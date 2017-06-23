@@ -47,7 +47,7 @@ public class AboutListener {
                 super.mouseClicked(e);
                 Desktop desktop = Desktop.getDesktop();
                 try {
-                    desktop.browse(new URI("https://github.com/rememberber/wepush"));
+                    desktop.browse(new URI("https://github.com/rememberber/WePush/releases"));
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 } catch (URISyntaxException e1) {
