@@ -6,15 +6,15 @@
 
 # WePush
 
-### ����
-�Զ�����������
->Ŀǰ֧�ֵ���Ϣ���ͣ�΢��ģ����Ϣ��΢�ſͷ���Ϣ���������ģ�����  
->֧����Ϣ�༭��Ԥ��  
->֧���ļ������û�  
->֧��MySQL�����û�  
->֧��΢�Ź��ں�ȫԱ���� 
+### 功能
+自定义批量推送
+>目前支持的消息类型：微信模板消息、微信客服消息、阿里大于模板短信  
+>支持消息编辑、预览  
+>支持文件导入用户  
+>支持MySQL导入用户  
+>支持微信公众号全员推送 
 
-### ����
+### 速览
 <p align="center">
   <a href="https://github.com/rememberber/WePush">
    <img alt="WePush" src="https://github.com/rememberber/WePush/blob/master/screen_shoot/%E5%9B%BE%E5%83%8F%20198.png?raw=true">
@@ -56,11 +56,11 @@
   </a>
 </p>
 
-### ��װ�ļ�����
+### 安装文件下载
 
-��װ֮ǰ��ȷ���Ѿ���װ��jre1.8�������ϰ汾  [jre���ص�ַ](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)  
+安装之前请确认已经安装了jre1.8或者以上版本  [jre下载地址](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)  
 
 [WePush](https://github.com/rememberber/WePush/tree/master/dist/exe)
 
-### ��������
+### 环境依赖
 >Java 8
