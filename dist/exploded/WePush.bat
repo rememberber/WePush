@@ -1,0 +1,1 @@
+start javaw -jar fangxuele-tool-wechat-push-1.0.jar

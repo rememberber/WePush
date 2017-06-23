@@ -1,0 +1,2959 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<DocumentData>
+<ProductID>{AFB904C4-C255-4540-B97E-A75A34F1FFB0}</ProductID>
+<ProductVersion>9.5.0.0</ProductVersion>
+<ProductType>Commercial</ProductType>
+<ArchiveFiles>
+<FileData>
+<FldRef>0</FldRef>
+<FullName>E:\IdeaWorkspace\fangxuele-tool-wechat-push\dist\exploded\fangxuele-tool-wechat-push-1.0.jar</FullName>
+<FileName>fangxuele-tool-wechat-push-1.0.jar</FileName>
+<Source>E:\IdeaWorkspace\fangxuele-tool-wechat-push\dist\exploded</Source>
+<Ext>jar</Ext>
+<RTSource>Archive</RTSource>
+<Desc/>
+<Recurse>1</Recurse>
+<MatchMode>0</MatchMode>
+<Dest>%AppFolder%</Dest>
+<Overwrite>1</Overwrite>
+<Backup>0</Backup>
+<Protect>0</Protect>
+<InstallOrder>1000</InstallOrder>
+<SCStartRoot>0</SCStartRoot>
+<SCStartProgs>0</SCStartProgs>
+<SCAppFld>0</SCAppFld>
+<SCStartup>0</SCStartup>
+<SCDesk>0</SCDesk>
+<SCQLaunch>0</SCQLaunch>
+<SCStartPinOption>0</SCStartPinOption>
+<SCCust>0</SCCust>
+<CustSCPath/>
+<SCDesc>fangxuele-tool-wechat-push-1.0</SCDesc>
+<SCComment/>
+<SCArgs/>
+<SCWork/>
+<UseExtIco>0</UseExtIco>
+<IcoFN/>
+<IcoIdx>0</IcoIdx>
+<IcoShowMd>0</IcoShowMd>
+<IcoHK>0</IcoHK>
+<RegTTF>0</RegTTF>
+<TTFName/>
+<RegOCX>0</RegOCX>
+<RegTLB>0</RegTLB>
+<SupInUse>1</SupInUse>
+<Compress>1</Compress>
+<UseOrigAttr>1</UseOrigAttr>
+<Attr>0</Attr>
+<NoCRC>0</NoCRC>
+<NoRemove>0</NoRemove>
+<Shared>0</Shared>
+<OSCond>
+<OS>32768</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>0</OS>
+<OS>0</OS>
+<OS>0</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+</OSCond>
+<RTCond/>
+<BuildConfigs>
+<Cfg>All</Cfg>
+</BuildConfigs>
+<Package>None</Package>
+<Packages/>
+<Notes/>
+<CompSize>0</CompSize>
+<CRC>0</CRC>
+<StoreOnly>0</StoreOnly>
+</FileData>
+<FileData>
+<FldRef>0</FldRef>
+<FullName>E:\IdeaWorkspace\fangxuele-tool-wechat-push\dist\exploded\WePush.bat</FullName>
+<FileName>WePush.bat</FileName>
+<Source>E:\IdeaWorkspace\fangxuele-tool-wechat-push\dist\exploded</Source>
+<Ext>bat</Ext>
+<RTSource>Archive</RTSource>
+<Desc/>
+<Recurse>1</Recurse>
+<MatchMode>0</MatchMode>
+<Dest>%AppFolder%</Dest>
+<Overwrite>1</Overwrite>
+<Backup>0</Backup>
+<Protect>0</Protect>
+<InstallOrder>1000</InstallOrder>
+<SCStartRoot>0</SCStartRoot>
+<SCStartProgs>0</SCStartProgs>
+<SCAppFld>1</SCAppFld>
+<SCStartup>0</SCStartup>
+<SCDesk>1</SCDesk>
+<SCQLaunch>0</SCQLaunch>
+<SCStartPinOption>0</SCStartPinOption>
+<SCCust>0</SCCust>
+<CustSCPath/>
+<SCDesc>WePush</SCDesc>
+<SCComment/>
+<SCArgs/>
+<SCWork/>
+<UseExtIco>1</UseExtIco>
+<IcoFN>%TempLaunchFolder%\WePush-desktop.ico</IcoFN>
+<IcoIdx>0</IcoIdx>
+<IcoShowMd>0</IcoShowMd>
+<IcoHK>0</IcoHK>
+<RegTTF>0</RegTTF>
+<TTFName/>
+<RegOCX>0</RegOCX>
+<RegTLB>0</RegTLB>
+<SupInUse>0</SupInUse>
+<Compress>1</Compress>
+<UseOrigAttr>1</UseOrigAttr>
+<Attr>0</Attr>
+<NoCRC>0</NoCRC>
+<NoRemove>0</NoRemove>
+<Shared>0</Shared>
+<OSCond>
+<OS>32768</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>0</OS>
+<OS>0</OS>
+<OS>0</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+</OSCond>
+<RTCond/>
+<BuildConfigs>
+<Cfg>All</Cfg>
+</BuildConfigs>
+<Package>None</Package>
+<Packages/>
+<Notes/>
+<CompSize>0</CompSize>
+<CRC>0</CRC>
+<StoreOnly>0</StoreOnly>
+</FileData>
+<FileData>
+<FldRef>1</FldRef>
+<FullName>E:\IdeaWorkspace\fangxuele-tool-wechat-push\dist\exploded\lib\*.*</FullName>
+<FileName>*.*</FileName>
+<Source>E:\IdeaWorkspace\fangxuele-tool-wechat-push\dist\exploded\lib</Source>
+<Ext>*</Ext>
+<RTSource>Archive</RTSource>
+<Desc/>
+<Recurse>1</Recurse>
+<MatchMode>0</MatchMode>
+<Dest>%AppFolder%\lib</Dest>
+<Overwrite>1</Overwrite>
+<Backup>0</Backup>
+<Protect>0</Protect>
+<InstallOrder>1000</InstallOrder>
+<SCStartRoot>0</SCStartRoot>
+<SCStartProgs>0</SCStartProgs>
+<SCAppFld>0</SCAppFld>
+<SCStartup>0</SCStartup>
+<SCDesk>0</SCDesk>
+<SCQLaunch>0</SCQLaunch>
+<SCStartPinOption>0</SCStartPinOption>
+<SCCust>0</SCCust>
+<CustSCPath/>
+<SCDesc/>
+<SCComment/>
+<SCArgs/>
+<SCWork/>
+<UseExtIco>0</UseExtIco>
+<IcoFN/>
+<IcoIdx>0</IcoIdx>
+<IcoShowMd>0</IcoShowMd>
+<IcoHK>0</IcoHK>
+<RegTTF>1</RegTTF>
+<TTFName/>
+<RegOCX>1</RegOCX>
+<RegTLB>1</RegTLB>
+<SupInUse>1</SupInUse>
+<Compress>1</Compress>
+<UseOrigAttr>1</UseOrigAttr>
+<Attr>0</Attr>
+<NoCRC>0</NoCRC>
+<NoRemove>0</NoRemove>
+<Shared>0</Shared>
+<OSCond>
+<OS>32768</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>0</OS>
+<OS>0</OS>
+<OS>0</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+</OSCond>
+<RTCond/>
+<BuildConfigs>
+<Cfg>All</Cfg>
+</BuildConfigs>
+<Package>None</Package>
+<Packages/>
+<Notes/>
+<CompSize>0</CompSize>
+<CRC>0</CRC>
+<StoreOnly>0</StoreOnly>
+</FileData>
+</ArchiveFiles>
+<ExternalFiles/>
+<BeforeInstallingScreens>
+<Screen>
+<Type>100</Type>
+<Name>Welcome to Setup</Name>
+<BannerStyle>2</BannerStyle>
+<TemplateName>Welcome to Setup</TemplateName>
+<OverrideProjTheme>1</OverrideProjTheme>
+<StyleData>
+<CstClrs>0</CstClrs>
+<TBBG format="hex">ffffff</TBBG>
+<BDYBG format="hex">ece9d8</BDYBG>
+<FTBG format="hex">ece9d8</FTBG>
+<TBTXT format="hex">000000</TBTXT>
+<BDYTXT format="hex">000000</BDYTXT>
+<CBG format="hex">ffffff</CBG>
+<C3DFACE format="hex">ece9d8</C3DFACE>
+<C3DHLT format="hex">ece9d8</C3DHLT>
+<C3DLIT format="hex">ffffff</C3DLIT>
+<C3DSH format="hex">aca899</C3DSH>
+<CBTNTXT format="hex">000000</CBTNTXT>
+<CTEXT format="hex">000000</CTEXT>
+<CDISTXT format="hex">aca899</CDISTXT>
+<CPRGRS format="hex">316ac5</CPRGRS>
+<C3DSHDK format="hex">716f64</C3DSHDK>
+<TBIMG>E:\IdeaWorkspace\fangxuele-tool-wechat-push\setup\InstallerHeader1.png</TBIMG>
+<SBIMG>C:\Program Files (x86)\Setup Factory 9\Themes\Default\Default_Side_Banner.jpg</SBIMG>
+<BDIMG/>
+<BDFILL>0</BDFILL>
+<HDSEP>0</HDSEP>
+<FTSEP>1</FTSEP>
+<CstFnts>0</CstFnts>
+<Fonts>
+<FontData>
+<FontName>Microsoft YaHei UI</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Microsoft YaHei UI</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Microsoft YaHei UI</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-24</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Microsoft YaHei UI</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>400</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Microsoft YaHei UI</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>400</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+</Fonts>
+<CAOff>
+<TP>0</TP>
+<L>15</L>
+<T>140</T>
+<R>15</R>
+<B>15</B>
+</CAOff>
+<CAOff>
+<TP>1</TP>
+<L>15</L>
+<T>15</T>
+<R>15</R>
+<B>15</B>
+</CAOff>
+<CAOff>
+<TP>2</TP>
+<L>15</L>
+<T>15</T>
+<R>15</R>
+<B>15</B>
+</CAOff>
+<TBTXTX>10</TBTXTX>
+<TBTXTY>10</TBTXTY>
+<ScreenW>600</ScreenW>
+<ScreenH>450</ScreenH>
+</StyleData>
+<Events>
+<Event>
+<Name>On Preload</Name>
+<Args/>
+<Script>-- These actions are performed before the screen is shown.
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Back</Name>
+<Args/>
+<Script>-- These actions are performed when the Back button is clicked.
+
+-- go back to the previous screen
+Screen.Back();
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Next</Name>
+<Args/>
+<Script>-- These actions are performed when the Next button is clicked.
+
+--ÅÐ¶ÏÓÐÃ»ÓÐ°²×°¹ý
+
+hasInstalledDobby = Registry.DoesKeyExist(HKEY_CURRENT_USER, "Software\\WePush");
+
+if hasInstalledDobby ~= false then
+
+--¶ÁÈ¡°²×°Â·¾¶
+InstalledPath = Registry.GetValue(HKEY_CURRENT_USER, "Software\\WePush", "InstallPath", false);
+SessionVar.Set("%AppFolder%", InstalledPath);
+end
+
+if hasInstalledDobby == false then
+
+--¶ÁÈ¡°²×°Â·¾¶
+InstalledPath = "D:\\Program Files\\WePush";
+SessionVar.Set("%AppFolder%", InstalledPath);
+end
+
+-- advance to the next screen
+Screen.Next();
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Cancel</Name>
+<Args/>
+<Script>-- These actions are performed when the Cancel button is clicked.
+
+-- from _SUF70_Global_Functions.lua:
+-- ask user if they're sure they want to exit
+if g_ConfirmSetupAbort() then
+	Application.Exit(EXIT_REASON_USER_ABORTED);
+end
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Help</Name>
+<Args/>
+<Script>-- These actions are performed when the Help button is clicked.
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Ctrl Message</Name>
+<Args>number e_CtrlID, number e_MsgID, table e_Details</Args>
+<Script>-- These actions are triggered by the controls on the screen.
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+</Events>
+<Controls>
+<Control>
+<Type>1</Type>
+<ID>103</ID>
+<Visible>0</Visible>
+<Enabled>0</Enabled>
+<TabOrder>75</TabOrder>
+<FTButton>1</FTButton>
+</Control>
+<Control>
+<Type>1</Type>
+<ID>101</ID>
+<Visible>0</Visible>
+<Enabled>0</Enabled>
+<TabOrder>76</TabOrder>
+<FTButton>1</FTButton>
+</Control>
+<Control>
+<Type>1</Type>
+<ID>100</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>77</TabOrder>
+<FTButton>1</FTButton>
+</Control>
+<Control>
+<Type>1</Type>
+<ID>102</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>78</TabOrder>
+<FTButton>1</FTButton>
+</Control>
+<Control>
+<Type>2</Type>
+<ID>200</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>1</TabOrder>
+<IsHeading>0</IsHeading>
+</Control>
+<Control>
+<Type>2</Type>
+<ID>300</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>0</TabOrder>
+<IsHeading>1</IsHeading>
+</Control>
+</Controls>
+<Languages>
+<SUF70Messages>
+<Language>
+<Name>Chinese (Simplified)</Name>
+<Default>1</Default>
+<Primary>4</Primary>
+<Secondary>
+<ID>2</ID>
+<ID>3</ID>
+<ID>4</ID>
+<ID>5</ID>
+</Secondary>
+</Language>
+<Messages>
+<IDS_WINDOW_TITLE>%ProductName% °²×°</IDS_WINDOW_TITLE>
+<IDS_HEADER_TEXT/>
+<IDS_SUBHEADER_TEXT/>
+<IDS_CTRL_BUTTON_NEXT>ÏÂÒ»²½(&amp;N) &gt;</IDS_CTRL_BUTTON_NEXT>
+<IDS_CTRL_BUTTON_BACK>&lt; ·µ»Ø(&amp;B)</IDS_CTRL_BUTTON_BACK>
+<IDS_CTRL_BUTTON_CANCEL>È¡Ïû(&amp;C)</IDS_CTRL_BUTTON_CANCEL>
+<IDS_CTRL_BUTTON_HELP>°ïÖú(&amp;H)</IDS_CTRL_BUTTON_HELP>
+<IDS_CTRL_STATICTEXT_BODY>
+×¢Òâ£º
+
+°²×°Ö®Ç°ÇëÈ·ÈÏ±¾»úÒÑ¾­°²×°JRE1.8»òÕß¸ü¸ß°æ±¾£¡
+
+ÒÑÈ·ÈÏ£¬Çëµ¥»÷¡°ÏÂÒ»²½¡±¼ÌÐø¡£</IDS_CTRL_STATICTEXT_BODY>
+<IDS_CTRL_HEADINGTEXT_BODY/>
+</Messages>
+</SUF70Messages>
+</Languages>
+</Screen>
+<Screen>
+<Type>110</Type>
+<Name>Select Install Folder</Name>
+<BannerStyle>2</BannerStyle>
+<TemplateName>Select Install Folder</TemplateName>
+<OverrideProjTheme>1</OverrideProjTheme>
+<StyleData>
+<CstClrs>0</CstClrs>
+<TBBG format="hex">ffffff</TBBG>
+<BDYBG format="hex">ece9d8</BDYBG>
+<FTBG format="hex">ece9d8</FTBG>
+<TBTXT format="hex">000000</TBTXT>
+<BDYTXT format="hex">000000</BDYTXT>
+<CBG format="hex">ffffff</CBG>
+<C3DFACE format="hex">ece9d8</C3DFACE>
+<C3DHLT format="hex">ece9d8</C3DHLT>
+<C3DLIT format="hex">ffffff</C3DLIT>
+<C3DSH format="hex">aca899</C3DSH>
+<CBTNTXT format="hex">000000</CBTNTXT>
+<CTEXT format="hex">000000</CTEXT>
+<CDISTXT format="hex">aca899</CDISTXT>
+<CPRGRS format="hex">316ac5</CPRGRS>
+<C3DSHDK format="hex">716f64</C3DSHDK>
+<TBIMG>E:\IdeaWorkspace\fangxuele-tool-wechat-push\setup\InstallerHeader1.png</TBIMG>
+<SBIMG>C:\Program Files (x86)\Setup Factory 9\Themes\Default\Default_Side_Banner.jpg</SBIMG>
+<BDIMG/>
+<BDFILL>0</BDFILL>
+<HDSEP>0</HDSEP>
+<FTSEP>1</FTSEP>
+<CstFnts>0</CstFnts>
+<Fonts>
+<FontData>
+<FontName>Microsoft YaHei UI</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Microsoft YaHei UI</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Microsoft YaHei UI</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-24</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Microsoft YaHei UI</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>400</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Microsoft YaHei UI</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>400</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+</Fonts>
+<CAOff>
+<TP>0</TP>
+<L>15</L>
+<T>140</T>
+<R>15</R>
+<B>15</B>
+</CAOff>
+<CAOff>
+<TP>1</TP>
+<L>15</L>
+<T>15</T>
+<R>15</R>
+<B>15</B>
+</CAOff>
+<CAOff>
+<TP>2</TP>
+<L>15</L>
+<T>15</T>
+<R>15</R>
+<B>15</B>
+</CAOff>
+<TBTXTX>10</TBTXTX>
+<TBTXTY>10</TBTXTY>
+<ScreenW>600</ScreenW>
+<ScreenH>450</ScreenH>
+</StyleData>
+<Variable>%AppFolder%</Variable>
+<Events>
+<Event>
+<Name>On Preload</Name>
+<Args/>
+<Script>-- These actions are performed before the screen is shown.
+
+-- calculate the amount of space required for the installation
+_SpaceRequired = SetupData.CalculateRequiredSpace();
+
+-- format it as a string with an appropriate unit of measurement (e.g. "0 bytes")
+local strSpaceRequired = String.GetFormattedSize(_SpaceRequired);
+
+-- store the string in a session variable so it can be used in the screen text
+SessionVar.Set("%SpaceRequired%", strSpaceRequired);
+
+-- from _SUF70_Global_Functions.lua:
+-- update the 'Space required:' message (expands any session variables in it)
+g_UpdateStaticTextCtrl(CTRL_STATICTEXT_SPACEREQUIRED, "IDS_CTRL_STATICTEXT_SPACEREQUIRED");
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Back</Name>
+<Args/>
+<Script>-- These actions are performed when the Back button is clicked.
+
+-- go back to the previous screen
+Screen.Back();
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Next</Name>
+<Args/>
+<Script>-- These actions are performed when the Next button is clicked.
+
+-- from _SUF70_Global_Functions.lua:
+-- make sure the install folder path is formatted properly (i.e. is a valid UNC or DOS path string)
+if(g_IsValidPath(strInstallFolderPath)) then
+
+	-- if there's enough space on the selected drive, proceed to the next screen
+	if(_SpaceAvailable &gt;= _SpaceRequired) then
+		-- there's enough space on the drive...so
+		-- proceed to the next screen
+		Screen.Next();
+	else
+		-- there isn't enough space on the drive...
+		
+		-- from _SUF70_Global_Functions.lua:
+		-- ask the user if they want to continue anyway
+		if g_ConfirmFreeSpaceOverride() then
+			-- user said to install anyway...so
+			-- advance to the next screen
+			Screen.Next();
+		end
+	end
+else
+	-- the install folder path isn't valid...
+	
+	local strTitle = SetupData.GetLocalizedString("MSG_INVALID_ENTRY");
+	local strPrompt;
+
+	-- from _SUF70_Global_Functions.lua:
+	-- check whether the install folder path contains only valid path characters
+	if(g_ContainsValidPathChars(strInstallFolderPath)) then
+		-- the string is just formatted wrong
+		strPrompt = SetupData.GetLocalizedString("ERR_INVALID_PATH");
+	else
+		-- the string contains invalid characters
+		strPrompt = SetupData.GetLocalizedString("ERR_INVALID_CHARACTERS") .. "\r\n/ * ? \" &lt; &gt; |";		
+	end
+
+	-- tell the user to smarten up :)
+	Dialog.Message(strTitle, strPrompt, MB_OK, MB_ICONEXCLAMATION);
+end
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Cancel</Name>
+<Args/>
+<Script>-- These actions are performed when the Cancel button is clicked.
+
+-- from _SUF70_Global_Functions.lua:
+-- ask user if they're sure they want to exit
+if g_ConfirmSetupAbort() then
+	Application.Exit(EXIT_REASON_USER_ABORTED);
+end
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Help</Name>
+<Args/>
+<Script>-- These actions are performed when the Help button is clicked.
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Ctrl Message</Name>
+<Args>number e_CtrlID, number e_MsgID, table e_Details</Args>
+<Script>-- These actions are triggered by the controls on the screen.
+
+if(e_CtrlID == CTRL_BUTTON_BROWSE) then
+	-- the control message is from the browse button...
+
+	-- if it's a click message, show the browse dialog 
+	-- and update the install folder
+	if (e_MsgID == MSGID_CLICKED) then
+
+		-- get the text from the label above the install folder field
+		-- (this will be used as the prompt on the Browse dialog)
+		local strPrompt = Screen.GetLocalizedString("IDS_CTRL_STATICTEXT_LABEL_01");
+		strPrompt = SessionVar.Expand(strPrompt);
+		
+		-- from _SUF70_Global_Functions.lua:
+		-- display a folder browse dialog to change the path in the install folder field
+		g_EditFieldFolderBrowse(CTRL_EDIT_FOLDER, strPrompt);
+	end
+end
+
+
+if(e_CtrlID == CTRL_EDIT_FOLDER) then
+	-- the control message is from the install folder field...
+
+	-- if it's an OnChanged message (i.e. the installation path has changed)
+	-- recalculate the space available on the selected drive
+	if (e_MsgID == MSGID_ONCHANGED) then
+
+		strInstallFolderPath = e_Details.Text;
+		
+		-- from _SUF70_Global_Functions.lua:
+		-- calculate the amount of disk space available on the selected drive
+		_SpaceAvailable = g_GetFreeSpaceInBytes(strInstallFolderPath);
+
+		-- set %SpaceAvailable% to a string with an appropriate unit of measurement (e.g. "0 bytes")
+		SessionVar.Set("%SpaceAvailable%", String.GetFormattedSize(_SpaceAvailable) );
+
+		-- from _SUF70_Global_Functions.lua:
+		-- update the 'Space available on selected drive:' message (expands any session variables in it)
+		g_UpdateStaticTextCtrl(CTRL_STATICTEXT_SPACEAVAILABLE, "IDS_CTRL_STATICTEXT_SPACEAVAILABLE");
+	end
+end
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+</Events>
+<Controls>
+<Control>
+<Type>1</Type>
+<ID>103</ID>
+<Visible>0</Visible>
+<Enabled>0</Enabled>
+<TabOrder>75</TabOrder>
+<FTButton>1</FTButton>
+</Control>
+<Control>
+<Type>1</Type>
+<ID>101</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>76</TabOrder>
+<FTButton>1</FTButton>
+</Control>
+<Control>
+<Type>1</Type>
+<ID>100</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>-10</TabOrder>
+<FTButton>1</FTButton>
+</Control>
+<Control>
+<Type>1</Type>
+<ID>102</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>-9</TabOrder>
+<FTButton>1</FTButton>
+</Control>
+<Control>
+<Type>2</Type>
+<ID>203</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>1</TabOrder>
+<IsHeading>0</IsHeading>
+</Control>
+<Control>
+<Type>2</Type>
+<ID>211</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>2</TabOrder>
+<IsHeading>0</IsHeading>
+</Control>
+<Control>
+<Type>6</Type>
+<ID>801</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>3</TabOrder>
+<TextAlign>0</TextAlign>
+<VertScroll>0</VertScroll>
+<HorizScroll>0</HorizScroll>
+<RTLReadingOrder>0</RTLReadingOrder>
+<Style>0</Style>
+<Mode>0</Mode>
+<MaskReturnMode>1</MaskReturnMode>
+<ReadOnly>0</ReadOnly>
+<StartNewRow>1</StartNewRow>
+<SizeColumns>4</SizeColumns>
+<Variable>%AppFolder%</Variable>
+</Control>
+<Control>
+<Type>1</Type>
+<ID>110</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>4</TabOrder>
+<FTButton>0</FTButton>
+</Control>
+<Control>
+<Type>2</Type>
+<ID>208</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>5</TabOrder>
+<IsHeading>0</IsHeading>
+</Control>
+<Control>
+<Type>2</Type>
+<ID>207</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>6</TabOrder>
+<IsHeading>0</IsHeading>
+</Control>
+</Controls>
+<Languages>
+<SUF70Messages>
+<Language>
+<Name>Chinese (Simplified)</Name>
+<Default>1</Default>
+<Primary>4</Primary>
+<Secondary>
+<ID>2</ID>
+<ID>3</ID>
+<ID>4</ID>
+<ID>5</ID>
+</Secondary>
+</Language>
+<Messages>
+<IDS_WINDOW_TITLE>%ProductName% °²×°</IDS_WINDOW_TITLE>
+<IDS_HEADER_TEXT/>
+<IDS_SUBHEADER_TEXT/>
+<IDS_CTRL_BUTTON_NEXT>ÏÂÒ»²½(&amp;N) &gt;</IDS_CTRL_BUTTON_NEXT>
+<IDS_CTRL_BUTTON_BACK>&lt; ·µ»Ø(&amp;B)</IDS_CTRL_BUTTON_BACK>
+<IDS_CTRL_BUTTON_CANCEL>È¡Ïû(&amp;C)</IDS_CTRL_BUTTON_CANCEL>
+<IDS_CTRL_BUTTON_HELP>°ïÖú(&amp;H)</IDS_CTRL_BUTTON_HELP>
+<IDS_CTRL_BUTTON_BROWSE>¸ü¸Ä(&amp;H)...</IDS_CTRL_BUTTON_BROWSE>
+<IDS_CTRL_EDIT_FOLDER>%AppFolder%</IDS_CTRL_EDIT_FOLDER>
+<IDS_CTRL_STATICTEXT_TOPINSTRUCTIONS>
+Îª±£Ö¤³ÌÐòÕý³£ÔËÐÐ£¬ÇëÎð°²×°µ½CÅÌ
+</IDS_CTRL_STATICTEXT_TOPINSTRUCTIONS>
+<IDS_CTRL_STATICTEXT_LABEL_01>½« %ProductName% °²×°µ½:</IDS_CTRL_STATICTEXT_LABEL_01>
+<IDS_CTRL_STATICTEXT_SPACEREQUIRED>ËùÐè¿Õ¼ä: %SpaceRequired%</IDS_CTRL_STATICTEXT_SPACEREQUIRED>
+<IDS_CTRL_STATICTEXT_SPACEAVAILABLE>Ñ¡¶¨Çý¶¯Æ÷µÄ¿ÉÓÃ¿Õ¼ä: %SpaceAvailable%</IDS_CTRL_STATICTEXT_SPACEAVAILABLE>
+</Messages>
+</SUF70Messages>
+</Languages>
+</Screen>
+<Screen>
+<Type>100</Type>
+<Name>Ready to Install</Name>
+<BannerStyle>2</BannerStyle>
+<TemplateName>Ready to Install</TemplateName>
+<OverrideProjTheme>1</OverrideProjTheme>
+<StyleData>
+<CstClrs>0</CstClrs>
+<TBBG format="hex">ffffff</TBBG>
+<BDYBG format="hex">ece9d8</BDYBG>
+<FTBG format="hex">ece9d8</FTBG>
+<TBTXT format="hex">000000</TBTXT>
+<BDYTXT format="hex">000000</BDYTXT>
+<CBG format="hex">ffffff</CBG>
+<C3DFACE format="hex">ece9d8</C3DFACE>
+<C3DHLT format="hex">ece9d8</C3DHLT>
+<C3DLIT format="hex">ffffff</C3DLIT>
+<C3DSH format="hex">aca899</C3DSH>
+<CBTNTXT format="hex">000000</CBTNTXT>
+<CTEXT format="hex">000000</CTEXT>
+<CDISTXT format="hex">aca899</CDISTXT>
+<CPRGRS format="hex">316ac5</CPRGRS>
+<C3DSHDK format="hex">716f64</C3DSHDK>
+<TBIMG>E:\IdeaWorkspace\fangxuele-tool-wechat-push\setup\InstallerHeader1.png</TBIMG>
+<SBIMG>C:\Program Files (x86)\Setup Factory 9\Themes\Default\Default_Side_Banner.jpg</SBIMG>
+<BDIMG/>
+<BDFILL>0</BDFILL>
+<HDSEP>0</HDSEP>
+<FTSEP>1</FTSEP>
+<CstFnts>0</CstFnts>
+<Fonts>
+<FontData>
+<FontName>Microsoft YaHei UI</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Microsoft YaHei UI</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Microsoft YaHei UI</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-24</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Microsoft YaHei UI</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>400</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Microsoft YaHei UI</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>400</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+</Fonts>
+<CAOff>
+<TP>0</TP>
+<L>15</L>
+<T>140</T>
+<R>15</R>
+<B>15</B>
+</CAOff>
+<CAOff>
+<TP>1</TP>
+<L>15</L>
+<T>15</T>
+<R>15</R>
+<B>15</B>
+</CAOff>
+<CAOff>
+<TP>2</TP>
+<L>15</L>
+<T>15</T>
+<R>15</R>
+<B>15</B>
+</CAOff>
+<TBTXTX>10</TBTXTX>
+<TBTXTY>10</TBTXTY>
+<ScreenW>600</ScreenW>
+<ScreenH>450</ScreenH>
+</StyleData>
+<Events>
+<Event>
+<Name>On Preload</Name>
+<Args/>
+<Script>-- These actions are performed before the screen is shown.
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Back</Name>
+<Args/>
+<Script>-- These actions are performed when the Back button is clicked.
+
+-- go back to the previous screen
+Screen.Back();
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Next</Name>
+<Args/>
+<Script>-- These actions are performed when the Next button is clicked.
+
+-- advance to the next screen
+Screen.Next();
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Cancel</Name>
+<Args/>
+<Script>-- These actions are performed when the Cancel button is clicked.
+
+-- from _SUF70_Global_Functions.lua:
+-- ask user if they're sure they want to exit
+if g_ConfirmSetupAbort() then
+	Application.Exit(EXIT_REASON_USER_ABORTED);
+end
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Help</Name>
+<Args/>
+<Script>-- These actions are performed when the Help button is clicked.
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Ctrl Message</Name>
+<Args>number e_CtrlID, number e_MsgID, table e_Details</Args>
+<Script>-- These actions are triggered by the controls on the screen.
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+</Events>
+<Controls>
+<Control>
+<Type>1</Type>
+<ID>103</ID>
+<Visible>0</Visible>
+<Enabled>0</Enabled>
+<TabOrder>75</TabOrder>
+<FTButton>1</FTButton>
+</Control>
+<Control>
+<Type>1</Type>
+<ID>101</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>76</TabOrder>
+<FTButton>1</FTButton>
+</Control>
+<Control>
+<Type>1</Type>
+<ID>100</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>-10</TabOrder>
+<FTButton>1</FTButton>
+</Control>
+<Control>
+<Type>1</Type>
+<ID>102</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>-9</TabOrder>
+<FTButton>1</FTButton>
+</Control>
+<Control>
+<Type>2</Type>
+<ID>200</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>0</TabOrder>
+<IsHeading>0</IsHeading>
+</Control>
+<Control>
+<Type>2</Type>
+<ID>300</ID>
+<Visible>0</Visible>
+<Enabled>1</Enabled>
+<TabOrder>1</TabOrder>
+<IsHeading>1</IsHeading>
+</Control>
+</Controls>
+<Languages>
+<SUF70Messages>
+<Language>
+<Name>Chinese (Simplified)</Name>
+<Default>1</Default>
+<Primary>4</Primary>
+<Secondary>
+<ID>2</ID>
+<ID>3</ID>
+<ID>4</ID>
+<ID>5</ID>
+</Secondary>
+</Language>
+<Messages>
+<IDS_WINDOW_TITLE>%ProductName% °²×°</IDS_WINDOW_TITLE>
+<IDS_HEADER_TEXT/>
+<IDS_SUBHEADER_TEXT/>
+<IDS_CTRL_BUTTON_NEXT>ÏÂÒ»²½(&amp;N) &gt;</IDS_CTRL_BUTTON_NEXT>
+<IDS_CTRL_BUTTON_BACK>&lt; ·µ»Ø(&amp;B)</IDS_CTRL_BUTTON_BACK>
+<IDS_CTRL_BUTTON_CANCEL>È¡Ïû(&amp;C)</IDS_CTRL_BUTTON_CANCEL>
+<IDS_CTRL_BUTTON_HELP>°ïÖú(&amp;H)</IDS_CTRL_BUTTON_HELP>
+<IDS_CTRL_STATICTEXT_BODY>
+
+
+°²×°ÎÄ¼þ¼Ð:        %AppFolder%
+
+¿ì½Ý·½Ê½ÎÄ¼þ¼Ð:    %AppShortcutFolderName%
+
+
+Çëµ¥»÷¡°ÏÂÒ»²½¡±¼ÌÐø°²×°¡£</IDS_CTRL_STATICTEXT_BODY>
+<IDS_CTRL_HEADINGTEXT_BODY>±êÌâ</IDS_CTRL_HEADINGTEXT_BODY>
+</Messages>
+</SUF70Messages>
+</Languages>
+</Screen>
+</BeforeInstallingScreens>
+<DuringInstScreenData>
+<ShowProgress>1</ShowProgress>
+<Screens>
+<Screen>
+<Type>130</Type>
+<Name>One Progress Bar (While Installing)</Name>
+<BannerStyle>2</BannerStyle>
+<TemplateName>One Progress Bar (While Installing)</TemplateName>
+<OverrideProjTheme>1</OverrideProjTheme>
+<StyleData>
+<CstClrs>0</CstClrs>
+<TBBG format="hex">ffffff</TBBG>
+<BDYBG format="hex">ece9d8</BDYBG>
+<FTBG format="hex">ece9d8</FTBG>
+<TBTXT format="hex">000000</TBTXT>
+<BDYTXT format="hex">000000</BDYTXT>
+<CBG format="hex">ffffff</CBG>
+<C3DFACE format="hex">ece9d8</C3DFACE>
+<C3DHLT format="hex">ece9d8</C3DHLT>
+<C3DLIT format="hex">ffffff</C3DLIT>
+<C3DSH format="hex">aca899</C3DSH>
+<CBTNTXT format="hex">000000</CBTNTXT>
+<CTEXT format="hex">000000</CTEXT>
+<CDISTXT format="hex">aca899</CDISTXT>
+<CPRGRS format="hex">316ac5</CPRGRS>
+<C3DSHDK format="hex">716f64</C3DSHDK>
+<TBIMG>E:\IdeaWorkspace\fangxuele-tool-wechat-push\setup\InstallerHeader2.png</TBIMG>
+<SBIMG>C:\Program Files (x86)\Setup Factory 9\Themes\Default\Default_Side_Banner.jpg</SBIMG>
+<BDIMG/>
+<BDFILL>0</BDFILL>
+<HDSEP>0</HDSEP>
+<FTSEP>1</FTSEP>
+<CstFnts>0</CstFnts>
+<Fonts>
+<FontData>
+<FontName>Microsoft YaHei UI</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Microsoft YaHei UI</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Microsoft YaHei UI</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-24</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Microsoft YaHei UI</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>400</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Microsoft YaHei UI</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>400</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+</Fonts>
+<CAOff>
+<TP>0</TP>
+<L>15</L>
+<T>140</T>
+<R>15</R>
+<B>15</B>
+</CAOff>
+<CAOff>
+<TP>1</TP>
+<L>15</L>
+<T>15</T>
+<R>15</R>
+<B>15</B>
+</CAOff>
+<CAOff>
+<TP>2</TP>
+<L>15</L>
+<T>15</T>
+<R>15</R>
+<B>15</B>
+</CAOff>
+<TBTXTX>10</TBTXTX>
+<TBTXTY>10</TBTXTY>
+<ScreenW>600</ScreenW>
+<ScreenH>450</ScreenH>
+</StyleData>
+<IsWhileInstallingMode>1</IsWhileInstallingMode>
+<Events>
+<Event>
+<Name>On Preload</Name>
+<Args/>
+<Script>-- These actions are performed before the screen is shown.
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Progress</Name>
+<Args>number e_Stage, string e_CurrentItemText, number e_CurrentItemPct, number e_StagePct</Args>
+<Script>-- These actions are performed whenever progress is made while the setup is installing files.
+
+--[[
+Note: 
+	The file installation process is divided into 4 progress stages: 
+
+	1. preparing to install
+	2. installing files
+	3. creating the uninstall
+	4. creating shortcuts
+
+	Each progress stage has a string in the project's language file(s)
+	that describes the stage, e.g. "Installing Files..." This makes
+	it possible for the progress text to be translated (along with
+	the other localized strings in the language files).
+]]
+
+-- get the appropriate string ID for the current stage's progress message...
+local strStringID;
+if(e_Stage == INSTALL_STAGE_PREPARING) then
+	strStringID = "MSG_PROG_PREPARING";
+elseif(e_Stage == INSTALL_STAGE_INSTALLING_FILES) then
+	strStringID = "MSG_PROG_INSTALLING_FILES";
+elseif(e_Stage == INSTALL_STAGE_CREATING_UNINSTALL) then
+	strStringID = "MSG_PROG_CREATING_UNINSTALL";
+elseif(e_Stage == INSTALL_STAGE_CREATING_SHORTCUTS) then
+	strStringID = "MSG_PROG_CREATING_SHORTCUTS";
+end
+
+-- ...and get the corresponding string from the language file
+local strStageMessage = SetupData.GetLocalizedString(strStringID);
+
+-- update the progress prompt to show the current stage
+DlgStaticText.SetProperties(CTRL_STATICTEXT_LABEL_01, {Text=strStageMessage});
+
+-- if the current item is a file path, it might be too long to fit on the screen...
+-- this next action will shorten the text to 72 characters if it contains at least one \ in it
+local strAbbreviatedItemText = String.AbbreviateFilePath(e_CurrentItemText, 72);
+
+-- update the status text to show the current item (e.g. the file being installed)
+DlgStaticText.SetProperties(CTRL_STATICTEXT_LABEL_02, {Text=strAbbreviatedItemText});
+
+-- update the progress bar
+DlgProgressBar.SetPos(CTRL_PROGRESS_BAR_01, e_StagePct);
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Cancel</Name>
+<Args/>
+<Script>-- These actions are performed when the Cancel button is clicked.
+
+-- from _SUF70_Global_Functions.lua:
+-- ask user if they're sure they want to exit
+if g_ConfirmSetupAbort() then
+	Application.Exit(EXIT_REASON_USER_ABORTED);
+end
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+</Events>
+<Controls>
+<Control>
+<Type>1</Type>
+<ID>102</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>78</TabOrder>
+<FTButton>1</FTButton>
+</Control>
+<Control>
+<Type>2</Type>
+<ID>203</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>1</TabOrder>
+<IsHeading>0</IsHeading>
+</Control>
+<Control>
+<Type>2</Type>
+<ID>211</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>2</TabOrder>
+<IsHeading>0</IsHeading>
+</Control>
+<Control>
+<Type>2</Type>
+<ID>212</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>3</TabOrder>
+<IsHeading>0</IsHeading>
+</Control>
+<Control>
+<Type>7</Type>
+<ID>900</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>4</TabOrder>
+<Style>0</Style>
+<Min>0</Min>
+<Max>100</Max>
+<XPStyleBars>1</XPStyleBars>
+</Control>
+<Control>
+<Type>2</Type>
+<ID>213</ID>
+<Visible>0</Visible>
+<Enabled>1</Enabled>
+<TabOrder>2</TabOrder>
+<IsHeading>0</IsHeading>
+</Control>
+<Control>
+<Type>2</Type>
+<ID>214</ID>
+<Visible>0</Visible>
+<Enabled>1</Enabled>
+<TabOrder>3</TabOrder>
+<IsHeading>0</IsHeading>
+</Control>
+<Control>
+<Type>7</Type>
+<ID>901</ID>
+<Visible>0</Visible>
+<Enabled>1</Enabled>
+<TabOrder>4</TabOrder>
+<Style>0</Style>
+<Min>0</Min>
+<Max>100</Max>
+<XPStyleBars>0</XPStyleBars>
+</Control>
+</Controls>
+<Languages>
+<SUF70Messages>
+<Language>
+<Name>Chinese (Simplified)</Name>
+<Default>1</Default>
+<Primary>4</Primary>
+<Secondary>
+<ID>2</ID>
+<ID>3</ID>
+<ID>4</ID>
+<ID>5</ID>
+</Secondary>
+</Language>
+<Messages>
+<IDS_WINDOW_TITLE>%ProductName% °²×°</IDS_WINDOW_TITLE>
+<IDS_HEADER_TEXT/>
+<IDS_SUBHEADER_TEXT/>
+<IDS_CTRL_BUTTON_CANCEL>È¡Ïû(&amp;C)</IDS_CTRL_BUTTON_CANCEL>
+<IDS_CTRL_STATICTEXT_TOPINSTRUCTIONS/>
+<IDS_CTRL_STATICTEXT_LABEL_01>ÕýÔÚ°²×° %ProductName%</IDS_CTRL_STATICTEXT_LABEL_01>
+<IDS_CTRL_STATICTEXT_LABEL_02/>
+<IDS_CTRL_PROGRESS_BAR_01/>
+<IDS_CTRL_STATICTEXT_LABEL_03>½ø³Ì¶þ</IDS_CTRL_STATICTEXT_LABEL_03>
+<IDS_CTRL_STATICTEXT_LABEL_04>ÕýÔÚÖ´ÐÐ¶¯×÷...</IDS_CTRL_STATICTEXT_LABEL_04>
+<IDS_CTRL_PROGRESS_BAR_02/>
+</Messages>
+</SUF70Messages>
+</Languages>
+</Screen>
+</Screens>
+</DuringInstScreenData>
+<AfterInstallingScreens>
+<Screen>
+<Type>100</Type>
+<Name>Finished Install</Name>
+<BannerStyle>2</BannerStyle>
+<TemplateName>Finished Install</TemplateName>
+<OverrideProjTheme>1</OverrideProjTheme>
+<StyleData>
+<CstClrs>0</CstClrs>
+<TBBG format="hex">ffffff</TBBG>
+<BDYBG format="hex">ece9d8</BDYBG>
+<FTBG format="hex">ece9d8</FTBG>
+<TBTXT format="hex">000000</TBTXT>
+<BDYTXT format="hex">000000</BDYTXT>
+<CBG format="hex">ffffff</CBG>
+<C3DFACE format="hex">ece9d8</C3DFACE>
+<C3DHLT format="hex">ece9d8</C3DHLT>
+<C3DLIT format="hex">ffffff</C3DLIT>
+<C3DSH format="hex">aca899</C3DSH>
+<CBTNTXT format="hex">000000</CBTNTXT>
+<CTEXT format="hex">000000</CTEXT>
+<CDISTXT format="hex">aca899</CDISTXT>
+<CPRGRS format="hex">316ac5</CPRGRS>
+<C3DSHDK format="hex">716f64</C3DSHDK>
+<TBIMG>E:\IdeaWorkspace\fangxuele-tool-wechat-push\setup\InstallerHeader2.png</TBIMG>
+<SBIMG>C:\Program Files (x86)\Setup Factory 9\Themes\Default\Default_Side_Banner.jpg</SBIMG>
+<BDIMG/>
+<BDFILL>0</BDFILL>
+<HDSEP>0</HDSEP>
+<FTSEP>1</FTSEP>
+<CstFnts>0</CstFnts>
+<Fonts>
+<FontData>
+<FontName>Microsoft YaHei UI</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Microsoft YaHei UI</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Microsoft YaHei UI</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-24</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Microsoft YaHei UI</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>400</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Microsoft YaHei UI</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>400</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+</Fonts>
+<CAOff>
+<TP>0</TP>
+<L>15</L>
+<T>160</T>
+<R>15</R>
+<B>15</B>
+</CAOff>
+<CAOff>
+<TP>1</TP>
+<L>15</L>
+<T>15</T>
+<R>15</R>
+<B>15</B>
+</CAOff>
+<CAOff>
+<TP>2</TP>
+<L>15</L>
+<T>15</T>
+<R>15</R>
+<B>15</B>
+</CAOff>
+<TBTXTX>10</TBTXTX>
+<TBTXTY>10</TBTXTY>
+<ScreenW>600</ScreenW>
+<ScreenH>450</ScreenH>
+</StyleData>
+<Events>
+<Event>
+<Name>On Preload</Name>
+<Args/>
+<Script>-- These actions are performed before the screen is shown.
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Back</Name>
+<Args/>
+<Script>-- These actions are performed when the Back button is clicked.
+
+-- go back to the previous screen
+Screen.Back();
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Next</Name>
+<Args/>
+<Script>-- These actions are performed when the Next button is clicked.
+
+-- advance to the next screen
+Screen.Next();
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Cancel</Name>
+<Args/>
+<Script>-- These actions are performed when the Cancel button is clicked.
+
+-- from _SUF70_Global_Functions.lua:
+-- ask user if they're sure they want to exit
+if g_ConfirmSetupAbort() then
+	Application.Exit(EXIT_REASON_USER_ABORTED);
+end
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Help</Name>
+<Args/>
+<Script>-- These actions are performed when the Help button is clicked.
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Ctrl Message</Name>
+<Args>number e_CtrlID, number e_MsgID, table e_Details</Args>
+<Script>-- These actions are triggered by the controls on the screen.
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+</Events>
+<Controls>
+<Control>
+<Type>1</Type>
+<ID>103</ID>
+<Visible>0</Visible>
+<Enabled>0</Enabled>
+<TabOrder>75</TabOrder>
+<FTButton>1</FTButton>
+</Control>
+<Control>
+<Type>1</Type>
+<ID>101</ID>
+<Visible>1</Visible>
+<Enabled>0</Enabled>
+<TabOrder>76</TabOrder>
+<FTButton>1</FTButton>
+</Control>
+<Control>
+<Type>1</Type>
+<ID>100</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>-10</TabOrder>
+<FTButton>1</FTButton>
+</Control>
+<Control>
+<Type>1</Type>
+<ID>102</ID>
+<Visible>1</Visible>
+<Enabled>0</Enabled>
+<TabOrder>-9</TabOrder>
+<FTButton>1</FTButton>
+</Control>
+<Control>
+<Type>2</Type>
+<ID>200</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>0</TabOrder>
+<IsHeading>0</IsHeading>
+</Control>
+<Control>
+<Type>2</Type>
+<ID>300</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>1</TabOrder>
+<IsHeading>1</IsHeading>
+</Control>
+</Controls>
+<Languages>
+<SUF70Messages>
+<Language>
+<Name>Chinese (Simplified)</Name>
+<Default>1</Default>
+<Primary>4</Primary>
+<Secondary>
+<ID>2</ID>
+<ID>3</ID>
+<ID>4</ID>
+<ID>5</ID>
+</Secondary>
+</Language>
+<Messages>
+<IDS_WINDOW_TITLE>%ProductName% °²×°</IDS_WINDOW_TITLE>
+<IDS_HEADER_TEXT/>
+<IDS_SUBHEADER_TEXT/>
+<IDS_CTRL_BUTTON_NEXT>Íê³É(&amp;F)</IDS_CTRL_BUTTON_NEXT>
+<IDS_CTRL_BUTTON_BACK>&lt; ·µ»Ø(&amp;B)</IDS_CTRL_BUTTON_BACK>
+<IDS_CTRL_BUTTON_CANCEL>È¡Ïû(&amp;C)</IDS_CTRL_BUTTON_CANCEL>
+<IDS_CTRL_BUTTON_HELP>°ïÖú(&amp;H)</IDS_CTRL_BUTTON_HELP>
+<IDS_CTRL_STATICTEXT_BODY>
+%ProductName% %ProductVer% ÒÑ°²×°Íê±Ï
+
+Çëµ¥»÷¡°Íê³É¡±ÍË³ö¸Ã°²×°³ÌÐò
+</IDS_CTRL_STATICTEXT_BODY>
+<IDS_CTRL_HEADINGTEXT_BODY>°²×°³É¹¦</IDS_CTRL_HEADINGTEXT_BODY>
+</Messages>
+</SUF70Messages>
+</Languages>
+</Screen>
+</AfterInstallingScreens>
+<Packages/>
+<SerialLists>
+<SerialListData>
+<Name>List 1</Name>
+<BuildConfigs>
+<Cfg>All</Cfg>
+</BuildConfigs>
+<Serials/>
+</SerialListData>
+</SerialLists>
+<UninstallData>
+<CreateUninstall>1</CreateUninstall>
+<CfgFile>uninstall.xml</CfgFile>
+<UninstallFilesFolder>%AppFolder%\Uninstall</UninstallFilesFolder>
+<UninstallEXELocation>%AppFolder%\uninstall.exe</UninstallEXELocation>
+<AllowSilent>0</AllowSilent>
+<StartSilent>0</StartSilent>
+<ShowBGWindow>0</ShowBGWindow>
+<MainWindowSettings>
+<ShowBackGroundWindow>0</ShowBackGroundWindow>
+<WindowStyle>0</WindowStyle>
+<WindowAppearance>1</WindowAppearance>
+<SolidBackColor format="hex">008080</SolidBackColor>
+<GradientBackColor format="hex">b4c2e3</GradientBackColor>
+<GradientForeColor format="hex">5971b6</GradientForeColor>
+<ImageFile/>
+<UseCustomIcon>0</UseCustomIcon>
+<CustomIcon/>
+<HideTaskbarIcon>0</HideTaskbarIcon>
+<AlwaysOnTop>0</AlwaysOnTop>
+<Headline>%ProductName% Uninstall</Headline>
+<HeadingFont>
+<FontData>
+<FontName>Arial</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-37</Height>
+<Weight>700</Weight>
+<Italic>1</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+</HeadingFont>
+<HeadlineTextColor format="hex">ffffff</HeadlineTextColor>
+<Headline3DColor format="hex">000000</Headline3DColor>
+<HeadlineAlign>0</HeadlineAlign>
+<Headline3d>1</Headline3d>
+<SubHeading>v%ProductVer%</SubHeading>
+<SubHeadingFont>
+<FontData>
+<FontName>Arial</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-18</Height>
+<Weight>700</Weight>
+<Italic>1</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+</SubHeadingFont>
+<SubHeadingTextColor format="hex">ffffff</SubHeadingTextColor>
+<SubHeading3DColor format="hex">000000</SubHeading3DColor>
+<SubHeadingAlign>0</SubHeadingAlign>
+<SubHeading3d>1</SubHeading3d>
+<Footer>%Copyright% %CompanyName%. All rights reserved. %CompanyURL%</Footer>
+<FooterFont>
+<FontData>
+<FontName>Arial</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-16</Height>
+<Weight>400</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+</FooterFont>
+<FooterTextColor format="hex">ffffff</FooterTextColor>
+<Footer3DColor format="hex">000000</Footer3DColor>
+<FooterAlign>0</FooterAlign>
+<Footer3d>1</Footer3d>
+</MainWindowSettings>
+<OverwriteDatFile>1</OverwriteDatFile>
+<OverwriteCtrlPanel>1</OverwriteCtrlPanel>
+<OverwriteSC>1</OverwriteSC>
+<CreateCPEntry>1</CreateCPEntry>
+<RegKeyName>%ProductName%</RegKeyName>
+<CPDesc>%ProductName%</CPDesc>
+<UseCustomCPIcon>1</UseCustomCPIcon>
+<CustCPIconFN>%TempLaunchFolder%\WePushInstaller.ico</CustCPIconFN>
+<CustCPIconIndex>0</CustCPIconIndex>
+<CPSIPublisher>%CompanyName%</CPSIPublisher>
+<CPSIPublisherURL>%CompanyURL%</CPSIPublisherURL>
+<CPSIHelpContactName>%CompanyName% Support Department</CPSIHelpContactName>
+<CPSIHelpURL>%CompanyURL%</CPSIHelpURL>
+<CPSIProductVer>%ProductVer%</CPSIProductVer>
+<CPSIRegOwner/>
+<CPSIRegCompany/>
+<CPSIUpdateInfoURL/>
+<CPSIReadmeLink/>
+<CPSIComments/>
+<CPSIInstallLocation>%AppFolder%</CPSIInstallLocation>
+<CPSIVersionMajor/>
+<CPSIVersionMinor/>
+<CreateAppFldSC>1</CreateAppFldSC>
+<AppFldSCDesc>Uninstall %ProductName%</AppFldSCDesc>
+<SCComment>Removes %ProductName% from your computer.</SCComment>
+<UseCustomAppFldSCIcon>1</UseCustomAppFldSCIcon>
+<AppFldCustomIconFN>%TempLaunchFolder%\WePush-Installer.ico</AppFldCustomIconFN>
+<AppFolderSCIconIndex>0</AppFolderSCIconIndex>
+<LFCreate>1</LFCreate>
+<LFFilename>%TempFolder%\%ProductName% Uninstall Log.txt</LFFilename>
+<LFCmdLineOverride>0</LFCmdLineOverride>
+<LFWriteMode>0</LFWriteMode>
+<LFActionDetailLevel>1</LFActionDetailLevel>
+<BeforeScreens>
+<Screen>
+<Type>100</Type>
+<Name>Welcome to Uninstall</Name>
+<BannerStyle>1</BannerStyle>
+<TemplateName>Welcome to Uninstall</TemplateName>
+<OverrideProjTheme>0</OverrideProjTheme>
+<StyleData>
+<CstClrs>0</CstClrs>
+<TBBG format="hex">ffffff</TBBG>
+<BDYBG format="hex">ece9d8</BDYBG>
+<FTBG format="hex">ece9d8</FTBG>
+<TBTXT format="hex">000000</TBTXT>
+<BDYTXT format="hex">000000</BDYTXT>
+<CBG format="hex">ffffff</CBG>
+<C3DFACE format="hex">ece9d8</C3DFACE>
+<C3DHLT format="hex">ece9d8</C3DHLT>
+<C3DLIT format="hex">ffffff</C3DLIT>
+<C3DSH format="hex">aca899</C3DSH>
+<CBTNTXT format="hex">000000</CBTNTXT>
+<CTEXT format="hex">000000</CTEXT>
+<CDISTXT format="hex">aca899</CDISTXT>
+<CPRGRS format="hex">316ac5</CPRGRS>
+<C3DSHDK format="hex">716f64</C3DSHDK>
+<TBIMG>Default_Top_Banner.jpg</TBIMG>
+<SBIMG>Default_Side_Banner.jpg</SBIMG>
+<BDIMG/>
+<BDFILL>0</BDFILL>
+<HDSEP>1</HDSEP>
+<FTSEP>1</FTSEP>
+<CstFnts>0</CstFnts>
+<Fonts>
+<FontData>
+<FontName>Arial</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Arial</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Arial</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-24</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Arial</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>400</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Arial</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>400</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+</Fonts>
+<CAOff>
+<TP>0</TP>
+<L>15</L>
+<T>15</T>
+<R>15</R>
+<B>15</B>
+</CAOff>
+<CAOff>
+<TP>1</TP>
+<L>15</L>
+<T>15</T>
+<R>15</R>
+<B>15</B>
+</CAOff>
+<CAOff>
+<TP>2</TP>
+<L>15</L>
+<T>15</T>
+<R>15</R>
+<B>15</B>
+</CAOff>
+<TBTXTX>10</TBTXTX>
+<TBTXTY>10</TBTXTY>
+<ScreenW>497</ScreenW>
+<ScreenH>362</ScreenH>
+</StyleData>
+<Events>
+<Event>
+<Name>On Preload</Name>
+<Args/>
+<Script>-- These actions are performed before the screen is shown.
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Back</Name>
+<Args/>
+<Script>-- These actions are performed when the Back button is clicked.
+
+-- go back to the previous screen
+Screen.Back();
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Next</Name>
+<Args/>
+<Script>-- These actions are performed when the Next button is clicked.
+
+-- advance to the next screen
+Screen.Next();
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Cancel</Name>
+<Args/>
+<Script>-- These actions are performed when the Cancel button is clicked.
+
+-- from _SUF70_Global_Functions.lua:
+-- ask user if they're sure they want to exit
+if g_ConfirmSetupAbort() then
+	Application.Exit(EXIT_REASON_USER_ABORTED);
+end
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Help</Name>
+<Args/>
+<Script>-- These actions are performed when the Help button is clicked.
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Ctrl Message</Name>
+<Args>number e_CtrlID, number e_MsgID, table e_Details</Args>
+<Script>-- These actions are triggered by the controls on the screen.
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+</Events>
+<Controls>
+<Control>
+<Type>1</Type>
+<ID>103</ID>
+<Visible>0</Visible>
+<Enabled>0</Enabled>
+<TabOrder>75</TabOrder>
+<FTButton>1</FTButton>
+</Control>
+<Control>
+<Type>1</Type>
+<ID>101</ID>
+<Visible>1</Visible>
+<Enabled>0</Enabled>
+<TabOrder>76</TabOrder>
+<FTButton>1</FTButton>
+</Control>
+<Control>
+<Type>1</Type>
+<ID>100</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>-10</TabOrder>
+<FTButton>1</FTButton>
+</Control>
+<Control>
+<Type>1</Type>
+<ID>102</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>-9</TabOrder>
+<FTButton>1</FTButton>
+</Control>
+<Control>
+<Type>2</Type>
+<ID>200</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>1</TabOrder>
+<IsHeading>0</IsHeading>
+</Control>
+<Control>
+<Type>2</Type>
+<ID>300</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>0</TabOrder>
+<IsHeading>1</IsHeading>
+</Control>
+</Controls>
+<Languages>
+<SUF70Messages>
+<Language>
+<Name>Chinese (Simplified)</Name>
+<Default>1</Default>
+<Primary>4</Primary>
+<Secondary>
+<ID>2</ID>
+<ID>3</ID>
+<ID>4</ID>
+<ID>5</ID>
+</Secondary>
+</Language>
+<Messages>
+<IDS_WINDOW_TITLE>%ProductName% Ð¶ÔØ³ÌÐò</IDS_WINDOW_TITLE>
+<IDS_HEADER_TEXT>»¶Ó­</IDS_HEADER_TEXT>
+<IDS_SUBHEADER_TEXT>»¶Ó­Ê¹ÓÃ %ProductName% %ProductVer% Ð¶ÔØ³ÌÐò</IDS_SUBHEADER_TEXT>
+<IDS_CTRL_BUTTON_NEXT>ÏÂÒ»²½(&amp;N) &gt;</IDS_CTRL_BUTTON_NEXT>
+<IDS_CTRL_BUTTON_BACK>&lt; ·µ»Ø(&amp;B)</IDS_CTRL_BUTTON_BACK>
+<IDS_CTRL_BUTTON_CANCEL>È¡Ïû(&amp;C)</IDS_CTRL_BUTTON_CANCEL>
+<IDS_CTRL_BUTTON_HELP>°ïÖú(&amp;H)</IDS_CTRL_BUTTON_HELP>
+<IDS_CTRL_STATICTEXT_BODY>¸Ã³ÌÐò½«Ð¶ÔØ %ProductName% %ProductVer%¡£
+
+Èç¹û %ProductName% µ±Ç°ÕýÔÚÔËÐÐ£¬¼ÌÐøÐ¶ÔØÖ®Ç°Çë½«Æä¹Ø±Õ¡£
+
+·ñÔò£¬Çëµ¥»÷¡°ÏÂÒ»²½¡±¼ÌÐø¡£
+</IDS_CTRL_STATICTEXT_BODY>
+<IDS_CTRL_HEADINGTEXT_BODY>Ð¶ÔØ %ProductName%</IDS_CTRL_HEADINGTEXT_BODY>
+</Messages>
+</SUF70Messages>
+</Languages>
+</Screen>
+</BeforeScreens>
+<DuringInstScreenData>
+<ShowProgress>1</ShowProgress>
+<Screens>
+<Screen>
+<Type>130</Type>
+<Name>One Progress Bar (While Uninstalling)</Name>
+<BannerStyle>2</BannerStyle>
+<TemplateName>One Progress Bar (While Uninstalling)</TemplateName>
+<OverrideProjTheme>0</OverrideProjTheme>
+<StyleData>
+<CstClrs>0</CstClrs>
+<TBBG format="hex">ffffff</TBBG>
+<BDYBG format="hex">ece9d8</BDYBG>
+<FTBG format="hex">ece9d8</FTBG>
+<TBTXT format="hex">000000</TBTXT>
+<BDYTXT format="hex">000000</BDYTXT>
+<CBG format="hex">ffffff</CBG>
+<C3DFACE format="hex">ece9d8</C3DFACE>
+<C3DHLT format="hex">ece9d8</C3DHLT>
+<C3DLIT format="hex">ffffff</C3DLIT>
+<C3DSH format="hex">aca899</C3DSH>
+<CBTNTXT format="hex">000000</CBTNTXT>
+<CTEXT format="hex">000000</CTEXT>
+<CDISTXT format="hex">aca899</CDISTXT>
+<CPRGRS format="hex">316ac5</CPRGRS>
+<C3DSHDK format="hex">716f64</C3DSHDK>
+<TBIMG>Default_Top_Banner.jpg</TBIMG>
+<SBIMG>Default_Side_Banner.jpg</SBIMG>
+<BDIMG/>
+<BDFILL>0</BDFILL>
+<HDSEP>1</HDSEP>
+<FTSEP>1</FTSEP>
+<CstFnts>0</CstFnts>
+<Fonts>
+<FontData>
+<FontName>Arial</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Arial</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Arial</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-24</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Arial</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>400</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Arial</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>400</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+</Fonts>
+<CAOff>
+<TP>0</TP>
+<L>15</L>
+<T>15</T>
+<R>15</R>
+<B>15</B>
+</CAOff>
+<CAOff>
+<TP>1</TP>
+<L>15</L>
+<T>15</T>
+<R>15</R>
+<B>15</B>
+</CAOff>
+<CAOff>
+<TP>2</TP>
+<L>15</L>
+<T>15</T>
+<R>15</R>
+<B>15</B>
+</CAOff>
+<TBTXTX>10</TBTXTX>
+<TBTXTY>10</TBTXTY>
+<ScreenW>497</ScreenW>
+<ScreenH>362</ScreenH>
+</StyleData>
+<IsWhileInstallingMode>1</IsWhileInstallingMode>
+<Events>
+<Event>
+<Name>On Preload</Name>
+<Args/>
+<Script>-- These actions are performed before the screen is shown.
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Progress</Name>
+<Args>number e_Stage, string e_CurrentItemText, number e_CurrentItemPct, number e_StagePct</Args>
+<Script>-- These actions are performed whenever progress is made while the setup is uninstalling files.
+
+--[[
+Note: 
+	The uninstallation process is divided into 2 progress stages: 
+
+	1. removing files
+	2. removing shortcuts
+
+	Each progress stage has a string in the project's language file(s)
+	that describes the stage, e.g. "Removing Files..." This makes
+	it possible for the progress text to be translated (along with
+	the other localized strings in the language files).
+]]
+
+-- get the appropriate string ID for the current stage's progress message...
+local strStringID;
+if(e_Stage == UNINSTALL_STAGE_REMOVING_FILES) then
+	strStringID = "MSG_PROG_UNINSTALL_REMOVING_FILES";
+elseif(e_Stage == UNINSTALL_STAGE_REMOVING_SHORTCUTS) then
+	strStringID = "MSG_PROG_UNINSTALL_REMOVING_SHORTCUTS";
+end
+
+-- ...and get the corresponding string from the language file
+local strStageMessage = SetupData.GetLocalizedString(strStringID);
+
+-- update the progress prompt to show the current stage
+DlgStaticText.SetProperties(CTRL_STATICTEXT_LABEL_01, {Text=strStageMessage});
+
+-- if the current item is a file path, it might be too long to fit on the screen...
+-- this next action will shorten the text to 72 characters if it contains at least one \ in it
+local strAbbreviatedItemText = String.AbbreviateFilePath(e_CurrentItemText, 72);
+
+-- update the status text to show the current item (e.g. the file being removed)
+DlgStaticText.SetProperties(CTRL_STATICTEXT_LABEL_02, {Text=strAbbreviatedItemText});
+
+-- update the progress bar
+DlgProgressBar.SetPos(CTRL_PROGRESS_BAR_01, e_StagePct);
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Cancel</Name>
+<Args/>
+<Script>-- These actions are performed when the Cancel button is clicked.
+
+-- from _SUF70_Global_Functions.lua:
+-- ask user if they're sure they want to exit
+if g_ConfirmSetupAbort() then
+	Application.Exit(EXIT_REASON_USER_ABORTED);
+end
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+</Events>
+<Controls>
+<Control>
+<Type>1</Type>
+<ID>102</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>78</TabOrder>
+<FTButton>1</FTButton>
+</Control>
+<Control>
+<Type>2</Type>
+<ID>203</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>1</TabOrder>
+<IsHeading>0</IsHeading>
+</Control>
+<Control>
+<Type>2</Type>
+<ID>211</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>2</TabOrder>
+<IsHeading>0</IsHeading>
+</Control>
+<Control>
+<Type>2</Type>
+<ID>212</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>3</TabOrder>
+<IsHeading>0</IsHeading>
+</Control>
+<Control>
+<Type>7</Type>
+<ID>900</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>4</TabOrder>
+<Style>0</Style>
+<Min>0</Min>
+<Max>100</Max>
+<XPStyleBars>1</XPStyleBars>
+</Control>
+<Control>
+<Type>2</Type>
+<ID>213</ID>
+<Visible>0</Visible>
+<Enabled>1</Enabled>
+<TabOrder>2</TabOrder>
+<IsHeading>0</IsHeading>
+</Control>
+<Control>
+<Type>2</Type>
+<ID>214</ID>
+<Visible>0</Visible>
+<Enabled>1</Enabled>
+<TabOrder>3</TabOrder>
+<IsHeading>0</IsHeading>
+</Control>
+<Control>
+<Type>7</Type>
+<ID>901</ID>
+<Visible>0</Visible>
+<Enabled>1</Enabled>
+<TabOrder>4</TabOrder>
+<Style>0</Style>
+<Min>0</Min>
+<Max>100</Max>
+<XPStyleBars>0</XPStyleBars>
+</Control>
+</Controls>
+<Languages>
+<SUF70Messages>
+<Language>
+<Name>Chinese (Simplified)</Name>
+<Default>1</Default>
+<Primary>4</Primary>
+<Secondary>
+<ID>2</ID>
+<ID>3</ID>
+<ID>4</ID>
+<ID>5</ID>
+</Secondary>
+</Language>
+<Messages>
+<IDS_WINDOW_TITLE>%ProductName% Ð¶ÔØ³ÌÐò</IDS_WINDOW_TITLE>
+<IDS_HEADER_TEXT>ÕýÔÚÒÆ³ý %ProductName%</IDS_HEADER_TEXT>
+<IDS_SUBHEADER_TEXT>ÇëÉÔºò...</IDS_SUBHEADER_TEXT>
+<IDS_CTRL_BUTTON_CANCEL>È¡Ïû(&amp;C)</IDS_CTRL_BUTTON_CANCEL>
+<IDS_CTRL_STATICTEXT_TOPINSTRUCTIONS/>
+<IDS_CTRL_STATICTEXT_LABEL_01> </IDS_CTRL_STATICTEXT_LABEL_01>
+<IDS_CTRL_STATICTEXT_LABEL_02> </IDS_CTRL_STATICTEXT_LABEL_02>
+<IDS_CTRL_PROGRESS_BAR_01/>
+<IDS_CTRL_STATICTEXT_LABEL_03>½ø³Ì¶þ</IDS_CTRL_STATICTEXT_LABEL_03>
+<IDS_CTRL_STATICTEXT_LABEL_04>ÕýÔÚÖ´ÐÐ¶¯×÷...</IDS_CTRL_STATICTEXT_LABEL_04>
+<IDS_CTRL_PROGRESS_BAR_02/>
+</Messages>
+</SUF70Messages>
+</Languages>
+</Screen>
+</Screens>
+</DuringInstScreenData>
+<AfterScreens>
+<Screen>
+<Type>100</Type>
+<Name>Finished Uninstall</Name>
+<BannerStyle>1</BannerStyle>
+<TemplateName>Finished Uninstall</TemplateName>
+<OverrideProjTheme>0</OverrideProjTheme>
+<StyleData>
+<CstClrs>0</CstClrs>
+<TBBG format="hex">ffffff</TBBG>
+<BDYBG format="hex">ece9d8</BDYBG>
+<FTBG format="hex">ece9d8</FTBG>
+<TBTXT format="hex">000000</TBTXT>
+<BDYTXT format="hex">000000</BDYTXT>
+<CBG format="hex">ffffff</CBG>
+<C3DFACE format="hex">ece9d8</C3DFACE>
+<C3DHLT format="hex">ece9d8</C3DHLT>
+<C3DLIT format="hex">ffffff</C3DLIT>
+<C3DSH format="hex">aca899</C3DSH>
+<CBTNTXT format="hex">000000</CBTNTXT>
+<CTEXT format="hex">000000</CTEXT>
+<CDISTXT format="hex">aca899</CDISTXT>
+<CPRGRS format="hex">316ac5</CPRGRS>
+<C3DSHDK format="hex">716f64</C3DSHDK>
+<TBIMG>Default_Top_Banner.jpg</TBIMG>
+<SBIMG>Default_Side_Banner.jpg</SBIMG>
+<BDIMG/>
+<BDFILL>0</BDFILL>
+<HDSEP>1</HDSEP>
+<FTSEP>1</FTSEP>
+<CstFnts>0</CstFnts>
+<Fonts>
+<FontData>
+<FontName>Arial</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Arial</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Arial</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-24</Height>
+<Weight>700</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Arial</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>400</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+<FontData>
+<FontName>Arial</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-13</Height>
+<Weight>400</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+</Fonts>
+<CAOff>
+<TP>0</TP>
+<L>15</L>
+<T>15</T>
+<R>15</R>
+<B>15</B>
+</CAOff>
+<CAOff>
+<TP>1</TP>
+<L>15</L>
+<T>15</T>
+<R>15</R>
+<B>15</B>
+</CAOff>
+<CAOff>
+<TP>2</TP>
+<L>15</L>
+<T>15</T>
+<R>15</R>
+<B>15</B>
+</CAOff>
+<TBTXTX>10</TBTXTX>
+<TBTXTY>10</TBTXTY>
+<ScreenW>497</ScreenW>
+<ScreenH>362</ScreenH>
+</StyleData>
+<Events>
+<Event>
+<Name>On Preload</Name>
+<Args/>
+<Script>-- These actions are performed before the screen is shown.
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Back</Name>
+<Args/>
+<Script>-- These actions are performed when the Back button is clicked.
+
+-- go back to the previous screen
+Screen.Back();
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Next</Name>
+<Args/>
+<Script>-- These actions are performed when the Next button is clicked.
+
+-- advance to the next screen
+Screen.Next();
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Cancel</Name>
+<Args/>
+<Script>-- These actions are performed when the Cancel button is clicked.
+
+-- from _SUF70_Global_Functions.lua:
+-- ask user if they're sure they want to exit
+if g_ConfirmSetupAbort() then
+	Application.Exit(EXIT_REASON_USER_ABORTED);
+end
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Help</Name>
+<Args/>
+<Script>-- These actions are performed when the Help button is clicked.
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Ctrl Message</Name>
+<Args>number e_CtrlID, number e_MsgID, table e_Details</Args>
+<Script>-- These actions are triggered by the controls on the screen.
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+</Events>
+<Controls>
+<Control>
+<Type>1</Type>
+<ID>103</ID>
+<Visible>0</Visible>
+<Enabled>0</Enabled>
+<TabOrder>75</TabOrder>
+<FTButton>1</FTButton>
+</Control>
+<Control>
+<Type>1</Type>
+<ID>101</ID>
+<Visible>1</Visible>
+<Enabled>0</Enabled>
+<TabOrder>76</TabOrder>
+<FTButton>1</FTButton>
+</Control>
+<Control>
+<Type>1</Type>
+<ID>100</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>-10</TabOrder>
+<FTButton>1</FTButton>
+</Control>
+<Control>
+<Type>1</Type>
+<ID>102</ID>
+<Visible>1</Visible>
+<Enabled>0</Enabled>
+<TabOrder>-9</TabOrder>
+<FTButton>1</FTButton>
+</Control>
+<Control>
+<Type>2</Type>
+<ID>200</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>0</TabOrder>
+<IsHeading>0</IsHeading>
+</Control>
+<Control>
+<Type>2</Type>
+<ID>300</ID>
+<Visible>1</Visible>
+<Enabled>1</Enabled>
+<TabOrder>1</TabOrder>
+<IsHeading>1</IsHeading>
+</Control>
+</Controls>
+<Languages>
+<SUF70Messages>
+<Language>
+<Name>Chinese (Simplified)</Name>
+<Default>1</Default>
+<Primary>4</Primary>
+<Secondary>
+<ID>2</ID>
+<ID>3</ID>
+<ID>4</ID>
+<ID>5</ID>
+</Secondary>
+</Language>
+<Messages>
+<IDS_WINDOW_TITLE>%ProductName% Ð¶ÔØ³ÌÐò</IDS_WINDOW_TITLE>
+<IDS_HEADER_TEXT>Ð¶ÔØÒÑÍê³É</IDS_HEADER_TEXT>
+<IDS_SUBHEADER_TEXT>Ð¶ÔØÒÑ³É¹¦Íê³É¡£</IDS_SUBHEADER_TEXT>
+<IDS_CTRL_BUTTON_NEXT>Íê³É(&amp;F)</IDS_CTRL_BUTTON_NEXT>
+<IDS_CTRL_BUTTON_BACK>&lt; ·µ»Ø(&amp;B)</IDS_CTRL_BUTTON_BACK>
+<IDS_CTRL_BUTTON_CANCEL>È¡Ïû(&amp;C)</IDS_CTRL_BUTTON_CANCEL>
+<IDS_CTRL_BUTTON_HELP>°ïÖú(&amp;H)</IDS_CTRL_BUTTON_HELP>
+<IDS_CTRL_STATICTEXT_BODY>%ProductName% %ProductVer% ÒÑ±»Ð¶ÔØ¡£
+
+Çëµ¥»÷¡°Íê³É¡±ÍË³ö¡£
+</IDS_CTRL_STATICTEXT_BODY>
+<IDS_CTRL_HEADINGTEXT_BODY>Ð¶ÔØ³É¹¦</IDS_CTRL_HEADINGTEXT_BODY>
+</Messages>
+</SUF70Messages>
+</Languages>
+</Screen>
+</AfterScreens>
+<Events>
+<Event>
+<Name>On Startup</Name>
+<Args/>
+<Script/>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Pre Uninstall</Name>
+<Args/>
+<Script/>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Uninstall Error</Name>
+<Args>number e_ErrorCode, string e_ErrorMsgID</Args>
+<Script>-- These actions are performed is an error occurs while the setup is uninstalling files.
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Post Uninstall</Name>
+<Args/>
+<Script/>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Shutdown</Name>
+<Args/>
+<Script>
+-- Call this function at the end after all other On Shutdown actions.
+-- This will cause the system to be rebooted, if needed.
+-- Defined in _SUF70_Global_Functions.lua
+-- Do not edit this script unless you know what your are doing
+g_HandleSystemReboot();
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+</Events>
+</UninstallData>
+<ProjectData>
+<LogFile>
+<Create>1</Create>
+<Filename>%TempFolder%\%ProductName% Setup Log.txt</Filename>
+<WriteMode>0</WriteMode>
+<ActionDetailLevel>1</ActionDetailLevel>
+</LogFile>
+<EnableSilentMode>0</EnableSilentMode>
+<StartInSilentMode>0</StartInSilentMode>
+<VerifyArchive>0</VerifyArchive>
+<UserProfile>0</UserProfile>
+<UserPrivilegeLevel>2</UserPrivilegeLevel>
+<MainWindowSettings>
+<ShowBackGroundWindow>0</ShowBackGroundWindow>
+<WindowStyle>0</WindowStyle>
+<WindowAppearance>1</WindowAppearance>
+<SolidBackColor format="hex">008080</SolidBackColor>
+<GradientBackColor format="hex">b4c2e3</GradientBackColor>
+<GradientForeColor format="hex">5971b6</GradientForeColor>
+<ImageFile/>
+<UseCustomIcon>1</UseCustomIcon>
+<CustomIcon>%TempLaunchFolder%\WePush-desktop.ico</CustomIcon>
+<HideTaskbarIcon>0</HideTaskbarIcon>
+<AlwaysOnTop>0</AlwaysOnTop>
+<Headline>%ProductName%</Headline>
+<HeadingFont>
+<FontData>
+<FontName>Arial</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-37</Height>
+<Weight>700</Weight>
+<Italic>1</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+</HeadingFont>
+<HeadlineTextColor format="hex">ffffff</HeadlineTextColor>
+<Headline3DColor format="hex">000000</Headline3DColor>
+<HeadlineAlign>0</HeadlineAlign>
+<Headline3d>1</Headline3d>
+<SubHeading>v%ProductVer%</SubHeading>
+<SubHeadingFont>
+<FontData>
+<FontName>Arial</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-18</Height>
+<Weight>700</Weight>
+<Italic>1</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+</SubHeadingFont>
+<SubHeadingTextColor format="hex">ffffff</SubHeadingTextColor>
+<SubHeading3DColor format="hex">000000</SubHeading3DColor>
+<SubHeadingAlign>0</SubHeadingAlign>
+<SubHeading3d>1</SubHeading3d>
+<Footer>%Copyright%. All rights reserved. %CompanyURL%</Footer>
+<FooterFont>
+<FontData>
+<FontName>Arial</FontName>
+<CharacterSet>0</CharacterSet>
+<Height>-16</Height>
+<Weight>400</Weight>
+<Italic>0</Italic>
+<Underline>0</Underline>
+<StrikeOut>0</StrikeOut>
+<AntiAlias>1</AntiAlias>
+</FontData>
+</FooterFont>
+<FooterTextColor format="hex">ffffff</FooterTextColor>
+<Footer3DColor format="hex">000000</Footer3DColor>
+<FooterAlign>0</FooterAlign>
+<Footer3d>1</Footer3d>
+</MainWindowSettings>
+<SetupExpiration>
+<ExpireByDate>0</ExpireByDate>
+<DateMethod>0</DateMethod>
+<NumDaysBld>30</NumDaysBld>
+<NumDaysRun>30</NumDaysRun>
+<AbortNotWriteDFR>1</AbortNotWriteDFR>
+<ExpireDate>1500606500</ExpireDate>
+<TellUserDate>0</TellUserDate>
+<ExpireByUses>0</ExpireByUses>
+<UsesMethod>1</UsesMethod>
+<NumUsesUser>1</NumUsesUser>
+<NumUsesSystem>2</NumUsesSystem>
+<AbortNotWritable>1</AbortNotWritable>
+<TellUserUses>0</TellUserUses>
+<UniqueKey>8DE6D824-1363-4CB0-9F0C-00CDAA2CAD8B</UniqueKey>
+<ShowContactInfo>0</ShowContactInfo>
+<ContactName>%CompanyName%</ContactName>
+<ContactURL>%CompanyURL%</ContactURL>
+<ContactEmail/>
+<ContactPhone/>
+</SetupExpiration>
+<SetupRequirements>
+<OSCond>
+<OS>32768</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>0</OS>
+<OS>0</OS>
+<OS>0</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+<OS>65535</OS>
+</OSCond>
+<ScreenWidth>0</ScreenWidth>
+<ScreenHeight>0</ScreenHeight>
+<ColorDepth>0</ColorDepth>
+<RAM>0</RAM>
+<AdminReq>0</AdminReq>
+<Action>0</Action>
+</SetupRequirements>
+<Launcher/>
+<ProjectTheme>Default</ProjectTheme>
+<ProjFileDesc>WePush</ProjFileDesc>
+<ProjFileAuthor>¶à¶à@fangxuele</ProjFileAuthor>
+<ProjFileCompany>±±¾©ÐÐÖªºÏÒ»¿Æ¼¼ÓÐÏÞ¹«Ë¾</ProjFileCompany>
+<ProjFileNotes/>
+<ProjFileCopyright>Copyright 2017 </ProjFileCopyright>
+<ProjFileURL/>
+<ProjFileEmail/>
+<ProjFileCreatedVer>9.5.1.0</ProjFileCreatedVer>
+<ProjFileSavedVer>9.5.0.0</ProjFileSavedVer>
+<BaseFolderArchive>E:\IdeaWorkspace\fangxuele-tool-wechat-push\dist\exploded</BaseFolderArchive>
+<BaseFolderExternal/>
+<UseSkinFile>0</UseSkinFile>
+<SkinFilename/>
+<SkinSubStyle/>
+<ActionPlugins/>
+<DependencyModules/>
+<PrimerFiles>
+<PrimerFile>
+<SourcePath>E:\IdeaWorkspace\fangxuele-tool-wechat-push\setup\WePush-desktop.ico</SourcePath>
+<DeleteOnExit>1</DeleteOnExit>
+<NeededByUninstall>0</NeededByUninstall>
+<BuildConfigs>
+<Cfg>All</Cfg>
+</BuildConfigs>
+</PrimerFile>
+<PrimerFile>
+<SourcePath>E:\IdeaWorkspace\fangxuele-tool-wechat-push\setup\WePush-Installer.ico</SourcePath>
+<DeleteOnExit>1</DeleteOnExit>
+<NeededByUninstall>0</NeededByUninstall>
+<BuildConfigs>
+<Cfg>All</Cfg>
+</BuildConfigs>
+</PrimerFile>
+</PrimerFiles>
+<Events>
+<Event>
+<Name>Global Functions</Name>
+<Args/>
+<Script/>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Startup</Name>
+<Args/>
+<Script/>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Pre Install</Name>
+<Args/>
+<Script/>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Install Error</Name>
+<Args>number e_ErrorCode, string e_ErrorMsgID</Args>
+<Script>-- These actions are performed is an error occurs while the setup is installing files.
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Post Install</Name>
+<Args/>
+<Script>Registry.SetValue(HKEY_CURRENT_USER, "Software\\WePush", "InstallPath", SessionVar.Get("%AppFolder%"), REG_SZ);
+Registry.SetValue(HKEY_CURRENT_USER, "Software\\WePush", "Version", SessionVar.Get("%ProductVer%"), REG_SZ);</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+<Event>
+<Name>On Shutdown</Name>
+<Args/>
+<Script>
+-- Call this function at the end after all other On Shutdown actions.
+-- This will cause the system to be rebooted, if needed.
+-- Defined in _SUF70_Global_Functions.lua
+-- Do not edit this script unless you know what your are doing
+g_HandleSystemReboot();
+</Script>
+<BookMarks count="0">
+</BookMarks>
+</Event>
+</Events>
+</ProjectData>
+<LangSettings>
+<Language>
+<Name>Chinese (Simplified)</Name>
+<Default>1</Default>
+<Primary>4</Primary>
+<Secondary>
+<ID>2</ID>
+<ID>3</ID>
+<ID>4</ID>
+<ID>5</ID>
+</Secondary>
+</Language>
+</LangSettings>
+<SUF7SessionVars>
+<SessionVar>
+<Name>%ProductName%</Name>
+<Value>WePush</Value>
+<Type>1</Type>
+</SessionVar>
+<SessionVar>
+<Name>%CompanyName%</Name>
+<Value>±±¾©ÐÐÖªºÏÒ»¿Æ¼¼ÓÐÏÞ¹«Ë¾</Value>
+<Type>1</Type>
+</SessionVar>
+<SessionVar>
+<Name>%ProductVer%</Name>
+<Value>v_1.00_170622</Value>
+<Type>1</Type>
+</SessionVar>
+<SessionVar>
+<Name>%Copyright%</Name>
+<Value>Copyright ?2017 %CompanyName%</Value>
+<Type>1</Type>
+</SessionVar>
+<SessionVar>
+<Name>%CompanyURL%</Name>
+<Value>http://www.fangxuele.com</Value>
+<Type>1</Type>
+</SessionVar>
+<SessionVar>
+<Name>%WindowTitle%</Name>
+<Value>%ProductName%</Value>
+<Type>1</Type>
+</SessionVar>
+<SessionVar>
+<Name>%WindowTitleUninstall%</Name>
+<Value>%ProductName% Uninstaller</Value>
+<Type>1</Type>
+</SessionVar>
+<SessionVar>
+<Name>%AppFolder%</Name>
+<Value>%ProgramFilesFolder%\%ProductName%</Value>
+<Type>2</Type>
+</SessionVar>
+<SessionVar>
+<Name>%AppShortcutFolderName%</Name>
+<Value>%ProductName%</Value>
+<Type>2</Type>
+</SessionVar>
+</SUF7SessionVars>
+<BuildConfigurations>
+<BuildConfig>
+<Name>Default</Name>
+<PreBuildProg/>
+<PreBuildCmdLine/>
+<PreBuildWait>0</PreBuildWait>
+<PostBuildProg/>
+<PostBuildCmdLine/>
+<PostBuildWait>0</PostBuildWait>
+<Filename>WePush-1.0-Setup.exe</Filename>
+<OutputFolder>E:\IdeaWorkspace\fangxuele-tool-wechat-push\dist\exe</OutputFolder>
+<SegmentSizeMode>0</SegmentSizeMode>
+<CustomSegSize>0</CustomSegSize>
+<CustomSegSizeMode>0</CustomSegSizeMode>
+<Platform>1</Platform>
+<CollectLaunchUserInfo>0</CollectLaunchUserInfo>
+<CodeSignLocation/>
+<CodeSignCertificateFile/>
+<CodeSignPVKFile/>
+<CodeSignTimeStampURL/>
+<CodeSignDescription/>
+<CodeSignDescriptionURL/>
+<CodeSignSetups>0</CodeSignSetups>
+<CodeSigningTool>0</CodeSigningTool>
+<Arguments/>
+<UseCustomIcon>1</UseCustomIcon>
+<CustomIconFile>E:\IdeaWorkspace\fangxuele-tool-wechat-push\setup\WePush-Installer.ico</CustomIconFile>
+<ResourceFileVersion>1.0</ResourceFileVersion>
+<ResourceProductVersion>1.0</ResourceProductVersion>
+<ResourceCompanyName>±±¾©ÐÐÖªºÏÒ»¿Æ¼¼ÓÐÏÞ¹«Ë¾</ResourceCompanyName>
+<ResourceProductName>WePush</ResourceProductName>
+<ResourceComments>by ¶à¶à@·ÅÑ§ÁË</ResourceComments>
+<ResourceInternalName>sf_rt</ResourceInternalName>
+<ResourceFileDescription>Setup Application</ResourceFileDescription>
+<ResourceCopyright>Copyright ?2017±±¾©ÐÐÖªºÏÒ»¿Æ¼¼ÓÐÏÞ¹«Ë¾</ResourceCopyright>
+<ResourceTrademarks>·ÅÑ§ÁË£¬¾ÍÈ¤Íæ</ResourceTrademarks>
+<ResourcePrivateBuild/>
+<ResourceSpecialBuild/>
+<StampResources>1</StampResources>
+<CompressionType CompressionSetting="LZMA_LOW" DictionarySize="24" WordSize="32" CPUThreads="2"/>
+<Vars/>
+</BuildConfig>
+</BuildConfigurations>
+<GlobalScriptIncludes>
+<GlobalIncludeScriptFile>
+<Filename>#SUFDIR#\Includes\Scripts\_SUF70_Global_Functions.lua</Filename>
+<IRReq>1</IRReq>
+<BuildConfigs>
+<Cfg>All</Cfg>
+</BuildConfigs>
+</GlobalIncludeScriptFile>
+</GlobalScriptIncludes>
+</DocumentData>
