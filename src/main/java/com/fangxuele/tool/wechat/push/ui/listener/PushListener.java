@@ -209,13 +209,13 @@ public class PushListener {
 
                                 long currentTimeMillis = System.currentTimeMillis();
                                 long lastTimeMillis = currentTimeMillis - startTimeMillis;
-                                long leftTimeMillis = (long) ((double) lastTimeMillis / (PushData.sendSuccessList.size() + PushData.sendFailList.size()) * (PushData.allUser.size() - PushData.sendSuccessList.size()));
+                                long leftTimeMillis = (long) ((double) lastTimeMillis / (PushData.sendSuccessList.size() + PushData.sendFailList.size()) * (PushData.allUser.size() - PushData.sendSuccessList.size() - PushData.sendFailList.size()));
 
                                 String formatBetweenLast = DateUtil.formatBetween(lastTimeMillis, BetweenFormater.Level.SECOND);
-                                MainWindow.mainWindow.getPushLastTimeLabel().setText(formatBetweenLast);
+                                MainWindow.mainWindow.getPushLastTimeLabel().setText("".equals(formatBetweenLast) ? "0s" : formatBetweenLast);
 
                                 String formatBetweenLeft = DateUtil.formatBetween(leftTimeMillis, BetweenFormater.Level.SECOND);
-                                MainWindow.mainWindow.getPushLeftTimeLabel().setText(formatBetweenLeft);
+                                MainWindow.mainWindow.getPushLeftTimeLabel().setText("".equals(formatBetweenLeft) ? "0s" : formatBetweenLeft);
 
                                 try {
                                     Thread.sleep(100);
