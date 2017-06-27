@@ -7,14 +7,15 @@
 # WePush
 
 ### 功能
-自定义批量推送
+自定义消息并批量推送
 >目前支持的消息类型：微信模板消息、微信客服消息、阿里大于模板短信  
+
 >支持消息编辑、预览  
 >支持文件导入用户  
 >支持MySQL导入用户  
 >支持微信公众号全员推送 
 
-### 速览
+### 截图速览
 <p align="center">
   <a href="https://github.com/rememberber/WePush">
    <img alt="WePush" src="https://github.com/rememberber/WePush/blob/master/screen_shoot/%E5%9B%BE%E5%83%8F%20198.png?raw=true">
@@ -64,3 +65,11 @@
 
 ### 环境依赖
 >Java 8
+
+### 特别感谢
+[weixin-java-tools](https://github.com/Wechat-Group/weixin-java-tools)  
+[Hutool](http://hutool.cn/)
+
+### 开发、构建
+
+### 使用帮助
