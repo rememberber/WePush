@@ -58,10 +58,8 @@
 </p>
 
 ### 安装文件下载
-
+WePush Windows 安装文件下载：[WePush](https://github.com/rememberber/WePush/releases)  
 安装之前请确认已经安装了jre1.8或者以上版本  [jre下载地址](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)  
-
-[WePush](https://github.com/rememberber/WePush/releases)
 
 ### 环境依赖
 >Java 8
