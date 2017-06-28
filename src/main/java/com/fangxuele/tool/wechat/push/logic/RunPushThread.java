@@ -67,7 +67,6 @@ public class RunPushThread extends Thread {
             // 按钮状态
             MainWindow.mainWindow.getScheduleRunButton().setEnabled(false);
             MainWindow.mainWindow.getPushStartButton().setEnabled(false);
-            MainWindow.mainWindow.getPushPauseButton().setEnabled(true);
             MainWindow.mainWindow.getPushStopButton().setEnabled(true);
 
             PushData.successRecords = 0;
@@ -159,9 +158,7 @@ public class RunPushThread extends Thread {
             while (true) {
                 if (PushData.stopedThreadCount == threadCount) {
 
-                    MainWindow.mainWindow.getPushPauseButton().setEnabled(false);
                     MainWindow.mainWindow.getPushStopButton().setEnabled(false);
-                    MainWindow.mainWindow.getPushPauseButton().updateUI();
                     MainWindow.mainWindow.getPushStopButton().updateUI();
 
                     String finishTip = "发送完毕！\n\n";
