@@ -5,6 +5,7 @@ import com.fangxuele.tool.wechat.push.ui.listener.FramListener;
 import com.fangxuele.tool.wechat.push.ui.listener.MemberListener;
 import com.fangxuele.tool.wechat.push.ui.listener.MsgListener;
 import com.fangxuele.tool.wechat.push.ui.listener.PushListener;
+import com.fangxuele.tool.wechat.push.ui.listener.ScheduleListener;
 import com.fangxuele.tool.wechat.push.ui.listener.SettingListener;
 import com.fangxuele.tool.wechat.push.ui.listener.TabListener;
 import com.xiaoleilu.hutool.log.Log;
@@ -193,11 +194,13 @@ public class MainWindow {
         Init.initOthers();
         Init.initAllTab();
 
+        // 添加事件监听
         AboutListener.addListeners();
         SettingListener.addListeners();
         MsgListener.addListeners();
         MemberListener.addListeners();
         PushListener.addListeners();
+        ScheduleListener.addListeners();
         TabListener.addListeners();
         FramListener.addListeners();
     }
