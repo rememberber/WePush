@@ -145,7 +145,6 @@ public class MainWindow {
     private JLabel pushLastTimeLabel;
     private JLabel pushLeftTimeLabel;
     private JLabel pushMsgName;
-    private JButton pushPauseButton;
     private JScrollPane settingScrollPane;
     private JPasswordField aliAppSecretPasswordField;
     private JButton clearImportButton;
@@ -1127,14 +1126,6 @@ public class MainWindow {
 
     public void setPushMsgName(String pushMsgName) {
         this.pushMsgName.setText(pushMsgName);
-    }
-
-    public JButton getPushPauseButton() {
-        return pushPauseButton;
-    }
-
-    public void setPushPauseButton(JButton pushPauseButton) {
-        this.pushPauseButton = pushPauseButton;
     }
 
     public JScrollPane getSettingScrollPane() {
