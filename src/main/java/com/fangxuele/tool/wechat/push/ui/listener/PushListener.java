@@ -26,7 +26,16 @@ public class PushListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (checkBeforePush()) {
-                    new RunPushThread().start();
+                    int isPush = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getPushPanel(),
+                            new StringBuilder("确定开始推送吗？\n\n推送消息：").
+                                    append(MainWindow.mainWindow.getMsgNameField().getText()).
+                                    append("\n推送人数：").append(PushData.allUser.size()).
+                                    append("\n\n空跑模式：").
+                                    append(MainWindow.mainWindow.getDryRunCheckBox().isSelected()).toString(), "确认推送？",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    if (isPush == JOptionPane.YES_OPTION) {
+                        new RunPushThread().start();
+                    }
                 }
             }
         });
@@ -52,31 +61,42 @@ public class PushListener {
                     @Override
                     public void run() {
                         if (checkBeforePush()) {
-                            if (Init.configer.isRadioStartAt()) {
-                                if (DateUtil.parse(Init.configer.getTextStartAt(), "yyyy-MM-dd HH:mm:ss").getTime() < System.currentTimeMillis()) {
-                                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getPushPanel(), "计划开始推送时间不能小于系统当前时间！\n\n请检查计划任务设置！\n\n", "提示",
-                                            JOptionPane.INFORMATION_MESSAGE);
-                                    return;
-                                }
-
-                            }
-                            if (Init.configer.isRadioStopAt()) {
-                                if (DateUtil.parse(Init.configer.getTextStopAt(), "yyyy-MM-dd HH:mm:ss").getTime() < System.currentTimeMillis()) {
-                                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getPushPanel(), "计划停止推送时间不能小于系统当前时间！\n\n请检查计划任务设置！\n\n", "提示",
-                                            JOptionPane.INFORMATION_MESSAGE);
-                                    return;
-                                }
-
-                            }
-                            if (Init.configer.isRadioPerDay()) {
-
-                            }
-                            if (Init.configer.isRadioPerWeek()) {
-
-                            }
-
-                            JOptionPane.showMessageDialog(MainWindow.mainWindow.getPushPanel(), "请先设置计划任务！", "提示",
+                            int isPush = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getPushPanel(),
+                                    new StringBuilder("确定开始推送吗？\n\n推送消息：").
+                                            append(MainWindow.mainWindow.getMsgNameField().getText()).
+                                            append("\n推送人数：").append(PushData.allUser.size()).
+                                            append("\n\n空跑模式：").
+                                            append(MainWindow.mainWindow.getDryRunCheckBox().isSelected()).toString(), "确认推送？",
                                     JOptionPane.INFORMATION_MESSAGE);
+
+                            if (isPush == JOptionPane.YES_OPTION) {
+
+                                if (Init.configer.isRadioStartAt()) {
+                                    if (DateUtil.parse(Init.configer.getTextStartAt(), "yyyy-MM-dd HH:mm:ss").getTime() < System.currentTimeMillis()) {
+                                        JOptionPane.showMessageDialog(MainWindow.mainWindow.getPushPanel(), "计划开始推送时间不能小于系统当前时间！\n\n请检查计划任务设置！\n\n", "提示",
+                                                JOptionPane.INFORMATION_MESSAGE);
+                                        return;
+                                    }
+
+                                }
+                                if (Init.configer.isRadioStopAt()) {
+                                    if (DateUtil.parse(Init.configer.getTextStopAt(), "yyyy-MM-dd HH:mm:ss").getTime() < System.currentTimeMillis()) {
+                                        JOptionPane.showMessageDialog(MainWindow.mainWindow.getPushPanel(), "计划停止推送时间不能小于系统当前时间！\n\n请检查计划任务设置！\n\n", "提示",
+                                                JOptionPane.INFORMATION_MESSAGE);
+                                        return;
+                                    }
+
+                                }
+                                if (Init.configer.isRadioPerDay()) {
+
+                                }
+                                if (Init.configer.isRadioPerWeek()) {
+
+                                }
+
+                                JOptionPane.showMessageDialog(MainWindow.mainWindow.getPushPanel(), "请先设置计划任务！", "提示",
+                                        JOptionPane.INFORMATION_MESSAGE);
+                            }
                         }
                     }
                 }).start();
