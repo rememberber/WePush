@@ -6,7 +6,6 @@ import com.xiaoleilu.hutool.date.BetweenFormater;
 import com.xiaoleilu.hutool.date.DateUtil;
 import com.xiaoleilu.hutool.log.Log;
 import com.xiaoleilu.hutool.log.LogFactory;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
@@ -28,30 +27,6 @@ public class RunPushThread extends Thread {
 
     @Override
     public void run() {
-        if (PushData.allUser == null || PushData.allUser.size() == 0) {
-            JOptionPane.showMessageDialog(MainWindow.mainWindow.getPushPanel(), "请先准备目标用户！", "提示",
-                    JOptionPane.INFORMATION_MESSAGE);
-
-            return;
-        }
-        if ("0".equals(MainWindow.mainWindow.getPushPageSizeTextField().getText()) || StringUtils.isEmpty(MainWindow.mainWindow.getPushPageSizeTextField().getText())) {
-            JOptionPane.showMessageDialog(MainWindow.mainWindow.getPushPanel(), "请设置每页分配用户数！", "提示",
-                    JOptionPane.INFORMATION_MESSAGE);
-
-            return;
-        }
-        if ("0".equals(MainWindow.mainWindow.getPushPagePerThreadTextField().getText()) || StringUtils.isEmpty(MainWindow.mainWindow.getPushPagePerThreadTextField().getText())) {
-            JOptionPane.showMessageDialog(MainWindow.mainWindow.getPushPanel(), "请设置每个线程分配的页数！", "提示",
-                    JOptionPane.INFORMATION_MESSAGE);
-
-            return;
-        }
-        if (StringUtils.isEmpty(MainWindow.mainWindow.getMsgNameField().getText())) {
-            JOptionPane.showMessageDialog(MainWindow.mainWindow.getPushPanel(), "请先编辑消息！", "提示",
-                    JOptionPane.INFORMATION_MESSAGE);
-
-            return;
-        }
 
         int isPush = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getPushPanel(),
                 new StringBuilder("确定开始推送吗？\n\n推送消息：").

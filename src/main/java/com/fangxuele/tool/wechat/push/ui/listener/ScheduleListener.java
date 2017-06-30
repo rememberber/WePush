@@ -24,44 +24,66 @@ public class ScheduleListener {
             public void actionPerformed(ActionEvent e) {
                 try {
                     String textStartAt = MainWindow.mainWindow.getStartAtThisTimeTextField().getText();
+                    boolean isStartAt = MainWindow.mainWindow.getRunAtThisTimeRadioButton().isSelected();
                     if (StringUtils.isNotEmpty(textStartAt)) {
-                        boolean isStartAt = MainWindow.mainWindow.getRunAtThisTimeRadioButton().isSelected();
-                        Init.configer.setRadioStartAt(isStartAt);
                         if (DateUtil.parse(textStartAt).getTime() <= System.currentTimeMillis() && isStartAt) {
                             JOptionPane.showMessageDialog(MainWindow.mainWindow.getSchedulePanel(),
                                     "保存失败！\n\n开始推送时间不能小于系统当前时间！", "失败",
                                     JOptionPane.ERROR_MESSAGE);
                             return;
                         }
+                        Init.configer.setRadioStartAt(isStartAt);
                         Init.configer.setTextStartAt(textStartAt);
+                    } else if (isStartAt) {
+                        JOptionPane.showMessageDialog(MainWindow.mainWindow.getSchedulePanel(),
+                                "保存失败！\n\n开始推送时间不能为空！", "失败",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
                     }
 
                     String textStopAt = MainWindow.mainWindow.getStopAtThisTimeTextField().getText();
+                    boolean isStopAt = MainWindow.mainWindow.getStopAtThisTimeRadioButton().isSelected();
                     if (StringUtils.isNotEmpty(textStopAt)) {
-                        boolean isStopAt = MainWindow.mainWindow.getStopAtThisTimeRadioButton().isSelected();
-                        Init.configer.setRadioStopAt(isStopAt);
                         if (DateUtil.parse(textStopAt).getTime() <= System.currentTimeMillis() && isStopAt) {
                             JOptionPane.showMessageDialog(MainWindow.mainWindow.getSchedulePanel(),
                                     "保存失败！\n\n停止推送时间不能小于系统当前时间！", "失败",
                                     JOptionPane.ERROR_MESSAGE);
                             return;
                         }
+                        Init.configer.setRadioStopAt(isStopAt);
                         Init.configer.setTextStopAt(textStopAt);
+                    } else if (isStopAt) {
+                        JOptionPane.showMessageDialog(MainWindow.mainWindow.getSchedulePanel(),
+                                "保存失败！\n\n停止推送时间不能为空！", "失败",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
                     }
 
                     String textPerDay = MainWindow.mainWindow.getStartPerDayTextField().getText();
+                    boolean isPerDay = MainWindow.mainWindow.getRunPerDayRadioButton().isSelected();
                     if (StringUtils.isNotEmpty(textPerDay)) {
-                        Init.configer.setRadioPerDay(MainWindow.mainWindow.getRunPerDayRadioButton().isSelected());
                         DateUtil.parse(textPerDay);
+                        Init.configer.setRadioPerDay(isPerDay);
                         Init.configer.setTextPerDay(textPerDay);
+                    } else if (isPerDay) {
+                        JOptionPane.showMessageDialog(MainWindow.mainWindow.getSchedulePanel(),
+                                "保存失败！\n\n每天固定推送时间不能为空！", "失败",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
                     }
 
                     String textPerWeekTime = MainWindow.mainWindow.getStartPerWeekTextField().getText();
+                    boolean isPerWeek = MainWindow.mainWindow.getRunPerWeekRadioButton().isSelected();
                     if (StringUtils.isNotEmpty(textPerWeekTime)) {
-                        Init.configer.setRadioPerWeek(MainWindow.mainWindow.getRunPerWeekRadioButton().isSelected());
-                        Init.configer.setTextPerWeekWeek(MainWindow.mainWindow.getSchedulePerWeekComboBox().getSelectedItem().toString());
                         DateUtil.parse(textPerWeekTime);
+                        Init.configer.setRadioPerWeek(isPerWeek);
+                        Init.configer.setTextPerWeekWeek(MainWindow.mainWindow.getSchedulePerWeekComboBox().getSelectedItem().toString());
                         Init.configer.setTextPerWeekTime(textPerWeekTime);
+                    } else if (isPerWeek) {
+                        JOptionPane.showMessageDialog(MainWindow.mainWindow.getSchedulePanel(),
+                                "保存失败！\n\n每周固定推送时间不能为空！", "失败",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
                     }
 
                     Init.configer.save();
