@@ -39,6 +39,9 @@ public class ScheduleListener {
                                 "保存失败！\n\n开始推送时间不能为空！", "失败",
                                 JOptionPane.ERROR_MESSAGE);
                         return;
+                    } else {
+                        Init.configer.setRadioStartAt(isStartAt);
+                        Init.configer.setTextStartAt(textStartAt);
                     }
 
                     String textStopAt = MainWindow.mainWindow.getStopAtThisTimeTextField().getText();
@@ -57,6 +60,9 @@ public class ScheduleListener {
                                 "保存失败！\n\n停止推送时间不能为空！", "失败",
                                 JOptionPane.ERROR_MESSAGE);
                         return;
+                    } else {
+                        Init.configer.setRadioStopAt(isStopAt);
+                        Init.configer.setTextStopAt(textStopAt);
                     }
 
                     String textPerDay = MainWindow.mainWindow.getStartPerDayTextField().getText();
@@ -70,6 +76,9 @@ public class ScheduleListener {
                                 "保存失败！\n\n每天固定推送时间不能为空！", "失败",
                                 JOptionPane.ERROR_MESSAGE);
                         return;
+                    } else {
+                        Init.configer.setRadioPerDay(isPerDay);
+                        Init.configer.setTextPerDay(textPerDay);
                     }
 
                     String textPerWeekTime = MainWindow.mainWindow.getStartPerWeekTextField().getText();
@@ -84,6 +93,10 @@ public class ScheduleListener {
                                 "保存失败！\n\n每周固定推送时间不能为空！", "失败",
                                 JOptionPane.ERROR_MESSAGE);
                         return;
+                    } else {
+                        Init.configer.setRadioPerWeek(isPerWeek);
+                        Init.configer.setTextPerWeekWeek(MainWindow.mainWindow.getSchedulePerWeekComboBox().getSelectedItem().toString());
+                        Init.configer.setTextPerWeekTime(textPerWeekTime);
                     }
 
                     Init.configer.save();
