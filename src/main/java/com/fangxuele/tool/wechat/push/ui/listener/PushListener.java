@@ -54,13 +54,18 @@ public class PushListener {
                         if (checkBeforePush()) {
                             if (Init.configer.isRadioStartAt()) {
                                 if (DateUtil.parse(Init.configer.getTextStartAt(), "yyyy-MM-dd HH:mm:ss").getTime() < System.currentTimeMillis()) {
-                                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getPushPanel(), "计划开始推送时间不能小于系统当前时间！", "提示",
+                                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getPushPanel(), "计划开始推送时间不能小于系统当前时间！\n\n请检查计划任务设置！\n\n", "提示",
                                             JOptionPane.INFORMATION_MESSAGE);
                                     return;
                                 }
 
                             }
                             if (Init.configer.isRadioStopAt()) {
+                                if (DateUtil.parse(Init.configer.getTextStopAt(), "yyyy-MM-dd HH:mm:ss").getTime() < System.currentTimeMillis()) {
+                                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getPushPanel(), "计划停止推送时间不能小于系统当前时间！\n\n请检查计划任务设置！\n\n", "提示",
+                                            JOptionPane.INFORMATION_MESSAGE);
+                                    return;
+                                }
 
                             }
                             if (Init.configer.isRadioPerDay()) {
