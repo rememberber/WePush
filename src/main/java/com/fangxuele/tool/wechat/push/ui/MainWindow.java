@@ -5,6 +5,7 @@ import com.fangxuele.tool.wechat.push.ui.listener.FramListener;
 import com.fangxuele.tool.wechat.push.ui.listener.MemberListener;
 import com.fangxuele.tool.wechat.push.ui.listener.MsgListener;
 import com.fangxuele.tool.wechat.push.ui.listener.PushListener;
+import com.fangxuele.tool.wechat.push.ui.listener.ScheduleListener;
 import com.fangxuele.tool.wechat.push.ui.listener.SettingListener;
 import com.fangxuele.tool.wechat.push.ui.listener.TabListener;
 import com.xiaoleilu.hutool.log.Log;
@@ -28,7 +29,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 
 /**
- * Created by zhouy on 2017/6/7.
+ * Created by rememberber(https://github.com/rememberber) on 2017/6/7.
  */
 public class MainWindow {
     private JPanel mainPanel;
@@ -108,8 +109,6 @@ public class MainWindow {
     private JRadioButton runAtThisTimeRadioButton;
     private JTextField startAtThisTimeTextField;
     private JPanel schedulePanel;
-    private JRadioButton stopAtThisTimeRadioButton;
-    private JTextField stopAtThisTimeTextField;
     private JRadioButton runPerDayRadioButton;
     private JTextField startPerDayTextField;
     private JRadioButton runPerWeekRadioButton;
@@ -144,7 +143,6 @@ public class MainWindow {
     private JLabel pushLastTimeLabel;
     private JLabel pushLeftTimeLabel;
     private JLabel pushMsgName;
-    private JButton pushPauseButton;
     private JScrollPane settingScrollPane;
     private JPasswordField aliAppSecretPasswordField;
     private JButton clearImportButton;
@@ -158,6 +156,7 @@ public class MainWindow {
     private JButton importHisTableDeleteButton;
     private JButton msgHisTableUnselectAllButton;
     private JButton importHisTableUnselectAllButton;
+    private JLabel scheduleDetailLabel;
     public static JFrame frame;
 
     public static MainWindow mainWindow;
@@ -193,11 +192,13 @@ public class MainWindow {
         Init.initOthers();
         Init.initAllTab();
 
+        // 添加事件监听
         AboutListener.addListeners();
         SettingListener.addListeners();
         MsgListener.addListeners();
         MemberListener.addListeners();
         PushListener.addListeners();
+        ScheduleListener.addListeners();
         TabListener.addListeners();
         FramListener.addListeners();
     }
@@ -818,22 +819,6 @@ public class MainWindow {
         this.schedulePanel = schedulePanel;
     }
 
-    public JRadioButton getStopAtThisTimeRadioButton() {
-        return stopAtThisTimeRadioButton;
-    }
-
-    public void setStopAtThisTimeRadioButton(boolean stopAtThisTime) {
-        this.stopAtThisTimeRadioButton.setSelected(stopAtThisTime);
-    }
-
-    public JTextField getStopAtThisTimeTextField() {
-        return stopAtThisTimeTextField;
-    }
-
-    public void setStopAtThisTimeTextField(String stopAtThisTimeTextField) {
-        this.stopAtThisTimeTextField.setText(stopAtThisTimeTextField);
-    }
-
     public JRadioButton getRunPerDayRadioButton() {
         return runPerDayRadioButton;
     }
@@ -1126,14 +1111,6 @@ public class MainWindow {
         this.pushMsgName.setText(pushMsgName);
     }
 
-    public JButton getPushPauseButton() {
-        return pushPauseButton;
-    }
-
-    public void setPushPauseButton(JButton pushPauseButton) {
-        this.pushPauseButton = pushPauseButton;
-    }
-
     public JScrollPane getSettingScrollPane() {
         return settingScrollPane;
     }
@@ -1230,4 +1207,11 @@ public class MainWindow {
         this.importHisTableUnselectAllButton = importHisTableUnselectAllButton;
     }
 
+    public JLabel getScheduleDetailLabel() {
+        return scheduleDetailLabel;
+    }
+
+    public void setScheduleDetailLabel(JLabel scheduleDetailLabel) {
+        this.scheduleDetailLabel = scheduleDetailLabel;
+    }
 }

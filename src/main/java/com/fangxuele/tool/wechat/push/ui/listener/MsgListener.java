@@ -20,7 +20,7 @@ import java.util.Set;
 
 /**
  * 编辑消息tab相关事件监听
- * Created by zhouy on 2017/6/18.
+ * Created by rememberber(https://github.com/rememberber) on 2017/6/18.
  */
 public class MsgListener {
     private static final Log logger = LogFactory.get();

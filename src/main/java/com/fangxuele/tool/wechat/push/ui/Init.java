@@ -38,7 +38,7 @@ import java.util.Map;
 
 /**
  * 初始化类
- * Created by zhouy on 2017/6/15.
+ * Created by rememberber(https://github.com/rememberber) on 2017/6/15.
  */
 public class Init {
 
@@ -302,10 +302,6 @@ public class Init {
         // 开始
         MainWindow.mainWindow.setRunAtThisTimeRadioButton(configer.isRadioStartAt());
         MainWindow.mainWindow.setStartAtThisTimeTextField(configer.getTextStartAt());
-
-        // 停止
-        MainWindow.mainWindow.setStopAtThisTimeRadioButton(configer.isRadioStopAt());
-        MainWindow.mainWindow.setStopAtThisTimeTextField(configer.getTextStopAt());
 
         //每天
         MainWindow.mainWindow.setRunPerDayRadioButton(configer.isRadioPerDay());

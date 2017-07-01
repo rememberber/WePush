@@ -28,7 +28,7 @@ import java.util.Map;
 
 /**
  * 推送管理
- * Created by zhouy on 2017/6/19.
+ * Created by rememberber(https://github.com/rememberber) on 2017/6/19.
  */
 public class PushManage {
 

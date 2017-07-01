@@ -11,7 +11,7 @@ import java.awt.event.WindowListener;
 
 /**
  * 窗体事件监听
- * Created by zhouy on 2017/6/21.
+ * Created by rememberber(https://github.com/rememberber) on 2017/6/21.
  */
 public class FramListener {
 
