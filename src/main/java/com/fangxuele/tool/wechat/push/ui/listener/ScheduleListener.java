@@ -87,5 +87,35 @@ public class ScheduleListener {
                 }
             }
         });
+
+        MainWindow.mainWindow.getRunAtThisTimeRadioButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (MainWindow.mainWindow.getRunAtThisTimeRadioButton().isSelected()) {
+                    MainWindow.mainWindow.getRunPerDayRadioButton().setSelected(false);
+                    MainWindow.mainWindow.getRunPerWeekRadioButton().setSelected(false);
+                }
+            }
+        });
+
+        MainWindow.mainWindow.getRunPerDayRadioButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (MainWindow.mainWindow.getRunPerDayRadioButton().isSelected()) {
+                    MainWindow.mainWindow.getRunAtThisTimeRadioButton().setSelected(false);
+                    MainWindow.mainWindow.getRunPerWeekRadioButton().setSelected(false);
+                }
+            }
+        });
+
+        MainWindow.mainWindow.getRunPerWeekRadioButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (MainWindow.mainWindow.getRunPerWeekRadioButton().isSelected()) {
+                    MainWindow.mainWindow.getRunAtThisTimeRadioButton().setSelected(false);
+                    MainWindow.mainWindow.getRunPerDayRadioButton().setSelected(false);
+                }
+            }
+        });
     }
 }
