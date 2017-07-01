@@ -13,7 +13,7 @@ import java.sql.Statement;
 /**
  * MySQL数据库工具，单例，持久连接
  *
- * @author zhouy
+ * @author rememberber(https://github.com/rememberber)
  */
 public class DbUtilMySQL {
     private Connection connection = null;

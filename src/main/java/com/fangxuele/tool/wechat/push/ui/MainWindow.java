@@ -29,7 +29,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 
 /**
- * Created by zhouy on 2017/6/7.
+ * Created by rememberber(https://github.com/rememberber) on 2017/6/7.
  */
 public class MainWindow {
     private JPanel mainPanel;

@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * 消息发送服务线程父类
- * Created by zhouy on 2017/3/29.
+ * Created by rememberber(https://github.com/rememberber) on 2017/3/29.
  */
 public class BaseMsgServiceThread extends Thread {
 

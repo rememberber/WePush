@@ -6,7 +6,7 @@ import java.awt.Toolkit;
 /**
  * UI相关的常量
  *
- * @author zhouy
+ * @author rememberber(https://github.com/rememberber)
  */
 public class ConstantsUI {
 
