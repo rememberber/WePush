@@ -303,10 +303,6 @@ public class Init {
         MainWindow.mainWindow.setRunAtThisTimeRadioButton(configer.isRadioStartAt());
         MainWindow.mainWindow.setStartAtThisTimeTextField(configer.getTextStartAt());
 
-        // 停止
-        MainWindow.mainWindow.setStopAtThisTimeRadioButton(configer.isRadioStopAt());
-        MainWindow.mainWindow.setStopAtThisTimeTextField(configer.getTextStopAt());
-
         //每天
         MainWindow.mainWindow.setRunPerDayRadioButton(configer.isRadioPerDay());
         MainWindow.mainWindow.setStartPerDayTextField(configer.getTextPerDay());
