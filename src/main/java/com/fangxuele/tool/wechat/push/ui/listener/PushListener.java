@@ -23,6 +23,12 @@ import java.util.concurrent.TimeUnit;
 public class PushListener {
     private static final Log logger = LogFactory.get();
 
+    public static ScheduledExecutorService serviceStartAt;
+
+    public static ScheduledExecutorService serviceStartPerDay;
+
+    public static ScheduledExecutorService serviceStartPerWeek;
+
     public static void addListeners() {
         // 开始按钮事件
         MainWindow.mainWindow.getPushStartButton().addActionListener(new ActionListener() {
@@ -79,7 +85,7 @@ public class PushListener {
 
                             // 定时开始
                             if (Init.configer.isRadioStartAt()) {
-                                long startAtMills = DateUtil.parse(Init.configer.getTextStartAt(), "yyyy-MM-dd HH:mm:ss").getTime();
+                                long startAtMills = DateUtil.parse(Init.configer.getTextStartAt(), DateUtil.NORM_DATETIME_PATTERN).getTime();
                                 if (startAtMills < System.currentTimeMillis()) {
                                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getPushPanel(), "计划开始推送时间不能小于系统当前时间！\n\n请检查计划任务设置！\n\n", "提示",
                                             JOptionPane.INFORMATION_MESSAGE);
@@ -89,7 +95,7 @@ public class PushListener {
                                 int isSchedulePush = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getPushPanel(),
                                         new StringBuilder("将在").
                                                 append(Init.configer.getTextStartAt()).
-                                                append("推送消息：\n\n").
+                                                append("推送\n\n消息：").
                                                 append(MainWindow.mainWindow.getMsgNameField().getText()).
                                                 append("\n\n推送人数：").append(PushData.allUser.size()).
                                                 append("\n\n空跑模式：").
@@ -101,54 +107,70 @@ public class PushListener {
                                     MainWindow.mainWindow.getScheduleRunButton().setEnabled(false);
                                     MainWindow.mainWindow.getPushStartButton().setEnabled(false);
                                     MainWindow.mainWindow.getPushStopButton().setEnabled(true);
-                                    
-                                    ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-                                    service.schedule(new RunPushThread(), startAtMills - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
-                                }
-                                existScheduleTask = true;
-                            }
 
-                            // 定时停止
-                            if (Init.configer.isRadioStopAt()) {
-                                long stopAtMills = DateUtil.parse(Init.configer.getTextStopAt(), "yyyy-MM-dd HH:mm:ss").getTime();
-                                if (stopAtMills < System.currentTimeMillis()) {
-                                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getPushPanel(), "计划停止推送时间不能小于系统当前时间！\n\n请检查计划任务设置！\n\n", "提示",
-                                            JOptionPane.INFORMATION_MESSAGE);
-                                    return;
-                                }
-                                int isScheduleStop = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getPushPanel(),
-                                        new StringBuilder("确定开始推送吗？\n\n推送消息：").
-                                                append(MainWindow.mainWindow.getMsgNameField().getText()).
-                                                append("\n推送人数：").append(PushData.allUser.size()).
-                                                append("\n\n空跑模式：").
-                                                append(MainWindow.mainWindow.getDryRunCheckBox().isSelected()).toString(), "确认推送？",
-                                        JOptionPane.INFORMATION_MESSAGE);
-                                if (isScheduleStop == JOptionPane.YES_OPTION) {
-                                    PushData.scheduling = true;
-                                    // 按钮状态
-                                    MainWindow.mainWindow.getScheduleRunButton().setEnabled(false);
-                                    MainWindow.mainWindow.getPushStartButton().setEnabled(false);
-                                    MainWindow.mainWindow.getPushStopButton().setEnabled(true);
-
-                                    ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-                                    service.schedule(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            PushData.running = false;
-                                        }
-                                    }, stopAtMills - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+                                    serviceStartAt = Executors.newSingleThreadScheduledExecutor();
+                                    serviceStartAt.schedule(new RunPushThread(), startAtMills - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
                                 }
                                 existScheduleTask = true;
                             }
 
                             // 每天固定时间开始
                             if (Init.configer.isRadioPerDay()) {
+                                long startPerDayMills = DateUtil.parse(DateUtil.today() + " " + Init.configer.getTextPerDay(), DateUtil.NORM_DATETIME_PATTERN).getTime();
 
+                                int isSchedulePush = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getPushPanel(),
+                                        new StringBuilder("将在每天").
+                                                append(Init.configer.getTextPerDay()).
+                                                append("推送\n\n消息：").
+                                                append(MainWindow.mainWindow.getMsgNameField().getText()).
+                                                append("\n\n推送人数：").append(PushData.allUser.size()).
+                                                append("\n\n空跑模式：").
+                                                append(MainWindow.mainWindow.getDryRunCheckBox().isSelected()).toString(), "确认定时推送？",
+                                        JOptionPane.INFORMATION_MESSAGE);
+                                if (isSchedulePush == JOptionPane.YES_OPTION) {
+                                    PushData.scheduling = true;
+                                    // 按钮状态
+                                    MainWindow.mainWindow.getScheduleRunButton().setEnabled(false);
+                                    MainWindow.mainWindow.getPushStartButton().setEnabled(false);
+                                    MainWindow.mainWindow.getPushStopButton().setEnabled(true);
+
+                                    serviceStartPerDay = Executors.newSingleThreadScheduledExecutor();
+                                    long millisBetween = startPerDayMills - System.currentTimeMillis();
+                                    long delay = millisBetween < 0 ? millisBetween + 24 * 60 * 60 * 1000 : millisBetween;
+                                    serviceStartPerDay.scheduleAtFixedRate(new RunPushThread(), delay, 24 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
+                                }
+                                existScheduleTask = true;
                             }
 
                             // 每周固定时间开始
                             if (Init.configer.isRadioPerWeek()) {
 
+                                long todaySetMills = DateUtil.parse(DateUtil.today() + " " + Init.configer.getTextPerWeekTime(), DateUtil.NORM_DATETIME_PATTERN).getTime();
+                                int dayBetween = getDayOfWeek(Init.configer.getTextPerWeekWeek()) - DateUtil.thisDayOfWeek();
+                                long startPerWeekMills = dayBetween < 0 ? (dayBetween + 7) * 24 * 60 * 60 * 1000 : dayBetween * 24 * 60 * 60 * 1000;
+
+                                int isSchedulePush = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getPushPanel(),
+                                        new StringBuilder("将在每周").append(Init.configer.getTextPerWeekWeek())
+                                                .append(Init.configer.getTextPerDay())
+                                                .append("推送\n\n消息：")
+                                                .append(MainWindow.mainWindow.getMsgNameField().getText())
+                                                .append("\n\n推送人数：").append(PushData.allUser.size())
+                                                .append("\n\n空跑模式：")
+                                                .append(MainWindow.mainWindow.getDryRunCheckBox().isSelected()).toString(), "确认定时推送？",
+                                        JOptionPane.INFORMATION_MESSAGE);
+                                if (isSchedulePush == JOptionPane.YES_OPTION) {
+                                    PushData.scheduling = true;
+                                    // 按钮状态
+                                    MainWindow.mainWindow.getScheduleRunButton().setEnabled(false);
+                                    MainWindow.mainWindow.getPushStartButton().setEnabled(false);
+                                    MainWindow.mainWindow.getPushStopButton().setEnabled(true);
+
+                                    serviceStartPerWeek = Executors.newSingleThreadScheduledExecutor();
+                                    long millisBetween = startPerWeekMills + todaySetMills - System.currentTimeMillis();
+                                    long delay = millisBetween < 0 ? millisBetween + 7 * 24 * 60 * 60 * 1000 : millisBetween;
+                                    serviceStartPerWeek.scheduleAtFixedRate(new RunPushThread(), delay, 7 * 24 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
+                                }
+                                existScheduleTask = true;
                             }
 
                             if (!existScheduleTask) {
@@ -194,6 +216,36 @@ public class PushListener {
         }
 
         return true;
+    }
+
+    public static int getDayOfWeek(String week) {
+        int dayOfWeek;
+        switch (week) {
+            case "一":
+                dayOfWeek = 2;
+                break;
+            case "二":
+                dayOfWeek = 3;
+                break;
+            case "三":
+                dayOfWeek = 4;
+                break;
+            case "四":
+                dayOfWeek = 5;
+                break;
+            case "五":
+                dayOfWeek = 6;
+                break;
+            case "六":
+                dayOfWeek = 7;
+                break;
+            case "日":
+                dayOfWeek = 1;
+                break;
+            default:
+                dayOfWeek = 0;
+        }
+        return dayOfWeek;
     }
 
 }
