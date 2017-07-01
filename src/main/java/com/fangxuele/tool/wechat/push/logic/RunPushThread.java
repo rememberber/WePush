@@ -27,6 +27,7 @@ public class RunPushThread extends Thread {
 
     @Override
     public void run() {
+        MainWindow.mainWindow.getPushStopButton().setText("停止");
 
         // 初始化
         MainWindow.mainWindow.getPushTotalProgressBar().setIndeterminate(true);
@@ -119,16 +120,19 @@ public class RunPushThread extends Thread {
         // 计时
         while (true) {
             if (PushData.stopedThreadCount == threadCount) {
-
-                MainWindow.mainWindow.getPushStopButton().setEnabled(false);
-                MainWindow.mainWindow.getPushStopButton().updateUI();
+                if (!PushData.fixRateScheduling) {
+                    MainWindow.mainWindow.getPushStopButton().setEnabled(false);
+                    MainWindow.mainWindow.getPushStopButton().updateUI();
+                }
 
                 String finishTip = "发送完毕！\n\n";
                 if (!MainWindow.mainWindow.getDryRunCheckBox().isSelected()) {
                     finishTip = "发送完毕！\n\n接下来将保存结果数据，请等待……\n\n";
                 }
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getPushPanel(), finishTip, "提示",
-                        JOptionPane.INFORMATION_MESSAGE);
+                if (!PushData.fixRateScheduling) {
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getPushPanel(), finishTip, "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
 
                 // 保存停止前的数据
                 try {
@@ -144,10 +148,17 @@ public class RunPushThread extends Thread {
                 } finally {
                     MainWindow.mainWindow.getPushTotalProgressBar().setIndeterminate(false);
                 }
-                MainWindow.mainWindow.getPushStartButton().setEnabled(true);
-                MainWindow.mainWindow.getScheduleRunButton().setEnabled(true);
-                MainWindow.mainWindow.getPushStartButton().updateUI();
-                MainWindow.mainWindow.getScheduleRunButton().updateUI();
+
+                if (!PushData.fixRateScheduling) {
+                    MainWindow.mainWindow.getPushStartButton().setEnabled(true);
+                    MainWindow.mainWindow.getScheduleRunButton().setEnabled(true);
+                    MainWindow.mainWindow.getPushStartButton().updateUI();
+                    MainWindow.mainWindow.getScheduleRunButton().updateUI();
+
+                    MainWindow.mainWindow.getScheduleDetailLabel().setText("");
+                } else {
+                    MainWindow.mainWindow.getPushStopButton().setText("停止计划任务");
+                }
 
                 break;
             }

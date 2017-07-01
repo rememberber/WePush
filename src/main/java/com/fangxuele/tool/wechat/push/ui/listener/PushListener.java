@@ -62,11 +62,47 @@ public class PushListener {
         MainWindow.mainWindow.getPushStopButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int isStop = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getPushPanel(),
-                        "确定停止当前的推送吗？", "确认停止？",
-                        JOptionPane.INFORMATION_MESSAGE);
-                if (isStop == JOptionPane.YES_OPTION) {
-                    PushData.running = false;
+
+                if (!PushData.running && PushData.scheduling) {
+                    MainWindow.mainWindow.getScheduleDetailLabel().setText("");
+                    if (serviceStartAt != null) {
+                        serviceStartAt.shutdownNow();
+                    }
+                    MainWindow.mainWindow.getPushStartButton().setEnabled(true);
+                    MainWindow.mainWindow.getScheduleRunButton().setEnabled(true);
+                    MainWindow.mainWindow.getPushStopButton().setText("停止");
+                    MainWindow.mainWindow.getPushStopButton().setEnabled(false);
+                    MainWindow.mainWindow.getPushStartButton().updateUI();
+                    MainWindow.mainWindow.getScheduleRunButton().updateUI();
+                    MainWindow.mainWindow.getPushStopButton().updateUI();
+                    PushData.scheduling = false;
+                }
+
+                if (!PushData.running && PushData.fixRateScheduling) {
+                    MainWindow.mainWindow.getScheduleDetailLabel().setText("");
+                    if (serviceStartPerDay != null) {
+                        serviceStartPerDay.shutdownNow();
+                    }
+                    if (serviceStartPerWeek != null) {
+                        serviceStartPerWeek.shutdownNow();
+                    }
+                    MainWindow.mainWindow.getPushStartButton().setEnabled(true);
+                    MainWindow.mainWindow.getScheduleRunButton().setEnabled(true);
+                    MainWindow.mainWindow.getPushStopButton().setText("停止");
+                    MainWindow.mainWindow.getPushStopButton().setEnabled(false);
+                    MainWindow.mainWindow.getPushStartButton().updateUI();
+                    MainWindow.mainWindow.getScheduleRunButton().updateUI();
+                    MainWindow.mainWindow.getPushStopButton().updateUI();
+                    PushData.fixRateScheduling = false;
+                }
+
+                if (PushData.running) {
+                    int isStop = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getPushPanel(),
+                            "确定停止当前的推送吗？", "确认停止？",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    if (isStop == JOptionPane.YES_OPTION) {
+                        PushData.running = false;
+                    }
                 }
             }
         });
@@ -106,7 +142,12 @@ public class PushListener {
                                     // 按钮状态
                                     MainWindow.mainWindow.getScheduleRunButton().setEnabled(false);
                                     MainWindow.mainWindow.getPushStartButton().setEnabled(false);
+                                    MainWindow.mainWindow.getPushStopButton().setText("停止计划任务");
                                     MainWindow.mainWindow.getPushStopButton().setEnabled(true);
+
+                                    MainWindow.mainWindow.getScheduleDetailLabel().setText(new StringBuilder("计划任务执行中：将在").
+                                            append(Init.configer.getTextStartAt()).
+                                            append("开始推送").toString());
 
                                     serviceStartAt = Executors.newSingleThreadScheduledExecutor();
                                     serviceStartAt.schedule(new RunPushThread(), startAtMills - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
@@ -128,11 +169,16 @@ public class PushListener {
                                                 append(MainWindow.mainWindow.getDryRunCheckBox().isSelected()).toString(), "确认定时推送？",
                                         JOptionPane.INFORMATION_MESSAGE);
                                 if (isSchedulePush == JOptionPane.YES_OPTION) {
-                                    PushData.scheduling = true;
+                                    PushData.fixRateScheduling = true;
                                     // 按钮状态
                                     MainWindow.mainWindow.getScheduleRunButton().setEnabled(false);
                                     MainWindow.mainWindow.getPushStartButton().setEnabled(false);
+                                    MainWindow.mainWindow.getPushStopButton().setText("停止计划任务");
                                     MainWindow.mainWindow.getPushStopButton().setEnabled(true);
+
+                                    MainWindow.mainWindow.getScheduleDetailLabel().setText(new StringBuilder("计划任务执行中：将在每天").
+                                            append(Init.configer.getTextPerDay()).
+                                            append("开始推送").toString());
 
                                     serviceStartPerDay = Executors.newSingleThreadScheduledExecutor();
                                     long millisBetween = startPerDayMills - System.currentTimeMillis();
@@ -151,7 +197,7 @@ public class PushListener {
 
                                 int isSchedulePush = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getPushPanel(),
                                         new StringBuilder("将在每周").append(Init.configer.getTextPerWeekWeek())
-                                                .append(Init.configer.getTextPerDay())
+                                                .append(Init.configer.getTextPerWeekTime())
                                                 .append("推送\n\n消息：")
                                                 .append(MainWindow.mainWindow.getMsgNameField().getText())
                                                 .append("\n\n推送人数：").append(PushData.allUser.size())
@@ -159,11 +205,17 @@ public class PushListener {
                                                 .append(MainWindow.mainWindow.getDryRunCheckBox().isSelected()).toString(), "确认定时推送？",
                                         JOptionPane.INFORMATION_MESSAGE);
                                 if (isSchedulePush == JOptionPane.YES_OPTION) {
-                                    PushData.scheduling = true;
+                                    PushData.fixRateScheduling = true;
                                     // 按钮状态
                                     MainWindow.mainWindow.getScheduleRunButton().setEnabled(false);
                                     MainWindow.mainWindow.getPushStartButton().setEnabled(false);
+                                    MainWindow.mainWindow.getPushStopButton().setText("停止计划任务");
                                     MainWindow.mainWindow.getPushStopButton().setEnabled(true);
+
+                                    MainWindow.mainWindow.getScheduleDetailLabel().setText(new StringBuilder("计划任务执行中：将在每周")
+                                            .append(Init.configer.getTextPerWeekWeek())
+                                            .append(Init.configer.getTextPerWeekTime())
+                                            .append("开始推送").toString());
 
                                     serviceStartPerWeek = Executors.newSingleThreadScheduledExecutor();
                                     long millisBetween = startPerWeekMills + todaySetMills - System.currentTimeMillis();
