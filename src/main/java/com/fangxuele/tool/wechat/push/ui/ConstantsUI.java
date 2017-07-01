@@ -6,7 +6,7 @@ import java.awt.Toolkit;
 /**
  * UI相关的常量
  *
- * @author zhouy
+ * @author rememberber(https://github.com/rememberber)
  */
 public class ConstantsUI {
 
@@ -14,7 +14,7 @@ public class ConstantsUI {
      * 软件名称,版本
      */
     public final static String APP_NAME = "WePush";
-    public final static String APP_VERSION = "v_1.0.1_170626";
+    public final static String APP_VERSION = "v_1.1.0_170701";
 
     /**
      * 主窗口图标

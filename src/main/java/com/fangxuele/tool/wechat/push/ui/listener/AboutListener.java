@@ -13,7 +13,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
- * Created by zhouy on 2017/6/23.
+ * Created by rememberber(https://github.com/rememberber) on 2017/6/23.
  */
 public class AboutListener {
     private static final Log logger = LogFactory.get();

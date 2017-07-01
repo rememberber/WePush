@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * 推送数据
  * <br/>报表相关等使用
- * Created by zhouy on 2017/6/19.
+ * Created by rememberber(https://github.com/rememberber) on 2017/6/19.
  */
 public class PushData {
 
@@ -48,6 +48,16 @@ public class PushData {
      * 停止标志
      */
     public static boolean running = false;
+
+    /**
+     * 计划任务执行中标志
+     */
+    public static boolean scheduling = false;
+
+    /**
+     * 固定频率计划任务执行中
+     */
+    public static boolean fixRateScheduling = false;
 
     /**
      * 线程总数
