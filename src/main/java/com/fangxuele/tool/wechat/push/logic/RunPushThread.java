@@ -19,7 +19,7 @@ import java.util.LinkedList;
 
 /**
  * 推送执行控制线程
- * Created by zhouy on 2017/6/28.
+ * Created by rememberber(https://github.com/rememberber) on 2017/6/28.
  */
 public class RunPushThread extends Thread {
 
