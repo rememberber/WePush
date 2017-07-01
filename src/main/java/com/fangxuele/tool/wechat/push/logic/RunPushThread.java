@@ -31,11 +31,6 @@ public class RunPushThread extends Thread {
         // 初始化
         MainWindow.mainWindow.getPushTotalProgressBar().setIndeterminate(true);
         PushData.running = true;
-        // 按钮状态
-        MainWindow.mainWindow.getScheduleRunButton().setEnabled(false);
-        MainWindow.mainWindow.getPushStartButton().setEnabled(false);
-        MainWindow.mainWindow.getPushStopButton().setEnabled(true);
-
         PushData.successRecords = 0;
         PushData.failRecords = 0;
         PushData.stopedThreadCount = 0;
