@@ -156,6 +156,7 @@ public class MainWindow {
     private JButton importHisTableDeleteButton;
     private JButton msgHisTableUnselectAllButton;
     private JButton importHisTableUnselectAllButton;
+    private JLabel scheduleDetailLabel;
     public static JFrame frame;
 
     public static MainWindow mainWindow;
@@ -1206,4 +1207,11 @@ public class MainWindow {
         this.importHisTableUnselectAllButton = importHisTableUnselectAllButton;
     }
 
+    public JLabel getScheduleDetailLabel() {
+        return scheduleDetailLabel;
+    }
+
+    public void setScheduleDetailLabel(JLabel scheduleDetailLabel) {
+        this.scheduleDetailLabel = scheduleDetailLabel;
+    }
 }
