@@ -66,7 +66,9 @@ WePush Windows 安装文件下载：[WePush](https://github.com/rememberber/WePu
 
 ### 特别感谢
 [weixin-java-tools](https://github.com/Wechat-Group/weixin-java-tools)  
-[Hutool](http://hutool.cn/)
+[Hutool](http://hutool.cn/)  
+[Darcula](https://github.com/bulenkov/Darcula)  
+[BeautyEye](https://github.com/JackJiang2011/beautyeye)  
 
 ### 开发、构建
 
