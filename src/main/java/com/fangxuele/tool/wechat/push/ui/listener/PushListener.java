@@ -28,18 +28,27 @@ public class PushListener {
         MainWindow.mainWindow.getPushStartButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (checkBeforePush()) {
-                    int isPush = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getPushPanel(),
-                            new StringBuilder("确定开始推送吗？\n\n推送消息：").
-                                    append(MainWindow.mainWindow.getMsgNameField().getText()).
-                                    append("\n推送人数：").append(PushData.allUser.size()).
-                                    append("\n\n空跑模式：").
-                                    append(MainWindow.mainWindow.getDryRunCheckBox().isSelected()).toString(), "确认推送？",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    if (isPush == JOptionPane.YES_OPTION) {
-                        new RunPushThread().start();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (checkBeforePush()) {
+                            int isPush = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getPushPanel(),
+                                    new StringBuilder("确定开始推送吗？\n\n推送消息：").
+                                            append(MainWindow.mainWindow.getMsgNameField().getText()).
+                                            append("\n推送人数：").append(PushData.allUser.size()).
+                                            append("\n\n空跑模式：").
+                                            append(MainWindow.mainWindow.getDryRunCheckBox().isSelected()).toString(), "确认推送？",
+                                    JOptionPane.INFORMATION_MESSAGE);
+                            if (isPush == JOptionPane.YES_OPTION) {
+                                // 按钮状态
+                                MainWindow.mainWindow.getScheduleRunButton().setEnabled(false);
+                                MainWindow.mainWindow.getPushStartButton().setEnabled(false);
+                                MainWindow.mainWindow.getPushStopButton().setEnabled(true);
+                                new RunPushThread().start();
+                            }
+                        }
                     }
-                }
+                }).start();
             }
         });
 
@@ -87,6 +96,12 @@ public class PushListener {
                                                 append(MainWindow.mainWindow.getDryRunCheckBox().isSelected()).toString(), "确认定时推送？",
                                         JOptionPane.INFORMATION_MESSAGE);
                                 if (isSchedulePush == JOptionPane.YES_OPTION) {
+                                    PushData.scheduling = true;
+                                    // 按钮状态
+                                    MainWindow.mainWindow.getScheduleRunButton().setEnabled(false);
+                                    MainWindow.mainWindow.getPushStartButton().setEnabled(false);
+                                    MainWindow.mainWindow.getPushStopButton().setEnabled(true);
+                                    
                                     ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
                                     service.schedule(new RunPushThread(), startAtMills - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
                                 }
@@ -109,6 +124,12 @@ public class PushListener {
                                                 append(MainWindow.mainWindow.getDryRunCheckBox().isSelected()).toString(), "确认推送？",
                                         JOptionPane.INFORMATION_MESSAGE);
                                 if (isScheduleStop == JOptionPane.YES_OPTION) {
+                                    PushData.scheduling = true;
+                                    // 按钮状态
+                                    MainWindow.mainWindow.getScheduleRunButton().setEnabled(false);
+                                    MainWindow.mainWindow.getPushStartButton().setEnabled(false);
+                                    MainWindow.mainWindow.getPushStopButton().setEnabled(true);
+
                                     ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
                                     service.schedule(new Runnable() {
                                         @Override

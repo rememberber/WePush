@@ -109,8 +109,6 @@ public class MainWindow {
     private JRadioButton runAtThisTimeRadioButton;
     private JTextField startAtThisTimeTextField;
     private JPanel schedulePanel;
-    private JRadioButton stopAtThisTimeRadioButton;
-    private JTextField stopAtThisTimeTextField;
     private JRadioButton runPerDayRadioButton;
     private JTextField startPerDayTextField;
     private JRadioButton runPerWeekRadioButton;
@@ -818,22 +816,6 @@ public class MainWindow {
 
     public void setSchedulePanel(JPanel schedulePanel) {
         this.schedulePanel = schedulePanel;
-    }
-
-    public JRadioButton getStopAtThisTimeRadioButton() {
-        return stopAtThisTimeRadioButton;
-    }
-
-    public void setStopAtThisTimeRadioButton(boolean stopAtThisTime) {
-        this.stopAtThisTimeRadioButton.setSelected(stopAtThisTime);
-    }
-
-    public JTextField getStopAtThisTimeTextField() {
-        return stopAtThisTimeTextField;
-    }
-
-    public void setStopAtThisTimeTextField(String stopAtThisTimeTextField) {
-        this.stopAtThisTimeTextField.setText(stopAtThisTimeTextField);
     }
 
     public JRadioButton getRunPerDayRadioButton() {
