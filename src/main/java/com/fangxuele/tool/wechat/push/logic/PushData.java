@@ -55,6 +55,11 @@ public class PushData {
     public static boolean scheduling = false;
 
     /**
+     * 固定频率计划任务执行中
+     */
+    public static boolean fixRateScheduling = false;
+
+    /**
      * 线程总数
      */
     public static int threadCount;
