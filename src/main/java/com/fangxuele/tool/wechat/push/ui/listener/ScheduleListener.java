@@ -44,27 +44,6 @@ public class ScheduleListener {
                         Init.configer.setTextStartAt(textStartAt);
                     }
 
-                    String textStopAt = MainWindow.mainWindow.getStopAtThisTimeTextField().getText();
-                    boolean isStopAt = MainWindow.mainWindow.getStopAtThisTimeRadioButton().isSelected();
-                    if (StringUtils.isNotEmpty(textStopAt)) {
-                        if (DateUtil.parse(textStopAt).getTime() <= System.currentTimeMillis() && isStopAt) {
-                            JOptionPane.showMessageDialog(MainWindow.mainWindow.getSchedulePanel(),
-                                    "保存失败！\n\n停止推送时间不能小于系统当前时间！", "失败",
-                                    JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                        Init.configer.setRadioStopAt(isStopAt);
-                        Init.configer.setTextStopAt(textStopAt);
-                    } else if (isStopAt) {
-                        JOptionPane.showMessageDialog(MainWindow.mainWindow.getSchedulePanel(),
-                                "保存失败！\n\n停止推送时间不能为空！", "失败",
-                                JOptionPane.ERROR_MESSAGE);
-                        return;
-                    } else {
-                        Init.configer.setRadioStopAt(isStopAt);
-                        Init.configer.setTextStopAt(textStopAt);
-                    }
-
                     String textPerDay = MainWindow.mainWindow.getStartPerDayTextField().getText();
                     boolean isPerDay = MainWindow.mainWindow.getRunPerDayRadioButton().isSelected();
                     if (StringUtils.isNotEmpty(textPerDay)) {

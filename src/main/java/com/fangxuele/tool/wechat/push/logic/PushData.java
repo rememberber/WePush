@@ -50,6 +50,11 @@ public class PushData {
     public static boolean running = false;
 
     /**
+     * 计划任务执行中标志
+     */
+    public static boolean scheduling = false;
+
+    /**
      * 线程总数
      */
     public static int threadCount;
