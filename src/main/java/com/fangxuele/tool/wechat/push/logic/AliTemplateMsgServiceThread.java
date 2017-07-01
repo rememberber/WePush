@@ -9,7 +9,7 @@ import com.taobao.api.response.AlibabaAliqinFcSmsNumSendResponse;
 
 /**
  * 阿里模板短信发送服务线程
- * Created by zhouy on 2017/3/29.
+ * Created by rememberber(https://github.com/rememberber) on 2017/3/29.
  */
 public class AliTemplateMsgServiceThread extends BaseMsgServiceThread {
 

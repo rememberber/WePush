@@ -10,7 +10,7 @@ import java.io.IOException;
 
 /**
  * 配置管理
- * Created by zhouy on 2017/6/14.
+ * Created by rememberber(https://github.com/rememberber) on 2017/6/14.
  */
 public class Config {
 

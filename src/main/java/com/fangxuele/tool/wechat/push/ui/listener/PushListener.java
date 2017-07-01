@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 推送tab相关事件监听
- * Created by zhouy on 2017/6/19.
+ * Created by rememberber(https://github.com/rememberber) on 2017/6/19.
  */
 public class PushListener {
     private static final Log logger = LogFactory.get();

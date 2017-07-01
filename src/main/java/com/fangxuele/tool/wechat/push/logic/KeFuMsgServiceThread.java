@@ -5,7 +5,7 @@ import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
 
 /**
  * 客服消息发送服务线程
- * Created by zhouy on 2017/3/29.
+ * Created by rememberber(https://github.com/rememberber) on 2017/3/29.
  */
 public class KeFuMsgServiceThread extends BaseMsgServiceThread {
 
