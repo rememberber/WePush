@@ -47,7 +47,7 @@ public class MemberListener {
                     String[] nextLine;
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());
                     while ((nextLine = reader.readNext()) != null) {
-                        PushData.allUser.add(nextLine[0]);
+                        PushData.allUser.add(nextLine[0].trim());
                         currentImported++;
                         MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(currentImported));
                         MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(currentImported);
@@ -124,7 +124,7 @@ public class MemberListener {
                 String[] nextLine;
                 PushData.allUser = Collections.synchronizedList(new ArrayList<>());
                 while ((nextLine = reader.readNext()) != null) {
-                    PushData.allUser.add(nextLine[0]);
+                    PushData.allUser.add(nextLine[0].trim());
                     currentImported++;
                     MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(currentImported));
                     MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(currentImported);
@@ -167,7 +167,7 @@ public class MemberListener {
                     int currentImported = 0;
 
                     while (rs.next()) {
-                        PushData.allUser.add(rs.getString(1));
+                        PushData.allUser.add(rs.getString(1).trim());
                         currentImported++;
                         MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(currentImported));
                         MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(currentImported);
