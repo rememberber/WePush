@@ -1,5 +1,6 @@
 package com.fangxuele.tool.wechat.push.ui;
 
+import com.alee.laf.WebLookAndFeel;
 import com.fangxuele.tool.wechat.push.logic.MsgHisManage;
 import com.fangxuele.tool.wechat.push.util.Config;
 import com.sun.java.swing.plaf.motif.MotifLookAndFeel;
@@ -95,6 +96,9 @@ public class Init {
                 case "BeautyEye":
                     BeautyEyeLNFHelper.launchBeautyEyeLNF();
                     UIManager.put("RootPane.setupButtonVisible", false);
+                    break;
+                case "weblaf":
+                    UIManager.setLookAndFeel(new WebLookAndFeel());
                     break;
                 case "系统默认":
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
