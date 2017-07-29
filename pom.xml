@@ -78,6 +78,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.weblaf</groupId>
+            <artifactId>weblaf-lnf</artifactId>
+            <version>1.2.8</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.taobao</groupId>
             <artifactId>top-auto-sdk</artifactId>
             <version>1.0</version>
