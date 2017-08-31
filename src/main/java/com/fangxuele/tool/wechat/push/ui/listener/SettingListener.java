@@ -24,283 +24,220 @@ public class SettingListener {
 
     public static void addListeners() {
         // 设置-公众号-保存
-        MainWindow.mainWindow.getSettingMpInfoSaveButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    Init.configer.setWechatAppId(MainWindow.mainWindow.getWechatAppIdTextField().getText());
-                    Init.configer.setWechatAppSecret(new String(MainWindow.mainWindow.getWechatAppSecretPasswordField().getPassword()));
-                    Init.configer.setWechatToken(new String(MainWindow.mainWindow.getWechatTokenPasswordField().getPassword()));
-                    Init.configer.setWechatAesKey(new String(MainWindow.mainWindow.getWechatAesKeyPasswordField().getPassword()));
-                    Init.configer.save();
+        MainWindow.mainWindow.getSettingMpInfoSaveButton().addActionListener(e -> {
+            try {
+                Init.configer.setWechatAppId(MainWindow.mainWindow.getWechatAppIdTextField().getText());
+                Init.configer.setWechatAppSecret(new String(MainWindow.mainWindow.getWechatAppSecretPasswordField().getPassword()));
+                Init.configer.setWechatToken(new String(MainWindow.mainWindow.getWechatTokenPasswordField().getPassword()));
+                Init.configer.setWechatAesKey(new String(MainWindow.mainWindow.getWechatAesKeyPasswordField().getPassword()));
+                Init.configer.save();
 
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存成功！", "成功",
-                            JOptionPane.INFORMATION_MESSAGE);
-                } catch (Exception e1) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
-                            JOptionPane.ERROR_MESSAGE);
-                    logger.error(e1);
-                }
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存成功！", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
             }
         });
 
         // 设置-阿里大于-保存
-        MainWindow.mainWindow.getSettingAliInfoSaveButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    Init.configer.setAliServerUrl(MainWindow.mainWindow.getAliServerUrlTextField().getText());
-                    Init.configer.setAliAppKey(new String(MainWindow.mainWindow.getAliAppKeyPasswordField().getPassword()));
-                    Init.configer.setAliAppSecret(new String(MainWindow.mainWindow.getAliAppSecretPasswordField().getPassword()));
-                    Init.configer.setAliSign(MainWindow.mainWindow.getAliSignTextField().getText());
-                    Init.configer.save();
+        MainWindow.mainWindow.getSettingAliInfoSaveButton().addActionListener(e -> {
+            try {
+                Init.configer.setAliServerUrl(MainWindow.mainWindow.getAliServerUrlTextField().getText());
+                Init.configer.setAliAppKey(new String(MainWindow.mainWindow.getAliAppKeyPasswordField().getPassword()));
+                Init.configer.setAliAppSecret(new String(MainWindow.mainWindow.getAliAppSecretPasswordField().getPassword()));
+                Init.configer.setAliSign(MainWindow.mainWindow.getAliSignTextField().getText());
+                Init.configer.save();
 
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存成功！", "成功",
-                            JOptionPane.INFORMATION_MESSAGE);
-                } catch (Exception e1) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
-                            JOptionPane.ERROR_MESSAGE);
-                    logger.error(e1);
-                }
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存成功！", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
             }
         });
 
         // mysql数据库-测试链接
-        MainWindow.mainWindow.getSettingTestDbLinkButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    DbUtilMySQL dbMySQL = DbUtilMySQL.getInstance();
-                    String DBUrl = MainWindow.mainWindow.getMysqlUrlTextField().getText();
-                    String DBName = MainWindow.mainWindow.getMysqlDatabaseTextField().getText();
-                    String DBUser = MainWindow.mainWindow.getMysqlUserTextField().getText();
-                    String DBPassword = new String(MainWindow.mainWindow.getMysqlPasswordField().getPassword());
-                    Connection conn = dbMySQL.testConnection(DBUrl, DBName, DBUser, DBPassword);
-                    if (conn == null) {
-                        JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "连接失败", "失败",
-                                JOptionPane.ERROR_MESSAGE);
-                    } else {
-                        JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "连接成功！", "成功",
-                                JOptionPane.INFORMATION_MESSAGE);
-                    }
-                } catch (Exception e1) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "连接失败！\n\n" + e1.getMessage(), "失败",
+        MainWindow.mainWindow.getSettingTestDbLinkButton().addActionListener(e -> {
+            try {
+                DbUtilMySQL dbMySQL = DbUtilMySQL.getInstance();
+                String DBUrl = MainWindow.mainWindow.getMysqlUrlTextField().getText();
+                String DBName = MainWindow.mainWindow.getMysqlDatabaseTextField().getText();
+                String DBUser = MainWindow.mainWindow.getMysqlUserTextField().getText();
+                String DBPassword = new String(MainWindow.mainWindow.getMysqlPasswordField().getPassword());
+                Connection conn = dbMySQL.testConnection(DBUrl, DBName, DBUser, DBPassword);
+                if (conn == null) {
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "连接失败", "失败",
                             JOptionPane.ERROR_MESSAGE);
-                    logger.error(e1);
+                } else {
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "连接成功！", "成功",
+                            JOptionPane.INFORMATION_MESSAGE);
                 }
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "连接失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
             }
         });
 
         // mysql数据库-保存
-        MainWindow.mainWindow.getSettingDbInfoSaveButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    Init.configer.setMysqlUrl(MainWindow.mainWindow.getMysqlUrlTextField().getText());
-                    Init.configer.setMysqlDatabase(MainWindow.mainWindow.getMysqlDatabaseTextField().getText());
-                    Init.configer.setMysqlUser(MainWindow.mainWindow.getMysqlUserTextField().getText());
-                    Init.configer.setMysqlPassword(new String(MainWindow.mainWindow.getMysqlPasswordField().getPassword()));
-                    Init.configer.save();
+        MainWindow.mainWindow.getSettingDbInfoSaveButton().addActionListener(e -> {
+            try {
+                Init.configer.setMysqlUrl(MainWindow.mainWindow.getMysqlUrlTextField().getText());
+                Init.configer.setMysqlDatabase(MainWindow.mainWindow.getMysqlDatabaseTextField().getText());
+                Init.configer.setMysqlUser(MainWindow.mainWindow.getMysqlUserTextField().getText());
+                Init.configer.setMysqlPassword(new String(MainWindow.mainWindow.getMysqlPasswordField().getPassword()));
+                Init.configer.save();
 
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存成功！", "成功",
-                            JOptionPane.INFORMATION_MESSAGE);
-                } catch (Exception e1) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
-                            JOptionPane.ERROR_MESSAGE);
-                    logger.error(e1);
-                }
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存成功！", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
             }
         });
 
         // 外观-保存
-        MainWindow.mainWindow.getSettingAppearanceSaveButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    Init.configer.setTheme(MainWindow.mainWindow.getSettingThemeComboBox().getSelectedItem().toString());
-                    Init.configer.setFont(MainWindow.mainWindow.getSettingFontNameComboBox().getSelectedItem().toString());
-                    Init.configer.setFontSize(Integer.parseInt(MainWindow.mainWindow.getSettingFontSizeComboBox().getSelectedItem().toString()));
-                    Init.configer.save();
+        MainWindow.mainWindow.getSettingAppearanceSaveButton().addActionListener(e -> {
+            try {
+                Init.configer.setTheme(MainWindow.mainWindow.getSettingThemeComboBox().getSelectedItem().toString());
+                Init.configer.setFont(MainWindow.mainWindow.getSettingFontNameComboBox().getSelectedItem().toString());
+                Init.configer.setFontSize(Integer.parseInt(MainWindow.mainWindow.getSettingFontSizeComboBox().getSelectedItem().toString()));
+                Init.configer.save();
 
-                    Init.initTheme();
-                    Init.initGlobalFont();
-                    SwingUtilities.updateComponentTreeUI(MainWindow.frame);
-                    SwingUtilities.updateComponentTreeUI(MainWindow.mainWindow.getTabbedPane());
+                Init.initTheme();
+                Init.initGlobalFont();
+                SwingUtilities.updateComponentTreeUI(MainWindow.frame);
+                SwingUtilities.updateComponentTreeUI(MainWindow.mainWindow.getTabbedPane());
 
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存成功！\n\n部分细节将在下次启动时生效！\n\n", "成功",
-                            JOptionPane.INFORMATION_MESSAGE);
-                } catch (Exception e1) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
-                            JOptionPane.ERROR_MESSAGE);
-                    logger.error(e1);
-                }
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存成功！\n\n部分细节将在下次启动时生效！\n\n", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
             }
         });
 
         // 历史消息管理-全选
-        MainWindow.mainWindow.getMsgHisTableSelectAllButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getMsgHistable()
-                                .getModel();
-                        int rowCount = tableModel.getRowCount();
-                        for (int i = 0; i < rowCount; i++) {
-                            tableModel.setValueAt(true, i, 0);
-                        }
-                    }
-                }).start();
+        MainWindow.mainWindow.getMsgHisTableSelectAllButton().addActionListener(e -> new Thread(() -> {
+            DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getMsgHistable()
+                    .getModel();
+            int rowCount = tableModel.getRowCount();
+            for (int i = 0; i < rowCount; i++) {
+                tableModel.setValueAt(true, i, 0);
             }
-        });
+        }).start());
 
         // 历史消息管理-全不选
-        MainWindow.mainWindow.getMsgHisTableUnselectAllButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getMsgHistable()
-                                .getModel();
-                        int rowCount = tableModel.getRowCount();
-                        for (int i = 0; i < rowCount; i++) {
-                            tableModel.setValueAt(false, i, 0);
-                        }
-                    }
-                }).start();
+        MainWindow.mainWindow.getMsgHisTableUnselectAllButton().addActionListener(e -> new Thread(() -> {
+            DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getMsgHistable()
+                    .getModel();
+            int rowCount = tableModel.getRowCount();
+            for (int i = 0; i < rowCount; i++) {
+                tableModel.setValueAt(false, i, 0);
             }
-        });
+        }).start());
 
         // 历史消息管理-删除
-        MainWindow.mainWindow.getMsgHisTableDeleteButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        int isDelete = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getSettingPanel(), "确认删除？", "确认",
-                                JOptionPane.INFORMATION_MESSAGE);
-                        if (isDelete == JOptionPane.YES_OPTION) {
-                            try {
-                                DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getMsgHistable()
-                                        .getModel();
-                                int rowCount = tableModel.getRowCount();
-                                Map<String, String[]> msgMap = Init.msgHisManager.readMsgHis();
-                                for (int i = 0; i < rowCount; ) {
-                                    boolean delete = (boolean) tableModel.getValueAt(i, 0);
-                                    if (delete) {
-                                        String msgName = (String) tableModel.getValueAt(i, 1);
-                                        if (msgMap.containsKey(msgName)) {
-                                            msgMap.remove(msgName);
-                                            File msgTemplateDataFile = new File("data/template_data/" + msgName + ".csv");
-                                            if (msgTemplateDataFile.exists()) {
-                                                msgTemplateDataFile.delete();
-                                            }
-                                        }
-                                        tableModel.removeRow(i);
-                                        MainWindow.mainWindow.getMsgHistable().updateUI();
-                                        i = 0;
-                                        rowCount = tableModel.getRowCount();
-                                        continue;
-                                    } else {
-                                        i++;
-                                    }
+        MainWindow.mainWindow.getMsgHisTableDeleteButton().addActionListener(e -> new Thread(() -> {
+            int isDelete = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getSettingPanel(), "确认删除？", "确认",
+                    JOptionPane.INFORMATION_MESSAGE);
+            if (isDelete == JOptionPane.YES_OPTION) {
+                try {
+                    DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getMsgHistable()
+                            .getModel();
+                    int rowCount = tableModel.getRowCount();
+                    Map<String, String[]> msgMap = Init.msgHisManager.readMsgHis();
+                    for (int i = 0; i < rowCount; ) {
+                        boolean delete = (boolean) tableModel.getValueAt(i, 0);
+                        if (delete) {
+                            String msgName = (String) tableModel.getValueAt(i, 1);
+                            if (msgMap.containsKey(msgName)) {
+                                msgMap.remove(msgName);
+                                File msgTemplateDataFile = new File("data/template_data/" + msgName + ".csv");
+                                if (msgTemplateDataFile.exists()) {
+                                    msgTemplateDataFile.delete();
                                 }
-                                Init.msgHisManager.writeMsgHis(msgMap);
-
-                                Init.initMsgTab(false);
-                            } catch (Exception e1) {
-                                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "删除失败！\n\n" + e1.getMessage(), "失败",
-                                        JOptionPane.ERROR_MESSAGE);
-                                logger.error(e1);
                             }
+                            tableModel.removeRow(i);
+                            MainWindow.mainWindow.getMsgHistable().updateUI();
+                            i = 0;
+                            rowCount = tableModel.getRowCount();
+                            continue;
+                        } else {
+                            i++;
                         }
                     }
-                }).start();
+                    Init.msgHisManager.writeMsgHis(msgMap);
+
+                    Init.initMsgTab(false);
+                } catch (Exception e1) {
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "删除失败！\n\n" + e1.getMessage(), "失败",
+                            JOptionPane.ERROR_MESSAGE);
+                    logger.error(e1);
+                }
             }
-        });
+        }).start());
 
         // 导入历史管理-全选
-        MainWindow.mainWindow.getImportHisTableSelectAllButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getImportHisTable()
-                                .getModel();
-                        int rowCount = tableModel.getRowCount();
-                        for (int i = 0; i < rowCount; i++) {
-                            tableModel.setValueAt(true, i, 0);
-                        }
-                    }
-                }).start();
+        MainWindow.mainWindow.getImportHisTableSelectAllButton().addActionListener(e -> new Thread(() -> {
+            DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getImportHisTable()
+                    .getModel();
+            int rowCount = tableModel.getRowCount();
+            for (int i = 0; i < rowCount; i++) {
+                tableModel.setValueAt(true, i, 0);
             }
-        });
+        }).start());
 
         // 导入历史管理-全不选
-        MainWindow.mainWindow.getImportHisTableUnselectAllButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getImportHisTable()
-                                .getModel();
-                        int rowCount = tableModel.getRowCount();
-                        for (int i = 0; i < rowCount; i++) {
-                            tableModel.setValueAt(false, i, 0);
-                        }
-                    }
-                }).start();
+        MainWindow.mainWindow.getImportHisTableUnselectAllButton().addActionListener(e -> new Thread(() -> {
+            DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getImportHisTable()
+                    .getModel();
+            int rowCount = tableModel.getRowCount();
+            for (int i = 0; i < rowCount; i++) {
+                tableModel.setValueAt(false, i, 0);
             }
-        });
+        }).start());
 
         // 导入历史管理-删除
-        MainWindow.mainWindow.getImportHisTableDeleteButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        int isDelete = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getSettingPanel(), "确认删除？", "确认",
-                                JOptionPane.INFORMATION_MESSAGE);
-                        if (isDelete == JOptionPane.YES_OPTION) {
-                            try {
-                                DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getImportHisTable()
-                                        .getModel();
-                                int rowCount = tableModel.getRowCount();
-                                for (int i = 0; i < rowCount; ) {
-                                    boolean delete = (boolean) tableModel.getValueAt(i, 0);
-                                    if (delete) {
-                                        String fileName = (String) tableModel.getValueAt(i, 1);
-                                        File msgTemplateDataFile = new File("data/push_his/" + fileName);
-                                        if (msgTemplateDataFile.exists()) {
-                                            msgTemplateDataFile.delete();
-                                        }
-                                        tableModel.removeRow(i);
-                                        MainWindow.mainWindow.getImportHisTable().updateUI();
-                                        i = 0;
-                                        rowCount = tableModel.getRowCount();
-                                        continue;
-                                    } else {
-                                        i++;
-                                    }
-                                }
-
-                                Init.initMemberTab();
-                            } catch (Exception e1) {
-                                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "删除失败！\n\n" + e1.getMessage(), "失败",
-                                        JOptionPane.ERROR_MESSAGE);
-                                logger.error(e1);
+        MainWindow.mainWindow.getImportHisTableDeleteButton().addActionListener(e -> new Thread(() -> {
+            int isDelete = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getSettingPanel(), "确认删除？", "确认",
+                    JOptionPane.INFORMATION_MESSAGE);
+            if (isDelete == JOptionPane.YES_OPTION) {
+                try {
+                    DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getImportHisTable()
+                            .getModel();
+                    int rowCount = tableModel.getRowCount();
+                    for (int i = 0; i < rowCount; ) {
+                        boolean delete = (boolean) tableModel.getValueAt(i, 0);
+                        if (delete) {
+                            String fileName = (String) tableModel.getValueAt(i, 1);
+                            File msgTemplateDataFile = new File("data/push_his/" + fileName);
+                            if (msgTemplateDataFile.exists()) {
+                                msgTemplateDataFile.delete();
                             }
+                            tableModel.removeRow(i);
+                            MainWindow.mainWindow.getImportHisTable().updateUI();
+                            i = 0;
+                            rowCount = tableModel.getRowCount();
+                            continue;
+                        } else {
+                            i++;
                         }
                     }
-                }).start();
+
+                    Init.initMemberTab();
+                } catch (Exception e1) {
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "删除失败！\n\n" + e1.getMessage(), "失败",
+                            JOptionPane.ERROR_MESSAGE);
+                    logger.error(e1);
+                }
             }
-        });
+        }).start());
 
     }
 }
