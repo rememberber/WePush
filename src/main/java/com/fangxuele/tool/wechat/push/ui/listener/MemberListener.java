@@ -33,200 +33,163 @@ public class MemberListener {
 
     public static void addListeners() {
         // 从文件导入按钮事件
-        MainWindow.mainWindow.getImportFromFileButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        File file = new File(MainWindow.mainWindow.getMemberFilePathField().getText());
-                        CSVReader reader = null;
-                        FileReader fileReader = null;
+        MainWindow.mainWindow.getImportFromFileButton().addActionListener(e -> new Thread(() -> {
+            File file = new File(MainWindow.mainWindow.getMemberFilePathField().getText());
+            CSVReader reader = null;
+            FileReader fileReader = null;
 
-                        int currentImported = 0;
+            int currentImported = 0;
 
-                        try {
-                            MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(true);
-                            if (file.getName().endsWith(".csv")) {
-                                reader = new CSVReader(new java.io.FileReader(file));
-                                String[] nextLine;
-                                PushData.allUser = Collections.synchronizedList(new ArrayList<>());
-                                while ((nextLine = reader.readNext()) != null) {
-                                    PushData.allUser.add(nextLine[0]);
-                                    currentImported++;
-                                    MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(currentImported));
-                                    MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(currentImported);
-                                }
-                            } else {
-                                fileReader = new FileReader(file);
-                                PushData.allUser = Collections.synchronizedList(new ArrayList<>());
-                                PushData.allUser.addAll(fileReader.readLines());
-                                MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(PushData.allUser.size()));
-                            }
-                            MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
-                            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导入完成！", "完成",
-                                    JOptionPane.INFORMATION_MESSAGE);
-
-                            Init.configer.setMemberFilePath(MainWindow.mainWindow.getMemberFilePathField().getText());
-                            Init.configer.save();
-                        } catch (Exception e1) {
-                            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导入失败！\n\n" + e1.getMessage(), "失败",
-                                    JOptionPane.ERROR_MESSAGE);
-                            logger.error(e1);
-                            e1.printStackTrace();
-                        } finally {
-                            MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
-                            if (reader != null) {
-                                try {
-                                    reader.close();
-                                } catch (IOException e1) {
-                                    logger.error(e1);
-                                    e1.printStackTrace();
-                                }
-                            }
-                        }
+            try {
+                MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(true);
+                if (file.getName().endsWith(".csv")) {
+                    reader = new CSVReader(new java.io.FileReader(file));
+                    String[] nextLine;
+                    PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+                    while ((nextLine = reader.readNext()) != null) {
+                        PushData.allUser.add(nextLine[0].trim());
+                        currentImported++;
+                        MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(currentImported));
+                        MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(currentImported);
                     }
-                }).start();
+                } else {
+                    fileReader = new FileReader(file);
+                    PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+                    PushData.allUser.addAll(fileReader.readLines());
+                    MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(PushData.allUser.size()));
+                }
+                MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导入完成！", "完成",
+                        JOptionPane.INFORMATION_MESSAGE);
 
+                Init.configer.setMemberFilePath(MainWindow.mainWindow.getMemberFilePathField().getText());
+                Init.configer.save();
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导入失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+                e1.printStackTrace();
+            } finally {
+                MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e1) {
+                        logger.error(e1);
+                        e1.printStackTrace();
+                    }
+                }
             }
-        });
+        }).start());
 
         // 导入全员按钮事件
-        MainWindow.mainWindow.getMemberImportAllButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            getMpUserList();
-                            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导入完成！", "完成",
-                                    JOptionPane.INFORMATION_MESSAGE);
-                        } catch (WxErrorException e1) {
-                            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导入失败！\n\n" + e1.getMessage(), "失败",
-                                    JOptionPane.ERROR_MESSAGE);
-                            logger.error(e1);
-                            e1.printStackTrace();
-                        } finally {
-                            MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
-                        }
-                    }
-                }).start();
+        MainWindow.mainWindow.getMemberImportAllButton().addActionListener(e -> new Thread(() -> {
+            try {
+                getMpUserList();
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导入完成！", "完成",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (WxErrorException e1) {
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导入失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+                e1.printStackTrace();
+            } finally {
+                MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
             }
-        });
+        }).start());
 
         // 清除按钮事件
-        MainWindow.mainWindow.getClearImportButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int isClear = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getMemberPanel(), "确认清除？", "确认",
-                        JOptionPane.INFORMATION_MESSAGE);
-                if (isClear == JOptionPane.YES_OPTION) {
-                    if (PushData.allUser != null) {
-                        PushData.allUser.clear();
-                        MainWindow.mainWindow.getMemberTabCountLabel().setText("0");
-                    }
+        MainWindow.mainWindow.getClearImportButton().addActionListener(e -> {
+            int isClear = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getMemberPanel(), "确认清除？", "确认",
+                    JOptionPane.INFORMATION_MESSAGE);
+            if (isClear == JOptionPane.YES_OPTION) {
+                if (PushData.allUser != null) {
+                    PushData.allUser.clear();
+                    MainWindow.mainWindow.getMemberTabCountLabel().setText("0");
                 }
             }
         });
 
         // 从历史导入按钮事件
-        MainWindow.mainWindow.getImportFromHisButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        File file = new File("data/push_his/" + MainWindow.mainWindow.getMemberHisComboBox().getSelectedItem().toString());
-                        CSVReader reader = null;
-                        FileReader fileReader = null;
+        MainWindow.mainWindow.getImportFromHisButton().addActionListener(e -> new Thread(() -> {
+            File file = new File("data/push_his/" + MainWindow.mainWindow.getMemberHisComboBox().getSelectedItem().toString());
+            CSVReader reader = null;
+            FileReader fileReader = null;
 
-                        int currentImported = 0;
+            int currentImported = 0;
 
-                        try {
-                            MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(true);
-                            reader = new CSVReader(new java.io.FileReader(file));
-                            String[] nextLine;
-                            PushData.allUser = Collections.synchronizedList(new ArrayList<>());
-                            while ((nextLine = reader.readNext()) != null) {
-                                PushData.allUser.add(nextLine[0]);
-                                currentImported++;
-                                MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(currentImported));
-                                MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(currentImported);
-                            }
-                            MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
-                            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导入完成！", "完成",
-                                    JOptionPane.INFORMATION_MESSAGE);
-                        } catch (Exception e1) {
-                            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导入失败！\n\n" + e1.getMessage(), "失败",
-                                    JOptionPane.ERROR_MESSAGE);
-                            logger.error(e1);
-                            e1.printStackTrace();
-                        } finally {
-                            MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
-                            if (reader != null) {
-                                try {
-                                    reader.close();
-                                } catch (IOException e1) {
-                                    logger.error(e1);
-                                    e1.printStackTrace();
-                                }
-                            }
-                        }
+            try {
+                MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(true);
+                reader = new CSVReader(new java.io.FileReader(file));
+                String[] nextLine;
+                PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+                while ((nextLine = reader.readNext()) != null) {
+                    PushData.allUser.add(nextLine[0].trim());
+                    currentImported++;
+                    MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(currentImported));
+                    MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(currentImported);
+                }
+                MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导入完成！", "完成",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导入失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+                e1.printStackTrace();
+            } finally {
+                MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e1) {
+                        logger.error(e1);
+                        e1.printStackTrace();
                     }
-                }).start();
+                }
             }
-        });
+        }).start());
 
         // 从sql导入 按钮事件
-        MainWindow.mainWindow.getImportFromSqlButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        MainWindow.mainWindow.getImportFromSqlButton().addActionListener(e -> new Thread(() -> {
+            MainWindow.mainWindow.getImportFromSqlButton().setEnabled(false);
+            MainWindow.mainWindow.getImportFromSqlButton().updateUI();
 
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MainWindow.mainWindow.getImportFromSqlButton().setEnabled(false);
-                        MainWindow.mainWindow.getImportFromSqlButton().updateUI();
+            DbUtilMySQL dbUtilMySQL = DbUtilMySQL.getInstance();// 获取SQLServer连接实例
 
-                        DbUtilMySQL dbUtilMySQL = DbUtilMySQL.getInstance();// 获取SQLServer连接实例
+            String querySql = MainWindow.mainWindow.getImportFromSqlTextArea().getText();
 
-                        String querySql = MainWindow.mainWindow.getImportFromSqlTextArea().getText();
+            MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(true);
+            if (StringUtils.isNotEmpty(querySql)) {
+                try {
+                    ResultSet rs = dbUtilMySQL.executeQuery(querySql);// 表查询
+                    PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+                    int currentImported = 0;
 
-                        MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(true);
-                        if (StringUtils.isNotEmpty(querySql)) {
-                            try {
-                                ResultSet rs = dbUtilMySQL.executeQuery(querySql);// 表查询
-                                PushData.allUser = Collections.synchronizedList(new ArrayList<>());
-                                int currentImported = 0;
-
-                                while (rs.next()) {
-                                    PushData.allUser.add(rs.getString(1));
-                                    currentImported++;
-                                    MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(currentImported));
-                                    MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(currentImported);
-                                }
-
-                                JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导入完成！", "完成",
-                                        JOptionPane.INFORMATION_MESSAGE);
-
-                                Init.configer.setMemberSql(querySql);
-                                Init.configer.save();
-                            } catch (Exception e1) {
-                                JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导入失败！\n\n" + e1.getMessage(), "失败",
-                                        JOptionPane.ERROR_MESSAGE);
-                                logger.error(e1);
-                                e1.printStackTrace();
-                            } finally {
-                                MainWindow.mainWindow.getImportFromSqlButton().setEnabled(true);
-                                MainWindow.mainWindow.getImportFromSqlButton().updateUI();
-                                MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
-                            }
-                        }
+                    while (rs.next()) {
+                        PushData.allUser.add(rs.getString(1).trim());
+                        currentImported++;
+                        MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(currentImported));
+                        MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(currentImported);
                     }
-                }).start();
+
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导入完成！", "完成",
+                            JOptionPane.INFORMATION_MESSAGE);
+
+                    Init.configer.setMemberSql(querySql);
+                    Init.configer.save();
+                } catch (Exception e1) {
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导入失败！\n\n" + e1.getMessage(), "失败",
+                            JOptionPane.ERROR_MESSAGE);
+                    logger.error(e1);
+                    e1.printStackTrace();
+                } finally {
+                    MainWindow.mainWindow.getImportFromSqlButton().setEnabled(true);
+                    MainWindow.mainWindow.getImportFromSqlButton().updateUI();
+                    MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
+                }
             }
-        });
+        }).start());
     }
 
     /**
