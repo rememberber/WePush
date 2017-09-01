@@ -136,6 +136,78 @@
                 </executions>
             </plugin>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.5.2</version>
+                <executions>
+                    <execution>
+                        <id>install-weblaf</id>
+                        <phase>clean</phase>
+                        <configuration>
+                            <file>${basedir}/src/main/lib/weblaf-complete-1.28.jar</file>
+                            <repositoryLayout>default</repositoryLayout>
+                            <groupId>com.weblaf</groupId>
+                            <artifactId>weblaf-lnf</artifactId>
+                            <version>1.2.8</version>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
+                        </configuration>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>install-beautyeye</id>
+                        <phase>clean</phase>
+                        <configuration>
+                            <file>${basedir}/src/main/lib/beautyeye_lnf.jar</file>
+                            <repositoryLayout>default</repositoryLayout>
+                            <groupId>com.beautyeye</groupId>
+                            <artifactId>beautyeye-lnf</artifactId>
+                            <version>1.0</version>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
+                        </configuration>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>install-darcula</id>
+                        <phase>clean</phase>
+                        <configuration>
+                            <file>${basedir}/src/main/lib/darcula.jar</file>
+                            <repositoryLayout>default</repositoryLayout>
+                            <groupId>com.darcula</groupId>
+                            <artifactId>darcula-lnf</artifactId>
+                            <version>1.0</version>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
+                        </configuration>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>install-taobao-sdk</id>
+                        <phase>clean</phase>
+                        <configuration>
+                            <file>${basedir}/src/main/lib/taobao-sdk-java.jar</file>
+                            <repositoryLayout>default</repositoryLayout>
+                            <groupId>com.taobao</groupId>
+                            <artifactId>top-auto-sdk</artifactId>
+                            <version>1.0</version>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
+                        </configuration>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 </project>
