@@ -4,7 +4,7 @@
   </a>
 </p>
 
-# WePush
+# WePush[![Build Status](https://travis-ci.org/rememberber/WePush.svg?branch=master)](https://travis-ci.org/rememberber/WePush)
 
 ### 功能
 自定义消息并批量推送
