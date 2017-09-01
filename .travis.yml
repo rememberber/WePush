@@ -10,15 +10,6 @@ jdk:
   - oraclejdk8
 script: "mvn clean package -Dmaven.test.skip=true"
 
-#branches:
-#  only:
-#    - develop
-#
-cache:
-  directories:
-    - '$HOME/.m2/repository'
-#    - '$HOME/.sonar/cache'
-
 notifications:
   email:
     - rememberber@163.com
