@@ -10,9 +10,6 @@ jdk:
   - oraclejdk8
 script: "mvn clean package -Dmaven.test.skip=true"
 
-#script:
-#  - mvn clean package sonar:sonar
-#
 #branches:
 #  only:
 #    - develop
