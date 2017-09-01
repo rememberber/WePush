@@ -2,6 +2,7 @@ language: java
 
 before_install:
 - mvn install:install-file -Dfile=./src/main/lib/darcula.jar -DgroupId=com.darcula -DartifactId=darcula-lnf -Dpackaging=jar -Dversion=1.0 -DgeneratePom=true -DcreateChecksum=true
+- mvn install:install-file -Dfile=./src/main/lib/beautyeye_lnf.jar -DgroupId=com.beautyeye -DartifactId=beautyeye-lnf -Dpackaging=jar -Dversion=1.0 -DgeneratePom=true -DcreateChecksum=true
 
 jdk:
   - oraclejdk8
