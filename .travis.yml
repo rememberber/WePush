@@ -10,8 +10,8 @@ jdk:
   - oraclejdk8
 script: "mvn clean package -Dmaven.test.skip=true"
 
-#script:
-#  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar
+script:
+  - mvn clean package sonar:sonar
 
 branches:
   only:
