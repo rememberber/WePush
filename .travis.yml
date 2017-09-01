@@ -1,23 +1,14 @@
 language: java
-#sudo: false
-#install: true
-#addons:
-#  sonarcloud:
-#    token:
-#      secure: "834110c7191f97ecb226970c46dcaff8e681da5a"
+
+before_install:
+- mvn install:install-file -Dfile=./src/main/lib/darcula.jar -DgroupId=com.darcula -DartifactId=darcula-lnf -Dpackaging=jar -Dversion=1.0 -DgeneratePom=true -DcreateChecksum=true
+- mvn install:install-file -Dfile=./src/main/lib/beautyeye_lnf.jar -DgroupId=com.beautyeye -DartifactId=beautyeye-lnf -Dpackaging=jar -Dversion=1.0 -DgeneratePom=true -DcreateChecksum=true
+- mvn install:install-file -Dfile=./src/main/lib/taobao-sdk-java.jar -DgroupId=com.taobao -DartifactId=top-auto-sdk -Dpackaging=jar -Dversion=1.0 -DgeneratePom=true -DcreateChecksum=true
+- mvn install:install-file -Dfile=./src/main/lib/weblaf-complete-1.28.jar -DgroupId=com.weblaf -DartifactId=weblaf-lnf -Dpackaging=jar -Dversion=1.2.8 -DgeneratePom=true -DcreateChecksum=true
 
 jdk:
   - oraclejdk8
 script: "mvn clean package -Dmaven.test.skip=true"
-
-#branches:
-#  only:
-#    - develop
-#
-#cache:
-#  directories:
-#    - '$HOME/.m2/repository'
-#    - '$HOME/.sonar/cache'
 
 notifications:
   email:
