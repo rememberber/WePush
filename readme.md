@@ -4,7 +4,7 @@
   </a>
 </p>
 
-# WePush [![Build Status](https://travis-ci.org/rememberber/WePush.svg?branch=master)](https://travis-ci.org/rememberber/WePush)
+# WePush [![Build Status](https://travis-ci.org/rememberber/WePush.svg?branch=master)](https://travis-ci.org/rememberber/WePush)![](https://img.shields.io/badge/license-MIT-000000.svg)
 
 ### 功能
 自定义消息并批量推送
