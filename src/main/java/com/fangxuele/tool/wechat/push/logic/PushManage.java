@@ -226,19 +226,17 @@ public class PushManage {
             }
             writer = new CSVWriter(new FileWriter(toSendFile));
 
-            for (String str : PushData.sendSuccessList) {
-                strArray = new String[1];
-                strArray[0] = str;
-                writer.writeNext(strArray);
+            for (String[] str : PushData.sendSuccessList) {
+                writer.writeNext(str);
             }
             writer.close();
         }
 
         // 保存未发送
-        for (String str : PushData.sendSuccessList) {
+        for (String[] str : PushData.sendSuccessList) {
             PushData.toSendList.remove(str);
         }
-        for (String str : PushData.sendFailList) {
+        for (String[] str : PushData.sendFailList) {
             PushData.toSendList.remove(str);
         }
         if (PushData.toSendList.size() > 0) {
@@ -247,10 +245,8 @@ public class PushManage {
                 unSendFile.createNewFile();
             }
             writer = new CSVWriter(new FileWriter(unSendFile));
-            for (String str : PushData.toSendList) {
-                strArray = new String[1];
-                strArray[0] = str;
-                writer.writeNext(strArray);
+            for (String[] str : PushData.toSendList) {
+                writer.writeNext(str);
             }
             writer.close();
         }
@@ -262,10 +258,8 @@ public class PushManage {
                 failSendFile.createNewFile();
             }
             writer = new CSVWriter(new FileWriter(failSendFile));
-            for (String str : PushData.sendFailList) {
-                strArray = new String[1];
-                strArray[0] = str;
-                writer.writeNext(strArray);
+            for (String[] str : PushData.sendFailList) {
+                writer.writeNext(str);
             }
             writer.close();
         }
