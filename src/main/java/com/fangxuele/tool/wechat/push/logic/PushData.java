@@ -12,7 +12,7 @@ public class PushData {
     /**
      * 导入的用户
      */
-    public static List<String> allUser;
+    public static List<String[]> allUser;
 
     /**
      * 总记录数
@@ -32,17 +32,17 @@ public class PushData {
     /**
      * 准备发送的列表
      */
-    public static List<String> toSendList;
+    public static List<String[]> toSendList;
 
     /**
      * 发送成功的列表
      */
-    public static List<String> sendSuccessList;
+    public static List<String[]> sendSuccessList;
 
     /**
      * 发送失败的列表
      */
-    public static List<String> sendFailList;
+    public static List<String[]> sendFailList;
 
     /**
      * 停止标志

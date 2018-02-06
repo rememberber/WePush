@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.swing.JOptionPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -47,7 +48,7 @@ public class MemberListener {
                     String[] nextLine;
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());
                     while ((nextLine = reader.readNext()) != null) {
-                        PushData.allUser.add(nextLine[0].trim());
+                        PushData.allUser.add(nextLine);
                         currentImported++;
                         MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(currentImported));
                         MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(currentImported);
@@ -55,8 +56,14 @@ public class MemberListener {
                 } else {
                     fileReader = new FileReader(file);
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());
-                    PushData.allUser.addAll(fileReader.readLines());
-                    MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(PushData.allUser.size()));
+                    BufferedReader br = fileReader.getReader();
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        PushData.allUser.add(line.split(","));
+                        currentImported++;
+                        MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(currentImported));
+                        MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(currentImported);
+                    }
                 }
                 MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
                 JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导入完成！", "完成",
@@ -124,7 +131,7 @@ public class MemberListener {
                 String[] nextLine;
                 PushData.allUser = Collections.synchronizedList(new ArrayList<>());
                 while ((nextLine = reader.readNext()) != null) {
-                    PushData.allUser.add(nextLine[0].trim());
+                    PushData.allUser.add(nextLine);
                     currentImported++;
                     MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(currentImported));
                     MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(currentImported);
@@ -167,7 +174,7 @@ public class MemberListener {
                     int currentImported = 0;
 
                     while (rs.next()) {
-                        PushData.allUser.add(rs.getString(1).trim());
+                        PushData.allUser.add(new String[]{rs.getString(1).trim()});
                         currentImported++;
                         MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(currentImported));
                         MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(currentImported);
@@ -212,7 +219,9 @@ public class MemberListener {
         List<String> openIds = wxMpUserList.getOpenids();
 
         PushData.allUser = Collections.synchronizedList(new ArrayList<>());
-        PushData.allUser.addAll(openIds);
+        for (String openId : openIds) {
+            PushData.allUser.add(new String[]{openId});
+        }
 
         importedCount += wxMpUserList.getCount();
         MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(importedCount));
@@ -227,8 +236,9 @@ public class MemberListener {
                 break;
             }
             openIds = wxMpUserList.getOpenids();
-
-            PushData.allUser.addAll(openIds);
+            for (String openId : openIds) {
+                PushData.allUser.add(new String[]{openId});
+            }
             importedCount += wxMpUserList.getCount();
             MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(importedCount));
             MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(importedCount);
