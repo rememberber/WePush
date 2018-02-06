@@ -37,7 +37,7 @@ public class KeFuPriorMsgServiceThread extends BaseMsgServiceThread {
                 return;
             }
 
-            String openId = list.get(i);
+            String openId = list.get(i)[0];
             try {
                 wxMpKefuMessage.setToUser(openId);
                 wxMpTemplateMessage.setToUser(openId);
@@ -60,14 +60,14 @@ public class KeFuPriorMsgServiceThread extends BaseMsgServiceThread {
                 tableModel.setValueAt(currentThreadSuccessCount, tableRow, 2);
 
                 // 保存发送成功
-                PushData.sendSuccessList.add(openId);
+                PushData.sendSuccessList.add(list.get(i));
             } catch (Exception e) {
                 // 总发送失败+1
                 PushData.increaseFail();
                 MainWindow.mainWindow.getPushFailCount().setText(String.valueOf(PushData.failRecords));
 
                 // 保存发送失败
-                PushData.sendFailList.add(openId);
+                PushData.sendFailList.add(list.get(i));
 
                 // 失败异常信息输出控制台
                 PushManage.console(new StringBuffer().append("发送失败:").append(e.getMessage()).append(";openid:").append(openId).toString());

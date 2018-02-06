@@ -44,7 +44,7 @@ public class AliTemplateMsgServiceThread extends BaseMsgServiceThread {
                 return;
             }
 
-            String telNum = list.get(i);
+            String telNum = list.get(i)[0];
             try {
                 alibabaAliqinFcSmsNumSendRequest.setRecNum(telNum);
 
@@ -61,14 +61,14 @@ public class AliTemplateMsgServiceThread extends BaseMsgServiceThread {
                         tableModel.setValueAt(currentThreadSuccessCount, tableRow, 2);
 
                         // 保存发送成功
-                        PushData.sendSuccessList.add(telNum);
+                        PushData.sendSuccessList.add(list.get(i));
                     } else {
                         // 总发送失败+1
                         PushData.increaseFail();
                         MainWindow.mainWindow.getPushFailCount().setText(String.valueOf(PushData.failRecords));
 
                         // 保存发送失败
-                        PushData.sendFailList.add(telNum);
+                        PushData.sendFailList.add(list.get(i));
 
                         // 失败异常信息输出控制台
                         PushManage.console(new StringBuffer().append("发送失败:").append(response.getBody()).append(";ErrorCode:")
@@ -88,7 +88,7 @@ public class AliTemplateMsgServiceThread extends BaseMsgServiceThread {
                     tableModel.setValueAt(currentThreadSuccessCount, tableRow, 2);
 
                     // 保存发送成功
-                    PushData.sendSuccessList.add(telNum);
+                    PushData.sendSuccessList.add(list.get(i));
                 }
 
             } catch (Exception e) {
@@ -97,7 +97,7 @@ public class AliTemplateMsgServiceThread extends BaseMsgServiceThread {
                 MainWindow.mainWindow.getPushFailCount().setText(String.valueOf(PushData.failRecords));
 
                 // 保存发送失败
-                PushData.sendFailList.add(telNum);
+                PushData.sendFailList.add(list.get(i));
 
                 // 失败异常信息输出控制台
                 PushManage.console(new StringBuffer().append("发送失败:").append(e.getMessage()).append(";telNum:").append(telNum).toString());
