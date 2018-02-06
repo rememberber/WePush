@@ -23,8 +23,12 @@ import javax.swing.table.DefaultTableModel;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 推送管理
@@ -40,38 +44,43 @@ public class PushManage {
      * @throws Exception
      */
     public static void preview() throws Exception {
+        List<String[]> msgDataList = new ArrayList<>();
 
-        WxMpTemplateMessage wxMessageTemplate = makeTemplateMessage();
-        WxMpKefuMessage wxMpKefuMessage = makeKefuMessage();
+        WxMpTemplateMessage wxMessageTemplate;
+        WxMpKefuMessage wxMpKefuMessage;
 
         WxMpService wxMpService = getWxMpService();
 
+        for (String data : MainWindow.mainWindow.getPreviewUserField().getText().split(";")) {
+            msgDataList.add(data.split(","));
+        }
         switch (MainWindow.mainWindow.getMsgTypeComboBox().getSelectedItem().toString()) {
             case "模板消息":
-                String[] toUsers = MainWindow.mainWindow.getPreviewUserField().getText().split(";");
-                for (String toUser : toUsers) {
-                    wxMessageTemplate.setToUser(toUser);
+                for (String[] msgData : msgDataList) {
+                    wxMessageTemplate = makeTemplateMessage(msgData);
+                    wxMessageTemplate.setToUser(msgData[0].trim());
                     // ！！！发送模板消息！！！
                     wxMpService.getTemplateMsgService().sendTemplateMsg(wxMessageTemplate);
                 }
                 break;
             case "客服消息":
-                toUsers = MainWindow.mainWindow.getPreviewUserField().getText().split(";");
-                for (String toUser : toUsers) {
-                    wxMpKefuMessage.setToUser(toUser);
+                for (String[] msgData : msgDataList) {
+                    wxMpKefuMessage = makeKefuMessage(msgData);
+                    wxMpKefuMessage.setToUser(msgData[0]);
                     // ！！！发送客服消息！！！
                     wxMpService.getKefuService().sendKefuMessage(wxMpKefuMessage);
                 }
                 break;
             case "客服消息优先":
-                toUsers = MainWindow.mainWindow.getPreviewUserField().getText().split(";");
-                for (String toUser : toUsers) {
+                for (String[] msgData : msgDataList) {
                     try {
-                        wxMpKefuMessage.setToUser(toUser);
+                        wxMpKefuMessage = makeKefuMessage(msgData);
+                        wxMpKefuMessage.setToUser(msgData[0]);
                         // ！！！发送客服消息！！！
                         wxMpService.getKefuService().sendKefuMessage(wxMpKefuMessage);
                     } catch (Exception e) {
-                        wxMessageTemplate.setToUser(toUser);
+                        wxMessageTemplate = makeTemplateMessage(msgData);
+                        wxMessageTemplate.setToUser(msgData[0].trim());
                         // ！！！发送模板消息！！！
                         wxMpService.getTemplateMsgService().sendTemplateMsg(wxMessageTemplate);
                     }
@@ -79,14 +88,13 @@ public class PushManage {
                 break;
             case "阿里大于模板短信":
                 TaobaoClient client = new DefaultTaobaoClient(Init.configer.getAliServerUrl(), Init.configer.getAliAppKey(), Init.configer.getAliAppSecret());
-                AlibabaAliqinFcSmsNumSendRequest request = makeAliTemplateMessage();
-                toUsers = MainWindow.mainWindow.getPreviewUserField().getText().split(";");
-                for (String toUser : toUsers) {
-                    request.setRecNum(toUser);
+                for (String[] msgData : msgDataList) {
+                    AlibabaAliqinFcSmsNumSendRequest request = makeAliTemplateMessage(msgData);
+                    request.setRecNum(msgData[0]);
                     AlibabaAliqinFcSmsNumSendResponse response = client.execute(request);
                     if (response.getResult() == null || !response.getResult().getSuccess()) {
                         throw new Exception(new StringBuffer().append(response.getBody()).append(";\n\nErrorCode:")
-                                .append(response.getErrorCode()).append(";\n\ntelNum:").append(toUser).toString());
+                                .append(response.getErrorCode()).append(";\n\ntelNum:").append(msgData[0]).toString());
                     }
                 }
                 break;
@@ -98,9 +106,10 @@ public class PushManage {
     /**
      * 组织模板消息
      *
+     * @param msgData
      * @return
      */
-    synchronized public static WxMpTemplateMessage makeTemplateMessage() {
+    synchronized public static WxMpTemplateMessage makeTemplateMessage(String[] msgData) {
         // 拼模板
         WxMpTemplateMessage wxMessageTemplate = new WxMpTemplateMessage();
         wxMessageTemplate.setTemplateId(MainWindow.mainWindow.getMsgTemplateIdTextField().getText());
@@ -112,7 +121,17 @@ public class PushManage {
         DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getTemplateMsgDataTable().getModel();
         int rowCount = tableModel.getRowCount();
         for (int i = 0; i < rowCount; i++) {
-            WxMpTemplateData templateData = new WxMpTemplateData((String) tableModel.getValueAt(i, 0), ((String) tableModel.getValueAt(i, 1)).replaceAll("#ENTER#", "\n"), ((String) tableModel.getValueAt(i, 2)).trim());
+            String name = ((String) tableModel.getValueAt(i, 0)).trim();
+
+            String value = ((String) tableModel.getValueAt(i, 1)).replaceAll("#ENTER#", "\n");
+            Pattern p = Pattern.compile("\\{([^{}]+)\\}");
+            Matcher matcher = p.matcher(value);
+            while (matcher.find()) {
+                value = value.replace(matcher.group(0), msgData[Integer.parseInt(matcher.group(1).trim())]);
+            }
+
+            String color = ((String) tableModel.getValueAt(i, 2)).trim();
+            WxMpTemplateData templateData = new WxMpTemplateData(name, value, color);
             wxMessageTemplate.addWxMpTemplateData(templateData);
         }
 
@@ -122,21 +141,43 @@ public class PushManage {
     /**
      * 组织客服消息
      *
+     * @param msgData
      * @return
      */
-    synchronized public static WxMpKefuMessage makeKefuMessage() {
+    synchronized public static WxMpKefuMessage makeKefuMessage(String[] msgData) {
 
         WxMpKefuMessage kefuMessage = null;
         if ("图文消息".equals(MainWindow.mainWindow.getMsgKefuMsgTypeComboBox().getSelectedItem().toString())) {
             WxMpKefuMessage.WxArticle article = new WxMpKefuMessage.WxArticle();
-            article.setTitle(MainWindow.mainWindow.getMsgKefuMsgTitleTextField().getText());
+
+            // 标题
+            String title = MainWindow.mainWindow.getMsgKefuMsgTitleTextField().getText();
+            Pattern p = Pattern.compile("\\{([^{}]+)\\}");
+            Matcher matcher = p.matcher(title);
+            while (matcher.find()) {
+                title = title.replace(matcher.group(0), msgData[Integer.parseInt(matcher.group(1).trim())]);
+            }
+            article.setTitle(title);
+
+            // 图片url
             article.setPicUrl(MainWindow.mainWindow.getMsgKefuPicUrlTextField().getText());
-            article.setDescription(MainWindow.mainWindow.getMsgKefuDescTextField().getText());
+
+            // 描述
+            String description = MainWindow.mainWindow.getMsgKefuDescTextField().getText();
+            p = Pattern.compile("\\{([^{}]+)\\}");
+            matcher = p.matcher(description);
+            while (matcher.find()) {
+                description = description.replace(matcher.group(0), msgData[Integer.parseInt(matcher.group(1).trim())]);
+            }
+            article.setDescription(description);
+
+            // 跳转url
             article.setUrl(MainWindow.mainWindow.getMsgKefuUrlTextField().getText());
+
             kefuMessage = WxMpKefuMessage.NEWS().addArticle(article).build();
         } else if ("文本消息".equals(MainWindow.mainWindow.getMsgKefuMsgTypeComboBox().getSelectedItem().toString())) {
-            kefuMessage = WxMpKefuMessage.TEXT()
-                    .content(MainWindow.mainWindow.getMsgKefuMsgTitleTextField().getText()).build();
+            String content = MainWindow.mainWindow.getMsgKefuMsgTitleTextField().getText();
+            kefuMessage = WxMpKefuMessage.TEXT().content(content).build();
         }
 
         return kefuMessage;
@@ -145,9 +186,10 @@ public class PushManage {
     /**
      * 组织阿里大于模板短信消息
      *
+     * @param msgData
      * @return
      */
-    synchronized public static AlibabaAliqinFcSmsNumSendRequest makeAliTemplateMessage() {
+    synchronized public static AlibabaAliqinFcSmsNumSendRequest makeAliTemplateMessage(String[] msgData) {
         AlibabaAliqinFcSmsNumSendRequest request = new AlibabaAliqinFcSmsNumSendRequest();
         // 用户可以根据该会员ID识别是哪位会员使用了你的应用
         request.setExtend("WePush");
@@ -164,7 +206,15 @@ public class PushManage {
         DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getTemplateMsgDataTable().getModel();
         int rowCount = tableModel.getRowCount();
         for (int i = 0; i < rowCount; i++) {
-            paramMap.put((String) tableModel.getValueAt(i, 0), ((String) tableModel.getValueAt(i, 1)).replaceAll("#ENTER#", "\n"));
+            String key = (String) tableModel.getValueAt(i, 0);
+            String value = ((String) tableModel.getValueAt(i, 1)).replaceAll("#ENTER#", "\n");
+            Pattern p = Pattern.compile("\\{([^{}]+)\\}");
+            Matcher matcher = p.matcher(value);
+            while (matcher.find()) {
+                value = value.replace(matcher.group(0), msgData[Integer.parseInt(matcher.group(1).trim())]);
+            }
+
+            paramMap.put(key, value);
         }
 
         request.setSmsParamString(JSONUtil.parseFromMap(paramMap).toJSONString(0));
