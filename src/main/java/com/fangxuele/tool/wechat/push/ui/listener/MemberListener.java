@@ -56,7 +56,6 @@ public class MemberListener {
                         PushData.allUser.add(nextLine);
                         currentImported++;
                         MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(currentImported));
-                        MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(currentImported);
                     }
                 } else {
                     fileReader = new FileReader(file);
@@ -67,9 +66,10 @@ public class MemberListener {
                         PushData.allUser.add(line.split(","));
                         currentImported++;
                         MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(currentImported));
-                        MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(currentImported);
                     }
                 }
+                MainWindow.mainWindow.getMemberTabImportProgressBar().setMaximum(100);
+                MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(100);
                 MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
                 JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导入完成！", "完成",
                         JOptionPane.INFORMATION_MESSAGE);
@@ -82,6 +82,8 @@ public class MemberListener {
                 logger.error(e1);
                 e1.printStackTrace();
             } finally {
+                MainWindow.mainWindow.getMemberTabImportProgressBar().setMaximum(100);
+                MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(100);
                 MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
                 if (reader != null) {
                     try {
@@ -141,8 +143,9 @@ public class MemberListener {
                     PushData.allUser.add(nextLine);
                     currentImported++;
                     MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(currentImported));
-                    MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(currentImported);
                 }
+                MainWindow.mainWindow.getMemberTabImportProgressBar().setMaximum(100);
+                MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(100);
                 MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
                 JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导入完成！", "完成",
                         JOptionPane.INFORMATION_MESSAGE);
@@ -152,6 +155,8 @@ public class MemberListener {
                 logger.error(e1);
                 e1.printStackTrace();
             } finally {
+                MainWindow.mainWindow.getMemberTabImportProgressBar().setMaximum(100);
+                MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(100);
                 MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
                 if (reader != null) {
                     try {
@@ -184,7 +189,6 @@ public class MemberListener {
                         PushData.allUser.add(new String[]{rs.getString(1).trim()});
                         currentImported++;
                         MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(currentImported));
-                        MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(currentImported);
                     }
 
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导入完成！", "完成",
@@ -200,6 +204,8 @@ public class MemberListener {
                 } finally {
                     MainWindow.mainWindow.getImportFromSqlButton().setEnabled(true);
                     MainWindow.mainWindow.getImportFromSqlButton().updateUI();
+                    MainWindow.mainWindow.getMemberTabImportProgressBar().setMaximum(100);
+                    MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(100);
                     MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
                 }
             }
