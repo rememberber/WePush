@@ -40,12 +40,10 @@ public class TemplateMsgServiceThread extends BaseMsgServiceThread {
             String[] msgData = list.get(i);
             String openId = msgData[0];
             try {
-                wxMessageTemplate = PushManage.makeTemplateMessage(msgData);
-
-                wxMessageTemplate.setToUser(openId);
-
                 // 空跑控制
                 if (!MainWindow.mainWindow.getDryRunCheckBox().isSelected()) {
+                    wxMessageTemplate = PushManage.makeTemplateMessage(msgData);
+                    wxMessageTemplate.setToUser(openId);
                     wxMpService.getTemplateMsgService().sendTemplateMsg(wxMessageTemplate);
                 }
 
