@@ -110,7 +110,7 @@ public class PushManage {
      * @param msgData
      * @return
      */
-    synchronized public static WxMpTemplateMessage makeTemplateMessage(String[] msgData) throws WxErrorException {
+    synchronized public static WxMpTemplateMessage makeTemplateMessage(String[] msgData) {
         // 拼模板
         WxMpTemplateMessage wxMessageTemplate = new WxMpTemplateMessage();
         wxMessageTemplate.setTemplateId(MainWindow.mainWindow.getMsgTemplateIdTextField().getText());
@@ -137,7 +137,12 @@ public class PushManage {
                 String str = matcher.group(0);
                 if (str.startsWith("$NICK_NAME")) {
                     WxMpService wxMpService = getWxMpService();
-                    String nickName = wxMpService.getUserService().userInfo(msgData[0]).getNickname();
+                    String nickName = "";
+                    try {
+                        nickName = wxMpService.getUserService().userInfo(msgData[0]).getNickname();
+                    } catch (WxErrorException e) {
+                        e.printStackTrace();
+                    }
                     value = value.replace(str, nickName);
                 }
             }
@@ -169,6 +174,22 @@ public class PushManage {
             while (matcher.find()) {
                 title = title.replace(matcher.group(0), msgData[Integer.parseInt(matcher.group(1).trim())]);
             }
+
+            p = Pattern.compile("\\$([^$]+)\\$");
+            matcher = p.matcher(title);
+            while (matcher.find()) {
+                String str = matcher.group(0);
+                if (str.startsWith("$NICK_NAME")) {
+                    WxMpService wxMpService = getWxMpService();
+                    String nickName = null;
+                    try {
+                        nickName = wxMpService.getUserService().userInfo(msgData[0]).getNickname();
+                    } catch (WxErrorException e) {
+                        e.printStackTrace();
+                    }
+                    title = title.replace(str, nickName);
+                }
+            }
             article.setTitle(title);
 
             // 图片url
@@ -180,6 +201,22 @@ public class PushManage {
             matcher = p.matcher(description);
             while (matcher.find()) {
                 description = description.replace(matcher.group(0), msgData[Integer.parseInt(matcher.group(1).trim())]);
+            }
+
+            p = Pattern.compile("\\$([^$]+)\\$");
+            matcher = p.matcher(description);
+            while (matcher.find()) {
+                String str = matcher.group(0);
+                if (str.startsWith("$NICK_NAME")) {
+                    WxMpService wxMpService = getWxMpService();
+                    String nickName = null;
+                    try {
+                        nickName = wxMpService.getUserService().userInfo(msgData[0]).getNickname();
+                    } catch (WxErrorException e) {
+                        e.printStackTrace();
+                    }
+                    description = description.replace(str, nickName);
+                }
             }
             article.setDescription(description);
 
