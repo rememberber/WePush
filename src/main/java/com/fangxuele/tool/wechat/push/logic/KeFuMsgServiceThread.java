@@ -26,7 +26,7 @@ public class KeFuMsgServiceThread extends BaseMsgServiceThread {
         // 初始化当前线程
         initCurrentThread();
 
-        WxMpKefuMessage wxMpKefuMessage = PushManage.makeKefuMessage();
+        WxMpKefuMessage wxMpKefuMessage;
 
         for (int i = 0; i < list.size(); i++) {
             if (!PushData.running) {
@@ -35,12 +35,14 @@ public class KeFuMsgServiceThread extends BaseMsgServiceThread {
                 return;
             }
 
-            String openId = list.get(i);
+            // 本条消息所需的数据
+            String[] msgData = list.get(i);
+            String openId = msgData[0];
             try {
-                wxMpKefuMessage.setToUser(openId);
-
                 // 空跑控制
                 if (!MainWindow.mainWindow.getDryRunCheckBox().isSelected()) {
+                    wxMpKefuMessage = PushManage.makeKefuMessage(msgData);
+                    wxMpKefuMessage.setToUser(openId);
                     wxMpService.getKefuService().sendKefuMessage(wxMpKefuMessage);
                 }
 
@@ -53,14 +55,14 @@ public class KeFuMsgServiceThread extends BaseMsgServiceThread {
                 tableModel.setValueAt(currentThreadSuccessCount, tableRow, 2);
 
                 // 保存发送成功
-                PushData.sendSuccessList.add(openId);
+                PushData.sendSuccessList.add(msgData);
             } catch (Exception e) {
                 // 总发送失败+1
                 PushData.increaseFail();
                 MainWindow.mainWindow.getPushFailCount().setText(String.valueOf(PushData.failRecords));
 
                 // 保存发送失败
-                PushData.sendFailList.add(openId);
+                PushData.sendFailList.add(msgData);
 
                 // 失败异常信息输出控制台
                 PushManage.console(new StringBuffer().append("发送失败:").append(e.getMessage()).append(";openid:").append(openId).toString());

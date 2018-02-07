@@ -17,8 +17,12 @@ import org.apache.commons.lang3.StringUtils;
 import javax.swing.JOptionPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,21 +47,29 @@ public class MemberListener {
             try {
                 MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(true);
                 if (file.getName().endsWith(".csv")) {
-                    reader = new CSVReader(new java.io.FileReader(file));
+                    // 可以解决中文乱码问题
+                    DataInputStream in = new DataInputStream(new FileInputStream(file));
+                    reader = new CSVReader(new InputStreamReader(in, "utf-8"));
                     String[] nextLine;
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());
                     while ((nextLine = reader.readNext()) != null) {
-                        PushData.allUser.add(nextLine[0].trim());
+                        PushData.allUser.add(nextLine);
                         currentImported++;
                         MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(currentImported));
-                        MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(currentImported);
                     }
                 } else {
                     fileReader = new FileReader(file);
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());
-                    PushData.allUser.addAll(fileReader.readLines());
-                    MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(PushData.allUser.size()));
+                    BufferedReader br = fileReader.getReader();
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        PushData.allUser.add(line.split(","));
+                        currentImported++;
+                        MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(currentImported));
+                    }
                 }
+                MainWindow.mainWindow.getMemberTabImportProgressBar().setMaximum(100);
+                MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(100);
                 MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
                 JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导入完成！", "完成",
                         JOptionPane.INFORMATION_MESSAGE);
@@ -70,6 +82,8 @@ public class MemberListener {
                 logger.error(e1);
                 e1.printStackTrace();
             } finally {
+                MainWindow.mainWindow.getMemberTabImportProgressBar().setMaximum(100);
+                MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(100);
                 MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
                 if (reader != null) {
                     try {
@@ -120,15 +134,18 @@ public class MemberListener {
 
             try {
                 MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(true);
-                reader = new CSVReader(new java.io.FileReader(file));
+                // 可以解决中文乱码问题
+                DataInputStream in = new DataInputStream(new FileInputStream(file));
+                reader = new CSVReader(new InputStreamReader(in, "utf-8"));
                 String[] nextLine;
                 PushData.allUser = Collections.synchronizedList(new ArrayList<>());
                 while ((nextLine = reader.readNext()) != null) {
-                    PushData.allUser.add(nextLine[0].trim());
+                    PushData.allUser.add(nextLine);
                     currentImported++;
                     MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(currentImported));
-                    MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(currentImported);
                 }
+                MainWindow.mainWindow.getMemberTabImportProgressBar().setMaximum(100);
+                MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(100);
                 MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
                 JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导入完成！", "完成",
                         JOptionPane.INFORMATION_MESSAGE);
@@ -138,6 +155,8 @@ public class MemberListener {
                 logger.error(e1);
                 e1.printStackTrace();
             } finally {
+                MainWindow.mainWindow.getMemberTabImportProgressBar().setMaximum(100);
+                MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(100);
                 MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
                 if (reader != null) {
                     try {
@@ -167,10 +186,9 @@ public class MemberListener {
                     int currentImported = 0;
 
                     while (rs.next()) {
-                        PushData.allUser.add(rs.getString(1).trim());
+                        PushData.allUser.add(new String[]{rs.getString(1).trim()});
                         currentImported++;
                         MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(currentImported));
-                        MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(currentImported);
                     }
 
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导入完成！", "完成",
@@ -186,6 +204,8 @@ public class MemberListener {
                 } finally {
                     MainWindow.mainWindow.getImportFromSqlButton().setEnabled(true);
                     MainWindow.mainWindow.getImportFromSqlButton().updateUI();
+                    MainWindow.mainWindow.getMemberTabImportProgressBar().setMaximum(100);
+                    MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(100);
                     MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
                 }
             }
@@ -212,7 +232,9 @@ public class MemberListener {
         List<String> openIds = wxMpUserList.getOpenids();
 
         PushData.allUser = Collections.synchronizedList(new ArrayList<>());
-        PushData.allUser.addAll(openIds);
+        for (String openId : openIds) {
+            PushData.allUser.add(new String[]{openId});
+        }
 
         importedCount += wxMpUserList.getCount();
         MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(importedCount));
@@ -227,8 +249,9 @@ public class MemberListener {
                 break;
             }
             openIds = wxMpUserList.getOpenids();
-
-            PushData.allUser.addAll(openIds);
+            for (String openId : openIds) {
+                PushData.allUser.add(new String[]{openId});
+            }
             importedCount += wxMpUserList.getCount();
             MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(importedCount));
             MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(importedCount);
