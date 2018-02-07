@@ -34,7 +34,7 @@ public class BaseMsgServiceThread extends Thread {
     /**
      * 当前线程要发送的list
      */
-    public List<String> list;
+    public List<String[]> list;
 
     /**
      * 微信工具服务

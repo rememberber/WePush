@@ -33,7 +33,7 @@ public class AliTemplateMsgServiceThread extends BaseMsgServiceThread {
         TaobaoClient client = new DefaultTaobaoClient(Init.configer.getAliServerUrl(), Init.configer.getAliAppKey(), Init.configer.getAliAppSecret());
 
         // 组织模板消息
-        AlibabaAliqinFcSmsNumSendRequest alibabaAliqinFcSmsNumSendRequest = PushManage.makeAliTemplateMessage();
+        AlibabaAliqinFcSmsNumSendRequest alibabaAliqinFcSmsNumSendRequest;
 
         AlibabaAliqinFcSmsNumSendResponse response;
 
@@ -44,8 +44,11 @@ public class AliTemplateMsgServiceThread extends BaseMsgServiceThread {
                 return;
             }
 
-            String telNum = list.get(i);
+            // 本条消息所需的数据
+            String[] msgData = list.get(i);
+            String telNum = msgData[0];
             try {
+                alibabaAliqinFcSmsNumSendRequest = PushManage.makeAliTemplateMessage(msgData);
                 alibabaAliqinFcSmsNumSendRequest.setRecNum(telNum);
 
                 // 空跑控制
@@ -61,14 +64,14 @@ public class AliTemplateMsgServiceThread extends BaseMsgServiceThread {
                         tableModel.setValueAt(currentThreadSuccessCount, tableRow, 2);
 
                         // 保存发送成功
-                        PushData.sendSuccessList.add(telNum);
+                        PushData.sendSuccessList.add(msgData);
                     } else {
                         // 总发送失败+1
                         PushData.increaseFail();
                         MainWindow.mainWindow.getPushFailCount().setText(String.valueOf(PushData.failRecords));
 
                         // 保存发送失败
-                        PushData.sendFailList.add(telNum);
+                        PushData.sendFailList.add(msgData);
 
                         // 失败异常信息输出控制台
                         PushManage.console(new StringBuffer().append("发送失败:").append(response.getBody()).append(";ErrorCode:")
@@ -88,7 +91,7 @@ public class AliTemplateMsgServiceThread extends BaseMsgServiceThread {
                     tableModel.setValueAt(currentThreadSuccessCount, tableRow, 2);
 
                     // 保存发送成功
-                    PushData.sendSuccessList.add(telNum);
+                    PushData.sendSuccessList.add(msgData);
                 }
 
             } catch (Exception e) {
@@ -97,7 +100,7 @@ public class AliTemplateMsgServiceThread extends BaseMsgServiceThread {
                 MainWindow.mainWindow.getPushFailCount().setText(String.valueOf(PushData.failRecords));
 
                 // 保存发送失败
-                PushData.sendFailList.add(telNum);
+                PushData.sendFailList.add(msgData);
 
                 // 失败异常信息输出控制台
                 PushManage.console(new StringBuffer().append("发送失败:").append(e.getMessage()).append(";telNum:").append(telNum).toString());
