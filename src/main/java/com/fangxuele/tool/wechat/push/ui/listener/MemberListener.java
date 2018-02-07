@@ -132,7 +132,9 @@ public class MemberListener {
 
             try {
                 MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(true);
-                reader = new CSVReader(new java.io.FileReader(file));
+                // 可以解决中文乱码问题
+                DataInputStream in = new DataInputStream(new FileInputStream(file));
+                reader = new CSVReader(new InputStreamReader(in, "utf-8"));
                 String[] nextLine;
                 PushData.allUser = Collections.synchronizedList(new ArrayList<>());
                 while ((nextLine = reader.readNext()) != null) {
