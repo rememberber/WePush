@@ -18,8 +18,11 @@ import javax.swing.JOptionPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +47,9 @@ public class MemberListener {
             try {
                 MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(true);
                 if (file.getName().endsWith(".csv")) {
-                    reader = new CSVReader(new java.io.FileReader(file));
+                    // 可以解决中文乱码问题
+                    DataInputStream in = new DataInputStream(new FileInputStream(file));
+                    reader = new CSVReader(new InputStreamReader(in, "utf-8"));
                     String[] nextLine;
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());
                     while ((nextLine = reader.readNext()) != null) {
