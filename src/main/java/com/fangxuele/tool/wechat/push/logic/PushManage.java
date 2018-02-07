@@ -123,7 +123,7 @@ public class PushManage {
         for (int i = 0; i < rowCount; i++) {
             String name = ((String) tableModel.getValueAt(i, 0)).trim();
 
-            String value = ((String) tableModel.getValueAt(i, 1)).replaceAll("#ENTER#", "\n");
+            String value = ((String) tableModel.getValueAt(i, 1)).replaceAll("$ENTER$", "\n");
             Pattern p = Pattern.compile("\\{([^{}]+)\\}");
             Matcher matcher = p.matcher(value);
             while (matcher.find()) {
@@ -207,7 +207,7 @@ public class PushManage {
         int rowCount = tableModel.getRowCount();
         for (int i = 0; i < rowCount; i++) {
             String key = (String) tableModel.getValueAt(i, 0);
-            String value = ((String) tableModel.getValueAt(i, 1)).replaceAll("#ENTER#", "\n");
+            String value = ((String) tableModel.getValueAt(i, 1)).replaceAll("$ENTER$", "\n");
             Pattern p = Pattern.compile("\\{([^{}]+)\\}");
             Matcher matcher = p.matcher(value);
             while (matcher.find()) {
