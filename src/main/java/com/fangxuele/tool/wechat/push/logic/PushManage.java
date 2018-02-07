@@ -11,6 +11,7 @@ import com.xiaoleilu.hutool.date.DateUtil;
 import com.xiaoleilu.hutool.json.JSONUtil;
 import com.xiaoleilu.hutool.log.Log;
 import com.xiaoleilu.hutool.log.LogFactory;
+import me.chanjar.weixin.common.exception.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpConfigStorage;
 import me.chanjar.weixin.mp.api.WxMpInMemoryConfigStorage;
 import me.chanjar.weixin.mp.api.WxMpService;
@@ -109,7 +110,7 @@ public class PushManage {
      * @param msgData
      * @return
      */
-    synchronized public static WxMpTemplateMessage makeTemplateMessage(String[] msgData) {
+    synchronized public static WxMpTemplateMessage makeTemplateMessage(String[] msgData) throws WxErrorException {
         // 拼模板
         WxMpTemplateMessage wxMessageTemplate = new WxMpTemplateMessage();
         wxMessageTemplate.setTemplateId(MainWindow.mainWindow.getMsgTemplateIdTextField().getText());
@@ -123,11 +124,22 @@ public class PushManage {
         for (int i = 0; i < rowCount; i++) {
             String name = ((String) tableModel.getValueAt(i, 0)).trim();
 
-            String value = ((String) tableModel.getValueAt(i, 1)).replaceAll("$ENTER$", "\n");
+            String value = ((String) tableModel.getValueAt(i, 1)).replaceAll("\\$ENTER\\$", "\n");
             Pattern p = Pattern.compile("\\{([^{}]+)\\}");
             Matcher matcher = p.matcher(value);
             while (matcher.find()) {
                 value = value.replace(matcher.group(0), msgData[Integer.parseInt(matcher.group(1).trim())]);
+            }
+
+            p = Pattern.compile("\\$([^$]+)\\$");
+            matcher = p.matcher(value);
+            while (matcher.find()) {
+                String str = matcher.group(0);
+                if (str.startsWith("$NICK_NAME")) {
+                    WxMpService wxMpService = getWxMpService();
+                    String nickName = wxMpService.getUserService().userInfo(msgData[0]).getNickname();
+                    value = value.replace(str, nickName);
+                }
             }
 
             String color = ((String) tableModel.getValueAt(i, 2)).trim();
