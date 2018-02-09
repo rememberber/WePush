@@ -36,7 +36,7 @@ public class AboutListener {
             @Override
             public void mouseEntered(MouseEvent e) {
                 super.mouseEntered(e);
-
+                MainWindow.mainWindow.getCompanyLabel().setCursor(new Cursor(Cursor.HAND_CURSOR));
             }
 
         });

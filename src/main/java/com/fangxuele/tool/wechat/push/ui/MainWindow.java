@@ -2,6 +2,7 @@ package com.fangxuele.tool.wechat.push.ui;
 
 import com.fangxuele.tool.wechat.push.ui.listener.AboutListener;
 import com.fangxuele.tool.wechat.push.ui.listener.FramListener;
+import com.fangxuele.tool.wechat.push.ui.listener.HelpListener;
 import com.fangxuele.tool.wechat.push.ui.listener.MemberListener;
 import com.fangxuele.tool.wechat.push.ui.listener.MsgListener;
 import com.fangxuele.tool.wechat.push.ui.listener.PushListener;
@@ -149,6 +150,7 @@ public class MainWindow {
     private JLabel templateMiniProgramAppidLabel;
     private JLabel templateMiniProgramPagePathLabel;
     private JTextPane helpTextPane;
+    private JLabel labelOnlineHelp;
     public static JFrame frame;
 
     public static MainWindow mainWindow;
@@ -186,6 +188,7 @@ public class MainWindow {
 
         // 添加事件监听
         AboutListener.addListeners();
+        HelpListener.addListeners();
         SettingListener.addListeners();
         MsgListener.addListeners();
         MemberListener.addListeners();
@@ -1229,5 +1232,13 @@ public class MainWindow {
 
     public void setHelpTextPane(JTextPane helpTextPane) {
         this.helpTextPane = helpTextPane;
+    }
+
+    public JLabel getLabelOnlineHelp() {
+        return labelOnlineHelp;
+    }
+
+    public void setLabelOnlineHelp(JLabel labelOnlineHelp) {
+        this.labelOnlineHelp = labelOnlineHelp;
     }
 }
