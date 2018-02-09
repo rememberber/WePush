@@ -113,14 +113,14 @@ public class PushManage {
     synchronized public static WxMpTemplateMessage makeTemplateMessage(String[] msgData) {
         // 拼模板
         WxMpTemplateMessage wxMessageTemplate = WxMpTemplateMessage.builder().build();
-        wxMessageTemplate.setTemplateId(MainWindow.mainWindow.getMsgTemplateIdTextField().getText());
-        wxMessageTemplate.setUrl(MainWindow.mainWindow.getMsgTemplateUrlTextField().getText());
+        wxMessageTemplate.setTemplateId(MainWindow.mainWindow.getMsgTemplateIdTextField().getText().trim());
+        wxMessageTemplate.setUrl(MainWindow.mainWindow.getMsgTemplateUrlTextField().getText().trim());
 
-        String appid = "asdf";
-        String pagePath = "asdf";
-
+        String appid = MainWindow.mainWindow.getMsgTemplateMiniAppidTextField().getText().trim();
+        String pagePath = MainWindow.mainWindow.getMsgTemplateMiniPagePathTextField().getText().trim();
         WxMpTemplateMessage.MiniProgram miniProgram = new WxMpTemplateMessage.MiniProgram(appid, pagePath);
         wxMessageTemplate.setMiniProgram(miniProgram);
+
         if (MainWindow.mainWindow.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
             Init.initTemplateDataTable();
         }
