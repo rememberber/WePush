@@ -132,7 +132,7 @@ public class Init {
     public static void initHelpTab() {
 
         try {
-            MainWindow.mainWindow.getHelpTextPane().setPage(MainWindow.class.getResource("/html/help.html"));
+            MainWindow.mainWindow.getHelpTextPane().setPage(MainWindow.class.getResource("/page/help.html"));
             MainWindow.mainWindow.getHelpTextPane().setEditable(false);
         } catch (IOException e) {
             e.printStackTrace();
