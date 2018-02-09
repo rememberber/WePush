@@ -14,7 +14,7 @@ public class ConstantsUI {
      * 软件名称,版本
      */
     public final static String APP_NAME = "WePush";
-    public final static String APP_VERSION = "v_1.3.0_180207";
+    public final static String APP_VERSION = "v_1.4.0_180209";
 
     /**
      * 主窗口图标
