@@ -147,16 +147,21 @@ public class Init {
         }
         if (msgMap != null && msgMap.size() != 0) {
             if (msgMap.containsKey(msgName)) {
-                String msgType = msgMap.get(msgName)[1];
+                String[] msgDataArray = msgMap.get(msgName);
+                String msgType = msgDataArray[1];
                 MainWindow.mainWindow.setMsgTypeComboBox(msgType);
-                MainWindow.mainWindow.setMsgTemplateIdTextField(msgMap.get(msgName)[2]);
-                MainWindow.mainWindow.setMsgTemplateUrlTextField(msgMap.get(msgName)[3]);
-                String kefuMsgType = msgMap.get(msgName)[4];
+                MainWindow.mainWindow.setMsgTemplateIdTextField(msgDataArray[2]);
+                MainWindow.mainWindow.setMsgTemplateUrlTextField(msgDataArray[3]);
+                String kefuMsgType = msgDataArray[4];
                 MainWindow.mainWindow.setMsgKefuMsgTypeComboBox(kefuMsgType);
-                MainWindow.mainWindow.setMsgKefuMsgTitleTextField(msgMap.get(msgName)[5]);
-                MainWindow.mainWindow.setMsgKefuPicUrlTextField(msgMap.get(msgName)[6]);
-                MainWindow.mainWindow.setMsgKefuDescTextField(msgMap.get(msgName)[7]);
-                MainWindow.mainWindow.setMsgKefuUrlTextField(msgMap.get(msgName)[8]);
+                MainWindow.mainWindow.setMsgKefuMsgTitleTextField(msgDataArray[5]);
+                MainWindow.mainWindow.setMsgKefuPicUrlTextField(msgDataArray[6]);
+                MainWindow.mainWindow.setMsgKefuDescTextField(msgDataArray[7]);
+                MainWindow.mainWindow.setMsgKefuUrlTextField(msgDataArray[8]);
+                if (msgDataArray.length > 9) {
+                    MainWindow.mainWindow.setMsgTemplateMiniAppidTextField(msgDataArray[9]);
+                    MainWindow.mainWindow.setMsgTemplateMiniPagePathTextField(msgDataArray[10]);
+                }
                 switchMsgType(msgType);
                 switchKefuMsgType(kefuMsgType);
 
