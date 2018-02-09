@@ -91,6 +91,15 @@
               </component>
             </children>
           </grid>
+          <grid id="9f68b" binding="reportPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="10" left="10" bottom="10" right="10"/>
+            <constraints>
+              <tabbedpane title="使用帮助"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children/>
+          </grid>
           <grid id="8f6b7" binding="messagePanel" layout-manager="GridLayoutManager" row-count="3" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="10" left="10" bottom="10" right="10"/>
             <constraints>
@@ -1166,15 +1175,6 @@
                 <properties/>
               </component>
             </children>
-          </grid>
-          <grid id="9f68b" binding="reportPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-            <margin top="10" left="10" bottom="10" right="10"/>
-            <constraints>
-              <tabbedpane title="结果报表"/>
-            </constraints>
-            <properties/>
-            <border type="none"/>
-            <children/>
           </grid>
           <grid id="5690d" binding="settingPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="10" left="10" bottom="10" right="10"/>
