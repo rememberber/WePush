@@ -33,6 +33,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -121,6 +122,20 @@ public class Init {
             }
         } catch (Exception e) {
             logger.error(e);
+        }
+
+    }
+
+    /**
+     * 初始化使用帮助tab
+     */
+    public static void initHelpTab() {
+
+        try {
+            MainWindow.mainWindow.getHelpTextPane().setPage(MainWindow.class.getResource("/html/help.html"));
+            MainWindow.mainWindow.getHelpTextPane().setEditable(false);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
     }
@@ -433,6 +448,7 @@ public class Init {
      * 初始化所有tab
      */
     public static void initAllTab() {
+        initHelpTab();
         initMsgTab(false);
         initMemberTab();
         initPushTab();
