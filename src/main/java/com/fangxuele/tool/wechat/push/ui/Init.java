@@ -132,6 +132,18 @@ public class Init {
         String msgName;
         if (isInitFromHisComboxChang) {
             msgName = MainWindow.mainWindow.getMsgHistoryComboBox().getSelectedItem().toString();
+
+            // 初始化，清空所有相关的输入框内容
+            MainWindow.mainWindow.setMsgTypeComboBox("");
+            MainWindow.mainWindow.setMsgTemplateIdTextField("");
+            MainWindow.mainWindow.setMsgTemplateUrlTextField("");
+            MainWindow.mainWindow.setMsgKefuMsgTypeComboBox("");
+            MainWindow.mainWindow.setMsgKefuMsgTitleTextField("");
+            MainWindow.mainWindow.setMsgKefuPicUrlTextField("");
+            MainWindow.mainWindow.setMsgKefuDescTextField("");
+            MainWindow.mainWindow.setMsgKefuUrlTextField("");
+            MainWindow.mainWindow.setMsgTemplateMiniAppidTextField("");
+            MainWindow.mainWindow.setMsgTemplateMiniPagePathTextField("");
         } else {
             msgName = configer.getMsgName();
         }
