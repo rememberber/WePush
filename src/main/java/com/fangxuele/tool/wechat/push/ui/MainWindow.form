@@ -162,6 +162,7 @@
                     </constraints>
                     <properties>
                       <font style="1"/>
+                      <labelFor value="d891e"/>
                       <text value="推送类型"/>
                     </properties>
                   </component>
@@ -184,6 +185,7 @@
                     </constraints>
                     <properties>
                       <font style="1"/>
+                      <labelFor value="5135c"/>
                       <text value="推送任务名称"/>
                     </properties>
                   </component>
@@ -201,6 +203,7 @@
                     </constraints>
                     <properties>
                       <font style="1"/>
+                      <labelFor value="495e3"/>
                       <text value="通过历史推送任务编辑 "/>
                     </properties>
                   </component>
@@ -241,6 +244,7 @@
                       <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
+                      <labelFor value="b213b"/>
                       <text value="预览用户openid/手机号（以半角分号分隔）"/>
                     </properties>
                   </component>
@@ -285,6 +289,7 @@
                       <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
+                      <labelFor value="fa9e4"/>
                       <text value="模板ID"/>
                     </properties>
                   </component>
@@ -301,6 +306,7 @@
                       <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
+                      <labelFor value="11d29"/>
                       <text value="跳转URL"/>
                     </properties>
                   </component>
@@ -325,6 +331,7 @@
                           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
+                          <labelFor value="e84d1"/>
                           <text value="name"/>
                         </properties>
                       </component>
@@ -341,6 +348,7 @@
                           <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
+                          <labelFor value="514d7"/>
                           <text value="value"/>
                         </properties>
                       </component>
@@ -357,6 +365,7 @@
                           <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
+                          <labelFor value="d59db"/>
                           <text value="color"/>
                         </properties>
                       </component>
@@ -402,6 +411,7 @@
                       <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
+                      <labelFor value="5d5e9"/>
                       <text value="小程序appid"/>
                     </properties>
                   </component>
@@ -420,6 +430,7 @@
                       <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
+                      <labelFor value="559c5"/>
                       <text value="小程序页面路径"/>
                     </properties>
                   </component>
@@ -466,6 +477,7 @@
                       <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
+                      <labelFor value="a26ee"/>
                       <text value="消息类型"/>
                     </properties>
                   </component>
@@ -490,6 +502,7 @@
                       <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
+                      <labelFor value="ffdc0"/>
                       <text value="内容/标题"/>
                     </properties>
                   </component>
@@ -507,6 +520,7 @@
                       <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
+                      <labelFor value="fea4c"/>
                       <text value="图片URL"/>
                     </properties>
                   </component>
@@ -523,6 +537,7 @@
                       <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
+                      <labelFor value="b21c7"/>
                       <text value="描述"/>
                     </properties>
                   </component>
@@ -539,6 +554,7 @@
                       <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
+                      <labelFor value="bf2d2"/>
                       <text value="跳转URL"/>
                     </properties>
                   </component>
