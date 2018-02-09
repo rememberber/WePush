@@ -157,6 +157,10 @@ public class MainWindow {
     private JButton msgHisTableUnselectAllButton;
     private JButton importHisTableUnselectAllButton;
     private JLabel scheduleDetailLabel;
+    private JTextField msgTemplateMiniAppidTextField;
+    private JTextField msgTemplateMiniPagePathTextField;
+    private JLabel templateMiniProgramAppidLabel;
+    private JLabel templateMiniProgramPagePathLabel;
     public static JFrame frame;
 
     public static MainWindow mainWindow;

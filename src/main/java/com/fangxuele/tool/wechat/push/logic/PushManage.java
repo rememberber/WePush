@@ -112,9 +112,15 @@ public class PushManage {
      */
     synchronized public static WxMpTemplateMessage makeTemplateMessage(String[] msgData) {
         // 拼模板
-        WxMpTemplateMessage wxMessageTemplate = new WxMpTemplateMessage();
+        WxMpTemplateMessage wxMessageTemplate = WxMpTemplateMessage.builder().build();
         wxMessageTemplate.setTemplateId(MainWindow.mainWindow.getMsgTemplateIdTextField().getText());
         wxMessageTemplate.setUrl(MainWindow.mainWindow.getMsgTemplateUrlTextField().getText());
+
+        String appid = "asdf";
+        String pagePath = "asdf";
+
+        WxMpTemplateMessage.MiniProgram miniProgram = new WxMpTemplateMessage.MiniProgram(appid, pagePath);
+        wxMessageTemplate.setMiniProgram(miniProgram);
         if (MainWindow.mainWindow.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
             Init.initTemplateDataTable();
         }
