@@ -157,6 +157,10 @@ public class MainWindow {
     private JButton msgHisTableUnselectAllButton;
     private JButton importHisTableUnselectAllButton;
     private JLabel scheduleDetailLabel;
+    private JTextField msgTemplateMiniAppidTextField;
+    private JTextField msgTemplateMiniPagePathTextField;
+    private JLabel templateMiniProgramAppidLabel;
+    private JLabel templateMiniProgramPagePathLabel;
     public static JFrame frame;
 
     public static MainWindow mainWindow;
@@ -353,6 +357,22 @@ public class MainWindow {
 
     public void setMsgTemplateUrlTextField(String msgTemplateUrlTextField) {
         this.msgTemplateUrlTextField.setText(msgTemplateUrlTextField);
+    }
+
+    public JTextField getMsgTemplateMiniAppidTextField() {
+        return msgTemplateMiniAppidTextField;
+    }
+
+    public void setMsgTemplateMiniAppidTextField(String msgTemplateMiniAppidTextField) {
+        this.msgTemplateMiniAppidTextField.setText(msgTemplateMiniAppidTextField);
+    }
+
+    public JTextField getMsgTemplateMiniPagePathTextField() {
+        return msgTemplateMiniPagePathTextField;
+    }
+
+    public void setMsgTemplateMiniPagePathTextField(String msgTemplateMiniPagePathTextField) {
+        this.msgTemplateMiniPagePathTextField.setText(msgTemplateMiniPagePathTextField);
     }
 
     public JPanel getTemplateMsgDataPanel() {
