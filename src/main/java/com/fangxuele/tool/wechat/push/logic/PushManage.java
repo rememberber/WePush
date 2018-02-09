@@ -118,6 +118,11 @@ public class PushManage {
 
         String appid = MainWindow.mainWindow.getMsgTemplateMiniAppidTextField().getText().trim();
         String pagePath = MainWindow.mainWindow.getMsgTemplateMiniPagePathTextField().getText().trim();
+        Pattern p = Pattern.compile("\\{([^{}]+)\\}");
+        Matcher matcher = p.matcher(pagePath);
+        while (matcher.find()) {
+            pagePath = pagePath.replace(matcher.group(0), msgData[Integer.parseInt(matcher.group(1).trim())]);
+        }
         WxMpTemplateMessage.MiniProgram miniProgram = new WxMpTemplateMessage.MiniProgram(appid, pagePath);
         wxMessageTemplate.setMiniProgram(miniProgram);
 
@@ -131,8 +136,8 @@ public class PushManage {
             String name = ((String) tableModel.getValueAt(i, 0)).trim();
 
             String value = ((String) tableModel.getValueAt(i, 1)).replaceAll("\\$ENTER\\$", "\n");
-            Pattern p = Pattern.compile("\\{([^{}]+)\\}");
-            Matcher matcher = p.matcher(value);
+            p = Pattern.compile("\\{([^{}]+)\\}");
+            matcher = p.matcher(value);
             while (matcher.find()) {
                 value = value.replace(matcher.group(0), msgData[Integer.parseInt(matcher.group(1).trim())]);
             }
