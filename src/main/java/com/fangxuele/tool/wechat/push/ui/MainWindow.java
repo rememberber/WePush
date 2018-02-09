@@ -359,6 +359,22 @@ public class MainWindow {
         this.msgTemplateUrlTextField.setText(msgTemplateUrlTextField);
     }
 
+    public JTextField getMsgTemplateMiniAppidTextField() {
+        return msgTemplateMiniAppidTextField;
+    }
+
+    public void setMsgTemplateMiniAppidTextField(String msgTemplateMiniAppidTextField) {
+        this.msgTemplateMiniAppidTextField.setText(msgTemplateMiniAppidTextField);
+    }
+
+    public JTextField getMsgTemplateMiniPagePathTextField() {
+        return msgTemplateMiniPagePathTextField;
+    }
+
+    public void setMsgTemplateMiniPagePathTextField(String msgTemplateMiniPagePathTextField) {
+        this.msgTemplateMiniPagePathTextField.setText(msgTemplateMiniPagePathTextField);
+    }
+
     public JPanel getTemplateMsgDataPanel() {
         return templateMsgDataPanel;
     }

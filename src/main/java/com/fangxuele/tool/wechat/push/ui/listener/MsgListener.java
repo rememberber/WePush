@@ -100,6 +100,8 @@ public class MsgListener {
                     record[6] = MainWindow.mainWindow.getMsgKefuPicUrlTextField().getText();
                     record[7] = MainWindow.mainWindow.getMsgKefuDescTextField().getText();
                     record[8] = MainWindow.mainWindow.getMsgKefuUrlTextField().getText();
+                    record[9] = MainWindow.mainWindow.getMsgTemplateMiniAppidTextField().getText();
+                    record[10] = MainWindow.mainWindow.getMsgTemplateMiniPagePathTextField().getText();
 
                     msgMap.put(msgName, record);
 
