@@ -26,6 +26,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.StyleSheet;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -132,8 +134,12 @@ public class Init {
     public static void initHelpTab() {
 
         try {
-            MainWindow.mainWindow.getHelpTextPane().setPage(MainWindow.class.getResource("/page/help.html"));
             MainWindow.mainWindow.getHelpTextPane().setEditable(false);
+            HTMLEditorKit kit = new HTMLEditorKit();
+            MainWindow.mainWindow.getHelpTextPane().setEditorKit(kit);
+            StyleSheet styleSheet = kit.getStyleSheet();
+            styleSheet.addRule("h2{color:#FBC87A;}");
+            MainWindow.mainWindow.getHelpTextPane().setPage(MainWindow.class.getResource("/page/help.html"));
         } catch (IOException e) {
             e.printStackTrace();
         }
