@@ -139,6 +139,7 @@ public class Init {
             MainWindow.mainWindow.getHelpTextPane().setEditorKit(kit);
             StyleSheet styleSheet = kit.getStyleSheet();
             styleSheet.addRule("h2{color:#FBC87A;}");
+            MainWindow.mainWindow.getHelpTextPane().setContentType("text/html; charset=utf-8");
             MainWindow.mainWindow.getHelpTextPane().setPage(MainWindow.class.getResource("/page/help.html"));
         } catch (IOException e) {
             e.printStackTrace();
