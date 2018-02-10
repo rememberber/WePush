@@ -112,7 +112,7 @@
                     <properties>
                       <doubleBuffered value="true"/>
                       <editable value="false"/>
-                      <margin top="10" left="10" bottom="10" right="10"/>
+                      <margin top="10" left="30" bottom="10" right="10"/>
                     </properties>
                     <clientProperties>
                       <JEditorPane.honorDisplayProperties class="java.lang.Boolean" value="true"/>
