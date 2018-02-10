@@ -26,6 +26,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.StyleSheet;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -33,6 +35,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -121,6 +124,25 @@ public class Init {
             }
         } catch (Exception e) {
             logger.error(e);
+        }
+
+    }
+
+    /**
+     * 初始化使用帮助tab
+     */
+    public static void initHelpTab() {
+
+        try {
+            MainWindow.mainWindow.getHelpTextPane().setEditable(false);
+            HTMLEditorKit kit = new HTMLEditorKit();
+            MainWindow.mainWindow.getHelpTextPane().setEditorKit(kit);
+            StyleSheet styleSheet = kit.getStyleSheet();
+            styleSheet.addRule("h2{color:#FBC87A;}");
+            MainWindow.mainWindow.getHelpTextPane().setContentType("text/html; charset=utf-8");
+            MainWindow.mainWindow.getHelpTextPane().setPage(MainWindow.class.getResource("/page/help.html"));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
     }
@@ -433,6 +455,7 @@ public class Init {
      * 初始化所有tab
      */
     public static void initAllTab() {
+        initHelpTab();
         initMsgTab(false);
         initMemberTab();
         initPushTab();
