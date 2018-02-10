@@ -39,8 +39,9 @@ public class KeFuPriorMsgServiceThread extends BaseMsgServiceThread {
 
             // 本条消息所需的数据
             String[] msgData = list.get(i);
-            String openId = msgData[0];
+            String openId = "";
             try {
+                openId = msgData[0];
                 wxMpKefuMessage = PushManage.makeKefuMessage(msgData);
                 wxMpTemplateMessage = PushManage.makeTemplateMessage(msgData);
 
