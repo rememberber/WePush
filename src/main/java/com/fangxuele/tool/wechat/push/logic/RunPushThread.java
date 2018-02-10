@@ -10,6 +10,7 @@ import com.xiaoleilu.hutool.log.LogFactory;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.Component;
@@ -83,6 +84,11 @@ public class RunPushThread extends Thread {
         DefaultTableModel tableModel = new DefaultTableModel(null, headerNames);
         MainWindow.mainWindow.getPushThreadTable().setModel(tableModel);
         MainWindow.mainWindow.getPushThreadTable().getColumn("当前进度").setCellRenderer(new MyProgressBarRenderer());
+
+        DefaultTableCellRenderer hr = (DefaultTableCellRenderer) MainWindow.mainWindow.getPushThreadTable().getTableHeader()
+                .getDefaultRenderer();
+        // 表头列名居中
+        hr.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
         MainWindow.mainWindow.getPushThreadTable().updateUI();
 
         Object[] data;
