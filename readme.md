@@ -75,3 +75,5 @@ WePush Windows 安装文件下载：[WePush](https://github.com/rememberber/WePu
 https://github.com/rememberber/WePush/wiki/build
 
 ### 使用帮助
+
+https://github.com/rememberber/WePush/wiki/help
