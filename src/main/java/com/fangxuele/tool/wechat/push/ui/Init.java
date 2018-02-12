@@ -2,6 +2,7 @@ package com.fangxuele.tool.wechat.push.ui;
 
 import com.alee.laf.WebLookAndFeel;
 import com.fangxuele.tool.wechat.push.logic.MsgHisManage;
+import com.fangxuele.tool.wechat.push.ui.listener.AboutListener;
 import com.fangxuele.tool.wechat.push.util.Config;
 import com.sun.java.swing.plaf.motif.MotifLookAndFeel;
 import com.sun.java.swing.plaf.windows.WindowsLookAndFeel;
@@ -461,6 +462,15 @@ public class Init {
         initPushTab();
         initScheduleTab();
         initSettingTab();
+
+        // 检查新版版
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                AboutListener.checkUpdate(true);
+            }
+        }).start();
+
     }
 
     /**
