@@ -151,6 +151,8 @@ public class MainWindow {
     private JLabel templateMiniProgramPagePathLabel;
     private JTextPane helpTextPane;
     private JLabel labelOnlineHelp;
+    private JLabel templateMiniProgramOptionalLabel1;
+    private JLabel templateMiniProgramOptionalLabel2;
     public static JFrame frame;
 
     public static MainWindow mainWindow;
@@ -1240,5 +1242,37 @@ public class MainWindow {
 
     public void setLabelOnlineHelp(JLabel labelOnlineHelp) {
         this.labelOnlineHelp = labelOnlineHelp;
+    }
+
+    public JLabel getTemplateMiniProgramAppidLabel() {
+        return templateMiniProgramAppidLabel;
+    }
+
+    public void setTemplateMiniProgramAppidLabel(JLabel templateMiniProgramAppidLabel) {
+        this.templateMiniProgramAppidLabel = templateMiniProgramAppidLabel;
+    }
+
+    public JLabel getTemplateMiniProgramPagePathLabel() {
+        return templateMiniProgramPagePathLabel;
+    }
+
+    public void setTemplateMiniProgramPagePathLabel(JLabel templateMiniProgramPagePathLabel) {
+        this.templateMiniProgramPagePathLabel = templateMiniProgramPagePathLabel;
+    }
+
+    public JLabel getTemplateMiniProgramOptionalLabel1() {
+        return templateMiniProgramOptionalLabel1;
+    }
+
+    public void setTemplateMiniProgramOptionalLabel1(JLabel templateMiniProgramOptionalLabel1) {
+        this.templateMiniProgramOptionalLabel1 = templateMiniProgramOptionalLabel1;
+    }
+
+    public JLabel getTemplateMiniProgramOptionalLabel2() {
+        return templateMiniProgramOptionalLabel2;
+    }
+
+    public void setTemplateMiniProgramOptionalLabel2(JLabel templateMiniProgramOptionalLabel2) {
+        this.templateMiniProgramOptionalLabel2 = templateMiniProgramOptionalLabel2;
     }
 }
