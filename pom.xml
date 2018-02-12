@@ -20,6 +20,7 @@
         <opencsv.version>3.9</opencsv.version>
         <mysql-connector-java.version>6.0.6</mysql-connector-java.version>
         <forms_rt.version>7.0.3</forms_rt.version>
+        <fastjson.version>1.2.46</fastjson.version>
     </properties>
 
     <dependencies>
@@ -63,6 +64,12 @@
             <groupId>com.intellij</groupId>
             <artifactId>forms_rt</artifactId>
             <version>${forms_rt.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>${fastjson.version}</version>
         </dependency>
 
         <dependency>
