@@ -243,6 +243,12 @@ public class Init {
                 MainWindow.mainWindow.getTemplateMsgPanel().setVisible(true);
                 MainWindow.mainWindow.getTemplateUrlLabel().setVisible(true);
                 MainWindow.mainWindow.getMsgTemplateUrlTextField().setVisible(true);
+                MainWindow.mainWindow.getTemplateMiniProgramAppidLabel().setVisible(true);
+                MainWindow.mainWindow.getMsgTemplateMiniAppidTextField().setVisible(true);
+                MainWindow.mainWindow.getTemplateMiniProgramPagePathLabel().setVisible(true);
+                MainWindow.mainWindow.getMsgTemplateMiniPagePathTextField().setVisible(true);
+                MainWindow.mainWindow.getTemplateMiniProgramOptionalLabel1().setVisible(true);
+                MainWindow.mainWindow.getTemplateMiniProgramOptionalLabel2().setVisible(true);
                 MainWindow.mainWindow.getTemplateMsgColorLabel().setVisible(true);
                 MainWindow.mainWindow.getTemplateDataColorTextField().setVisible(true);
                 MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户openid（以半角分号分隔）");
@@ -257,6 +263,12 @@ public class Init {
                 MainWindow.mainWindow.getTemplateMsgPanel().setVisible(true);
                 MainWindow.mainWindow.getTemplateUrlLabel().setVisible(true);
                 MainWindow.mainWindow.getMsgTemplateUrlTextField().setVisible(true);
+                MainWindow.mainWindow.getTemplateMiniProgramAppidLabel().setVisible(true);
+                MainWindow.mainWindow.getMsgTemplateMiniAppidTextField().setVisible(true);
+                MainWindow.mainWindow.getTemplateMiniProgramPagePathLabel().setVisible(true);
+                MainWindow.mainWindow.getMsgTemplateMiniPagePathTextField().setVisible(true);
+                MainWindow.mainWindow.getTemplateMiniProgramOptionalLabel1().setVisible(true);
+                MainWindow.mainWindow.getTemplateMiniProgramOptionalLabel2().setVisible(true);
                 MainWindow.mainWindow.getTemplateMsgColorLabel().setVisible(true);
                 MainWindow.mainWindow.getTemplateDataColorTextField().setVisible(true);
                 MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户openid（以半角分号分隔）");
@@ -266,6 +278,12 @@ public class Init {
                 MainWindow.mainWindow.getTemplateMsgPanel().setVisible(true);
                 MainWindow.mainWindow.getTemplateUrlLabel().setVisible(false);
                 MainWindow.mainWindow.getMsgTemplateUrlTextField().setVisible(false);
+                MainWindow.mainWindow.getTemplateMiniProgramAppidLabel().setVisible(false);
+                MainWindow.mainWindow.getMsgTemplateMiniAppidTextField().setVisible(false);
+                MainWindow.mainWindow.getTemplateMiniProgramPagePathLabel().setVisible(false);
+                MainWindow.mainWindow.getMsgTemplateMiniPagePathTextField().setVisible(false);
+                MainWindow.mainWindow.getTemplateMiniProgramOptionalLabel1().setVisible(false);
+                MainWindow.mainWindow.getTemplateMiniProgramOptionalLabel2().setVisible(false);
                 MainWindow.mainWindow.getTemplateMsgColorLabel().setVisible(false);
                 MainWindow.mainWindow.getTemplateDataColorTextField().setVisible(false);
                 MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户手机号（以半角分号分隔）");
