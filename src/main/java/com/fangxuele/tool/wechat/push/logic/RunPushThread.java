@@ -6,6 +6,7 @@ import com.xiaoleilu.hutool.date.BetweenFormater;
 import com.xiaoleilu.hutool.date.DateUtil;
 import com.xiaoleilu.hutool.log.Log;
 import com.xiaoleilu.hutool.log.LogFactory;
+import me.chanjar.weixin.mp.api.WxMpService;
 
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
@@ -98,17 +99,35 @@ public class RunPushThread extends Thread {
             if ("模板消息".equals(msgType)) {
                 thread = new TemplateMsgServiceThread(i * pagePerThread,
                         i * pagePerThread + pagePerThread - 1, pageSize);
+
+                WxMpService wxMpService = PushManage.getWxMpService();
+                if (wxMpService.getWxMpConfigStorage() == null) {
+                    return;
+                }
+                thread.setWxMpService(wxMpService);
             } else if ("客服消息".equals(msgType)) {
                 thread = new KeFuMsgServiceThread(i * pagePerThread,
                         i * pagePerThread + pagePerThread - 1, pageSize);
+
+                WxMpService wxMpService = PushManage.getWxMpService();
+                if (wxMpService.getWxMpConfigStorage() == null) {
+                    return;
+                }
+                thread.setWxMpService(wxMpService);
             } else if ("客服消息优先".equals(msgType)) {
                 thread = new KeFuPriorMsgServiceThread(i * pagePerThread,
                         i * pagePerThread + pagePerThread - 1, pageSize);
+
+                WxMpService wxMpService = PushManage.getWxMpService();
+                if (wxMpService.getWxMpConfigStorage() == null) {
+                    return;
+                }
+                thread.setWxMpService(wxMpService);
             } else if ("阿里大于模板短信".equals(msgType)) {
                 thread = new AliTemplateMsgServiceThread(i * pagePerThread,
                         i * pagePerThread + pagePerThread - 1, pageSize);
             }
-            thread.setWxMpService(PushManage.getWxMpService());
+
             thread.setName(new StringBuffer().append("T-").append(i).toString());
 
             data = new Object[6];

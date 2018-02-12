@@ -19,7 +19,9 @@ import me.chanjar.weixin.mp.api.impl.WxMpServiceImpl;
 import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
+import org.apache.commons.lang3.StringUtils;
 
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.io.File;
 import java.io.FileWriter;
@@ -47,16 +49,18 @@ public class PushManage {
     public static void preview() throws Exception {
         List<String[]> msgDataList = new ArrayList<>();
 
-        WxMpTemplateMessage wxMessageTemplate;
-        WxMpKefuMessage wxMpKefuMessage;
-
-        WxMpService wxMpService = getWxMpService();
-
         for (String data : MainWindow.mainWindow.getPreviewUserField().getText().split(";")) {
             msgDataList.add(data.split(","));
         }
+
         switch (MainWindow.mainWindow.getMsgTypeComboBox().getSelectedItem().toString()) {
             case "模板消息":
+                WxMpTemplateMessage wxMessageTemplate;
+                WxMpService wxMpService = getWxMpService();
+                if (wxMpService.getWxMpConfigStorage() == null) {
+                    return;
+                }
+
                 for (String[] msgData : msgDataList) {
                     wxMessageTemplate = makeTemplateMessage(msgData);
                     wxMessageTemplate.setToUser(msgData[0].trim());
@@ -65,6 +69,12 @@ public class PushManage {
                 }
                 break;
             case "客服消息":
+                wxMpService = getWxMpService();
+                WxMpKefuMessage wxMpKefuMessage;
+                if (wxMpService.getWxMpConfigStorage() == null) {
+                    return;
+                }
+
                 for (String[] msgData : msgDataList) {
                     wxMpKefuMessage = makeKefuMessage(msgData);
                     wxMpKefuMessage.setToUser(msgData[0]);
@@ -73,6 +83,11 @@ public class PushManage {
                 }
                 break;
             case "客服消息优先":
+                wxMpService = getWxMpService();
+                if (wxMpService.getWxMpConfigStorage() == null) {
+                    return;
+                }
+
                 for (String[] msgData : msgDataList) {
                     try {
                         wxMpKefuMessage = makeKefuMessage(msgData);
@@ -295,6 +310,12 @@ public class PushManage {
      */
     private static WxMpConfigStorage wxMpConfigStorage() {
         WxMpInMemoryConfigStorage configStorage = new WxMpInMemoryConfigStorage();
+        if (StringUtils.isEmpty(Init.configer.getWechatAppId()) || StringUtils.isEmpty(Init.configer.getWechatAppSecret())
+                || StringUtils.isEmpty(Init.configer.getWechatToken()) || StringUtils.isEmpty(Init.configer.getWechatAesKey())) {
+            JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "请先在设置中填写并保存公众号相关配置！", "提示",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return null;
+        }
         configStorage.setAppId(Init.configer.getWechatAppId());
         configStorage.setSecret(Init.configer.getWechatAppSecret());
         configStorage.setToken(Init.configer.getWechatToken());
