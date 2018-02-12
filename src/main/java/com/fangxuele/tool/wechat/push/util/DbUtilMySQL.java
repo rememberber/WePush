@@ -1,9 +1,12 @@
 package com.fangxuele.tool.wechat.push.util;
 
 import com.fangxuele.tool.wechat.push.ui.Init;
+import com.fangxuele.tool.wechat.push.ui.MainWindow;
 import com.xiaoleilu.hutool.log.Log;
 import com.xiaoleilu.hutool.log.LogFactory;
+import org.apache.commons.lang3.StringUtils;
 
+import javax.swing.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -13,7 +16,7 @@ import java.sql.Statement;
 /**
  * MySQL数据库工具，单例，持久连接
  *
- * @author rememberber(https://github.com/rememberber)
+ * @author rememberber(https : / / github.com / rememberber)
  */
 public class DbUtilMySQL {
     private Connection connection = null;
@@ -59,6 +62,14 @@ public class DbUtilMySQL {
             DBName = Init.configer.getMysqlDatabase();
             DBUser = Init.configer.getMysqlUser();
             DBPassword = Init.configer.getMysqlPassword();
+
+            if (StringUtils.isEmpty(DBUrl) || StringUtils.isEmpty(DBName)
+                    || StringUtils.isEmpty(DBUser) || StringUtils.isEmpty(DBPassword)) {
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
+                        "请先在设置中填写并保存MySQL数据库相关配置！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
 
             Class.forName(DBClassName);
         } catch (Exception e) {
