@@ -21,6 +21,7 @@
         <mysql-connector-java.version>6.0.6</mysql-connector-java.version>
         <forms_rt.version>7.0.3</forms_rt.version>
         <fastjson.version>1.2.46</fastjson.version>
+        <sun-mail.version>1.5.6</sun-mail.version>
     </properties>
 
     <dependencies>
@@ -70,6 +71,12 @@
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
             <version>${fastjson.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>${sun-mail.version}</version>
         </dependency>
 
         <dependency>
