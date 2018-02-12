@@ -25,6 +25,6 @@ public class ConstantsUI {
     /**
      * 软件版本检查url
      */
-    public final static String CHECK_VERSION_URL = "https://raw.githubusercontent.com/rememberber/WePush/develop/src/main/resources/version_summary.json";
+    public final static String CHECK_VERSION_URL = "https://raw.githubusercontent.com/rememberber/WePush/master/src/main/resources/version_summary.json";
 
 }
