@@ -219,6 +219,9 @@ public class MemberListener {
         MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(true);
 
         WxMpService wxMpService = PushManage.getWxMpService();
+        if (wxMpService.getWxMpConfigStorage() == null) {
+            return;
+        }
 
         WxMpUserList wxMpUserList = wxMpService.getUserService().userList(null);
 
