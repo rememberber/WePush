@@ -103,7 +103,18 @@ public class PushManage {
                 }
                 break;
             case "阿里大于模板短信":
-                TaobaoClient client = new DefaultTaobaoClient(Init.configer.getAliServerUrl(), Init.configer.getAliAppKey(), Init.configer.getAliAppSecret());
+                String aliServerUrl = Init.configer.getAliServerUrl();
+                String aliAppKey = Init.configer.getAliAppKey();
+                String aliAppSecret = Init.configer.getAliAppSecret();
+
+                if (StringUtils.isEmpty(aliServerUrl) || StringUtils.isEmpty(aliAppKey)
+                        || StringUtils.isEmpty(aliAppSecret)) {
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
+                            "请先在设置中填写并保存阿里大于相关配置！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+
+                TaobaoClient client = new DefaultTaobaoClient(aliServerUrl, aliAppKey, aliAppSecret);
                 for (String[] msgData : msgDataList) {
                     AlibabaAliqinFcSmsNumSendRequest request = makeAliTemplateMessage(msgData);
                     request.setRecNum(msgData[0]);
