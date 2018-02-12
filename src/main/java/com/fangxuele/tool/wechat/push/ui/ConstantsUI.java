@@ -22,4 +22,9 @@ public class ConstantsUI {
     public final static Image IMAGE_ICON = Toolkit.getDefaultToolkit()
             .getImage(MainWindow.class.getResource("/icon/logo-md.png"));
 
+    /**
+     * 软件版本检查url
+     */
+    public final static String CHECK_VERSION_URL = "https://raw.githubusercontent.com/rememberber/WePush/develop/src/main/resources/version_summary.json";
+
 }
