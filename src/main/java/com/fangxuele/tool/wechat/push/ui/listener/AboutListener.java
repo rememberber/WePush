@@ -112,7 +112,7 @@ public class AboutListener {
                 }
             } else {
                 if (!initCheck) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "您当前已经是最新版本！", "恭喜",
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "当前已经是最新版本！", "恭喜",
                             JOptionPane.INFORMATION_MESSAGE);
                 }
             }
