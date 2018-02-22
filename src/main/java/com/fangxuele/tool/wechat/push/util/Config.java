@@ -70,6 +70,8 @@ public class Config {
 
     private String textPerWeekTime;
 
+    private boolean autoCheckUpdate;
+
     private String wechatAppId;
 
     private String wechatAppSecret;
@@ -168,6 +170,7 @@ public class Config {
         props.setProperty("schedule.radioPerWeek", "false");
         props.setProperty("schedule.textPerWeek.week", "一");
         props.setProperty("schedule.textPerWeek.time", "");
+        props.setProperty("setting.normal.autoCheckUpdate", "");
         props.setProperty("setting.wechat.appId", "");
         props.setProperty("setting.wechat.AppSecret", "");
         props.setProperty("setting.wechat.token", "");
@@ -377,6 +380,14 @@ public class Config {
 
     public void setTextPerWeekTime(String textPerWeekTime) {
         props.setProperty("schedule.textPerWeek.time", textPerWeekTime);
+    }
+
+    public boolean isAutoCheckUpdate() {
+        return props.getBool("setting.normal.autoCheckUpdate") == null ? true : props.getBool("setting.normal.autoCheckUpdate");
+    }
+
+    public void setAutoCheckUpdate(boolean autoCheckUpdate) {
+        props.setProperty("setting.normal.autoCheckUpdate", autoCheckUpdate);
     }
 
     public String getWechatAppId() {
