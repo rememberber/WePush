@@ -13,8 +13,7 @@ import com.xiaoleilu.hutool.log.Log;
 import com.xiaoleilu.hutool.log.LogFactory;
 
 import javax.swing.*;
-import java.awt.Dimension;
-import java.awt.Toolkit;
+import java.awt.*;
 
 /**
  * Created by rememberber(https://github.com/rememberber) on 2017/6/7.
@@ -153,14 +152,11 @@ public class MainWindow {
     private JLabel labelOnlineHelp;
     private JLabel templateMiniProgramOptionalLabel1;
     private JLabel templateMiniProgramOptionalLabel2;
+    private JCheckBox autoCheckUpdateCheckBox;
     public static JFrame frame;
 
     public static MainWindow mainWindow;
     private static Log logger = LogFactory.get();
-
-    public MainWindow() {
-
-    }
 
     public static void main(String[] args) {
         logger.info("main start");
@@ -1274,5 +1270,13 @@ public class MainWindow {
 
     public void setTemplateMiniProgramOptionalLabel2(JLabel templateMiniProgramOptionalLabel2) {
         this.templateMiniProgramOptionalLabel2 = templateMiniProgramOptionalLabel2;
+    }
+
+    public JCheckBox getAutoCheckUpdateCheckBox() {
+        return autoCheckUpdateCheckBox;
+    }
+
+    public void setAutoCheckUpdateCheckBox(boolean selected) {
+        this.autoCheckUpdateCheckBox.setSelected(selected);
     }
 }
