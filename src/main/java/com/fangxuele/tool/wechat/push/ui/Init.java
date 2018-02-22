@@ -379,7 +379,9 @@ public class Init {
      * 初始化设置tab
      */
     public static void initSettingTab() {
-        // 微信
+        // 常规
+        MainWindow.mainWindow.setAutoCheckUpdateCheckBox(configer.isAutoCheckUpdate());
+        // 微信公众号
         MainWindow.mainWindow.setWechatAppIdTextField(configer.getWechatAppId());
         MainWindow.mainWindow.setWechatAppSecretPasswordField(configer.getWechatAppSecret());
         MainWindow.mainWindow.setWechatTokenPasswordField(configer.getWechatToken());
@@ -482,13 +484,14 @@ public class Init {
         initSettingTab();
 
         // 检查新版版
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                AboutListener.checkUpdate(true);
-            }
-        }).start();
-
+        if (configer.isAutoCheckUpdate()) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    AboutListener.checkUpdate(true);
+                }
+            }).start();
+        }
     }
 
     /**
