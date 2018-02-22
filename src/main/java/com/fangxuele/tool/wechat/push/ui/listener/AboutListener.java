@@ -93,7 +93,7 @@ public class AboutListener {
                 // 当前版本索引
                 int currentVersionIndex = Integer.parseInt(versionIndexMap.get(currentVersion));
                 // 版本更新日志：
-                StringBuilder versionLogBuilder = new StringBuilder();
+                StringBuilder versionLogBuilder = new StringBuilder("惊现新版本！立即下载？\n\n");
                 VersionSummary.Version version;
                 for (int i = currentVersionIndex + 1; i < versionDetailList.size(); i++) {
                     version = versionDetailList.get(i);
@@ -112,7 +112,7 @@ public class AboutListener {
                 }
             } else {
                 if (!initCheck) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "您当前已经是最新版本！", "恭喜",
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "当前已经是最新版本！", "恭喜",
                             JOptionPane.INFORMATION_MESSAGE);
                 }
             }

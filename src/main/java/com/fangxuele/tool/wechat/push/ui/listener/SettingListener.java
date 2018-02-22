@@ -23,6 +23,13 @@ public class SettingListener {
     private static final Log logger = LogFactory.get();
 
     public static void addListeners() {
+
+        // 设置-常规-启动时自动检查更新
+        MainWindow.mainWindow.getAutoCheckUpdateCheckBox().addActionListener(e -> {
+            Init.configer.setAutoCheckUpdate(MainWindow.mainWindow.getAutoCheckUpdateCheckBox().isSelected());
+            Init.configer.save();
+        });
+
         // 设置-公众号-保存
         MainWindow.mainWindow.getSettingMpInfoSaveButton().addActionListener(e -> {
             try {
