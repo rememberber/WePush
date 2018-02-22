@@ -14,7 +14,7 @@ public class ConstantsUI {
      * 软件名称,版本
      */
     public final static String APP_NAME = "WePush";
-    public final static String APP_VERSION = "v_1.6.0_180212";
+    public final static String APP_VERSION = "v_1.6.0_180222";
 
     /**
      * 主窗口图标
@@ -25,6 +25,6 @@ public class ConstantsUI {
     /**
      * 软件版本检查url
      */
-    public final static String CHECK_VERSION_URL = "https://raw.githubusercontent.com/rememberber/WePush/develop/src/main/resources/version_summary.json";
+    public final static String CHECK_VERSION_URL = "https://raw.githubusercontent.com/rememberber/WePush/master/src/main/resources/version_summary.json";
 
 }
