@@ -5,6 +5,7 @@ import com.fangxuele.tool.wechat.push.ui.listener.FramListener;
 import com.fangxuele.tool.wechat.push.ui.listener.HelpListener;
 import com.fangxuele.tool.wechat.push.ui.listener.MemberListener;
 import com.fangxuele.tool.wechat.push.ui.listener.MsgListener;
+import com.fangxuele.tool.wechat.push.ui.listener.PushHisListener;
 import com.fangxuele.tool.wechat.push.ui.listener.PushListener;
 import com.fangxuele.tool.wechat.push.ui.listener.ScheduleListener;
 import com.fangxuele.tool.wechat.push.ui.listener.SettingListener;
@@ -153,9 +154,9 @@ public class MainWindow {
     private JLabel templateMiniProgramOptionalLabel1;
     private JLabel templateMiniProgramOptionalLabel2;
     private JCheckBox autoCheckUpdateCheckBox;
-    private JButton 全选Button;
-    private JButton 全不选Button;
-    private JButton 删除Button;
+    private JButton pushHisLeftSelectAllButton;
+    private JButton pushHisLeftUnselectAllButton;
+    private JButton pushHisLeftDeleteButton;
     private JTable pushHisLeftTable;
     private JPanel pushHisPanel;
     private JButton 导出Button;
@@ -194,6 +195,7 @@ public class MainWindow {
         // 添加事件监听
         AboutListener.addListeners();
         HelpListener.addListeners();
+        PushHisListener.addListeners();
         SettingListener.addListeners();
         MsgListener.addListeners();
         MemberListener.addListeners();
@@ -1293,5 +1295,29 @@ public class MainWindow {
 
     public void setPushHisLeftTable(JTable pushHisLeftTable) {
         this.pushHisLeftTable = pushHisLeftTable;
+    }
+
+    public JButton getPushHisLeftSelectAllButton() {
+        return pushHisLeftSelectAllButton;
+    }
+
+    public void setPushHisLeftSelectAllButton(JButton pushHisLeftSelectAllButton) {
+        this.pushHisLeftSelectAllButton = pushHisLeftSelectAllButton;
+    }
+
+    public JButton getPushHisLeftUnselectAllButton() {
+        return pushHisLeftUnselectAllButton;
+    }
+
+    public void setPushHisLeftUnselectAllButton(JButton pushHisLeftUnselectAllButton) {
+        this.pushHisLeftUnselectAllButton = pushHisLeftUnselectAllButton;
+    }
+
+    public JButton getPushHisLeftDeleteButton() {
+        return pushHisLeftDeleteButton;
+    }
+
+    public void setPushHisLeftDeleteButton(JButton pushHisLeftDeleteButton) {
+        this.pushHisLeftDeleteButton = pushHisLeftDeleteButton;
     }
 }
