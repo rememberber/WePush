@@ -155,7 +155,7 @@ public class MainWindow {
     private JTable pushHisLeftTable;
     private JPanel pushHisPanel;
     private JButton 导出Button;
-    private JTextPane textPane1;
+    private JTextArea pushHisTextArea;
     public static JFrame frame;
 
     public static MainWindow mainWindow;
@@ -1282,5 +1282,13 @@ public class MainWindow {
 
     public void setPushHisLeftDeleteButton(JButton pushHisLeftDeleteButton) {
         this.pushHisLeftDeleteButton = pushHisLeftDeleteButton;
+    }
+
+    public JTextArea getPushHisTextArea() {
+        return pushHisTextArea;
+    }
+
+    public void setPushHisTextArea(JTextArea pushHisTextArea) {
+        this.pushHisTextArea = pushHisTextArea;
     }
 }
