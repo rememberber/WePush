@@ -56,7 +56,7 @@ public class PushHisListener {
                                 msgTemplateDataFile.delete();
                             }
                             tableModel.removeRow(i);
-                            MainWindow.mainWindow.getImportHisTable().updateUI();
+                            MainWindow.mainWindow.getPushHisLeftTable().updateUI();
                             i = 0;
                             rowCount = tableModel.getRowCount();
                             continue;

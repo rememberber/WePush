@@ -6,11 +6,8 @@ import com.fangxuele.tool.wechat.push.util.DbUtilMySQL;
 import com.xiaoleilu.hutool.log.Log;
 import com.xiaoleilu.hutool.log.LogFactory;
 
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.sql.Connection;
 import java.util.Map;
@@ -182,62 +179,6 @@ public class SettingListener {
                     Init.msgHisManager.writeMsgHis(msgMap);
 
                     Init.initMsgTab(false);
-                } catch (Exception e1) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "删除失败！\n\n" + e1.getMessage(), "失败",
-                            JOptionPane.ERROR_MESSAGE);
-                    logger.error(e1);
-                }
-            }
-        }).start());
-
-        // 导入历史管理-全选
-        MainWindow.mainWindow.getImportHisTableSelectAllButton().addActionListener(e -> new Thread(() -> {
-            DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getImportHisTable()
-                    .getModel();
-            int rowCount = tableModel.getRowCount();
-            for (int i = 0; i < rowCount; i++) {
-                tableModel.setValueAt(true, i, 0);
-            }
-        }).start());
-
-        // 导入历史管理-全不选
-        MainWindow.mainWindow.getImportHisTableUnselectAllButton().addActionListener(e -> new Thread(() -> {
-            DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getImportHisTable()
-                    .getModel();
-            int rowCount = tableModel.getRowCount();
-            for (int i = 0; i < rowCount; i++) {
-                tableModel.setValueAt(false, i, 0);
-            }
-        }).start());
-
-        // 导入历史管理-删除
-        MainWindow.mainWindow.getImportHisTableDeleteButton().addActionListener(e -> new Thread(() -> {
-            int isDelete = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getSettingPanel(), "确认删除？", "确认",
-                    JOptionPane.INFORMATION_MESSAGE);
-            if (isDelete == JOptionPane.YES_OPTION) {
-                try {
-                    DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getImportHisTable()
-                            .getModel();
-                    int rowCount = tableModel.getRowCount();
-                    for (int i = 0; i < rowCount; ) {
-                        boolean delete = (boolean) tableModel.getValueAt(i, 0);
-                        if (delete) {
-                            String fileName = (String) tableModel.getValueAt(i, 1);
-                            File msgTemplateDataFile = new File("data/push_his/" + fileName);
-                            if (msgTemplateDataFile.exists()) {
-                                msgTemplateDataFile.delete();
-                            }
-                            tableModel.removeRow(i);
-                            MainWindow.mainWindow.getImportHisTable().updateUI();
-                            i = 0;
-                            rowCount = tableModel.getRowCount();
-                            continue;
-                        } else {
-                            i++;
-                        }
-                    }
-
-                    Init.initMemberTab();
                 } catch (Exception e1) {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "删除失败！\n\n" + e1.getMessage(), "失败",
                             JOptionPane.ERROR_MESSAGE);
