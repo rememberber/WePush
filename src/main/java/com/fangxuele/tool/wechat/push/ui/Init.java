@@ -23,6 +23,7 @@ import javax.swing.UIManager;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -376,6 +377,43 @@ public class Init {
     }
 
     /**
+     * 初始化发送历史tab
+     */
+    public static void initPushHisTab() {
+        // 导入历史管理
+        String[] headerNames = {"选择", "文件名称"};
+        DefaultTableModel model = new DefaultTableModel(null, headerNames);
+        MainWindow.mainWindow.getPushHisLeftTable().setModel(model);
+
+        // 隐藏表头
+        MainWindow.mainWindow.getPushHisLeftTable().getTableHeader().setVisible(false);
+        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+        renderer.setPreferredSize(new Dimension(0, 0));
+        MainWindow.mainWindow.getPushHisLeftTable().getTableHeader().setDefaultRenderer(renderer);
+
+        File pushHisDir = new File("data/push_his");
+        if (!pushHisDir.exists()) {
+            pushHisDir.mkdirs();
+        }
+
+        File[] files = pushHisDir.listFiles();
+        Object[] data;
+        if (files.length > 0) {
+            for (File file : files) {
+                data = new Object[2];
+                data[0] = false;
+                data[1] = file.getName();
+                model.addRow(data);
+            }
+        }
+        MainWindow.mainWindow.getPushHisLeftTable().getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(new JCheckBox()));
+        MainWindow.mainWindow.getPushHisLeftTable().getColumnModel().getColumn(0).setCellRenderer(new MyCheckBoxRenderer());
+        // 设置列宽
+        MainWindow.mainWindow.getPushHisLeftTable().getColumnModel().getColumn(0).setPreferredWidth(50);
+        MainWindow.mainWindow.getPushHisLeftTable().getColumnModel().getColumn(0).setMaxWidth(50);
+    }
+
+    /**
      * 初始化设置tab
      */
     public static void initSettingTab() {
@@ -481,6 +519,7 @@ public class Init {
         initMemberTab();
         initPushTab();
         initScheduleTab();
+        initPushHisTab();
         initSettingTab();
 
         // 检查新版版
