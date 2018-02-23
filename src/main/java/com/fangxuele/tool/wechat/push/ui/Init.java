@@ -366,7 +366,7 @@ public class Init {
     }
 
     /**
-     * 初始化发送历史tab
+     * 初始化推送历史tab
      */
     public static void initPushHisTab() {
         // 导入历史管理
