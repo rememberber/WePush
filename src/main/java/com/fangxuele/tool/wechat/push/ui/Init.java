@@ -11,15 +11,7 @@ import com.xiaoleilu.hutool.log.LogFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 
-import javax.swing.AbstractCellEditor;
-import javax.swing.DefaultCellEditor;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JOptionPane;
-import javax.swing.JTable;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
@@ -30,10 +22,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -409,8 +398,8 @@ public class Init {
         MainWindow.mainWindow.getPushHisLeftTable().getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(new JCheckBox()));
         MainWindow.mainWindow.getPushHisLeftTable().getColumnModel().getColumn(0).setCellRenderer(new MyCheckBoxRenderer());
         // 设置列宽
-        MainWindow.mainWindow.getPushHisLeftTable().getColumnModel().getColumn(0).setPreferredWidth(50);
-        MainWindow.mainWindow.getPushHisLeftTable().getColumnModel().getColumn(0).setMaxWidth(50);
+        MainWindow.mainWindow.getPushHisLeftTable().getColumnModel().getColumn(0).setPreferredWidth(30);
+        MainWindow.mainWindow.getPushHisLeftTable().getColumnModel().getColumn(0).setMaxWidth(30);
     }
 
     /**
