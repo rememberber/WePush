@@ -44,7 +44,6 @@ public class PushHisListener {
                             while (StringUtils.isNotEmpty(line)) {
                                 MainWindow.mainWindow.getPushHisTextArea().append(line);
                                 MainWindow.mainWindow.getPushHisTextArea().append("\n");
-                                MainWindow.mainWindow.getPushHisTextArea().updateUI();
                                 line = br.readLine();
                                 count++;
                             }
