@@ -158,6 +158,8 @@ public class MainWindow {
     private JButton 删除Button;
     private JTable pushHisLeftTable;
     private JPanel pushHisPanel;
+    private JButton 导出Button;
+    private JTextPane textPane1;
     public static JFrame frame;
 
     public static MainWindow mainWindow;
