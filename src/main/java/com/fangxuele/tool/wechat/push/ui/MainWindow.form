@@ -1358,9 +1358,11 @@
                         <properties/>
                         <border type="none"/>
                         <children>
-                          <component id="706ef" class="javax.swing.JTextPane" binding="textPane1" default-binding="true">
+                          <component id="546a8" class="javax.swing.JTextArea" binding="pushHisTextArea">
                             <constraints/>
-                            <properties/>
+                            <properties>
+                              <editable value="false"/>
+                            </properties>
                           </component>
                         </children>
                       </scrollpane>
