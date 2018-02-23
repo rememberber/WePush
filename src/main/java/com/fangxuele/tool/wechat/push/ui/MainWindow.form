@@ -1272,7 +1272,7 @@
                         <properties/>
                         <border type="none"/>
                         <children>
-                          <component id="e3700" class="javax.swing.JButton" binding="全选Button" default-binding="true">
+                          <component id="e3700" class="javax.swing.JButton" binding="pushHisLeftSelectAllButton">
                             <constraints>
                               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                             </constraints>
@@ -1285,7 +1285,7 @@
                               <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                             </constraints>
                           </hspacer>
-                          <component id="4b5ba" class="javax.swing.JButton" binding="全不选Button" default-binding="true">
+                          <component id="4b5ba" class="javax.swing.JButton" binding="pushHisLeftUnselectAllButton">
                             <constraints>
                               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                             </constraints>
@@ -1293,7 +1293,7 @@
                               <text value="全不选"/>
                             </properties>
                           </component>
-                          <component id="ed0f7" class="javax.swing.JButton" binding="删除Button" default-binding="true">
+                          <component id="ed0f7" class="javax.swing.JButton" binding="pushHisLeftDeleteButton">
                             <constraints>
                               <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                             </constraints>
