@@ -1260,7 +1260,7 @@
                     </constraints>
                     <properties>
                       <minimumSize width="50" height="24"/>
-                      <preferredSize width="300" height="24"/>
+                      <preferredSize width="460" height="24"/>
                     </properties>
                     <border type="none"/>
                     <children>
