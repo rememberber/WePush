@@ -156,6 +156,7 @@ public class MainWindow {
     private JPanel pushHisPanel;
     private JButton 导出Button;
     private JTextArea pushHisTextArea;
+    private JLabel pushHisCountLabel;
     public static JFrame frame;
 
     public static MainWindow mainWindow;
@@ -1290,5 +1291,13 @@ public class MainWindow {
 
     public void setPushHisTextArea(JTextArea pushHisTextArea) {
         this.pushHisTextArea = pushHisTextArea;
+    }
+
+    public JLabel getPushHisCountLabel() {
+        return pushHisCountLabel;
+    }
+
+    public void setPushHisCountLabel(JLabel pushHisCountLabel) {
+        this.pushHisCountLabel = pushHisCountLabel;
     }
 }
