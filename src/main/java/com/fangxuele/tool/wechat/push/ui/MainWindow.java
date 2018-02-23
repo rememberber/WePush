@@ -153,6 +153,11 @@ public class MainWindow {
     private JLabel templateMiniProgramOptionalLabel1;
     private JLabel templateMiniProgramOptionalLabel2;
     private JCheckBox autoCheckUpdateCheckBox;
+    private JButton 全选Button;
+    private JButton 全不选Button;
+    private JButton 删除Button;
+    private JTable pushHisLeftTable;
+    private JPanel pushHisPanel;
     public static JFrame frame;
 
     public static MainWindow mainWindow;
@@ -1278,5 +1283,13 @@ public class MainWindow {
 
     public void setAutoCheckUpdateCheckBox(boolean selected) {
         this.autoCheckUpdateCheckBox.setSelected(selected);
+    }
+
+    public JTable getPushHisLeftTable() {
+        return pushHisLeftTable;
+    }
+
+    public void setPushHisLeftTable(JTable pushHisLeftTable) {
+        this.pushHisLeftTable = pushHisLeftTable;
     }
 }
