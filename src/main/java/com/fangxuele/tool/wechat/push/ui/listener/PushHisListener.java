@@ -28,26 +28,36 @@ public class PushHisListener {
         MainWindow.mainWindow.getPushHisLeftTable().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                MainWindow.mainWindow.getPushHisTextArea().setText("");
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        MainWindow.mainWindow.getPushHisTextArea().setText("");
 
-                int selectedRow = MainWindow.mainWindow.getPushHisLeftTable().getSelectedRow();
-                String selectedFileName = MainWindow.mainWindow.getPushHisLeftTable().getValueAt(selectedRow, 1).toString();
-                File pushHisFile = new File("data/push_his/" + selectedFileName);
+                        int selectedRow = MainWindow.mainWindow.getPushHisLeftTable().getSelectedRow();
+                        String selectedFileName = MainWindow.mainWindow.getPushHisLeftTable().getValueAt(selectedRow, 1).toString();
+                        File pushHisFile = new File("data/push_his/" + selectedFileName);
 
-                try {
-                    BufferedReader br = new BufferedReader(new FileReader(pushHisFile));
-                    String line = br.readLine();
-                    while (StringUtils.isNotEmpty(line)) {
-                        MainWindow.mainWindow.getPushHisTextArea().append(line);
-                        MainWindow.mainWindow.getPushHisTextArea().append("\n");
-                        line = br.readLine();
+                        try {
+                            BufferedReader br = new BufferedReader(new FileReader(pushHisFile));
+                            String line = br.readLine();
+                            long count = 0;
+                            while (StringUtils.isNotEmpty(line)) {
+                                MainWindow.mainWindow.getPushHisTextArea().append(line);
+                                MainWindow.mainWindow.getPushHisTextArea().append("\n");
+                                MainWindow.mainWindow.getPushHisTextArea().updateUI();
+                                line = br.readLine();
+                                count++;
+                            }
+
+                            MainWindow.mainWindow.getPushHisCountLabel().setText("共" + count + "条");
+                        } catch (FileNotFoundException e1) {
+                            e1.printStackTrace();
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
+
                     }
-                } catch (FileNotFoundException e1) {
-                    e1.printStackTrace();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-
+                }).start();
                 super.mouseClicked(e);
             }
         });
