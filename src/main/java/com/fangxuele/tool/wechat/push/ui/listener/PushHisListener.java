@@ -4,10 +4,17 @@ import com.fangxuele.tool.wechat.push.ui.Init;
 import com.fangxuele.tool.wechat.push.ui.MainWindow;
 import com.xiaoleilu.hutool.log.Log;
 import com.xiaoleilu.hutool.log.LogFactory;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 
 /**
  * 推送历史管理tab相关事件监听
@@ -17,6 +24,33 @@ public class PushHisListener {
     private static final Log logger = LogFactory.get();
 
     public static void addListeners() {
+        // 点击左侧表格事件
+        MainWindow.mainWindow.getPushHisLeftTable().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                MainWindow.mainWindow.getPushHisTextArea().setText("");
+
+                int selectedRow = MainWindow.mainWindow.getPushHisLeftTable().getSelectedRow();
+                String selectedFileName = MainWindow.mainWindow.getPushHisLeftTable().getValueAt(selectedRow, 1).toString();
+                File pushHisFile = new File("data/push_his/" + selectedFileName);
+
+                try {
+                    BufferedReader br = new BufferedReader(new FileReader(pushHisFile));
+                    String line = br.readLine();
+                    while (StringUtils.isNotEmpty(line)) {
+                        MainWindow.mainWindow.getPushHisTextArea().append(line);
+                        MainWindow.mainWindow.getPushHisTextArea().append("\n");
+                        line = br.readLine();
+                    }
+                } catch (FileNotFoundException e1) {
+                    e1.printStackTrace();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+
+                super.mouseClicked(e);
+            }
+        });
 
         // 导入历史管理-全选
         MainWindow.mainWindow.getPushHisLeftSelectAllButton().addActionListener(e -> new Thread(() -> {
