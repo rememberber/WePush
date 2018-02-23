@@ -449,30 +449,6 @@ public class Init {
         MainWindow.mainWindow.getMsgHistable().getColumnModel().getColumn(0).setPreferredWidth(50);
         MainWindow.mainWindow.getMsgHistable().getColumnModel().getColumn(0).setMaxWidth(50);
 
-        // 导入历史管理
-        String[] headerNames2 = {"选择", "文件名称"};
-        DefaultTableModel model2 = new DefaultTableModel(null, headerNames2);
-        MainWindow.mainWindow.getImportHisTable().setModel(model2);
-
-        File pushHisDir = new File("data/push_his");
-        if (!pushHisDir.exists()) {
-            pushHisDir.mkdirs();
-        }
-
-        File[] files = pushHisDir.listFiles();
-        if (files.length > 0) {
-            for (File file : files) {
-                data = new Object[2];
-                data[0] = false;
-                data[1] = file.getName();
-                model2.addRow(data);
-            }
-        }
-        MainWindow.mainWindow.getImportHisTable().getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(new JCheckBox()));
-        MainWindow.mainWindow.getImportHisTable().getColumnModel().getColumn(0).setCellRenderer(new MyCheckBoxRenderer());
-        // 设置列宽
-        MainWindow.mainWindow.getImportHisTable().getColumnModel().getColumn(0).setPreferredWidth(50);
-        MainWindow.mainWindow.getImportHisTable().getColumnModel().getColumn(0).setMaxWidth(50);
     }
 
     /**

@@ -136,14 +136,9 @@ public class MainWindow {
     private JButton clearImportButton;
     private JComboBox memberHisComboBox;
     private JButton importFromHisButton;
-    private JTable importHisTable;
-    private JPanel memberHisManagePanel;
     private JButton msgHisTableSelectAllButton;
     private JButton msgHisTableDeleteButton;
-    private JButton importHisTableSelectAllButton;
-    private JButton importHisTableDeleteButton;
     private JButton msgHisTableUnselectAllButton;
-    private JButton importHisTableUnselectAllButton;
     private JLabel scheduleDetailLabel;
     private JTextField msgTemplateMiniAppidTextField;
     private JTextField msgTemplateMiniPagePathTextField;
@@ -1169,14 +1164,6 @@ public class MainWindow {
         this.memberHisComboBox = memberHisComboBox;
     }
 
-    public JTable getImportHisTable() {
-        return importHisTable;
-    }
-
-    public void setImportHisTable(JTable importHisTable) {
-        this.importHisTable = importHisTable;
-    }
-
     public JButton getMsgHisTableSelectAllButton() {
         return msgHisTableSelectAllButton;
     }
@@ -1193,36 +1180,12 @@ public class MainWindow {
         this.msgHisTableDeleteButton = msgHisTableDeleteButton;
     }
 
-    public JButton getImportHisTableSelectAllButton() {
-        return importHisTableSelectAllButton;
-    }
-
-    public void setImportHisTableSelectAllButton(JButton importHisTableSelectAllButton) {
-        this.importHisTableSelectAllButton = importHisTableSelectAllButton;
-    }
-
-    public JButton getImportHisTableDeleteButton() {
-        return importHisTableDeleteButton;
-    }
-
-    public void setImportHisTableDeleteButton(JButton importHisTableDeleteButton) {
-        this.importHisTableDeleteButton = importHisTableDeleteButton;
-    }
-
     public JButton getMsgHisTableUnselectAllButton() {
         return msgHisTableUnselectAllButton;
     }
 
     public void setMsgHisTableUnselectAllButton(JButton msgHisTableUnselectAllButton) {
         this.msgHisTableUnselectAllButton = msgHisTableUnselectAllButton;
-    }
-
-    public JButton getImportHisTableUnselectAllButton() {
-        return importHisTableUnselectAllButton;
-    }
-
-    public void setImportHisTableUnselectAllButton(JButton importHisTableUnselectAllButton) {
-        this.importHisTableUnselectAllButton = importHisTableUnselectAllButton;
     }
 
     public JLabel getScheduleDetailLabel() {
