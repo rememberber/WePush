@@ -4,6 +4,7 @@ import com.alee.laf.WebLookAndFeel;
 import com.fangxuele.tool.wechat.push.logic.MsgHisManage;
 import com.fangxuele.tool.wechat.push.ui.listener.AboutListener;
 import com.fangxuele.tool.wechat.push.util.Config;
+import com.fangxuele.tool.wechat.push.util.SystemUtil;
 import com.sun.java.swing.plaf.motif.MotifLookAndFeel;
 import com.sun.java.swing.plaf.windows.WindowsLookAndFeel;
 import com.xiaoleilu.hutool.log.Log;
@@ -55,6 +56,11 @@ public class Init {
         if (screenSize.width <= 1366 && StringUtils.isEmpty(configer.getProps(lowDpiKey))) {
             configer.setFontSize(15);
             configer.setProps(lowDpiKey, "true");
+            configer.save();
+        }
+
+        if (SystemUtil.isMacOs()) {
+            configer.setFontSize(15);
             configer.save();
         }
 
