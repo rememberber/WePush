@@ -1,5 +1,6 @@
 package com.fangxuele.tool.wechat.push.ui;
 
+import com.apple.eawt.Application;
 import com.fangxuele.tool.wechat.push.ui.listener.AboutListener;
 import com.fangxuele.tool.wechat.push.ui.listener.FramListener;
 import com.fangxuele.tool.wechat.push.ui.listener.HelpListener;
@@ -10,6 +11,7 @@ import com.fangxuele.tool.wechat.push.ui.listener.PushListener;
 import com.fangxuele.tool.wechat.push.ui.listener.ScheduleListener;
 import com.fangxuele.tool.wechat.push.ui.listener.SettingListener;
 import com.fangxuele.tool.wechat.push.ui.listener.TabListener;
+import com.fangxuele.tool.wechat.push.util.SystemUtil;
 import com.xiaoleilu.hutool.log.Log;
 import com.xiaoleilu.hutool.log.LogFactory;
 
@@ -165,11 +167,19 @@ public class MainWindow {
     public static void main(String[] args) {
         logger.info("main start");
 
+        // 初始化主题
         Init.initTheme();
-        Init.initGlobalFont();  //统一设置字体
-
+        // 统一设置字体
+        Init.initGlobalFont();
+        // Windows系统状态栏图标
         frame = new JFrame(ConstantsUI.APP_NAME);
         frame.setIconImage(ConstantsUI.IMAGE_ICON);
+        // Mac系统Dock图标
+        if (SystemUtil.isMacOs()) {
+            Application application = Application.getApplication();
+            application.setDockIconImage(ConstantsUI.IMAGE_ICON);
+        }
+
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); //得到屏幕的尺寸
         frame.setBounds((int) (screenSize.width * 0.1), (int) (screenSize.height * 0.08), (int) (screenSize.width * 0.8),
                 (int) (screenSize.height * 0.8));
