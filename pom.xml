@@ -80,6 +80,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.apple</groupId>
+            <artifactId>AppleJavaExtensions</artifactId>
+            <version>1.4</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.darcula</groupId>
             <artifactId>darcula-lnf</artifactId>
             <version>1.0</version>
