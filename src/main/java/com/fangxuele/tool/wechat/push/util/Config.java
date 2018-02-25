@@ -170,7 +170,7 @@ public class Config {
         props.setProperty("schedule.radioPerWeek", "false");
         props.setProperty("schedule.textPerWeek.week", "一");
         props.setProperty("schedule.textPerWeek.time", "");
-        props.setProperty("setting.normal.autoCheckUpdate", "");
+        props.setProperty("setting.normal.autoCheckUpdate", "true");
         props.setProperty("setting.wechat.appId", "");
         props.setProperty("setting.wechat.AppSecret", "");
         props.setProperty("setting.wechat.token", "");
