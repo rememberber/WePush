@@ -107,8 +107,8 @@ public class Config {
     }
 
     private Config() {
-        file = new File("config/config.properties");
-        File configDir = new File("config/");
+        file = new File(SystemUtil.configHome + "config" + File.separator + "config.properties");
+        File configDir = new File(SystemUtil.configHome + "config" + File.separator);
         if (!file.exists()) {
             try {
                 configDir.mkdirs();
