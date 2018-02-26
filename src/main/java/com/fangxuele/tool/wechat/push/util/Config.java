@@ -1,5 +1,6 @@
 package com.fangxuele.tool.wechat.push.util;
 
+import com.xiaoleilu.hutool.io.FileUtil;
 import com.xiaoleilu.hutool.log.Log;
 import com.xiaoleilu.hutool.log.LogFactory;
 import com.xiaoleilu.hutool.setting.dialect.Props;
@@ -107,6 +108,24 @@ public class Config {
     }
 
     private Config() {
+        // --旧版本配置文件迁移初始化开始--
+        File configHomeDir = new File(SystemUtil.configHome);
+        if (!configHomeDir.exists()) {
+            configHomeDir.mkdirs();
+        }
+        File oldConfigDir = new File("config");
+        if (oldConfigDir.exists()) {
+            FileUtil.copy(oldConfigDir.getAbsolutePath(), SystemUtil.configHome, true);
+            FileUtil.del(oldConfigDir.getAbsolutePath());
+        }
+
+        File oldDataDir = new File("data");
+        if (oldDataDir.exists()) {
+            FileUtil.copy(oldDataDir.getAbsolutePath(), SystemUtil.configHome, true);
+            FileUtil.del(oldDataDir.getAbsolutePath());
+        }
+        // --旧版本配置文件迁移初始化结束--
+
         file = new File(SystemUtil.configHome + "config" + File.separator + "config.properties");
         File configDir = new File(SystemUtil.configHome + "config" + File.separator);
         if (!file.exists()) {
