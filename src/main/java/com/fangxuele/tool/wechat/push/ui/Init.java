@@ -7,7 +7,6 @@ import com.fangxuele.tool.wechat.push.util.Config;
 import com.fangxuele.tool.wechat.push.util.SystemUtil;
 import com.sun.java.swing.plaf.motif.MotifLookAndFeel;
 import com.sun.java.swing.plaf.windows.WindowsLookAndFeel;
-import com.xiaoleilu.hutool.io.FileUtil;
 import com.xiaoleilu.hutool.log.Log;
 import com.xiaoleilu.hutool.log.LogFactory;
 import org.apache.commons.lang3.StringUtils;
@@ -582,23 +581,6 @@ public class Init {
             Boolean b = (Boolean) value;//这一列必须都是integer类型(0-100)
             setSelected(b);
             return this;
-        }
-    }
-
-    /**
-     * 旧版本配置文件迁移初始化
-     */
-    public static void oldVersionConfigMigration() {
-        File configDir = new File("config");
-        if (configDir.exists()) {
-            FileUtil.copy(configDir.getAbsolutePath(), SystemUtil.configHome, true);
-            FileUtil.del(configDir.getAbsolutePath());
-        }
-
-        File dataDir = new File("data");
-        if (dataDir.exists()) {
-            FileUtil.copy(dataDir.getAbsolutePath(), SystemUtil.configHome, true);
-            FileUtil.del(dataDir.getAbsolutePath());
         }
     }
 

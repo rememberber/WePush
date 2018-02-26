@@ -171,8 +171,6 @@ public class MainWindow {
     public static void main(String[] args) {
         logger.info("main start");
 
-        // 旧版本配置文件迁移初始化
-        Init.oldVersionConfigMigration();
         // 初始化主题
         Init.initTheme();
         // 统一设置字体
