@@ -12,11 +12,10 @@ import com.xiaoleilu.hutool.log.LogFactory;
 import me.chanjar.weixin.common.exception.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.result.WxMpUserList;
+import me.chanjar.weixin.mp.bean.tag.WxUserTag;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.swing.JOptionPane;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
@@ -26,7 +25,9 @@ import java.io.InputStreamReader;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 准备目标数据tab相关事件监听
@@ -34,6 +35,8 @@ import java.util.List;
  */
 public class MemberListener {
     private static final Log logger = LogFactory.get();
+
+    private static Map<String, Long> userTagMap = new HashMap<>();
 
     public static void addListeners() {
         // 从文件导入按钮事件
@@ -111,6 +114,33 @@ public class MemberListener {
                 MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
             }
         }).start());
+
+        // 刷新可选的标签按钮事件
+        MainWindow.mainWindow.getMemberImportTagFreshButton().addActionListener(e -> {
+            WxMpService wxMpService = PushManage.getWxMpService();
+            if (wxMpService.getWxMpConfigStorage() == null) {
+                return;
+            }
+
+            try {
+                List<WxUserTag> wxUserTagList = wxMpService.getUserTagService().tagGet();
+
+                MainWindow.mainWindow.getMemberImportTagComboBox().removeAllItems();
+                userTagMap = new HashMap<>();
+
+                for (WxUserTag wxUserTag : wxUserTagList) {
+                    String item = wxUserTag.getName() + "/" + wxUserTag.getCount() + "用户";
+                    MainWindow.mainWindow.getMemberImportTagComboBox().addItem(item);
+                    userTagMap.put(item, wxUserTag.getId());
+                }
+
+            } catch (WxErrorException e1) {
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "刷新失败！", "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+                e1.printStackTrace();
+            }
+        });
 
         // 清除按钮事件
         MainWindow.mainWindow.getClearImportButton().addActionListener(e -> {
