@@ -793,7 +793,9 @@
                   <grid row="9" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties/>
-                <border type="none"/>
+                <border type="etched" title="通过微信公众平台导入">
+                  <font style="1"/>
+                </border>
                 <children>
                   <component id="2341f" class="javax.swing.JButton" binding="memberImportAllButton">
                     <constraints>
@@ -802,7 +804,7 @@
                     <properties>
                       <font style="1"/>
                       <icon value="icon/fromVCS.png"/>
-                      <text value="导入全员（自动导入当前所有关注公众号的用户）"/>
+                      <text value="导入全员（导入所有关注公众号的用户）"/>
                     </properties>
                   </component>
                   <component id="26432" class="javax.swing.JButton" binding="memberImportTagButton">
