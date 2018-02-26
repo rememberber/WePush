@@ -16,6 +16,8 @@ import me.chanjar.weixin.mp.bean.tag.WxUserTag;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
@@ -139,6 +141,14 @@ public class MemberListener {
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
                 e1.printStackTrace();
+            }
+        });
+
+        // 导入选择的标签分组用户按钮事件
+        MainWindow.mainWindow.getMemberImportTagButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
             }
         });
 
