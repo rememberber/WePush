@@ -2,6 +2,7 @@ package com.fangxuele.tool.wechat.push.ui.listener;
 
 import com.fangxuele.tool.wechat.push.ui.Init;
 import com.fangxuele.tool.wechat.push.ui.MainWindow;
+import com.fangxuele.tool.wechat.push.util.SystemUtil;
 import com.xiaoleilu.hutool.log.Log;
 import com.xiaoleilu.hutool.log.LogFactory;
 import com.xiaoleilu.hutool.util.ClipboardUtil;
@@ -37,8 +38,10 @@ public class PushHisListener {
                         MainWindow.mainWindow.getPushHisTextArea().setText("");
 
                         int selectedRow = MainWindow.mainWindow.getPushHisLeftTable().getSelectedRow();
-                        String selectedFileName = MainWindow.mainWindow.getPushHisLeftTable().getValueAt(selectedRow, 1).toString();
-                        File pushHisFile = new File("data/push_his/" + selectedFileName);
+                        String selectedFileName = MainWindow.mainWindow.getPushHisLeftTable()
+                                .getValueAt(selectedRow, 1).toString();
+                        File pushHisFile = new File(SystemUtil.configHome + "data" + File.separator
+                                + "push_his" + File.separator + selectedFileName);
 
                         try {
                             BufferedReader br = new BufferedReader(new FileReader(pushHisFile));
@@ -97,7 +100,7 @@ public class PushHisListener {
                         boolean delete = (boolean) tableModel.getValueAt(i, 0);
                         if (delete) {
                             String fileName = (String) tableModel.getValueAt(i, 1);
-                            File msgTemplateDataFile = new File("data/push_his/" + fileName);
+                            File msgTemplateDataFile = new File(SystemUtil.configHome + "data" + File.separator + "push_his" + File.separator + fileName);
                             if (msgTemplateDataFile.exists()) {
                                 msgTemplateDataFile.delete();
                             }
