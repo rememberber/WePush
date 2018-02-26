@@ -4,6 +4,7 @@ import com.alee.laf.WebLookAndFeel;
 import com.fangxuele.tool.wechat.push.logic.MsgHisManage;
 import com.fangxuele.tool.wechat.push.ui.listener.AboutListener;
 import com.fangxuele.tool.wechat.push.util.Config;
+import com.fangxuele.tool.wechat.push.util.SystemUtil;
 import com.sun.java.swing.plaf.motif.MotifLookAndFeel;
 import com.sun.java.swing.plaf.windows.WindowsLookAndFeel;
 import com.xiaoleilu.hutool.log.Log;
@@ -11,28 +12,18 @@ import com.xiaoleilu.hutool.log.LogFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 
-import javax.swing.AbstractCellEditor;
-import javax.swing.DefaultCellEditor;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JOptionPane;
-import javax.swing.JTable;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -60,11 +51,20 @@ public class Init {
      */
     public static void initGlobalFont() {
 
+        // 低分辨率屏幕字号初始化
         String lowDpiKey = "lowDpiInit";
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); //得到屏幕的尺寸
         if (screenSize.width <= 1366 && StringUtils.isEmpty(configer.getProps(lowDpiKey))) {
             configer.setFontSize(15);
             configer.setProps(lowDpiKey, "true");
+            configer.save();
+        }
+
+        // Mac高分辨率屏幕字号初始化
+        String highDpiKey = "highDpiInit";
+        if (SystemUtil.isMacOs() && StringUtils.isEmpty(configer.getProps(highDpiKey))) {
+            configer.setFontSize(15);
+            configer.setProps(highDpiKey, "true");
             configer.save();
         }
 
@@ -376,6 +376,43 @@ public class Init {
     }
 
     /**
+     * 初始化推送历史tab
+     */
+    public static void initPushHisTab() {
+        // 导入历史管理
+        String[] headerNames = {"选择", "文件名称"};
+        DefaultTableModel model = new DefaultTableModel(null, headerNames);
+        MainWindow.mainWindow.getPushHisLeftTable().setModel(model);
+
+        // 隐藏表头
+        MainWindow.mainWindow.getPushHisLeftTable().getTableHeader().setVisible(false);
+        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+        renderer.setPreferredSize(new Dimension(0, 0));
+        MainWindow.mainWindow.getPushHisLeftTable().getTableHeader().setDefaultRenderer(renderer);
+
+        File pushHisDir = new File("data/push_his");
+        if (!pushHisDir.exists()) {
+            pushHisDir.mkdirs();
+        }
+
+        File[] files = pushHisDir.listFiles();
+        Object[] data;
+        if (files.length > 0) {
+            for (File file : files) {
+                data = new Object[2];
+                data[0] = false;
+                data[1] = file.getName();
+                model.addRow(data);
+            }
+        }
+        MainWindow.mainWindow.getPushHisLeftTable().getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(new JCheckBox()));
+        MainWindow.mainWindow.getPushHisLeftTable().getColumnModel().getColumn(0).setCellRenderer(new MyCheckBoxRenderer());
+        // 设置列宽
+        MainWindow.mainWindow.getPushHisLeftTable().getColumnModel().getColumn(0).setPreferredWidth(30);
+        MainWindow.mainWindow.getPushHisLeftTable().getColumnModel().getColumn(0).setMaxWidth(30);
+    }
+
+    /**
      * 初始化设置tab
      */
     public static void initSettingTab() {
@@ -422,30 +459,6 @@ public class Init {
         MainWindow.mainWindow.getMsgHistable().getColumnModel().getColumn(0).setPreferredWidth(50);
         MainWindow.mainWindow.getMsgHistable().getColumnModel().getColumn(0).setMaxWidth(50);
 
-        // 导入历史管理
-        String[] headerNames2 = {"选择", "文件名称"};
-        DefaultTableModel model2 = new DefaultTableModel(null, headerNames2);
-        MainWindow.mainWindow.getImportHisTable().setModel(model2);
-
-        File pushHisDir = new File("data/push_his");
-        if (!pushHisDir.exists()) {
-            pushHisDir.mkdirs();
-        }
-
-        File[] files = pushHisDir.listFiles();
-        if (files.length > 0) {
-            for (File file : files) {
-                data = new Object[2];
-                data[0] = false;
-                data[1] = file.getName();
-                model2.addRow(data);
-            }
-        }
-        MainWindow.mainWindow.getImportHisTable().getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(new JCheckBox()));
-        MainWindow.mainWindow.getImportHisTable().getColumnModel().getColumn(0).setCellRenderer(new MyCheckBoxRenderer());
-        // 设置列宽
-        MainWindow.mainWindow.getImportHisTable().getColumnModel().getColumn(0).setPreferredWidth(50);
-        MainWindow.mainWindow.getImportHisTable().getColumnModel().getColumn(0).setMaxWidth(50);
     }
 
     /**
@@ -481,6 +494,7 @@ public class Init {
         initMemberTab();
         initPushTab();
         initScheduleTab();
+        initPushHisTab();
         initSettingTab();
 
         // 检查新版版

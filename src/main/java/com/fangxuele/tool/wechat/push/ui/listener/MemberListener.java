@@ -12,11 +12,11 @@ import com.xiaoleilu.hutool.log.LogFactory;
 import me.chanjar.weixin.common.exception.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.result.WxMpUserList;
+import me.chanjar.weixin.mp.bean.tag.WxTagListUser;
+import me.chanjar.weixin.mp.bean.tag.WxUserTag;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.swing.JOptionPane;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
@@ -26,7 +26,9 @@ import java.io.InputStreamReader;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 准备目标数据tab相关事件监听
@@ -34,6 +36,8 @@ import java.util.List;
  */
 public class MemberListener {
     private static final Log logger = LogFactory.get();
+
+    private static Map<String, Long> userTagMap = new HashMap<>();
 
     public static void addListeners() {
         // 从文件导入按钮事件
@@ -102,6 +106,57 @@ public class MemberListener {
                 getMpUserList();
                 JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导入完成！", "完成",
                         JOptionPane.INFORMATION_MESSAGE);
+            } catch (WxErrorException e1) {
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导入失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+                e1.printStackTrace();
+            } finally {
+                MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
+            }
+        }).start());
+
+        // 刷新可选的标签按钮事件
+        MainWindow.mainWindow.getMemberImportTagFreshButton().addActionListener(e -> {
+            WxMpService wxMpService = PushManage.getWxMpService();
+            if (wxMpService.getWxMpConfigStorage() == null) {
+                return;
+            }
+
+            try {
+                List<WxUserTag> wxUserTagList = wxMpService.getUserTagService().tagGet();
+
+                MainWindow.mainWindow.getMemberImportTagComboBox().removeAllItems();
+                userTagMap = new HashMap<>();
+
+                for (WxUserTag wxUserTag : wxUserTagList) {
+                    String item = wxUserTag.getName() + "/" + wxUserTag.getCount() + "用户";
+                    MainWindow.mainWindow.getMemberImportTagComboBox().addItem(item);
+                    userTagMap.put(item, wxUserTag.getId());
+                }
+
+            } catch (WxErrorException e1) {
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "刷新失败！", "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+                e1.printStackTrace();
+            }
+        });
+
+        // 导入选择的标签分组用户按钮事件
+        MainWindow.mainWindow.getMemberImportTagButton().addActionListener(e -> new Thread(() -> {
+            try {
+                if (MainWindow.mainWindow.getMemberImportTagComboBox().getSelectedItem() != null
+                        && StringUtils.isNotEmpty(MainWindow.mainWindow.getMemberImportTagComboBox().getSelectedItem().toString())) {
+
+                    long selectedTagId = userTagMap.get(MainWindow.mainWindow.getMemberImportTagComboBox().getSelectedItem());
+                    getMpUserListByTag(selectedTagId);
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导入完成！", "完成",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "请先选择需要导入的标签！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
             } catch (WxErrorException e1) {
                 JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导入失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
@@ -231,17 +286,22 @@ public class MemberListener {
         MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
         MainWindow.mainWindow.getMemberTabImportProgressBar().setMaximum((int) wxMpUserList.getTotal());
         int importedCount = 0;
+        PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+
+        if (wxMpUserList.getCount() == 0) {
+            MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(importedCount));
+            MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(importedCount);
+            return;
+        }
 
         List<String> openIds = wxMpUserList.getOpenids();
 
-        PushData.allUser = Collections.synchronizedList(new ArrayList<>());
         for (String openId : openIds) {
             PushData.allUser.add(new String[]{openId});
+            importedCount++;
+            MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(importedCount));
+            MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(importedCount);
         }
-
-        importedCount += wxMpUserList.getCount();
-        MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(importedCount));
-        MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(importedCount);
 
         while (StringUtils.isNotEmpty(wxMpUserList.getNextOpenid())) {
             wxMpUserList = wxMpService.getUserService().userList(wxMpUserList.getNextOpenid());
@@ -254,12 +314,71 @@ public class MemberListener {
             openIds = wxMpUserList.getOpenids();
             for (String openId : openIds) {
                 PushData.allUser.add(new String[]{openId});
+                importedCount++;
+                MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(importedCount));
+                MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(importedCount);
             }
-            importedCount += wxMpUserList.getCount();
+        }
+
+        MainWindow.mainWindow.getMemberTabImportProgressBar().setValue((int) wxMpUserList.getTotal());
+    }
+
+    /**
+     * 按标签拉取公众平台用户列表
+     */
+    public static void getMpUserListByTag(Long tagId) throws WxErrorException {
+        MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(true);
+
+        WxMpService wxMpService = PushManage.getWxMpService();
+        if (wxMpService.getWxMpConfigStorage() == null) {
+            return;
+        }
+
+        WxTagListUser wxTagListUser = wxMpService.getUserTagService().tagListUser(tagId, "");
+
+        PushManage.console("拉取的OPENID个数：" + wxTagListUser.getCount());
+
+        MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
+        MainWindow.mainWindow.getMemberTabImportProgressBar().setMaximum((int) wxTagListUser.getCount());
+        int importedCount = 0;
+        PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+
+        if (wxTagListUser.getCount() == 0) {
+            MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(importedCount));
+            MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(importedCount);
+            return;
+        }
+
+        List<String> openIds = wxTagListUser.getData().getOpenidList();
+
+        for (String openId : openIds) {
+            PushData.allUser.add(new String[]{openId});
+            importedCount++;
             MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(importedCount));
             MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(importedCount);
         }
 
-        MainWindow.mainWindow.getMemberTabImportProgressBar().setValue((int) wxMpUserList.getTotal());
+        while (StringUtils.isNotEmpty(wxTagListUser.getNextOpenid())) {
+            wxTagListUser = wxMpService.getUserTagService().tagListUser(tagId, wxTagListUser.getNextOpenid());
+
+            MainWindow.mainWindow.getMemberTabImportProgressBar().setMaximum((int) wxTagListUser.getCount());
+            int progressValue = 0;
+            MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(progressValue);
+            PushManage.console("拉取的OPENID个数：" + wxTagListUser.getCount());
+
+            if (wxTagListUser.getCount() == 0) {
+                break;
+            }
+            openIds = wxTagListUser.getData().getOpenidList();
+            for (String openId : openIds) {
+                PushData.allUser.add(new String[]{openId});
+                importedCount++;
+                progressValue++;
+                MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(importedCount));
+                MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(progressValue);
+            }
+
+        }
+
     }
 }
