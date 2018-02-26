@@ -159,6 +159,7 @@ public class MainWindow {
     private JButton 导出Button;
     private JTextArea pushHisTextArea;
     private JLabel pushHisCountLabel;
+    private JButton pushHisCopyButton;
     public static JFrame frame;
 
     public static MainWindow mainWindow;
