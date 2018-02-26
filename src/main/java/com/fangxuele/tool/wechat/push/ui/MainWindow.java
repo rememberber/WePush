@@ -162,6 +162,7 @@ public class MainWindow {
     private JButton pushHisCopyButton;
     private JButton memberImportTagButton;
     private JComboBox memberImportTagComboBox;
+    private JButton memberImportTagFreshButton;
     public static JFrame frame;
 
     public static MainWindow mainWindow;
@@ -1328,5 +1329,13 @@ public class MainWindow {
 
     public void setMemberImportTagComboBox(JComboBox memberImportTagComboBox) {
         this.memberImportTagComboBox = memberImportTagComboBox;
+    }
+
+    public JButton getMemberImportTagFreshButton() {
+        return memberImportTagFreshButton;
+    }
+
+    public void setMemberImportTagFreshButton(JButton memberImportTagFreshButton) {
+        this.memberImportTagFreshButton = memberImportTagFreshButton;
     }
 }
