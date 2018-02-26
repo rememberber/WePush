@@ -5,6 +5,7 @@ import com.fangxuele.tool.wechat.push.logic.PushManage;
 import com.fangxuele.tool.wechat.push.ui.Init;
 import com.fangxuele.tool.wechat.push.ui.MainWindow;
 import com.fangxuele.tool.wechat.push.util.DbUtilMySQL;
+import com.fangxuele.tool.wechat.push.util.SystemUtil;
 import com.opencsv.CSVReader;
 import com.xiaoleilu.hutool.io.file.FileReader;
 import com.xiaoleilu.hutool.log.Log;
@@ -181,7 +182,8 @@ public class MemberListener {
 
         // 从历史导入按钮事件
         MainWindow.mainWindow.getImportFromHisButton().addActionListener(e -> new Thread(() -> {
-            File file = new File("data/push_his/" + MainWindow.mainWindow.getMemberHisComboBox().getSelectedItem().toString());
+            File file = new File(SystemUtil.configHome + "data/push_his" + File.separator
+                    + MainWindow.mainWindow.getMemberHisComboBox().getSelectedItem().toString());
             CSVReader reader = null;
             FileReader fileReader = null;
 
