@@ -1313,4 +1313,20 @@ public class MainWindow {
     public void setPushHisCountLabel(JLabel pushHisCountLabel) {
         this.pushHisCountLabel = pushHisCountLabel;
     }
+
+    public JButton getMemberImportTagButton() {
+        return memberImportTagButton;
+    }
+
+    public void setMemberImportTagButton(JButton memberImportTagButton) {
+        this.memberImportTagButton = memberImportTagButton;
+    }
+
+    public JComboBox getMemberImportTagComboBox() {
+        return memberImportTagComboBox;
+    }
+
+    public void setMemberImportTagComboBox(JComboBox memberImportTagComboBox) {
+        this.memberImportTagComboBox = memberImportTagComboBox;
+    }
 }
