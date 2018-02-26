@@ -1,5 +1,6 @@
 package com.fangxuele.tool.wechat.push.ui.listener;
 
+import com.fangxuele.tool.wechat.push.ui.Init;
 import com.fangxuele.tool.wechat.push.ui.MainWindow;
 import com.xiaoleilu.hutool.log.Log;
 import com.xiaoleilu.hutool.log.LogFactory;
@@ -24,6 +25,7 @@ public class TabListener {
                 int index = MainWindow.mainWindow.getTabbedPane().getSelectedIndex();
                 switch (index) {
                     case 6:
+                        Init.initPushHisTab();
                         break;
                     default:
                         break;
