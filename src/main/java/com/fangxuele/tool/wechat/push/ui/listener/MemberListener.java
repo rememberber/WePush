@@ -361,6 +361,9 @@ public class MemberListener {
         while (StringUtils.isNotEmpty(wxTagListUser.getNextOpenid())) {
             wxTagListUser = wxMpService.getUserTagService().tagListUser(tagId, wxTagListUser.getNextOpenid());
 
+            MainWindow.mainWindow.getMemberTabImportProgressBar().setMaximum((int) wxTagListUser.getCount());
+            int progressValue = 0;
+            MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(progressValue);
             PushManage.console("拉取的OPENID个数：" + wxTagListUser.getCount());
 
             if (wxTagListUser.getCount() == 0) {
@@ -370,12 +373,12 @@ public class MemberListener {
             for (String openId : openIds) {
                 PushData.allUser.add(new String[]{openId});
                 importedCount++;
+                progressValue++;
                 MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(importedCount));
-                MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(importedCount);
+                MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(progressValue);
             }
 
         }
 
-        MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(wxTagListUser.getCount());
     }
 }
