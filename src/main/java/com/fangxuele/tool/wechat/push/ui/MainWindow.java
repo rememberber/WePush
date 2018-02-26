@@ -160,6 +160,8 @@ public class MainWindow {
     private JTextArea pushHisTextArea;
     private JLabel pushHisCountLabel;
     private JButton pushHisCopyButton;
+    private JButton memberImportTagButton;
+    private JComboBox memberImportTagComboBox;
     public static JFrame frame;
 
     public static MainWindow mainWindow;
