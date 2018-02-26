@@ -1354,4 +1354,5 @@ public class MainWindow {
     public void setPushHisCopyButton(JButton pushHisCopyButton) {
         this.pushHisCopyButton = pushHisCopyButton;
     }
+
 }
