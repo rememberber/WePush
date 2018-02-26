@@ -20,8 +20,6 @@ import org.apache.commons.lang3.StringUtils;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
@@ -273,25 +271,24 @@ public class MemberListener {
         }).start());
 
         // 浏览按钮
-        MainWindow.mainWindow.getMemberImportExploreButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                File beforeFile = new File(MainWindow.mainWindow.getMemberFilePathField().getText());
-                JFileChooser fileChooser;
-                if (beforeFile.exists()) {
-                    fileChooser = new JFileChooser(beforeFile);
-                } else {
-                    fileChooser = new JFileChooser();
-                }
-                FileFilter filter;
-                filter = new FileNameExtensionFilter("*.txt,*.csv", "txt", "csv", "TXT", "CSV");
-                fileChooser.setFileFilter(filter);
-                int approve = fileChooser.showOpenDialog(MainWindow.mainWindow.getSettingPanel());
-                if (approve == JFileChooser.APPROVE_OPTION) {
-                    MainWindow.mainWindow.getMemberFilePathField().setText(fileChooser.getSelectedFile().getAbsolutePath());
-                }
+        MainWindow.mainWindow.getMemberImportExploreButton().addActionListener(e -> {
+            File beforeFile = new File(MainWindow.mainWindow.getMemberFilePathField().getText());
+            JFileChooser fileChooser;
 
+            if (beforeFile.exists()) {
+                fileChooser = new JFileChooser(beforeFile);
+            } else {
+                fileChooser = new JFileChooser();
             }
+
+            FileFilter filter = new FileNameExtensionFilter("*.txt,*.csv", "txt", "csv", "TXT", "CSV");
+            fileChooser.setFileFilter(filter);
+
+            int approve = fileChooser.showOpenDialog(MainWindow.mainWindow.getSettingPanel());
+            if (approve == JFileChooser.APPROVE_OPTION) {
+                MainWindow.mainWindow.getMemberFilePathField().setText(fileChooser.getSelectedFile().getAbsolutePath());
+            }
+
         });
     }
 
