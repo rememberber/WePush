@@ -2,6 +2,7 @@ package com.fangxuele.tool.wechat.push.logic;
 
 import com.fangxuele.tool.wechat.push.ui.Init;
 import com.fangxuele.tool.wechat.push.ui.MainWindow;
+import com.fangxuele.tool.wechat.push.util.SystemUtil;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.xiaoleilu.hutool.log.Log;
@@ -40,8 +41,8 @@ public class MsgHisManage {
 
     private MsgHisManage() {
         try {
-            msgHisFile = new File("data/msg_his.csv");
-            File msgHisDir = new File("data/");
+            msgHisFile = new File(SystemUtil.configHome + "data" + File.separator + "msg_his.csv");
+            File msgHisDir = new File(SystemUtil.configHome + "data" + File.separator);
             if (!msgHisFile.exists()) {
                 msgHisDir.mkdirs();
                 msgHisFile.createNewFile();
@@ -100,8 +101,8 @@ public class MsgHisManage {
     public List<String[]> readTemplateData(String msgName) {
         CSVReader reader = null;
         List<String[]> list = new ArrayList<>();
-        File dir = new File("data/template_data/");
-        File file = new File("data/template_data/" + msgName + ".csv");
+        File dir = new File(SystemUtil.configHome + "data" + File.separator + "template_data" + File.separator);
+        File file = new File(SystemUtil.configHome + "data" + File.separator + "template_data" + File.separator + msgName + ".csv");
         try {
             if (!file.exists()) {
                 dir.mkdirs();
@@ -146,8 +147,9 @@ public class MsgHisManage {
      * @throws IOException
      */
     public void writeTemplateData(String msgName) throws IOException {
-        File dir = new File("data/template_data/");
-        File file = new File("data/template_data/" + msgName + ".csv");
+        File dir = new File(SystemUtil.configHome + "data" + File.separator + "template_data" + File.separator);
+        File file = new File(SystemUtil.configHome + "data" + File.separator + "template_data" + File.separator
+                + msgName + ".csv");
         if (!file.exists()) {
             dir.mkdirs();
             file.createNewFile();
