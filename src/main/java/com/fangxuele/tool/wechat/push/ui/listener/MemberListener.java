@@ -287,6 +287,12 @@ public class MemberListener {
         MainWindow.mainWindow.getMemberTabImportProgressBar().setMaximum((int) wxMpUserList.getTotal());
         int importedCount = 0;
 
+        if (wxMpUserList.getCount() == 0) {
+            MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(importedCount));
+            MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(importedCount);
+            return;
+        }
+
         List<String> openIds = wxMpUserList.getOpenids();
 
         PushData.allUser = Collections.synchronizedList(new ArrayList<>());
@@ -335,6 +341,12 @@ public class MemberListener {
         MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
         MainWindow.mainWindow.getMemberTabImportProgressBar().setMaximum((int) wxTagListUser.getCount());
         int importedCount = 0;
+
+        if (wxTagListUser.getCount() == 0) {
+            MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(importedCount));
+            MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(importedCount);
+            return;
+        }
 
         List<String> openIds = wxTagListUser.getData().getOpenidList();
 
