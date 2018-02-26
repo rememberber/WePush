@@ -3,6 +3,7 @@ package com.fangxuele.tool.wechat.push.ui.listener;
 import com.fangxuele.tool.wechat.push.ui.Init;
 import com.fangxuele.tool.wechat.push.ui.MainWindow;
 import com.fangxuele.tool.wechat.push.util.DbUtilMySQL;
+import com.fangxuele.tool.wechat.push.util.SystemUtil;
 import com.xiaoleilu.hutool.log.Log;
 import com.xiaoleilu.hutool.log.LogFactory;
 
@@ -162,7 +163,8 @@ public class SettingListener {
                             String msgName = (String) tableModel.getValueAt(i, 1);
                             if (msgMap.containsKey(msgName)) {
                                 msgMap.remove(msgName);
-                                File msgTemplateDataFile = new File("data/template_data/" + msgName + ".csv");
+                                File msgTemplateDataFile = new File(SystemUtil.configHome + "data"
+                                        + File.separator + "template_data" + File.separator + msgName + ".csv");
                                 if (msgTemplateDataFile.exists()) {
                                     msgTemplateDataFile.delete();
                                 }
