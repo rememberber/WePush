@@ -1,10 +1,7 @@
 package com.fangxuele.tool.wechat.push.ui.listener;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.fangxuele.tool.wechat.push.bean.VersionSummary;
-import com.fangxuele.tool.wechat.push.logic.PushData;
-import com.fangxuele.tool.wechat.push.logic.RunPushThread;
 import com.fangxuele.tool.wechat.push.ui.ConstantsUI;
 import com.fangxuele.tool.wechat.push.ui.MainWindow;
 import com.xiaoleilu.hutool.http.HttpUtil;
@@ -13,8 +10,7 @@ import com.xiaoleilu.hutool.log.LogFactory;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
-import java.awt.Cursor;
-import java.awt.Desktop;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -75,7 +71,9 @@ public class AboutListener {
 
             // 从github获取最新版本相关信息
             String content = HttpUtil.get(ConstantsUI.CHECK_VERSION_URL);
-            if (StringUtils.isEmpty(content)) {
+            if (StringUtils.isEmpty(content) && !initCheck) {
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "检查超时，请关注GitHub Release！", "网络错误",
+                        JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
             content = content.replace("\n", "");
