@@ -51,6 +51,7 @@ public class Init {
      */
     public static void initGlobalFont() {
 
+        // 低分辨率屏幕字号初始化
         String lowDpiKey = "lowDpiInit";
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); //得到屏幕的尺寸
         if (screenSize.width <= 1366 && StringUtils.isEmpty(configer.getProps(lowDpiKey))) {
@@ -59,8 +60,11 @@ public class Init {
             configer.save();
         }
 
-        if (SystemUtil.isMacOs()) {
+        // Mac高分辨率屏幕字号初始化
+        String highDpiKey = "highDpiInit";
+        if (SystemUtil.isMacOs() && StringUtils.isEmpty(configer.getProps(highDpiKey))) {
             configer.setFontSize(15);
+            configer.setProps(highDpiKey, "true");
             configer.save();
         }
 
