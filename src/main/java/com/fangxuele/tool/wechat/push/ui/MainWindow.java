@@ -1,14 +1,17 @@
 package com.fangxuele.tool.wechat.push.ui;
 
+import com.apple.eawt.Application;
 import com.fangxuele.tool.wechat.push.ui.listener.AboutListener;
 import com.fangxuele.tool.wechat.push.ui.listener.FramListener;
 import com.fangxuele.tool.wechat.push.ui.listener.HelpListener;
 import com.fangxuele.tool.wechat.push.ui.listener.MemberListener;
 import com.fangxuele.tool.wechat.push.ui.listener.MsgListener;
+import com.fangxuele.tool.wechat.push.ui.listener.PushHisListener;
 import com.fangxuele.tool.wechat.push.ui.listener.PushListener;
 import com.fangxuele.tool.wechat.push.ui.listener.ScheduleListener;
 import com.fangxuele.tool.wechat.push.ui.listener.SettingListener;
 import com.fangxuele.tool.wechat.push.ui.listener.TabListener;
+import com.fangxuele.tool.wechat.push.util.SystemUtil;
 import com.xiaoleilu.hutool.log.Log;
 import com.xiaoleilu.hutool.log.LogFactory;
 
@@ -135,14 +138,9 @@ public class MainWindow {
     private JButton clearImportButton;
     private JComboBox memberHisComboBox;
     private JButton importFromHisButton;
-    private JTable importHisTable;
-    private JPanel memberHisManagePanel;
     private JButton msgHisTableSelectAllButton;
     private JButton msgHisTableDeleteButton;
-    private JButton importHisTableSelectAllButton;
-    private JButton importHisTableDeleteButton;
     private JButton msgHisTableUnselectAllButton;
-    private JButton importHisTableUnselectAllButton;
     private JLabel scheduleDetailLabel;
     private JTextField msgTemplateMiniAppidTextField;
     private JTextField msgTemplateMiniPagePathTextField;
@@ -153,6 +151,18 @@ public class MainWindow {
     private JLabel templateMiniProgramOptionalLabel1;
     private JLabel templateMiniProgramOptionalLabel2;
     private JCheckBox autoCheckUpdateCheckBox;
+    private JButton pushHisLeftSelectAllButton;
+    private JButton pushHisLeftUnselectAllButton;
+    private JButton pushHisLeftDeleteButton;
+    private JTable pushHisLeftTable;
+    private JPanel pushHisPanel;
+    private JButton pushHisExportButton;
+    private JTextArea pushHisTextArea;
+    private JLabel pushHisCountLabel;
+    private JButton pushHisCopyButton;
+    private JButton memberImportTagButton;
+    private JComboBox memberImportTagComboBox;
+    private JButton memberImportTagFreshButton;
     public static JFrame frame;
 
     public static MainWindow mainWindow;
@@ -161,11 +171,19 @@ public class MainWindow {
     public static void main(String[] args) {
         logger.info("main start");
 
+        // 初始化主题
         Init.initTheme();
-        Init.initGlobalFont();  //统一设置字体
-
+        // 统一设置字体
+        Init.initGlobalFont();
+        // Windows系统状态栏图标
         frame = new JFrame(ConstantsUI.APP_NAME);
         frame.setIconImage(ConstantsUI.IMAGE_ICON);
+        // Mac系统Dock图标
+        if (SystemUtil.isMacOs()) {
+            Application application = Application.getApplication();
+            application.setDockIconImage(ConstantsUI.IMAGE_ICON);
+        }
+
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); //得到屏幕的尺寸
         frame.setBounds((int) (screenSize.width * 0.1), (int) (screenSize.height * 0.08), (int) (screenSize.width * 0.8),
                 (int) (screenSize.height * 0.8));
@@ -187,6 +205,7 @@ public class MainWindow {
         // 添加事件监听
         AboutListener.addListeners();
         HelpListener.addListeners();
+        PushHisListener.addListeners();
         SettingListener.addListeners();
         MsgListener.addListeners();
         MemberListener.addListeners();
@@ -1160,14 +1179,6 @@ public class MainWindow {
         this.memberHisComboBox = memberHisComboBox;
     }
 
-    public JTable getImportHisTable() {
-        return importHisTable;
-    }
-
-    public void setImportHisTable(JTable importHisTable) {
-        this.importHisTable = importHisTable;
-    }
-
     public JButton getMsgHisTableSelectAllButton() {
         return msgHisTableSelectAllButton;
     }
@@ -1184,36 +1195,12 @@ public class MainWindow {
         this.msgHisTableDeleteButton = msgHisTableDeleteButton;
     }
 
-    public JButton getImportHisTableSelectAllButton() {
-        return importHisTableSelectAllButton;
-    }
-
-    public void setImportHisTableSelectAllButton(JButton importHisTableSelectAllButton) {
-        this.importHisTableSelectAllButton = importHisTableSelectAllButton;
-    }
-
-    public JButton getImportHisTableDeleteButton() {
-        return importHisTableDeleteButton;
-    }
-
-    public void setImportHisTableDeleteButton(JButton importHisTableDeleteButton) {
-        this.importHisTableDeleteButton = importHisTableDeleteButton;
-    }
-
     public JButton getMsgHisTableUnselectAllButton() {
         return msgHisTableUnselectAllButton;
     }
 
     public void setMsgHisTableUnselectAllButton(JButton msgHisTableUnselectAllButton) {
         this.msgHisTableUnselectAllButton = msgHisTableUnselectAllButton;
-    }
-
-    public JButton getImportHisTableUnselectAllButton() {
-        return importHisTableUnselectAllButton;
-    }
-
-    public void setImportHisTableUnselectAllButton(JButton importHisTableUnselectAllButton) {
-        this.importHisTableUnselectAllButton = importHisTableUnselectAllButton;
     }
 
     public JLabel getScheduleDetailLabel() {
@@ -1278,5 +1265,93 @@ public class MainWindow {
 
     public void setAutoCheckUpdateCheckBox(boolean selected) {
         this.autoCheckUpdateCheckBox.setSelected(selected);
+    }
+
+    public JTable getPushHisLeftTable() {
+        return pushHisLeftTable;
+    }
+
+    public void setPushHisLeftTable(JTable pushHisLeftTable) {
+        this.pushHisLeftTable = pushHisLeftTable;
+    }
+
+    public JButton getPushHisLeftSelectAllButton() {
+        return pushHisLeftSelectAllButton;
+    }
+
+    public void setPushHisLeftSelectAllButton(JButton pushHisLeftSelectAllButton) {
+        this.pushHisLeftSelectAllButton = pushHisLeftSelectAllButton;
+    }
+
+    public JButton getPushHisLeftUnselectAllButton() {
+        return pushHisLeftUnselectAllButton;
+    }
+
+    public void setPushHisLeftUnselectAllButton(JButton pushHisLeftUnselectAllButton) {
+        this.pushHisLeftUnselectAllButton = pushHisLeftUnselectAllButton;
+    }
+
+    public JButton getPushHisLeftDeleteButton() {
+        return pushHisLeftDeleteButton;
+    }
+
+    public void setPushHisLeftDeleteButton(JButton pushHisLeftDeleteButton) {
+        this.pushHisLeftDeleteButton = pushHisLeftDeleteButton;
+    }
+
+    public JTextArea getPushHisTextArea() {
+        return pushHisTextArea;
+    }
+
+    public void setPushHisTextArea(JTextArea pushHisTextArea) {
+        this.pushHisTextArea = pushHisTextArea;
+    }
+
+    public JLabel getPushHisCountLabel() {
+        return pushHisCountLabel;
+    }
+
+    public void setPushHisCountLabel(JLabel pushHisCountLabel) {
+        this.pushHisCountLabel = pushHisCountLabel;
+    }
+
+    public JButton getMemberImportTagButton() {
+        return memberImportTagButton;
+    }
+
+    public void setMemberImportTagButton(JButton memberImportTagButton) {
+        this.memberImportTagButton = memberImportTagButton;
+    }
+
+    public JComboBox getMemberImportTagComboBox() {
+        return memberImportTagComboBox;
+    }
+
+    public void setMemberImportTagComboBox(JComboBox memberImportTagComboBox) {
+        this.memberImportTagComboBox = memberImportTagComboBox;
+    }
+
+    public JButton getMemberImportTagFreshButton() {
+        return memberImportTagFreshButton;
+    }
+
+    public void setMemberImportTagFreshButton(JButton memberImportTagFreshButton) {
+        this.memberImportTagFreshButton = memberImportTagFreshButton;
+    }
+
+    public JButton getPushHisExportButton() {
+        return pushHisExportButton;
+    }
+
+    public void setPushHisExportButton(JButton pushHisExportButton) {
+        this.pushHisExportButton = pushHisExportButton;
+    }
+
+    public JButton getPushHisCopyButton() {
+        return pushHisCopyButton;
+    }
+
+    public void setPushHisCopyButton(JButton pushHisCopyButton) {
+        this.pushHisCopyButton = pushHisCopyButton;
     }
 }
