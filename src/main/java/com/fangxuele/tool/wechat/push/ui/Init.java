@@ -494,7 +494,8 @@ public class Init {
         initMemberTab();
         initPushTab();
         initScheduleTab();
-        initPushHisTab();
+        // 初始化后置，切换tab时再触发
+        // initPushHisTab();
         initSettingTab();
 
         // 检查新版版
