@@ -17,8 +17,6 @@ import com.xiaoleilu.hutool.log.LogFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * Created by rememberber(https://github.com/rememberber) on 2017/6/7.
@@ -158,7 +156,7 @@ public class MainWindow {
     private JButton pushHisLeftDeleteButton;
     private JTable pushHisLeftTable;
     private JPanel pushHisPanel;
-    private JButton 导出Button;
+    private JButton pushHisExportButton;
     private JTextArea pushHisTextArea;
     private JLabel pushHisCountLabel;
     private JButton pushHisCopyButton;
@@ -169,11 +167,6 @@ public class MainWindow {
 
     public static MainWindow mainWindow;
     private static Log logger = LogFactory.get();
-
-    public MainWindow() {
-
-
-    }
 
     public static void main(String[] args) {
         logger.info("main start");
@@ -1344,5 +1337,21 @@ public class MainWindow {
 
     public void setMemberImportTagFreshButton(JButton memberImportTagFreshButton) {
         this.memberImportTagFreshButton = memberImportTagFreshButton;
+    }
+
+    public JButton getPushHisExportButton() {
+        return pushHisExportButton;
+    }
+
+    public void setPushHisExportButton(JButton pushHisExportButton) {
+        this.pushHisExportButton = pushHisExportButton;
+    }
+
+    public JButton getPushHisCopyButton() {
+        return pushHisCopyButton;
+    }
+
+    public void setPushHisCopyButton(JButton pushHisCopyButton) {
+        this.pushHisCopyButton = pushHisCopyButton;
     }
 }
