@@ -2,6 +2,7 @@ package com.fangxuele.tool.wechat.push.ui.listener;
 
 import com.fangxuele.tool.wechat.push.ui.Init;
 import com.fangxuele.tool.wechat.push.ui.MainWindow;
+import com.fangxuele.tool.wechat.push.util.SystemUtil;
 import com.xiaoleilu.hutool.log.Log;
 import com.xiaoleilu.hutool.log.LogFactory;
 import org.apache.commons.lang3.StringUtils;
@@ -115,6 +116,20 @@ public class PushHisListener {
                     logger.error(e1);
                 }
             }
+        }).start());
+
+        MainWindow.mainWindow.getPushHisCopyButton().addActionListener(e -> new Thread(() -> {
+            try {
+                MainWindow.mainWindow.getPushHisCopyButton().setEnabled(false);
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "内容已经复制到剪贴板！", "复制成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+                SystemUtil.setSysClipboardText(MainWindow.mainWindow.getPushHisTextArea().getText());
+            } catch (Exception e1) {
+                logger.error(e1);
+            } finally {
+                MainWindow.mainWindow.getPushHisCopyButton().setEnabled(true);
+            }
+
         }).start());
 
     }
