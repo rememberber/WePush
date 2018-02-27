@@ -848,6 +848,7 @@
                     </constraints>
                     <properties>
                       <font style="1"/>
+                      <icon value="icon/forceRefresh.png"/>
                       <text value="刷新可选的标签"/>
                     </properties>
                   </component>
