@@ -6,7 +6,7 @@ import java.awt.Toolkit;
 /**
  * UI相关的常量
  *
- * @author rememberber(https://github.com/rememberber)
+ * @author rememberber(https : / / github.com / rememberber)
  */
 public class ConstantsUI {
 
@@ -20,7 +20,7 @@ public class ConstantsUI {
      * 主窗口图标
      */
     public final static Image IMAGE_ICON = Toolkit.getDefaultToolkit()
-            .getImage(MainWindow.class.getResource("/icon/logo-md.png"));
+            .getImage(MainWindow.class.getResource("/icon/logo-lg.png"));
 
     /**
      * 软件版本检查url
