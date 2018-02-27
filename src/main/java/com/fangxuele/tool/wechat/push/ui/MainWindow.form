@@ -645,7 +645,7 @@
                   </component>
                 </children>
               </grid>
-              <grid id="563e6" binding="memberTabDownPanel" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+              <grid id="563e6" binding="memberTabDownPanel" layout-manager="GridLayoutManager" row-count="1" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="10" left="50" bottom="10" right="0"/>
                 <constraints>
                   <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -673,11 +673,19 @@
                   </component>
                   <component id="6592d" class="javax.swing.JButton" binding="importFromFileButton">
                     <constraints>
-                      <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                      <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <icon value="icon/fromVCS.png"/>
                       <text value="导入openid/手机号"/>
+                    </properties>
+                  </component>
+                  <component id="8c101" class="javax.swing.JButton" binding="memberImportExploreButton">
+                    <constraints>
+                      <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="浏览"/>
                     </properties>
                   </component>
                 </children>

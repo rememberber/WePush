@@ -48,11 +48,17 @@ public class AboutListener {
 
         });
 
+        // 检查更新
         MainWindow.mainWindow.getCheckUpdateLabel().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                checkUpdate(false);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        checkUpdate(false);
+                    }
+                }).start();
             }
 
             @Override

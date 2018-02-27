@@ -334,7 +334,7 @@ public class Init {
 
         MainWindow.mainWindow.getMemberHisComboBox().removeAllItems();
 
-        File pushHisDir = new File("data/push_his");
+        File pushHisDir = new File(SystemUtil.configHome + "data" + File.separator + "push_his");
         if (!pushHisDir.exists()) {
             pushHisDir.mkdirs();
         }
@@ -390,7 +390,7 @@ public class Init {
         renderer.setPreferredSize(new Dimension(0, 0));
         MainWindow.mainWindow.getPushHisLeftTable().getTableHeader().setDefaultRenderer(renderer);
 
-        File pushHisDir = new File("data/push_his");
+        File pushHisDir = new File(SystemUtil.configHome + "data" + File.separator + "push_his");
         if (!pushHisDir.exists()) {
             pushHisDir.mkdirs();
         }
@@ -494,7 +494,8 @@ public class Init {
         initMemberTab();
         initPushTab();
         initScheduleTab();
-        initPushHisTab();
+        // 初始化后置，切换tab时再触发
+        // initPushHisTab();
         initSettingTab();
 
         // 检查新版版

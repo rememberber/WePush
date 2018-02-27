@@ -5,6 +5,7 @@ import com.fangxuele.tool.wechat.push.logic.PushManage;
 import com.fangxuele.tool.wechat.push.ui.Init;
 import com.fangxuele.tool.wechat.push.ui.MainWindow;
 import com.fangxuele.tool.wechat.push.util.DbUtilMySQL;
+import com.fangxuele.tool.wechat.push.util.SystemUtil;
 import com.opencsv.CSVReader;
 import com.xiaoleilu.hutool.io.file.FileReader;
 import com.xiaoleilu.hutool.log.Log;
@@ -17,6 +18,8 @@ import me.chanjar.weixin.mp.bean.tag.WxUserTag;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
@@ -181,7 +184,8 @@ public class MemberListener {
 
         // 从历史导入按钮事件
         MainWindow.mainWindow.getImportFromHisButton().addActionListener(e -> new Thread(() -> {
-            File file = new File("data/push_his/" + MainWindow.mainWindow.getMemberHisComboBox().getSelectedItem().toString());
+            File file = new File(SystemUtil.configHome + "data/push_his" + File.separator
+                    + MainWindow.mainWindow.getMemberHisComboBox().getSelectedItem().toString());
             CSVReader reader = null;
             FileReader fileReader = null;
 
@@ -265,6 +269,27 @@ public class MemberListener {
                 }
             }
         }).start());
+
+        // 浏览按钮
+        MainWindow.mainWindow.getMemberImportExploreButton().addActionListener(e -> {
+            File beforeFile = new File(MainWindow.mainWindow.getMemberFilePathField().getText());
+            JFileChooser fileChooser;
+
+            if (beforeFile.exists()) {
+                fileChooser = new JFileChooser(beforeFile);
+            } else {
+                fileChooser = new JFileChooser();
+            }
+
+            FileFilter filter = new FileNameExtensionFilter("*.txt,*.csv", "txt", "csv", "TXT", "CSV");
+            fileChooser.setFileFilter(filter);
+
+            int approve = fileChooser.showOpenDialog(MainWindow.mainWindow.getSettingPanel());
+            if (approve == JFileChooser.APPROVE_OPTION) {
+                MainWindow.mainWindow.getMemberFilePathField().setText(fileChooser.getSelectedFile().getAbsolutePath());
+            }
+
+        });
     }
 
     /**
