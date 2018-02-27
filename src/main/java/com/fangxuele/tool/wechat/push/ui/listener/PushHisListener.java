@@ -2,6 +2,8 @@ package com.fangxuele.tool.wechat.push.ui.listener;
 
 import com.fangxuele.tool.wechat.push.ui.Init;
 import com.fangxuele.tool.wechat.push.ui.MainWindow;
+import com.fangxuele.tool.wechat.push.util.SystemUtil;
+import com.xiaoleilu.hutool.io.FileUtil;
 import com.xiaoleilu.hutool.log.Log;
 import com.xiaoleilu.hutool.log.LogFactory;
 import com.xiaoleilu.hutool.util.ClipboardUtil;
@@ -9,8 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
@@ -18,6 +19,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 推送历史管理tab相关事件监听
@@ -37,8 +40,10 @@ public class PushHisListener {
                         MainWindow.mainWindow.getPushHisTextArea().setText("");
 
                         int selectedRow = MainWindow.mainWindow.getPushHisLeftTable().getSelectedRow();
-                        String selectedFileName = MainWindow.mainWindow.getPushHisLeftTable().getValueAt(selectedRow, 1).toString();
-                        File pushHisFile = new File("data/push_his/" + selectedFileName);
+                        String selectedFileName = MainWindow.mainWindow.getPushHisLeftTable()
+                                .getValueAt(selectedRow, 1).toString();
+                        File pushHisFile = new File(SystemUtil.configHome + "data" + File.separator
+                                + "push_his" + File.separator + selectedFileName);
 
                         try {
                             BufferedReader br = new BufferedReader(new FileReader(pushHisFile));
@@ -97,7 +102,7 @@ public class PushHisListener {
                         boolean delete = (boolean) tableModel.getValueAt(i, 0);
                         if (delete) {
                             String fileName = (String) tableModel.getValueAt(i, 1);
-                            File msgTemplateDataFile = new File("data/push_his/" + fileName);
+                            File msgTemplateDataFile = new File(SystemUtil.configHome + "data" + File.separator + "push_his" + File.separator + fileName);
                             if (msgTemplateDataFile.exists()) {
                                 msgTemplateDataFile.delete();
                             }
@@ -136,13 +141,57 @@ public class PushHisListener {
         }).start());
 
         // 推送历史管理-导出按钮
-        MainWindow.mainWindow.getPushHisExportButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // TODO 导出推送历史
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "敬请期待！", "提示",
-                        JOptionPane.INFORMATION_MESSAGE);
+        MainWindow.mainWindow.getPushHisExportButton().addActionListener(e -> {
+            List<String> toExportFilePathList = new ArrayList<>();
+            int selectedCount = 0;
+
+            try {
+                DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getPushHisLeftTable()
+                        .getModel();
+                int rowCount = tableModel.getRowCount();
+                for (int i = 0; i < rowCount; i++) {
+                    boolean selected = (boolean) tableModel.getValueAt(i, 0);
+                    if (selected) {
+                        selectedCount++;
+                        String fileName = (String) tableModel.getValueAt(i, 1);
+                        File msgTemplateDataFile = new File(SystemUtil.configHome + "data" + File.separator + "push_his" + File.separator + fileName);
+                        if (msgTemplateDataFile.exists()) {
+                            toExportFilePathList.add(msgTemplateDataFile.getAbsolutePath());
+                        }
+                    }
+                }
+
+                if (selectedCount > 0) {
+                    JFileChooser fileChooser = new JFileChooser();
+                    fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                    int approve = fileChooser.showOpenDialog(MainWindow.mainWindow.getSettingPanel());
+                    String exportPath = "";
+                    if (approve == JFileChooser.APPROVE_OPTION) {
+                        exportPath = fileChooser.getSelectedFile().getAbsolutePath();
+                    }
+
+                    for (String toExportFilePath : toExportFilePathList) {
+                        FileUtil.copy(toExportFilePath, exportPath, true);
+                    }
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "导出成功！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    try {
+                        Desktop desktop = Desktop.getDesktop();
+                        desktop.open(new File(exportPath));
+                    } catch (Exception e2) {
+                        logger.error(e2);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "请至少选择一个！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "导出失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
             }
+
         });
 
     }

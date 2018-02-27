@@ -2,6 +2,7 @@ package com.fangxuele.tool.wechat.push.logic;
 
 import com.fangxuele.tool.wechat.push.ui.Init;
 import com.fangxuele.tool.wechat.push.ui.MainWindow;
+import com.fangxuele.tool.wechat.push.util.SystemUtil;
 import com.opencsv.CSVWriter;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
@@ -349,7 +350,7 @@ public class PushManage {
      * 推送停止或结束后保存数据
      */
     public static void savePushData() throws IOException {
-        File pushHisDir = new File("data/push_his");
+        File pushHisDir = new File(SystemUtil.configHome + "data" + File.separator + "push_his");
         if (!pushHisDir.exists()) {
             pushHisDir.mkdirs();
         }
@@ -362,7 +363,9 @@ public class PushManage {
 
         // 保存已发送
         if (PushData.sendSuccessList.size() > 0) {
-            File toSendFile = new File(new StringBuilder("data/push_his/").append(msgName).append("-发送成功-").append(nowTime).append(".csv").toString());
+            File toSendFile = new File(new StringBuilder(SystemUtil.configHome).append("data")
+                    .append(File.separator).append("push_his").append(File.separator).append(msgName)
+                    .append("-发送成功-").append(nowTime).append(".csv").toString());
             if (!toSendFile.exists()) {
                 toSendFile.createNewFile();
             }
@@ -382,7 +385,9 @@ public class PushManage {
             PushData.toSendList.remove(str);
         }
         if (PushData.toSendList.size() > 0) {
-            File unSendFile = new File(new StringBuilder("data/push_his/").append(msgName).append("-未发送-").append(nowTime).append(".csv").toString());
+            File unSendFile = new File(new StringBuilder(SystemUtil.configHome).append("data").append(File.separator)
+                    .append("push_his").append(File.separator).append(msgName).append("-未发送-").append(nowTime)
+                    .append(".csv").toString());
             if (!unSendFile.exists()) {
                 unSendFile.createNewFile();
             }
@@ -395,7 +400,8 @@ public class PushManage {
 
         // 保存发送失败
         if (PushData.sendFailList.size() > 0) {
-            File failSendFile = new File(new StringBuilder("data/push_his/").append(msgName).append("-发送失败-").append(nowTime).append(".csv").toString());
+            File failSendFile = new File(new StringBuilder(SystemUtil.configHome).append("data").append(File.separator)
+                    .append("push_his").append(File.separator).append(msgName).append("-发送失败-").append(nowTime).append(".csv").toString());
             if (!failSendFile.exists()) {
                 failSendFile.createNewFile();
             }
