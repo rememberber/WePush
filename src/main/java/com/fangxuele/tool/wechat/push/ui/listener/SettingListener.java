@@ -180,7 +180,7 @@ public class SettingListener {
                     }
                     Init.msgHisManager.writeMsgHis(msgMap);
 
-                    Init.initMsgTab(false);
+                    Init.initMsgTab(null);
                 } catch (Exception e1) {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "删除失败！\n\n" + e1.getMessage(), "失败",
                             JOptionPane.ERROR_MESSAGE);
