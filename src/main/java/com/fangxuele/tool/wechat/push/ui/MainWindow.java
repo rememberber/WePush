@@ -25,10 +25,10 @@ public class MainWindow {
     private JPanel mainPanel;
     private JTabbedPane tabbedPane;
     private JPanel aboutPanel;
-    private JPanel messagePanel;
+    private JSplitPane messagePanel;
     private JPanel memberPanel;
     private JPanel pushPanel;
-    private JPanel reportPanel;
+    private JPanel helpPanel;
     private JPanel settingPanel;
     private JLabel companyLabel;
     private JLabel versionLabel;
@@ -240,11 +240,11 @@ public class MainWindow {
         this.aboutPanel = aboutPanel;
     }
 
-    public JPanel getMessagePanel() {
+    public JSplitPane getMessagePanel() {
         return messagePanel;
     }
 
-    public void setMessagePanel(JPanel messagePanel) {
+    public void setMessagePanel(JSplitPane messagePanel) {
         this.messagePanel = messagePanel;
     }
 
@@ -264,12 +264,12 @@ public class MainWindow {
         this.pushPanel = pushPanel;
     }
 
-    public JPanel getReportPanel() {
-        return reportPanel;
+    public JPanel getHelpPanel() {
+        return helpPanel;
     }
 
-    public void setReportPanel(JPanel reportPanel) {
-        this.reportPanel = reportPanel;
+    public void setHelpPanel(JPanel helpPanel) {
+        this.helpPanel = helpPanel;
     }
 
     public JPanel getSettingPanel() {
