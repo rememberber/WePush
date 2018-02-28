@@ -224,7 +224,7 @@ public class PushListener {
                         // 页大小
                         int pageSize = Integer.parseInt(MainWindow.mainWindow.getPushPageSizeTextField().getText());
                         // 总记录数
-                        long totalCount = PushData.toSendList.size();
+                        long totalCount = PushData.allUser.size();
                         MainWindow.mainWindow.getPushTotalCountLabel().setText("总用户数：" + totalCount);
                         MainWindow.mainWindow.getPushTotalProgressBar().setMaximum((int) totalCount);
                         // 总页数
@@ -253,7 +253,7 @@ public class PushListener {
                         // 页大小
                         int pageSize = Integer.parseInt(MainWindow.mainWindow.getPushPageSizeTextField().getText());
                         // 总记录数
-                        long totalCount = PushData.toSendList.size();
+                        long totalCount = PushData.allUser.size();
                         MainWindow.mainWindow.getPushTotalCountLabel().setText("总用户数：" + totalCount);
                         MainWindow.mainWindow.getPushTotalProgressBar().setMaximum((int) totalCount);
                         // 总页数
