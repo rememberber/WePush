@@ -27,6 +27,8 @@ public class TabListener {
                     case 6:
                         Init.initPushHisTab();
                         break;
+                    case 4:
+                        MainWindow.mainWindow.setPushMsgName(MainWindow.mainWindow.getMsgNameField().getText());
                     default:
                         break;
                 }
