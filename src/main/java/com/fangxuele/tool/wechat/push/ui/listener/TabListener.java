@@ -32,20 +32,7 @@ public class TabListener {
                         MainWindow.mainWindow.setPushMsgName(MainWindow.mainWindow.getMsgNameField().getText());
 
                         if (PushData.allUser != null && PushData.allUser.size() > 0) {
-                            // 页大小
-                            int pageSize = Integer.parseInt(MainWindow.mainWindow.getPushPageSizeTextField().getText());
-                            // 总记录数
-                            long totalCount = PushData.allUser.size();
-                            MainWindow.mainWindow.getPushTotalCountLabel().setText("总用户数：" + totalCount);
-                            MainWindow.mainWindow.getPushTotalProgressBar().setMaximum((int) totalCount);
-                            // 总页数
-                            int totalPage = Long.valueOf((totalCount + pageSize - 1) / pageSize).intValue();
-                            MainWindow.mainWindow.getPushTotalPageLabel().setText("总页数：" + totalPage);
-                            // 每个线程分配多少页
-                            int pagePerThread = Integer.parseInt(MainWindow.mainWindow.getPushPagePerThreadTextField().getText());
-                            // 需要多少个线程
-                            int threadCount = (totalPage + pagePerThread - 1) / pagePerThread;
-                            MainWindow.mainWindow.getPushTotalThreadLabel().setText("需要线程宝宝个数：" + threadCount);
+                            PushListener.refreshPushInfo();
                         }
 
                     default:
