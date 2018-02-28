@@ -441,6 +441,12 @@ public class Init {
         String[] headerNames = {"选择", "消息名称"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
         MainWindow.mainWindow.getMsgHistable().setModel(model);
+        // 隐藏表头
+        MainWindow.mainWindow.getMsgHistable().getTableHeader().setVisible(false);
+        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+        renderer.setPreferredSize(new Dimension(0, 0));
+        MainWindow.mainWindow.getMsgHistable().getTableHeader().setDefaultRenderer(renderer);
+
         Map<String, String[]> msgMap = msgHisManager.readMsgHis();
         Object[] data;
         for (String msgName : msgMap.keySet()) {
@@ -454,7 +460,6 @@ public class Init {
         // 设置列宽
         MainWindow.mainWindow.getMsgHistable().getColumnModel().getColumn(0).setPreferredWidth(50);
         MainWindow.mainWindow.getMsgHistable().getColumnModel().getColumn(0).setMaxWidth(50);
-
     }
 
     /**
