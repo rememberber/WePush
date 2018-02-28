@@ -17,6 +17,8 @@ import com.xiaoleilu.hutool.log.LogFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 /**
  * Created by rememberber(https://github.com/rememberber) on 2017/6/7.
@@ -166,6 +168,10 @@ public class MainWindow {
 
     public static MainWindow mainWindow;
     private static Log logger = LogFactory.get();
+
+    public MainWindow() {
+
+    }
 
     public static void main(String[] args) {
         logger.info("main start");
