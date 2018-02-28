@@ -168,6 +168,8 @@ public class MsgListener {
             MainWindow.mainWindow.getMsgKefuPicUrlTextField().setText("");
             MainWindow.mainWindow.getMsgKefuDescTextField().setText("");
             MainWindow.mainWindow.getMsgKefuUrlTextField().setText("");
+            MainWindow.mainWindow.setMsgTemplateMiniAppidTextField("");
+            MainWindow.mainWindow.setMsgTemplateMiniPagePathTextField("");
 
             if (MainWindow.mainWindow.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
                 Init.initTemplateDataTable();
