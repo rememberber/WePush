@@ -84,9 +84,7 @@ public class MainWindow {
     private JButton pushStopButton;
     private JButton pushStartButton;
     private JTextField msgNameField;
-    private JComboBox msgHistoryComboBox;
     private JButton msgSaveButton;
-    private JLabel msgHistoryLabel;
     private JLabel msgNameLabel;
     private JPanel pushUpPanel;
     private JPanel pushDownPanel;
@@ -728,28 +726,12 @@ public class MainWindow {
         this.msgNameField.setText(msgName);
     }
 
-    public JComboBox getMsgHistoryComboBox() {
-        return msgHistoryComboBox;
-    }
-
-    public void setMsgHistoryComboBox(JComboBox msgHistoryComboBox) {
-        this.msgHistoryComboBox = msgHistoryComboBox;
-    }
-
     public JButton getMsgSaveButton() {
         return msgSaveButton;
     }
 
     public void setMsgSaveButton(JButton msgSaveButton) {
         this.msgSaveButton = msgSaveButton;
-    }
-
-    public JLabel getMsgHistoryLabel() {
-        return msgHistoryLabel;
-    }
-
-    public void setMsgHistoryLabel(JLabel msgHistoryLabel) {
-        this.msgHistoryLabel = msgHistoryLabel;
     }
 
     public JLabel getMsgNameLabel() {
