@@ -17,8 +17,6 @@ import com.xiaoleilu.hutool.log.LogFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 /**
  * Created by rememberber(https://github.com/rememberber) on 2017/6/7.
