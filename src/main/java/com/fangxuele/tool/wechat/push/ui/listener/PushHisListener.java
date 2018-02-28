@@ -91,37 +91,51 @@ public class PushHisListener {
 
         // 推送历史管理-删除
         MainWindow.mainWindow.getPushHisLeftDeleteButton().addActionListener(e -> new Thread(() -> {
-            int isDelete = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getSettingPanel(), "确认删除？", "确认",
-                    JOptionPane.INFORMATION_MESSAGE);
-            if (isDelete == JOptionPane.YES_OPTION) {
-                try {
-                    DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getPushHisLeftTable()
-                            .getModel();
-                    int rowCount = tableModel.getRowCount();
-                    for (int i = 0; i < rowCount; ) {
-                        boolean delete = (boolean) tableModel.getValueAt(i, 0);
-                        if (delete) {
-                            String fileName = (String) tableModel.getValueAt(i, 1);
-                            File msgTemplateDataFile = new File(SystemUtil.configHome + "data" + File.separator + "push_his" + File.separator + fileName);
-                            if (msgTemplateDataFile.exists()) {
-                                msgTemplateDataFile.delete();
-                            }
-                            tableModel.removeRow(i);
-                            MainWindow.mainWindow.getPushHisLeftTable().updateUI();
-                            i = 0;
-                            rowCount = tableModel.getRowCount();
-                            continue;
-                        } else {
-                            i++;
-                        }
-                    }
+            try {
+                DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getPushHisLeftTable()
+                        .getModel();
+                int rowCount = tableModel.getRowCount();
 
-                    Init.initMemberTab();
-                } catch (Exception e1) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "删除失败！\n\n" + e1.getMessage(), "失败",
-                            JOptionPane.ERROR_MESSAGE);
-                    logger.error(e1);
+                int selectedCount = 0;
+                for (int i = 0; i < rowCount; i++) {
+                    boolean isSelected = (boolean) tableModel.getValueAt(i, 0);
+                    if (isSelected) {
+                        selectedCount++;
+                    }
                 }
+
+                if (selectedCount == 0) {
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "请至少选择一个！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    int isDelete = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getSettingPanel(), "确认删除？", "确认",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    if (isDelete == JOptionPane.YES_OPTION) {
+                        for (int i = 0; i < rowCount; ) {
+                            boolean delete = (boolean) tableModel.getValueAt(i, 0);
+                            if (delete) {
+                                String fileName = (String) tableModel.getValueAt(i, 1);
+                                File msgTemplateDataFile = new File(SystemUtil.configHome + "data" + File.separator + "push_his" + File.separator + fileName);
+                                if (msgTemplateDataFile.exists()) {
+                                    msgTemplateDataFile.delete();
+                                }
+                                tableModel.removeRow(i);
+                                MainWindow.mainWindow.getPushHisLeftTable().updateUI();
+                                i = 0;
+                                rowCount = tableModel.getRowCount();
+                                continue;
+                            } else {
+                                i++;
+                            }
+                        }
+
+                        Init.initMemberTab();
+                    }
+                }
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "删除失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
             }
         }).start());
 
