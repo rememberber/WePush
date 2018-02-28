@@ -151,35 +151,31 @@ public class Init {
     /**
      * 初始化消息tab
      */
-    public static void initMsgTab(boolean isInitFromHisComboxChang) {
-        String msgName;
-        if (isInitFromHisComboxChang) {
-            msgName = MainWindow.mainWindow.getMsgHistoryComboBox().getSelectedItem().toString();
+    public static void initMsgTab(String selectedMsgName) {
+        // 初始化，清空所有相关的输入框内容
+        MainWindow.mainWindow.setMsgTypeComboBox("");
+        MainWindow.mainWindow.setMsgTemplateIdTextField("");
+        MainWindow.mainWindow.setMsgTemplateUrlTextField("");
+        MainWindow.mainWindow.setMsgKefuMsgTypeComboBox("");
+        MainWindow.mainWindow.setMsgKefuMsgTitleTextField("");
+        MainWindow.mainWindow.setMsgKefuPicUrlTextField("");
+        MainWindow.mainWindow.setMsgKefuDescTextField("");
+        MainWindow.mainWindow.setMsgKefuUrlTextField("");
+        MainWindow.mainWindow.setMsgTemplateMiniAppidTextField("");
+        MainWindow.mainWindow.setMsgTemplateMiniPagePathTextField("");
 
-            // 初始化，清空所有相关的输入框内容
-            MainWindow.mainWindow.setMsgTypeComboBox("");
-            MainWindow.mainWindow.setMsgTemplateIdTextField("");
-            MainWindow.mainWindow.setMsgTemplateUrlTextField("");
-            MainWindow.mainWindow.setMsgKefuMsgTypeComboBox("");
-            MainWindow.mainWindow.setMsgKefuMsgTitleTextField("");
-            MainWindow.mainWindow.setMsgKefuPicUrlTextField("");
-            MainWindow.mainWindow.setMsgKefuDescTextField("");
-            MainWindow.mainWindow.setMsgKefuUrlTextField("");
-            MainWindow.mainWindow.setMsgTemplateMiniAppidTextField("");
-            MainWindow.mainWindow.setMsgTemplateMiniPagePathTextField("");
-        } else {
+        String msgName;
+        if (StringUtils.isEmpty(selectedMsgName)) {
             msgName = configer.getMsgName();
+        } else {
+            msgName = selectedMsgName;
         }
 
         MainWindow.mainWindow.setMsgNameField(msgName);
         MainWindow.mainWindow.setPreviewUserField(configer.getPreviewUser());
 
         Map<String, String[]> msgMap = msgHisManager.readMsgHis();
-        if (!isInitFromHisComboxChang) {
-            DefaultComboBoxModel model = new DefaultComboBoxModel(msgMap.keySet().toArray());
-            MainWindow.mainWindow.getMsgHistoryComboBox().setModel(model);
-            MainWindow.mainWindow.getMsgHistoryComboBox().setSelectedItem(configer.getMsgName());
-        }
+
         if (msgMap != null && msgMap.size() != 0) {
             if (msgMap.containsKey(msgName)) {
                 String[] msgDataArray = msgMap.get(msgName);
@@ -490,7 +486,7 @@ public class Init {
      */
     public static void initAllTab() {
         initHelpTab();
-        initMsgTab(false);
+        initMsgTab(null);
         initMemberTab();
         initPushTab();
         initScheduleTab();
