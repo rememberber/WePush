@@ -20,6 +20,8 @@ import java.util.Map;
 public class SettingListener {
     private static final Log logger = LogFactory.get();
 
+    private static boolean selectAllToggle = false;
+
     public static void addListeners() {
 
         // 设置-常规-启动时自动检查更新
@@ -129,11 +131,12 @@ public class SettingListener {
 
         // 历史消息管理-全选
         MainWindow.mainWindow.getMsgHisTableSelectAllButton().addActionListener(e -> new Thread(() -> {
+            toggleSelectAll();
             DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getMsgHistable()
                     .getModel();
             int rowCount = tableModel.getRowCount();
             for (int i = 0; i < rowCount; i++) {
-                tableModel.setValueAt(true, i, 0);
+                tableModel.setValueAt(selectAllToggle, i, 0);
             }
         }).start());
 
@@ -203,5 +206,18 @@ public class SettingListener {
             }
         }).start());
 
+    }
+
+    /**
+     * 切换全选/全不选
+     *
+     * @return
+     */
+    private static void toggleSelectAll() {
+        if (!selectAllToggle) {
+            selectAllToggle = true;
+        } else {
+            selectAllToggle = false;
+        }
     }
 }
