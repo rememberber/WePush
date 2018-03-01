@@ -140,16 +140,6 @@ public class SettingListener {
             }
         }).start());
 
-        // 历史消息管理-全不选
-        MainWindow.mainWindow.getMsgHisTableUnselectAllButton().addActionListener(e -> new Thread(() -> {
-            DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getMsgHistable()
-                    .getModel();
-            int rowCount = tableModel.getRowCount();
-            for (int i = 0; i < rowCount; i++) {
-                tableModel.setValueAt(false, i, 0);
-            }
-        }).start());
-
         // 历史消息管理-删除
         MainWindow.mainWindow.getMsgHisTableDeleteButton().addActionListener(e -> new Thread(() -> {
             try {
