@@ -1,5 +1,6 @@
 package com.fangxuele.tool.wechat.push.ui.listener;
 
+import com.fangxuele.tool.wechat.push.logic.PushData;
 import com.fangxuele.tool.wechat.push.ui.Init;
 import com.fangxuele.tool.wechat.push.ui.MainWindow;
 import com.xiaoleilu.hutool.log.Log;
@@ -27,6 +28,13 @@ public class TabListener {
                     case 6:
                         Init.initPushHisTab();
                         break;
+                    case 4:
+                        MainWindow.mainWindow.setPushMsgName(MainWindow.mainWindow.getMsgNameField().getText());
+
+                        if (PushData.allUser != null && PushData.allUser.size() > 0) {
+                            PushListener.refreshPushInfo();
+                        }
+
                     default:
                         break;
                 }
