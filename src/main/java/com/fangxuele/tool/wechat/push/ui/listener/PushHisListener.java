@@ -82,16 +82,6 @@ public class PushHisListener {
             }
         }).start());
 
-        // 推送历史管理-全不选
-        MainWindow.mainWindow.getPushHisLeftUnselectAllButton().addActionListener(e -> new Thread(() -> {
-            DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getPushHisLeftTable()
-                    .getModel();
-            int rowCount = tableModel.getRowCount();
-            for (int i = 0; i < rowCount; i++) {
-                tableModel.setValueAt(false, i, 0);
-            }
-        }).start());
-
         // 推送历史管理-删除
         MainWindow.mainWindow.getPushHisLeftDeleteButton().addActionListener(e -> new Thread(() -> {
             try {
