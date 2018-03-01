@@ -596,7 +596,7 @@
                       </component>
                     </children>
                   </scrollpane>
-                  <grid id="9a0b8" layout-manager="GridLayoutManager" row-count="1" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                  <grid id="9a0b8" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                     <margin top="0" left="0" bottom="0" right="0"/>
                     <constraints>
                       <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -614,7 +614,7 @@
                       </component>
                       <component id="e5d0a" class="javax.swing.JButton" binding="msgHisTableDeleteButton">
                         <constraints>
-                          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text value="删除"/>
@@ -622,17 +622,9 @@
                       </component>
                       <hspacer id="2a418">
                         <constraints>
-                          <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                       </hspacer>
-                      <component id="f1f80" class="javax.swing.JButton" binding="msgHisTableUnselectAllButton">
-                        <constraints>
-                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <text value="全不选"/>
-                        </properties>
-                      </component>
                     </children>
                   </grid>
                 </children>
@@ -1370,7 +1362,7 @@
                     </properties>
                     <border type="none"/>
                     <children>
-                      <grid id="24cff" layout-manager="GridLayoutManager" row-count="1" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                      <grid id="24cff" layout-manager="GridLayoutManager" row-count="1" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                         <margin top="0" left="10" bottom="0" right="0"/>
                         <constraints>
                           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -1388,20 +1380,12 @@
                           </component>
                           <hspacer id="44702">
                             <constraints>
-                              <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                             </constraints>
                           </hspacer>
-                          <component id="4b5ba" class="javax.swing.JButton" binding="pushHisLeftUnselectAllButton">
-                            <constraints>
-                              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                            </constraints>
-                            <properties>
-                              <text value="全不选"/>
-                            </properties>
-                          </component>
                           <component id="ed0f7" class="javax.swing.JButton" binding="pushHisLeftDeleteButton">
                             <constraints>
-                              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
                               <text value="删除"/>
@@ -1409,7 +1393,7 @@
                           </component>
                           <component id="b42b8" class="javax.swing.JButton" binding="pushHisExportButton">
                             <constraints>
-                              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
                               <text value="导出"/>
