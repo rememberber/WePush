@@ -172,7 +172,6 @@ public class MainWindow {
     }
 
     public static void main(String[] args) {
-        logger.info("main start");
 
         // 初始化主题
         Init.initTheme();
