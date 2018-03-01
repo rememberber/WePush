@@ -138,7 +138,6 @@ public class MainWindow {
     private JButton importFromHisButton;
     private JButton msgHisTableSelectAllButton;
     private JButton msgHisTableDeleteButton;
-    private JButton msgHisTableUnselectAllButton;
     private JLabel scheduleDetailLabel;
     private JTextField msgTemplateMiniAppidTextField;
     private JTextField msgTemplateMiniPagePathTextField;
@@ -150,7 +149,6 @@ public class MainWindow {
     private JLabel templateMiniProgramOptionalLabel2;
     private JCheckBox autoCheckUpdateCheckBox;
     private JButton pushHisLeftSelectAllButton;
-    private JButton pushHisLeftUnselectAllButton;
     private JButton pushHisLeftDeleteButton;
     private JTable pushHisLeftTable;
     private JPanel pushHisPanel;
@@ -1181,14 +1179,6 @@ public class MainWindow {
         this.msgHisTableDeleteButton = msgHisTableDeleteButton;
     }
 
-    public JButton getMsgHisTableUnselectAllButton() {
-        return msgHisTableUnselectAllButton;
-    }
-
-    public void setMsgHisTableUnselectAllButton(JButton msgHisTableUnselectAllButton) {
-        this.msgHisTableUnselectAllButton = msgHisTableUnselectAllButton;
-    }
-
     public JLabel getScheduleDetailLabel() {
         return scheduleDetailLabel;
     }
@@ -1267,14 +1257,6 @@ public class MainWindow {
 
     public void setPushHisLeftSelectAllButton(JButton pushHisLeftSelectAllButton) {
         this.pushHisLeftSelectAllButton = pushHisLeftSelectAllButton;
-    }
-
-    public JButton getPushHisLeftUnselectAllButton() {
-        return pushHisLeftUnselectAllButton;
-    }
-
-    public void setPushHisLeftUnselectAllButton(JButton pushHisLeftUnselectAllButton) {
-        this.pushHisLeftUnselectAllButton = pushHisLeftUnselectAllButton;
     }
 
     public JButton getPushHisLeftDeleteButton() {
