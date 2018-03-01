@@ -29,6 +29,8 @@ import java.util.List;
 public class PushHisListener {
     private static final Log logger = LogFactory.get();
 
+    private static boolean selectAllToggle = false;
+
     public static void addListeners() {
         // 点击左侧表格事件
         MainWindow.mainWindow.getPushHisLeftTable().addMouseListener(new MouseAdapter() {
@@ -71,11 +73,12 @@ public class PushHisListener {
 
         // 推送历史管理-全选
         MainWindow.mainWindow.getPushHisLeftSelectAllButton().addActionListener(e -> new Thread(() -> {
+            toggleSelectAll();
             DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getPushHisLeftTable()
                     .getModel();
             int rowCount = tableModel.getRowCount();
             for (int i = 0; i < rowCount; i++) {
-                tableModel.setValueAt(true, i, 0);
+                tableModel.setValueAt(selectAllToggle, i, 0);
             }
         }).start());
 
@@ -182,6 +185,8 @@ public class PushHisListener {
                     String exportPath = "";
                     if (approve == JFileChooser.APPROVE_OPTION) {
                         exportPath = fileChooser.getSelectedFile().getAbsolutePath();
+                    } else {
+                        return;
                     }
 
                     for (String toExportFilePath : toExportFilePathList) {
@@ -208,5 +213,18 @@ public class PushHisListener {
 
         });
 
+    }
+
+    /**
+     * 切换全选/全不选
+     *
+     * @return
+     */
+    private static void toggleSelectAll() {
+        if (!selectAllToggle) {
+            selectAllToggle = true;
+        } else {
+            selectAllToggle = false;
+        }
     }
 }
