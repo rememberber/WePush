@@ -8,12 +8,10 @@ import com.xiaoleilu.hutool.log.Log;
 import com.xiaoleilu.hutool.log.LogFactory;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -29,14 +27,31 @@ public class MsgListener {
 
     public static void addListeners() {
 
+        // 点击左侧表格事件
+        MainWindow.mainWindow.getMsgHistable().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        MainWindow.mainWindow.getPushHisTextArea().setText("");
+
+                        int selectedRow = MainWindow.mainWindow.getMsgHistable().getSelectedRow();
+                        String selectedMsgName = MainWindow.mainWindow.getMsgHistable()
+                                .getValueAt(selectedRow, 1).toString();
+
+                        Init.initMsgTab(selectedMsgName);
+                    }
+                }).start();
+                super.mouseClicked(e);
+            }
+        });
+
         // 消息类型切换事件
         MainWindow.mainWindow.getMsgTypeComboBox().addItemListener(e -> Init.switchMsgType(e.getItem().toString()));
 
         // 客服消息类型切换事件
         MainWindow.mainWindow.getMsgKefuMsgTypeComboBox().addItemListener(e -> Init.switchKefuMsgType(e.getItem().toString()));
-
-        // 历史消息切换事件
-        MainWindow.mainWindow.getMsgHistoryComboBox().addItemListener(e -> Init.initMsgTab(true));
 
         // 模板数据-添加 按钮事件
         MainWindow.mainWindow.getTemplateMsgDataAddButton().addActionListener(e -> {
@@ -115,7 +130,7 @@ public class MsgListener {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存成功！", "成功",
                             JOptionPane.INFORMATION_MESSAGE);
 
-                    Init.initMsgTab(false);
+                    Init.initMsgTab(null);
                     Init.initSettingTab();
                 }
             } catch (Exception e1) {
@@ -153,6 +168,8 @@ public class MsgListener {
             MainWindow.mainWindow.getMsgKefuPicUrlTextField().setText("");
             MainWindow.mainWindow.getMsgKefuDescTextField().setText("");
             MainWindow.mainWindow.getMsgKefuUrlTextField().setText("");
+            MainWindow.mainWindow.setMsgTemplateMiniAppidTextField("");
+            MainWindow.mainWindow.setMsgTemplateMiniPagePathTextField("");
 
             if (MainWindow.mainWindow.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
                 Init.initTemplateDataTable();

@@ -9,9 +9,11 @@ import com.xiaoleilu.hutool.log.Log;
 import com.xiaoleilu.hutool.log.LogFactory;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.swing.JOptionPane;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -214,6 +216,92 @@ public class PushListener {
                 }
             }
         }).start()));
+
+        // 每页分配用户数失去焦点
+        MainWindow.mainWindow.getPushPageSizeTextField().addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                try {
+                    if (PushData.allUser != null && PushData.allUser.size() > 0) {
+                        refreshPushInfo();
+                    }
+                } catch (Exception e1) {
+                    logger.error(e1);
+                } finally {
+                    super.focusLost(e);
+                }
+            }
+        });
+
+        // 每页分配用户数键入回车
+        MainWindow.mainWindow.getPushPageSizeTextField().addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    try {
+                        if (PushData.allUser != null && PushData.allUser.size() > 0) {
+                            refreshPushInfo();
+                        }
+                    } catch (Exception e1) {
+                        logger.error(e1);
+                    } finally {
+                        super.keyPressed(e);
+                    }
+                }
+            }
+        });
+
+        // 每个线程分配的页数失去焦点
+        MainWindow.mainWindow.getPushPagePerThreadTextField().addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                try {
+                    if (PushData.allUser != null && PushData.allUser.size() > 0) {
+                        refreshPushInfo();
+                    }
+                } catch (Exception e1) {
+                    logger.error(e1);
+                } finally {
+                    super.focusLost(e);
+                }
+            }
+        });
+
+        // 每个线程分配的页数键入回车
+        MainWindow.mainWindow.getPushPagePerThreadTextField().addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    try {
+                        if (PushData.allUser != null && PushData.allUser.size() > 0) {
+                            refreshPushInfo();
+                        }
+                    } catch (Exception e1) {
+                        logger.error(e1);
+                    } finally {
+                        super.keyPressed(e);
+                    }
+                }
+            }
+        });
+
+    }
+
+    public static void refreshPushInfo() {
+        // 页大小
+        int pageSize = Integer.parseInt(MainWindow.mainWindow.getPushPageSizeTextField().getText());
+        // 总记录数
+        long totalCount = PushData.allUser.size();
+        MainWindow.mainWindow.getPushTotalCountLabel().setText("总用户数：" + totalCount);
+        MainWindow.mainWindow.getPushTotalProgressBar().setMaximum((int) totalCount);
+        // 总页数
+        int totalPage = Long.valueOf((totalCount + pageSize - 1) / pageSize).intValue();
+        MainWindow.mainWindow.getPushTotalPageLabel().setText("总页数：" + totalPage);
+        // 每个线程分配多少页
+        int pagePerThread = Integer.parseInt(MainWindow.mainWindow.getPushPagePerThreadTextField().getText());
+        // 需要多少个线程
+        int threadCount = (totalPage + pagePerThread - 1) / pagePerThread;
+        MainWindow.mainWindow.getPushTotalThreadLabel().setText("需要线程宝宝个数：" + threadCount);
     }
 
     /**

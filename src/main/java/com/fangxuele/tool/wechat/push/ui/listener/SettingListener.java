@@ -20,6 +20,8 @@ import java.util.Map;
 public class SettingListener {
     private static final Log logger = LogFactory.get();
 
+    private static boolean selectAllToggle = false;
+
     public static void addListeners() {
 
         // 设置-常规-启动时自动检查更新
@@ -129,65 +131,83 @@ public class SettingListener {
 
         // 历史消息管理-全选
         MainWindow.mainWindow.getMsgHisTableSelectAllButton().addActionListener(e -> new Thread(() -> {
+            toggleSelectAll();
             DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getMsgHistable()
                     .getModel();
             int rowCount = tableModel.getRowCount();
             for (int i = 0; i < rowCount; i++) {
-                tableModel.setValueAt(true, i, 0);
-            }
-        }).start());
-
-        // 历史消息管理-全不选
-        MainWindow.mainWindow.getMsgHisTableUnselectAllButton().addActionListener(e -> new Thread(() -> {
-            DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getMsgHistable()
-                    .getModel();
-            int rowCount = tableModel.getRowCount();
-            for (int i = 0; i < rowCount; i++) {
-                tableModel.setValueAt(false, i, 0);
+                tableModel.setValueAt(selectAllToggle, i, 0);
             }
         }).start());
 
         // 历史消息管理-删除
         MainWindow.mainWindow.getMsgHisTableDeleteButton().addActionListener(e -> new Thread(() -> {
-            int isDelete = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getSettingPanel(), "确认删除？", "确认",
-                    JOptionPane.INFORMATION_MESSAGE);
-            if (isDelete == JOptionPane.YES_OPTION) {
-                try {
-                    DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getMsgHistable()
-                            .getModel();
-                    int rowCount = tableModel.getRowCount();
-                    Map<String, String[]> msgMap = Init.msgHisManager.readMsgHis();
-                    for (int i = 0; i < rowCount; ) {
-                        boolean delete = (boolean) tableModel.getValueAt(i, 0);
-                        if (delete) {
-                            String msgName = (String) tableModel.getValueAt(i, 1);
-                            if (msgMap.containsKey(msgName)) {
-                                msgMap.remove(msgName);
-                                File msgTemplateDataFile = new File(SystemUtil.configHome + "data"
-                                        + File.separator + "template_data" + File.separator + msgName + ".csv");
-                                if (msgTemplateDataFile.exists()) {
-                                    msgTemplateDataFile.delete();
-                                }
-                            }
-                            tableModel.removeRow(i);
-                            MainWindow.mainWindow.getMsgHistable().updateUI();
-                            i = 0;
-                            rowCount = tableModel.getRowCount();
-                            continue;
-                        } else {
-                            i++;
-                        }
-                    }
-                    Init.msgHisManager.writeMsgHis(msgMap);
+            try {
+                DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getMsgHistable()
+                        .getModel();
+                int rowCount = tableModel.getRowCount();
 
-                    Init.initMsgTab(false);
-                } catch (Exception e1) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "删除失败！\n\n" + e1.getMessage(), "失败",
-                            JOptionPane.ERROR_MESSAGE);
-                    logger.error(e1);
+                int selectedCount = 0;
+                for (int i = 0; i < rowCount; i++) {
+                    boolean isSelected = (boolean) tableModel.getValueAt(i, 0);
+                    if (isSelected) {
+                        selectedCount++;
+                    }
                 }
+
+                if (selectedCount == 0) {
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "请至少选择一个！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    int isDelete = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getSettingPanel(), "确认删除？", "确认",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    if (isDelete == JOptionPane.YES_OPTION) {
+                        Map<String, String[]> msgMap = Init.msgHisManager.readMsgHis();
+                        for (int i = 0; i < rowCount; ) {
+                            boolean delete = (boolean) tableModel.getValueAt(i, 0);
+                            if (delete) {
+                                String msgName = (String) tableModel.getValueAt(i, 1);
+                                if (msgMap.containsKey(msgName)) {
+                                    msgMap.remove(msgName);
+                                    File msgTemplateDataFile = new File(SystemUtil.configHome + "data"
+                                            + File.separator + "template_data" + File.separator + msgName + ".csv");
+                                    if (msgTemplateDataFile.exists()) {
+                                        msgTemplateDataFile.delete();
+                                    }
+                                }
+                                tableModel.removeRow(i);
+                                MainWindow.mainWindow.getMsgHistable().updateUI();
+                                i = 0;
+                                rowCount = tableModel.getRowCount();
+                                continue;
+                            } else {
+                                i++;
+                            }
+                        }
+                        Init.msgHisManager.writeMsgHis(msgMap);
+
+                        Init.initMsgTab(null);
+                    }
+                }
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "删除失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
             }
         }).start());
 
+    }
+
+    /**
+     * 切换全选/全不选
+     *
+     * @return
+     */
+    private static void toggleSelectAll() {
+        if (!selectAllToggle) {
+            selectAllToggle = true;
+        } else {
+            selectAllToggle = false;
+        }
     }
 }

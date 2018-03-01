@@ -25,10 +25,10 @@ public class MainWindow {
     private JPanel mainPanel;
     private JTabbedPane tabbedPane;
     private JPanel aboutPanel;
-    private JPanel messagePanel;
+    private JSplitPane messagePanel;
     private JPanel memberPanel;
     private JPanel pushPanel;
-    private JPanel reportPanel;
+    private JPanel helpPanel;
     private JPanel settingPanel;
     private JLabel companyLabel;
     private JLabel versionLabel;
@@ -84,9 +84,7 @@ public class MainWindow {
     private JButton pushStopButton;
     private JButton pushStartButton;
     private JTextField msgNameField;
-    private JComboBox msgHistoryComboBox;
     private JButton msgSaveButton;
-    private JLabel msgHistoryLabel;
     private JLabel msgNameLabel;
     private JPanel pushUpPanel;
     private JPanel pushDownPanel;
@@ -140,7 +138,6 @@ public class MainWindow {
     private JButton importFromHisButton;
     private JButton msgHisTableSelectAllButton;
     private JButton msgHisTableDeleteButton;
-    private JButton msgHisTableUnselectAllButton;
     private JLabel scheduleDetailLabel;
     private JTextField msgTemplateMiniAppidTextField;
     private JTextField msgTemplateMiniPagePathTextField;
@@ -152,7 +149,6 @@ public class MainWindow {
     private JLabel templateMiniProgramOptionalLabel2;
     private JCheckBox autoCheckUpdateCheckBox;
     private JButton pushHisLeftSelectAllButton;
-    private JButton pushHisLeftUnselectAllButton;
     private JButton pushHisLeftDeleteButton;
     private JTable pushHisLeftTable;
     private JPanel pushHisPanel;
@@ -169,8 +165,11 @@ public class MainWindow {
     public static MainWindow mainWindow;
     private static Log logger = LogFactory.get();
 
+    public MainWindow() {
+
+    }
+
     public static void main(String[] args) {
-        logger.info("main start");
 
         // 初始化主题
         Init.initTheme();
@@ -240,11 +239,11 @@ public class MainWindow {
         this.aboutPanel = aboutPanel;
     }
 
-    public JPanel getMessagePanel() {
+    public JSplitPane getMessagePanel() {
         return messagePanel;
     }
 
-    public void setMessagePanel(JPanel messagePanel) {
+    public void setMessagePanel(JSplitPane messagePanel) {
         this.messagePanel = messagePanel;
     }
 
@@ -264,12 +263,12 @@ public class MainWindow {
         this.pushPanel = pushPanel;
     }
 
-    public JPanel getReportPanel() {
-        return reportPanel;
+    public JPanel getHelpPanel() {
+        return helpPanel;
     }
 
-    public void setReportPanel(JPanel reportPanel) {
-        this.reportPanel = reportPanel;
+    public void setHelpPanel(JPanel helpPanel) {
+        this.helpPanel = helpPanel;
     }
 
     public JPanel getSettingPanel() {
@@ -728,28 +727,12 @@ public class MainWindow {
         this.msgNameField.setText(msgName);
     }
 
-    public JComboBox getMsgHistoryComboBox() {
-        return msgHistoryComboBox;
-    }
-
-    public void setMsgHistoryComboBox(JComboBox msgHistoryComboBox) {
-        this.msgHistoryComboBox = msgHistoryComboBox;
-    }
-
     public JButton getMsgSaveButton() {
         return msgSaveButton;
     }
 
     public void setMsgSaveButton(JButton msgSaveButton) {
         this.msgSaveButton = msgSaveButton;
-    }
-
-    public JLabel getMsgHistoryLabel() {
-        return msgHistoryLabel;
-    }
-
-    public void setMsgHistoryLabel(JLabel msgHistoryLabel) {
-        this.msgHistoryLabel = msgHistoryLabel;
     }
 
     public JLabel getMsgNameLabel() {
@@ -1196,14 +1179,6 @@ public class MainWindow {
         this.msgHisTableDeleteButton = msgHisTableDeleteButton;
     }
 
-    public JButton getMsgHisTableUnselectAllButton() {
-        return msgHisTableUnselectAllButton;
-    }
-
-    public void setMsgHisTableUnselectAllButton(JButton msgHisTableUnselectAllButton) {
-        this.msgHisTableUnselectAllButton = msgHisTableUnselectAllButton;
-    }
-
     public JLabel getScheduleDetailLabel() {
         return scheduleDetailLabel;
     }
@@ -1282,14 +1257,6 @@ public class MainWindow {
 
     public void setPushHisLeftSelectAllButton(JButton pushHisLeftSelectAllButton) {
         this.pushHisLeftSelectAllButton = pushHisLeftSelectAllButton;
-    }
-
-    public JButton getPushHisLeftUnselectAllButton() {
-        return pushHisLeftUnselectAllButton;
-    }
-
-    public void setPushHisLeftUnselectAllButton(JButton pushHisLeftUnselectAllButton) {
-        this.pushHisLeftUnselectAllButton = pushHisLeftUnselectAllButton;
     }
 
     public JButton getPushHisLeftDeleteButton() {
