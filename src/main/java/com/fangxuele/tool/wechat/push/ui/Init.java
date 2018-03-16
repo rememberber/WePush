@@ -269,6 +269,7 @@ public class Init {
                 MainWindow.mainWindow.getTemplateDataColorTextField().setVisible(true);
                 MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户openid（以半角分号分隔）");
                 break;
+            case "阿里云短信":
             case "阿里大于模板短信":
                 MainWindow.mainWindow.getKefuMsgPanel().setVisible(false);
                 MainWindow.mainWindow.getTemplateMsgPanel().setVisible(true);
@@ -419,6 +420,11 @@ public class Init {
         MainWindow.mainWindow.setWechatAppSecretPasswordField(configer.getWechatAppSecret());
         MainWindow.mainWindow.setWechatTokenPasswordField(configer.getWechatToken());
         MainWindow.mainWindow.setWechatAesKeyPasswordField(configer.getWechatAesKey());
+
+        // 阿里云短信
+        MainWindow.mainWindow.setAliyunAccessKeyIdTextField(configer.getAliyunAccessKeyId());
+        MainWindow.mainWindow.setAliyunAccessKeySecretTextField(configer.getAliyunAccessKeySecret());
+        MainWindow.mainWindow.setAliyunSignTextField(configer.getAliyunSign());
 
         // 阿里大于
         MainWindow.mainWindow.setAliServerUrlTextField(configer.getAliServerUrl());

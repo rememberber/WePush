@@ -124,7 +124,10 @@ public class RunPushThread extends Thread {
                 }
                 thread.setWxMpService(wxMpService);
             } else if ("阿里大于模板短信".equals(msgType)) {
-                thread = new AliTemplateMsgServiceThread(i * pagePerThread,
+                thread = new AliDayuTemplateSmsMsgServiceThread(i * pagePerThread,
+                        i * pagePerThread + pagePerThread - 1, pageSize);
+            } else if ("阿里云短信".equals(msgType)) {
+                thread = new AliYunSmsMsgServiceThread(i * pagePerThread,
                         i * pagePerThread + pagePerThread - 1, pageSize);
             }
 

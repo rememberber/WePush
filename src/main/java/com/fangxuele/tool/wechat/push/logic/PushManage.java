@@ -1,5 +1,13 @@
 package com.fangxuele.tool.wechat.push.logic;
 
+import com.aliyuncs.DefaultAcsClient;
+import com.aliyuncs.IAcsClient;
+import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
+import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
+import com.aliyuncs.exceptions.ClientException;
+import com.aliyuncs.http.MethodType;
+import com.aliyuncs.profile.DefaultProfile;
+import com.aliyuncs.profile.IClientProfile;
 import com.fangxuele.tool.wechat.push.ui.Init;
 import com.fangxuele.tool.wechat.push.ui.MainWindow;
 import com.fangxuele.tool.wechat.push.util.SystemUtil;
@@ -100,6 +108,36 @@ public class PushManage {
                         wxMessageTemplate.setToUser(msgData[0].trim());
                         // ！！！发送模板消息！！！
                         wxMpService.getTemplateMsgService().sendTemplateMsg(wxMessageTemplate);
+                    }
+                }
+                break;
+            case "阿里云短信":
+                String aliyunAccessKeyId = Init.configer.getAliyunAccessKeyId();
+                String aliyunAccessKeySecret = Init.configer.getAliyunAccessKeySecret();
+
+                if (StringUtils.isEmpty(aliyunAccessKeyId) || StringUtils.isEmpty(aliyunAccessKeySecret)) {
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
+                            "请先在设置中填写并保存阿里云短信相关配置！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+
+                //初始化acsClient,暂不支持region化
+                IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", aliyunAccessKeyId, aliyunAccessKeySecret);
+                try {
+                    DefaultProfile.addEndpoint("cn-hangzhou", "cn-hangzhou", "Dysmsapi", "dysmsapi.aliyuncs.com");
+                } catch (ClientException e) {
+                    logger.error(e.toString());
+                }
+
+                IAcsClient acsClient = new DefaultAcsClient(profile);
+                for (String[] msgData : msgDataList) {
+                    SendSmsRequest request = makeAliyunMessage(msgData);
+                    request.setPhoneNumbers(msgData[0]);
+                    SendSmsResponse response = acsClient.getAcsResponse(request);
+
+                    if (response.getCode() == null || !"OK".equals(response.getCode())) {
+                        throw new Exception(new StringBuffer().append(response.getMessage()).append(";\n\nErrorCode:")
+                                .append(response.getCode()).append(";\n\ntelNum:").append(msgData[0]).toString());
                     }
                 }
                 break;
@@ -268,6 +306,48 @@ public class PushManage {
         }
 
         return kefuMessage;
+    }
+
+    /**
+     * 组织阿里云短信消息
+     *
+     * @param msgData
+     * @return
+     */
+    synchronized public static SendSmsRequest makeAliyunMessage(String[] msgData) {
+        SendSmsRequest request = new SendSmsRequest();
+        //使用post提交
+        request.setMethod(MethodType.POST);
+        //必填:短信签名-可在短信控制台中找到
+        request.setSignName(Init.configer.getAliyunSign());
+
+        // 模板参数
+        Map<String, String> paramMap = new HashMap<>();
+
+        if (MainWindow.mainWindow.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+            Init.initTemplateDataTable();
+        }
+
+        DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getTemplateMsgDataTable().getModel();
+        int rowCount = tableModel.getRowCount();
+        for (int i = 0; i < rowCount; i++) {
+            String key = (String) tableModel.getValueAt(i, 0);
+            String value = ((String) tableModel.getValueAt(i, 1)).replaceAll("$ENTER$", "\n");
+            Pattern p = Pattern.compile("\\{([^{}]+)\\}");
+            Matcher matcher = p.matcher(value);
+            while (matcher.find()) {
+                value = value.replace(matcher.group(0), msgData[Integer.parseInt(matcher.group(1).trim())]);
+            }
+
+            paramMap.put(key, value);
+        }
+
+        request.setTemplateParam(JSONUtil.parseFromMap(paramMap).toJSONString(0));
+
+        // 短信模板ID，传入的模板必须是在阿里阿里云短信中的可用模板。示例：SMS_585014
+        request.setTemplateCode(MainWindow.mainWindow.getMsgTemplateIdTextField().getText());
+
+        return request;
     }
 
     /**
