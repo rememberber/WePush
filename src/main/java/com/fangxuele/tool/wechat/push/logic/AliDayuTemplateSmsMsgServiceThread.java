@@ -14,7 +14,7 @@ import javax.swing.*;
  * 阿里模板短信发送服务线程
  * Created by rememberber(https://github.com/rememberber) on 2017/3/29.
  */
-public class AliTemplateMsgServiceThread extends BaseMsgServiceThread {
+public class AliDayuTemplateSmsMsgServiceThread extends BaseMsgServiceThread {
 
     /**
      * 构造函数
@@ -23,7 +23,7 @@ public class AliTemplateMsgServiceThread extends BaseMsgServiceThread {
      * @param pageTo   截止页
      * @param pageSize 页大小
      */
-    public AliTemplateMsgServiceThread(int pageFrom, int pageTo, int pageSize) {
+    public AliDayuTemplateSmsMsgServiceThread(int pageFrom, int pageTo, int pageSize) {
         super(pageFrom, pageTo, pageSize);
     }
 
