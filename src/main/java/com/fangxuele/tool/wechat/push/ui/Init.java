@@ -421,6 +421,11 @@ public class Init {
         MainWindow.mainWindow.setWechatTokenPasswordField(configer.getWechatToken());
         MainWindow.mainWindow.setWechatAesKeyPasswordField(configer.getWechatAesKey());
 
+        // 阿里云短信
+        MainWindow.mainWindow.setAliyunAccessKeyIdTextField(configer.getAliyunAccessKeyId());
+        MainWindow.mainWindow.setAliyunAccessKeySecretTextField(configer.getAliyunAccessKeySecret());
+        MainWindow.mainWindow.setAliyunSignTextField(configer.getAliyunSign());
+
         // 阿里大于
         MainWindow.mainWindow.setAliServerUrlTextField(configer.getAliServerUrl());
         MainWindow.mainWindow.setAliAppKeyPasswordField(configer.getAliAppKey());
