@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class BaseMsgServiceThread extends Thread {
 
-    private static final Log logger = LogFactory.get();
+    public static final Log logger = LogFactory.get();
 
     /**
      * 起始页号
