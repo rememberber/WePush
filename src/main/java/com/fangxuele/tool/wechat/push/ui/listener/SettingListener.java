@@ -48,6 +48,23 @@ public class SettingListener {
             }
         });
 
+        // 设置-阿里云短信-保存
+        MainWindow.mainWindow.getSettingAliyunSaveButton().addActionListener(e -> {
+            try {
+                Init.configer.setAliyunAccessKeyId(MainWindow.mainWindow.getAliyunAccessKeyIdTextField().getText());
+                Init.configer.setAliyunAccessKeySecret(new String(MainWindow.mainWindow.getAliyunAccessKeySecretTextField().getPassword()));
+                Init.configer.setAliyunSign(MainWindow.mainWindow.getAliyunSignTextField().getText());
+                Init.configer.save();
+
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存成功！", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        });
+
         // 设置-阿里大于-保存
         MainWindow.mainWindow.getSettingAliInfoSaveButton().addActionListener(e -> {
             try {
