@@ -134,6 +134,11 @@ public class PushManage {
                     SendSmsRequest request = makeAliyunMessage(msgData);
                     request.setPhoneNumbers(msgData[0]);
                     SendSmsResponse response = acsClient.getAcsResponse(request);
+
+                    if (response.getCode() == null || !"OK".equals(response.getCode())) {
+                        throw new Exception(new StringBuffer().append(response.getMessage()).append(";\n\nErrorCode:")
+                                .append(response.getCode()).append(";\n\ntelNum:").append(msgData[0]).toString());
+                    }
                 }
                 break;
             case "阿里大于模板短信":
