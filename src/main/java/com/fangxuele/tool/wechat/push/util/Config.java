@@ -81,6 +81,12 @@ public class Config {
 
     private String wechatAesKey;
 
+    private String aliyunAccessKeyId;
+
+    private String aliyunAccessKeySecret;
+
+    private String aliyunSign;
+
     private String aliServerUrl;
 
     private String aliAppKey;
@@ -194,6 +200,9 @@ public class Config {
         props.setProperty("setting.wechat.AppSecret", "");
         props.setProperty("setting.wechat.token", "");
         props.setProperty("setting.wechat.aesKey", "");
+        props.setProperty("setting.aliyun.accessKeyId", "");
+        props.setProperty("setting.aliyun.accessKeySecret", "");
+        props.setProperty("setting.aliyun.aliyunSign", "");
         props.setProperty("setting.ali.serverUrl", "");
         props.setProperty("setting.ali.appKey", "");
         props.setProperty("setting.ali.appSecret", "");
@@ -528,4 +537,29 @@ public class Config {
     public void setFontSize(int fontSize) {
         props.setProperty("setting.appearance.fontSize", fontSize);
     }
+
+    public String getAliyunAccessKeyId() {
+        return props.getProperty("setting.aliyun.accessKeyId");
+    }
+
+    public void setAliyunAccessKeyId(String aliyunAccessKeyId) {
+        props.setProperty("setting.aliyun.accessKeyId", aliyunAccessKeyId);
+    }
+
+    public String getAliyunAccessKeySecret() {
+        return props.getProperty("setting.aliyun.accessKeySecret");
+    }
+
+    public void setAliyunAccessKeySecret(String aliyunAccessKeySecret) {
+        props.setProperty("setting.aliyun.accessKeySecret", aliyunAccessKeySecret);
+    }
+
+    public String getAliyunSign() {
+        return props.getProperty("setting.aliyun.aliyunSign");
+    }
+
+    public void setAliyunSign(String aliyunSign) {
+        props.setProperty("setting.aliyun.aliyunSign", aliyunSign);
+    }
+
 }
