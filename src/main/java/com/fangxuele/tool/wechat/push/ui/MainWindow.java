@@ -160,6 +160,10 @@ public class MainWindow {
     private JComboBox memberImportTagComboBox;
     private JButton memberImportTagFreshButton;
     private JButton memberImportExploreButton;
+    private JTextField aliyunAccessKeyIdTextField;
+    private JPasswordField aliyunAccessKeySecretTextField;
+    private JTextField aliyunSignTextField;
+    private JButton settingAliyunSaveButton;
     public static JFrame frame;
 
     public static MainWindow mainWindow;
@@ -1329,5 +1333,37 @@ public class MainWindow {
 
     public void setMemberImportExploreButton(JButton memberImportExploreButton) {
         this.memberImportExploreButton = memberImportExploreButton;
+    }
+
+    public JTextField getAliyunAccessKeyIdTextField() {
+        return aliyunAccessKeyIdTextField;
+    }
+
+    public void setAliyunAccessKeyIdTextField(String aliyunAccessKeyIdTextField) {
+        this.aliyunAccessKeyIdTextField.setText(aliyunAccessKeyIdTextField);
+    }
+
+    public JPasswordField getAliyunAccessKeySecretTextField() {
+        return aliyunAccessKeySecretTextField;
+    }
+
+    public void setAliyunAccessKeySecretTextField(String aliyunAccessKeySecretTextField) {
+        this.aliyunAccessKeySecretTextField.setText(aliyunAccessKeySecretTextField);
+    }
+
+    public JTextField getAliyunSignTextField() {
+        return aliyunSignTextField;
+    }
+
+    public void setAliyunSignTextField(String aliyunSignTextField) {
+        this.aliyunSignTextField.setText(aliyunSignTextField);
+    }
+
+    public JButton getSettingAliyunSaveButton() {
+        return settingAliyunSaveButton;
+    }
+
+    public void setSettingAliyunSaveButton(JButton settingAliyunSaveButton) {
+        this.settingAliyunSaveButton = settingAliyunSaveButton;
     }
 }
