@@ -22,6 +22,7 @@
         <forms_rt.version>7.0.3</forms_rt.version>
         <fastjson.version>1.2.46</fastjson.version>
         <sun-mail.version>1.5.6</sun-mail.version>
+        <aliyun-java-sdk-core.version>3.5.0</aliyun-java-sdk-core.version>
     </properties>
 
     <dependencies>
@@ -80,6 +81,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-core</artifactId>
+            <version>${aliyun-java-sdk-core.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.apple</groupId>
             <artifactId>AppleJavaExtensions</artifactId>
             <version>1.4</version>
@@ -107,6 +114,12 @@
             <groupId>com.taobao</groupId>
             <artifactId>top-auto-sdk</artifactId>
             <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-dysmsapi</artifactId>
+            <version>1.0.0</version>
         </dependency>
 
     </dependencies>
@@ -218,6 +231,22 @@
                             <groupId>com.taobao</groupId>
                             <artifactId>top-auto-sdk</artifactId>
                             <version>1.0</version>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
+                        </configuration>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>install-alysms-sdk</id>
+                        <phase>clean</phase>
+                        <configuration>
+                            <file>${basedir}/src/main/lib/aliyun-java-sdk-dysmsapi-1.0.0.jar</file>
+                            <repositoryLayout>default</repositoryLayout>
+                            <groupId>com.aliyun</groupId>
+                            <artifactId>aliyun-java-sdk-dysmsapi</artifactId>
+                            <version>1.0.0</version>
                             <packaging>jar</packaging>
                             <generatePom>true</generatePom>
                         </configuration>
