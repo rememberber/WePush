@@ -10,6 +10,8 @@ import com.opencsv.CSVReader;
 import com.xiaoleilu.hutool.io.file.FileReader;
 import com.xiaoleilu.hutool.log.Log;
 import com.xiaoleilu.hutool.log.LogFactory;
+import com.xiaoleilu.hutool.poi.excel.ExcelReader;
+import com.xiaoleilu.hutool.poi.excel.ExcelUtil;
 import me.chanjar.weixin.common.exception.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.result.WxMpUserList;
@@ -53,7 +55,8 @@ public class MemberListener {
 
             try {
                 MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(true);
-                if (file.getName().endsWith(".csv")) {
+                String fileNameLowerCase = file.getName().toLowerCase();
+                if (fileNameLowerCase.endsWith(".csv")) {
                     // 可以解决中文乱码问题
                     DataInputStream in = new DataInputStream(new FileInputStream(file));
                     reader = new CSVReader(new InputStreamReader(in, "utf-8"));
@@ -64,7 +67,22 @@ public class MemberListener {
                         currentImported++;
                         MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(currentImported));
                     }
-                } else {
+                } else if (fileNameLowerCase.endsWith(".xlsx") || fileNameLowerCase.endsWith(".xls")) {
+                    ExcelReader excelReader = ExcelUtil.getReader(file);
+                    List<List<Object>> readAll = excelReader.read(1, Integer.MAX_VALUE);
+                    PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+                    for (List<Object> objects : readAll) {
+                        if (objects != null && objects.size() > 0) {
+                            String[] nextLine = new String[objects.size()];
+                            for (int i = 0; i < objects.size(); i++) {
+                                nextLine[i] = objects.get(i).toString();
+                            }
+                            PushData.allUser.add(nextLine);
+                            currentImported++;
+                            MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(currentImported));
+                        }
+                    }
+                } else if (fileNameLowerCase.endsWith(".txt")) {
                     fileReader = new FileReader(file);
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());
                     BufferedReader br = fileReader.getReader();
@@ -74,6 +92,10 @@ public class MemberListener {
                         currentImported++;
                         MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(currentImported));
                     }
+                } else {
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "不支持该格式的文件！", "文件格式不支持",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
                 }
                 MainWindow.mainWindow.getMemberTabImportProgressBar().setMaximum(100);
                 MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(100);
@@ -281,7 +303,7 @@ public class MemberListener {
                 fileChooser = new JFileChooser();
             }
 
-            FileFilter filter = new FileNameExtensionFilter("*.txt,*.csv", "txt", "csv", "TXT", "CSV");
+            FileFilter filter = new FileNameExtensionFilter("*.txt,*.csv,*.xlsx,*.xls", "txt", "csv", "TXT", "CSV", "xlsx", "xls");
             fileChooser.setFileFilter(filter);
 
             int approve = fileChooser.showOpenDialog(MainWindow.mainWindow.getSettingPanel());
