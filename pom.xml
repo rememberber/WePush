@@ -23,6 +23,7 @@
         <fastjson.version>1.2.46</fastjson.version>
         <sun-mail.version>1.5.6</sun-mail.version>
         <aliyun-java-sdk-core.version>3.5.0</aliyun-java-sdk-core.version>
+        <poi.version>3.17</poi.version>
     </properties>
 
     <dependencies>
@@ -84,6 +85,12 @@
             <groupId>com.aliyun</groupId>
             <artifactId>aliyun-java-sdk-core</artifactId>
             <version>${aliyun-java-sdk-core.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>${poi.version}</version>
         </dependency>
 
         <dependency>
