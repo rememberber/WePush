@@ -420,10 +420,10 @@ public class MemberListener {
                 PushData.allUser.add(new String[]{openId});
                 tagUserSet.add(openId);
                 importedCount++;
-                progressValue++;
                 MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(importedCount));
-                MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(progressValue);
             }
+            progressValue++;
+            MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(progressValue);
         }
 
         while (StringUtils.isNotEmpty(wxTagListUser.getNextOpenid())) {
@@ -442,10 +442,10 @@ public class MemberListener {
                 if (!tagUserSet.contains(openId)) {
                     PushData.allUser.add(new String[]{openId});
                     importedCount++;
-                    progressValue++;
                     MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(importedCount));
-                    MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(progressValue);
                 }
+                progressValue++;
+                MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(progressValue);
             }
         }
     }
