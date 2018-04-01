@@ -168,7 +168,7 @@ public class MemberListener {
                 }
 
             } catch (WxErrorException e1) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "刷新失败！", "失败",
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "刷新失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
                 e1.printStackTrace();
