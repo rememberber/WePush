@@ -32,8 +32,10 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 准备目标数据tab相关事件监听
@@ -43,6 +45,11 @@ public class MemberListener {
     private static final Log logger = LogFactory.get();
 
     private static Map<String, Long> userTagMap = new HashMap<>();
+
+    /**
+     * 用于导入多个标签的用户时去重判断
+     */
+    private static Set<String> tagUserSet;
 
     public static void addListeners() {
         // 从文件导入按钮事件
@@ -161,7 +168,7 @@ public class MemberListener {
                 }
 
             } catch (WxErrorException e1) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "刷新失败！", "失败",
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "刷新失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
                 e1.printStackTrace();
@@ -201,6 +208,7 @@ public class MemberListener {
                     PushData.allUser.clear();
                     MainWindow.mainWindow.getMemberTabCountLabel().setText("0");
                 }
+                tagUserSet = null;
             }
         });
 
@@ -387,29 +395,42 @@ public class MemberListener {
 
         MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
         MainWindow.mainWindow.getMemberTabImportProgressBar().setMaximum((int) wxTagListUser.getCount());
-        int importedCount = 0;
-        PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+        int progressValue = 0;
+
+        if (PushData.allUser == null) {
+            PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+        }
+
+        if (tagUserSet == null) {
+            tagUserSet = Collections.synchronizedSet(new HashSet<>());
+        }
+
+        int importedCount = PushData.allUser.size();
 
         if (wxTagListUser.getCount() == 0) {
             MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(importedCount));
-            MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(importedCount);
+            MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(progressValue);
             return;
         }
 
         List<String> openIds = wxTagListUser.getData().getOpenidList();
 
         for (String openId : openIds) {
-            PushData.allUser.add(new String[]{openId});
-            importedCount++;
-            MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(importedCount));
-            MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(importedCount);
+            if (!tagUserSet.contains(openId)) {
+                PushData.allUser.add(new String[]{openId});
+                tagUserSet.add(openId);
+                importedCount++;
+                MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(importedCount));
+            }
+            progressValue++;
+            MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(progressValue);
         }
 
         while (StringUtils.isNotEmpty(wxTagListUser.getNextOpenid())) {
             wxTagListUser = wxMpService.getUserTagService().tagListUser(tagId, wxTagListUser.getNextOpenid());
 
             MainWindow.mainWindow.getMemberTabImportProgressBar().setMaximum((int) wxTagListUser.getCount());
-            int progressValue = 0;
+            progressValue = 0;
             MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(progressValue);
             PushManage.console("拉取的OPENID个数：" + wxTagListUser.getCount());
 
@@ -418,14 +439,14 @@ public class MemberListener {
             }
             openIds = wxTagListUser.getData().getOpenidList();
             for (String openId : openIds) {
-                PushData.allUser.add(new String[]{openId});
-                importedCount++;
+                if (!tagUserSet.contains(openId)) {
+                    PushData.allUser.add(new String[]{openId});
+                    importedCount++;
+                    MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(importedCount));
+                }
                 progressValue++;
-                MainWindow.mainWindow.getMemberTabCountLabel().setText(String.valueOf(importedCount));
                 MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(progressValue);
             }
-
         }
-
     }
 }
