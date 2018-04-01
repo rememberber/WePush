@@ -164,6 +164,7 @@ public class MainWindow {
     private JPasswordField aliyunAccessKeySecretTextField;
     private JTextField aliyunSignTextField;
     private JButton settingAliyunSaveButton;
+    private JButton memberImportTagRetainButton;
     public static JFrame frame;
 
     public static MainWindow mainWindow;
@@ -1365,5 +1366,13 @@ public class MainWindow {
 
     public void setSettingAliyunSaveButton(JButton settingAliyunSaveButton) {
         this.settingAliyunSaveButton = settingAliyunSaveButton;
+    }
+
+    public JButton getMemberImportTagRetainButton() {
+        return memberImportTagRetainButton;
+    }
+
+    public void setMemberImportTagRetainButton(JButton memberImportTagRetainButton) {
+        this.memberImportTagRetainButton = memberImportTagRetainButton;
     }
 }
