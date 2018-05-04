@@ -225,7 +225,7 @@ public class PushManage {
 
             String color = ((String) tableModel.getValueAt(i, 2)).trim();
             WxMpTemplateData templateData = new WxMpTemplateData(name, value, color);
-            wxMessageTemplate.addWxMpTemplateData(templateData);
+            wxMessageTemplate.addData(templateData);
         }
 
         return wxMessageTemplate;
