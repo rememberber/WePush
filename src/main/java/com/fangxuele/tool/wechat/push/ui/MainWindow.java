@@ -165,6 +165,11 @@ public class MainWindow {
     private JTextField aliyunSignTextField;
     private JButton settingAliyunSaveButton;
     private JButton memberImportTagRetainButton;
+    private JTextField miniAppAppIdTextField;
+    private JPasswordField miniAppAppSecretPasswordField;
+    private JPasswordField miniAppTokenPasswordField;
+    private JPasswordField miniAppAesKeyPasswordField;
+    private JButton settingMaInfoSaveButton;
     public static JFrame frame;
 
     public static MainWindow mainWindow;
@@ -1374,5 +1379,45 @@ public class MainWindow {
 
     public void setMemberImportTagRetainButton(JButton memberImportTagRetainButton) {
         this.memberImportTagRetainButton = memberImportTagRetainButton;
+    }
+
+    public JTextField getMiniAppAppIdTextField() {
+        return miniAppAppIdTextField;
+    }
+
+    public void setMiniAppAppIdTextField(JTextField miniAppAppIdTextField) {
+        this.miniAppAppIdTextField = miniAppAppIdTextField;
+    }
+
+    public JPasswordField getMiniAppAppSecretPasswordField() {
+        return miniAppAppSecretPasswordField;
+    }
+
+    public void setMiniAppAppSecretPasswordField(JPasswordField miniAppAppSecretPasswordField) {
+        this.miniAppAppSecretPasswordField = miniAppAppSecretPasswordField;
+    }
+
+    public JPasswordField getMiniAppTokenPasswordField() {
+        return miniAppTokenPasswordField;
+    }
+
+    public void setMiniAppTokenPasswordField(JPasswordField miniAppTokenPasswordField) {
+        this.miniAppTokenPasswordField = miniAppTokenPasswordField;
+    }
+
+    public JPasswordField getMiniAppAesKeyPasswordField() {
+        return miniAppAesKeyPasswordField;
+    }
+
+    public void setMiniAppAesKeyPasswordField(JPasswordField miniAppAesKeyPasswordField) {
+        this.miniAppAesKeyPasswordField = miniAppAesKeyPasswordField;
+    }
+
+    public JButton getSettingMaInfoSaveButton() {
+        return settingMaInfoSaveButton;
+    }
+
+    public void setSettingMaInfoSaveButton(JButton settingMaInfoSaveButton) {
+        this.settingMaInfoSaveButton = settingMaInfoSaveButton;
     }
 }
