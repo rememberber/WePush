@@ -81,6 +81,14 @@ public class Config {
 
     private String wechatAesKey;
 
+    private String miniAppAppId;
+
+    private String miniAppAppSecret;
+
+    private String miniAppToken;
+
+    private String miniAppAesKey;
+
     private String aliyunAccessKeyId;
 
     private String aliyunAccessKeySecret;
@@ -200,6 +208,10 @@ public class Config {
         props.setProperty("setting.wechat.AppSecret", "");
         props.setProperty("setting.wechat.token", "");
         props.setProperty("setting.wechat.aesKey", "");
+        props.setProperty("setting.miniApp.appId", "");
+        props.setProperty("setting.miniApp.AppSecret", "");
+        props.setProperty("setting.miniApp.token", "");
+        props.setProperty("setting.miniApp.aesKey", "");
         props.setProperty("setting.aliyun.accessKeyId", "");
         props.setProperty("setting.aliyun.accessKeySecret", "");
         props.setProperty("setting.aliyun.aliyunSign", "");
@@ -562,4 +574,35 @@ public class Config {
         props.setProperty("setting.aliyun.aliyunSign", aliyunSign);
     }
 
+    public String getMiniAppAppId() {
+        return props.getProperty("setting.miniApp.appId");
+    }
+
+    public void setMiniAppAppId(String miniAppAppId) {
+        props.setProperty("setting.miniApp.appId", miniAppAppId);
+    }
+
+    public String getMiniAppAppSecret() {
+        return props.getProperty("setting.miniApp.AppSecret");
+    }
+
+    public void setMiniAppAppSecret(String miniAppAppSecret) {
+        props.setProperty("setting.miniApp.AppSecret", miniAppAppSecret);
+    }
+
+    public String getMiniAppToken() {
+        return props.getProperty("setting.miniApp.token");
+    }
+
+    public void setMiniAppToken(String miniAppToken) {
+        props.setProperty("setting.miniApp.token", miniAppToken);
+    }
+
+    public String getMiniAppAesKey() {
+        return props.getProperty("setting.miniApp.aesKey");
+    }
+
+    public void setMiniAppAesKey(String miniAppAesKey) {
+        props.setProperty("setting.miniApp.aesKey", miniAppAesKey);
+    }
 }

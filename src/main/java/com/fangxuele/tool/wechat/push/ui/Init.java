@@ -415,11 +415,18 @@ public class Init {
     public static void initSettingTab() {
         // 常规
         MainWindow.mainWindow.setAutoCheckUpdateCheckBox(configer.isAutoCheckUpdate());
+
         // 微信公众号
         MainWindow.mainWindow.setWechatAppIdTextField(configer.getWechatAppId());
         MainWindow.mainWindow.setWechatAppSecretPasswordField(configer.getWechatAppSecret());
         MainWindow.mainWindow.setWechatTokenPasswordField(configer.getWechatToken());
         MainWindow.mainWindow.setWechatAesKeyPasswordField(configer.getWechatAesKey());
+
+        // 微信小程序
+        MainWindow.mainWindow.setMiniAppAppIdTextField(configer.getMiniAppAppId());
+        MainWindow.mainWindow.setMiniAppAppSecretPasswordField(configer.getMiniAppAppSecret());
+        MainWindow.mainWindow.setMiniAppTokenPasswordField(configer.getMiniAppToken());
+        MainWindow.mainWindow.setMiniAppAesKeyPasswordField(configer.getMiniAppAesKey());
 
         // 阿里云短信
         MainWindow.mainWindow.setAliyunAccessKeyIdTextField(configer.getAliyunAccessKeyId());
