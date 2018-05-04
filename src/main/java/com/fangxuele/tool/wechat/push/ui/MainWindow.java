@@ -1385,32 +1385,32 @@ public class MainWindow {
         return miniAppAppIdTextField;
     }
 
-    public void setMiniAppAppIdTextField(JTextField miniAppAppIdTextField) {
-        this.miniAppAppIdTextField = miniAppAppIdTextField;
+    public void setMiniAppAppIdTextField(String miniAppAppIdTextField) {
+        this.miniAppAppIdTextField.setText(miniAppAppIdTextField);
     }
 
     public JPasswordField getMiniAppAppSecretPasswordField() {
         return miniAppAppSecretPasswordField;
     }
 
-    public void setMiniAppAppSecretPasswordField(JPasswordField miniAppAppSecretPasswordField) {
-        this.miniAppAppSecretPasswordField = miniAppAppSecretPasswordField;
+    public void setMiniAppAppSecretPasswordField(String miniAppAppSecretPasswordField) {
+        this.miniAppAppSecretPasswordField.setText(miniAppAppSecretPasswordField);
     }
 
     public JPasswordField getMiniAppTokenPasswordField() {
         return miniAppTokenPasswordField;
     }
 
-    public void setMiniAppTokenPasswordField(JPasswordField miniAppTokenPasswordField) {
-        this.miniAppTokenPasswordField = miniAppTokenPasswordField;
+    public void setMiniAppTokenPasswordField(String miniAppTokenPasswordField) {
+        this.miniAppTokenPasswordField.setText(miniAppTokenPasswordField);
     }
 
     public JPasswordField getMiniAppAesKeyPasswordField() {
         return miniAppAesKeyPasswordField;
     }
 
-    public void setMiniAppAesKeyPasswordField(JPasswordField miniAppAesKeyPasswordField) {
-        this.miniAppAesKeyPasswordField = miniAppAesKeyPasswordField;
+    public void setMiniAppAesKeyPasswordField(String miniAppAesKeyPasswordField) {
+        this.miniAppAesKeyPasswordField.setText(miniAppAesKeyPasswordField);
     }
 
     public JButton getSettingMaInfoSaveButton() {
