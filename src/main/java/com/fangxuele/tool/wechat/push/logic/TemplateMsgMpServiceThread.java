@@ -7,7 +7,7 @@ import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
  * 模板消息发送服务线程
  * Created by rememberber(https://github.com/rememberber) on 2017/3/29.
  */
-public class TemplateMsgServiceThread extends BaseMsgServiceThread {
+public class TemplateMsgMpServiceThread extends BaseMsgServiceThread {
 
     /**
      * 构造函数
@@ -16,7 +16,7 @@ public class TemplateMsgServiceThread extends BaseMsgServiceThread {
      * @param pageTo   截止页
      * @param pageSize 页大小
      */
-    public TemplateMsgServiceThread(int pageFrom, int pageTo, int pageSize) {
+    public TemplateMsgMpServiceThread(int pageFrom, int pageTo, int pageSize) {
         super(pageFrom, pageTo, pageSize);
     }
 
