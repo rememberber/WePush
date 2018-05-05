@@ -163,6 +163,9 @@ public class Init {
         MainWindow.mainWindow.setMsgKefuUrlTextField("");
         MainWindow.mainWindow.setMsgTemplateMiniAppidTextField("");
         MainWindow.mainWindow.setMsgTemplateMiniPagePathTextField("");
+        MainWindow.mainWindow.setMsgTemplateFormIdTextField("");
+        MainWindow.mainWindow.setMsgTemplateColorTextField("");
+        MainWindow.mainWindow.setMsgTemplateKeyWordTextField("");
 
         String msgName;
         if (StringUtils.isEmpty(selectedMsgName)) {
@@ -189,6 +192,11 @@ public class Init {
                 MainWindow.mainWindow.setMsgKefuPicUrlTextField(msgDataArray[6]);
                 MainWindow.mainWindow.setMsgKefuDescTextField(msgDataArray[7]);
                 MainWindow.mainWindow.setMsgKefuUrlTextField(msgDataArray[8]);
+                if (msgDataArray.length > 11) {
+                    MainWindow.mainWindow.setMsgTemplateFormIdTextField(msgDataArray[11]);
+                    MainWindow.mainWindow.setMsgTemplateColorTextField(msgDataArray[12]);
+                    MainWindow.mainWindow.setMsgTemplateKeyWordTextField(msgDataArray[13]);
+                }
                 if (msgDataArray.length > 9) {
                     MainWindow.mainWindow.setMsgTemplateMiniAppidTextField(msgDataArray[9]);
                     MainWindow.mainWindow.setMsgTemplateMiniPagePathTextField(msgDataArray[10]);
@@ -247,6 +255,34 @@ public class Init {
                 MainWindow.mainWindow.getTemplateMiniProgramOptionalLabel2().setVisible(true);
                 MainWindow.mainWindow.getTemplateMsgColorLabel().setVisible(true);
                 MainWindow.mainWindow.getTemplateDataColorTextField().setVisible(true);
+                MainWindow.mainWindow.getMsgTemplateFormIdTextField().setVisible(false);
+                MainWindow.mainWindow.getMsgTemplateColorTextField().setVisible(false);
+                MainWindow.mainWindow.getMsgTemplateKeyWordTextField().setVisible(false);
+                MainWindow.mainWindow.getTemplateFormIdLabel().setVisible(false);
+                MainWindow.mainWindow.getTemplateColorLabel().setVisible(false);
+                MainWindow.mainWindow.getTemplateKeyWordLabel().setVisible(false);
+                MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户openid（以半角分号分隔）");
+
+                break;
+            case "模板消息-小程序":
+                MainWindow.mainWindow.getKefuMsgPanel().setVisible(false);
+                MainWindow.mainWindow.getTemplateMsgPanel().setVisible(true);
+                MainWindow.mainWindow.getTemplateUrlLabel().setVisible(true);
+                MainWindow.mainWindow.getMsgTemplateUrlTextField().setVisible(true);
+                MainWindow.mainWindow.getTemplateMiniProgramAppidLabel().setVisible(true);
+                MainWindow.mainWindow.getMsgTemplateMiniAppidTextField().setVisible(true);
+                MainWindow.mainWindow.getTemplateMiniProgramPagePathLabel().setVisible(true);
+                MainWindow.mainWindow.getMsgTemplateMiniPagePathTextField().setVisible(true);
+                MainWindow.mainWindow.getTemplateMiniProgramOptionalLabel1().setVisible(true);
+                MainWindow.mainWindow.getTemplateMiniProgramOptionalLabel2().setVisible(true);
+                MainWindow.mainWindow.getTemplateMsgColorLabel().setVisible(true);
+                MainWindow.mainWindow.getTemplateDataColorTextField().setVisible(true);
+                MainWindow.mainWindow.getMsgTemplateFormIdTextField().setVisible(true);
+                MainWindow.mainWindow.getMsgTemplateColorTextField().setVisible(true);
+                MainWindow.mainWindow.getMsgTemplateKeyWordTextField().setVisible(true);
+                MainWindow.mainWindow.getTemplateFormIdLabel().setVisible(true);
+                MainWindow.mainWindow.getTemplateColorLabel().setVisible(true);
+                MainWindow.mainWindow.getTemplateKeyWordLabel().setVisible(true);
                 MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户openid（以半角分号分隔）");
 
                 break;
@@ -267,6 +303,12 @@ public class Init {
                 MainWindow.mainWindow.getTemplateMiniProgramOptionalLabel2().setVisible(true);
                 MainWindow.mainWindow.getTemplateMsgColorLabel().setVisible(true);
                 MainWindow.mainWindow.getTemplateDataColorTextField().setVisible(true);
+                MainWindow.mainWindow.getMsgTemplateFormIdTextField().setVisible(false);
+                MainWindow.mainWindow.getMsgTemplateColorTextField().setVisible(false);
+                MainWindow.mainWindow.getMsgTemplateKeyWordTextField().setVisible(false);
+                MainWindow.mainWindow.getTemplateFormIdLabel().setVisible(false);
+                MainWindow.mainWindow.getTemplateColorLabel().setVisible(false);
+                MainWindow.mainWindow.getTemplateKeyWordLabel().setVisible(false);
                 MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户openid（以半角分号分隔）");
                 break;
             case "阿里云短信":
@@ -283,6 +325,12 @@ public class Init {
                 MainWindow.mainWindow.getTemplateMiniProgramOptionalLabel2().setVisible(false);
                 MainWindow.mainWindow.getTemplateMsgColorLabel().setVisible(false);
                 MainWindow.mainWindow.getTemplateDataColorTextField().setVisible(false);
+                MainWindow.mainWindow.getMsgTemplateFormIdTextField().setVisible(false);
+                MainWindow.mainWindow.getMsgTemplateColorTextField().setVisible(false);
+                MainWindow.mainWindow.getMsgTemplateKeyWordTextField().setVisible(false);
+                MainWindow.mainWindow.getTemplateFormIdLabel().setVisible(false);
+                MainWindow.mainWindow.getTemplateColorLabel().setVisible(false);
+                MainWindow.mainWindow.getTemplateKeyWordLabel().setVisible(false);
                 MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户手机号（以半角分号分隔）");
                 break;
             default:
