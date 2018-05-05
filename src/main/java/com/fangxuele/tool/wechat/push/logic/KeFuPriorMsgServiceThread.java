@@ -43,7 +43,7 @@ public class KeFuPriorMsgServiceThread extends BaseMsgServiceThread {
             try {
                 openId = msgData[0];
                 wxMpKefuMessage = PushManage.makeKefuMessage(msgData);
-                wxMpTemplateMessage = PushManage.makeTemplateMessage(msgData);
+                wxMpTemplateMessage = PushManage.makeMpTemplateMessage(msgData);
 
                 wxMpKefuMessage.setToUser(openId);
                 wxMpTemplateMessage.setToUser(openId);
