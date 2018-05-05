@@ -172,6 +172,7 @@ public class MainWindow {
     private JButton settingMaInfoSaveButton;
     private JTextField msgTemplateColorTextField;
     private JTextField msgTemplateKeyWordTextField;
+    private JTextField msgTemplateFormIdTextField;
     public static JFrame frame;
 
     public static MainWindow mainWindow;
@@ -1437,5 +1438,13 @@ public class MainWindow {
 
     public void setMsgTemplateKeyWordTextField(JTextField msgTemplateKeyWordTextField) {
         this.msgTemplateKeyWordTextField = msgTemplateKeyWordTextField;
+    }
+
+    public JTextField getMsgTemplateFormIdTextField() {
+        return msgTemplateFormIdTextField;
+    }
+
+    public void setMsgTemplateFormIdTextField(JTextField msgTemplateFormIdTextField) {
+        this.msgTemplateFormIdTextField = msgTemplateFormIdTextField;
     }
 }
