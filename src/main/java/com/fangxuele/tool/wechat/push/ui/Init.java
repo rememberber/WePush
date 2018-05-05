@@ -149,6 +149,25 @@ public class Init {
     }
 
     /**
+     * 初始化他们都在用tab
+     */
+    public static void initUserCaseTab() {
+
+        try {
+            MainWindow.mainWindow.getUserCaseTextPane().setEditable(false);
+            HTMLEditorKit kit = new HTMLEditorKit();
+            MainWindow.mainWindow.getUserCaseTextPane().setEditorKit(kit);
+            StyleSheet styleSheet = kit.getStyleSheet();
+            styleSheet.addRule("h2{color:#FBC87A;}");
+            MainWindow.mainWindow.getUserCaseTextPane().setContentType("text/html; charset=utf-8");
+            MainWindow.mainWindow.getUserCaseTextPane().setPage(MainWindow.class.getResource("/page/help.html"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
      * 初始化消息tab
      */
     public static void initMsgTab(String selectedMsgName) {
@@ -552,6 +571,7 @@ public class Init {
      */
     public static void initAllTab() {
         initHelpTab();
+        initUserCaseTab();
         initMsgTab(null);
         initMemberTab();
         initPushTab();
