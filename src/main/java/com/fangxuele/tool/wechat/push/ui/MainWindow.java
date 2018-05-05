@@ -173,6 +173,9 @@ public class MainWindow {
     private JTextField msgTemplateColorTextField;
     private JTextField msgTemplateKeyWordTextField;
     private JTextField msgTemplateFormIdTextField;
+    private JLabel templateFormIdLabel;
+    private JLabel templateColorLabel;
+    private JLabel templateKeyWordLabel;
     public static JFrame frame;
 
     public static MainWindow mainWindow;
@@ -1428,23 +1431,47 @@ public class MainWindow {
         return msgTemplateColorTextField;
     }
 
-    public void setMsgTemplateColorTextField(JTextField msgTemplateColorTextField) {
-        this.msgTemplateColorTextField = msgTemplateColorTextField;
+    public void setMsgTemplateColorTextField(String msgTemplateColorTextField) {
+        this.msgTemplateColorTextField.setText(msgTemplateColorTextField);
     }
 
     public JTextField getMsgTemplateKeyWordTextField() {
         return msgTemplateKeyWordTextField;
     }
 
-    public void setMsgTemplateKeyWordTextField(JTextField msgTemplateKeyWordTextField) {
-        this.msgTemplateKeyWordTextField = msgTemplateKeyWordTextField;
+    public void setMsgTemplateKeyWordTextField(String msgTemplateKeyWordTextField) {
+        this.msgTemplateKeyWordTextField.setText(msgTemplateKeyWordTextField);
     }
 
     public JTextField getMsgTemplateFormIdTextField() {
         return msgTemplateFormIdTextField;
     }
 
-    public void setMsgTemplateFormIdTextField(JTextField msgTemplateFormIdTextField) {
-        this.msgTemplateFormIdTextField = msgTemplateFormIdTextField;
+    public void setMsgTemplateFormIdTextField(String msgTemplateFormIdTextField) {
+        this.msgTemplateFormIdTextField.setText(msgTemplateFormIdTextField);
+    }
+
+    public JLabel getTemplateFormIdLabel() {
+        return templateFormIdLabel;
+    }
+
+    public void setTemplateFormIdLabel(JLabel templateFormIdLabel) {
+        this.templateFormIdLabel = templateFormIdLabel;
+    }
+
+    public JLabel getTemplateColorLabel() {
+        return templateColorLabel;
+    }
+
+    public void setTemplateColorLabel(JLabel templateColorLabel) {
+        this.templateColorLabel = templateColorLabel;
+    }
+
+    public JLabel getTemplateKeyWordLabel() {
+        return templateKeyWordLabel;
+    }
+
+    public void setTemplateKeyWordLabel(JLabel templateKeyWordLabel) {
+        this.templateKeyWordLabel = templateKeyWordLabel;
     }
 }

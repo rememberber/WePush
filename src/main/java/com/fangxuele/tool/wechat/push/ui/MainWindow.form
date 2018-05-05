@@ -456,7 +456,7 @@
                           <text value="（选填）"/>
                         </properties>
                       </component>
-                      <component id="da3a1" class="javax.swing.JLabel">
+                      <component id="da3a1" class="javax.swing.JLabel" binding="templateColorLabel">
                         <constraints>
                           <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
@@ -473,7 +473,7 @@
                         </constraints>
                         <properties/>
                       </component>
-                      <component id="1e2ab" class="javax.swing.JLabel">
+                      <component id="1e2ab" class="javax.swing.JLabel" binding="templateKeyWordLabel">
                         <constraints>
                           <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
@@ -490,7 +490,7 @@
                         </constraints>
                         <properties/>
                       </component>
-                      <component id="183c7" class="javax.swing.JLabel">
+                      <component id="183c7" class="javax.swing.JLabel" binding="templateFormIdLabel">
                         <constraints>
                           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
