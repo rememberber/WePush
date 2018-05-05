@@ -1,5 +1,8 @@
 package com.fangxuele.tool.wechat.push.logic;
 
+import cn.binarywang.wx.miniapp.api.WxMaService;
+import cn.binarywang.wx.miniapp.api.impl.WxMaServiceImpl;
+import cn.binarywang.wx.miniapp.config.WxMaInMemoryConfig;
 import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.IAcsClient;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
@@ -416,7 +419,28 @@ public class PushManage {
     }
 
     /**
-     * 获取微信工具服务
+     * 微信小程序配置
+     *
+     * @return
+     */
+    private static WxMaInMemoryConfig wxMaConfigStorage() {
+        WxMaInMemoryConfig configStorage = new WxMaInMemoryConfig();
+        if (StringUtils.isEmpty(Init.configer.getMiniAppAppId()) || StringUtils.isEmpty(Init.configer.getMiniAppAppSecret())
+                || StringUtils.isEmpty(Init.configer.getMiniAppToken()) || StringUtils.isEmpty(Init.configer.getMiniAppAesKey())) {
+            JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "请先在设置中填写并保存小程序相关配置！", "提示",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return null;
+        }
+        configStorage.setAppid(Init.configer.getMiniAppAppId());
+        configStorage.setSecret(Init.configer.getMiniAppAppSecret());
+        configStorage.setToken(Init.configer.getMiniAppToken());
+        configStorage.setAesKey(Init.configer.getMiniAppAesKey());
+        configStorage.setMsgDataFormat("JSON");
+        return configStorage;
+    }
+
+    /**
+     * 获取微信公众号工具服务
      *
      * @return
      */
@@ -424,6 +448,17 @@ public class PushManage {
         WxMpService wxMpService = new WxMpServiceImpl();
         wxMpService.setWxMpConfigStorage(wxMpConfigStorage());
         return wxMpService;
+    }
+
+    /**
+     * 获取微信小程序工具服务
+     *
+     * @return
+     */
+    public static WxMaService getWxMaService() {
+        WxMaService wxMaService = new WxMaServiceImpl();
+        wxMaService.setWxMaConfig(wxMaConfigStorage());
+        return wxMaService;
     }
 
     /**
