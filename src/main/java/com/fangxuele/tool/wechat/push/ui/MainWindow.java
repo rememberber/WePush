@@ -170,6 +170,8 @@ public class MainWindow {
     private JPasswordField miniAppTokenPasswordField;
     private JPasswordField miniAppAesKeyPasswordField;
     private JButton settingMaInfoSaveButton;
+    private JTextField msgTemplateColorTextField;
+    private JTextField msgTemplateKeyWordTextField;
     public static JFrame frame;
 
     public static MainWindow mainWindow;
@@ -1419,5 +1421,21 @@ public class MainWindow {
 
     public void setSettingMaInfoSaveButton(JButton settingMaInfoSaveButton) {
         this.settingMaInfoSaveButton = settingMaInfoSaveButton;
+    }
+
+    public JTextField getMsgTemplateColorTextField() {
+        return msgTemplateColorTextField;
+    }
+
+    public void setMsgTemplateColorTextField(JTextField msgTemplateColorTextField) {
+        this.msgTemplateColorTextField = msgTemplateColorTextField;
+    }
+
+    public JTextField getMsgTemplateKeyWordTextField() {
+        return msgTemplateKeyWordTextField;
+    }
+
+    public void setMsgTemplateKeyWordTextField(JTextField msgTemplateKeyWordTextField) {
+        this.msgTemplateKeyWordTextField = msgTemplateKeyWordTextField;
     }
 }
