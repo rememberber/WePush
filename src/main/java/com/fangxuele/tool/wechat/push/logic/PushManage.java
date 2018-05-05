@@ -2,6 +2,7 @@ package com.fangxuele.tool.wechat.push.logic;
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.api.impl.WxMaServiceImpl;
+import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
 import cn.binarywang.wx.miniapp.config.WxMaInMemoryConfig;
 import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.IAcsClient;
@@ -74,10 +75,24 @@ public class PushManage {
                 }
 
                 for (String[] msgData : msgDataList) {
-                    wxMessageTemplate = makeTemplateMessage(msgData);
+                    wxMessageTemplate = makeMpTemplateMessage(msgData);
                     wxMessageTemplate.setToUser(msgData[0].trim());
                     // ！！！发送模板消息！！！
                     wxMpService.getTemplateMsgService().sendTemplateMsg(wxMessageTemplate);
+                }
+                break;
+            case "模板消息-小程序":
+                WxMaTemplateMessage wxMaMessageTemplate;
+                WxMaService wxMaService = getWxMaService();
+                if (wxMaService.getWxMaConfig() == null) {
+                    return;
+                }
+
+                for (String[] msgData : msgDataList) {
+                    wxMaMessageTemplate = makeMaTemplateMessage(msgData);
+                    wxMaMessageTemplate.setToUser(msgData[0].trim());
+                    // ！！！发送小程序模板消息！！！
+                    wxMaService.getMsgService().sendTemplateMsg(wxMaMessageTemplate);
                 }
                 break;
             case "客服消息":
@@ -107,7 +122,7 @@ public class PushManage {
                         // ！！！发送客服消息！！！
                         wxMpService.getKefuService().sendKefuMessage(wxMpKefuMessage);
                     } catch (Exception e) {
-                        wxMessageTemplate = makeTemplateMessage(msgData);
+                        wxMessageTemplate = makeMpTemplateMessage(msgData);
                         wxMessageTemplate.setToUser(msgData[0].trim());
                         // ！！！发送模板消息！！！
                         wxMpService.getTemplateMsgService().sendTemplateMsg(wxMessageTemplate);
@@ -173,12 +188,12 @@ public class PushManage {
     }
 
     /**
-     * 组织模板消息
+     * 组织模板消息-公众号
      *
      * @param msgData
      * @return
      */
-    synchronized public static WxMpTemplateMessage makeTemplateMessage(String[] msgData) {
+    synchronized public static WxMpTemplateMessage makeMpTemplateMessage(String[] msgData) {
         // 拼模板
         WxMpTemplateMessage wxMessageTemplate = WxMpTemplateMessage.builder().build();
         wxMessageTemplate.setTemplateId(MainWindow.mainWindow.getMsgTemplateIdTextField().getText().trim());
@@ -228,6 +243,60 @@ public class PushManage {
 
             String color = ((String) tableModel.getValueAt(i, 2)).trim();
             WxMpTemplateData templateData = new WxMpTemplateData(name, value, color);
+            wxMessageTemplate.addData(templateData);
+        }
+
+        return wxMessageTemplate;
+    }
+
+    /**
+     * 组织模板消息-小程序
+     *
+     * @param msgData
+     * @return
+     */
+    synchronized public static WxMaTemplateMessage makeMaTemplateMessage(String[] msgData) {
+        // 拼模板
+        WxMaTemplateMessage wxMessageTemplate = WxMaTemplateMessage.builder().build();
+        wxMessageTemplate.setTemplateId(MainWindow.mainWindow.getMsgTemplateIdTextField().getText().trim());
+        wxMessageTemplate.setPage(MainWindow.mainWindow.getMsgTemplateUrlTextField().getText().trim());
+        wxMessageTemplate.setColor(MainWindow.mainWindow.getMsgTemplateColorTextField().getText().trim());
+        wxMessageTemplate.setEmphasisKeyword(MainWindow.mainWindow.getMsgTemplateKeyWordTextField().getText().trim());
+
+        if (MainWindow.mainWindow.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+            Init.initTemplateDataTable();
+        }
+
+        DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getTemplateMsgDataTable().getModel();
+        int rowCount = tableModel.getRowCount();
+        for (int i = 0; i < rowCount; i++) {
+            String name = ((String) tableModel.getValueAt(i, 0)).trim();
+
+            String value = ((String) tableModel.getValueAt(i, 1)).replaceAll("\\$ENTER\\$", "\n");
+            Pattern p = Pattern.compile("\\{([^{}]+)\\}");
+            Matcher matcher = p.matcher(value);
+            while (matcher.find()) {
+                value = value.replace(matcher.group(0), msgData[Integer.parseInt(matcher.group(1).trim())]);
+            }
+
+            p = Pattern.compile("\\$([^$]+)\\$");
+            matcher = p.matcher(value);
+            while (matcher.find()) {
+                String str = matcher.group(0);
+                if (str.startsWith("$NICK_NAME")) {
+                    WxMpService wxMpService = getWxMpService();
+                    String nickName = "";
+                    try {
+                        nickName = wxMpService.getUserService().userInfo(msgData[0]).getNickname();
+                    } catch (WxErrorException e) {
+                        e.printStackTrace();
+                    }
+                    value = value.replace(str, nickName);
+                }
+            }
+
+            String color = ((String) tableModel.getValueAt(i, 2)).trim();
+            WxMaTemplateMessage.Data templateData = new WxMaTemplateMessage.Data(name, value, color);
             wxMessageTemplate.addData(templateData);
         }
 
