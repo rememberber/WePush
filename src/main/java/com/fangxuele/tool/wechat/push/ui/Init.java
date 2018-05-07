@@ -1,17 +1,24 @@
 package com.fangxuele.tool.wechat.push.ui;
 
+import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONUtil;
+import cn.hutool.log.Log;
+import cn.hutool.log.LogFactory;
 import com.alee.laf.WebLookAndFeel;
+import com.fangxuele.tool.wechat.push.bean.UserCase;
 import com.fangxuele.tool.wechat.push.logic.MsgHisManage;
 import com.fangxuele.tool.wechat.push.ui.listener.AboutListener;
 import com.fangxuele.tool.wechat.push.util.Config;
 import com.fangxuele.tool.wechat.push.util.SystemUtil;
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.intellij.uiDesigner.core.Spacer;
 import com.sun.java.swing.plaf.motif.MotifLookAndFeel;
 import com.sun.java.swing.plaf.windows.WindowsLookAndFeel;
-import com.xiaoleilu.hutool.log.Log;
-import com.xiaoleilu.hutool.log.LogFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.metal.MetalLookAndFeel;
@@ -26,8 +33,11 @@ import javax.swing.text.html.StyleSheet;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -85,6 +95,9 @@ public class Init {
         // 设置滚动条速度
         MainWindow.mainWindow.getSettingScrollPane().getVerticalScrollBar().setUnitIncrement(15);
         MainWindow.mainWindow.getSettingScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
+
+        MainWindow.mainWindow.getUserCaseScrollPane().getVerticalScrollBar().setUnitIncrement(15);
+        MainWindow.mainWindow.getUserCaseScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
 
         // 设置版本
         MainWindow.mainWindow.getVersionLabel().setText(ConstantsUI.APP_VERSION);
@@ -149,6 +162,57 @@ public class Init {
     }
 
     /**
+     * 初始化他们都在用tab
+     */
+    public static void initUserCaseTab() {
+        // 从github获取用户案例相关信息
+        String userCaseInfoContent = HttpUtil.get(ConstantsUI.USER_CASE_URL);
+        if (StringUtils.isNotEmpty(userCaseInfoContent)) {
+            List<UserCase> userCaseInfoList = JSONUtil.toList(JSONUtil.parseArray(userCaseInfoContent), UserCase.class);
+
+            JPanel userCaseListPanel = MainWindow.mainWindow.getUserCaseListPanel();
+            int listSize = userCaseInfoList.size();
+            userCaseListPanel.setLayout(new GridLayoutManager((int) Math.ceil(listSize / 2.0), 3, new Insets(0, 0, 0, 0), -1, -1));
+            for (int i = 0; i < listSize; i++) {
+                UserCase userCase = userCaseInfoList.get(i);
+                JPanel userCasePanel = new JPanel();
+                userCasePanel.setLayout(new GridLayoutManager(2, 2, new Insets(10, 10, 0, 0), -1, -1));
+
+                JLabel qrCodeLabel = new JLabel();
+                try {
+                    URL url = new URL(userCase.getQrCodeUrl());
+                    BufferedImage image = ImageIO.read(url);
+                    qrCodeLabel.setIcon(new ImageIcon(image));
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                    logger.error(e);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    logger.error(e);
+                }
+                JLabel titleLabel = new JLabel();
+                titleLabel.setText(userCase.getTitle());
+                Font fnt = new Font(configer.getFont(), Font.BOLD, 20);
+                titleLabel.setFont(fnt);
+                JLabel descLabel = new JLabel();
+                descLabel.setText(userCase.getDesc());
+
+                userCasePanel.add(qrCodeLabel, new GridConstraints(0, 0, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+                userCasePanel.add(titleLabel, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+                userCasePanel.add(descLabel, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+                userCaseListPanel.add(userCasePanel, new GridConstraints(i / 2, i % 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+            }
+
+            final Spacer spacer1 = new Spacer();
+            userCaseListPanel.add(spacer1, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+            final Spacer spacer2 = new Spacer();
+            userCaseListPanel.add(spacer2, new GridConstraints((int) Math.ceil(listSize / 2.0) - 1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+
+            userCaseListPanel.updateUI();
+        }
+    }
+
+    /**
      * 初始化消息tab
      */
     public static void initMsgTab(String selectedMsgName) {
@@ -163,6 +227,9 @@ public class Init {
         MainWindow.mainWindow.setMsgKefuUrlTextField("");
         MainWindow.mainWindow.setMsgTemplateMiniAppidTextField("");
         MainWindow.mainWindow.setMsgTemplateMiniPagePathTextField("");
+        MainWindow.mainWindow.setMsgTemplateFormIdTextField("");
+        MainWindow.mainWindow.setMsgTemplateColorTextField("");
+        MainWindow.mainWindow.setMsgTemplateKeyWordTextField("");
 
         String msgName;
         if (StringUtils.isEmpty(selectedMsgName)) {
@@ -189,6 +256,11 @@ public class Init {
                 MainWindow.mainWindow.setMsgKefuPicUrlTextField(msgDataArray[6]);
                 MainWindow.mainWindow.setMsgKefuDescTextField(msgDataArray[7]);
                 MainWindow.mainWindow.setMsgKefuUrlTextField(msgDataArray[8]);
+                if (msgDataArray.length > 11) {
+                    MainWindow.mainWindow.setMsgTemplateFormIdTextField(msgDataArray[11]);
+                    MainWindow.mainWindow.setMsgTemplateColorTextField(msgDataArray[12]);
+                    MainWindow.mainWindow.setMsgTemplateKeyWordTextField(msgDataArray[13]);
+                }
                 if (msgDataArray.length > 9) {
                     MainWindow.mainWindow.setMsgTemplateMiniAppidTextField(msgDataArray[9]);
                     MainWindow.mainWindow.setMsgTemplateMiniPagePathTextField(msgDataArray[10]);
@@ -247,6 +319,34 @@ public class Init {
                 MainWindow.mainWindow.getTemplateMiniProgramOptionalLabel2().setVisible(true);
                 MainWindow.mainWindow.getTemplateMsgColorLabel().setVisible(true);
                 MainWindow.mainWindow.getTemplateDataColorTextField().setVisible(true);
+                MainWindow.mainWindow.getMsgTemplateFormIdTextField().setVisible(false);
+                MainWindow.mainWindow.getMsgTemplateColorTextField().setVisible(false);
+                MainWindow.mainWindow.getMsgTemplateKeyWordTextField().setVisible(false);
+                MainWindow.mainWindow.getTemplateFormIdLabel().setVisible(false);
+                MainWindow.mainWindow.getTemplateColorLabel().setVisible(false);
+                MainWindow.mainWindow.getTemplateKeyWordLabel().setVisible(false);
+                MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户openid（以半角分号分隔）");
+
+                break;
+            case "模板消息-小程序":
+                MainWindow.mainWindow.getKefuMsgPanel().setVisible(false);
+                MainWindow.mainWindow.getTemplateMsgPanel().setVisible(true);
+                MainWindow.mainWindow.getTemplateUrlLabel().setVisible(true);
+                MainWindow.mainWindow.getMsgTemplateUrlTextField().setVisible(true);
+                MainWindow.mainWindow.getTemplateMiniProgramAppidLabel().setVisible(false);
+                MainWindow.mainWindow.getMsgTemplateMiniAppidTextField().setVisible(false);
+                MainWindow.mainWindow.getTemplateMiniProgramPagePathLabel().setVisible(false);
+                MainWindow.mainWindow.getMsgTemplateMiniPagePathTextField().setVisible(false);
+                MainWindow.mainWindow.getTemplateMiniProgramOptionalLabel1().setVisible(false);
+                MainWindow.mainWindow.getTemplateMiniProgramOptionalLabel2().setVisible(false);
+                MainWindow.mainWindow.getTemplateMsgColorLabel().setVisible(true);
+                MainWindow.mainWindow.getTemplateDataColorTextField().setVisible(true);
+                MainWindow.mainWindow.getMsgTemplateFormIdTextField().setVisible(true);
+                MainWindow.mainWindow.getMsgTemplateColorTextField().setVisible(true);
+                MainWindow.mainWindow.getMsgTemplateKeyWordTextField().setVisible(true);
+                MainWindow.mainWindow.getTemplateFormIdLabel().setVisible(true);
+                MainWindow.mainWindow.getTemplateColorLabel().setVisible(true);
+                MainWindow.mainWindow.getTemplateKeyWordLabel().setVisible(true);
                 MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户openid（以半角分号分隔）");
 
                 break;
@@ -267,6 +367,12 @@ public class Init {
                 MainWindow.mainWindow.getTemplateMiniProgramOptionalLabel2().setVisible(true);
                 MainWindow.mainWindow.getTemplateMsgColorLabel().setVisible(true);
                 MainWindow.mainWindow.getTemplateDataColorTextField().setVisible(true);
+                MainWindow.mainWindow.getMsgTemplateFormIdTextField().setVisible(false);
+                MainWindow.mainWindow.getMsgTemplateColorTextField().setVisible(false);
+                MainWindow.mainWindow.getMsgTemplateKeyWordTextField().setVisible(false);
+                MainWindow.mainWindow.getTemplateFormIdLabel().setVisible(false);
+                MainWindow.mainWindow.getTemplateColorLabel().setVisible(false);
+                MainWindow.mainWindow.getTemplateKeyWordLabel().setVisible(false);
                 MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户openid（以半角分号分隔）");
                 break;
             case "阿里云短信":
@@ -283,6 +389,12 @@ public class Init {
                 MainWindow.mainWindow.getTemplateMiniProgramOptionalLabel2().setVisible(false);
                 MainWindow.mainWindow.getTemplateMsgColorLabel().setVisible(false);
                 MainWindow.mainWindow.getTemplateDataColorTextField().setVisible(false);
+                MainWindow.mainWindow.getMsgTemplateFormIdTextField().setVisible(false);
+                MainWindow.mainWindow.getMsgTemplateColorTextField().setVisible(false);
+                MainWindow.mainWindow.getMsgTemplateKeyWordTextField().setVisible(false);
+                MainWindow.mainWindow.getTemplateFormIdLabel().setVisible(false);
+                MainWindow.mainWindow.getTemplateColorLabel().setVisible(false);
+                MainWindow.mainWindow.getTemplateKeyWordLabel().setVisible(false);
                 MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户手机号（以半角分号分隔）");
                 break;
             default:
@@ -415,11 +527,18 @@ public class Init {
     public static void initSettingTab() {
         // 常规
         MainWindow.mainWindow.setAutoCheckUpdateCheckBox(configer.isAutoCheckUpdate());
+
         // 微信公众号
         MainWindow.mainWindow.setWechatAppIdTextField(configer.getWechatAppId());
         MainWindow.mainWindow.setWechatAppSecretPasswordField(configer.getWechatAppSecret());
         MainWindow.mainWindow.setWechatTokenPasswordField(configer.getWechatToken());
         MainWindow.mainWindow.setWechatAesKeyPasswordField(configer.getWechatAesKey());
+
+        // 微信小程序
+        MainWindow.mainWindow.setMiniAppAppIdTextField(configer.getMiniAppAppId());
+        MainWindow.mainWindow.setMiniAppAppSecretPasswordField(configer.getMiniAppAppSecret());
+        MainWindow.mainWindow.setMiniAppTokenPasswordField(configer.getMiniAppToken());
+        MainWindow.mainWindow.setMiniAppAesKeyPasswordField(configer.getMiniAppAesKey());
 
         // 阿里云短信
         MainWindow.mainWindow.setAliyunAccessKeyIdTextField(configer.getAliyunAccessKeyId());
@@ -497,6 +616,7 @@ public class Init {
      */
     public static void initAllTab() {
         initHelpTab();
+        new Thread(() -> initUserCaseTab()).start();
         initMsgTab(null);
         initMemberTab();
         initPushTab();

@@ -1,20 +1,19 @@
 package com.fangxuele.tool.wechat.push.logic;
 
+import cn.binarywang.wx.miniapp.api.WxMaService;
+import cn.hutool.core.date.BetweenFormater;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.log.Log;
+import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.wechat.push.ui.Init;
 import com.fangxuele.tool.wechat.push.ui.MainWindow;
-import com.xiaoleilu.hutool.date.BetweenFormater;
-import com.xiaoleilu.hutool.date.DateUtil;
-import com.xiaoleilu.hutool.log.Log;
-import com.xiaoleilu.hutool.log.LogFactory;
 import me.chanjar.weixin.mp.api.WxMpService;
 
-import javax.swing.JOptionPane;
-import javax.swing.JProgressBar;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
-import java.awt.Component;
+import java.awt.*;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -97,7 +96,7 @@ public class RunPushThread extends Thread {
         BaseMsgServiceThread thread = null;
         for (int i = 0; i < threadCount; i++) {
             if ("模板消息".equals(msgType)) {
-                thread = new TemplateMsgServiceThread(i * pagePerThread,
+                thread = new TemplateMsgMpServiceThread(i * pagePerThread,
                         i * pagePerThread + pagePerThread - 1, pageSize);
 
                 WxMpService wxMpService = PushManage.getWxMpService();
@@ -105,6 +104,15 @@ public class RunPushThread extends Thread {
                     return;
                 }
                 thread.setWxMpService(wxMpService);
+            } else if ("模板消息-小程序".equals(msgType)) {
+                thread = new TemplateMsgMaServiceThread(i * pagePerThread,
+                        i * pagePerThread + pagePerThread - 1, pageSize);
+
+                WxMaService wxMaService = PushManage.getWxMaService();
+                if (wxMaService.getWxMaConfig() == null) {
+                    return;
+                }
+                ((TemplateMsgMaServiceThread) thread).setWxMaService(wxMaService);
             } else if ("客服消息".equals(msgType)) {
                 thread = new KeFuMsgServiceThread(i * pagePerThread,
                         i * pagePerThread + pagePerThread - 1, pageSize);

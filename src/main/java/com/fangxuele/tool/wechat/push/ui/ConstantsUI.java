@@ -27,4 +27,9 @@ public class ConstantsUI {
      */
     public final static String CHECK_VERSION_URL = "https://raw.githubusercontent.com/rememberber/WePush/master/src/main/resources/version_summary.json";
 
+    /**
+     * 用户案例url
+     */
+    public final static String USER_CASE_URL = "https://raw.githubusercontent.com/rememberber/WePush/master/src/main/resources/user_case.json";
+
 }
