@@ -1,9 +1,9 @@
 package com.fangxuele.tool.wechat.push.util;
 
+import cn.hutool.log.Log;
+import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.wechat.push.ui.Init;
 import com.fangxuele.tool.wechat.push.ui.MainWindow;
-import com.xiaoleilu.hutool.log.Log;
-import com.xiaoleilu.hutool.log.LogFactory;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
