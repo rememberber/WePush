@@ -1,8 +1,8 @@
 package com.fangxuele.tool.wechat.push.logic;
 
+import cn.hutool.log.Log;
+import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.wechat.push.ui.MainWindow;
-import com.xiaoleilu.hutool.log.Log;
-import com.xiaoleilu.hutool.log.LogFactory;
 import me.chanjar.weixin.mp.api.WxMpService;
 
 import javax.swing.table.DefaultTableModel;

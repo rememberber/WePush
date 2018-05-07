@@ -1,17 +1,24 @@
 package com.fangxuele.tool.wechat.push.ui;
 
+import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONUtil;
+import cn.hutool.log.Log;
+import cn.hutool.log.LogFactory;
 import com.alee.laf.WebLookAndFeel;
+import com.fangxuele.tool.wechat.push.bean.UserCase;
 import com.fangxuele.tool.wechat.push.logic.MsgHisManage;
 import com.fangxuele.tool.wechat.push.ui.listener.AboutListener;
 import com.fangxuele.tool.wechat.push.util.Config;
 import com.fangxuele.tool.wechat.push.util.SystemUtil;
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.intellij.uiDesigner.core.Spacer;
 import com.sun.java.swing.plaf.motif.MotifLookAndFeel;
 import com.sun.java.swing.plaf.windows.WindowsLookAndFeel;
-import com.xiaoleilu.hutool.log.Log;
-import com.xiaoleilu.hutool.log.LogFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.metal.MetalLookAndFeel;
@@ -26,8 +33,11 @@ import javax.swing.text.html.StyleSheet;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -85,6 +95,9 @@ public class Init {
         // 设置滚动条速度
         MainWindow.mainWindow.getSettingScrollPane().getVerticalScrollBar().setUnitIncrement(15);
         MainWindow.mainWindow.getSettingScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
+
+        MainWindow.mainWindow.getUserCaseScrollPane().getVerticalScrollBar().setUnitIncrement(15);
+        MainWindow.mainWindow.getUserCaseScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
 
         // 设置版本
         MainWindow.mainWindow.getVersionLabel().setText(ConstantsUI.APP_VERSION);
@@ -152,6 +165,51 @@ public class Init {
      * 初始化他们都在用tab
      */
     public static void initUserCaseTab() {
+        // 从github获取用户案例相关信息
+        String userCaseInfoContent = HttpUtil.get(ConstantsUI.USER_CASE_URL);
+        if (StringUtils.isNotEmpty(userCaseInfoContent)) {
+            List<UserCase> userCaseInfoList = JSONUtil.toList(JSONUtil.parseArray(userCaseInfoContent), UserCase.class);
+
+            JPanel userCaseListPanel = MainWindow.mainWindow.getUserCaseListPanel();
+            int listSize = userCaseInfoList.size();
+            userCaseListPanel.setLayout(new GridLayoutManager((int) Math.ceil(listSize / 2.0), 3, new Insets(0, 0, 0, 0), -1, -1));
+            for (int i = 0; i < listSize; i++) {
+                UserCase userCase = userCaseInfoList.get(i);
+                JPanel userCasePanel = new JPanel();
+                userCasePanel.setLayout(new GridLayoutManager(2, 2, new Insets(10, 10, 0, 0), -1, -1));
+
+                JLabel qrCodeLabel = new JLabel();
+                try {
+                    URL url = new URL(userCase.getQrCodeUrl());
+                    BufferedImage image = ImageIO.read(url);
+                    qrCodeLabel.setIcon(new ImageIcon(image));
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                    logger.error(e);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    logger.error(e);
+                }
+                JLabel titleLabel = new JLabel();
+                titleLabel.setText(userCase.getTitle());
+                Font fnt = new Font(configer.getFont(), Font.BOLD, 20);
+                titleLabel.setFont(fnt);
+                JLabel descLabel = new JLabel();
+                descLabel.setText(userCase.getDesc());
+
+                userCasePanel.add(qrCodeLabel, new GridConstraints(0, 0, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+                userCasePanel.add(titleLabel, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+                userCasePanel.add(descLabel, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+                userCaseListPanel.add(userCasePanel, new GridConstraints(i / 2, i % 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+            }
+
+            final Spacer spacer1 = new Spacer();
+            userCaseListPanel.add(spacer1, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+            final Spacer spacer2 = new Spacer();
+            userCaseListPanel.add(spacer2, new GridConstraints((int) Math.ceil(listSize / 2.0) - 1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+
+            userCaseListPanel.updateUI();
+        }
     }
 
     /**
@@ -558,7 +616,7 @@ public class Init {
      */
     public static void initAllTab() {
         initHelpTab();
-        initUserCaseTab();
+        new Thread(() -> initUserCaseTab()).start();
         initMsgTab(null);
         initMemberTab();
         initPushTab();
