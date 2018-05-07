@@ -1,12 +1,12 @@
 package com.fangxuele.tool.wechat.push.ui.listener;
 
+import cn.hutool.http.HttpUtil;
+import cn.hutool.log.Log;
+import cn.hutool.log.LogFactory;
 import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.wechat.push.bean.VersionSummary;
 import com.fangxuele.tool.wechat.push.ui.ConstantsUI;
 import com.fangxuele.tool.wechat.push.ui.MainWindow;
-import com.xiaoleilu.hutool.http.HttpUtil;
-import com.xiaoleilu.hutool.log.Log;
-import com.xiaoleilu.hutool.log.LogFactory;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;

@@ -1,12 +1,12 @@
 package com.fangxuele.tool.wechat.push.logic;
 
+import cn.hutool.log.Log;
+import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.wechat.push.ui.Init;
 import com.fangxuele.tool.wechat.push.ui.MainWindow;
 import com.fangxuele.tool.wechat.push.util.SystemUtil;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
-import com.xiaoleilu.hutool.log.Log;
-import com.xiaoleilu.hutool.log.LogFactory;
 
 import javax.swing.table.DefaultTableModel;
 import java.io.File;
