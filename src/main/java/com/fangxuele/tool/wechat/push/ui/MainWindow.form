@@ -2280,21 +2280,7 @@
                 </constraints>
                 <properties/>
                 <border type="none"/>
-                <children>
-                  <component id="cf704" class="javax.swing.JTextPane" binding="userCaseTextPane">
-                    <constraints/>
-                    <properties>
-                      <doubleBuffered value="true"/>
-                      <editable value="false"/>
-                      <margin top="10" left="30" bottom="10" right="10"/>
-                      <text value=""/>
-                    </properties>
-                    <clientProperties>
-                      <JEditorPane.honorDisplayProperties class="java.lang.Boolean" value="true"/>
-                      <JEditorPane.w3cLengthUnits class="java.lang.Boolean" value="true"/>
-                    </clientProperties>
-                  </component>
-                </children>
+                <children/>
               </scrollpane>
               <grid id="5c936" layout-manager="GridLayoutManager" row-count="5" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="0" left="10" bottom="0" right="0"/>
@@ -2318,7 +2304,7 @@
                     </constraints>
                     <properties>
                       <font style="1"/>
-                      <text value="WePush不会搜集用户的任何信息"/>
+                      <text value="WePush不会收集用户的任何信息"/>
                     </properties>
                   </component>
                   <component id="701ab" class="javax.swing.JLabel">
