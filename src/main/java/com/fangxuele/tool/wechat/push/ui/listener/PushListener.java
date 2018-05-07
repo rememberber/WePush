@@ -1,12 +1,13 @@
 package com.fangxuele.tool.wechat.push.ui.listener;
 
+import cn.hutool.core.date.DatePattern;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.log.Log;
+import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.wechat.push.logic.PushData;
 import com.fangxuele.tool.wechat.push.logic.RunPushThread;
 import com.fangxuele.tool.wechat.push.ui.Init;
 import com.fangxuele.tool.wechat.push.ui.MainWindow;
-import com.xiaoleilu.hutool.date.DateUtil;
-import com.xiaoleilu.hutool.log.Log;
-import com.xiaoleilu.hutool.log.LogFactory;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
@@ -106,7 +107,7 @@ public class PushListener {
 
                 // 定时开始
                 if (Init.configer.isRadioStartAt()) {
-                    long startAtMills = DateUtil.parse(Init.configer.getTextStartAt(), DateUtil.NORM_DATETIME_PATTERN).getTime();
+                    long startAtMills = DateUtil.parse(Init.configer.getTextStartAt(), DatePattern.NORM_DATETIME_PATTERN).getTime();
                     if (startAtMills < System.currentTimeMillis()) {
                         JOptionPane.showMessageDialog(MainWindow.mainWindow.getPushPanel(), "计划开始推送时间不能小于系统当前时间！\n\n请检查计划任务设置！\n\n", "提示",
                                 JOptionPane.INFORMATION_MESSAGE);
@@ -142,7 +143,7 @@ public class PushListener {
 
                 // 每天固定时间开始
                 if (Init.configer.isRadioPerDay()) {
-                    long startPerDayMills = DateUtil.parse(DateUtil.today() + " " + Init.configer.getTextPerDay(), DateUtil.NORM_DATETIME_PATTERN).getTime();
+                    long startPerDayMills = DateUtil.parse(DateUtil.today() + " " + Init.configer.getTextPerDay(), DatePattern.NORM_DATETIME_PATTERN).getTime();
 
                     int isSchedulePush = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getPushPanel(),
                             new StringBuilder("将在每天").
@@ -176,7 +177,7 @@ public class PushListener {
                 // 每周固定时间开始
                 if (Init.configer.isRadioPerWeek()) {
 
-                    long todaySetMills = DateUtil.parse(DateUtil.today() + " " + Init.configer.getTextPerWeekTime(), DateUtil.NORM_DATETIME_PATTERN).getTime();
+                    long todaySetMills = DateUtil.parse(DateUtil.today() + " " + Init.configer.getTextPerWeekTime(), DatePattern.NORM_DATETIME_PATTERN).getTime();
                     int dayBetween = getDayOfWeek(Init.configer.getTextPerWeekWeek()) - DateUtil.thisDayOfWeek();
                     long startPerWeekMills = dayBetween < 0 ? (dayBetween + 7) * 24 * 60 * 60 * 1000 : dayBetween * 24 * 60 * 60 * 1000;
 

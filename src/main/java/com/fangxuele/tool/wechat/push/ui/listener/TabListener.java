@@ -1,10 +1,10 @@
 package com.fangxuele.tool.wechat.push.ui.listener;
 
+import cn.hutool.log.Log;
+import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.wechat.push.logic.PushData;
 import com.fangxuele.tool.wechat.push.ui.Init;
 import com.fangxuele.tool.wechat.push.ui.MainWindow;
-import com.xiaoleilu.hutool.log.Log;
-import com.xiaoleilu.hutool.log.LogFactory;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;

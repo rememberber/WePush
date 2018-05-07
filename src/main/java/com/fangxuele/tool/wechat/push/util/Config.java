@@ -1,9 +1,10 @@
 package com.fangxuele.tool.wechat.push.util;
 
-import com.xiaoleilu.hutool.io.FileUtil;
-import com.xiaoleilu.hutool.log.Log;
-import com.xiaoleilu.hutool.log.LogFactory;
-import com.xiaoleilu.hutool.setting.dialect.Props;
+
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.log.Log;
+import cn.hutool.log.LogFactory;
+import cn.hutool.setting.dialect.Props;
 
 import java.io.File;
 import java.io.FileOutputStream;
