@@ -176,7 +176,6 @@ public class MainWindow {
     private JLabel templateFormIdLabel;
     private JLabel templateColorLabel;
     private JLabel templateKeyWordLabel;
-    private JTextPane userCaseTextPane;
     public static JFrame frame;
 
     public static MainWindow mainWindow;
@@ -1476,11 +1475,4 @@ public class MainWindow {
         this.templateKeyWordLabel = templateKeyWordLabel;
     }
 
-    public JTextPane getUserCaseTextPane() {
-        return userCaseTextPane;
-    }
-
-    public void setUserCaseTextPane(JTextPane userCaseTextPane) {
-        this.userCaseTextPane = userCaseTextPane;
-    }
 }
