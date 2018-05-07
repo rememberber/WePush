@@ -1,11 +1,11 @@
 package com.fangxuele.tool.wechat.push.ui.listener;
 
+import cn.hutool.log.Log;
+import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.wechat.push.ui.Init;
 import com.fangxuele.tool.wechat.push.ui.MainWindow;
 import com.fangxuele.tool.wechat.push.util.DbUtilMySQL;
 import com.fangxuele.tool.wechat.push.util.SystemUtil;
-import com.xiaoleilu.hutool.log.Log;
-import com.xiaoleilu.hutool.log.LogFactory;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
