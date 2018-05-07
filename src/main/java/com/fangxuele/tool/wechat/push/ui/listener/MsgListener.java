@@ -1,11 +1,11 @@
 package com.fangxuele.tool.wechat.push.ui.listener;
 
+import cn.hutool.log.Log;
+import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.wechat.push.logic.MsgHisManage;
 import com.fangxuele.tool.wechat.push.logic.PushManage;
 import com.fangxuele.tool.wechat.push.ui.Init;
 import com.fangxuele.tool.wechat.push.ui.MainWindow;
-import com.xiaoleilu.hutool.log.Log;
-import com.xiaoleilu.hutool.log.LogFactory;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
@@ -117,6 +117,9 @@ public class MsgListener {
                     record[8] = MainWindow.mainWindow.getMsgKefuUrlTextField().getText();
                     record[9] = MainWindow.mainWindow.getMsgTemplateMiniAppidTextField().getText();
                     record[10] = MainWindow.mainWindow.getMsgTemplateMiniPagePathTextField().getText();
+                    record[11] = MainWindow.mainWindow.getMsgTemplateFormIdTextField().getText();
+                    record[12] = MainWindow.mainWindow.getMsgTemplateColorTextField().getText();
+                    record[13] = MainWindow.mainWindow.getMsgTemplateKeyWordTextField().getText();
 
                     msgMap.put(msgName, record);
 
@@ -170,6 +173,9 @@ public class MsgListener {
             MainWindow.mainWindow.getMsgKefuUrlTextField().setText("");
             MainWindow.mainWindow.setMsgTemplateMiniAppidTextField("");
             MainWindow.mainWindow.setMsgTemplateMiniPagePathTextField("");
+            MainWindow.mainWindow.setMsgTemplateFormIdTextField("");
+            MainWindow.mainWindow.setMsgTemplateColorTextField("");
+            MainWindow.mainWindow.setMsgTemplateKeyWordTextField("");
 
             if (MainWindow.mainWindow.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
                 Init.initTemplateDataTable();

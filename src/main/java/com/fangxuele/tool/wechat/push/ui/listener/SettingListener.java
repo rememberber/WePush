@@ -1,11 +1,11 @@
 package com.fangxuele.tool.wechat.push.ui.listener;
 
+import cn.hutool.log.Log;
+import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.wechat.push.ui.Init;
 import com.fangxuele.tool.wechat.push.ui.MainWindow;
 import com.fangxuele.tool.wechat.push.util.DbUtilMySQL;
 import com.fangxuele.tool.wechat.push.util.SystemUtil;
-import com.xiaoleilu.hutool.log.Log;
-import com.xiaoleilu.hutool.log.LogFactory;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -37,6 +37,24 @@ public class SettingListener {
                 Init.configer.setWechatAppSecret(new String(MainWindow.mainWindow.getWechatAppSecretPasswordField().getPassword()));
                 Init.configer.setWechatToken(new String(MainWindow.mainWindow.getWechatTokenPasswordField().getPassword()));
                 Init.configer.setWechatAesKey(new String(MainWindow.mainWindow.getWechatAesKeyPasswordField().getPassword()));
+                Init.configer.save();
+
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存成功！", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        });
+
+        // 设置-小程序-保存
+        MainWindow.mainWindow.getSettingMaInfoSaveButton().addActionListener(e -> {
+            try {
+                Init.configer.setMiniAppAppId(MainWindow.mainWindow.getMiniAppAppIdTextField().getText());
+                Init.configer.setMiniAppAppSecret(new String(MainWindow.mainWindow.getMiniAppAppSecretPasswordField().getPassword()));
+                Init.configer.setMiniAppToken(new String(MainWindow.mainWindow.getMiniAppTokenPasswordField().getPassword()));
+                Init.configer.setMiniAppAesKey(new String(MainWindow.mainWindow.getMiniAppAesKeyPasswordField().getPassword()));
                 Init.configer.save();
 
                 JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存成功！", "成功",

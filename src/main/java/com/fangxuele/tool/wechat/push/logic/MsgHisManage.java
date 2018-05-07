@@ -1,12 +1,12 @@
 package com.fangxuele.tool.wechat.push.logic;
 
+import cn.hutool.log.Log;
+import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.wechat.push.ui.Init;
 import com.fangxuele.tool.wechat.push.ui.MainWindow;
 import com.fangxuele.tool.wechat.push.util.SystemUtil;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
-import com.xiaoleilu.hutool.log.Log;
-import com.xiaoleilu.hutool.log.LogFactory;
 
 import javax.swing.table.DefaultTableModel;
 import java.io.File;
@@ -33,7 +33,7 @@ public class MsgHisManage {
     /**
      * 历史消息保存的csv的列数
      */
-    public static final int ARRAY_LENGTH = 11;
+    public static final int ARRAY_LENGTH = 14;
 
     public static MsgHisManage getInstance() {
         return ourInstance;
