@@ -172,7 +172,7 @@ public class Init {
 
             JPanel userCaseListPanel = MainWindow.mainWindow.getUserCaseListPanel();
             int listSize = userCaseInfoList.size();
-            userCaseListPanel.setLayout(new GridLayoutManager((int) Math.ceil(listSize / 2.0), 3, new Insets(0, 0, 0, 0), -1, -1));
+            userCaseListPanel.setLayout(new GridLayoutManager((int) Math.ceil(listSize / 2.0) + 1, 3, new Insets(0, 0, 0, 0), -1, -1));
             for (int i = 0; i < listSize; i++) {
                 UserCase userCase = userCaseInfoList.get(i);
                 JPanel userCasePanel = new JPanel();
@@ -206,7 +206,7 @@ public class Init {
             final Spacer spacer1 = new Spacer();
             userCaseListPanel.add(spacer1, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
             final Spacer spacer2 = new Spacer();
-            userCaseListPanel.add(spacer2, new GridConstraints((int) Math.ceil(listSize / 2.0) - 1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+            userCaseListPanel.add(spacer2, new GridConstraints((int) Math.ceil(listSize / 2.0), 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 
             userCaseListPanel.updateUI();
         }
