@@ -2379,7 +2379,7 @@ public class MainWindow {
         userCaseListPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         userCaseScrollPane.setViewportView(userCaseListPanel);
         final JPanel panel28 = new JPanel();
-        panel28.setLayout(new GridLayoutManager(5, 1, new Insets(0, 10, 0, 0), -1, -1));
+        panel28.setLayout(new GridLayoutManager(5, 1, new Insets(10, 10, 0, 0), -1, -1));
         panel27.add(panel28, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label40 = new JLabel();
         label40.setText("产品信息将会在这里展示，帮助宣传您的产品");
