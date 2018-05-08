@@ -551,6 +551,11 @@ public class Init {
         MainWindow.mainWindow.setAliAppSecretPasswordField(configer.getAliAppSecret());
         MainWindow.mainWindow.setAliSignTextField(configer.getAliSign());
 
+        // 腾讯云短信
+        MainWindow.mainWindow.setTxyunAppIdTextField(configer.getTxyunAppId());
+        MainWindow.mainWindow.setTxyunAppKeyTextField(configer.getTxyunAppKey());
+        MainWindow.mainWindow.setTxyunSignTextField(configer.getTxyunSign());
+
         // MySQL
         MainWindow.mainWindow.setMysqlUrlTextField(configer.getMysqlUrl());
         MainWindow.mainWindow.setMysqlDatabaseTextField(configer.getMysqlDatabase());
