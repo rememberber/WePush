@@ -1631,6 +1631,7 @@ public class MainWindow {
         defaultComboBoxModel1.addElement("客服消息优先");
         defaultComboBoxModel1.addElement("阿里云短信");
         defaultComboBoxModel1.addElement("阿里大于模板短信");
+        defaultComboBoxModel1.addElement("腾讯云短信");
         msgTypeComboBox.setModel(defaultComboBoxModel1);
         panel3.add(msgTypeComboBox, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         msgNameLabel = new JLabel();
