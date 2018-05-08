@@ -376,6 +376,7 @@ public class Init {
                 MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户openid（以半角分号分隔）");
                 break;
             case "阿里云短信":
+            case "腾讯云短信":
             case "阿里大于模板短信":
                 MainWindow.mainWindow.getKefuMsgPanel().setVisible(false);
                 MainWindow.mainWindow.getTemplateMsgPanel().setVisible(true);

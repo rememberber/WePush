@@ -190,6 +190,7 @@
                             <item value="客服消息优先"/>
                             <item value="阿里云短信"/>
                             <item value="阿里大于模板短信"/>
+                            <item value="腾讯云短信"/>
                           </model>
                         </properties>
                       </component>
