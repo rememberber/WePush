@@ -104,6 +104,12 @@ public class Config {
 
     private String aliSign;
 
+    private String txyunAppId;
+
+    private String txyunAppKey;
+
+    private String txyunSign;
+
     private String mysqlUrl;
 
     private String mysqlDatabase;
@@ -220,6 +226,9 @@ public class Config {
         props.setProperty("setting.ali.appKey", "");
         props.setProperty("setting.ali.appSecret", "");
         props.setProperty("setting.ali.sign", "");
+        props.setProperty("setting.txyun.appId", "");
+        props.setProperty("setting.txyun.appKey", "");
+        props.setProperty("setting.txyun.txyunSign", "");
         props.setProperty("setting.mysql.url", "");
         props.setProperty("setting.mysql.database", "");
         props.setProperty("setting.mysql.user", "");
@@ -605,5 +614,29 @@ public class Config {
 
     public void setMiniAppAesKey(String miniAppAesKey) {
         props.setProperty("setting.miniApp.aesKey", miniAppAesKey);
+    }
+
+    public String getTxyunAppId() {
+        return props.getProperty("setting.txyun.appId");
+    }
+
+    public void setTxyunAppId(String txyunAppId) {
+        props.setProperty("setting.txyun.appId", txyunAppId);
+    }
+
+    public String getTxyunAppKey() {
+        return props.getProperty("setting.txyun.appKey");
+    }
+
+    public void setTxyunAppKey(String txyunAppKey) {
+        props.setProperty("setting.txyun.appKey", txyunAppKey);
+    }
+
+    public String getTxyunSign() {
+        return props.getProperty("setting.txyun.txyunSign");
+    }
+
+    public void setTxyunSign(String txyunSign) {
+        props.setProperty("setting.txyun.txyunSign", txyunSign);
     }
 }
