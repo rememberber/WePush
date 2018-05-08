@@ -30,6 +30,6 @@ public class ConstantsUI {
     /**
      * 用户案例url
      */
-    public final static String USER_CASE_URL = "https://raw.githubusercontent.com/rememberber/WePush/master/src/main/resources/user_case.json";
+    public final static String USER_CASE_URL = "http://download.zhoubochina.com/file/user_case.json";
 
 }
