@@ -2459,7 +2459,7 @@ public class MainWindow {
         label44.setText("WePush不会收集用户的任何信息");
         panel30.add(label44, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label45 = new JLabel();
-        label45.setText("也正因为如此，我无法得知哪些优秀的企业或个人在使用她");
+        label45.setText("也正因如此，我无法得知哪些优秀的企业或个人在使用她");
         panel30.add(label45, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label46 = new JLabel();
         label46.setText("如果WePush能给您带来一些便利，或者有任何想法可以让WePush变的更好");
