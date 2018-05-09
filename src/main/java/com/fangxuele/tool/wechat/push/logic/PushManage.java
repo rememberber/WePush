@@ -19,6 +19,8 @@ import com.aliyuncs.profile.IClientProfile;
 import com.fangxuele.tool.wechat.push.ui.Init;
 import com.fangxuele.tool.wechat.push.ui.MainWindow;
 import com.fangxuele.tool.wechat.push.util.SystemUtil;
+import com.github.qcloudsms.SmsSingleSender;
+import com.github.qcloudsms.SmsSingleSenderResult;
 import com.opencsv.CSVWriter;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
@@ -156,6 +158,28 @@ public class PushManage {
                     if (response.getCode() == null || !"OK".equals(response.getCode())) {
                         throw new Exception(new StringBuffer().append(response.getMessage()).append(";\n\nErrorCode:")
                                 .append(response.getCode()).append(";\n\ntelNum:").append(msgData[0]).toString());
+                    }
+                }
+                break;
+            case "腾讯云短信":
+                String txyunAppId = Init.configer.getTxyunAppId();
+                String txyunAppKey = Init.configer.getTxyunAppKey();
+
+                if (StringUtils.isEmpty(txyunAppId) || StringUtils.isEmpty(txyunAppKey)) {
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
+                            "请先在设置中填写并保存腾讯云短信相关配置！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+
+                SmsSingleSender ssender = new SmsSingleSender(Integer.valueOf(txyunAppId), txyunAppKey);
+
+                for (String[] msgData : msgDataList) {
+                    String[] params = makeTxyunMessage(msgData);
+                    SmsSingleSenderResult result = ssender.sendWithParam("86", msgData[0],
+                            Integer.valueOf(MainWindow.mainWindow.getMsgTemplateIdTextField().getText()),
+                            params, Init.configer.getAliyunSign(), "", "");
+                    if (result.result != 0) {
+                        throw new Exception(result.toString());
                     }
                 }
                 break;
@@ -466,6 +490,38 @@ public class PushManage {
         request.setSmsTemplateCode(MainWindow.mainWindow.getMsgTemplateIdTextField().getText());
 
         return request;
+    }
+
+    /**
+     * 组织腾讯云短信消息
+     *
+     * @param msgData
+     * @return
+     */
+    synchronized public static String[] makeTxyunMessage(String[] msgData) {
+        // 模板参数
+        Map<String, String> paramMap = new HashMap<>();
+
+        if (MainWindow.mainWindow.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+            Init.initTemplateDataTable();
+        }
+
+        DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getTemplateMsgDataTable().getModel();
+        int rowCount = tableModel.getRowCount();
+        String[] params = new String[rowCount];
+        for (int i = 0; i < rowCount; i++) {
+            String key = (String) tableModel.getValueAt(i, 0);
+            String value = ((String) tableModel.getValueAt(i, 1)).replaceAll("$ENTER$", "\n");
+            Pattern p = Pattern.compile("\\{([^{}]+)\\}");
+            Matcher matcher = p.matcher(value);
+            while (matcher.find()) {
+                value = value.replace(matcher.group(0), msgData[Integer.parseInt(matcher.group(1).trim())]);
+            }
+
+            params[i] = value;
+        }
+
+        return params;
     }
 
     /**

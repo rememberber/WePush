@@ -101,6 +101,23 @@ public class SettingListener {
             }
         });
 
+        // 设置-腾讯云短信-保存
+        MainWindow.mainWindow.getSettingTxyunSaveButton().addActionListener(e -> {
+            try {
+                Init.configer.setTxyunAppId(MainWindow.mainWindow.getTxyunAppIdTextField().getText());
+                Init.configer.setTxyunAppKey(new String(MainWindow.mainWindow.getTxyunAppKeyTextField().getPassword()));
+                Init.configer.setTxyunSign(MainWindow.mainWindow.getTxyunSignTextField().getText());
+                Init.configer.save();
+
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存成功！", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        });
+
         // mysql数据库-测试链接
         MainWindow.mainWindow.getSettingTestDbLinkButton().addActionListener(e -> {
             try {
