@@ -137,6 +137,9 @@ public class RunPushThread extends Thread {
             } else if ("阿里云短信".equals(msgType)) {
                 thread = new AliYunSmsMsgServiceThread(i * pagePerThread,
                         i * pagePerThread + pagePerThread - 1, pageSize);
+            } else if ("腾讯云短信".equals(msgType)) {
+                thread = new TxYunSmsMsgServiceThread(i * pagePerThread,
+                        i * pagePerThread + pagePerThread - 1, pageSize);
             }
 
             thread.setName(new StringBuffer().append("T-").append(i).toString());

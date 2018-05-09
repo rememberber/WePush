@@ -14,7 +14,7 @@ public class ConstantsUI {
      * 软件名称,版本
      */
     public final static String APP_NAME = "WePush";
-    public final static String APP_VERSION = "v_2.0.2_180401";
+    public final static String APP_VERSION = "v_2.1.0_180509";
 
     /**
      * 主窗口图标
@@ -30,6 +30,6 @@ public class ConstantsUI {
     /**
      * 用户案例url
      */
-    public final static String USER_CASE_URL = "https://raw.githubusercontent.com/rememberber/WePush/master/src/main/resources/user_case.json";
+    public final static String USER_CASE_URL = "http://download.zhoubochina.com/file/user_case.json";
 
 }

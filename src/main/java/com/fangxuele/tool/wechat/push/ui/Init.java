@@ -172,7 +172,7 @@ public class Init {
 
             JPanel userCaseListPanel = MainWindow.mainWindow.getUserCaseListPanel();
             int listSize = userCaseInfoList.size();
-            userCaseListPanel.setLayout(new GridLayoutManager((int) Math.ceil(listSize / 2.0), 3, new Insets(0, 0, 0, 0), -1, -1));
+            userCaseListPanel.setLayout(new GridLayoutManager((int) Math.ceil(listSize / 2.0) + 1, 3, new Insets(0, 0, 0, 0), -1, -1));
             for (int i = 0; i < listSize; i++) {
                 UserCase userCase = userCaseInfoList.get(i);
                 JPanel userCasePanel = new JPanel();
@@ -206,7 +206,7 @@ public class Init {
             final Spacer spacer1 = new Spacer();
             userCaseListPanel.add(spacer1, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
             final Spacer spacer2 = new Spacer();
-            userCaseListPanel.add(spacer2, new GridConstraints((int) Math.ceil(listSize / 2.0) - 1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+            userCaseListPanel.add(spacer2, new GridConstraints((int) Math.ceil(listSize / 2.0), 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 
             userCaseListPanel.updateUI();
         }
@@ -376,6 +376,7 @@ public class Init {
                 MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户openid（以半角分号分隔）");
                 break;
             case "阿里云短信":
+            case "腾讯云短信":
             case "阿里大于模板短信":
                 MainWindow.mainWindow.getKefuMsgPanel().setVisible(false);
                 MainWindow.mainWindow.getTemplateMsgPanel().setVisible(true);
@@ -550,6 +551,11 @@ public class Init {
         MainWindow.mainWindow.setAliAppKeyPasswordField(configer.getAliAppKey());
         MainWindow.mainWindow.setAliAppSecretPasswordField(configer.getAliAppSecret());
         MainWindow.mainWindow.setAliSignTextField(configer.getAliSign());
+
+        // 腾讯云短信
+        MainWindow.mainWindow.setTxyunAppIdTextField(configer.getTxyunAppId());
+        MainWindow.mainWindow.setTxyunAppKeyTextField(configer.getTxyunAppKey());
+        MainWindow.mainWindow.setTxyunSignTextField(configer.getTxyunSign());
 
         // MySQL
         MainWindow.mainWindow.setMysqlUrlTextField(configer.getMysqlUrl());
