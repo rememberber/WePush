@@ -24,7 +24,7 @@ public class HelpListener {
                 super.mouseClicked(e);
                 Desktop desktop = Desktop.getDesktop();
                 try {
-                    desktop.browse(new URI("https://github.com/rememberber/WePush/wiki"));
+                    desktop.browse(new URI("https://gitee.com/zhoubochina/WePush/wikis/help"));
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 } catch (URISyntaxException e1) {
