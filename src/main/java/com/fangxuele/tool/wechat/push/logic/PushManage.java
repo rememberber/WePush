@@ -285,7 +285,7 @@ public class PushManage {
         WxMaTemplateMessage wxMessageTemplate = WxMaTemplateMessage.builder().build();
         wxMessageTemplate.setTemplateId(MainWindow.mainWindow.getMsgTemplateIdTextField().getText().trim());
         wxMessageTemplate.setPage(MainWindow.mainWindow.getMsgTemplateUrlTextField().getText().trim());
-        wxMessageTemplate.setEmphasisKeyword(MainWindow.mainWindow.getMsgTemplateKeyWordTextField().getText().trim());
+        wxMessageTemplate.setEmphasisKeyword(MainWindow.mainWindow.getMsgTemplateKeyWordTextField().getText().trim() + ".DATA");
 
         if (MainWindow.mainWindow.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
             Init.initTemplateDataTable();
