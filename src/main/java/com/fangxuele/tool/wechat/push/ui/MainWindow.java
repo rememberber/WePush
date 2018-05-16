@@ -2416,10 +2416,10 @@ public class MainWindow {
         label45.setText("也正因如此，我无法得知哪些优秀的企业或个人在使用她");
         panel30.add(label45, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label46 = new JLabel();
-        label46.setText("如果WePush能给您带来一些便利，或者有任何想法可以让WePush变的更好");
+        label46.setText("如果WePush能给您带来一些便利");
         panel30.add(label46, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label47 = new JLabel();
-        label47.setText("欢迎将您的产品和想法邮件告诉我：rememberber@163.com");
+        label47.setText("欢迎将您的产品邮件告诉我：rememberber@163.com");
         panel30.add(label47, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         msgTypeLabel.setLabelFor(msgTypeComboBox);
         msgNameLabel.setLabelFor(msgNameField);
