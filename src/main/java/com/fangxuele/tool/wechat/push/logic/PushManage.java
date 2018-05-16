@@ -93,6 +93,7 @@ public class PushManage {
                 for (String[] msgData : msgDataList) {
                     wxMaMessageTemplate = makeMaTemplateMessage(msgData);
                     wxMaMessageTemplate.setToUser(msgData[0].trim());
+                    wxMaMessageTemplate.setFormId(msgData[1].trim());
                     // ！！！发送小程序模板消息！！！
                     wxMaService.getMsgService().sendTemplateMsg(wxMaMessageTemplate);
                 }
@@ -283,10 +284,8 @@ public class PushManage {
         // 拼模板
         WxMaTemplateMessage wxMessageTemplate = WxMaTemplateMessage.builder().build();
         wxMessageTemplate.setTemplateId(MainWindow.mainWindow.getMsgTemplateIdTextField().getText().trim());
-        wxMessageTemplate.setFormId(MainWindow.mainWindow.getMsgTemplateFormIdTextField().getText().trim());
         wxMessageTemplate.setPage(MainWindow.mainWindow.getMsgTemplateUrlTextField().getText().trim());
-        wxMessageTemplate.setColor(MainWindow.mainWindow.getMsgTemplateColorTextField().getText().trim());
-        wxMessageTemplate.setEmphasisKeyword(MainWindow.mainWindow.getMsgTemplateKeyWordTextField().getText().trim());
+        wxMessageTemplate.setEmphasisKeyword(MainWindow.mainWindow.getMsgTemplateKeyWordTextField().getText().trim() + ".DATA");
 
         if (MainWindow.mainWindow.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
             Init.initTemplateDataTable();

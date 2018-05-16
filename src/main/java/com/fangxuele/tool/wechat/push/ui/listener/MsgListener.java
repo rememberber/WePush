@@ -117,9 +117,7 @@ public class MsgListener {
                     record[8] = MainWindow.mainWindow.getMsgKefuUrlTextField().getText();
                     record[9] = MainWindow.mainWindow.getMsgTemplateMiniAppidTextField().getText();
                     record[10] = MainWindow.mainWindow.getMsgTemplateMiniPagePathTextField().getText();
-                    record[11] = MainWindow.mainWindow.getMsgTemplateFormIdTextField().getText();
-                    record[12] = MainWindow.mainWindow.getMsgTemplateColorTextField().getText();
-                    record[13] = MainWindow.mainWindow.getMsgTemplateKeyWordTextField().getText();
+                    record[11] = MainWindow.mainWindow.getMsgTemplateKeyWordTextField().getText();
 
                     msgMap.put(msgName, record);
 
@@ -173,8 +171,6 @@ public class MsgListener {
             MainWindow.mainWindow.getMsgKefuUrlTextField().setText("");
             MainWindow.mainWindow.setMsgTemplateMiniAppidTextField("");
             MainWindow.mainWindow.setMsgTemplateMiniPagePathTextField("");
-            MainWindow.mainWindow.setMsgTemplateFormIdTextField("");
-            MainWindow.mainWindow.setMsgTemplateColorTextField("");
             MainWindow.mainWindow.setMsgTemplateKeyWordTextField("");
 
             if (MainWindow.mainWindow.getTemplateMsgDataTable().getModel().getRowCount() == 0) {

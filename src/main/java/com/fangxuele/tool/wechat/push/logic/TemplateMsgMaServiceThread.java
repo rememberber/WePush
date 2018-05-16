@@ -49,6 +49,7 @@ public class TemplateMsgMaServiceThread extends BaseMsgServiceThread {
                 openId = msgData[0];
                 wxMaTemplateMessage = PushManage.makeMaTemplateMessage(msgData);
                 wxMaTemplateMessage.setToUser(openId);
+                wxMaTemplateMessage.setFormId(msgData[1]);
                 // 空跑控制
                 if (!MainWindow.mainWindow.getDryRunCheckBox().isSelected()) {
                     wxMaService.getMsgService().sendTemplateMsg(wxMaTemplateMessage);

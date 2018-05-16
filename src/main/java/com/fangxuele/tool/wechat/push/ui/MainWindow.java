@@ -174,11 +174,7 @@ public class MainWindow {
     private JPasswordField miniAppTokenPasswordField;
     private JPasswordField miniAppAesKeyPasswordField;
     private JButton settingMaInfoSaveButton;
-    private JTextField msgTemplateColorTextField;
     private JTextField msgTemplateKeyWordTextField;
-    private JTextField msgTemplateFormIdTextField;
-    private JLabel templateFormIdLabel;
-    private JLabel templateColorLabel;
     private JLabel templateKeyWordLabel;
     private JPanel userCaseListPanel;
     private JScrollPane userCaseScrollPane;
@@ -1437,44 +1433,12 @@ public class MainWindow {
         this.settingMaInfoSaveButton = settingMaInfoSaveButton;
     }
 
-    public JTextField getMsgTemplateColorTextField() {
-        return msgTemplateColorTextField;
-    }
-
-    public void setMsgTemplateColorTextField(String msgTemplateColorTextField) {
-        this.msgTemplateColorTextField.setText(msgTemplateColorTextField);
-    }
-
     public JTextField getMsgTemplateKeyWordTextField() {
         return msgTemplateKeyWordTextField;
     }
 
     public void setMsgTemplateKeyWordTextField(String msgTemplateKeyWordTextField) {
         this.msgTemplateKeyWordTextField.setText(msgTemplateKeyWordTextField);
-    }
-
-    public JTextField getMsgTemplateFormIdTextField() {
-        return msgTemplateFormIdTextField;
-    }
-
-    public void setMsgTemplateFormIdTextField(String msgTemplateFormIdTextField) {
-        this.msgTemplateFormIdTextField.setText(msgTemplateFormIdTextField);
-    }
-
-    public JLabel getTemplateFormIdLabel() {
-        return templateFormIdLabel;
-    }
-
-    public void setTemplateFormIdLabel(JLabel templateFormIdLabel) {
-        this.templateFormIdLabel = templateFormIdLabel;
-    }
-
-    public JLabel getTemplateColorLabel() {
-        return templateColorLabel;
-    }
-
-    public void setTemplateColorLabel(JLabel templateColorLabel) {
-        this.templateColorLabel = templateColorLabel;
     }
 
     public JLabel getTemplateKeyWordLabel() {
@@ -1661,7 +1625,7 @@ public class MainWindow {
         msgSaveButton.setText("保存");
         panel4.add(msgSaveButton, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         templateMsgPanel = new JPanel();
-        templateMsgPanel.setLayout(new GridLayoutManager(8, 3, new Insets(10, 10, 10, 0), -1, -1));
+        templateMsgPanel.setLayout(new GridLayoutManager(6, 3, new Insets(10, 10, 10, 0), -1, -1));
         panel2.add(templateMsgPanel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         templateMsgPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "模板消息编辑", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, templateMsgPanel.getFont())));
         templateIdLabel = new JLabel();
@@ -1671,12 +1635,12 @@ public class MainWindow {
         templateMsgPanel.add(msgTemplateIdTextField, new GridConstraints(0, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         templateUrlLabel = new JLabel();
         templateUrlLabel.setText("跳转URL");
-        templateMsgPanel.add(templateUrlLabel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        templateMsgPanel.add(templateUrlLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         msgTemplateUrlTextField = new JTextField();
-        templateMsgPanel.add(msgTemplateUrlTextField, new GridConstraints(2, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        templateMsgPanel.add(msgTemplateUrlTextField, new GridConstraints(1, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         templateMsgDataPanel = new JPanel();
         templateMsgDataPanel.setLayout(new GridLayoutManager(2, 7, new Insets(10, 0, 0, 0), -1, -1));
-        templateMsgPanel.add(templateMsgDataPanel, new GridConstraints(7, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        templateMsgPanel.add(templateMsgDataPanel, new GridConstraints(5, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         templateMsgDataPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "模板消息数据配置（可使用\"$ENTER$\"作为换行符）", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.ABOVE_TOP));
         templateMsgNameLabel = new JLabel();
         templateMsgNameLabel.setText("name");
@@ -1707,37 +1671,27 @@ public class MainWindow {
         scrollPane2.setViewportView(templateMsgDataTable);
         templateMiniProgramAppidLabel = new JLabel();
         templateMiniProgramAppidLabel.setText("小程序appid");
-        templateMsgPanel.add(templateMiniProgramAppidLabel, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        templateMsgPanel.add(templateMiniProgramAppidLabel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         msgTemplateMiniAppidTextField = new JTextField();
         msgTemplateMiniAppidTextField.setText("");
-        templateMsgPanel.add(msgTemplateMiniAppidTextField, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        templateMsgPanel.add(msgTemplateMiniAppidTextField, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         templateMiniProgramPagePathLabel = new JLabel();
         templateMiniProgramPagePathLabel.setText("小程序页面路径");
-        templateMsgPanel.add(templateMiniProgramPagePathLabel, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        templateMsgPanel.add(templateMiniProgramPagePathLabel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         msgTemplateMiniPagePathTextField = new JTextField();
         msgTemplateMiniPagePathTextField.setText("");
-        templateMsgPanel.add(msgTemplateMiniPagePathTextField, new GridConstraints(6, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        templateMsgPanel.add(msgTemplateMiniPagePathTextField, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         templateMiniProgramOptionalLabel1 = new JLabel();
         templateMiniProgramOptionalLabel1.setText("（选填）");
-        templateMsgPanel.add(templateMiniProgramOptionalLabel1, new GridConstraints(5, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        templateMsgPanel.add(templateMiniProgramOptionalLabel1, new GridConstraints(3, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         templateMiniProgramOptionalLabel2 = new JLabel();
         templateMiniProgramOptionalLabel2.setText("（选填）");
-        templateMsgPanel.add(templateMiniProgramOptionalLabel2, new GridConstraints(6, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        templateColorLabel = new JLabel();
-        templateColorLabel.setText("字体颜色");
-        templateMsgPanel.add(templateColorLabel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        msgTemplateColorTextField = new JTextField();
-        templateMsgPanel.add(msgTemplateColorTextField, new GridConstraints(3, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        templateMsgPanel.add(templateMiniProgramOptionalLabel2, new GridConstraints(4, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         templateKeyWordLabel = new JLabel();
         templateKeyWordLabel.setText("放大关键词");
-        templateMsgPanel.add(templateKeyWordLabel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        templateMsgPanel.add(templateKeyWordLabel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         msgTemplateKeyWordTextField = new JTextField();
-        templateMsgPanel.add(msgTemplateKeyWordTextField, new GridConstraints(4, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        templateFormIdLabel = new JLabel();
-        templateFormIdLabel.setText("FormId");
-        templateMsgPanel.add(templateFormIdLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        msgTemplateFormIdTextField = new JTextField();
-        templateMsgPanel.add(msgTemplateFormIdTextField, new GridConstraints(1, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        templateMsgPanel.add(msgTemplateKeyWordTextField, new GridConstraints(2, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         kefuMsgPanel = new JPanel();
         kefuMsgPanel.setLayout(new GridLayoutManager(6, 2, new Insets(10, 0, 10, 0), -1, -1));
         panel2.add(kefuMsgPanel, new GridConstraints(1, 2, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -2462,10 +2416,10 @@ public class MainWindow {
         label45.setText("也正因如此，我无法得知哪些优秀的企业或个人在使用她");
         panel30.add(label45, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label46 = new JLabel();
-        label46.setText("如果WePush能给您带来一些便利，或者有任何想法可以让WePush变的更好");
+        label46.setText("如果WePush能给您带来一些便利");
         panel30.add(label46, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label47 = new JLabel();
-        label47.setText("欢迎将您的产品和想法邮件告诉我：rememberber@163.com");
+        label47.setText("欢迎将您的产品邮件告诉我：rememberber@163.com");
         panel30.add(label47, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         msgTypeLabel.setLabelFor(msgTypeComboBox);
         msgNameLabel.setLabelFor(msgNameField);
@@ -2477,9 +2431,7 @@ public class MainWindow {
         templateMsgColorLabel.setLabelFor(templateDataColorTextField);
         templateMiniProgramAppidLabel.setLabelFor(msgTemplateMiniAppidTextField);
         templateMiniProgramPagePathLabel.setLabelFor(msgTemplateMiniPagePathTextField);
-        templateColorLabel.setLabelFor(msgTemplateUrlTextField);
         templateKeyWordLabel.setLabelFor(msgTemplateUrlTextField);
-        templateFormIdLabel.setLabelFor(msgTemplateUrlTextField);
         kefuMsgTypeLabel.setLabelFor(msgKefuMsgTypeComboBox);
         kefuMsgTitleLabel.setLabelFor(msgKefuMsgTitleTextField);
         kefuMsgPicUrlLabel.setLabelFor(msgKefuPicUrlTextField);
