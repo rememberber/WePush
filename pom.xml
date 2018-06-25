@@ -14,8 +14,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <logback.version>1.2.1</logback.version>
-        <weixin-java-mp.version>3.0.0</weixin-java-mp.version>
-        <weixin-java-miniapp.version>3.0.0</weixin-java-miniapp.version>
+        <weixin-java-mp.version>3.1.0</weixin-java-mp.version>
+        <weixin-java-miniapp.version>3.1.0</weixin-java-miniapp.version>
         <emoji-java.version>3.1.3</emoji-java.version>
         <hutool-all.version>4.0.10</hutool-all.version>
         <opencsv.version>3.9</opencsv.version>
