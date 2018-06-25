@@ -12,7 +12,7 @@ import com.fangxuele.tool.wechat.push.ui.MainWindow;
 import com.fangxuele.tool.wechat.push.util.DbUtilMySQL;
 import com.fangxuele.tool.wechat.push.util.SystemUtil;
 import com.opencsv.CSVReader;
-import me.chanjar.weixin.common.exception.WxErrorException;
+import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.result.WxMpUserList;
 import me.chanjar.weixin.mp.bean.tag.WxTagListUser;
