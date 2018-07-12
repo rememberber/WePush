@@ -25,6 +25,9 @@
         <sun-mail.version>1.5.6</sun-mail.version>
         <aliyun-java-sdk-core.version>3.5.0</aliyun-java-sdk-core.version>
         <poi.version>3.17</poi.version>
+        <AppleJavaExtensions.version>1.4</AppleJavaExtensions.version>
+        <qcloudsms.version>1.0.2</qcloudsms.version>
+        <yunpian-java-sdk.version>1.2.7</yunpian-java-sdk.version>
     </properties>
 
     <dependencies>
@@ -103,7 +106,19 @@
         <dependency>
             <groupId>com.apple</groupId>
             <artifactId>AppleJavaExtensions</artifactId>
-            <version>1.4</version>
+            <version>${AppleJavaExtensions.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.qcloudsms</groupId>
+            <artifactId>qcloudsms</artifactId>
+            <version>${qcloudsms.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.yunpian.sdk</groupId>
+            <artifactId>yunpian-java-sdk</artifactId>
+            <version>${yunpian-java-sdk.version}</version>
         </dependency>
 
         <dependency>
@@ -135,13 +150,6 @@
             <artifactId>aliyun-java-sdk-dysmsapi</artifactId>
             <version>1.0.0</version>
         </dependency>
-
-        <dependency>
-            <groupId>com.github.qcloudsms</groupId>
-            <artifactId>qcloudsms</artifactId>
-            <version>1.0.2</version>
-        </dependency>
-
     </dependencies>
 
     <build>
