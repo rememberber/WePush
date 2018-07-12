@@ -1569,7 +1569,7 @@ public class MainWindow {
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 10, 0, 0), -1, -1));
         helpPanel.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         labelOnlineHelp = new JLabel();
-        labelOnlineHelp.setText("<html>查看更多在线帮助文档：<a href='https://github.com/rememberber/WePush/wiki'>https://gitee.com/zhoubochina/WePush/wikis/help</a></html>");
+        labelOnlineHelp.setText("<html>如有更多问题请添加issue或邮件<email>rememberber@163.com</email></html>");
         panel1.add(labelOnlineHelp, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         messagePanel = new JSplitPane();
         tabbedPane.addTab("编辑消息", messagePanel);
