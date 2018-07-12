@@ -94,6 +94,11 @@ public class MsgListener {
         // 保存按钮事件
         MainWindow.mainWindow.getMsgSaveButton().addActionListener(e -> {
             String msgName = MainWindow.mainWindow.getMsgNameField().getText();
+            if (StringUtils.isBlank(msgName)) {
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "请填写推送任务名称！\n\n", "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             Map<String, String[]> msgMap = msgHisManager.readMsgHis();
 
             int isCover = JOptionPane.NO_OPTION;
