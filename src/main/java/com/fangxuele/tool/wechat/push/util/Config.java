@@ -110,6 +110,8 @@ public class Config {
 
     private String txyunSign;
 
+    private String yunpianApiKey;
+
     private String mysqlUrl;
 
     private String mysqlDatabase;
@@ -229,6 +231,7 @@ public class Config {
         props.setProperty("setting.txyun.appId", "");
         props.setProperty("setting.txyun.appKey", "");
         props.setProperty("setting.txyun.txyunSign", "");
+        props.setProperty("setting.yunpian.apiKey", "");
         props.setProperty("setting.mysql.url", "");
         props.setProperty("setting.mysql.database", "");
         props.setProperty("setting.mysql.user", "");
@@ -638,5 +641,13 @@ public class Config {
 
     public void setTxyunSign(String txyunSign) {
         props.setProperty("setting.txyun.txyunSign", txyunSign);
+    }
+
+    public String getYunpianApiKey() {
+        return props.getProperty("setting.yunpian.apiKey");
+    }
+
+    public void setYunpianApiKey(String yunpianApiKey) {
+        props.setProperty("setting.yunpian.apiKey", yunpianApiKey);
     }
 }
