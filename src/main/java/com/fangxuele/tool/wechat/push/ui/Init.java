@@ -537,6 +537,9 @@ public class Init {
         MainWindow.mainWindow.setTxyunAppKeyTextField(configer.getTxyunAppKey());
         MainWindow.mainWindow.setTxyunSignTextField(configer.getTxyunSign());
 
+        // 云片网短信
+        MainWindow.mainWindow.setYunpianApiKeyTextField(configer.getYunpianApiKey());
+
         // MySQL
         MainWindow.mainWindow.setMysqlUrlTextField(configer.getMysqlUrl());
         MainWindow.mainWindow.setMysqlDatabaseTextField(configer.getMysqlDatabase());
