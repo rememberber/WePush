@@ -1610,7 +1610,7 @@ public class MainWindow {
         messagePanel = new JSplitPane();
         tabbedPane.addTab("编辑消息", messagePanel);
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(4, 5, new Insets(0, 0, 0, 0), -1, -1));
+        panel2.setLayout(new GridLayoutManager(4, 5, new Insets(0, 0, 0, 10), -1, -1));
         panel2.setMaximumSize(new Dimension(-1, -1));
         panel2.setMinimumSize(new Dimension(-1, -1));
         panel2.setPreferredSize(new Dimension(-1, -1));
@@ -1662,7 +1662,7 @@ public class MainWindow {
         msgSaveButton.setText("保存");
         panel4.add(msgSaveButton, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         templateMsgPanel = new JPanel();
-        templateMsgPanel.setLayout(new GridLayoutManager(6, 3, new Insets(10, 10, 10, 0), -1, -1));
+        templateMsgPanel.setLayout(new GridLayoutManager(6, 3, new Insets(10, 10, 0, 0), -1, -1));
         panel2.add(templateMsgPanel, new GridConstraints(1, 0, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         templateMsgPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "模板消息编辑", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, templateMsgPanel.getFont())));
         templateIdLabel = new JLabel();
@@ -1730,7 +1730,7 @@ public class MainWindow {
         msgTemplateKeyWordTextField = new JTextField();
         templateMsgPanel.add(msgTemplateKeyWordTextField, new GridConstraints(2, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         kefuMsgPanel = new JPanel();
-        kefuMsgPanel.setLayout(new GridLayoutManager(6, 2, new Insets(10, 0, 10, 0), -1, -1));
+        kefuMsgPanel.setLayout(new GridLayoutManager(6, 2, new Insets(10, 0, 0, 0), -1, -1));
         panel2.add(kefuMsgPanel, new GridConstraints(1, 2, 2, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         kefuMsgPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "客服消息编辑", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, kefuMsgPanel.getFont())));
         kefuMsgTypeLabel = new JLabel();
@@ -1767,7 +1767,7 @@ public class MainWindow {
         final Spacer spacer2 = new Spacer();
         panel2.add(spacer2, new GridConstraints(1, 1, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         yunpianMsgPanel = new JPanel();
-        yunpianMsgPanel.setLayout(new GridLayoutManager(2, 1, new Insets(10, 0, 10, 0), -1, -1));
+        yunpianMsgPanel.setLayout(new GridLayoutManager(2, 1, new Insets(10, 0, 0, 0), -1, -1));
         panel2.add(yunpianMsgPanel, new GridConstraints(1, 4, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         yunpianMsgPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "云片网短信编辑", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, yunpianMsgPanel.getFont())));
         final JScrollPane scrollPane3 = new JScrollPane();
