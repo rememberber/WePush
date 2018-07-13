@@ -1529,8 +1529,8 @@ public class MainWindow {
         return msgYunpianMsgContentTextField;
     }
 
-    public void setMsgYunpianMsgContentTextField(JTextArea msgYunpianMsgContentTextField) {
-        this.msgYunpianMsgContentTextField = msgYunpianMsgContentTextField;
+    public void setMsgYunpianMsgContentTextField(String msgYunpianMsgContentTextField) {
+        this.msgYunpianMsgContentTextField.setText(msgYunpianMsgContentTextField);
     }
 
     {
