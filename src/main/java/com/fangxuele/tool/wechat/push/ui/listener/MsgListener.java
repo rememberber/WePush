@@ -123,6 +123,7 @@ public class MsgListener {
                     record[9] = MainWindow.mainWindow.getMsgTemplateMiniAppidTextField().getText();
                     record[10] = MainWindow.mainWindow.getMsgTemplateMiniPagePathTextField().getText();
                     record[11] = MainWindow.mainWindow.getMsgTemplateKeyWordTextField().getText();
+                    record[12] = MainWindow.mainWindow.getMsgYunpianMsgContentTextField().getText();
 
                     msgMap.put(msgName, record);
 
@@ -177,6 +178,7 @@ public class MsgListener {
             MainWindow.mainWindow.setMsgTemplateMiniAppidTextField("");
             MainWindow.mainWindow.setMsgTemplateMiniPagePathTextField("");
             MainWindow.mainWindow.setMsgTemplateKeyWordTextField("");
+            MainWindow.mainWindow.getMsgYunpianMsgContentTextField().setText("");
 
             if (MainWindow.mainWindow.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
                 Init.initTemplateDataTable();
