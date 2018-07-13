@@ -149,7 +149,7 @@
             <border type="none"/>
             <children>
               <grid id="50e97" layout-manager="GridLayoutManager" row-count="4" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-                <margin top="0" left="0" bottom="0" right="0"/>
+                <margin top="0" left="0" bottom="0" right="10"/>
                 <constraints>
                   <splitpane position="right"/>
                 </constraints>
@@ -273,7 +273,7 @@
                     </children>
                   </grid>
                   <grid id="b0ec9" binding="templateMsgPanel" layout-manager="GridLayoutManager" row-count="6" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-                    <margin top="10" left="10" bottom="10" right="0"/>
+                    <margin top="10" left="10" bottom="0" right="0"/>
                     <constraints>
                       <grid row="1" column="0" row-span="2" col-span="1" vsize-policy="3" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -478,7 +478,7 @@
                     </children>
                   </grid>
                   <grid id="eafc9" binding="kefuMsgPanel" layout-manager="GridLayoutManager" row-count="6" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-                    <margin top="10" left="0" bottom="10" right="0"/>
+                    <margin top="10" left="0" bottom="0" right="0"/>
                     <constraints>
                       <grid row="1" column="2" row-span="2" col-span="2" vsize-policy="3" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -589,7 +589,7 @@
                     </constraints>
                   </vspacer>
                   <grid id="e840b" binding="yunpianMsgPanel" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-                    <margin top="10" left="0" bottom="10" right="0"/>
+                    <margin top="10" left="0" bottom="0" right="0"/>
                     <constraints>
                       <grid row="1" column="4" row-span="2" col-span="1" vsize-policy="3" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
