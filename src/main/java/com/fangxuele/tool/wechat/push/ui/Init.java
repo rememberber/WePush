@@ -323,7 +323,7 @@ public class Init {
                 MainWindow.mainWindow.getTemplateDataColorTextField().setVisible(true);
                 MainWindow.mainWindow.getMsgTemplateKeyWordTextField().setVisible(false);
                 MainWindow.mainWindow.getTemplateKeyWordLabel().setVisible(false);
-                MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户openid（以半角分号分隔）");
+                MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户openid（多个以半角分号分隔）");
                 break;
             case "模板消息-小程序":
                 MainWindow.mainWindow.getTemplateMsgPanel().setVisible(true);
@@ -339,11 +339,11 @@ public class Init {
                 MainWindow.mainWindow.getTemplateDataColorTextField().setVisible(true);
                 MainWindow.mainWindow.getMsgTemplateKeyWordTextField().setVisible(true);
                 MainWindow.mainWindow.getTemplateKeyWordLabel().setVisible(true);
-                MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户openid（以半角分号分隔）");
-
+                MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户openid（多个以半角分号分隔）");
                 break;
             case "客服消息":
                 MainWindow.mainWindow.getKefuMsgPanel().setVisible(true);
+                MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户openid（多个以半角分号分隔）");
                 break;
             case "客服消息优先":
                 MainWindow.mainWindow.getKefuMsgPanel().setVisible(true);
@@ -360,7 +360,7 @@ public class Init {
                 MainWindow.mainWindow.getTemplateDataColorTextField().setVisible(true);
                 MainWindow.mainWindow.getMsgTemplateKeyWordTextField().setVisible(false);
                 MainWindow.mainWindow.getTemplateKeyWordLabel().setVisible(false);
-                MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户openid（以半角分号分隔）");
+                MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户openid（多个以半角分号分隔）");
                 break;
             case "阿里云短信":
             case "腾讯云短信":
@@ -378,10 +378,11 @@ public class Init {
                 MainWindow.mainWindow.getTemplateDataColorTextField().setVisible(false);
                 MainWindow.mainWindow.getMsgTemplateKeyWordTextField().setVisible(false);
                 MainWindow.mainWindow.getTemplateKeyWordLabel().setVisible(false);
-                MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户手机号（以半角分号分隔）");
+                MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户手机号（多个以半角分号分隔）");
                 break;
             case "云片网短信":
                 MainWindow.mainWindow.getYunpianMsgPanel().setVisible(true);
+                MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户手机号（多个以半角分号分隔）");
                 break;
             default:
                 break;

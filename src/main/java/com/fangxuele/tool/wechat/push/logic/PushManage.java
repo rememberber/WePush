@@ -233,6 +233,7 @@ public class PushManage {
                         throw new Exception(result.toString());
                     }
                 }
+                clnt.close();
                 break;
             default:
                 break;
