@@ -33,7 +33,7 @@ public class MsgHisManage {
     /**
      * 历史消息保存的csv的列数
      */
-    public static final int ARRAY_LENGTH = 14;
+    public static final int ARRAY_LENGTH = 15;
 
     public static MsgHisManage getInstance() {
         return ourInstance;
