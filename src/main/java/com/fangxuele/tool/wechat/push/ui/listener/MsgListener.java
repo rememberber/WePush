@@ -31,17 +31,14 @@ public class MsgListener {
         MainWindow.mainWindow.getMsgHistable().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MainWindow.mainWindow.getPushHisTextArea().setText("");
+                new Thread(() -> {
+                    MainWindow.mainWindow.getPushHisTextArea().setText("");
 
-                        int selectedRow = MainWindow.mainWindow.getMsgHistable().getSelectedRow();
-                        String selectedMsgName = MainWindow.mainWindow.getMsgHistable()
-                                .getValueAt(selectedRow, 1).toString();
+                    int selectedRow = MainWindow.mainWindow.getMsgHistable().getSelectedRow();
+                    String selectedMsgName = MainWindow.mainWindow.getMsgHistable()
+                            .getValueAt(selectedRow, 1).toString();
 
-                        Init.initMsgTab(selectedMsgName);
-                    }
+                    Init.initMsgTab(selectedMsgName);
                 }).start();
                 super.mouseClicked(e);
             }
