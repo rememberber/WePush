@@ -228,6 +228,7 @@ public class Init {
         MainWindow.mainWindow.setMsgTemplateMiniAppidTextField("");
         MainWindow.mainWindow.setMsgTemplateMiniPagePathTextField("");
         MainWindow.mainWindow.setMsgTemplateKeyWordTextField("");
+        MainWindow.mainWindow.setMsgYunpianMsgContentTextField("");
 
         String msgName;
         if (StringUtils.isEmpty(selectedMsgName)) {
@@ -254,6 +255,9 @@ public class Init {
                 MainWindow.mainWindow.setMsgKefuPicUrlTextField(msgDataArray[6]);
                 MainWindow.mainWindow.setMsgKefuDescTextField(msgDataArray[7]);
                 MainWindow.mainWindow.setMsgKefuUrlTextField(msgDataArray[8]);
+                if (msgDataArray.length > 11) {
+                    MainWindow.mainWindow.setMsgYunpianMsgContentTextField(msgDataArray[12]);
+                }
                 if (msgDataArray.length > 10) {
                     MainWindow.mainWindow.setMsgTemplateKeyWordTextField(msgDataArray[11]);
                 }
