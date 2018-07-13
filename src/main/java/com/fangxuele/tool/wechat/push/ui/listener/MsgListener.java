@@ -155,9 +155,10 @@ public class MsgListener {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "预览消息用户不能为空！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
-                    PushManage.preview();
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "发送预览消息成功！", "成功",
-                            JOptionPane.INFORMATION_MESSAGE);
+                    if (PushManage.preview()) {
+                        JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "发送预览消息成功！", "成功",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    }
                 }
             } catch (Exception e1) {
                 JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "发送预览消息失败！\n\n" + e1.getMessage(), "失败",
