@@ -554,7 +554,7 @@ public class PushManage {
      * @param msgData
      * @return
      */
-    synchronized private static Map<String, String> makeYunpianMessage(String[] msgData) {
+    synchronized static Map<String, String> makeYunpianMessage(String[] msgData) {
         Map<String, String> params = new HashMap<>(2);
 
         String text = MainWindow.mainWindow.getMsgYunpianMsgContentTextField().getText();
