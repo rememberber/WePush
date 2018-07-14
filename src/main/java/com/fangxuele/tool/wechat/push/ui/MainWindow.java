@@ -1551,6 +1551,7 @@ public class MainWindow {
         mainPanel = new JPanel();
         mainPanel.setLayout(new GridLayoutManager(1, 1, new Insets(8, 0, 0, 0), -1, -1));
         tabbedPane = new JTabbedPane();
+        tabbedPane.setDoubleBuffered(true);
         Font tabbedPaneFont = this.$$$getFont$$$(null, -1, -1, tabbedPane.getFont());
         if (tabbedPaneFont != null) tabbedPane.setFont(tabbedPaneFont);
         mainPanel.add(tabbedPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));
@@ -1608,6 +1609,7 @@ public class MainWindow {
         labelOnlineHelp.setText("<html>如有更多问题请添加issue或邮件rememberber@163.com</html>");
         panel1.add(labelOnlineHelp, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         messagePanel = new JSplitPane();
+        messagePanel.setDoubleBuffered(true);
         tabbedPane.addTab("编辑消息", messagePanel);
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(4, 5, new Insets(10, 8, 0, 8), -1, -1));
