@@ -617,7 +617,10 @@ public class PushManage {
      */
     public static WxMpService getWxMpService() {
         WxMpService wxMpService = new WxMpServiceImpl();
-        wxMpService.setWxMpConfigStorage(wxMpConfigStorage());
+        WxMpConfigStorage wxMpConfigStorage = wxMpConfigStorage();
+        if (wxMpConfigStorage != null) {
+            wxMpService.setWxMpConfigStorage(wxMpConfigStorage);
+        }
         return wxMpService;
     }
 
