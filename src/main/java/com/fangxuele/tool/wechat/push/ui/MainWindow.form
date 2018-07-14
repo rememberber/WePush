@@ -15,6 +15,7 @@
           </grid>
         </constraints>
         <properties>
+          <doubleBuffered value="true"/>
           <font/>
         </properties>
         <border type="none"/>
@@ -145,7 +146,9 @@
             <constraints>
               <tabbedpane title="编辑消息"/>
             </constraints>
-            <properties/>
+            <properties>
+              <doubleBuffered value="true"/>
+            </properties>
             <border type="none"/>
             <children>
               <grid id="50e97" layout-manager="GridLayoutManager" row-count="4" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
