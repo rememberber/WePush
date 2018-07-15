@@ -228,6 +228,7 @@ public class Init {
         MainWindow.mainWindow.setMsgTemplateMiniAppidTextField("");
         MainWindow.mainWindow.setMsgTemplateMiniPagePathTextField("");
         MainWindow.mainWindow.setMsgTemplateKeyWordTextField("");
+        MainWindow.mainWindow.setMsgYunpianMsgContentTextField("");
 
         String msgName;
         if (StringUtils.isEmpty(selectedMsgName)) {
@@ -254,6 +255,9 @@ public class Init {
                 MainWindow.mainWindow.setMsgKefuPicUrlTextField(msgDataArray[6]);
                 MainWindow.mainWindow.setMsgKefuDescTextField(msgDataArray[7]);
                 MainWindow.mainWindow.setMsgKefuUrlTextField(msgDataArray[8]);
+                if (msgDataArray.length > 11) {
+                    MainWindow.mainWindow.setMsgYunpianMsgContentTextField(msgDataArray[12]);
+                }
                 if (msgDataArray.length > 10) {
                     MainWindow.mainWindow.setMsgTemplateKeyWordTextField(msgDataArray[11]);
                 }
@@ -301,9 +305,11 @@ public class Init {
      * @param msgType
      */
     public static void switchMsgType(String msgType) {
+        MainWindow.mainWindow.getKefuMsgPanel().setVisible(false);
+        MainWindow.mainWindow.getTemplateMsgPanel().setVisible(false);
+        MainWindow.mainWindow.getYunpianMsgPanel().setVisible(false);
         switch (msgType) {
             case "模板消息":
-                MainWindow.mainWindow.getKefuMsgPanel().setVisible(false);
                 MainWindow.mainWindow.getTemplateMsgPanel().setVisible(true);
                 MainWindow.mainWindow.getTemplateUrlLabel().setVisible(true);
                 MainWindow.mainWindow.getMsgTemplateUrlTextField().setVisible(true);
@@ -317,11 +323,9 @@ public class Init {
                 MainWindow.mainWindow.getTemplateDataColorTextField().setVisible(true);
                 MainWindow.mainWindow.getMsgTemplateKeyWordTextField().setVisible(false);
                 MainWindow.mainWindow.getTemplateKeyWordLabel().setVisible(false);
-                MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户openid（以半角分号分隔）");
-
+                MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户openid（多个以半角分号分隔）");
                 break;
             case "模板消息-小程序":
-                MainWindow.mainWindow.getKefuMsgPanel().setVisible(false);
                 MainWindow.mainWindow.getTemplateMsgPanel().setVisible(true);
                 MainWindow.mainWindow.getTemplateUrlLabel().setVisible(true);
                 MainWindow.mainWindow.getMsgTemplateUrlTextField().setVisible(true);
@@ -335,12 +339,11 @@ public class Init {
                 MainWindow.mainWindow.getTemplateDataColorTextField().setVisible(true);
                 MainWindow.mainWindow.getMsgTemplateKeyWordTextField().setVisible(true);
                 MainWindow.mainWindow.getTemplateKeyWordLabel().setVisible(true);
-                MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户openid（以半角分号分隔）");
-
+                MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户openid（多个以半角分号分隔）");
                 break;
             case "客服消息":
                 MainWindow.mainWindow.getKefuMsgPanel().setVisible(true);
-                MainWindow.mainWindow.getTemplateMsgPanel().setVisible(false);
+                MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户openid（多个以半角分号分隔）");
                 break;
             case "客服消息优先":
                 MainWindow.mainWindow.getKefuMsgPanel().setVisible(true);
@@ -357,12 +360,11 @@ public class Init {
                 MainWindow.mainWindow.getTemplateDataColorTextField().setVisible(true);
                 MainWindow.mainWindow.getMsgTemplateKeyWordTextField().setVisible(false);
                 MainWindow.mainWindow.getTemplateKeyWordLabel().setVisible(false);
-                MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户openid（以半角分号分隔）");
+                MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户openid（多个以半角分号分隔）");
                 break;
             case "阿里云短信":
             case "腾讯云短信":
             case "阿里大于模板短信":
-                MainWindow.mainWindow.getKefuMsgPanel().setVisible(false);
                 MainWindow.mainWindow.getTemplateMsgPanel().setVisible(true);
                 MainWindow.mainWindow.getTemplateUrlLabel().setVisible(false);
                 MainWindow.mainWindow.getMsgTemplateUrlTextField().setVisible(false);
@@ -376,7 +378,11 @@ public class Init {
                 MainWindow.mainWindow.getTemplateDataColorTextField().setVisible(false);
                 MainWindow.mainWindow.getMsgTemplateKeyWordTextField().setVisible(false);
                 MainWindow.mainWindow.getTemplateKeyWordLabel().setVisible(false);
-                MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户手机号（以半角分号分隔）");
+                MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户手机号（多个以半角分号分隔）");
+                break;
+            case "云片网短信":
+                MainWindow.mainWindow.getYunpianMsgPanel().setVisible(true);
+                MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户手机号（多个以半角分号分隔）");
                 break;
             default:
                 break;
@@ -536,6 +542,9 @@ public class Init {
         MainWindow.mainWindow.setTxyunAppIdTextField(configer.getTxyunAppId());
         MainWindow.mainWindow.setTxyunAppKeyTextField(configer.getTxyunAppKey());
         MainWindow.mainWindow.setTxyunSignTextField(configer.getTxyunSign());
+
+        // 云片网短信
+        MainWindow.mainWindow.setYunpianApiKeyTextField(configer.getYunpianApiKey());
 
         // MySQL
         MainWindow.mainWindow.setMysqlUrlTextField(configer.getMysqlUrl());

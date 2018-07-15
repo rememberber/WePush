@@ -26,6 +26,9 @@ import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.request.AlibabaAliqinFcSmsNumSendRequest;
 import com.taobao.api.response.AlibabaAliqinFcSmsNumSendResponse;
+import com.yunpian.sdk.YunpianClient;
+import com.yunpian.sdk.model.Result;
+import com.yunpian.sdk.model.SmsSingleSend;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpConfigStorage;
 import me.chanjar.weixin.mp.api.WxMpInMemoryConfigStorage;
@@ -61,7 +64,7 @@ public class PushManage {
      *
      * @throws Exception
      */
-    public static void preview() throws Exception {
+    public static boolean preview() throws Exception {
         List<String[]> msgDataList = new ArrayList<>();
 
         for (String data : MainWindow.mainWindow.getPreviewUserField().getText().split(";")) {
@@ -73,7 +76,7 @@ public class PushManage {
                 WxMpTemplateMessage wxMessageTemplate;
                 WxMpService wxMpService = getWxMpService();
                 if (wxMpService.getWxMpConfigStorage() == null) {
-                    return;
+                    return false;
                 }
 
                 for (String[] msgData : msgDataList) {
@@ -87,7 +90,7 @@ public class PushManage {
                 WxMaTemplateMessage wxMaMessageTemplate;
                 WxMaService wxMaService = getWxMaService();
                 if (wxMaService.getWxMaConfig() == null) {
-                    return;
+                    return false;
                 }
 
                 for (String[] msgData : msgDataList) {
@@ -102,7 +105,7 @@ public class PushManage {
                 wxMpService = getWxMpService();
                 WxMpKefuMessage wxMpKefuMessage;
                 if (wxMpService.getWxMpConfigStorage() == null) {
-                    return;
+                    return false;
                 }
 
                 for (String[] msgData : msgDataList) {
@@ -115,7 +118,7 @@ public class PushManage {
             case "客服消息优先":
                 wxMpService = getWxMpService();
                 if (wxMpService.getWxMpConfigStorage() == null) {
-                    return;
+                    return false;
                 }
 
                 for (String[] msgData : msgDataList) {
@@ -140,6 +143,7 @@ public class PushManage {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
                             "请先在设置中填写并保存阿里云短信相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
+                    return false;
                 }
 
                 //初始化acsClient,暂不支持region化
@@ -170,6 +174,7 @@ public class PushManage {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
                             "请先在设置中填写并保存腾讯云短信相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
+                    return false;
                 }
 
                 SmsSingleSender ssender = new SmsSingleSender(Integer.valueOf(txyunAppId), txyunAppKey);
@@ -194,6 +199,7 @@ public class PushManage {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
                             "请先在设置中填写并保存阿里大于相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
+                    return false;
                 }
 
                 TaobaoClient client = new DefaultTaobaoClient(aliServerUrl, aliAppKey, aliAppSecret);
@@ -207,9 +213,32 @@ public class PushManage {
                     }
                 }
                 break;
+            case "云片网短信":
+                String yunpianApiKey = Init.configer.getYunpianApiKey();
+
+                if (StringUtils.isEmpty(yunpianApiKey)) {
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
+                            "请先在设置中填写并保存云片网短信相关配置！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return false;
+                }
+
+                YunpianClient clnt = new YunpianClient(yunpianApiKey).init();
+
+                for (String[] msgData : msgDataList) {
+                    Map<String, String> params = makeYunpianMessage(msgData);
+                    params.put(YunpianClient.MOBILE, msgData[0]);
+                    Result<SmsSingleSend> result = clnt.sms().single_send(params);
+                    if (result.getCode() != 0) {
+                        throw new Exception(result.toString());
+                    }
+                }
+                clnt.close();
+                break;
             default:
                 break;
         }
+        return true;
     }
 
     /**
@@ -498,9 +527,6 @@ public class PushManage {
      * @return
      */
     synchronized public static String[] makeTxyunMessage(String[] msgData) {
-        // 模板参数
-        Map<String, String> paramMap = new HashMap<>();
-
         if (MainWindow.mainWindow.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
             Init.initTemplateDataTable();
         }
@@ -509,7 +535,6 @@ public class PushManage {
         int rowCount = tableModel.getRowCount();
         String[] params = new String[rowCount];
         for (int i = 0; i < rowCount; i++) {
-            String key = (String) tableModel.getValueAt(i, 0);
             String value = ((String) tableModel.getValueAt(i, 1)).replaceAll("$ENTER$", "\n");
             Pattern p = Pattern.compile("\\{([^{}]+)\\}");
             Matcher matcher = p.matcher(value);
@@ -520,6 +545,27 @@ public class PushManage {
             params[i] = value;
         }
 
+        return params;
+    }
+
+    /**
+     * 组织云片网短信消息
+     *
+     * @param msgData
+     * @return
+     */
+    synchronized static Map<String, String> makeYunpianMessage(String[] msgData) {
+        Map<String, String> params = new HashMap<>(2);
+
+        String text = MainWindow.mainWindow.getMsgYunpianMsgContentTextField().getText();
+        text = text.replaceAll("$ENTER$", "\n");
+        Pattern p = Pattern.compile("\\{([^{}]+)\\}");
+        Matcher matcher = p.matcher(text);
+        while (matcher.find()) {
+            text = text.replace(matcher.group(0), msgData[Integer.parseInt(matcher.group(1).trim())]);
+        }
+
+        params.put(YunpianClient.TEXT, text);
         return params;
     }
 
@@ -571,7 +617,10 @@ public class PushManage {
      */
     public static WxMpService getWxMpService() {
         WxMpService wxMpService = new WxMpServiceImpl();
-        wxMpService.setWxMpConfigStorage(wxMpConfigStorage());
+        WxMpConfigStorage wxMpConfigStorage = wxMpConfigStorage();
+        if (wxMpConfigStorage != null) {
+            wxMpService.setWxMpConfigStorage(wxMpConfigStorage);
+        }
         return wxMpService;
     }
 

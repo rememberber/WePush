@@ -31,17 +31,14 @@ public class MsgListener {
         MainWindow.mainWindow.getMsgHistable().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MainWindow.mainWindow.getPushHisTextArea().setText("");
+                new Thread(() -> {
+                    MainWindow.mainWindow.getPushHisTextArea().setText("");
 
-                        int selectedRow = MainWindow.mainWindow.getMsgHistable().getSelectedRow();
-                        String selectedMsgName = MainWindow.mainWindow.getMsgHistable()
-                                .getValueAt(selectedRow, 1).toString();
+                    int selectedRow = MainWindow.mainWindow.getMsgHistable().getSelectedRow();
+                    String selectedMsgName = MainWindow.mainWindow.getMsgHistable()
+                            .getValueAt(selectedRow, 1).toString();
 
-                        Init.initMsgTab(selectedMsgName);
-                    }
+                    Init.initMsgTab(selectedMsgName);
                 }).start();
                 super.mouseClicked(e);
             }
@@ -94,6 +91,11 @@ public class MsgListener {
         // 保存按钮事件
         MainWindow.mainWindow.getMsgSaveButton().addActionListener(e -> {
             String msgName = MainWindow.mainWindow.getMsgNameField().getText();
+            if (StringUtils.isBlank(msgName)) {
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "请填写推送任务名称！\n\n", "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             Map<String, String[]> msgMap = msgHisManager.readMsgHis();
 
             int isCover = JOptionPane.NO_OPTION;
@@ -118,6 +120,7 @@ public class MsgListener {
                     record[9] = MainWindow.mainWindow.getMsgTemplateMiniAppidTextField().getText();
                     record[10] = MainWindow.mainWindow.getMsgTemplateMiniPagePathTextField().getText();
                     record[11] = MainWindow.mainWindow.getMsgTemplateKeyWordTextField().getText();
+                    record[12] = MainWindow.mainWindow.getMsgYunpianMsgContentTextField().getText();
 
                     msgMap.put(msgName, record);
 
@@ -149,9 +152,10 @@ public class MsgListener {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "预览消息用户不能为空！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
-                    PushManage.preview();
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "发送预览消息成功！", "成功",
-                            JOptionPane.INFORMATION_MESSAGE);
+                    if (PushManage.preview()) {
+                        JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "发送预览消息成功！", "成功",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    }
                 }
             } catch (Exception e1) {
                 JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "发送预览消息失败！\n\n" + e1.getMessage(), "失败",
@@ -172,6 +176,7 @@ public class MsgListener {
             MainWindow.mainWindow.setMsgTemplateMiniAppidTextField("");
             MainWindow.mainWindow.setMsgTemplateMiniPagePathTextField("");
             MainWindow.mainWindow.setMsgTemplateKeyWordTextField("");
+            MainWindow.mainWindow.getMsgYunpianMsgContentTextField().setText("");
 
             if (MainWindow.mainWindow.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
                 Init.initTemplateDataTable();
