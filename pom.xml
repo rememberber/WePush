@@ -180,7 +180,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>com.fangxuele.tool.wechat.push.ui.MainWindow</mainClass>
+                            <mainClass>com.fangxuele.tool.push.ui.MainWindow</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
