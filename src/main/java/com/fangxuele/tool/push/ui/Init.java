@@ -255,10 +255,10 @@ public class Init {
                 MainWindow.mainWindow.setMsgKefuPicUrlTextField(msgDataArray[6]);
                 MainWindow.mainWindow.setMsgKefuDescTextField(msgDataArray[7]);
                 MainWindow.mainWindow.setMsgKefuUrlTextField(msgDataArray[8]);
-                if (msgDataArray.length > 11) {
+                if (msgDataArray.length > 12) {
                     MainWindow.mainWindow.setMsgYunpianMsgContentTextField(msgDataArray[12]);
                 }
-                if (msgDataArray.length > 10) {
+                if (msgDataArray.length > 11) {
                     MainWindow.mainWindow.setMsgTemplateKeyWordTextField(msgDataArray[11]);
                 }
                 if (msgDataArray.length > 9) {
@@ -592,10 +592,10 @@ public class Init {
         MainWindow.mainWindow.getTemplateMsgDataTable().updateUI();
         MainWindow.mainWindow.getTemplateMsgDataTable().getColumnModel().
                 getColumn(headerNames.length - 1).
-                setCellRenderer(new Init.ButtonColumn(MainWindow.mainWindow.getTemplateMsgDataTable(), headerNames.length - 1));
+                setCellRenderer(new ButtonColumn(MainWindow.mainWindow.getTemplateMsgDataTable(), headerNames.length - 1));
         MainWindow.mainWindow.getTemplateMsgDataTable().getColumnModel().
                 getColumn(headerNames.length - 1).
-                setCellEditor(new Init.ButtonColumn(MainWindow.mainWindow.getTemplateMsgDataTable(), headerNames.length - 1));
+                setCellEditor(new ButtonColumn(MainWindow.mainWindow.getTemplateMsgDataTable(), headerNames.length - 1));
 
         // 设置列宽
         MainWindow.mainWindow.getTemplateMsgDataTable().getColumnModel().getColumn(0).setPreferredWidth(150);
