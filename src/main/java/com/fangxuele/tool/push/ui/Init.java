@@ -255,10 +255,10 @@ public class Init {
                 MainWindow.mainWindow.setMsgKefuPicUrlTextField(msgDataArray[6]);
                 MainWindow.mainWindow.setMsgKefuDescTextField(msgDataArray[7]);
                 MainWindow.mainWindow.setMsgKefuUrlTextField(msgDataArray[8]);
-                if (msgDataArray.length > 11) {
+                if (msgDataArray.length > 12) {
                     MainWindow.mainWindow.setMsgYunpianMsgContentTextField(msgDataArray[12]);
                 }
-                if (msgDataArray.length > 10) {
+                if (msgDataArray.length > 11) {
                     MainWindow.mainWindow.setMsgTemplateKeyWordTextField(msgDataArray[11]);
                 }
                 if (msgDataArray.length > 9) {
