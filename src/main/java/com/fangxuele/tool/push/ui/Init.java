@@ -592,10 +592,10 @@ public class Init {
         MainWindow.mainWindow.getTemplateMsgDataTable().updateUI();
         MainWindow.mainWindow.getTemplateMsgDataTable().getColumnModel().
                 getColumn(headerNames.length - 1).
-                setCellRenderer(new Init.ButtonColumn(MainWindow.mainWindow.getTemplateMsgDataTable(), headerNames.length - 1));
+                setCellRenderer(new ButtonColumn(MainWindow.mainWindow.getTemplateMsgDataTable(), headerNames.length - 1));
         MainWindow.mainWindow.getTemplateMsgDataTable().getColumnModel().
                 getColumn(headerNames.length - 1).
-                setCellEditor(new Init.ButtonColumn(MainWindow.mainWindow.getTemplateMsgDataTable(), headerNames.length - 1));
+                setCellEditor(new ButtonColumn(MainWindow.mainWindow.getTemplateMsgDataTable(), headerNames.length - 1));
 
         // 设置列宽
         MainWindow.mainWindow.getTemplateMsgDataTable().getColumnModel().getColumn(0).setPreferredWidth(150);
