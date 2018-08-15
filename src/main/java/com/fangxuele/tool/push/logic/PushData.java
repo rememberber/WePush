@@ -47,7 +47,7 @@ public class PushData {
     /**
      * 停止标志
      */
-    public static boolean running = false;
+    public volatile static boolean running = false;
 
     /**
      * 计划任务执行中标志
