@@ -14,10 +14,10 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <logback.version>1.2.1</logback.version>
-        <weixin-java-mp.version>3.0.0</weixin-java-mp.version>
-        <weixin-java-miniapp.version>3.0.0</weixin-java-miniapp.version>
+        <weixin-java-mp.version>3.1.0</weixin-java-mp.version>
+        <weixin-java-miniapp.version>3.1.0</weixin-java-miniapp.version>
         <emoji-java.version>3.1.3</emoji-java.version>
-        <hutool-all.version>4.0.10</hutool-all.version>
+        <hutool-all.version>4.1.19</hutool-all.version>
         <opencsv.version>3.9</opencsv.version>
         <mysql-connector-java.version>6.0.6</mysql-connector-java.version>
         <forms_rt.version>7.0.3</forms_rt.version>
@@ -25,6 +25,9 @@
         <sun-mail.version>1.5.6</sun-mail.version>
         <aliyun-java-sdk-core.version>3.5.0</aliyun-java-sdk-core.version>
         <poi.version>3.17</poi.version>
+        <AppleJavaExtensions.version>1.4</AppleJavaExtensions.version>
+        <qcloudsms.version>1.0.2</qcloudsms.version>
+        <yunpian-java-sdk.version>1.2.7</yunpian-java-sdk.version>
     </properties>
 
     <dependencies>
@@ -103,7 +106,19 @@
         <dependency>
             <groupId>com.apple</groupId>
             <artifactId>AppleJavaExtensions</artifactId>
-            <version>1.4</version>
+            <version>${AppleJavaExtensions.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.qcloudsms</groupId>
+            <artifactId>qcloudsms</artifactId>
+            <version>${qcloudsms.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.yunpian.sdk</groupId>
+            <artifactId>yunpian-java-sdk</artifactId>
+            <version>${yunpian-java-sdk.version}</version>
         </dependency>
 
         <dependency>
@@ -135,13 +150,6 @@
             <artifactId>aliyun-java-sdk-dysmsapi</artifactId>
             <version>1.0.0</version>
         </dependency>
-
-        <dependency>
-            <groupId>com.github.qcloudsms</groupId>
-            <artifactId>qcloudsms</artifactId>
-            <version>1.0.2</version>
-        </dependency>
-
     </dependencies>
 
     <build>
@@ -159,6 +167,12 @@
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.0.0</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
@@ -166,7 +180,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>com.fangxuele.tool.wechat.push.ui.MainWindow</mainClass>
+                            <mainClass>com.fangxuele.tool.push.ui.MainWindow</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
