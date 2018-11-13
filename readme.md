@@ -6,6 +6,9 @@
 
 # WePush [![Build Status](https://travis-ci.org/rememberber/WePush.svg?branch=master)](https://travis-ci.org/rememberber/WePush)
 
+### 恭喜WePush入围2018年度最受欢迎中国开源软件评选
+**[【2018年度最受欢迎中国开源软件评选】](https://www.oschina.net/project/top_cn_2018) 已开始，喜欢WePush的话，请帮忙投上宝贵一票，多谢支持！**
+
 ### 功能
 自定义消息并批量推送
 >目前支持的消息类型：模板消息-公众号、模板消息-小程序、微信客服消息、阿里云短信、阿里大于模板短信、腾讯云短信、云片网短信
