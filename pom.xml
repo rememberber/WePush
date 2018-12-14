@@ -212,7 +212,7 @@
                         <id>install-weblaf</id>
                         <phase>clean</phase>
                         <configuration>
-                            <file>${basedir}/src/main/lib/weblaf-complete-1.28.jar</file>
+                            <file>${basedir}/src/main/lib/weblaf-1.29.jar</file>
                             <repositoryLayout>default</repositoryLayout>
                             <groupId>com.weblaf</groupId>
                             <artifactId>weblaf-lnf</artifactId>
