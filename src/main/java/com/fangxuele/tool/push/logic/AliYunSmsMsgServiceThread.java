@@ -47,12 +47,7 @@ public class AliYunSmsMsgServiceThread extends BaseMsgServiceThread {
 
         //初始化acsClient,暂不支持region化
         IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", aliyunAccessKeyId, aliyunAccessKeySecret);
-        try {
-            DefaultProfile.addEndpoint("cn-hangzhou", "cn-hangzhou", "Dysmsapi", "dysmsapi.aliyuncs.com");
-        } catch (ClientException e) {
-            logger.error(e);
-            PushManage.console(e.getMessage());
-        }
+        DefaultProfile.addEndpoint("cn-hangzhou", "Dysmsapi", "cn-hangzhou");
         IAcsClient acsClient = new DefaultAcsClient(profile);
 
         // 组织模板消息

@@ -653,6 +653,7 @@ public class Init {
             columnModel.getColumn(column).setCellEditor(this);
         }
 
+        @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
             if (hasFocus) {
@@ -671,6 +672,7 @@ public class Init {
             return renderButton;
         }
 
+        @Override
         public Component getTableCellEditorComponent(JTable table, Object value,
                                                      boolean isSelected, int row, int column) {
             editButton.setText("移除");
@@ -678,10 +680,12 @@ public class Init {
             return editButton;
         }
 
+        @Override
         public Object getCellEditorValue() {
             return "移除";
         }
 
+        @Override
         public void actionPerformed(ActionEvent e) {
             int isDelete = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getMessagePanel(), "确认移除？", "确认",
                     JOptionPane.INFORMATION_MESSAGE);

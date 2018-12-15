@@ -149,11 +149,7 @@ public class PushManage {
 
                 //初始化acsClient,暂不支持region化
                 IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", aliyunAccessKeyId, aliyunAccessKeySecret);
-                try {
-                    DefaultProfile.addEndpoint("cn-hangzhou", "cn-hangzhou", "Dysmsapi", "dysmsapi.aliyuncs.com");
-                } catch (ClientException e) {
-                    logger.error(e.toString());
-                }
+                DefaultProfile.addEndpoint("cn-hangzhou", "Dysmsapi", "cn-hangzhou");
 
                 IAcsClient acsClient = new DefaultAcsClient(profile);
                 for (String[] msgData : msgDataList) {
@@ -261,7 +257,7 @@ public class PushManage {
         while (matcher.find()) {
             pagePath = pagePath.replace(matcher.group(0), msgData[Integer.parseInt(matcher.group(1).trim())]);
         }
-        WxMpTemplateMessage.MiniProgram miniProgram = new WxMpTemplateMessage.MiniProgram(appid, pagePath,true);
+        WxMpTemplateMessage.MiniProgram miniProgram = new WxMpTemplateMessage.MiniProgram(appid, pagePath, true);
         wxMessageTemplate.setMiniProgram(miniProgram);
 
         if (MainWindow.mainWindow.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
