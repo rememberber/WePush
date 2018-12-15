@@ -80,11 +80,12 @@ public class Init {
 
         Font fnt = new Font(configer.getFont(), Font.PLAIN, configer.getFontSize());
         FontUIResource fontRes = new FontUIResource(fnt);
-        for (Enumeration keys = UIManager.getDefaults().keys(); keys.hasMoreElements(); ) {
+        for (Enumeration<Object> keys = UIManager.getDefaults().keys(); keys.hasMoreElements(); ) {
             Object key = keys.nextElement();
             Object value = UIManager.get(key);
-            if (value instanceof FontUIResource)
+            if (value instanceof FontUIResource) {
                 UIManager.put(key, fontRes);
+            }
         }
     }
 
@@ -704,7 +705,8 @@ public class Init {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
-            Boolean b = (Boolean) value;//这一列必须都是integer类型(0-100)
+            //这一列必须都是integer类型(0-100)
+            Boolean b = (Boolean) value;
             setSelected(b);
             return this;
         }
