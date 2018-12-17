@@ -2,6 +2,7 @@ package com.fangxuele.tool.push.logic;
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.api.impl.WxMaServiceImpl;
+import cn.binarywang.wx.miniapp.bean.WxMaTemplateData;
 import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
 import cn.binarywang.wx.miniapp.config.WxMaInMemoryConfig;
 import cn.hutool.core.date.DateUtil;
@@ -62,7 +63,7 @@ public class PushManage {
     /**
      * 预览消息
      *
-     * @throws Exception
+     * @throws Exception 异常
      */
     public static boolean preview() throws Exception {
         List<String[]> msgDataList = new ArrayList<>();
@@ -148,11 +149,7 @@ public class PushManage {
 
                 //初始化acsClient,暂不支持region化
                 IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", aliyunAccessKeyId, aliyunAccessKeySecret);
-                try {
-                    DefaultProfile.addEndpoint("cn-hangzhou", "cn-hangzhou", "Dysmsapi", "dysmsapi.aliyuncs.com");
-                } catch (ClientException e) {
-                    logger.error(e.toString());
-                }
+                DefaultProfile.addEndpoint("cn-hangzhou", "Dysmsapi", "cn-hangzhou");
 
                 IAcsClient acsClient = new DefaultAcsClient(profile);
                 for (String[] msgData : msgDataList) {
@@ -260,7 +257,7 @@ public class PushManage {
         while (matcher.find()) {
             pagePath = pagePath.replace(matcher.group(0), msgData[Integer.parseInt(matcher.group(1).trim())]);
         }
-        WxMpTemplateMessage.MiniProgram miniProgram = new WxMpTemplateMessage.MiniProgram(appid, pagePath);
+        WxMpTemplateMessage.MiniProgram miniProgram = new WxMpTemplateMessage.MiniProgram(appid, pagePath, true);
         wxMessageTemplate.setMiniProgram(miniProgram);
 
         if (MainWindow.mainWindow.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
@@ -349,7 +346,7 @@ public class PushManage {
             }
 
             String color = ((String) tableModel.getValueAt(i, 2)).trim();
-            WxMaTemplateMessage.Data templateData = new WxMaTemplateMessage.Data(name, value, color);
+            WxMaTemplateData templateData = new WxMaTemplateData(name, value, color);
             wxMessageTemplate.addData(templateData);
         }
 

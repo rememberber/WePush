@@ -80,11 +80,12 @@ public class Init {
 
         Font fnt = new Font(configer.getFont(), Font.PLAIN, configer.getFontSize());
         FontUIResource fontRes = new FontUIResource(fnt);
-        for (Enumeration keys = UIManager.getDefaults().keys(); keys.hasMoreElements(); ) {
+        for (Enumeration<Object> keys = UIManager.getDefaults().keys(); keys.hasMoreElements(); ) {
             Object key = keys.nextElement();
             Object value = UIManager.get(key);
-            if (value instanceof FontUIResource)
+            if (value instanceof FontUIResource) {
                 UIManager.put(key, fontRes);
+            }
         }
     }
 
@@ -653,6 +654,7 @@ public class Init {
             columnModel.getColumn(column).setCellEditor(this);
         }
 
+        @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
             if (hasFocus) {
@@ -671,6 +673,7 @@ public class Init {
             return renderButton;
         }
 
+        @Override
         public Component getTableCellEditorComponent(JTable table, Object value,
                                                      boolean isSelected, int row, int column) {
             editButton.setText("移除");
@@ -678,10 +681,12 @@ public class Init {
             return editButton;
         }
 
+        @Override
         public Object getCellEditorValue() {
             return "移除";
         }
 
+        @Override
         public void actionPerformed(ActionEvent e) {
             int isDelete = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getMessagePanel(), "确认移除？", "确认",
                     JOptionPane.INFORMATION_MESSAGE);
@@ -700,7 +705,8 @@ public class Init {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
-            Boolean b = (Boolean) value;//这一列必须都是integer类型(0-100)
+            //这一列必须都是integer类型(0-100)
+            Boolean b = (Boolean) value;
             setSelected(b);
             return this;
         }
