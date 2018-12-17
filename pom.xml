@@ -187,7 +187,7 @@
         <dependency>
             <groupId>com.weblaf</groupId>
             <artifactId>weblaf-lnf</artifactId>
-            <version>1.2.8</version>
+            <version>1.2.9</version>
         </dependency>
 
         <dependency>
@@ -267,7 +267,7 @@
                             <repositoryLayout>default</repositoryLayout>
                             <groupId>com.weblaf</groupId>
                             <artifactId>weblaf-lnf</artifactId>
-                            <version>1.2.8</version>
+                            <version>1.2.9</version>
                             <packaging>jar</packaging>
                             <generatePom>true</generatePom>
                         </configuration>
