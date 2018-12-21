@@ -2,6 +2,7 @@ package com.fangxuele.tool.push.ui.listener;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.swing.ClipboardUtil;
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.ui.Init;
@@ -36,43 +37,38 @@ public class PushHisListener {
         MainWindow.mainWindow.getPushHisLeftTable().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MainWindow.mainWindow.getPushHisTextArea().setText("");
+                ThreadUtil.execute(() -> {
+                    MainWindow.mainWindow.getPushHisTextArea().setText("");
 
-                        int selectedRow = MainWindow.mainWindow.getPushHisLeftTable().getSelectedRow();
-                        String selectedFileName = MainWindow.mainWindow.getPushHisLeftTable()
-                                .getValueAt(selectedRow, 1).toString();
-                        File pushHisFile = new File(SystemUtil.configHome + "data" + File.separator
-                                + "push_his" + File.separator + selectedFileName);
+                    int selectedRow = MainWindow.mainWindow.getPushHisLeftTable().getSelectedRow();
+                    String selectedFileName = MainWindow.mainWindow.getPushHisLeftTable()
+                            .getValueAt(selectedRow, 1).toString();
+                    File pushHisFile = new File(SystemUtil.configHome + "data" + File.separator
+                            + "push_his" + File.separator + selectedFileName);
 
-                        try {
-                            BufferedReader br = new BufferedReader(new FileReader(pushHisFile));
-                            String line = br.readLine();
-                            long count = 0;
-                            while (StringUtils.isNotEmpty(line)) {
-                                MainWindow.mainWindow.getPushHisTextArea().append(line);
-                                MainWindow.mainWindow.getPushHisTextArea().append("\n");
-                                line = br.readLine();
-                                count++;
-                            }
-
-                            MainWindow.mainWindow.getPushHisCountLabel().setText("共" + count + "条");
-                        } catch (FileNotFoundException e1) {
-                            e1.printStackTrace();
-                        } catch (IOException e1) {
-                            e1.printStackTrace();
+                    try {
+                        BufferedReader br = new BufferedReader(new FileReader(pushHisFile));
+                        String line = br.readLine();
+                        long count = 0;
+                        while (StringUtils.isNotEmpty(line)) {
+                            MainWindow.mainWindow.getPushHisTextArea().append(line);
+                            MainWindow.mainWindow.getPushHisTextArea().append("\n");
+                            line = br.readLine();
+                            count++;
                         }
 
+                        MainWindow.mainWindow.getPushHisCountLabel().setText("共" + count + "条");
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
                     }
-                }).start();
+
+                });
                 super.mouseClicked(e);
             }
         });
 
         // 推送历史管理-全选
-        MainWindow.mainWindow.getPushHisLeftSelectAllButton().addActionListener(e -> new Thread(() -> {
+        MainWindow.mainWindow.getPushHisLeftSelectAllButton().addActionListener(e -> ThreadUtil.execute(() -> {
             toggleSelectAll();
             DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getPushHisLeftTable()
                     .getModel();
@@ -80,10 +76,10 @@ public class PushHisListener {
             for (int i = 0; i < rowCount; i++) {
                 tableModel.setValueAt(selectAllToggle, i, 0);
             }
-        }).start());
+        }));
 
         // 推送历史管理-删除
-        MainWindow.mainWindow.getPushHisLeftDeleteButton().addActionListener(e -> new Thread(() -> {
+        MainWindow.mainWindow.getPushHisLeftDeleteButton().addActionListener(e -> ThreadUtil.execute(() -> {
             try {
                 DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getPushHisLeftTable()
                         .getModel();
@@ -102,7 +98,7 @@ public class PushHisListener {
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     int isDelete = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getSettingPanel(), "确认删除？", "确认",
-                            JOptionPane.INFORMATION_MESSAGE);
+                            JOptionPane.YES_NO_OPTION);
                     if (isDelete == JOptionPane.YES_OPTION) {
                         for (int i = 0; i < rowCount; ) {
                             boolean delete = (boolean) tableModel.getValueAt(i, 0);
@@ -116,7 +112,6 @@ public class PushHisListener {
                                 MainWindow.mainWindow.getPushHisLeftTable().updateUI();
                                 i = 0;
                                 rowCount = tableModel.getRowCount();
-                                continue;
                             } else {
                                 i++;
                             }
@@ -130,10 +125,10 @@ public class PushHisListener {
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
-        }).start());
+        }));
 
         // 推送历史管理-复制按钮
-        MainWindow.mainWindow.getPushHisCopyButton().addActionListener(e -> new Thread(() -> {
+        MainWindow.mainWindow.getPushHisCopyButton().addActionListener(e -> ThreadUtil.execute(() -> {
             try {
                 MainWindow.mainWindow.getPushHisCopyButton().setEnabled(false);
                 JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "内容已经复制到剪贴板！", "复制成功",
@@ -145,7 +140,7 @@ public class PushHisListener {
                 MainWindow.mainWindow.getPushHisCopyButton().setEnabled(true);
             }
 
-        }).start());
+        }));
 
         // 推送历史管理-导出按钮
         MainWindow.mainWindow.getPushHisExportButton().addActionListener(e -> {

@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.listener;
 
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
@@ -33,9 +34,7 @@ public class AboutListener {
                 Desktop desktop = Desktop.getDesktop();
                 try {
                     desktop.browse(new URI("https://gitee.com/zhoubochina/WePush"));
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                } catch (URISyntaxException e1) {
+                } catch (IOException | URISyntaxException e1) {
                     e1.printStackTrace();
                 }
             }
@@ -53,12 +52,7 @@ public class AboutListener {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        checkUpdate(false);
-                    }
-                }).start();
+                ThreadUtil.execute(() -> checkUpdate(false));
             }
 
             @Override
@@ -109,7 +103,7 @@ public class AboutListener {
 
                 int isPush = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getPushPanel(),
                         versionLog, "惊现新版本！立即下载？",
-                        JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.YES_NO_OPTION);
 
                 if (isPush == JOptionPane.YES_OPTION) {
                     desktop.browse(new URI("https://github.com/rememberber/WePush/releases"));
@@ -121,9 +115,7 @@ public class AboutListener {
                 }
             }
 
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        } catch (URISyntaxException e1) {
+        } catch (IOException | URISyntaxException e1) {
             e1.printStackTrace();
         }
     }

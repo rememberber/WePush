@@ -92,8 +92,8 @@ public class AliYunSmsMsgServiceThread extends BaseMsgServiceThread {
                         PushData.sendFailList.add(msgData);
 
                         // 失败异常信息输出控制台
-                        PushManage.console(new StringBuffer().append("发送失败:").append(response.getMessage()).append(";ErrorCode:")
-                                .append(response.getCode()).append(";telNum:").append(telNum).toString());
+                        PushManage.console("发送失败:" + response.getMessage() + ";ErrorCode:" +
+                                response.getCode() + ";telNum:" + telNum);
 
                         // 当前线程发送失败+1
                         currentThreadFailCount++;
@@ -121,7 +121,7 @@ public class AliYunSmsMsgServiceThread extends BaseMsgServiceThread {
                 PushData.sendFailList.add(msgData);
 
                 // 失败异常信息输出控制台
-                PushManage.console(new StringBuffer().append("发送失败:").append(e.getMessage()).append(";telNum:").append(telNum).toString());
+                PushManage.console("发送失败:" + e.getMessage() + ";telNum:" + telNum);
 
                 // 当前线程发送失败+1
                 currentThreadFailCount++;

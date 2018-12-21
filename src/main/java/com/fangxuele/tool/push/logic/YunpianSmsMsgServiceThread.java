@@ -23,7 +23,7 @@ public class YunpianSmsMsgServiceThread extends BaseMsgServiceThread {
      * @param pageTo   截止页
      * @param pageSize 页大小
      */
-    public YunpianSmsMsgServiceThread(int pageFrom, int pageTo, int pageSize) {
+    YunpianSmsMsgServiceThread(int pageFrom, int pageTo, int pageSize) {
         super(pageFrom, pageTo, pageSize);
     }
 
@@ -110,7 +110,7 @@ public class YunpianSmsMsgServiceThread extends BaseMsgServiceThread {
                 PushData.sendFailList.add(msgData);
 
                 // 失败异常信息输出控制台
-                PushManage.console(new StringBuffer().append("发送失败:").append(e.getMessage()).append(";telNum:").append(telNum).toString());
+                PushManage.console("发送失败:" + e.getMessage() + ";telNum:" + telNum);
 
                 // 当前线程发送失败+1
                 currentThreadFailCount++;

@@ -21,7 +21,7 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
      * @param pageTo   截止页
      * @param pageSize 页大小
      */
-    public TxYunSmsMsgServiceThread(int pageFrom, int pageTo, int pageSize) {
+    TxYunSmsMsgServiceThread(int pageFrom, int pageTo, int pageSize) {
         super(pageFrom, pageTo, pageSize);
     }
 
@@ -82,8 +82,8 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
                         PushData.sendFailList.add(msgData);
 
                         // 失败异常信息输出控制台
-                        PushManage.console(new StringBuffer().append("发送失败:").append(result.toString())
-                                .append(";telNum:").append(telNum).toString());
+                        PushManage.console("发送失败:" + result.toString() +
+                                ";telNum:" + telNum);
 
                         // 当前线程发送失败+1
                         currentThreadFailCount++;
@@ -111,7 +111,7 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
                 PushData.sendFailList.add(msgData);
 
                 // 失败异常信息输出控制台
-                PushManage.console(new StringBuffer().append("发送失败:").append(e.getMessage()).append(";telNum:").append(telNum).toString());
+                PushManage.console("发送失败:" + e.getMessage() + ";telNum:" + telNum);
 
                 // 当前线程发送失败+1
                 currentThreadFailCount++;

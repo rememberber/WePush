@@ -1,6 +1,7 @@
 package com.fangxuele.tool.push.ui.listener;
 
 import cn.hutool.core.io.file.FileReader;
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import cn.hutool.poi.excel.ExcelReader;
@@ -28,14 +29,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 准备目标数据tab相关事件监听
@@ -53,7 +49,7 @@ public class MemberListener {
 
     public static void addListeners() {
         // 从文件导入按钮事件
-        MainWindow.mainWindow.getImportFromFileButton().addActionListener(e -> new Thread(() -> {
+        MainWindow.mainWindow.getImportFromFileButton().addActionListener(e -> ThreadUtil.execute(() -> {
             File file = new File(MainWindow.mainWindow.getMemberFilePathField().getText());
             CSVReader reader = null;
             FileReader fileReader = null;
@@ -66,7 +62,7 @@ public class MemberListener {
                 if (fileNameLowerCase.endsWith(".csv")) {
                     // 可以解决中文乱码问题
                     DataInputStream in = new DataInputStream(new FileInputStream(file));
-                    reader = new CSVReader(new InputStreamReader(in, "utf-8"));
+                    reader = new CSVReader(new InputStreamReader(in, StandardCharsets.UTF_8));
                     String[] nextLine;
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());
                     while ((nextLine = reader.readNext()) != null) {
@@ -130,10 +126,10 @@ public class MemberListener {
                     }
                 }
             }
-        }).start());
+        }));
 
         // 导入全员按钮事件
-        MainWindow.mainWindow.getMemberImportAllButton().addActionListener(e -> new Thread(() -> {
+        MainWindow.mainWindow.getMemberImportAllButton().addActionListener(e -> ThreadUtil.execute(() -> {
             try {
                 getMpUserList();
                 JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导入完成！", "完成",
@@ -146,7 +142,7 @@ public class MemberListener {
             } finally {
                 MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
             }
-        }).start());
+        }));
 
         // 刷新可选的标签按钮事件
         MainWindow.mainWindow.getMemberImportTagFreshButton().addActionListener(e -> {
@@ -176,7 +172,7 @@ public class MemberListener {
         });
 
         // 导入选择的标签分组用户按钮事件(取并集)
-        MainWindow.mainWindow.getMemberImportTagButton().addActionListener(e -> new Thread(() -> {
+        MainWindow.mainWindow.getMemberImportTagButton().addActionListener(e -> ThreadUtil.execute(() -> {
             try {
                 if (MainWindow.mainWindow.getMemberImportTagComboBox().getSelectedItem() != null
                         && StringUtils.isNotEmpty(MainWindow.mainWindow.getMemberImportTagComboBox().getSelectedItem().toString())) {
@@ -198,10 +194,10 @@ public class MemberListener {
                 MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
                 MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(MainWindow.mainWindow.getMemberTabImportProgressBar().getMaximum());
             }
-        }).start());
+        }));
 
         // 导入选择的标签分组用户按钮事件(取交集)
-        MainWindow.mainWindow.getMemberImportTagRetainButton().addActionListener(e -> new Thread(() -> {
+        MainWindow.mainWindow.getMemberImportTagRetainButton().addActionListener(e -> ThreadUtil.execute(() -> {
             try {
                 if (MainWindow.mainWindow.getMemberImportTagComboBox().getSelectedItem() != null
                         && StringUtils.isNotEmpty(MainWindow.mainWindow.getMemberImportTagComboBox().getSelectedItem().toString())) {
@@ -223,12 +219,12 @@ public class MemberListener {
                 MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
                 MainWindow.mainWindow.getMemberTabImportProgressBar().setValue(MainWindow.mainWindow.getMemberTabImportProgressBar().getMaximum());
             }
-        }).start());
+        }));
 
         // 清除按钮事件
         MainWindow.mainWindow.getClearImportButton().addActionListener(e -> {
             int isClear = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getMemberPanel(), "确认清除？", "确认",
-                    JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.YES_NO_OPTION);
             if (isClear == JOptionPane.YES_OPTION) {
                 if (PushData.allUser != null) {
                     PushData.allUser.clear();
@@ -239,9 +235,9 @@ public class MemberListener {
         });
 
         // 从历史导入按钮事件
-        MainWindow.mainWindow.getImportFromHisButton().addActionListener(e -> new Thread(() -> {
+        MainWindow.mainWindow.getImportFromHisButton().addActionListener(e -> ThreadUtil.execute(() -> {
             File file = new File(SystemUtil.configHome + "data/push_his" + File.separator
-                    + MainWindow.mainWindow.getMemberHisComboBox().getSelectedItem().toString());
+                    + Objects.requireNonNull(MainWindow.mainWindow.getMemberHisComboBox().getSelectedItem()).toString());
             CSVReader reader = null;
             FileReader fileReader = null;
 
@@ -251,7 +247,7 @@ public class MemberListener {
                 MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(true);
                 // 可以解决中文乱码问题
                 DataInputStream in = new DataInputStream(new FileInputStream(file));
-                reader = new CSVReader(new InputStreamReader(in, "utf-8"));
+                reader = new CSVReader(new InputStreamReader(in, StandardCharsets.UTF_8));
                 String[] nextLine;
                 PushData.allUser = Collections.synchronizedList(new ArrayList<>());
                 while ((nextLine = reader.readNext()) != null) {
@@ -282,10 +278,10 @@ public class MemberListener {
                     }
                 }
             }
-        }).start());
+        }));
 
         // 从sql导入 按钮事件
-        MainWindow.mainWindow.getImportFromSqlButton().addActionListener(e -> new Thread(() -> {
+        MainWindow.mainWindow.getImportFromSqlButton().addActionListener(e -> ThreadUtil.execute(() -> {
             MainWindow.mainWindow.getImportFromSqlButton().setEnabled(false);
             MainWindow.mainWindow.getImportFromSqlButton().updateUI();
 
@@ -324,7 +320,7 @@ public class MemberListener {
                     MainWindow.mainWindow.getMemberTabImportProgressBar().setIndeterminate(false);
                 }
             }
-        }).start());
+        }));
 
         // 浏览按钮
         MainWindow.mainWindow.getMemberImportExploreButton().addActionListener(e -> {

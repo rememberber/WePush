@@ -13,7 +13,7 @@ public class TemplateMsgMaServiceThread extends BaseMsgServiceThread {
     /**
      * 微信小程序工具服务
      */
-    public WxMaService wxMaService;
+    private WxMaService wxMaService;
 
     /**
      * 构造函数
@@ -22,7 +22,7 @@ public class TemplateMsgMaServiceThread extends BaseMsgServiceThread {
      * @param pageTo   截止页
      * @param pageSize 页大小
      */
-    public TemplateMsgMaServiceThread(int pageFrom, int pageTo, int pageSize) {
+    TemplateMsgMaServiceThread(int pageFrom, int pageTo, int pageSize) {
         super(pageFrom, pageTo, pageSize);
     }
 
@@ -74,7 +74,7 @@ public class TemplateMsgMaServiceThread extends BaseMsgServiceThread {
                 PushData.sendFailList.add(msgData);
 
                 // 失败异常信息输出控制台
-                PushManage.console(new StringBuffer().append("发送失败:").append(e.getMessage()).append(";openid:").append(openId).toString());
+                PushManage.console("发送失败:" + e.getMessage() + ";openid:" + openId);
 
                 // 当前线程发送失败+1
                 currentThreadFailCount++;
@@ -95,7 +95,7 @@ public class TemplateMsgMaServiceThread extends BaseMsgServiceThread {
         return wxMaService;
     }
 
-    public void setWxMaService(WxMaService wxMaService) {
+    void setWxMaService(WxMaService wxMaService) {
         this.wxMaService = wxMaService;
     }
 }

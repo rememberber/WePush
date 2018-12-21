@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.listener;
 
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.util.DbUtilMySQL;
@@ -12,6 +13,7 @@ import javax.swing.table.DefaultTableModel;
 import java.io.File;
 import java.sql.Connection;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 设置tab相关事件监听
@@ -137,11 +139,11 @@ public class SettingListener {
         MainWindow.mainWindow.getSettingTestDbLinkButton().addActionListener(e -> {
             try {
                 DbUtilMySQL dbMySQL = DbUtilMySQL.getInstance();
-                String DBUrl = MainWindow.mainWindow.getMysqlUrlTextField().getText();
-                String DBName = MainWindow.mainWindow.getMysqlDatabaseTextField().getText();
-                String DBUser = MainWindow.mainWindow.getMysqlUserTextField().getText();
-                String DBPassword = new String(MainWindow.mainWindow.getMysqlPasswordField().getPassword());
-                Connection conn = dbMySQL.testConnection(DBUrl, DBName, DBUser, DBPassword);
+                String dbUrl = MainWindow.mainWindow.getMysqlUrlTextField().getText();
+                String dbName = MainWindow.mainWindow.getMysqlDatabaseTextField().getText();
+                String dbUser = MainWindow.mainWindow.getMysqlUserTextField().getText();
+                String dbPassword = new String(MainWindow.mainWindow.getMysqlPasswordField().getPassword());
+                Connection conn = dbMySQL.testConnection(dbUrl, dbName, dbUser, dbPassword);
                 if (conn == null) {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "连接失败", "失败",
                             JOptionPane.ERROR_MESSAGE);
@@ -177,9 +179,9 @@ public class SettingListener {
         // 外观-保存
         MainWindow.mainWindow.getSettingAppearanceSaveButton().addActionListener(e -> {
             try {
-                Init.configer.setTheme(MainWindow.mainWindow.getSettingThemeComboBox().getSelectedItem().toString());
-                Init.configer.setFont(MainWindow.mainWindow.getSettingFontNameComboBox().getSelectedItem().toString());
-                Init.configer.setFontSize(Integer.parseInt(MainWindow.mainWindow.getSettingFontSizeComboBox().getSelectedItem().toString()));
+                Init.configer.setTheme(Objects.requireNonNull(MainWindow.mainWindow.getSettingThemeComboBox().getSelectedItem()).toString());
+                Init.configer.setFont(Objects.requireNonNull(MainWindow.mainWindow.getSettingFontNameComboBox().getSelectedItem()).toString());
+                Init.configer.setFontSize(Integer.parseInt(Objects.requireNonNull(MainWindow.mainWindow.getSettingFontSizeComboBox().getSelectedItem()).toString()));
                 Init.configer.save();
 
                 Init.initTheme();
@@ -197,7 +199,7 @@ public class SettingListener {
         });
 
         // 历史消息管理-全选
-        MainWindow.mainWindow.getMsgHisTableSelectAllButton().addActionListener(e -> new Thread(() -> {
+        MainWindow.mainWindow.getMsgHisTableSelectAllButton().addActionListener(e -> ThreadUtil.execute(() -> {
             toggleSelectAll();
             DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getMsgHistable()
                     .getModel();
@@ -205,10 +207,10 @@ public class SettingListener {
             for (int i = 0; i < rowCount; i++) {
                 tableModel.setValueAt(selectAllToggle, i, 0);
             }
-        }).start());
+        }));
 
         // 历史消息管理-删除
-        MainWindow.mainWindow.getMsgHisTableDeleteButton().addActionListener(e -> new Thread(() -> {
+        MainWindow.mainWindow.getMsgHisTableDeleteButton().addActionListener(e -> ThreadUtil.execute(() -> {
             try {
                 DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getMsgHistable()
                         .getModel();
@@ -227,7 +229,7 @@ public class SettingListener {
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     int isDelete = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getSettingPanel(), "确认删除？", "确认",
-                            JOptionPane.INFORMATION_MESSAGE);
+                            JOptionPane.YES_NO_OPTION);
                     if (isDelete == JOptionPane.YES_OPTION) {
                         Map<String, String[]> msgMap = Init.msgHisManager.readMsgHis();
                         for (int i = 0; i < rowCount; ) {
@@ -246,7 +248,6 @@ public class SettingListener {
                                 MainWindow.mainWindow.getMsgHistable().updateUI();
                                 i = 0;
                                 rowCount = tableModel.getRowCount();
-                                continue;
                             } else {
                                 i++;
                             }
@@ -261,20 +262,14 @@ public class SettingListener {
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
-        }).start());
+        }));
 
     }
 
     /**
      * 切换全选/全不选
-     *
-     * @return
      */
     private static void toggleSelectAll() {
-        if (!selectAllToggle) {
-            selectAllToggle = true;
-        } else {
-            selectAllToggle = false;
-        }
+        selectAllToggle = !selectAllToggle;
     }
 }

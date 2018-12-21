@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.listener;
 
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.ui.Init;
@@ -14,6 +15,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -31,7 +33,7 @@ public class MsgListener {
         MainWindow.mainWindow.getMsgHistable().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                new Thread(() -> {
+                ThreadUtil.execute(() -> {
                     MainWindow.mainWindow.getPushHisTextArea().setText("");
 
                     int selectedRow = MainWindow.mainWindow.getMsgHistable().getSelectedRow();
@@ -39,7 +41,7 @@ public class MsgListener {
                             .getValueAt(selectedRow, 1).toString();
 
                     Init.initMsgTab(selectedMsgName);
-                }).start();
+                });
                 super.mouseClicked(e);
             }
         });
@@ -102,17 +104,17 @@ public class MsgListener {
             if (msgMap.containsKey(msgName)) {
                 // 如果存在，是否覆盖
                 isCover = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getMessagePanel(), "已经存在同名的历史消息，\n是否覆盖？", "确认",
-                        JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.YES_NO_OPTION);
             }
 
             try {
                 if (!msgMap.containsKey(msgName) || isCover == JOptionPane.YES_OPTION) {
                     String[] record = new String[MsgHisManage.ARRAY_LENGTH];
                     record[0] = msgName;
-                    record[1] = MainWindow.mainWindow.getMsgTypeComboBox().getSelectedItem().toString();
+                    record[1] = Objects.requireNonNull(MainWindow.mainWindow.getMsgTypeComboBox().getSelectedItem()).toString();
                     record[2] = MainWindow.mainWindow.getMsgTemplateIdTextField().getText();
                     record[3] = MainWindow.mainWindow.getMsgTemplateUrlTextField().getText();
-                    record[4] = MainWindow.mainWindow.getMsgKefuMsgTypeComboBox().getSelectedItem().toString();
+                    record[4] = Objects.requireNonNull(MainWindow.mainWindow.getMsgKefuMsgTypeComboBox().getSelectedItem()).toString();
                     record[5] = MainWindow.mainWindow.getMsgKefuMsgTitleTextField().getText();
                     record[6] = MainWindow.mainWindow.getMsgKefuPicUrlTextField().getText();
                     record[7] = MainWindow.mainWindow.getMsgKefuDescTextField().getText();

@@ -18,6 +18,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -73,13 +74,13 @@ public class RunPushThread extends Thread {
         int pagePerThread = Integer.parseInt(MainWindow.mainWindow.getPushPagePerThreadTextField().getText());
         Init.configer.setPagePerThread(pagePerThread);
         Init.configer.save();
-        PushManage.console(new StringBuffer().append("每个线程分配：").append(pagePerThread).append("页").toString());
+        PushManage.console("每个线程分配：" + pagePerThread + "页");
 
         // 需要多少个线程
         int threadCount = (totalPage + pagePerThread - 1) / pagePerThread;
         PushData.threadCount = threadCount;
         MainWindow.mainWindow.getPushTotalThreadLabel().setText("需要线程宝宝个数：" + threadCount);
-        PushManage.console(new StringBuffer().append("需要：").append(threadCount).append("个线程宝宝齐力合作").toString());
+        PushManage.console("需要：" + threadCount + "个线程宝宝齐力合作");
 
         // 初始化线程table
         String[] headerNames = {"线程", "页数区间", "成功", "失败", "总数", "当前进度"};
@@ -94,7 +95,7 @@ public class RunPushThread extends Thread {
         MainWindow.mainWindow.getPushThreadTable().updateUI();
 
         Object[] data;
-        String msgType = MainWindow.mainWindow.getMsgTypeComboBox().getSelectedItem().toString();
+        String msgType = Objects.requireNonNull(MainWindow.mainWindow.getMsgTypeComboBox().getSelectedItem()).toString();
 
         ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(20, 100 * Runtime.getRuntime().availableProcessors());
         BaseMsgServiceThread thread = null;
@@ -150,7 +151,7 @@ public class RunPushThread extends Thread {
             }
 
             thread.setTableRow(i);
-            thread.setName(new StringBuffer().append("T-").append(i).toString());
+            thread.setName("T-" + i);
 
             data = new Object[6];
             data[0] = thread.getName();
@@ -236,7 +237,8 @@ public class RunPushThread extends Thread {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
-            Integer v = (Integer) value;//这一列必须都是integer类型(0-100)
+            // 这一列必须都是integer类型(0-100)
+            Integer v = (Integer) value;
             setValue(v);
             return this;
         }
