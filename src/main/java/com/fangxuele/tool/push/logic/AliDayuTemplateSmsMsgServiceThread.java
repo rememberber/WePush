@@ -88,8 +88,8 @@ public class AliDayuTemplateSmsMsgServiceThread extends BaseMsgServiceThread {
                         PushData.sendFailList.add(msgData);
 
                         // 失败异常信息输出控制台
-                        PushManage.console(new StringBuffer().append("发送失败:").append(response.getBody()).append(";ErrorCode:")
-                                .append(response.getErrorCode()).append(";telNum:").append(telNum).toString());
+                        PushManage.console("发送失败:" + response.getBody() + ";ErrorCode:" +
+                                response.getErrorCode() + ";telNum:" + telNum);
 
                         // 当前线程发送失败+1
                         currentThreadFailCount++;
@@ -117,7 +117,7 @@ public class AliDayuTemplateSmsMsgServiceThread extends BaseMsgServiceThread {
                 PushData.sendFailList.add(msgData);
 
                 // 失败异常信息输出控制台
-                PushManage.console(new StringBuffer().append("发送失败:").append(e.getMessage()).append(";telNum:").append(telNum).toString());
+                PushManage.console("发送失败:" + e.getMessage() + ";telNum:" + telNum);
 
                 // 当前线程发送失败+1
                 currentThreadFailCount++;

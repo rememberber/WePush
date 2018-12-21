@@ -16,7 +16,7 @@ public class KeFuMsgServiceThread extends BaseMsgServiceThread {
      * @param pageTo   截止页
      * @param pageSize 页大小
      */
-    public KeFuMsgServiceThread(int pageFrom, int pageTo, int pageSize) {
+    KeFuMsgServiceThread(int pageFrom, int pageTo, int pageSize) {
         super(pageFrom, pageTo, pageSize);
     }
 
@@ -66,7 +66,7 @@ public class KeFuMsgServiceThread extends BaseMsgServiceThread {
                 PushData.sendFailList.add(msgData);
 
                 // 失败异常信息输出控制台
-                PushManage.console(new StringBuffer().append("发送失败:").append(e.getMessage()).append(";openid:").append(openId).toString());
+                PushManage.console("发送失败:" + e.getMessage() + ";openid:" + openId);
 
                 // 当前线程发送失败+1
                 currentThreadFailCount++;

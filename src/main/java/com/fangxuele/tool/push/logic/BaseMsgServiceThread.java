@@ -39,17 +39,17 @@ public class BaseMsgServiceThread extends Thread {
     /**
      * 微信工具服务
      */
-    public WxMpService wxMpService;
+    WxMpService wxMpService;
 
     /**
      * 当前线程成功数
      */
-    public int currentThreadSuccessCount;
+    int currentThreadSuccessCount;
 
     /**
      * 当前线程失败数
      */
-    public int currentThreadFailCount;
+    int currentThreadFailCount;
 
     /**
      * 线程列表tableModel
@@ -59,7 +59,7 @@ public class BaseMsgServiceThread extends Thread {
     /**
      * 当前线程所在的线程列表行
      */
-    public int tableRow;
+    int tableRow;
 
     /**
      * 构造函数
@@ -82,9 +82,9 @@ public class BaseMsgServiceThread extends Thread {
     /**
      * 初始化当前线程
      */
-    public void initCurrentThread() {
-        PushManage.console(new StringBuffer().append("线程").append(this.getName()).append("负责处理:").append(pageFrom).append("-")
-                .append(pageTo).append("页的数据").toString());
+    void initCurrentThread() {
+        PushManage.console("线程" + this.getName() + "负责处理:" + pageFrom + "-" +
+                pageTo + "页的数据");
 
         int end = pageTo * pageSize + pageSize;
         if (PushData.totalRecords < end) {
@@ -108,9 +108,9 @@ public class BaseMsgServiceThread extends Thread {
     /**
      * 当前线程结束
      */
-    public void currentThreadFinish() {
-        PushManage.console(new StringBuffer().append(this.getName()).append("已处理完第").append(pageFrom).append("-")
-                .append(pageTo).append("页的数据").toString());
+    void currentThreadFinish() {
+        PushManage.console(this.getName() + "已处理完第" + pageFrom + "-" +
+                pageTo + "页的数据");
 
         PushData.increaseStopedThread();
     }
@@ -119,7 +119,7 @@ public class BaseMsgServiceThread extends Thread {
         return wxMpService;
     }
 
-    public void setWxMpService(WxMpService wxMpService) {
+    void setWxMpService(WxMpService wxMpService) {
         this.wxMpService = wxMpService;
     }
 
@@ -151,7 +151,7 @@ public class BaseMsgServiceThread extends Thread {
         return tableRow;
     }
 
-    public void setTableRow(int tableRow) {
+    void setTableRow(int tableRow) {
         this.tableRow = tableRow;
     }
 }

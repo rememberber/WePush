@@ -51,9 +51,6 @@ public class MsgHisManage {
                 writer.writeNext(entries);
                 writer.close();
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            logger.error(e);
         } catch (IOException e) {
             e.printStackTrace();
             logger.error(e);
@@ -130,7 +127,7 @@ public class MsgHisManage {
      * 写入(保存)消息历史
      *
      * @param map key:消息名称 value:消息详情
-     * @throws IOException
+     * @throws IOException io异常
      */
     public void writeMsgHis(Map<String, String[]> map) throws IOException {
         CSVWriter writer = new CSVWriter(new FileWriter(msgHisFile));

@@ -58,8 +58,6 @@ public class PushHisListener {
                         }
 
                         MainWindow.mainWindow.getPushHisCountLabel().setText("共" + count + "条");
-                    } catch (FileNotFoundException e1) {
-                        e1.printStackTrace();
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
@@ -100,7 +98,7 @@ public class PushHisListener {
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     int isDelete = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getSettingPanel(), "确认删除？", "确认",
-                            JOptionPane.INFORMATION_MESSAGE);
+                            JOptionPane.YES_NO_OPTION);
                     if (isDelete == JOptionPane.YES_OPTION) {
                         for (int i = 0; i < rowCount; ) {
                             boolean delete = (boolean) tableModel.getValueAt(i, 0);
@@ -114,7 +112,6 @@ public class PushHisListener {
                                 MainWindow.mainWindow.getPushHisLeftTable().updateUI();
                                 i = 0;
                                 rowCount = tableModel.getRowCount();
-                                continue;
                             } else {
                                 i++;
                             }

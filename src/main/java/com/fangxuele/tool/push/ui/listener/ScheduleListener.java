@@ -8,6 +8,7 @@ import com.fangxuele.tool.push.ui.MainWindow;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
+import java.util.Objects;
 
 /**
  * 计划任务tab相关事件监听
@@ -61,7 +62,7 @@ public class ScheduleListener {
                 if (StringUtils.isNotEmpty(textPerWeekTime)) {
                     DateUtil.parse(textPerWeekTime);
                     Init.configer.setRadioPerWeek(isPerWeek);
-                    Init.configer.setTextPerWeekWeek(MainWindow.mainWindow.getSchedulePerWeekComboBox().getSelectedItem().toString());
+                    Init.configer.setTextPerWeekWeek(Objects.requireNonNull(MainWindow.mainWindow.getSchedulePerWeekComboBox().getSelectedItem()).toString());
                     Init.configer.setTextPerWeekTime(textPerWeekTime);
                 } else if (isPerWeek) {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getSchedulePanel(),
@@ -70,7 +71,7 @@ public class ScheduleListener {
                     return;
                 } else {
                     Init.configer.setRadioPerWeek(isPerWeek);
-                    Init.configer.setTextPerWeekWeek(MainWindow.mainWindow.getSchedulePerWeekComboBox().getSelectedItem().toString());
+                    Init.configer.setTextPerWeekWeek(Objects.requireNonNull(MainWindow.mainWindow.getSchedulePerWeekComboBox().getSelectedItem()).toString());
                     Init.configer.setTextPerWeekTime(textPerWeekTime);
                 }
 

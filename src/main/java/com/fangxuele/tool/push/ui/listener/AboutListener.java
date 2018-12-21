@@ -34,9 +34,7 @@ public class AboutListener {
                 Desktop desktop = Desktop.getDesktop();
                 try {
                     desktop.browse(new URI("https://gitee.com/zhoubochina/WePush"));
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                } catch (URISyntaxException e1) {
+                } catch (IOException | URISyntaxException e1) {
                     e1.printStackTrace();
                 }
             }
@@ -105,7 +103,7 @@ public class AboutListener {
 
                 int isPush = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getPushPanel(),
                         versionLog, "惊现新版本！立即下载？",
-                        JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.YES_NO_OPTION);
 
                 if (isPush == JOptionPane.YES_OPTION) {
                     desktop.browse(new URI("https://github.com/rememberber/WePush/releases"));
@@ -117,9 +115,7 @@ public class AboutListener {
                 }
             }
 
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        } catch (URISyntaxException e1) {
+        } catch (IOException | URISyntaxException e1) {
             e1.printStackTrace();
         }
     }

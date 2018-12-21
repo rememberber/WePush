@@ -76,7 +76,7 @@ public class KeFuPriorMsgServiceThread extends BaseMsgServiceThread {
                 PushData.sendFailList.add(msgData);
 
                 // 失败异常信息输出控制台
-                PushManage.console(new StringBuffer().append("发送失败:").append(e.getMessage()).append(";openid:").append(openId).toString());
+                PushManage.console("发送失败:" + e.getMessage() + ";openid:" + openId);
 
                 // 当前线程发送失败+1
                 currentThreadFailCount++;

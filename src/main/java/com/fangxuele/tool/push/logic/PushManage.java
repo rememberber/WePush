@@ -45,10 +45,7 @@ import javax.swing.table.DefaultTableModel;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -72,7 +69,7 @@ public class PushManage {
             msgDataList.add(data.split(","));
         }
 
-        switch (MainWindow.mainWindow.getMsgTypeComboBox().getSelectedItem().toString()) {
+        switch (Objects.requireNonNull(MainWindow.mainWindow.getMsgTypeComboBox().getSelectedItem()).toString()) {
             case "模板消息":
                 WxMpTemplateMessage wxMessageTemplate;
                 WxMpService wxMpService = getWxMpService();
@@ -158,8 +155,8 @@ public class PushManage {
                     SendSmsResponse response = acsClient.getAcsResponse(request);
 
                     if (response.getCode() == null || !"OK".equals(response.getCode())) {
-                        throw new Exception(new StringBuffer().append(response.getMessage()).append(";\n\nErrorCode:")
-                                .append(response.getCode()).append(";\n\ntelNum:").append(msgData[0]).toString());
+                        throw new Exception(response.getMessage() + ";\n\nErrorCode:" +
+                                response.getCode() + ";\n\ntelNum:" + msgData[0]);
                     }
                 }
                 break;
@@ -205,8 +202,8 @@ public class PushManage {
                     request.setRecNum(msgData[0]);
                     AlibabaAliqinFcSmsNumSendResponse response = client.execute(request);
                     if (response.getResult() == null || !response.getResult().getSuccess()) {
-                        throw new Exception(new StringBuffer().append(response.getBody()).append(";\n\nErrorCode:")
-                                .append(response.getErrorCode()).append(";\n\ntelNum:").append(msgData[0]).toString());
+                        throw new Exception(response.getBody() + ";\n\nErrorCode:" +
+                                response.getErrorCode() + ";\n\ntelNum:" + msgData[0]);
                     }
                 }
                 break;
@@ -241,10 +238,10 @@ public class PushManage {
     /**
      * 组织模板消息-公众号
      *
-     * @param msgData
-     * @return
+     * @param msgData 消息数据
+     * @return WxMpTemplateMessage
      */
-    synchronized public static WxMpTemplateMessage makeMpTemplateMessage(String[] msgData) {
+    synchronized static WxMpTemplateMessage makeMpTemplateMessage(String[] msgData) {
         // 拼模板
         WxMpTemplateMessage wxMessageTemplate = WxMpTemplateMessage.builder().build();
         wxMessageTemplate.setTemplateId(MainWindow.mainWindow.getMsgTemplateIdTextField().getText().trim());
@@ -303,10 +300,10 @@ public class PushManage {
     /**
      * 组织模板消息-小程序
      *
-     * @param msgData
-     * @return
+     * @param msgData 消息信息
+     * @return WxMaTemplateMessage
      */
-    synchronized public static WxMaTemplateMessage makeMaTemplateMessage(String[] msgData) {
+    synchronized static WxMaTemplateMessage makeMaTemplateMessage(String[] msgData) {
         // 拼模板
         WxMaTemplateMessage wxMessageTemplate = WxMaTemplateMessage.builder().build();
         wxMessageTemplate.setTemplateId(MainWindow.mainWindow.getMsgTemplateIdTextField().getText().trim());
@@ -356,13 +353,13 @@ public class PushManage {
     /**
      * 组织客服消息
      *
-     * @param msgData
-     * @return
+     * @param msgData 消息信息
+     * @return WxMpKefuMessage
      */
-    synchronized public static WxMpKefuMessage makeKefuMessage(String[] msgData) {
+    synchronized static WxMpKefuMessage makeKefuMessage(String[] msgData) {
 
         WxMpKefuMessage kefuMessage = null;
-        if ("图文消息".equals(MainWindow.mainWindow.getMsgKefuMsgTypeComboBox().getSelectedItem().toString())) {
+        if ("图文消息".equals(Objects.requireNonNull(MainWindow.mainWindow.getMsgKefuMsgTypeComboBox().getSelectedItem()).toString())) {
             WxMpKefuMessage.WxArticle article = new WxMpKefuMessage.WxArticle();
 
             // 标题
@@ -379,7 +376,7 @@ public class PushManage {
                 String str = matcher.group(0);
                 if (str.startsWith("$NICK_NAME")) {
                     WxMpService wxMpService = getWxMpService();
-                    String nickName = null;
+                    String nickName = "";
                     try {
                         nickName = wxMpService.getUserService().userInfo(msgData[0]).getNickname();
                     } catch (WxErrorException e) {
@@ -407,7 +404,7 @@ public class PushManage {
                 String str = matcher.group(0);
                 if (str.startsWith("$NICK_NAME")) {
                     WxMpService wxMpService = getWxMpService();
-                    String nickName = null;
+                    String nickName = "";
                     try {
                         nickName = wxMpService.getUserService().userInfo(msgData[0]).getNickname();
                     } catch (WxErrorException e) {
@@ -433,10 +430,10 @@ public class PushManage {
     /**
      * 组织阿里云短信消息
      *
-     * @param msgData
-     * @return
+     * @param msgData 消息信息
+     * @return SendSmsRequest
      */
-    synchronized public static SendSmsRequest makeAliyunMessage(String[] msgData) {
+    synchronized static SendSmsRequest makeAliyunMessage(String[] msgData) {
         SendSmsRequest request = new SendSmsRequest();
         //使用post提交
         request.setMethod(MethodType.POST);
@@ -475,10 +472,10 @@ public class PushManage {
     /**
      * 组织阿里大于模板短信消息
      *
-     * @param msgData
-     * @return
+     * @param msgData 消息信息
+     * @return AlibabaAliqinFcSmsNumSendRequest
      */
-    synchronized public static AlibabaAliqinFcSmsNumSendRequest makeAliTemplateMessage(String[] msgData) {
+    synchronized static AlibabaAliqinFcSmsNumSendRequest makeAliTemplateMessage(String[] msgData) {
         AlibabaAliqinFcSmsNumSendRequest request = new AlibabaAliqinFcSmsNumSendRequest();
         // 用户可以根据该会员ID识别是哪位会员使用了你的应用
         request.setExtend("WePush");
@@ -520,10 +517,10 @@ public class PushManage {
     /**
      * 组织腾讯云短信消息
      *
-     * @param msgData
-     * @return
+     * @param msgData 消息信息
+     * @return String[]
      */
-    synchronized public static String[] makeTxyunMessage(String[] msgData) {
+    synchronized static String[] makeTxyunMessage(String[] msgData) {
         if (MainWindow.mainWindow.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
             Init.initTemplateDataTable();
         }
@@ -548,8 +545,8 @@ public class PushManage {
     /**
      * 组织云片网短信消息
      *
-     * @param msgData
-     * @return
+     * @param msgData 消息信息
+     * @return Map<String, String>
      */
     synchronized static Map<String, String> makeYunpianMessage(String[] msgData) {
         Map<String, String> params = new HashMap<>(2);
@@ -569,7 +566,7 @@ public class PushManage {
     /**
      * 微信公众号配置
      *
-     * @return
+     * @return WxMpConfigStorage
      */
     private static WxMpConfigStorage wxMpConfigStorage() {
         WxMpInMemoryConfigStorage configStorage = new WxMpInMemoryConfigStorage();
@@ -589,7 +586,7 @@ public class PushManage {
     /**
      * 微信小程序配置
      *
-     * @return
+     * @return WxMaInMemoryConfig
      */
     private static WxMaInMemoryConfig wxMaConfigStorage() {
         WxMaInMemoryConfig configStorage = new WxMaInMemoryConfig();
@@ -610,7 +607,7 @@ public class PushManage {
     /**
      * 获取微信公众号工具服务
      *
-     * @return
+     * @return WxMpService
      */
     public static WxMpService getWxMpService() {
         WxMpService wxMpService = new WxMpServiceImpl();
@@ -624,9 +621,9 @@ public class PushManage {
     /**
      * 获取微信小程序工具服务
      *
-     * @return
+     * @return WxMaService
      */
-    public static WxMaService getWxMaService() {
+    static WxMaService getWxMaService() {
         WxMaService wxMaService = new WxMaServiceImpl();
         wxMaService.setWxMaConfig(wxMaConfigStorage());
         return wxMaService;
@@ -635,7 +632,7 @@ public class PushManage {
     /**
      * 推送停止或结束后保存数据
      */
-    public static void savePushData() throws IOException {
+    static void savePushData() throws IOException {
         File pushHisDir = new File(SystemUtil.configHome + "data" + File.separator + "push_his");
         if (!pushHisDir.exists()) {
             pushHisDir.mkdirs();
@@ -649,9 +646,9 @@ public class PushManage {
 
         // 保存已发送
         if (PushData.sendSuccessList.size() > 0) {
-            File toSendFile = new File(new StringBuilder(SystemUtil.configHome).append("data")
-                    .append(File.separator).append("push_his").append(File.separator).append(msgName)
-                    .append("-发送成功-").append(nowTime).append(".csv").toString());
+            File toSendFile = new File(SystemUtil.configHome + "data" +
+                    File.separator + "push_his" + File.separator + msgName +
+                    "-发送成功-" + nowTime + ".csv");
             if (!toSendFile.exists()) {
                 toSendFile.createNewFile();
             }
@@ -671,9 +668,9 @@ public class PushManage {
             PushData.toSendList.remove(str);
         }
         if (PushData.toSendList.size() > 0) {
-            File unSendFile = new File(new StringBuilder(SystemUtil.configHome).append("data").append(File.separator)
-                    .append("push_his").append(File.separator).append(msgName).append("-未发送-").append(nowTime)
-                    .append(".csv").toString());
+            File unSendFile = new File(SystemUtil.configHome + "data" + File.separator +
+                    "push_his" + File.separator + msgName + "-未发送-" + nowTime +
+                    ".csv");
             if (!unSendFile.exists()) {
                 unSendFile.createNewFile();
             }
@@ -686,8 +683,8 @@ public class PushManage {
 
         // 保存发送失败
         if (PushData.sendFailList.size() > 0) {
-            File failSendFile = new File(new StringBuilder(SystemUtil.configHome).append("data").append(File.separator)
-                    .append("push_his").append(File.separator).append(msgName).append("-发送失败-").append(nowTime).append(".csv").toString());
+            File failSendFile = new File(SystemUtil.configHome + "data" + File.separator +
+                    "push_his" + File.separator + msgName + "-发送失败-" + nowTime + ".csv");
             if (!failSendFile.exists()) {
                 failSendFile.createNewFile();
             }

@@ -42,6 +42,7 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 初始化类
@@ -93,7 +94,7 @@ public class Init {
     /**
      * 其他初始化
      */
-    public static void initOthers() {
+    static void initOthers() {
         // 设置滚动条速度
         MainWindow.mainWindow.getSettingScrollPane().getVerticalScrollBar().setUnitIncrement(15);
         MainWindow.mainWindow.getSettingScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
@@ -147,7 +148,7 @@ public class Init {
     /**
      * 初始化使用帮助tab
      */
-    public static void initHelpTab() {
+    private static void initHelpTab() {
 
         try {
             MainWindow.mainWindow.getHelpTextPane().setEditable(false);
@@ -166,7 +167,7 @@ public class Init {
     /**
      * 初始化他们都在用tab
      */
-    public static void initUserCaseTab() {
+    private static void initUserCaseTab() {
         // 从github获取用户案例相关信息
         String userCaseInfoContent = HttpUtil.get(ConstantsUI.USER_CASE_URL);
         if (StringUtils.isNotEmpty(userCaseInfoContent)) {
@@ -185,9 +186,6 @@ public class Init {
                     URL url = new URL(userCase.getQrCodeUrl());
                     BufferedImage image = ImageIO.read(url);
                     qrCodeLabel.setIcon(new ImageIcon(image));
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                    logger.error(e);
                 } catch (IOException e) {
                     e.printStackTrace();
                     logger.error(e);
@@ -297,7 +295,7 @@ public class Init {
                 MainWindow.mainWindow.getTemplateMsgDataTable().updateUI();
             }
         } else {
-            switchMsgType(MainWindow.mainWindow.getMsgTypeComboBox().getSelectedItem().toString());
+            switchMsgType(Objects.requireNonNull(MainWindow.mainWindow.getMsgTypeComboBox().getSelectedItem()).toString());
         }
     }
 
@@ -394,7 +392,7 @@ public class Init {
     /**
      * 根据客服消息类型转换界面显示
      *
-     * @param msgType
+     * @param msgType 消息类型
      */
     public static void switchKefuMsgType(String msgType) {
         switch (msgType) {
@@ -438,7 +436,7 @@ public class Init {
         }
 
         File[] files = pushHisDir.listFiles();
-        if (files.length > 0) {
+        if (Objects.requireNonNull(files).length > 0) {
             for (File file : files) {
                 MainWindow.mainWindow.getMemberHisComboBox().addItem(file.getName());
             }
@@ -448,7 +446,7 @@ public class Init {
     /**
      * 初始化推送tab
      */
-    public static void initPushTab() {
+    private static void initPushTab() {
         MainWindow.mainWindow.setPushMsgName(configer.getMsgName());
         MainWindow.mainWindow.setPushPageSizeTextField(configer.getRecordPerPage());
         MainWindow.mainWindow.setPushPagePerThreadTextField(configer.getPagePerThread());
@@ -458,7 +456,7 @@ public class Init {
     /**
      * 初始化计划任务tab
      */
-    public static void initScheduleTab() {
+    private static void initScheduleTab() {
         // 开始
         MainWindow.mainWindow.setRunAtThisTimeRadioButton(configer.isRadioStartAt());
         MainWindow.mainWindow.setStartAtThisTimeTextField(configer.getTextStartAt());
@@ -495,7 +493,7 @@ public class Init {
 
         File[] files = pushHisDir.listFiles();
         Object[] data;
-        if (files.length > 0) {
+        if (Objects.requireNonNull(files).length > 0) {
             for (File file : files) {
                 data = new Object[2];
                 data[0] = false;
@@ -611,9 +609,9 @@ public class Init {
     /**
      * 初始化所有tab
      */
-    public static void initAllTab() {
+    static void initAllTab() {
         initHelpTab();
-        ThreadUtil.execute(() -> initUserCaseTab());
+        ThreadUtil.execute(Init::initUserCaseTab);
         initMsgTab(null);
         initMemberTab();
         initPushTab();
@@ -637,7 +635,7 @@ public class Init {
         JButton renderButton;
         JButton editButton;
 
-        public ButtonColumn(JTable table, int column) {
+        ButtonColumn(JTable table, int column) {
             super();
             this.table = table;
             renderButton = new JButton();
@@ -685,7 +683,7 @@ public class Init {
         @Override
         public void actionPerformed(ActionEvent e) {
             int isDelete = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getMessagePanel(), "确认移除？", "确认",
-                    JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.YES_NO_OPTION);
             if (isDelete == JOptionPane.YES_OPTION) {
                 fireEditingStopped();
                 DefaultTableModel model = (DefaultTableModel) table.getModel();

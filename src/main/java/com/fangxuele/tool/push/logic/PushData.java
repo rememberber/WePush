@@ -17,7 +17,7 @@ public class PushData {
     /**
      * 总记录数
      */
-    public static long totalRecords;
+    static long totalRecords;
 
     /**
      * 发送成功数
@@ -32,7 +32,7 @@ public class PushData {
     /**
      * 准备发送的列表
      */
-    public static List<String[]> toSendList;
+    static List<String[]> toSendList;
 
     /**
      * 发送成功的列表
@@ -62,24 +62,24 @@ public class PushData {
     /**
      * 线程总数
      */
-    public static int threadCount;
+    static int threadCount;
 
     /**
      * 已经停止了的线程总数
      */
-    public static int stopedThreadCount;
+    static int stopedThreadCount;
 
     /**
      * 成功数+1
      */
-    synchronized public static void increaseSuccess() {
+    synchronized static void increaseSuccess() {
         successRecords++;
     }
 
     /**
      * 失败数+1
      */
-    synchronized public static void increaseFail() {
+    synchronized static void increaseFail() {
         failRecords++;
     }
 
