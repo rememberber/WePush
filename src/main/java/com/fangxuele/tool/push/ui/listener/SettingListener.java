@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.listener;
 
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.util.DbUtilMySQL;
@@ -197,7 +198,7 @@ public class SettingListener {
         });
 
         // 历史消息管理-全选
-        MainWindow.mainWindow.getMsgHisTableSelectAllButton().addActionListener(e -> new Thread(() -> {
+        MainWindow.mainWindow.getMsgHisTableSelectAllButton().addActionListener(e -> ThreadUtil.execute(() -> {
             toggleSelectAll();
             DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getMsgHistable()
                     .getModel();
@@ -205,10 +206,10 @@ public class SettingListener {
             for (int i = 0; i < rowCount; i++) {
                 tableModel.setValueAt(selectAllToggle, i, 0);
             }
-        }).start());
+        }));
 
         // 历史消息管理-删除
-        MainWindow.mainWindow.getMsgHisTableDeleteButton().addActionListener(e -> new Thread(() -> {
+        MainWindow.mainWindow.getMsgHisTableDeleteButton().addActionListener(e -> ThreadUtil.execute(() -> {
             try {
                 DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getMsgHistable()
                         .getModel();
@@ -261,7 +262,7 @@ public class SettingListener {
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
-        }).start());
+        }));
 
     }
 

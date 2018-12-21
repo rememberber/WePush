@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.listener;
 
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.ui.Init;
@@ -31,7 +32,7 @@ public class MsgListener {
         MainWindow.mainWindow.getMsgHistable().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                new Thread(() -> {
+                ThreadUtil.execute(() -> {
                     MainWindow.mainWindow.getPushHisTextArea().setText("");
 
                     int selectedRow = MainWindow.mainWindow.getMsgHistable().getSelectedRow();
@@ -39,7 +40,7 @@ public class MsgListener {
                             .getValueAt(selectedRow, 1).toString();
 
                     Init.initMsgTab(selectedMsgName);
-                }).start();
+                });
                 super.mouseClicked(e);
             }
         });

@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui;
 
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
@@ -612,7 +613,7 @@ public class Init {
      */
     public static void initAllTab() {
         initHelpTab();
-        new Thread(() -> initUserCaseTab()).start();
+        ThreadUtil.execute(() -> initUserCaseTab());
         initMsgTab(null);
         initMemberTab();
         initPushTab();
@@ -623,12 +624,7 @@ public class Init {
 
         // 检查新版版
         if (configer.isAutoCheckUpdate()) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    AboutListener.checkUpdate(true);
-                }
-            }).start();
+            ThreadUtil.execute(() -> AboutListener.checkUpdate(true));
         }
     }
 

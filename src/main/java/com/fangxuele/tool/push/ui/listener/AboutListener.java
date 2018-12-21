@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.listener;
 
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
@@ -53,12 +54,7 @@ public class AboutListener {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        checkUpdate(false);
-                    }
-                }).start();
+                ThreadUtil.execute(() -> checkUpdate(false));
             }
 
             @Override
