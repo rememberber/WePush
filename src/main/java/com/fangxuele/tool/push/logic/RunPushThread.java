@@ -3,6 +3,7 @@ package com.fangxuele.tool.push.logic;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.hutool.core.date.BetweenFormater;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.ui.Init;
@@ -17,6 +18,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * 推送执行控制线程
@@ -93,6 +95,8 @@ public class RunPushThread extends Thread {
 
         Object[] data;
         String msgType = MainWindow.mainWindow.getMsgTypeComboBox().getSelectedItem().toString();
+
+        ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(20, 100 * Runtime.getRuntime().availableProcessors());
         BaseMsgServiceThread thread = null;
         for (int i = 0; i < threadCount; i++) {
             if ("模板消息".equals(msgType)) {
@@ -145,6 +149,7 @@ public class RunPushThread extends Thread {
                         i * pagePerThread + pagePerThread - 1, pageSize);
             }
 
+            thread.setTableRow(i);
             thread.setName(new StringBuffer().append("T-").append(i).toString());
 
             data = new Object[6];
@@ -153,7 +158,7 @@ public class RunPushThread extends Thread {
             data[5] = 0;
             tableModel.addRow(data);
 
-            thread.start();
+            threadPoolExecutor.execute(thread);
         }
         MainWindow.mainWindow.getPushTotalProgressBar().setIndeterminate(false);
         PushManage.console("所有线程宝宝启动完毕……");

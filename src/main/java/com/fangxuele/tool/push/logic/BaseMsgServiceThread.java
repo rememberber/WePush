@@ -97,7 +97,6 @@ public class BaseMsgServiceThread extends Thread {
 
         // 初始化线程列表行
         tableModel = (DefaultTableModel) MainWindow.mainWindow.getPushThreadTable().getModel();
-        tableRow = Integer.parseInt(Thread.currentThread().getName().substring(2));
         currentThreadSuccessCount = 0;
         currentThreadFailCount = 0;
         tableModel.setValueAt(currentThreadSuccessCount, tableRow, 2);
@@ -146,5 +145,13 @@ public class BaseMsgServiceThread extends Thread {
 
     public void setPageTo(int pageTo) {
         this.pageTo = pageTo;
+    }
+
+    public int getTableRow() {
+        return tableRow;
+    }
+
+    public void setTableRow(int tableRow) {
+        this.tableRow = tableRow;
     }
 }
