@@ -65,7 +65,7 @@ public class Init {
         String lowDpiKey = "lowDpiInit";
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); //得到屏幕的尺寸
         if (screenSize.width <= 1366 && StringUtils.isEmpty(configer.getProps(lowDpiKey))) {
-            configer.setFontSize(15);
+            configer.setFontSize(13);
             configer.setProps(lowDpiKey, "true");
             configer.save();
         }
