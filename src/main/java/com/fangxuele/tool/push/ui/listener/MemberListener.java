@@ -6,6 +6,7 @@ import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
+import com.fangxuele.tool.push.util.CharSetUtil;
 import com.fangxuele.tool.push.util.DbUtilMySQL;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.PushManage;
@@ -62,7 +63,7 @@ public class MemberListener {
                 if (fileNameLowerCase.endsWith(".csv")) {
                     // 可以解决中文乱码问题
                     DataInputStream in = new DataInputStream(new FileInputStream(file));
-                    reader = new CSVReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+                    reader = new CSVReader(new InputStreamReader(in, CharSetUtil.getCharSet(file)));
                     String[] nextLine;
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());
                     while ((nextLine = reader.readNext()) != null) {
@@ -86,7 +87,7 @@ public class MemberListener {
                         }
                     }
                 } else if (fileNameLowerCase.endsWith(".txt")) {
-                    fileReader = new FileReader(file);
+                    fileReader = new FileReader(file, CharSetUtil.getCharSetName(file));
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());
                     BufferedReader br = fileReader.getReader();
                     String line;

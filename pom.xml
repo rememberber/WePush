@@ -172,6 +172,14 @@
             </exclusions>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/net.sourceforge.cpdetector/cpdetector -->
+        <!--文件字符集格式检测-->
+        <dependency>
+            <groupId>net.sourceforge.cpdetector</groupId>
+            <artifactId>cpdetector</artifactId>
+            <version>1.0.7</version>
+        </dependency>
+
         <dependency>
             <groupId>com.darcula</groupId>
             <artifactId>darcula-lnf</artifactId>
