@@ -2,21 +2,29 @@ package com.fangxuele.tool.push.ui.listener;
 
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.alibaba.fastjson.JSON;
+import com.fangxuele.tool.push.bean.UserCase;
 import com.fangxuele.tool.push.bean.VersionSummary;
 import com.fangxuele.tool.push.ui.ConstantsUI;
 import com.fangxuele.tool.push.ui.MainWindow;
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.intellij.uiDesigner.core.Spacer;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -117,6 +125,28 @@ public class AboutListener {
 
         } catch (IOException | URISyntaxException e1) {
             e1.printStackTrace();
+        }
+    }
+
+    /**
+     * 初始化二维码
+     */
+    public static void initQrCode() {
+        String qrCodeContent = HttpUtil.get(ConstantsUI.QR_CODE_URL);
+        if (StringUtils.isNotEmpty(qrCodeContent)) {
+            Map<String, String> urlMap = JSONUtil.toBean(qrCodeContent, Map.class);
+            JLabel qrCodeLabel = MainWindow.mainWindow.getQrCodeLabel();
+
+            try {
+                URL url = new URL(urlMap.get("url"));
+                BufferedImage image = ImageIO.read(url);
+                qrCodeLabel.setIcon(new ImageIcon(image));
+            } catch (IOException e) {
+                e.printStackTrace();
+                logger.error(e);
+            }
+
+            MainWindow.mainWindow.getAboutPanel().updateUI();
         }
     }
 }

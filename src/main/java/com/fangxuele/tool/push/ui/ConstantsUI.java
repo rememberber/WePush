@@ -32,4 +32,9 @@ public class ConstantsUI {
      */
     final static String USER_CASE_URL = "http://download.zhoubochina.com/file/user_case.json";
 
+    /**
+     * 用户案例url
+     */
+    public final static String QR_CODE_URL = "http://download.zhoubochina.com/file/wepush_qrcode.json";
+
 }

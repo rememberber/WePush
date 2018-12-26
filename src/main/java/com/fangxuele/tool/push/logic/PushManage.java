@@ -546,7 +546,7 @@ public class PushManage {
      * 组织云片网短信消息
      *
      * @param msgData 消息信息
-     * @return Map<String, String>
+     * @return Map
      */
     synchronized static Map<String, String> makeYunpianMessage(String[] msgData) {
         Map<String, String> params = new HashMap<>(2);
@@ -570,8 +570,7 @@ public class PushManage {
      */
     private static WxMpConfigStorage wxMpConfigStorage() {
         WxMpInMemoryConfigStorage configStorage = new WxMpInMemoryConfigStorage();
-        if (StringUtils.isEmpty(Init.configer.getWechatAppId()) || StringUtils.isEmpty(Init.configer.getWechatAppSecret())
-                || StringUtils.isEmpty(Init.configer.getWechatToken()) || StringUtils.isEmpty(Init.configer.getWechatAesKey())) {
+        if (StringUtils.isEmpty(Init.configer.getWechatAppId()) || StringUtils.isEmpty(Init.configer.getWechatAppSecret())) {
             JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "请先在设置中填写并保存公众号相关配置！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
             return null;
