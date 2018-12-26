@@ -624,6 +624,8 @@ public class Init {
         if (configer.isAutoCheckUpdate()) {
             ThreadUtil.execute(() -> AboutListener.checkUpdate(true));
         }
+        // 更新二维码
+        ThreadUtil.execute(AboutListener::initQrCode);
     }
 
     /**
