@@ -1,5 +1,7 @@
 package com.fangxuele.tool.push.util;
 
+import cn.hutool.log.Log;
+import cn.hutool.log.LogFactory;
 import info.monitorenter.cpdetector.io.*;
 
 import java.io.File;
@@ -16,6 +18,7 @@ import java.nio.charset.StandardCharsets;
  * @since 2018/12/25.
  */
 public class CharSetUtil {
+    private static final Log logger = LogFactory.get();
 
     /**
      * 获取文件字符集名称
@@ -24,7 +27,7 @@ public class CharSetUtil {
      * @return 字符集名称
      */
     public static String getCharSetName(File file) {
-        System.err.println(getCharSet(file).name());
+        logger.warn(getCharSet(file).name());
         return getCharSet(file).name();
     }
 
@@ -44,7 +47,7 @@ public class CharSetUtil {
 
         Charset charset = null;
         try {
-            charset = detector.detectCodepage(file.toURL());
+            charset = detector.detectCodepage(file.toURI().toURL());
         } catch (IOException e) {
             e.printStackTrace();
         }
