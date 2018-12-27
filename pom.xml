@@ -172,14 +172,6 @@
             </exclusions>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/net.sourceforge.cpdetector/cpdetector -->
-        <!--文件字符集格式检测-->
-        <dependency>
-            <groupId>net.sourceforge.cpdetector</groupId>
-            <artifactId>cpdetector</artifactId>
-            <version>1.0.7</version>
-        </dependency>
-
         <dependency>
             <groupId>com.darcula</groupId>
             <artifactId>darcula-lnf</artifactId>
@@ -209,6 +201,29 @@
             <artifactId>aliyun-java-sdk-dysmsapi</artifactId>
             <version>1.0.0</version>
         </dependency>
+
+        <!--文件字符集格式检测-->
+        <dependency>
+            <groupId>net.sourceforge.cpdetector</groupId>
+            <artifactId>cpdetector</artifactId>
+            <version>1.0.10</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.cpdetector</groupId>
+            <artifactId>antlr</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.cpdetector</groupId>
+            <artifactId>chardet</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.cpdetector</groupId>
+            <artifactId>jargs</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -339,6 +354,70 @@
                             <repositoryLayout>default</repositoryLayout>
                             <groupId>com.aliyun</groupId>
                             <artifactId>aliyun-java-sdk-dysmsapi</artifactId>
+                            <version>1.0.0</version>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
+                        </configuration>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>install-cpdetector</id>
+                        <phase>clean</phase>
+                        <configuration>
+                            <file>${basedir}/src/main/lib/cpdetector_1.0.10.jar</file>
+                            <repositoryLayout>default</repositoryLayout>
+                            <groupId>net.sourceforge.cpdetector</groupId>
+                            <artifactId>cpdetector</artifactId>
+                            <version>1.0.10</version>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
+                        </configuration>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>install-antlr</id>
+                        <phase>clean</phase>
+                        <configuration>
+                            <file>${basedir}/src/main/lib/antlr-2.7.4.jar</file>
+                            <repositoryLayout>default</repositoryLayout>
+                            <groupId>net.sourceforge.cpdetector</groupId>
+                            <artifactId>antlr</artifactId>
+                            <version>1.0.0</version>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
+                        </configuration>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>install-chardet</id>
+                        <phase>clean</phase>
+                        <configuration>
+                            <file>${basedir}/src/main/lib/chardet-1.0.jar</file>
+                            <repositoryLayout>default</repositoryLayout>
+                            <groupId>net.sourceforge.cpdetector</groupId>
+                            <artifactId>chardet</artifactId>
+                            <version>1.0.0</version>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
+                        </configuration>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>install-jargs</id>
+                        <phase>clean</phase>
+                        <configuration>
+                            <file>${basedir}/src/main/lib/jargs-1.0.jar</file>
+                            <repositoryLayout>default</repositoryLayout>
+                            <groupId>net.sourceforge.cpdetector</groupId>
+                            <artifactId>jargs</artifactId>
                             <version>1.0.0</version>
                             <packaging>jar</packaging>
                             <generatePom>true</generatePom>
