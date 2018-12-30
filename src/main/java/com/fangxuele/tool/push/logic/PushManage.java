@@ -385,6 +385,7 @@ public class PushManage {
                     title = title.replace(str, nickName);
                 }
             }
+            title = title.replaceAll("\\$ENTER\\$", "\n");
             article.setTitle(title);
 
             // 图片url
@@ -413,6 +414,7 @@ public class PushManage {
                     description = description.replace(str, nickName);
                 }
             }
+            description = description.replaceAll("\\$ENTER\\$", "\n");
             article.setDescription(description);
 
             // 跳转url
