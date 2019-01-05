@@ -20,6 +20,7 @@ import com.aliyuncs.profile.IClientProfile;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.MainWindow;
 import com.fangxuele.tool.push.util.SystemUtil;
+import com.fangxuele.tool.push.util.TemplateUtil;
 import com.github.qcloudsms.SmsSingleSender;
 import com.github.qcloudsms.SmsSingleSenderResult;
 import com.opencsv.CSVWriter;
@@ -39,6 +40,7 @@ import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.velocity.VelocityContext;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -56,6 +58,11 @@ import java.util.regex.Pattern;
 public class PushManage {
 
     private static final Log logger = LogFactory.get();
+
+    /**
+     * 模板变量前缀
+     */
+    public static final String TEMPLATE_VAR_PREFIX = "var";
 
     /**
      * 预览消息
@@ -249,11 +256,12 @@ public class PushManage {
 
         String appid = MainWindow.mainWindow.getMsgTemplateMiniAppidTextField().getText().trim();
         String pagePath = MainWindow.mainWindow.getMsgTemplateMiniPagePathTextField().getText().trim();
-        Pattern p = Pattern.compile("\\{([^{}]+)\\}");
-        Matcher matcher = p.matcher(pagePath);
-        while (matcher.find()) {
-            pagePath = pagePath.replace(matcher.group(0), msgData[Integer.parseInt(matcher.group(1).trim())]);
+
+        VelocityContext velocityContext = new VelocityContext();
+        for (int i = 0; i < msgData.length; i++) {
+            velocityContext.put(TEMPLATE_VAR_PREFIX + i, msgData[i]);
         }
+        pagePath = TemplateUtil.evaluate(pagePath, velocityContext);
         WxMpTemplateMessage.MiniProgram miniProgram = new WxMpTemplateMessage.MiniProgram(appid, pagePath, true);
         wxMessageTemplate.setMiniProgram(miniProgram);
 
@@ -266,28 +274,8 @@ public class PushManage {
         for (int i = 0; i < rowCount; i++) {
             String name = ((String) tableModel.getValueAt(i, 0)).trim();
 
-            String value = ((String) tableModel.getValueAt(i, 1)).replaceAll("\\$ENTER\\$", "\n");
-            p = Pattern.compile("\\{([^{}]+)\\}");
-            matcher = p.matcher(value);
-            while (matcher.find()) {
-                value = value.replace(matcher.group(0), msgData[Integer.parseInt(matcher.group(1).trim())]);
-            }
-
-            p = Pattern.compile("\\$([^$]+)\\$");
-            matcher = p.matcher(value);
-            while (matcher.find()) {
-                String str = matcher.group(0);
-                if (str.startsWith("$NICK_NAME")) {
-                    WxMpService wxMpService = getWxMpService();
-                    String nickName = "";
-                    try {
-                        nickName = wxMpService.getUserService().userInfo(msgData[0]).getNickname();
-                    } catch (WxErrorException e) {
-                        e.printStackTrace();
-                    }
-                    value = value.replace(str, nickName);
-                }
-            }
+            String value = ((String) tableModel.getValueAt(i, 1));
+            value = TemplateUtil.evaluate(value, velocityContext);
 
             String color = ((String) tableModel.getValueAt(i, 2)).trim();
             WxMpTemplateData templateData = new WxMpTemplateData(name, value, color);
@@ -316,31 +304,16 @@ public class PushManage {
 
         DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getTemplateMsgDataTable().getModel();
         int rowCount = tableModel.getRowCount();
+
+        VelocityContext velocityContext = new VelocityContext();
+        for (int i = 0; i < msgData.length; i++) {
+            velocityContext.put(TEMPLATE_VAR_PREFIX + i, msgData[i]);
+        }
         for (int i = 0; i < rowCount; i++) {
             String name = ((String) tableModel.getValueAt(i, 0)).trim();
 
-            String value = ((String) tableModel.getValueAt(i, 1)).replaceAll("\\$ENTER\\$", "\n");
-            Pattern p = Pattern.compile("\\{([^{}]+)\\}");
-            Matcher matcher = p.matcher(value);
-            while (matcher.find()) {
-                value = value.replace(matcher.group(0), msgData[Integer.parseInt(matcher.group(1).trim())]);
-            }
-
-            p = Pattern.compile("\\$([^$]+)\\$");
-            matcher = p.matcher(value);
-            while (matcher.find()) {
-                String str = matcher.group(0);
-                if (str.startsWith("$NICK_NAME")) {
-                    WxMpService wxMpService = getWxMpService();
-                    String nickName = "";
-                    try {
-                        nickName = wxMpService.getUserService().userInfo(msgData[0]).getNickname();
-                    } catch (WxErrorException e) {
-                        e.printStackTrace();
-                    }
-                    value = value.replace(str, nickName);
-                }
-            }
+            String value = ((String) tableModel.getValueAt(i, 1));
+            value = TemplateUtil.evaluate(value, velocityContext);
 
             String color = ((String) tableModel.getValueAt(i, 2)).trim();
             WxMaTemplateData templateData = new WxMaTemplateData(name, value, color);
@@ -359,33 +332,16 @@ public class PushManage {
     synchronized static WxMpKefuMessage makeKefuMessage(String[] msgData) {
 
         WxMpKefuMessage kefuMessage = null;
+        VelocityContext velocityContext = new VelocityContext();
+        for (int i = 0; i < msgData.length; i++) {
+            velocityContext.put(TEMPLATE_VAR_PREFIX + i, msgData[i]);
+        }
         if ("图文消息".equals(Objects.requireNonNull(MainWindow.mainWindow.getMsgKefuMsgTypeComboBox().getSelectedItem()).toString())) {
             WxMpKefuMessage.WxArticle article = new WxMpKefuMessage.WxArticle();
 
             // 标题
             String title = MainWindow.mainWindow.getMsgKefuMsgTitleTextField().getText();
-            Pattern p = Pattern.compile("\\{([^{}]+)\\}");
-            Matcher matcher = p.matcher(title);
-            while (matcher.find()) {
-                title = title.replace(matcher.group(0), msgData[Integer.parseInt(matcher.group(1).trim())]);
-            }
-
-            p = Pattern.compile("\\$([^$]+)\\$");
-            matcher = p.matcher(title);
-            while (matcher.find()) {
-                String str = matcher.group(0);
-                if (str.startsWith("$NICK_NAME")) {
-                    WxMpService wxMpService = getWxMpService();
-                    String nickName = "";
-                    try {
-                        nickName = wxMpService.getUserService().userInfo(msgData[0]).getNickname();
-                    } catch (WxErrorException e) {
-                        e.printStackTrace();
-                    }
-                    title = title.replace(str, nickName);
-                }
-            }
-            title = title.replaceAll("\\$ENTER\\$", "\n");
+            title = TemplateUtil.evaluate(title, velocityContext);
             article.setTitle(title);
 
             // 图片url
@@ -393,28 +349,7 @@ public class PushManage {
 
             // 描述
             String description = MainWindow.mainWindow.getMsgKefuDescTextField().getText();
-            p = Pattern.compile("\\{([^{}]+)\\}");
-            matcher = p.matcher(description);
-            while (matcher.find()) {
-                description = description.replace(matcher.group(0), msgData[Integer.parseInt(matcher.group(1).trim())]);
-            }
-
-            p = Pattern.compile("\\$([^$]+)\\$");
-            matcher = p.matcher(description);
-            while (matcher.find()) {
-                String str = matcher.group(0);
-                if (str.startsWith("$NICK_NAME")) {
-                    WxMpService wxMpService = getWxMpService();
-                    String nickName = "";
-                    try {
-                        nickName = wxMpService.getUserService().userInfo(msgData[0]).getNickname();
-                    } catch (WxErrorException e) {
-                        e.printStackTrace();
-                    }
-                    description = description.replace(str, nickName);
-                }
-            }
-            description = description.replaceAll("\\$ENTER\\$", "\n");
+            description = TemplateUtil.evaluate(description, velocityContext);
             article.setDescription(description);
 
             // 跳转url
@@ -423,6 +358,7 @@ public class PushManage {
             kefuMessage = WxMpKefuMessage.NEWS().addArticle(article).build();
         } else if ("文本消息".equals(MainWindow.mainWindow.getMsgKefuMsgTypeComboBox().getSelectedItem().toString())) {
             String content = MainWindow.mainWindow.getMsgKefuMsgTitleTextField().getText();
+            content = TemplateUtil.evaluate(content, velocityContext);
             kefuMessage = WxMpKefuMessage.TEXT().content(content).build();
         }
 
@@ -451,14 +387,15 @@ public class PushManage {
 
         DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getTemplateMsgDataTable().getModel();
         int rowCount = tableModel.getRowCount();
+
+        VelocityContext velocityContext = new VelocityContext();
+        for (int i = 0; i < msgData.length; i++) {
+            velocityContext.put(TEMPLATE_VAR_PREFIX + i, msgData[i]);
+        }
         for (int i = 0; i < rowCount; i++) {
             String key = (String) tableModel.getValueAt(i, 0);
-            String value = ((String) tableModel.getValueAt(i, 1)).replaceAll("$ENTER$", "\n");
-            Pattern p = Pattern.compile("\\{([^{}]+)\\}");
-            Matcher matcher = p.matcher(value);
-            while (matcher.find()) {
-                value = value.replace(matcher.group(0), msgData[Integer.parseInt(matcher.group(1).trim())]);
-            }
+            String value = ((String) tableModel.getValueAt(i, 1));
+            value = TemplateUtil.evaluate(value, velocityContext);
 
             paramMap.put(key, value);
         }
@@ -493,14 +430,14 @@ public class PushManage {
 
         DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getTemplateMsgDataTable().getModel();
         int rowCount = tableModel.getRowCount();
+        VelocityContext velocityContext = new VelocityContext();
+        for (int i = 0; i < msgData.length; i++) {
+            velocityContext.put(TEMPLATE_VAR_PREFIX + i, msgData[i]);
+        }
         for (int i = 0; i < rowCount; i++) {
             String key = (String) tableModel.getValueAt(i, 0);
-            String value = ((String) tableModel.getValueAt(i, 1)).replaceAll("$ENTER$", "\n");
-            Pattern p = Pattern.compile("\\{([^{}]+)\\}");
-            Matcher matcher = p.matcher(value);
-            while (matcher.find()) {
-                value = value.replace(matcher.group(0), msgData[Integer.parseInt(matcher.group(1).trim())]);
-            }
+            String value = ((String) tableModel.getValueAt(i, 1));
+            value = TemplateUtil.evaluate(value, velocityContext);
 
             paramMap.put(key, value);
         }
@@ -530,13 +467,14 @@ public class PushManage {
         DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getTemplateMsgDataTable().getModel();
         int rowCount = tableModel.getRowCount();
         String[] params = new String[rowCount];
+
+        VelocityContext velocityContext = new VelocityContext();
+        for (int i = 0; i < msgData.length; i++) {
+            velocityContext.put(TEMPLATE_VAR_PREFIX + i, msgData[i]);
+        }
         for (int i = 0; i < rowCount; i++) {
-            String value = ((String) tableModel.getValueAt(i, 1)).replaceAll("$ENTER$", "\n");
-            Pattern p = Pattern.compile("\\{([^{}]+)\\}");
-            Matcher matcher = p.matcher(value);
-            while (matcher.find()) {
-                value = value.replace(matcher.group(0), msgData[Integer.parseInt(matcher.group(1).trim())]);
-            }
+            String value = ((String) tableModel.getValueAt(i, 1));
+            value = TemplateUtil.evaluate(value, velocityContext);
 
             params[i] = value;
         }
@@ -553,13 +491,13 @@ public class PushManage {
     synchronized static Map<String, String> makeYunpianMessage(String[] msgData) {
         Map<String, String> params = new HashMap<>(2);
 
-        String text = MainWindow.mainWindow.getMsgYunpianMsgContentTextField().getText();
-        text = text.replaceAll("$ENTER$", "\n");
-        Pattern p = Pattern.compile("\\{([^{}]+)\\}");
-        Matcher matcher = p.matcher(text);
-        while (matcher.find()) {
-            text = text.replace(matcher.group(0), msgData[Integer.parseInt(matcher.group(1).trim())]);
+        VelocityContext velocityContext = new VelocityContext();
+        for (int i = 0; i < msgData.length; i++) {
+            velocityContext.put(TEMPLATE_VAR_PREFIX + i, msgData[i]);
         }
+
+        String text = MainWindow.mainWindow.getMsgYunpianMsgContentTextField().getText();
+        text = TemplateUtil.evaluate(text, velocityContext);
 
         params.put(YunpianClient.TEXT, text);
         return params;
