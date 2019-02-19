@@ -4,6 +4,16 @@ import com.apple.eawt.Application;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.listener.AboutListener;
+import com.fangxuele.tool.push.ui.listener.FramListener;
+import com.fangxuele.tool.push.ui.listener.HelpListener;
+import com.fangxuele.tool.push.ui.listener.MemberListener;
+import com.fangxuele.tool.push.ui.listener.MsgListener;
+import com.fangxuele.tool.push.ui.listener.PushHisListener;
+import com.fangxuele.tool.push.ui.listener.PushListener;
+import com.fangxuele.tool.push.ui.listener.ScheduleListener;
+import com.fangxuele.tool.push.ui.listener.SettingListener;
+import com.fangxuele.tool.push.ui.listener.TabListener;
 import com.fangxuele.tool.push.util.SystemUtil;
 
 import javax.swing.*;
@@ -40,5 +50,21 @@ public class MainFrame extends JFrame {
 
         Init.initOthers();
         Init.initAllTab();
+    }
+
+    /**
+     * 添加事件监听
+     */
+    public void addListeners() {
+        AboutListener.addListeners();
+        HelpListener.addListeners();
+        PushHisListener.addListeners();
+        SettingListener.addListeners();
+        MsgListener.addListeners();
+        MemberListener.addListeners();
+        PushListener.addListeners();
+        ScheduleListener.addListeners();
+        TabListener.addListeners();
+        FramListener.addListeners();
     }
 }

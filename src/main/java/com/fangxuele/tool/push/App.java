@@ -5,16 +5,6 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.frame.MainFrame;
-import com.fangxuele.tool.push.ui.listener.AboutListener;
-import com.fangxuele.tool.push.ui.listener.FramListener;
-import com.fangxuele.tool.push.ui.listener.HelpListener;
-import com.fangxuele.tool.push.ui.listener.MemberListener;
-import com.fangxuele.tool.push.ui.listener.MsgListener;
-import com.fangxuele.tool.push.ui.listener.PushHisListener;
-import com.fangxuele.tool.push.ui.listener.PushListener;
-import com.fangxuele.tool.push.ui.listener.ScheduleListener;
-import com.fangxuele.tool.push.ui.listener.SettingListener;
-import com.fangxuele.tool.push.ui.listener.TabListener;
 
 import javax.swing.*;
 
@@ -34,21 +24,10 @@ public class App {
 
         mainFrame = new MainFrame();
         mainFrame.init();
+        mainFrame.addListeners();
         mainFrame.setContentPane(MainWindow.mainWindow.mainPanel);
         mainFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         mainFrame.pack();
         mainFrame.setVisible(true);
-
-        // 添加事件监听
-        AboutListener.addListeners();
-        HelpListener.addListeners();
-        PushHisListener.addListeners();
-        SettingListener.addListeners();
-        MsgListener.addListeners();
-        MemberListener.addListeners();
-        PushListener.addListeners();
-        ScheduleListener.addListeners();
-        TabListener.addListeners();
-        FramListener.addListeners();
     }
 }
