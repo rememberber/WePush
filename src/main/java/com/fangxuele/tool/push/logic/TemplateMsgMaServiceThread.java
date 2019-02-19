@@ -2,7 +2,7 @@ package com.fangxuele.tool.push.logic;
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
-import com.fangxuele.tool.push.ui.MainWindow;
+import com.fangxuele.tool.push.ui.form.MainWindow;
 
 /**
  * 模板消息-小程序发送服务线程
@@ -84,7 +84,7 @@ public class TemplateMsgMaServiceThread extends BaseMsgServiceThread {
             tableModel.setValueAt((int) ((double) (i + 1) / list.size() * 100), tableRow, 5);
 
             // 总进度条
-            MainWindow.mainWindow.getPushTotalProgressBar().setValue((int) (PushData.successRecords + PushData.failRecords));
+            MainWindow.mainWindow.getPushTotalProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
         }
 
         // 当前线程结束

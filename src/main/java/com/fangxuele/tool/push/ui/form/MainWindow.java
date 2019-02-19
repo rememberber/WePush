@@ -1,19 +1,7 @@
-package com.fangxuele.tool.push.ui;
+package com.fangxuele.tool.push.ui.form;
 
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
-import com.apple.eawt.Application;
-import com.fangxuele.tool.push.ui.listener.AboutListener;
-import com.fangxuele.tool.push.ui.listener.FramListener;
-import com.fangxuele.tool.push.ui.listener.HelpListener;
-import com.fangxuele.tool.push.ui.listener.MemberListener;
-import com.fangxuele.tool.push.ui.listener.MsgListener;
-import com.fangxuele.tool.push.ui.listener.PushHisListener;
-import com.fangxuele.tool.push.ui.listener.PushListener;
-import com.fangxuele.tool.push.ui.listener.ScheduleListener;
-import com.fangxuele.tool.push.ui.listener.SettingListener;
-import com.fangxuele.tool.push.ui.listener.TabListener;
-import com.fangxuele.tool.push.util.SystemUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -26,7 +14,7 @@ import java.awt.*;
  * Created by rememberber(https://github.com/rememberber) on 2017/6/7.
  */
 public class MainWindow {
-    private JPanel mainPanel;
+    public JPanel mainPanel;
     private JTabbedPane tabbedPane;
     private JPanel aboutPanel;
     private JSplitPane messagePanel;
@@ -187,60 +175,9 @@ public class MainWindow {
     private JTextArea msgYunpianMsgContentTextField;
     private JPanel yunpianMsgPanel;
     private JLabel qrCodeLabel;
-    public static JFrame frame;
 
     public static MainWindow mainWindow;
     private static Log logger = LogFactory.get();
-
-    public MainWindow() {
-
-    }
-
-    public static void main(String[] args) {
-
-        // 初始化主题
-        Init.initTheme();
-        // 统一设置字体
-        Init.initGlobalFont();
-        // Windows系统状态栏图标
-        frame = new JFrame(ConstantsUI.APP_NAME);
-        frame.setIconImage(ConstantsUI.IMAGE_ICON);
-        // Mac系统Dock图标
-        if (SystemUtil.isMacOs()) {
-            Application application = Application.getApplication();
-            application.setDockIconImage(ConstantsUI.IMAGE_ICON);
-        }
-
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); //得到屏幕的尺寸
-        frame.setBounds((int) (screenSize.width * 0.1), (int) (screenSize.height * 0.08), (int) (screenSize.width * 0.8),
-                (int) (screenSize.height * 0.8));
-
-        Dimension preferSize = new Dimension((int) (screenSize.width * 0.8),
-                (int) (screenSize.height * 0.8));
-        frame.setPreferredSize(preferSize);
-
-        mainWindow = new MainWindow();
-
-        frame.setContentPane(mainWindow.mainPanel);
-        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
-
-        Init.initOthers();
-        Init.initAllTab();
-
-        // 添加事件监听
-        AboutListener.addListeners();
-        HelpListener.addListeners();
-        PushHisListener.addListeners();
-        SettingListener.addListeners();
-        MsgListener.addListeners();
-        MemberListener.addListeners();
-        PushListener.addListeners();
-        ScheduleListener.addListeners();
-        TabListener.addListeners();
-        FramListener.addListeners();
-    }
 
     public JPanel getMainPanel() {
         return mainPanel;

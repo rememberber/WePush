@@ -1,7 +1,7 @@
 package com.fangxuele.tool.push.logic;
 
 import com.fangxuele.tool.push.ui.Init;
-import com.fangxuele.tool.push.ui.MainWindow;
+import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.github.qcloudsms.SmsSingleSender;
 import com.github.qcloudsms.SmsSingleSenderResult;
 import org.apache.commons.lang3.StringUtils;
@@ -121,7 +121,7 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
             tableModel.setValueAt((int) ((double) (i + 1) / list.size() * 100), tableRow, 5);
 
             // 总进度条
-            MainWindow.mainWindow.getPushTotalProgressBar().setValue((int) (PushData.successRecords + PushData.failRecords));
+            MainWindow.mainWindow.getPushTotalProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
         }
 
         // 当前线程结束

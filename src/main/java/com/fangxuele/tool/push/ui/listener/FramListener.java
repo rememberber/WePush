@@ -2,7 +2,8 @@ package com.fangxuele.tool.push.ui.listener;
 
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
-import com.fangxuele.tool.push.ui.MainWindow;
+import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.ui.form.MainWindow;
 
 import javax.swing.*;
 import java.awt.event.WindowEvent;
@@ -17,7 +18,7 @@ public class FramListener {
     private static final Log logger = LogFactory.get();
 
     public static void addListeners() {
-        MainWindow.frame.addWindowListener(new WindowListener() {
+        App.mainFrame.addWindowListener(new WindowListener() {
 
             @Override
             public void windowOpened(WindowEvent e) {
@@ -49,7 +50,7 @@ public class FramListener {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getPushPanel(),
                             "有推送任务正在进行！\n\n为避免数据丢失，请先停止!\n\n", "Sorry~", JOptionPane.WARNING_MESSAGE);
                 } else {
-                    MainWindow.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    App.mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 }
 
             }

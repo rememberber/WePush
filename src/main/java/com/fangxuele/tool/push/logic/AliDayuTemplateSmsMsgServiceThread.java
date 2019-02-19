@@ -1,7 +1,7 @@
 package com.fangxuele.tool.push.logic;
 
 import com.fangxuele.tool.push.ui.Init;
-import com.fangxuele.tool.push.ui.MainWindow;
+import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.request.AlibabaAliqinFcSmsNumSendRequest;
@@ -127,7 +127,7 @@ public class AliDayuTemplateSmsMsgServiceThread extends BaseMsgServiceThread {
             tableModel.setValueAt((int) ((double) (i + 1) / list.size() * 100), tableRow, 5);
 
             // 总进度条
-            MainWindow.mainWindow.getPushTotalProgressBar().setValue((int) (PushData.successRecords + PushData.failRecords));
+            MainWindow.mainWindow.getPushTotalProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
         }
 
         // 当前线程结束

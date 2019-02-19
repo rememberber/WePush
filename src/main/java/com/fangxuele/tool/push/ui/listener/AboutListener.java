@@ -6,13 +6,9 @@ import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.alibaba.fastjson.JSON;
-import com.fangxuele.tool.push.bean.UserCase;
 import com.fangxuele.tool.push.bean.VersionSummary;
-import com.fangxuele.tool.push.ui.ConstantsUI;
-import com.fangxuele.tool.push.ui.MainWindow;
-import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
+import com.fangxuele.tool.push.ui.UiConsts;
+import com.fangxuele.tool.push.ui.form.MainWindow;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.imageio.ImageIO;
@@ -75,10 +71,10 @@ public class AboutListener {
         Desktop desktop = Desktop.getDesktop();
         try {
             // 当前版本
-            String currentVersion = ConstantsUI.APP_VERSION;
+            String currentVersion = UiConsts.APP_VERSION;
 
             // 从github获取最新版本相关信息
-            String content = HttpUtil.get(ConstantsUI.CHECK_VERSION_URL);
+            String content = HttpUtil.get(UiConsts.CHECK_VERSION_URL);
             if (StringUtils.isEmpty(content) && !initCheck) {
                 JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "检查超时，请关注GitHub Release！", "网络错误",
                         JOptionPane.INFORMATION_MESSAGE);
@@ -132,7 +128,7 @@ public class AboutListener {
      * 初始化二维码
      */
     public static void initQrCode() {
-        String qrCodeContent = HttpUtil.get(ConstantsUI.QR_CODE_URL);
+        String qrCodeContent = HttpUtil.get(UiConsts.QR_CODE_URL);
         if (StringUtils.isNotEmpty(qrCodeContent)) {
             Map<String, String> urlMap = JSONUtil.toBean(qrCodeContent, Map.class);
             JLabel qrCodeLabel = MainWindow.mainWindow.getQrCodeLabel();

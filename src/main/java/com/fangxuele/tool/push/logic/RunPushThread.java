@@ -7,7 +7,7 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.ui.Init;
-import com.fangxuele.tool.push.ui.MainWindow;
+import com.fangxuele.tool.push.ui.form.MainWindow;
 import me.chanjar.weixin.mp.api.WxMpService;
 
 import javax.swing.*;
@@ -36,9 +36,9 @@ public class RunPushThread extends Thread {
         // 初始化
         MainWindow.mainWindow.getPushTotalProgressBar().setIndeterminate(true);
         PushData.running = true;
-        PushData.successRecords = 0;
-        PushData.failRecords = 0;
-        PushData.stopedThreadCount = 0;
+        PushData.successRecords.reset();
+        PushData.failRecords.reset();
+        PushData.stopedThreadCount.reset();
         PushData.threadCount = 0;
 
         MainWindow.mainWindow.getPushSuccessCount().setText("0");
@@ -167,7 +167,7 @@ public class RunPushThread extends Thread {
         long startTimeMillis = System.currentTimeMillis();
         // 计时
         while (true) {
-            if (PushData.stopedThreadCount == threadCount) {
+            if (PushData.stopedThreadCount.intValue() == threadCount) {
                 if (!PushData.fixRateScheduling) {
                     MainWindow.mainWindow.getPushStopButton().setEnabled(false);
                     MainWindow.mainWindow.getPushStopButton().updateUI();

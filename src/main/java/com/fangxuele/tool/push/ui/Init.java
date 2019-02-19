@@ -7,6 +7,7 @@ import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.alee.laf.WebLookAndFeel;
 import com.fangxuele.tool.push.bean.UserCase;
+import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.listener.AboutListener;
 import com.fangxuele.tool.push.logic.MsgHisManage;
 import com.fangxuele.tool.push.util.Config;
@@ -37,7 +38,6 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.List;
@@ -95,7 +95,7 @@ public class Init {
     /**
      * 其他初始化
      */
-    static void initOthers() {
+    public static void initOthers() {
         // 设置滚动条速度
         MainWindow.mainWindow.getSettingScrollPane().getVerticalScrollBar().setUnitIncrement(15);
         MainWindow.mainWindow.getSettingScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
@@ -104,7 +104,7 @@ public class Init {
         MainWindow.mainWindow.getUserCaseScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
 
         // 设置版本
-        MainWindow.mainWindow.getVersionLabel().setText(ConstantsUI.APP_VERSION);
+        MainWindow.mainWindow.getVersionLabel().setText(UiConsts.APP_VERSION);
     }
 
     /**
@@ -170,7 +170,7 @@ public class Init {
      */
     private static void initUserCaseTab() {
         // 从github获取用户案例相关信息
-        String userCaseInfoContent = HttpUtil.get(ConstantsUI.USER_CASE_URL);
+        String userCaseInfoContent = HttpUtil.get(UiConsts.USER_CASE_URL);
         if (StringUtils.isNotEmpty(userCaseInfoContent)) {
             List<UserCase> userCaseInfoList = JSONUtil.toList(JSONUtil.parseArray(userCaseInfoContent), UserCase.class);
 
@@ -610,7 +610,7 @@ public class Init {
     /**
      * 初始化所有tab
      */
-    static void initAllTab() {
+    public static void initAllTab() {
         initHelpTab();
         ThreadUtil.execute(Init::initUserCaseTab);
         initMsgTab(null);
