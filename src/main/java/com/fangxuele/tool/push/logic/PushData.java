@@ -1,6 +1,7 @@
 package com.fangxuele.tool.push.logic;
 
 import java.util.List;
+import java.util.concurrent.atomic.LongAdder;
 
 /**
  * 推送数据
@@ -22,12 +23,13 @@ public class PushData {
     /**
      * 发送成功数
      */
-    public static long successRecords;
+    public static LongAdder successRecords = new LongAdder();
 
     /**
      * 发送失败数
      */
-    public static long failRecords;
+    public static LongAdder failRecords = new LongAdder();
+    ;
 
     /**
      * 准备发送的列表
@@ -67,27 +69,28 @@ public class PushData {
     /**
      * 已经停止了的线程总数
      */
-    static int stopedThreadCount;
+    static LongAdder stopedThreadCount = new LongAdder();
+    ;
 
     /**
      * 成功数+1
      */
-    synchronized static void increaseSuccess() {
-        successRecords++;
+    static void increaseSuccess() {
+        successRecords.add(1);
     }
 
     /**
      * 失败数+1
      */
-    synchronized static void increaseFail() {
-        failRecords++;
+    static void increaseFail() {
+        failRecords.add(1);
     }
 
     /**
      * 停止线程数+1
      */
-    synchronized public static void increaseStopedThread() {
-        stopedThreadCount++;
+    public static void increaseStopedThread() {
+        stopedThreadCount.add(1);
     }
 
 }
