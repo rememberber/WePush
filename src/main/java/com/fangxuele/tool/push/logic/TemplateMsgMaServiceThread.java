@@ -2,7 +2,7 @@ package com.fangxuele.tool.push.logic;
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
-import com.fangxuele.tool.push.ui.MainWindow;
+import com.fangxuele.tool.push.ui.form.MainWindow;
 
 /**
  * 模板消息-小程序发送服务线程

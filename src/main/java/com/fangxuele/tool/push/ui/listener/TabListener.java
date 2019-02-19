@@ -4,7 +4,7 @@ import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.ui.Init;
-import com.fangxuele.tool.push.ui.MainWindow;
+import com.fangxuele.tool.push.ui.form.MainWindow;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;

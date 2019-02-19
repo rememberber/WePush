@@ -2,7 +2,7 @@ package com.fangxuele.tool.push.logic;
 
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
-import com.fangxuele.tool.push.ui.MainWindow;
+import com.fangxuele.tool.push.ui.form.MainWindow;
 import me.chanjar.weixin.mp.api.WxMpService;
 
 import javax.swing.table.DefaultTableModel;

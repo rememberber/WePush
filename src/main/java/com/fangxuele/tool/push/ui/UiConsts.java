@@ -1,26 +1,25 @@
 package com.fangxuele.tool.push.ui;
 
-import java.awt.Image;
-import java.awt.Toolkit;
+import java.awt.*;
 
 /**
  * UI相关的常量
  *
  * @author rememberber(https : / / github.com / rememberber)
  */
-public class ConstantsUI {
+public class UiConsts {
 
     /**
      * 软件名称,版本
      */
-    final static String APP_NAME = "WePush";
+    public final static String APP_NAME = "WePush";
     public final static String APP_VERSION = "v_2.3.3_190107";
 
     /**
      * 主窗口图标
      */
-    final static Image IMAGE_ICON = Toolkit.getDefaultToolkit()
-            .getImage(MainWindow.class.getResource("/icon/logo-lg.png"));
+    public final static Image IMAGE_ICON = Toolkit.getDefaultToolkit()
+            .getImage(UiConsts.class.getResource("/icon/logo-lg.png"));
 
     /**
      * 软件版本检查url

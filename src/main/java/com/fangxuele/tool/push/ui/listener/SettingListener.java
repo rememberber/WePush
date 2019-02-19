@@ -3,9 +3,10 @@ package com.fangxuele.tool.push.ui.listener;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
-import com.fangxuele.tool.push.util.DbUtilMySQL;
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.Init;
-import com.fangxuele.tool.push.ui.MainWindow;
+import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.util.DbUtilMySQL;
 import com.fangxuele.tool.push.util.SystemUtil;
 
 import javax.swing.*;
@@ -186,7 +187,7 @@ public class SettingListener {
 
                 Init.initTheme();
                 Init.initGlobalFont();
-                SwingUtilities.updateComponentTreeUI(MainWindow.frame);
+                SwingUtilities.updateComponentTreeUI(App.mainFrame);
                 SwingUtilities.updateComponentTreeUI(MainWindow.mainWindow.getTabbedPane());
 
                 JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存成功！\n\n部分细节将在下次启动时生效！\n\n", "成功",
