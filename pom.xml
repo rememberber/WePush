@@ -259,7 +259,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>com.fangxuele.tool.push.ui.form.MainWindow</mainClass>
+                            <mainClass>com.fangxuele.tool.push.App</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
