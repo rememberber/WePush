@@ -20,8 +20,8 @@
 
         <java.version>1.8</java.version>
         <logback.version>1.2.3</logback.version>
-        <weixin-java-mp.version>3.2.0</weixin-java-mp.version>
-        <weixin-java-miniapp.version>3.2.0</weixin-java-miniapp.version>
+        <weixin-java-mp.version>3.3.0</weixin-java-mp.version>
+        <weixin-java-miniapp.version>3.3.0</weixin-java-miniapp.version>
         <emoji-java.version>4.0.0</emoji-java.version>
         <hutool-all.version>4.1.19</hutool-all.version>
         <opencsv.version>4.4</opencsv.version>
