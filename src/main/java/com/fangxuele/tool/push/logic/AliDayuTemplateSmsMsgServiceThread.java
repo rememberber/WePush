@@ -62,7 +62,7 @@ public class AliDayuTemplateSmsMsgServiceThread extends BaseMsgServiceThread {
             String[] msgData = list.get(i);
             String telNum = msgData[0];
             try {
-                alibabaAliqinFcSmsNumSendRequest = PushManage.makeAliTemplateMessage(msgData);
+                alibabaAliqinFcSmsNumSendRequest = MessageMaker.makeAliTemplateMessage(msgData);
                 alibabaAliqinFcSmsNumSendRequest.setRecNum(telNum);
 
                 // 空跑控制

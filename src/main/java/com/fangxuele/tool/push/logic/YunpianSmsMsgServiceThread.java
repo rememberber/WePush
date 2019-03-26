@@ -54,7 +54,7 @@ public class YunpianSmsMsgServiceThread extends BaseMsgServiceThread {
             String[] msgData = list.get(i);
             String telNum = msgData[0];
             try {
-                Map<String, String> params = PushManage.makeYunpianMessage(msgData);
+                Map<String, String> params = MessageMaker.makeYunpianMessage(msgData);
                 params.put(YunpianClient.MOBILE, telNum);
 
                 // 空跑控制
