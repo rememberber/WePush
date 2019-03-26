@@ -55,7 +55,7 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
             String[] msgData = list.get(i);
             String telNum = msgData[0];
             try {
-                String[] params = PushManage.makeTxyunMessage(msgData);
+                String[] params = MessageMaker.makeTxyunMessage(msgData);
 
                 // 空跑控制
                 if (!MainWindow.mainWindow.getDryRunCheckBox().isSelected()) {

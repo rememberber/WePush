@@ -40,7 +40,7 @@ public class KeFuMsgServiceThread extends BaseMsgServiceThread {
             String openId = "";
             try {
                 openId = msgData[0];
-                wxMpKefuMessage = PushManage.makeKefuMessage(msgData);
+                wxMpKefuMessage = MessageMaker.makeKefuMessage(msgData);
                 wxMpKefuMessage.setToUser(openId);
                 // 空跑控制
                 if (!MainWindow.mainWindow.getDryRunCheckBox().isSelected()) {

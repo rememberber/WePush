@@ -41,7 +41,7 @@ public class TemplateMsgMpServiceThread extends BaseMsgServiceThread {
             String openId = "";
             try {
                 openId = msgData[0];
-                wxMessageTemplate = PushManage.makeMpTemplateMessage(msgData);
+                wxMessageTemplate = MessageMaker.makeMpTemplateMessage(msgData);
                 wxMessageTemplate.setToUser(openId);
                 // 空跑控制
                 if (!MainWindow.mainWindow.getDryRunCheckBox().isSelected()) {

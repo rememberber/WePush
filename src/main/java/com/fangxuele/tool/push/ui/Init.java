@@ -7,9 +7,11 @@ import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.alee.laf.WebLookAndFeel;
 import com.fangxuele.tool.push.bean.UserCase;
+import com.fangxuele.tool.push.logic.MsgHisManage;
+import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
+import com.fangxuele.tool.push.ui.component.TableInCellCheckBoxRenderer;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.listener.AboutListener;
-import com.fangxuele.tool.push.logic.MsgHisManage;
 import com.fangxuele.tool.push.util.Config;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -27,14 +29,9 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumnModel;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -280,10 +277,10 @@ public class Init {
                 MainWindow.mainWindow.getTemplateMsgDataTable().setModel(model);
                 MainWindow.mainWindow.getTemplateMsgDataTable().getColumnModel().
                         getColumn(headerNames.length - 1).
-                        setCellRenderer(new ButtonColumn(MainWindow.mainWindow.getTemplateMsgDataTable(), headerNames.length - 1));
+                        setCellRenderer(new TableInCellButtonColumn(MainWindow.mainWindow.getTemplateMsgDataTable(), headerNames.length - 1));
                 MainWindow.mainWindow.getTemplateMsgDataTable().getColumnModel().
                         getColumn(headerNames.length - 1).
-                        setCellEditor(new ButtonColumn(MainWindow.mainWindow.getTemplateMsgDataTable(), headerNames.length - 1));
+                        setCellEditor(new TableInCellButtonColumn(MainWindow.mainWindow.getTemplateMsgDataTable(), headerNames.length - 1));
 
                 // 设置列宽
                 MainWindow.mainWindow.getTemplateMsgDataTable().getColumnModel().getColumn(0).setPreferredWidth(150);
@@ -503,7 +500,7 @@ public class Init {
             }
         }
         MainWindow.mainWindow.getPushHisLeftTable().getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(new JCheckBox()));
-        MainWindow.mainWindow.getPushHisLeftTable().getColumnModel().getColumn(0).setCellRenderer(new MyCheckBoxRenderer());
+        MainWindow.mainWindow.getPushHisLeftTable().getColumnModel().getColumn(0).setCellRenderer(new TableInCellCheckBoxRenderer());
         // 设置列宽
         MainWindow.mainWindow.getPushHisLeftTable().getColumnModel().getColumn(0).setPreferredWidth(30);
         MainWindow.mainWindow.getPushHisLeftTable().getColumnModel().getColumn(0).setMaxWidth(30);
@@ -577,7 +574,7 @@ public class Init {
             model.addRow(data);
         }
         MainWindow.mainWindow.getMsgHistable().getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(new JCheckBox()));
-        MainWindow.mainWindow.getMsgHistable().getColumnModel().getColumn(0).setCellRenderer(new MyCheckBoxRenderer());
+        MainWindow.mainWindow.getMsgHistable().getColumnModel().getColumn(0).setCellRenderer(new TableInCellCheckBoxRenderer());
         // 设置列宽
         MainWindow.mainWindow.getMsgHistable().getColumnModel().getColumn(0).setPreferredWidth(50);
         MainWindow.mainWindow.getMsgHistable().getColumnModel().getColumn(0).setMaxWidth(50);
@@ -593,10 +590,10 @@ public class Init {
         MainWindow.mainWindow.getTemplateMsgDataTable().updateUI();
         MainWindow.mainWindow.getTemplateMsgDataTable().getColumnModel().
                 getColumn(headerNames.length - 1).
-                setCellRenderer(new ButtonColumn(MainWindow.mainWindow.getTemplateMsgDataTable(), headerNames.length - 1));
+                setCellRenderer(new TableInCellButtonColumn(MainWindow.mainWindow.getTemplateMsgDataTable(), headerNames.length - 1));
         MainWindow.mainWindow.getTemplateMsgDataTable().getColumnModel().
                 getColumn(headerNames.length - 1).
-                setCellEditor(new ButtonColumn(MainWindow.mainWindow.getTemplateMsgDataTable(), headerNames.length - 1));
+                setCellEditor(new TableInCellButtonColumn(MainWindow.mainWindow.getTemplateMsgDataTable(), headerNames.length - 1));
 
         // 设置列宽
         MainWindow.mainWindow.getTemplateMsgDataTable().getColumnModel().getColumn(0).setPreferredWidth(150);
@@ -627,86 +624,6 @@ public class Init {
         }
         // 更新二维码
         ThreadUtil.execute(AboutListener::initQrCode);
-    }
-
-    /**
-     * 自定义单元格按钮渲染器
-     */
-    public static class ButtonColumn extends AbstractCellEditor implements
-            TableCellRenderer, TableCellEditor, ActionListener {
-        JTable table;
-        JButton renderButton;
-        JButton editButton;
-
-        ButtonColumn(JTable table, int column) {
-            super();
-            this.table = table;
-            renderButton = new JButton();
-            editButton = new JButton();
-            editButton.setFocusPainted(false);
-            editButton.addActionListener(this);
-
-            TableColumnModel columnModel = table.getColumnModel();
-            columnModel.getColumn(column).setCellRenderer(this);
-            columnModel.getColumn(column).setCellEditor(this);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                                                       boolean isSelected, boolean hasFocus, int row, int column) {
-            if (hasFocus) {
-                renderButton.setForeground(table.getForeground());
-                renderButton.setBackground(UIManager.getColor("Button.background"));
-            } else if (isSelected) {
-                renderButton.setForeground(table.getSelectionForeground());
-                renderButton.setBackground(table.getSelectionBackground());
-            } else {
-                renderButton.setForeground(table.getForeground());
-                renderButton.setBackground(UIManager.getColor("Button.background"));
-            }
-
-            renderButton.setText("移除");
-            renderButton.setIcon(new ImageIcon(getClass().getResource("/icon/remove.png")));
-            return renderButton;
-        }
-
-        @Override
-        public Component getTableCellEditorComponent(JTable table, Object value,
-                                                     boolean isSelected, int row, int column) {
-            editButton.setText("移除");
-            editButton.setIcon(new ImageIcon(getClass().getResource("/icon/remove.png")));
-            return editButton;
-        }
-
-        @Override
-        public Object getCellEditorValue() {
-            return "移除";
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            int isDelete = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getMessagePanel(), "确认移除？", "确认",
-                    JOptionPane.YES_NO_OPTION);
-            if (isDelete == JOptionPane.YES_OPTION) {
-                fireEditingStopped();
-                DefaultTableModel model = (DefaultTableModel) table.getModel();
-                model.removeRow(table.getSelectedRow());
-            }
-        }
-    }
-
-    /**
-     * 自定义单元格单选框渲染器
-     */
-    public static class MyCheckBoxRenderer extends JCheckBox implements TableCellRenderer {
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                                                       boolean isSelected, boolean hasFocus, int row, int column) {
-            //这一列必须都是integer类型(0-100)
-            Boolean b = (Boolean) value;
-            setSelected(b);
-            return this;
-        }
     }
 
 }

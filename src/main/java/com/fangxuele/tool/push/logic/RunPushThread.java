@@ -7,14 +7,13 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.ui.Init;
+import com.fangxuele.tool.push.ui.component.TableInCellProgressBarRenderer;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import me.chanjar.weixin.mp.api.WxMpService;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-import java.awt.*;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -86,7 +85,7 @@ public class RunPushThread extends Thread {
         String[] headerNames = {"线程", "页数区间", "成功", "失败", "总数", "当前进度"};
         DefaultTableModel tableModel = new DefaultTableModel(null, headerNames);
         MainWindow.mainWindow.getPushThreadTable().setModel(tableModel);
-        MainWindow.mainWindow.getPushThreadTable().getColumn("当前进度").setCellRenderer(new MyProgressBarRenderer());
+        MainWindow.mainWindow.getPushThreadTable().getColumn("当前进度").setCellRenderer(new TableInCellProgressBarRenderer());
 
         DefaultTableCellRenderer hr = (DefaultTableCellRenderer) MainWindow.mainWindow.getPushThreadTable().getTableHeader()
                 .getDefaultRenderer();
@@ -230,17 +229,4 @@ public class RunPushThread extends Thread {
         }
     }
 
-    /**
-     * 自定义进度条单元格渲染器
-     */
-    public static class MyProgressBarRenderer extends JProgressBar implements TableCellRenderer {
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                                                       boolean isSelected, boolean hasFocus, int row, int column) {
-            // 这一列必须都是integer类型(0-100)
-            Integer v = (Integer) value;
-            setValue(v);
-            return this;
-        }
-    }
 }

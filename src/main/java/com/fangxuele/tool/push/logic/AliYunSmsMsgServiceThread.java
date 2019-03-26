@@ -65,7 +65,7 @@ public class AliYunSmsMsgServiceThread extends BaseMsgServiceThread {
             String[] msgData = list.get(i);
             String telNum = msgData[0];
             try {
-                sendSmsRequest = PushManage.makeAliyunMessage(msgData);
+                sendSmsRequest = MessageMaker.makeAliyunMessage(msgData);
                 sendSmsRequest.setPhoneNumbers(telNum);
 
                 // 空跑控制

@@ -47,7 +47,7 @@ public class TemplateMsgMaServiceThread extends BaseMsgServiceThread {
             String openId = "";
             try {
                 openId = msgData[0];
-                wxMaTemplateMessage = PushManage.makeMaTemplateMessage(msgData);
+                wxMaTemplateMessage = MessageMaker.makeMaTemplateMessage(msgData);
                 wxMaTemplateMessage.setToUser(openId);
                 wxMaTemplateMessage.setFormId(msgData[1]);
                 // 空跑控制
