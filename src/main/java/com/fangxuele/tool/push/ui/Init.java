@@ -7,6 +7,7 @@ import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.alee.laf.WebLookAndFeel;
 import com.fangxuele.tool.push.bean.UserCase;
+import com.fangxuele.tool.push.logic.MessageTypeConsts;
 import com.fangxuele.tool.push.logic.MsgHisManage;
 import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
 import com.fangxuele.tool.push.ui.component.TableInCellCheckBoxRenderer;
@@ -307,7 +308,7 @@ public class Init {
         MainWindow.mainWindow.getTemplateMsgPanel().setVisible(false);
         MainWindow.mainWindow.getYunpianMsgPanel().setVisible(false);
         switch (msgType) {
-            case "模板消息":
+            case MessageTypeConsts.MP_TEMPLATE:
                 MainWindow.mainWindow.getTemplateMsgPanel().setVisible(true);
                 MainWindow.mainWindow.getTemplateUrlLabel().setVisible(true);
                 MainWindow.mainWindow.getMsgTemplateUrlTextField().setVisible(true);
@@ -323,7 +324,7 @@ public class Init {
                 MainWindow.mainWindow.getTemplateKeyWordLabel().setVisible(false);
                 MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户openid（多个以半角分号分隔）");
                 break;
-            case "模板消息-小程序":
+            case MessageTypeConsts.MA_TEMPLATE:
                 MainWindow.mainWindow.getTemplateMsgPanel().setVisible(true);
                 MainWindow.mainWindow.getTemplateUrlLabel().setVisible(true);
                 MainWindow.mainWindow.getMsgTemplateUrlTextField().setVisible(true);
@@ -339,11 +340,11 @@ public class Init {
                 MainWindow.mainWindow.getTemplateKeyWordLabel().setVisible(true);
                 MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户openid（多个以半角分号分隔）");
                 break;
-            case "客服消息":
+            case MessageTypeConsts.KEFU:
                 MainWindow.mainWindow.getKefuMsgPanel().setVisible(true);
                 MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户openid（多个以半角分号分隔）");
                 break;
-            case "客服消息优先":
+            case MessageTypeConsts.KEFU_PRIORITY:
                 MainWindow.mainWindow.getKefuMsgPanel().setVisible(true);
                 MainWindow.mainWindow.getTemplateMsgPanel().setVisible(true);
                 MainWindow.mainWindow.getTemplateUrlLabel().setVisible(true);
@@ -360,9 +361,9 @@ public class Init {
                 MainWindow.mainWindow.getTemplateKeyWordLabel().setVisible(false);
                 MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户openid（多个以半角分号分隔）");
                 break;
-            case "阿里云短信":
-            case "腾讯云短信":
-            case "阿里大于模板短信":
+            case MessageTypeConsts.ALI_YUN:
+            case MessageTypeConsts.TX_YUN:
+            case MessageTypeConsts.ALI_TEMPLATE:
                 MainWindow.mainWindow.getTemplateMsgPanel().setVisible(true);
                 MainWindow.mainWindow.getTemplateUrlLabel().setVisible(false);
                 MainWindow.mainWindow.getMsgTemplateUrlTextField().setVisible(false);
@@ -378,7 +379,7 @@ public class Init {
                 MainWindow.mainWindow.getTemplateKeyWordLabel().setVisible(false);
                 MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户手机号（多个以半角分号分隔）");
                 break;
-            case "云片网短信":
+            case MessageTypeConsts.YUN_PIAN:
                 MainWindow.mainWindow.getYunpianMsgPanel().setVisible(true);
                 MainWindow.mainWindow.getPreviewMemberLabel().setText("预览消息用户手机号（多个以半角分号分隔）");
                 break;
