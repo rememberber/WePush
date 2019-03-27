@@ -99,7 +99,7 @@ public class RunPushThread extends Thread {
         ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(20, 100 * Runtime.getRuntime().availableProcessors());
         BaseMsgServiceThread thread = null;
         for (int i = 0; i < threadCount; i++) {
-            if ("模板消息".equals(msgType)) {
+            if (MessageTypeConsts.MP_TEMPLATE.equals(msgType)) {
                 thread = new TemplateMsgMpServiceThread(i * pagePerThread,
                         i * pagePerThread + pagePerThread - 1, pageSize);
 
@@ -108,7 +108,7 @@ public class RunPushThread extends Thread {
                     return;
                 }
                 thread.setWxMpService(wxMpService);
-            } else if ("模板消息-小程序".equals(msgType)) {
+            } else if (MessageTypeConsts.MA_TEMPLATE.equals(msgType)) {
                 thread = new TemplateMsgMaServiceThread(i * pagePerThread,
                         i * pagePerThread + pagePerThread - 1, pageSize);
 
@@ -117,7 +117,7 @@ public class RunPushThread extends Thread {
                     return;
                 }
                 ((TemplateMsgMaServiceThread) thread).setWxMaService(wxMaService);
-            } else if ("客服消息".equals(msgType)) {
+            } else if (MessageTypeConsts.KEFU.equals(msgType)) {
                 thread = new KeFuMsgServiceThread(i * pagePerThread,
                         i * pagePerThread + pagePerThread - 1, pageSize);
 
@@ -126,7 +126,7 @@ public class RunPushThread extends Thread {
                     return;
                 }
                 thread.setWxMpService(wxMpService);
-            } else if ("客服消息优先".equals(msgType)) {
+            } else if (MessageTypeConsts.KEFU_PRIORITY.equals(msgType)) {
                 thread = new KeFuPriorMsgServiceThread(i * pagePerThread,
                         i * pagePerThread + pagePerThread - 1, pageSize);
 
@@ -135,16 +135,16 @@ public class RunPushThread extends Thread {
                     return;
                 }
                 thread.setWxMpService(wxMpService);
-            } else if ("阿里大于模板短信".equals(msgType)) {
+            } else if (MessageTypeConsts.ALI_TEMPLATE.equals(msgType)) {
                 thread = new AliDayuTemplateSmsMsgServiceThread(i * pagePerThread,
                         i * pagePerThread + pagePerThread - 1, pageSize);
-            } else if ("阿里云短信".equals(msgType)) {
+            } else if (MessageTypeConsts.ALI_YUN.equals(msgType)) {
                 thread = new AliYunSmsMsgServiceThread(i * pagePerThread,
                         i * pagePerThread + pagePerThread - 1, pageSize);
-            } else if ("腾讯云短信".equals(msgType)) {
+            } else if (MessageTypeConsts.TX_YUN.equals(msgType)) {
                 thread = new TxYunSmsMsgServiceThread(i * pagePerThread,
                         i * pagePerThread + pagePerThread - 1, pageSize);
-            } else if ("云片网短信".equals(msgType)) {
+            } else if (MessageTypeConsts.YUN_PIAN.equals(msgType)) {
                 thread = new YunpianSmsMsgServiceThread(i * pagePerThread,
                         i * pagePerThread + pagePerThread - 1, pageSize);
             }

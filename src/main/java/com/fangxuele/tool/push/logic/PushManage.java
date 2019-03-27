@@ -66,7 +66,7 @@ public class PushManage {
         }
 
         switch (Objects.requireNonNull(MainWindow.mainWindow.getMsgTypeComboBox().getSelectedItem()).toString()) {
-            case "模板消息":
+            case MessageTypeConsts.MP_TEMPLATE:
                 WxMpTemplateMessage wxMessageTemplate;
                 WxMpService wxMpService = getWxMpService();
                 if (wxMpService.getWxMpConfigStorage() == null) {
@@ -80,7 +80,7 @@ public class PushManage {
                     wxMpService.getTemplateMsgService().sendTemplateMsg(wxMessageTemplate);
                 }
                 break;
-            case "模板消息-小程序":
+            case MessageTypeConsts.MA_TEMPLATE:
                 WxMaTemplateMessage wxMaMessageTemplate;
                 WxMaService wxMaService = getWxMaService();
                 if (wxMaService.getWxMaConfig() == null) {
@@ -95,7 +95,7 @@ public class PushManage {
                     wxMaService.getMsgService().sendTemplateMsg(wxMaMessageTemplate);
                 }
                 break;
-            case "客服消息":
+            case MessageTypeConsts.KEFU:
                 wxMpService = getWxMpService();
                 WxMpKefuMessage wxMpKefuMessage;
                 if (wxMpService.getWxMpConfigStorage() == null) {
@@ -109,7 +109,7 @@ public class PushManage {
                     wxMpService.getKefuService().sendKefuMessage(wxMpKefuMessage);
                 }
                 break;
-            case "客服消息优先":
+            case MessageTypeConsts.KEFU_PRIORITY:
                 wxMpService = getWxMpService();
                 if (wxMpService.getWxMpConfigStorage() == null) {
                     return false;
@@ -129,7 +129,7 @@ public class PushManage {
                     }
                 }
                 break;
-            case "阿里云短信":
+            case MessageTypeConsts.ALI_YUN:
                 String aliyunAccessKeyId = Init.configer.getAliyunAccessKeyId();
                 String aliyunAccessKeySecret = Init.configer.getAliyunAccessKeySecret();
 
@@ -156,7 +156,7 @@ public class PushManage {
                     }
                 }
                 break;
-            case "腾讯云短信":
+            case MessageTypeConsts.TX_YUN:
                 String txyunAppId = Init.configer.getTxyunAppId();
                 String txyunAppKey = Init.configer.getTxyunAppKey();
 
@@ -179,7 +179,7 @@ public class PushManage {
                     }
                 }
                 break;
-            case "阿里大于模板短信":
+            case MessageTypeConsts.ALI_TEMPLATE:
                 String aliServerUrl = Init.configer.getAliServerUrl();
                 String aliAppKey = Init.configer.getAliAppKey();
                 String aliAppSecret = Init.configer.getAliAppSecret();
@@ -203,7 +203,7 @@ public class PushManage {
                     }
                 }
                 break;
-            case "云片网短信":
+            case MessageTypeConsts.YUN_PIAN:
                 String yunpianApiKey = Init.configer.getYunpianApiKey();
 
                 if (StringUtils.isEmpty(yunpianApiKey)) {
