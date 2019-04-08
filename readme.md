@@ -102,3 +102,10 @@ https://github.com/rememberber/WePush/wiki/build
 ### 使用帮助
 
 https://github.com/rememberber/WePush/wiki/help
+
+### 鼓励&赞赏
+<p align="center">
+  <a href="https://github.com/rememberber/WePush">
+   <img alt="WePush" src="http://download.zhoubochina.com/file/wx-zanshang.jpg">
+  </a>
+</p>
