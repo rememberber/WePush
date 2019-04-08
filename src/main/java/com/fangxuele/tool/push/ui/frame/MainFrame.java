@@ -30,6 +30,7 @@ import java.awt.*;
 public class MainFrame extends JFrame {
     public void init() {
         this.setName(UiConsts.APP_NAME);
+        this.setTitle(UiConsts.APP_NAME);
         this.setIconImage(UiConsts.IMAGE_ICON);
         // Mac系统Dock图标
         if (SystemUtil.isMacOs()) {
