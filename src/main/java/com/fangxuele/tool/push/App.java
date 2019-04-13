@@ -17,14 +17,17 @@ public class App {
     public static void main(String[] args) {
         Init.initTheme();
         mainFrame = new MainFrame();
-        mainFrame.pack();
         mainFrame.init();
+        mainFrame.pack();
         mainFrame.setVisible(true);
-        mainFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        Init.initGlobalFont();
-        Init.initAllTab();
-        Init.initOthers();
-        mainFrame.setContentPane(MainWindow.mainWindow.mainPanel);
-        mainFrame.addListeners();
+
+        SwingUtilities.invokeLater(() -> {
+            mainFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+            Init.initGlobalFont();
+            Init.initAllTab();
+            Init.initOthers();
+            mainFrame.setContentPane(MainWindow.mainWindow.mainPanel);
+            mainFrame.addListeners();
+        });
     }
 }

@@ -50,10 +50,14 @@ public class Init {
 
     private static final Log logger = LogFactory.get();
 
-    // 配置文件管理器对象
+    /**
+     * 配置文件管理器对象
+     */
     public static Config configer = Config.getInstance();
 
-    // 消息管理
+    /**
+     * 消息管理
+     */
     public static MsgHisManage msgHisManager = MsgHisManage.getInstance();
 
     /**
