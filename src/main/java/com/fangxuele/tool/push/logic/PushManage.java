@@ -241,6 +241,10 @@ public class PushManage {
         if (StringUtils.isEmpty(Init.configer.getWechatAppId()) || StringUtils.isEmpty(Init.configer.getWechatAppSecret())) {
             JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "请先在设置中填写并保存公众号相关配置！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
+            MainWindow.mainWindow.getScheduleRunButton().setEnabled(true);
+            MainWindow.mainWindow.getPushStartButton().setEnabled(true);
+            MainWindow.mainWindow.getPushStopButton().setEnabled(false);
+            MainWindow.mainWindow.getPushTotalProgressBar().setIndeterminate(false);
             return null;
         }
         configStorage.setAppId(Init.configer.getWechatAppId());
@@ -261,6 +265,10 @@ public class PushManage {
                 || StringUtils.isEmpty(Init.configer.getMiniAppToken()) || StringUtils.isEmpty(Init.configer.getMiniAppAesKey())) {
             JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "请先在设置中填写并保存小程序相关配置！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
+            MainWindow.mainWindow.getScheduleRunButton().setEnabled(true);
+            MainWindow.mainWindow.getPushStartButton().setEnabled(true);
+            MainWindow.mainWindow.getPushStopButton().setEnabled(false);
+            MainWindow.mainWindow.getPushTotalProgressBar().setIndeterminate(false);
             return null;
         }
         configStorage.setAppid(Init.configer.getMiniAppAppId());

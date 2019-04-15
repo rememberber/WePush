@@ -1,9 +1,7 @@
 package com.fangxuele.tool.push.ui.frame;
 
 import com.apple.eawt.Application;
-import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.UiConsts;
-import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.listener.AboutListener;
 import com.fangxuele.tool.push.ui.listener.FramListener;
 import com.fangxuele.tool.push.ui.listener.HelpListener;
@@ -46,11 +44,6 @@ public class MainFrame extends JFrame {
         Dimension preferSize = new Dimension((int) (screenSize.width * 0.8),
                 (int) (screenSize.height * 0.8));
         this.setPreferredSize(preferSize);
-
-        MainWindow.mainWindow = new MainWindow();
-
-        Init.initOthers();
-        Init.initAllTab();
     }
 
     /**

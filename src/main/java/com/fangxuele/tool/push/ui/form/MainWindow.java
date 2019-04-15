@@ -176,7 +176,7 @@ public class MainWindow {
     private JPanel yunpianMsgPanel;
     private JLabel qrCodeLabel;
 
-    public static MainWindow mainWindow;
+    public static MainWindow mainWindow = new MainWindow();
     private static Log logger = LogFactory.get();
 
     public JPanel getMainPanel() {
