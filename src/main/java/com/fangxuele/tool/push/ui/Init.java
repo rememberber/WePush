@@ -13,7 +13,7 @@ import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
 import com.fangxuele.tool.push.ui.component.TableInCellCheckBoxRenderer;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.listener.AboutListener;
-import com.fangxuele.tool.push.util.Config;
+import com.fangxuele.tool.push.util.ConfigUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -53,7 +53,7 @@ public class Init {
     /**
      * 配置文件管理器对象
      */
-    public static Config configer = Config.getInstance();
+    public static ConfigUtil configer = ConfigUtil.getInstance();
 
     /**
      * 消息管理

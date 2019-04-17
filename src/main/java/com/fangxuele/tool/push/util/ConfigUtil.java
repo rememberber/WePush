@@ -14,7 +14,7 @@ import java.io.IOException;
  * 配置管理
  * Created by rememberber(https://github.com/rememberber) on 2017/6/14.
  */
-public class Config {
+public class ConfigUtil {
 
     private static final Log logger = LogFactory.get();
 
@@ -22,7 +22,7 @@ public class Config {
 
     private Props props;
 
-    private static Config ourInstance = new Config();
+    private static ConfigUtil ourInstance = new ConfigUtil();
 
     private String msgName;
 
@@ -126,11 +126,11 @@ public class Config {
 
     private int fontSize;
 
-    public static Config getInstance() {
+    public static ConfigUtil getInstance() {
         return ourInstance;
     }
 
-    private Config() {
+    private ConfigUtil() {
         // --旧版本配置文件迁移初始化开始--
         File configHomeDir = new File(SystemUtil.configHome);
         if (!configHomeDir.exists()) {
