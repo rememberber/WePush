@@ -40,7 +40,7 @@ public class TabListener {
                         }
                         break;
                     case 4:
-                        MainWindow.mainWindow.setPushMsgName(MainWindow.mainWindow.getMsgNameField().getText());
+                        MainWindow.mainWindow.getPushMsgName().setText(MainWindow.mainWindow.getMsgNameField().getText());
 
                         if (PushData.allUser != null && PushData.allUser.size() > 0) {
                             PushListener.refreshPushInfo();

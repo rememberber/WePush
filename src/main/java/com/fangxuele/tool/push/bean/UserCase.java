@@ -1,7 +1,10 @@
 package com.fangxuele.tool.push.bean;
 
+import lombok.Data;
+
 import java.io.Serializable;
 
+@Data
 public class UserCase implements Serializable {
 
     private static final long serialVersionUID = 2829237163275443844L;
@@ -12,27 +15,4 @@ public class UserCase implements Serializable {
 
     private String desc;
 
-    public String getQrCodeUrl() {
-        return qrCodeUrl;
-    }
-
-    public void setQrCodeUrl(String qrCodeUrl) {
-        this.qrCodeUrl = qrCodeUrl;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDesc() {
-        return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
 }

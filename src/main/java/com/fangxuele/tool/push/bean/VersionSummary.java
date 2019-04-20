@@ -1,8 +1,11 @@
 package com.fangxuele.tool.push.bean;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.List;
 
+@Data
 public class VersionSummary implements Serializable {
 
     private static final long serialVersionUID = 4637273116136790267L;
@@ -22,33 +25,10 @@ public class VersionSummary implements Serializable {
      */
     private List<Version> versionDetailList;
 
-    public String getCurrentVersion() {
-        return currentVersion;
-    }
-
-    public void setCurrentVersion(String currentVersion) {
-        this.currentVersion = currentVersion;
-    }
-
-    public String getVersionIndex() {
-        return versionIndex;
-    }
-
-    public void setVersionIndex(String versionIndex) {
-        this.versionIndex = versionIndex;
-    }
-
-    public List<Version> getVersionDetailList() {
-        return versionDetailList;
-    }
-
-    public void setVersionDetailList(List<Version> versionDetailList) {
-        this.versionDetailList = versionDetailList;
-    }
-
     /**
      * 版本实体
      */
+    @Data
     public static class Version implements Serializable {
 
         private static final long serialVersionUID = 4637273116136790268L;
@@ -59,29 +39,6 @@ public class VersionSummary implements Serializable {
 
         private String log;
 
-        public String getVersion() {
-            return version;
-        }
-
-        public void setVersion(String version) {
-            this.version = version;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
-        }
-
-        public String getLog() {
-            return log;
-        }
-
-        public void setLog(String log) {
-            this.log = log;
-        }
     }
 
 }
