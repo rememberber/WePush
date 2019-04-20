@@ -10,7 +10,12 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 
 /**
- * Created by rememberber(https://github.com/rememberber) on 2017/6/7.
+ * <pre>
+ * 主界面
+ * </pre>
+ *
+ * @author <a href="https://github.com/rememberber">RememBerBer</a>
+ * @since 2017/6/7.
  */
 @Getter
 public class MainWindow {

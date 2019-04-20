@@ -43,8 +43,12 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
+ * <pre>
  * 初始化类
- * Created by rememberber(https://github.com/rememberber) on 2017/6/15.
+ * </pre>
+ *
+ * @author <a href="https://github.com/rememberber">RememBerBer</a>
+ * @since 2017/6/15.
  */
 public class Init {
 

@@ -35,8 +35,12 @@ import java.sql.ResultSet;
 import java.util.*;
 
 /**
+ * <pre>
  * 准备目标数据tab相关事件监听
- * Created by rememberber(https://github.com/rememberber) on 2017/6/19.
+ * </pre>
+ *
+ * @author <a href="https://github.com/rememberber">RememBerBer</a>
+ * @since 2017/6/19.
  */
 public class MemberListener {
     private static final Log logger = LogFactory.get();

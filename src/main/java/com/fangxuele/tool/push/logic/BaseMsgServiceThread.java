@@ -9,8 +9,12 @@ import javax.swing.table.DefaultTableModel;
 import java.util.List;
 
 /**
+ * <pre>
  * 消息发送服务线程父类
- * Created by rememberber(https://github.com/rememberber) on 2017/3/29.
+ * </pre>
+ *
+ * @author <a href="https://github.com/rememberber">RememBerBer</a>
+ * @since 2017/3/29.
  */
 public class BaseMsgServiceThread extends Thread {
 

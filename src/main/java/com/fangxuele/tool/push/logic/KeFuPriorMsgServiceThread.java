@@ -5,8 +5,12 @@ import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
 
 /**
+ * <pre>
  * 客服消息优先发送服务线程
- * Created by rememberber(https://github.com/rememberber) on 2017/3/29.
+ * </pre>
+ *
+ * @author <a href="https://github.com/rememberber">RememBerBer</a>
+ * @since 2017/3/29.
  */
 public class KeFuPriorMsgServiceThread extends BaseMsgServiceThread {
 

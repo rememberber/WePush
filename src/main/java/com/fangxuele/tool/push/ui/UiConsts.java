@@ -3,9 +3,12 @@ package com.fangxuele.tool.push.ui;
 import java.awt.*;
 
 /**
+ * <pre>
  * UI相关的常量
+ * </pre>
  *
- * @author rememberber(https : / / github.com / rememberber)
+ * @author <a href="https://github.com/rememberber">RememBerBer</a>
+ * @since 2019/4/20.
  */
 public class UiConsts {
 

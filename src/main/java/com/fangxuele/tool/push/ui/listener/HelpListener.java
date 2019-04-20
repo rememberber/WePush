@@ -12,7 +12,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
- * Created by rememberber(https://github.com/rememberber) on 2018/2/9.
+ * <pre>
+ * HelpPanel Listener
+ * </pre>
+ *
+ * @author <a href="https://github.com/rememberber">RememBerBer</a>
+ * @since 2018/2/9.
  */
 public class HelpListener {
     private static final Log logger = LogFactory.get();

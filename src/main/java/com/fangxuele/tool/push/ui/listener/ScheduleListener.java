@@ -11,8 +11,12 @@ import javax.swing.*;
 import java.util.Objects;
 
 /**
+ * <pre>
  * 计划任务tab相关事件监听
- * Created by rememberber(https://github.com/rememberber) on 2017/6/28.
+ * </pre>
+ *
+ * @author <a href="https://github.com/rememberber">RememBerBer</a>
+ * @since 2017/6/28.
  */
 public class ScheduleListener {
     private static final Log logger = LogFactory.get();

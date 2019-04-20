@@ -11,8 +11,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
+ * <pre>
  * 配置管理
- * Created by rememberber(https://github.com/rememberber) on 2017/6/14.
+ * </pre>
+ *
+ * @author <a href="https://github.com/rememberber">RememBerBer</a>
+ * @since 2017/6/14.
  */
 public class ConfigUtil {
 

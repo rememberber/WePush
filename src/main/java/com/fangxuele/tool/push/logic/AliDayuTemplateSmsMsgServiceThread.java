@@ -11,8 +11,12 @@ import org.apache.commons.lang3.StringUtils;
 import javax.swing.*;
 
 /**
+ * <pre>
  * 阿里模板短信发送服务线程
- * Created by rememberber(https://github.com/rememberber) on 2017/3/29.
+ * </pre>
+ *
+ * @author <a href="https://github.com/rememberber">RememBerBer</a>
+ * @since 2017/3/29.
  */
 public class AliDayuTemplateSmsMsgServiceThread extends BaseMsgServiceThread {
 

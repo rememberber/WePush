@@ -4,9 +4,12 @@ import java.util.List;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
- * 推送数据
- * <br/>报表相关等使用
- * Created by rememberber(https://github.com/rememberber) on 2017/6/19.
+ * <pre>
+ * 推送数据 报表相关等使用
+ * </pre>
+ *
+ * @author <a href="https://github.com/rememberber">RememBerBer</a>
+ * @since 2017/6/19.
  */
 public class PushData {
 

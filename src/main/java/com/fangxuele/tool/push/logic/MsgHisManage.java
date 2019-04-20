@@ -19,8 +19,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * <pre>
  * 历史消息管理（单例）
- * Created by rememberber(https://github.com/rememberber) on 2017/6/17.
+ * </pre>
+ *
+ * @author <a href="https://github.com/rememberber">RememBerBer</a>
+ * @since 2017/6/17.
  */
 public class MsgHisManage {
     private static final Log logger = LogFactory.get();

@@ -19,8 +19,12 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
+ * <pre>
  * 编辑消息tab相关事件监听
- * Created by rememberber(https://github.com/rememberber) on 2017/6/18.
+ * </pre>
+ *
+ * @author <a href="https://github.com/rememberber">RememBerBer</a>
+ * @since 2017/6/18.
  */
 public class MsgListener {
     private static final Log logger = LogFactory.get();

@@ -8,9 +8,12 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
+ * <pre>
  * 加载中
+ * </pre>
  *
- * @author zhouy
+ * @author <a href="https://github.com/rememberber">RememBerBer</a>
+ * @since 2019/4/20.
  */
 @Getter
 public class LoadingForm {

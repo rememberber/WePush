@@ -14,9 +14,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
+ * <pre>
  * MySQL数据库工具，单例，持久连接
+ * </pre>
  *
- * @author rememberber(https : / / github.com / rememberber)
+ * @author <a href="https://github.com/rememberber">RememBerBer</a>
+ * @since 2019/4/20.
  */
 public class DbUtilMySQL {
     private Connection connection = null;
