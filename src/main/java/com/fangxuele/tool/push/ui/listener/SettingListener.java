@@ -17,8 +17,12 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
+ * <pre>
  * 设置tab相关事件监听
- * Created by rememberber(https://github.com/rememberber) on 2017/6/16.
+ * </pre>
+ *
+ * @author <a href="https://github.com/rememberber">RememBerBer</a>
+ * @since 2017/6/16.
  */
 public class SettingListener {
     private static final Log logger = LogFactory.get();

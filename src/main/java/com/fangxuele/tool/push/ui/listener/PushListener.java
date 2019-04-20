@@ -21,8 +21,12 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * <pre>
  * 推送tab相关事件监听
- * Created by rememberber(https://github.com/rememberber) on 2017/6/19.
+ * </pre>
+ *
+ * @author <a href="https://github.com/rememberber">RememBerBer</a>
+ * @since 2017/6/19.
  */
 public class PushListener {
     private static final Log logger = LogFactory.get();

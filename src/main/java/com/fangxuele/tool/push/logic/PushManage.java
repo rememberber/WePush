@@ -41,8 +41,12 @@ import java.io.IOException;
 import java.util.*;
 
 /**
+ * <pre>
  * 推送管理
- * Created by rememberber(https://github.com/rememberber) on 2017/6/19.
+ * </pre>
+ *
+ * @author <a href="https://github.com/rememberber">RememBerBer</a>
+ * @since 2017/6/19.
  */
 public class PushManage {
 

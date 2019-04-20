@@ -1,15 +1,19 @@
 package com.fangxuele.tool.push;
 
 import com.fangxuele.tool.push.ui.Init;
+import com.fangxuele.tool.push.ui.form.LoadingForm;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.frame.MainFrame;
 
 import javax.swing.*;
 
 /**
+ * <pre>
  * Main Enter!
+ * </pre>
  *
- * @author rememberber
+ * @author <a href="https://github.com/rememberber">RememBerBer</a>
+ * @since 2019/4/20.
  */
 public class App {
     public static MainFrame mainFrame;
@@ -18,6 +22,7 @@ public class App {
         Init.initTheme();
         mainFrame = new MainFrame();
         mainFrame.init();
+        mainFrame.add(new LoadingForm().getLoadingPanel());
         mainFrame.pack();
         mainFrame.setVisible(true);
 

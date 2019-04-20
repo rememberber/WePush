@@ -9,8 +9,12 @@ import org.apache.velocity.app.VelocityEngine;
 import java.io.StringWriter;
 
 /**
+ * <pre>
  * 模板工具
- * Created by rememberber(https://github.com/rememberber) on 2019/1/5.
+ * </pre>
+ *
+ * @author <a href="https://github.com/rememberber">RememBerBer</a>
+ * @since 2019/1/5.
  */
 public class TemplateUtil {
 

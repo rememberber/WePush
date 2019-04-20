@@ -21,8 +21,12 @@ import java.util.Objects;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
+ * <pre>
  * 推送执行控制线程
- * Created by rememberber(https://github.com/rememberber) on 2017/6/28.
+ * </pre>
+ *
+ * @author <a href="https://github.com/rememberber">RememBerBer</a>
+ * @since 2017/6/28.
  */
 public class RunPushThread extends Thread {
 

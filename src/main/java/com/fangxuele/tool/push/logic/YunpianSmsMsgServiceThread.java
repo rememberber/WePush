@@ -11,8 +11,12 @@ import javax.swing.*;
 import java.util.Map;
 
 /**
+ * <pre>
  * 云片网短信发送服务线程
- * Created by rememberber(https://github.com/rememberber) on 2018/7/13.
+ * </pre>
+ *
+ * @author <a href="https://github.com/rememberber">RememBerBer</a>
+ * @since 2018/7/13.
  */
 public class YunpianSmsMsgServiceThread extends BaseMsgServiceThread {
 

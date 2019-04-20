@@ -11,8 +11,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 /**
+ * <pre>
  * tab事件监听
- * Created by rememberber(https://github.com/rememberber) on 2017/6/21.
+ * </pre>
+ *
+ * @author <a href="https://github.com/rememberber">RememBerBer</a>
+ * @since 2017/6/21.
  */
 public class TabListener {
 
@@ -40,7 +44,7 @@ public class TabListener {
                         }
                         break;
                     case 4:
-                        MainWindow.mainWindow.setPushMsgName(MainWindow.mainWindow.getMsgNameField().getText());
+                        MainWindow.mainWindow.getPushMsgName().setText(MainWindow.mainWindow.getMsgNameField().getText());
 
                         if (PushData.allUser != null && PushData.allUser.size() > 0) {
                             PushListener.refreshPushInfo();

@@ -19,8 +19,12 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
+ * <pre>
  * 编辑消息tab相关事件监听
- * Created by rememberber(https://github.com/rememberber) on 2017/6/18.
+ * </pre>
+ *
+ * @author <a href="https://github.com/rememberber">RememBerBer</a>
+ * @since 2017/6/18.
  */
 public class MsgListener {
     private static final Log logger = LogFactory.get();
@@ -175,9 +179,9 @@ public class MsgListener {
             MainWindow.mainWindow.getMsgKefuPicUrlTextField().setText("");
             MainWindow.mainWindow.getMsgKefuDescTextField().setText("");
             MainWindow.mainWindow.getMsgKefuUrlTextField().setText("");
-            MainWindow.mainWindow.setMsgTemplateMiniAppidTextField("");
-            MainWindow.mainWindow.setMsgTemplateMiniPagePathTextField("");
-            MainWindow.mainWindow.setMsgTemplateKeyWordTextField("");
+            MainWindow.mainWindow.getMsgTemplateMiniAppidTextField().setText("");
+            MainWindow.mainWindow.getMsgTemplateMiniPagePathTextField().setText("");
+            MainWindow.mainWindow.getMsgTemplateKeyWordTextField().setText("");
             MainWindow.mainWindow.getMsgYunpianMsgContentTextField().setText("");
 
             if (MainWindow.mainWindow.getTemplateMsgDataTable().getModel().getRowCount() == 0) {

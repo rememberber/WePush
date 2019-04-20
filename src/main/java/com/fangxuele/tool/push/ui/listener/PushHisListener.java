@@ -23,8 +23,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * <pre>
  * 推送历史管理tab相关事件监听
- * Created by rememberber(https://github.com/rememberber) on 2017/6/16.
+ * </pre>
+ *
+ * @author <a href="https://github.com/rememberber">RememBerBer</a>
+ * @since 2017/6/16.
  */
 public class PushHisListener {
     private static final Log logger = LogFactory.get();

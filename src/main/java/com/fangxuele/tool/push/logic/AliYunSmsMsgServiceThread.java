@@ -13,8 +13,12 @@ import org.apache.commons.lang3.StringUtils;
 import javax.swing.*;
 
 /**
+ * <pre>
  * 阿里云短信发送服务线程
- * Created by rememberber(https://github.com/rememberber) on 2018/3/16.
+ * </pre>
+ *
+ * @author <a href="https://github.com/rememberber">RememBerBer</a>
+ * @since 2018/3/16.
  */
 public class AliYunSmsMsgServiceThread extends BaseMsgServiceThread {
 

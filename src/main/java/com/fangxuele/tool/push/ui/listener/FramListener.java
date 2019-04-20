@@ -10,8 +10,12 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 /**
+ * <pre>
  * 窗体事件监听
- * Created by rememberber(https://github.com/rememberber) on 2017/6/21.
+ * </pre>
+ *
+ * @author <a href="https://github.com/rememberber">RememBerBer</a>
+ * @since 2017/6/21.
  */
 public class FramListener {
 

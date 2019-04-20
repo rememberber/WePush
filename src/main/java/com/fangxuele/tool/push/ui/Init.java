@@ -13,7 +13,7 @@ import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
 import com.fangxuele.tool.push.ui.component.TableInCellCheckBoxRenderer;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.listener.AboutListener;
-import com.fangxuele.tool.push.util.Config;
+import com.fangxuele.tool.push.util.ConfigUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -43,8 +43,12 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
+ * <pre>
  * 初始化类
- * Created by rememberber(https://github.com/rememberber) on 2017/6/15.
+ * </pre>
+ *
+ * @author <a href="https://github.com/rememberber">RememBerBer</a>
+ * @since 2017/6/15.
  */
 public class Init {
 
@@ -53,7 +57,7 @@ public class Init {
     /**
      * 配置文件管理器对象
      */
-    public static Config configer = Config.getInstance();
+    public static ConfigUtil configer = ConfigUtil.getInstance();
 
     /**
      * 消息管理
@@ -220,18 +224,18 @@ public class Init {
      */
     public static void initMsgTab(String selectedMsgName) {
         // 初始化，清空所有相关的输入框内容
-        MainWindow.mainWindow.setMsgTypeComboBox("");
-        MainWindow.mainWindow.setMsgTemplateIdTextField("");
-        MainWindow.mainWindow.setMsgTemplateUrlTextField("");
-        MainWindow.mainWindow.setMsgKefuMsgTypeComboBox("");
-        MainWindow.mainWindow.setMsgKefuMsgTitleTextField("");
-        MainWindow.mainWindow.setMsgKefuPicUrlTextField("");
-        MainWindow.mainWindow.setMsgKefuDescTextField("");
-        MainWindow.mainWindow.setMsgKefuUrlTextField("");
-        MainWindow.mainWindow.setMsgTemplateMiniAppidTextField("");
-        MainWindow.mainWindow.setMsgTemplateMiniPagePathTextField("");
-        MainWindow.mainWindow.setMsgTemplateKeyWordTextField("");
-        MainWindow.mainWindow.setMsgYunpianMsgContentTextField("");
+        MainWindow.mainWindow.getMsgTypeComboBox().setSelectedItem("");
+        MainWindow.mainWindow.getMsgTemplateIdTextField().setText("");
+        MainWindow.mainWindow.getMsgTemplateUrlTextField().setText("");
+        MainWindow.mainWindow.getMsgKefuMsgTypeComboBox().setSelectedItem("");
+        MainWindow.mainWindow.getMsgKefuMsgTitleTextField().setText("");
+        MainWindow.mainWindow.getMsgKefuPicUrlTextField().setText("");
+        MainWindow.mainWindow.getMsgKefuDescTextField().setText("");
+        MainWindow.mainWindow.getMsgKefuUrlTextField().setText("");
+        MainWindow.mainWindow.getMsgTemplateMiniAppidTextField().setText("");
+        MainWindow.mainWindow.getMsgTemplateMiniPagePathTextField().setText("");
+        MainWindow.mainWindow.getMsgTemplateKeyWordTextField().setText("");
+        MainWindow.mainWindow.getMsgYunpianMsgContentTextField().setText("");
 
         String msgName;
         if (StringUtils.isEmpty(selectedMsgName)) {
@@ -240,8 +244,8 @@ public class Init {
             msgName = selectedMsgName;
         }
 
-        MainWindow.mainWindow.setMsgNameField(msgName);
-        MainWindow.mainWindow.setPreviewUserField(configer.getPreviewUser());
+        MainWindow.mainWindow.getMsgNameField().setText(msgName);
+        MainWindow.mainWindow.getPreviewUserField().setText(configer.getPreviewUser());
 
         Map<String, String[]> msgMap = msgHisManager.readMsgHis();
 
@@ -249,24 +253,24 @@ public class Init {
             if (msgMap.containsKey(msgName)) {
                 String[] msgDataArray = msgMap.get(msgName);
                 String msgType = msgDataArray[1];
-                MainWindow.mainWindow.setMsgTypeComboBox(msgType);
-                MainWindow.mainWindow.setMsgTemplateIdTextField(msgDataArray[2]);
-                MainWindow.mainWindow.setMsgTemplateUrlTextField(msgDataArray[3]);
+                MainWindow.mainWindow.getMsgTypeComboBox().setSelectedItem(msgType);
+                MainWindow.mainWindow.getMsgTemplateIdTextField().setText(msgDataArray[2]);
+                MainWindow.mainWindow.getMsgTemplateUrlTextField().setText(msgDataArray[3]);
                 String kefuMsgType = msgDataArray[4];
-                MainWindow.mainWindow.setMsgKefuMsgTypeComboBox(kefuMsgType);
-                MainWindow.mainWindow.setMsgKefuMsgTitleTextField(msgDataArray[5]);
-                MainWindow.mainWindow.setMsgKefuPicUrlTextField(msgDataArray[6]);
-                MainWindow.mainWindow.setMsgKefuDescTextField(msgDataArray[7]);
-                MainWindow.mainWindow.setMsgKefuUrlTextField(msgDataArray[8]);
+                MainWindow.mainWindow.getMsgKefuMsgTypeComboBox().setSelectedItem(kefuMsgType);
+                MainWindow.mainWindow.getMsgKefuMsgTitleTextField().setText(msgDataArray[5]);
+                MainWindow.mainWindow.getMsgKefuPicUrlTextField().setText(msgDataArray[6]);
+                MainWindow.mainWindow.getMsgKefuDescTextField().setText(msgDataArray[7]);
+                MainWindow.mainWindow.getMsgKefuUrlTextField().setText(msgDataArray[8]);
                 if (msgDataArray.length > 12) {
-                    MainWindow.mainWindow.setMsgYunpianMsgContentTextField(msgDataArray[12]);
+                    MainWindow.mainWindow.getMsgYunpianMsgContentTextField().setText(msgDataArray[12]);
                 }
                 if (msgDataArray.length > 11) {
-                    MainWindow.mainWindow.setMsgTemplateKeyWordTextField(msgDataArray[11]);
+                    MainWindow.mainWindow.getMsgTemplateKeyWordTextField().setText(msgDataArray[11]);
                 }
                 if (msgDataArray.length > 9) {
-                    MainWindow.mainWindow.setMsgTemplateMiniAppidTextField(msgDataArray[9]);
-                    MainWindow.mainWindow.setMsgTemplateMiniPagePathTextField(msgDataArray[10]);
+                    MainWindow.mainWindow.getMsgTemplateMiniAppidTextField().setText(msgDataArray[9]);
+                    MainWindow.mainWindow.getMsgTemplateMiniPagePathTextField().setText(msgDataArray[10]);
                 }
                 switchMsgType(msgType);
                 switchKefuMsgType(kefuMsgType);
@@ -428,8 +432,8 @@ public class Init {
      * 初始化导入用户tab
      */
     public static void initMemberTab() {
-        MainWindow.mainWindow.setImportFromSqlTextArea(configer.getMemberSql());
-        MainWindow.mainWindow.setMemberFilePathField(configer.getMemberFilePath());
+        MainWindow.mainWindow.getImportFromSqlTextArea().setText(configer.getMemberSql());
+        MainWindow.mainWindow.getMemberFilePathField().setText(configer.getMemberFilePath());
 
         MainWindow.mainWindow.getMemberHisComboBox().removeAllItems();
 
@@ -450,10 +454,10 @@ public class Init {
      * 初始化推送tab
      */
     private static void initPushTab() {
-        MainWindow.mainWindow.setPushMsgName(configer.getMsgName());
-        MainWindow.mainWindow.setPushPageSizeTextField(configer.getRecordPerPage());
-        MainWindow.mainWindow.setPushPagePerThreadTextField(configer.getPagePerThread());
-        MainWindow.mainWindow.setDryRunCheckBox(configer.isDryRun());
+        MainWindow.mainWindow.getPushMsgName().setText(configer.getMsgName());
+        MainWindow.mainWindow.getPushPageSizeTextField().setText(String.valueOf(configer.getRecordPerPage()));
+        MainWindow.mainWindow.getPushPagePerThreadTextField().setText(String.valueOf(configer.getPagePerThread()));
+        MainWindow.mainWindow.getDryRunCheckBox().setSelected(configer.isDryRun());
     }
 
     /**
@@ -461,17 +465,17 @@ public class Init {
      */
     private static void initScheduleTab() {
         // 开始
-        MainWindow.mainWindow.setRunAtThisTimeRadioButton(configer.isRadioStartAt());
-        MainWindow.mainWindow.setStartAtThisTimeTextField(configer.getTextStartAt());
+        MainWindow.mainWindow.getRunAtThisTimeRadioButton().setSelected(configer.isRadioStartAt());
+        MainWindow.mainWindow.getStartAtThisTimeTextField().setText(configer.getTextStartAt());
 
         //每天
-        MainWindow.mainWindow.setRunPerDayRadioButton(configer.isRadioPerDay());
-        MainWindow.mainWindow.setStartPerDayTextField(configer.getTextPerDay());
+        MainWindow.mainWindow.getRunPerDayRadioButton().setSelected(configer.isRadioPerDay());
+        MainWindow.mainWindow.getStartPerDayTextField().setText(configer.getTextPerDay());
 
         // 每周
-        MainWindow.mainWindow.setRunPerWeekRadioButton(configer.isRadioPerWeek());
-        MainWindow.mainWindow.setSchedulePerWeekComboBox(configer.getTextPerWeekWeek());
-        MainWindow.mainWindow.setStartPerWeekTextField(configer.getTextPerWeekTime());
+        MainWindow.mainWindow.getRunPerWeekRadioButton().setSelected(configer.isRadioPerWeek());
+        MainWindow.mainWindow.getSchedulePerWeekComboBox().setSelectedItem(configer.getTextPerWeekWeek());
+        MainWindow.mainWindow.getStartPerWeekTextField().setText(configer.getTextPerWeekTime());
     }
 
     /**
@@ -516,49 +520,49 @@ public class Init {
      */
     public static void initSettingTab() {
         // 常规
-        MainWindow.mainWindow.setAutoCheckUpdateCheckBox(configer.isAutoCheckUpdate());
+        MainWindow.mainWindow.getAutoCheckUpdateCheckBox().setSelected(configer.isAutoCheckUpdate());
 
         // 微信公众号
-        MainWindow.mainWindow.setWechatAppIdTextField(configer.getWechatAppId());
-        MainWindow.mainWindow.setWechatAppSecretPasswordField(configer.getWechatAppSecret());
-        MainWindow.mainWindow.setWechatTokenPasswordField(configer.getWechatToken());
-        MainWindow.mainWindow.setWechatAesKeyPasswordField(configer.getWechatAesKey());
+        MainWindow.mainWindow.getWechatAppIdTextField().setText(configer.getWechatAppId());
+        MainWindow.mainWindow.getWechatAppSecretPasswordField().setText(configer.getWechatAppSecret());
+        MainWindow.mainWindow.getWechatTokenPasswordField().setText(configer.getWechatToken());
+        MainWindow.mainWindow.getWechatAesKeyPasswordField().setText(configer.getWechatAesKey());
 
         // 微信小程序
-        MainWindow.mainWindow.setMiniAppAppIdTextField(configer.getMiniAppAppId());
-        MainWindow.mainWindow.setMiniAppAppSecretPasswordField(configer.getMiniAppAppSecret());
-        MainWindow.mainWindow.setMiniAppTokenPasswordField(configer.getMiniAppToken());
-        MainWindow.mainWindow.setMiniAppAesKeyPasswordField(configer.getMiniAppAesKey());
+        MainWindow.mainWindow.getMiniAppAppIdTextField().setText(configer.getMiniAppAppId());
+        MainWindow.mainWindow.getMiniAppAppSecretPasswordField().setText(configer.getMiniAppAppSecret());
+        MainWindow.mainWindow.getMiniAppTokenPasswordField().setText(configer.getMiniAppToken());
+        MainWindow.mainWindow.getMiniAppAesKeyPasswordField().setText(configer.getMiniAppAesKey());
 
         // 阿里云短信
-        MainWindow.mainWindow.setAliyunAccessKeyIdTextField(configer.getAliyunAccessKeyId());
-        MainWindow.mainWindow.setAliyunAccessKeySecretTextField(configer.getAliyunAccessKeySecret());
-        MainWindow.mainWindow.setAliyunSignTextField(configer.getAliyunSign());
+        MainWindow.mainWindow.getAliyunAccessKeyIdTextField().setText(configer.getAliyunAccessKeyId());
+        MainWindow.mainWindow.getAliyunAccessKeySecretTextField().setText(configer.getAliyunAccessKeySecret());
+        MainWindow.mainWindow.getAliyunSignTextField().setText(configer.getAliyunSign());
 
         // 阿里大于
-        MainWindow.mainWindow.setAliServerUrlTextField(configer.getAliServerUrl());
-        MainWindow.mainWindow.setAliAppKeyPasswordField(configer.getAliAppKey());
-        MainWindow.mainWindow.setAliAppSecretPasswordField(configer.getAliAppSecret());
-        MainWindow.mainWindow.setAliSignTextField(configer.getAliSign());
+        MainWindow.mainWindow.getAliServerUrlTextField().setText(configer.getAliServerUrl());
+        MainWindow.mainWindow.getAliAppKeyPasswordField().setText(configer.getAliAppKey());
+        MainWindow.mainWindow.getAliAppSecretPasswordField().setText(configer.getAliAppSecret());
+        MainWindow.mainWindow.getAliSignTextField().setText(configer.getAliSign());
 
         // 腾讯云短信
-        MainWindow.mainWindow.setTxyunAppIdTextField(configer.getTxyunAppId());
-        MainWindow.mainWindow.setTxyunAppKeyTextField(configer.getTxyunAppKey());
-        MainWindow.mainWindow.setTxyunSignTextField(configer.getTxyunSign());
+        MainWindow.mainWindow.getTxyunAppIdTextField().setText(configer.getTxyunAppId());
+        MainWindow.mainWindow.getTxyunAppKeyTextField().setText(configer.getTxyunAppKey());
+        MainWindow.mainWindow.getTxyunSignTextField().setText(configer.getTxyunSign());
 
         // 云片网短信
-        MainWindow.mainWindow.setYunpianApiKeyTextField(configer.getYunpianApiKey());
+        MainWindow.mainWindow.getYunpianApiKeyTextField().setText(configer.getYunpianApiKey());
 
         // MySQL
-        MainWindow.mainWindow.setMysqlUrlTextField(configer.getMysqlUrl());
-        MainWindow.mainWindow.setMysqlDatabaseTextField(configer.getMysqlDatabase());
-        MainWindow.mainWindow.setMysqlUserTextField(configer.getMysqlUser());
-        MainWindow.mainWindow.setMysqlPasswordField(configer.getMysqlPassword());
+        MainWindow.mainWindow.getMysqlUrlTextField().setText(configer.getMysqlUrl());
+        MainWindow.mainWindow.getMysqlDatabaseTextField().setText(configer.getMysqlDatabase());
+        MainWindow.mainWindow.getMysqlUserTextField().setText(configer.getMysqlUser());
+        MainWindow.mainWindow.getMysqlPasswordField().setText(configer.getMysqlPassword());
 
         // 外观
-        MainWindow.mainWindow.setSettingThemeComboBox(configer.getTheme());
-        MainWindow.mainWindow.setSettingFontNameComboBox(configer.getFont());
-        MainWindow.mainWindow.setSettingFontSizeComboBox(configer.getFontSize());
+        MainWindow.mainWindow.getSettingThemeComboBox().setSelectedItem(configer.getTheme());
+        MainWindow.mainWindow.getSettingFontNameComboBox().setSelectedItem(configer.getFont());
+        MainWindow.mainWindow.getSettingFontSizeComboBox().setSelectedItem(configer.getFontSize());
 
         // 历史消息管理
         String[] headerNames = {"选择", "消息名称"};

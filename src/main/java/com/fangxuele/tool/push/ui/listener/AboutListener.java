@@ -25,7 +25,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by rememberber(https://github.com/rememberber) on 2017/6/23.
+ * <pre>
+ * AboutPanel Listener
+ * </pre>
+ *
+ * @author <a href="https://github.com/rememberber">RememBerBer</a>
+ * @since 2017/6/23.
  */
 public class AboutListener {
     private static final Log logger = LogFactory.get();
