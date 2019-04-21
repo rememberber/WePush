@@ -18,16 +18,12 @@ import com.fangxuele.tool.push.util.SystemUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import com.sun.java.swing.plaf.motif.MotifLookAndFeel;
-import com.sun.java.swing.plaf.windows.WindowsLookAndFeel;
 import org.apache.commons.lang3.StringUtils;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
-import javax.swing.plaf.metal.MetalLookAndFeel;
-import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.html.HTMLEditorKit;
@@ -129,18 +125,6 @@ public class Init {
                     break;
                 case "系统默认":
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                    break;
-                case "Windows":
-                    UIManager.setLookAndFeel(WindowsLookAndFeel.class.getName());
-                    break;
-                case "Nimbus":
-                    UIManager.setLookAndFeel(NimbusLookAndFeel.class.getName());
-                    break;
-                case "Metal":
-                    UIManager.setLookAndFeel(MetalLookAndFeel.class.getName());
-                    break;
-                case "Motif":
-                    UIManager.setLookAndFeel(MotifLookAndFeel.class.getName());
                     break;
                 case "Darcula(推荐)":
                 default:
