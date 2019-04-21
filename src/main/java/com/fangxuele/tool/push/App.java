@@ -22,7 +22,8 @@ public class App {
         Init.initTheme();
         mainFrame = new MainFrame();
         mainFrame.init();
-        mainFrame.add(new LoadingForm().getLoadingPanel());
+        JPanel loadingPanel = new LoadingForm().getLoadingPanel();
+        mainFrame.add(loadingPanel);
         mainFrame.pack();
         mainFrame.setVisible(true);
 
@@ -33,6 +34,7 @@ public class App {
             Init.initOthers();
             mainFrame.setContentPane(MainWindow.mainWindow.mainPanel);
             mainFrame.addListeners();
+            mainFrame.remove(loadingPanel);
         });
     }
 }
