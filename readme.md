@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/rememberber/WePush">
-   <img alt="WePush-Logo" src="https://github.com/rememberber/WePush/blob/master/src/main/resources/icon/logo-md.png?raw=true">
+   <img alt="WePush-Logo" src="https://raw.githubusercontent.com/rememberber/WePush/master/src/main/resources/icon/logo-md.png">
   </a>
 </p>
 
@@ -17,65 +17,65 @@
 
 ### 截图速览
 <p align="center">
-  <a href="https://github.com/rememberber/WePush">
-   <img alt="WePush" src="https://github.com/rememberber/WePush/blob/master/screen_shoot/%E5%9B%BE%E5%83%8F%20198.png?raw=true">
+  <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20198.png">
+   <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20198.png">
   </a>
 </p>  
 <p align="center">
-  <a href="https://github.com/rememberber/WePush">
-   <img alt="WePush" src="https://github.com/rememberber/WePush/blob/master/screen_shoot/%E5%9B%BE%E5%83%8F%20199.png?raw=true">
+  <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20199.png">
+   <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20199.png">
   </a>
 </p>
 <p align="center">
-  <a href="https://github.com/rememberber/WePush">
-   <img alt="WePush" src="https://github.com/rememberber/WePush/blob/master/screen_shoot/%E5%9B%BE%E5%83%8F%20200.png?raw=true">
+  <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20200.png">
+   <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20200.png">
   </a>
 </p>
 <p align="center">
-  <a href="https://github.com/rememberber/WePush">
-   <img alt="WePush" src="https://github.com/rememberber/WePush/blob/master/screen_shoot/%E5%9B%BE%E5%83%8F%20202.png?raw=true">
+  <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20202.png">
+   <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20202.png">
   </a>
 </p>
 <p align="center">
-  <a href="https://github.com/rememberber/WePush">
-   <img alt="WePush" src="https://github.com/rememberber/WePush/blob/master/screen_shoot/%E5%9B%BE%E5%83%8F%20204.png?raw=true">
+  <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20204.png">
+   <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20204.png">
   </a>
 </p>
 <p align="center">
-  <a href="https://github.com/rememberber/WePush">
-   <img alt="WePush" src="https://github.com/rememberber/WePush/blob/master/screen_shoot/%E5%9B%BE%E5%83%8F%20205.png?raw=true">
+  <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20205.png">
+   <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20205.png">
   </a>
 </p>
 <p align="center">
-  <a href="https://github.com/rememberber/WePush">
-   <img alt="WePush" src="https://github.com/rememberber/WePush/blob/master/screen_shoot/%E5%9B%BE%E5%83%8F%20206.png?raw=true">
+  <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20206.png">
+   <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20206.png">
   </a>
 </p>
 <p align="center">
-  <a href="https://github.com/rememberber/WePush">
-   <img alt="WePush" src="https://github.com/rememberber/WePush/blob/master/screen_shoot/%E5%9B%BE%E5%83%8F%20207.png?raw=true">
+  <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20207.png">
+   <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20207.png">
   </a>
 </p>
 
 ### 更多皮肤
 <p align="center">
-  <a href="https://github.com/rememberber/WePush">
-   <img alt="WePush" src="https://github.com/rememberber/WePush/blob/master/screen_shoot/Image001.png?raw=true">
+  <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/Image001.png">
+   <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/Image001.png">
   </a>
 </p> 
 <p align="center">
-  <a href="https://github.com/rememberber/WePush">
-   <img alt="WePush" src="https://github.com/rememberber/WePush/blob/master/screen_shoot/Image002.png?raw=true">
+  <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/Image002.png">
+   <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/Image002.png">
   </a>
 </p> 
 <p align="center">
-  <a href="https://github.com/rememberber/WePush">
-   <img alt="WePush" src="https://github.com/rememberber/WePush/blob/master/screen_shoot/Image003.png?raw=true">
+  <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/Image003.png">
+   <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/Image003.png">
   </a>
 </p> 
 <p align="center">
-  <a href="https://github.com/rememberber/WePush">
-   <img alt="WePush" src="https://github.com/rememberber/WePush/blob/master/screen_shoot/Image1.png?raw=true">
+  <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/Image1.png">
+   <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/Image1.png">
   </a>
 </p> 
 

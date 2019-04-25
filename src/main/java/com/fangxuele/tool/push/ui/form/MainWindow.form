@@ -1925,12 +1925,8 @@
                               <model>
                                 <item value="Darcula(推荐)"/>
                                 <item value="BeautyEye"/>
-                                <item value="weblaf"/>
                                 <item value="系统默认"/>
-                                <item value="Windows"/>
-                                <item value="Nimbus"/>
-                                <item value="Metal"/>
-                                <item value="Motif"/>
+                                <item value="weblaf"/>
                               </model>
                             </properties>
                           </component>

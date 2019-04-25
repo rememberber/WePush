@@ -924,12 +924,8 @@ public class MainWindow {
         final DefaultComboBoxModel defaultComboBoxModel5 = new DefaultComboBoxModel();
         defaultComboBoxModel5.addElement("Darcula(推荐)");
         defaultComboBoxModel5.addElement("BeautyEye");
-        defaultComboBoxModel5.addElement("weblaf");
         defaultComboBoxModel5.addElement("系统默认");
-        defaultComboBoxModel5.addElement("Windows");
-        defaultComboBoxModel5.addElement("Nimbus");
-        defaultComboBoxModel5.addElement("Metal");
-        defaultComboBoxModel5.addElement("Motif");
+        defaultComboBoxModel5.addElement("weblaf");
         settingThemeComboBox.setModel(defaultComboBoxModel5);
         panel20.add(settingThemeComboBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label30 = new JLabel();
