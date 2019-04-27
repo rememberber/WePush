@@ -21,12 +21,11 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
     /**
      * 构造函数
      *
-     * @param pageFrom 起始页
-     * @param pageTo   截止页
-     * @param pageSize 页大小
+     * @param startIndex 起始页
+     * @param endIndex   截止页
      */
-    TxYunSmsMsgServiceThread(int pageFrom, int pageTo, int pageSize) {
-        super(pageFrom, pageTo, pageSize);
+    TxYunSmsMsgServiceThread(int startIndex, int endIndex) {
+        super(startIndex, endIndex);
     }
 
     @Override

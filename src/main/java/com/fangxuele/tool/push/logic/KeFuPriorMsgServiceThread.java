@@ -17,12 +17,11 @@ public class KeFuPriorMsgServiceThread extends BaseMsgServiceThread {
     /**
      * 构造函数
      *
-     * @param pageFrom 起始页
-     * @param pageTo   截止页
-     * @param pageSize 页大小
+     * @param pageFrom 起始索引
+     * @param pageTo   截止索引
      */
-    public KeFuPriorMsgServiceThread(int pageFrom, int pageTo, int pageSize) {
-        super(pageFrom, pageTo, pageSize);
+    public KeFuPriorMsgServiceThread(int pageFrom, int pageTo) {
+        super(pageFrom, pageTo);
     }
 
     @Override

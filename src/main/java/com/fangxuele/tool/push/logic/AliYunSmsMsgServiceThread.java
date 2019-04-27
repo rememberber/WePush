@@ -25,12 +25,11 @@ public class AliYunSmsMsgServiceThread extends BaseMsgServiceThread {
     /**
      * 构造函数
      *
-     * @param pageFrom 起始页
-     * @param pageTo   截止页
-     * @param pageSize 页大小
+     * @param startIndex 起始索引
+     * @param endIndex   截止索引
      */
-    public AliYunSmsMsgServiceThread(int pageFrom, int pageTo, int pageSize) {
-        super(pageFrom, pageTo, pageSize);
+    public AliYunSmsMsgServiceThread(int startIndex, int endIndex) {
+        super(startIndex, endIndex);
     }
 
     @Override

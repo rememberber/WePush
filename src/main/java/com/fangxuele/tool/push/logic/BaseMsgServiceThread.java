@@ -21,14 +21,14 @@ public class BaseMsgServiceThread extends Thread {
     public static final Log logger = LogFactory.get();
 
     /**
-     * 起始页号
+     * 起始索引
      */
-    private int pageFrom;
+    private int startIndex;
 
     /**
-     * 截至页号
+     * 截止索引
      */
-    private int pageTo;
+    private int endIndex;
 
     /**
      * 页大小
@@ -68,14 +68,12 @@ public class BaseMsgServiceThread extends Thread {
     /**
      * 构造函数
      *
-     * @param pageFrom 起始页
-     * @param pageTo   截止页
-     * @param pageSize 页大小
+     * @param start 起始页
+     * @param end   截止页
      */
-    public BaseMsgServiceThread(int pageFrom, int pageTo, int pageSize) {
-        this.pageFrom = pageFrom;
-        this.pageTo = pageTo;
-        this.pageSize = pageSize;
+    public BaseMsgServiceThread(int start, int end) {
+        this.startIndex = start;
+        this.endIndex = end;
     }
 
     @Override
@@ -87,17 +85,10 @@ public class BaseMsgServiceThread extends Thread {
      * 初始化当前线程
      */
     void initCurrentThread() {
-        PushManage.console("线程" + this.getName() + "负责处理:" + pageFrom + "-" +
-                pageTo + "页的数据");
+        PushManage.console("线程" + this.getName() + "负责处理:" + startIndex + "-" +
+                endIndex + "的分片数据");
 
-        int end = pageTo * pageSize + pageSize;
-        if (PushData.totalRecords < end) {
-            end = (int) PushData.totalRecords;
-        }
-
-        int start = pageFrom * pageSize;
-
-        list = PushData.toSendList.subList(start, end);
+        list = PushData.toSendList.subList(startIndex, endIndex);
 
         // 初始化线程列表行
         tableModel = (DefaultTableModel) MainWindow.mainWindow.getPushThreadTable().getModel();
@@ -113,8 +104,8 @@ public class BaseMsgServiceThread extends Thread {
      * 当前线程结束
      */
     void currentThreadFinish() {
-        PushManage.console(this.getName() + "已处理完第" + pageFrom + "-" +
-                pageTo + "页的数据");
+        PushManage.console(this.getName() + "已处理完第" + startIndex + "-" +
+                endIndex + "页的数据");
 
         PushData.increaseStopedThread();
     }
@@ -135,20 +126,20 @@ public class BaseMsgServiceThread extends Thread {
         this.pageSize = pageSize;
     }
 
-    public int getPageFrom() {
-        return pageFrom;
+    public int getStartIndex() {
+        return startIndex;
     }
 
-    public void setPageFrom(int pageFrom) {
-        this.pageFrom = pageFrom;
+    public void setStartIndex(int startIndex) {
+        this.startIndex = startIndex;
     }
 
-    public int getPageTo() {
-        return pageTo;
+    public int getEndIndex() {
+        return endIndex;
     }
 
-    public void setPageTo(int pageTo) {
-        this.pageTo = pageTo;
+    public void setEndIndex(int endIndex) {
+        this.endIndex = endIndex;
     }
 
     public int getTableRow() {

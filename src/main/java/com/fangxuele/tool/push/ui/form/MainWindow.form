@@ -1061,20 +1061,20 @@
                       <orientation value="1"/>
                     </properties>
                   </component>
-                  <component id="d6e15" class="javax.swing.JLabel" binding="pushTotalThreadLabel">
+                  <component id="d6e15" class="javax.swing.JLabel" binding="jvmMemoryLabel">
                     <constraints>
                       <grid row="3" column="8" row-span="1" col-span="5" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <text value="需要线程宝宝个数："/>
+                      <text value="JVM内存占用：--"/>
                     </properties>
                   </component>
-                  <component id="2caef" class="javax.swing.JLabel" binding="pushTotalPageLabel">
+                  <component id="2caef" class="javax.swing.JLabel" binding="availableProcessorLabel">
                     <constraints>
                       <grid row="2" column="8" row-span="1" col-span="5" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <text value="总页数："/>
+                      <text value="可用处理器核心：--"/>
                     </properties>
                   </component>
                   <component id="a36cb" class="javax.swing.JLabel" binding="pushTotalCountLabel">
@@ -1082,7 +1082,7 @@
                       <grid row="1" column="8" row-span="1" col-span="5" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <text value="总用户数："/>
+                      <text value="总用户数：0"/>
                     </properties>
                   </component>
                   <component id="ec315" class="javax.swing.JLabel" binding="pushMsgName">
@@ -1135,10 +1135,10 @@
                           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
-                          <text value="每页分配用户数"/>
+                          <text value="最大线程池"/>
                         </properties>
                       </component>
-                      <component id="415de" class="javax.swing.JTextField" binding="pushPageSizeTextField">
+                      <component id="415de" class="javax.swing.JTextField" binding="maxThreadPoolTextField">
                         <constraints>
                           <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                             <preferred-size width="100" height="-1"/>
@@ -1151,10 +1151,10 @@
                           <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
-                          <text value="每个线程分配的页数"/>
+                          <text value="线程数"/>
                         </properties>
                       </component>
-                      <component id="e020b" class="javax.swing.JTextField" binding="pushPagePerThreadTextField">
+                      <component id="e020b" class="javax.swing.JTextField" binding="threadCountTextField">
                         <constraints>
                           <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                             <preferred-size width="100" height="-1"/>

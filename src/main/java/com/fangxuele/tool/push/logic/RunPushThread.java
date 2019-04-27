@@ -53,40 +53,33 @@ public class RunPushThread extends Thread {
 
         PushManage.console("推送开始……");
 
-        // 页大小
-        int pageSize = Integer.parseInt(MainWindow.mainWindow.getPushPageSizeTextField().getText());
-        Init.configer.setRecordPerPage(pageSize);
-        Init.configer.save();
-        PushManage.console("页大小：" + pageSize);
-
         // 拷贝准备的目标用户
         PushData.toSendList.addAll(PushData.allUser);
         // 总记录数
         long totalCount = PushData.toSendList.size();
         PushData.totalRecords = totalCount;
 
-        MainWindow.mainWindow.getPushTotalCountLabel().setText("总用户数：" + totalCount);
+        MainWindow.mainWindow.getPushTotalCountLabel().setText("消息总数：" + totalCount);
         MainWindow.mainWindow.getPushTotalProgressBar().setMaximum((int) totalCount);
-        PushManage.console("总用户数：" + totalCount);
-        // 总页数
-        int totalPage = Long.valueOf((totalCount + pageSize - 1) / pageSize).intValue();
-        MainWindow.mainWindow.getPushTotalPageLabel().setText("总页数：" + totalPage);
-        PushManage.console("总页数：" + totalPage);
+        PushManage.console("消息总数：" + totalCount);
+        // 可用处理器核心数量
+        MainWindow.mainWindow.getAvailableProcessorLabel().setText("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
+        PushManage.console("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
 
-        // 每个线程分配多少页
-        int pagePerThread = Integer.parseInt(MainWindow.mainWindow.getPushPagePerThreadTextField().getText());
-        Init.configer.setPagePerThread(pagePerThread);
+        // 线程池大小
+        Init.configer.setPagePerThread(Integer.parseInt(MainWindow.mainWindow.getMaxThreadPoolTextField().getText()));
         Init.configer.save();
-        PushManage.console("每个线程分配：" + pagePerThread + "页");
+        PushManage.console("线程池大小：" + MainWindow.mainWindow.getMaxThreadPoolTextField().getText());
 
-        // 需要多少个线程
-        int threadCount = (totalPage + pagePerThread - 1) / pagePerThread;
+        // JVM内存占用
+        MainWindow.mainWindow.getJvmMemoryLabel().setText("JVM内存占用：" + Runtime.getRuntime().maxMemory() + "/" + Runtime.getRuntime().totalMemory());
+        // 线程数
+        int threadCount = Integer.parseInt(MainWindow.mainWindow.getThreadCountTextField().getText());
         PushData.threadCount = threadCount;
-        MainWindow.mainWindow.getPushTotalThreadLabel().setText("需要线程宝宝个数：" + threadCount);
-        PushManage.console("需要：" + threadCount + "个线程宝宝齐力合作");
+        PushManage.console("需要：" + MainWindow.mainWindow.getThreadCountTextField().getText() + "个线程宝宝齐力合作");
 
         // 初始化线程table
-        String[] headerNames = {"线程", "页数区间", "成功", "失败", "总数", "当前进度"};
+        String[] headerNames = {"线程", "分片区间", "成功", "失败", "总数", "当前进度"};
         DefaultTableModel tableModel = new DefaultTableModel(null, headerNames);
         MainWindow.mainWindow.getPushThreadTable().setModel(tableModel);
         MainWindow.mainWindow.getPushThreadTable().getColumn("当前进度").setCellRenderer(new TableInCellProgressBarRenderer());
@@ -100,12 +93,19 @@ public class RunPushThread extends Thread {
         Object[] data;
         String msgType = Objects.requireNonNull(MainWindow.mainWindow.getMsgTypeComboBox().getSelectedItem()).toString();
 
-        ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(20, 100 * Runtime.getRuntime().availableProcessors());
+        int maxThreadPoolSize = Integer.parseInt(MainWindow.mainWindow.getMaxThreadPoolTextField().getText());
+        ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(maxThreadPoolSize, maxThreadPoolSize);
         BaseMsgServiceThread thread = null;
+        // 每个线程分配
+        int perThread = (int) (totalCount / threadCount) + 1;
         for (int i = 0; i < threadCount; i++) {
+            int startIndex = i * perThread;
+            int endIndex = i * perThread + perThread;
+            if (endIndex > totalCount - 1) {
+                endIndex = (int) (totalCount - 1);
+            }
             if (MessageTypeConsts.MP_TEMPLATE.equals(msgType)) {
-                thread = new TemplateMsgMpServiceThread(i * pagePerThread,
-                        i * pagePerThread + pagePerThread - 1, pageSize);
+                thread = new TemplateMsgMpServiceThread(startIndex, endIndex);
 
                 WxMpService wxMpService = PushManage.getWxMpService();
                 if (wxMpService.getWxMpConfigStorage() == null) {
@@ -113,8 +113,7 @@ public class RunPushThread extends Thread {
                 }
                 thread.setWxMpService(wxMpService);
             } else if (MessageTypeConsts.MA_TEMPLATE.equals(msgType)) {
-                thread = new TemplateMsgMaServiceThread(i * pagePerThread,
-                        i * pagePerThread + pagePerThread - 1, pageSize);
+                thread = new TemplateMsgMaServiceThread(startIndex, endIndex);
 
                 WxMaService wxMaService = PushManage.getWxMaService();
                 if (wxMaService.getWxMaConfig() == null) {
@@ -122,8 +121,7 @@ public class RunPushThread extends Thread {
                 }
                 ((TemplateMsgMaServiceThread) thread).setWxMaService(wxMaService);
             } else if (MessageTypeConsts.KEFU.equals(msgType)) {
-                thread = new KeFuMsgServiceThread(i * pagePerThread,
-                        i * pagePerThread + pagePerThread - 1, pageSize);
+                thread = new KeFuMsgServiceThread(startIndex, endIndex);
 
                 WxMpService wxMpService = PushManage.getWxMpService();
                 if (wxMpService.getWxMpConfigStorage() == null) {
@@ -131,8 +129,7 @@ public class RunPushThread extends Thread {
                 }
                 thread.setWxMpService(wxMpService);
             } else if (MessageTypeConsts.KEFU_PRIORITY.equals(msgType)) {
-                thread = new KeFuPriorMsgServiceThread(i * pagePerThread,
-                        i * pagePerThread + pagePerThread - 1, pageSize);
+                thread = new KeFuPriorMsgServiceThread(startIndex, endIndex);
 
                 WxMpService wxMpService = PushManage.getWxMpService();
                 if (wxMpService.getWxMpConfigStorage() == null) {
@@ -140,17 +137,13 @@ public class RunPushThread extends Thread {
                 }
                 thread.setWxMpService(wxMpService);
             } else if (MessageTypeConsts.ALI_TEMPLATE.equals(msgType)) {
-                thread = new AliDayuTemplateSmsMsgServiceThread(i * pagePerThread,
-                        i * pagePerThread + pagePerThread - 1, pageSize);
+                thread = new AliDayuTemplateSmsMsgServiceThread(startIndex, endIndex);
             } else if (MessageTypeConsts.ALI_YUN.equals(msgType)) {
-                thread = new AliYunSmsMsgServiceThread(i * pagePerThread,
-                        i * pagePerThread + pagePerThread - 1, pageSize);
+                thread = new AliYunSmsMsgServiceThread(startIndex, endIndex);
             } else if (MessageTypeConsts.TX_YUN.equals(msgType)) {
-                thread = new TxYunSmsMsgServiceThread(i * pagePerThread,
-                        i * pagePerThread + pagePerThread - 1, pageSize);
+                thread = new TxYunSmsMsgServiceThread(startIndex, endIndex);
             } else if (MessageTypeConsts.YUN_PIAN.equals(msgType)) {
-                thread = new YunpianSmsMsgServiceThread(i * pagePerThread,
-                        i * pagePerThread + pagePerThread - 1, pageSize);
+                thread = new YunpianSmsMsgServiceThread(startIndex, endIndex);
             }
 
             thread.setTableRow(i);
@@ -158,7 +151,7 @@ public class RunPushThread extends Thread {
 
             data = new Object[6];
             data[0] = thread.getName();
-            data[1] = i * pagePerThread + "-" + (i * pagePerThread + pagePerThread - 1);
+            data[1] = startIndex + "-" + endIndex;
             data[5] = 0;
             tableModel.addRow(data);
 

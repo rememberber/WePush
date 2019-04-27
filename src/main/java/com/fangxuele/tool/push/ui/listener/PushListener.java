@@ -224,7 +224,7 @@ public class PushListener {
         })));
 
         // 每页分配用户数失去焦点
-        MainWindow.mainWindow.getPushPageSizeTextField().addFocusListener(new FocusAdapter() {
+        MainWindow.mainWindow.getMaxThreadPoolTextField().addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
                 try {
@@ -240,7 +240,7 @@ public class PushListener {
         });
 
         // 每页分配用户数键入回车
-        MainWindow.mainWindow.getPushPageSizeTextField().addKeyListener(new KeyAdapter() {
+        MainWindow.mainWindow.getMaxThreadPoolTextField().addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -258,7 +258,7 @@ public class PushListener {
         });
 
         // 每个线程分配的页数失去焦点
-        MainWindow.mainWindow.getPushPagePerThreadTextField().addFocusListener(new FocusAdapter() {
+        MainWindow.mainWindow.getThreadCountTextField().addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
                 try {
@@ -274,7 +274,7 @@ public class PushListener {
         });
 
         // 每个线程分配的页数键入回车
-        MainWindow.mainWindow.getPushPagePerThreadTextField().addKeyListener(new KeyAdapter() {
+        MainWindow.mainWindow.getThreadCountTextField().addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -295,19 +295,19 @@ public class PushListener {
 
     static void refreshPushInfo() {
         // 页大小
-        int pageSize = Integer.parseInt(MainWindow.mainWindow.getPushPageSizeTextField().getText());
+        int pageSize = Integer.parseInt(MainWindow.mainWindow.getMaxThreadPoolTextField().getText());
         // 总记录数
         long totalCount = PushData.allUser.size();
         MainWindow.mainWindow.getPushTotalCountLabel().setText("总用户数：" + totalCount);
         MainWindow.mainWindow.getPushTotalProgressBar().setMaximum((int) totalCount);
         // 总页数
         int totalPage = Long.valueOf((totalCount + pageSize - 1) / pageSize).intValue();
-        MainWindow.mainWindow.getPushTotalPageLabel().setText("总页数：" + totalPage);
+        MainWindow.mainWindow.getAvailableProcessorLabel().setText("总页数：" + totalPage);
         // 每个线程分配多少页
-        int pagePerThread = Integer.parseInt(MainWindow.mainWindow.getPushPagePerThreadTextField().getText());
+        int pagePerThread = Integer.parseInt(MainWindow.mainWindow.getThreadCountTextField().getText());
         // 需要多少个线程
         int threadCount = (totalPage + pagePerThread - 1) / pagePerThread;
-        MainWindow.mainWindow.getPushTotalThreadLabel().setText("需要线程宝宝个数：" + threadCount);
+        MainWindow.mainWindow.getJvmMemoryLabel().setText("需要线程宝宝个数：" + threadCount);
     }
 
     /**
@@ -322,13 +322,13 @@ public class PushListener {
 
             return false;
         }
-        if ("0".equals(MainWindow.mainWindow.getPushPageSizeTextField().getText()) || StringUtils.isEmpty(MainWindow.mainWindow.getPushPageSizeTextField().getText())) {
+        if ("0".equals(MainWindow.mainWindow.getMaxThreadPoolTextField().getText()) || StringUtils.isEmpty(MainWindow.mainWindow.getMaxThreadPoolTextField().getText())) {
             JOptionPane.showMessageDialog(MainWindow.mainWindow.getPushPanel(), "请设置每页分配用户数！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
 
             return false;
         }
-        if ("0".equals(MainWindow.mainWindow.getPushPagePerThreadTextField().getText()) || StringUtils.isEmpty(MainWindow.mainWindow.getPushPagePerThreadTextField().getText())) {
+        if ("0".equals(MainWindow.mainWindow.getThreadCountTextField().getText()) || StringUtils.isEmpty(MainWindow.mainWindow.getThreadCountTextField().getText())) {
             JOptionPane.showMessageDialog(MainWindow.mainWindow.getPushPanel(), "请设置每个线程分配的页数！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
 
