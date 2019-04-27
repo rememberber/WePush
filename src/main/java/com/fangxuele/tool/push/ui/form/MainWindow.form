@@ -1092,7 +1092,7 @@
                     <properties>
                       <font size="24"/>
                       <foreground color="-13587376"/>
-                      <text value="五彩城跳跳糖大蹦床定点推送"/>
+                      <text value="消息标题"/>
                     </properties>
                   </component>
                   <component id="132d3" class="javax.swing.JLabel">
