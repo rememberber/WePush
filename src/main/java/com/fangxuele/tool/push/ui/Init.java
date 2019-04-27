@@ -439,8 +439,8 @@ public class Init {
      */
     private static void initPushTab() {
         MainWindow.mainWindow.getPushMsgName().setText(configer.getMsgName());
-        MainWindow.mainWindow.getMaxThreadPoolTextField().setText(String.valueOf(configer.getRecordPerPage()));
-        MainWindow.mainWindow.getThreadCountTextField().setText(String.valueOf(configer.getPagePerThread()));
+        MainWindow.mainWindow.getMaxThreadPoolTextField().setText(String.valueOf(configer.getMaxThreadPool()));
+        MainWindow.mainWindow.getThreadCountTextField().setText(String.valueOf(configer.getThreadCount()));
         MainWindow.mainWindow.getDryRunCheckBox().setSelected(configer.isDryRun());
     }
 

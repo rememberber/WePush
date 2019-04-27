@@ -52,9 +52,9 @@ public class ConfigUtil {
 
     private int totalThread;
 
-    private int recordPerPage;
+    private int maxThreadPool;
 
-    private int pagePerThread;
+    private int threadCount;
 
     private boolean dryRun;
 
@@ -204,8 +204,8 @@ public class ConfigUtil {
         props.setProperty("push.totalRecord", "0");
         props.setProperty("push.totalPage", "0");
         props.setProperty("push.totalThread", "0");
-        props.setProperty("push.recordPerPage", "500");
-        props.setProperty("push.pagePerThread", "3");
+        props.setProperty("push.maxThreadPool", "500");
+        props.setProperty("push.threadCount", "3");
         props.setProperty("push.dryRun", "true");
         props.setProperty("schedule.radioStartAt", "false");
         props.setProperty("schedule.textStartAt", "");
@@ -343,20 +343,20 @@ public class ConfigUtil {
         props.setProperty("push.totalThread", totalThread);
     }
 
-    public int getRecordPerPage() {
-        return props.getInt("push.recordPerPage");
+    public int getMaxThreadPool() {
+        return props.getInt("push.maxThreadPool") == null ? 100 : props.getInt("push.maxThreadPool");
     }
 
-    public void setRecordPerPage(int recordPerPage) {
-        props.setProperty("push.recordPerPage", recordPerPage);
+    public void setMaxThreadPool(int maxThreadPool) {
+        props.setProperty("push.maxThreadPool", maxThreadPool);
     }
 
-    public int getPagePerThread() {
-        return props.getInt("push.pagePerThread");
+    public int getThreadCount() {
+        return props.getInt("push.threadCount") == null ? 100 : props.getInt("push.threadCount");
     }
 
-    public void setPagePerThread(int pagePerThread) {
-        props.setProperty("push.pagePerThread", pagePerThread);
+    public void setThreadCount(int threadCount) {
+        props.setProperty("push.threadCount", threadCount);
     }
 
     public boolean isDryRun() {
