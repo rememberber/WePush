@@ -956,7 +956,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <grid id="d6ff1" binding="pushUpPanel" layout-manager="GridLayoutManager" row-count="7" column-count="13" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+              <grid id="d6ff1" binding="pushUpPanel" layout-manager="GridLayoutManager" row-count="8" column-count="13" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -966,7 +966,7 @@
                 <children>
                   <component id="6712e" class="javax.swing.JLabel" binding="pushSuccessCount">
                     <constraints>
-                      <grid row="0" column="0" row-span="6" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="0" column="0" row-span="7" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <font name="Microsoft JhengHei UI" size="48"/>
@@ -976,7 +976,7 @@
                   </component>
                   <component id="19523" class="javax.swing.JLabel" binding="pushFailCount">
                     <constraints>
-                      <grid row="0" column="2" row-span="6" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="0" column="2" row-span="7" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <font name="Microsoft YaHei UI" size="48"/>
@@ -986,7 +986,7 @@
                   </component>
                   <component id="cd583" class="javax.swing.JLabel" binding="pushTotalProgressLabel">
                     <constraints>
-                      <grid row="5" column="8" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="6" column="8" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <text value="总进度"/>
@@ -994,7 +994,7 @@
                   </component>
                   <component id="c3034" class="javax.swing.JProgressBar" binding="pushTotalProgressBar">
                     <constraints>
-                      <grid row="5" column="9" row-span="1" col-span="4" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                      <grid row="6" column="9" row-span="1" col-span="4" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <stringPainted value="true"/>
@@ -1002,7 +1002,7 @@
                   </component>
                   <component id="4df82" class="javax.swing.JLabel">
                     <constraints>
-                      <grid row="2" column="1" row-span="2" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="3" column="1" row-span="2" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <text value="成功"/>
@@ -1010,7 +1010,7 @@
                   </component>
                   <component id="dfc" class="javax.swing.JLabel">
                     <constraints>
-                      <grid row="2" column="3" row-span="2" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="3" column="3" row-span="2" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <text value="失败"/>
@@ -1018,7 +1018,7 @@
                   </component>
                   <component id="cc4b7" class="javax.swing.JSeparator">
                     <constraints>
-                      <grid row="0" column="4" row-span="6" col-span="1" vsize-policy="6" hsize-policy="7" anchor="8" fill="2" indent="0" use-parent-layout="false"/>
+                      <grid row="0" column="4" row-span="7" col-span="1" vsize-policy="6" hsize-policy="7" anchor="8" fill="2" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <orientation value="1"/>
@@ -1026,7 +1026,7 @@
                   </component>
                   <component id="107ac" class="javax.swing.JLabel" binding="pushLastTimeLabel">
                     <constraints>
-                      <grid row="0" column="6" row-span="3" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="0" column="6" row-span="4" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <enabled value="true"/>
@@ -1045,7 +1045,7 @@
                   </component>
                   <component id="a46d6" class="javax.swing.JLabel" binding="pushLeftTimeLabel">
                     <constraints>
-                      <grid row="3" column="6" row-span="3" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="4" column="6" row-span="3" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <font size="36"/>
@@ -1055,7 +1055,7 @@
                   </component>
                   <component id="597b1" class="javax.swing.JSeparator">
                     <constraints>
-                      <grid row="0" column="7" row-span="6" col-span="1" vsize-policy="6" hsize-policy="0" anchor="8" fill="2" indent="0" use-parent-layout="false"/>
+                      <grid row="0" column="7" row-span="7" col-span="1" vsize-policy="6" hsize-policy="0" anchor="8" fill="2" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <orientation value="1"/>
@@ -1063,7 +1063,7 @@
                   </component>
                   <component id="d6e15" class="javax.swing.JLabel" binding="jvmMemoryLabel">
                     <constraints>
-                      <grid row="3" column="8" row-span="1" col-span="5" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="4" column="8" row-span="1" col-span="5" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <text value="JVM内存占用：--"/>
@@ -1071,7 +1071,7 @@
                   </component>
                   <component id="2caef" class="javax.swing.JLabel" binding="availableProcessorLabel">
                     <constraints>
-                      <grid row="2" column="8" row-span="1" col-span="5" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="3" column="8" row-span="1" col-span="5" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <text value="可用处理器核心：--"/>
@@ -1097,7 +1097,7 @@
                   </component>
                   <component id="132d3" class="javax.swing.JLabel">
                     <constraints>
-                      <grid row="4" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="5" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <text value="预计剩余"/>
@@ -1105,11 +1105,19 @@
                   </component>
                   <component id="3f6e5" class="javax.swing.JLabel" binding="scheduleDetailLabel">
                     <constraints>
-                      <grid row="4" column="8" row-span="1" col-span="5" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="5" column="8" row-span="1" col-span="5" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
                       <foreground color="-276358"/>
                       <text value=""/>
+                    </properties>
+                  </component>
+                  <component id="8567e" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="2" column="8" row-span="1" col-span="5" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="每个线程平均分配：0"/>
                     </properties>
                   </component>
                 </children>
