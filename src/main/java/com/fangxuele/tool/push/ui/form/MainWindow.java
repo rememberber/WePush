@@ -259,6 +259,9 @@ public class MainWindow {
         labelOnlineHelp.setText("<html>如有更多问题请添加issue或邮件rememberber@163.com</html>");
         panel1.add(labelOnlineHelp, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         messagePanel = new JSplitPane();
+        messagePanel.setContinuousLayout(true);
+        messagePanel.setDividerLocation(280);
+        messagePanel.setDividerSize(4);
         messagePanel.setDoubleBuffered(true);
         tabbedPane.addTab("编辑消息", messagePanel);
         final JPanel panel2 = new JPanel();
@@ -638,7 +641,7 @@ public class MainWindow {
         scheduleDetailLabel.setText("");
         pushUpPanel.add(scheduleDetailLabel, new GridConstraints(5, 8, 1, 5, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label10 = new JLabel();
-        label10.setText("Label");
+        label10.setText("每个线程平均分配：0");
         pushUpPanel.add(label10, new GridConstraints(2, 8, 1, 5, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         pushDownPanel = new JPanel();
         pushDownPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
@@ -743,6 +746,8 @@ public class MainWindow {
         pushHisPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane.addTab("推送历史管理", pushHisPanel);
         final JSplitPane splitPane1 = new JSplitPane();
+        splitPane1.setContinuousLayout(true);
+        splitPane1.setDividerSize(4);
         splitPane1.setDoubleBuffered(true);
         splitPane1.setResizeWeight(0.0);
         pushHisPanel.add(splitPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));

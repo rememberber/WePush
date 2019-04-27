@@ -147,6 +147,9 @@
               <tabbedpane title="编辑消息"/>
             </constraints>
             <properties>
+              <continuousLayout value="true"/>
+              <dividerLocation value="280"/>
+              <dividerSize value="4"/>
               <doubleBuffered value="true"/>
             </properties>
             <border type="none"/>
@@ -1405,6 +1408,8 @@
                   </grid>
                 </constraints>
                 <properties>
+                  <continuousLayout value="true"/>
+                  <dividerSize value="4"/>
                   <doubleBuffered value="true"/>
                   <resizeWeight value="0.0"/>
                 </properties>
