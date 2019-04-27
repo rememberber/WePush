@@ -294,20 +294,14 @@ public class PushListener {
     }
 
     static void refreshPushInfo() {
-        // 页大小
-        int pageSize = Integer.parseInt(MainWindow.mainWindow.getMaxThreadPoolTextField().getText());
         // 总记录数
         long totalCount = PushData.allUser.size();
-        MainWindow.mainWindow.getPushTotalCountLabel().setText("总用户数：" + totalCount);
+        MainWindow.mainWindow.getPushTotalCountLabel().setText("消息总数：" + totalCount);
         MainWindow.mainWindow.getPushTotalProgressBar().setMaximum((int) totalCount);
-        // 总页数
-        int totalPage = Long.valueOf((totalCount + pageSize - 1) / pageSize).intValue();
-        MainWindow.mainWindow.getAvailableProcessorLabel().setText("总页数：" + totalPage);
-        // 每个线程分配多少页
-        int pagePerThread = Integer.parseInt(MainWindow.mainWindow.getThreadCountTextField().getText());
-        // 需要多少个线程
-        int threadCount = (totalPage + pagePerThread - 1) / pagePerThread;
-        MainWindow.mainWindow.getJvmMemoryLabel().setText("需要线程宝宝个数：" + threadCount);
+        // 可用处理器核心
+        MainWindow.mainWindow.getAvailableProcessorLabel().setText("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
+        // JVM内存占用
+        MainWindow.mainWindow.getJvmMemoryLabel().setText("JVM内存占用：" + Runtime.getRuntime().maxMemory() + "/" + Runtime.getRuntime().totalMemory());
     }
 
     /**

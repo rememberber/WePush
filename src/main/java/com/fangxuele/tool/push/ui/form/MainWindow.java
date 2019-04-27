@@ -622,7 +622,7 @@ public class MainWindow {
         availableProcessorLabel.setText("可用处理器核心：--");
         pushUpPanel.add(availableProcessorLabel, new GridConstraints(2, 8, 1, 5, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         pushTotalCountLabel = new JLabel();
-        pushTotalCountLabel.setText("总用户数：0");
+        pushTotalCountLabel.setText("消息总数：0");
         pushUpPanel.add(pushTotalCountLabel, new GridConstraints(1, 8, 1, 5, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         pushMsgName = new JLabel();
         Font pushMsgNameFont = this.$$$getFont$$$(null, -1, 24, pushMsgName.getFont());
