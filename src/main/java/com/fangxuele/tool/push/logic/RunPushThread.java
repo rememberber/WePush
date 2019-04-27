@@ -66,8 +66,13 @@ public class RunPushThread extends Thread {
         MainWindow.mainWindow.getAvailableProcessorLabel().setText("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
         PushManage.console("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
 
+        // 线程数
+        Init.configer.setPagePerThread(Integer.parseInt(MainWindow.mainWindow.getThreadCountTextField().getText()));
+        Init.configer.save();
+        PushManage.console("线程数：" + MainWindow.mainWindow.getThreadCountTextField().getText());
+
         // 线程池大小
-        Init.configer.setPagePerThread(Integer.parseInt(MainWindow.mainWindow.getMaxThreadPoolTextField().getText()));
+        Init.configer.setRecordPerPage(Integer.parseInt(MainWindow.mainWindow.getMaxThreadPoolTextField().getText()));
         Init.configer.save();
         PushManage.console("线程池大小：" + MainWindow.mainWindow.getMaxThreadPoolTextField().getText());
 
