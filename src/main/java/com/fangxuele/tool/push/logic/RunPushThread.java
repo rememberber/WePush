@@ -77,7 +77,7 @@ public class RunPushThread extends Thread {
         PushManage.console("线程池大小：" + MainWindow.mainWindow.getMaxThreadPoolTextField().getText());
 
         // JVM内存占用
-        MainWindow.mainWindow.getJvmMemoryLabel().setText("JVM内存占用：" + Runtime.getRuntime().maxMemory() + "/" + Runtime.getRuntime().totalMemory());
+        MainWindow.mainWindow.getJvmMemoryLabel().setText("JVM内存占用：" + Runtime.getRuntime().totalMemory() / 1024 / 1024 + "MB/" + Runtime.getRuntime().maxMemory() / 1024 / 1024 + "MB");
         // 线程数
         int threadCount = Integer.parseInt(MainWindow.mainWindow.getThreadCountTextField().getText());
         PushData.threadCount = threadCount;
@@ -221,6 +221,8 @@ public class RunPushThread extends Thread {
 
             String formatBetweenLeft = DateUtil.formatBetween(leftTimeMillis, BetweenFormater.Level.SECOND);
             MainWindow.mainWindow.getPushLeftTimeLabel().setText("".equals(formatBetweenLeft) ? "0s" : formatBetweenLeft);
+
+            MainWindow.mainWindow.getJvmMemoryLabel().setText("JVM内存占用：" + Runtime.getRuntime().totalMemory() / 1024 / 1024 + "MB/" + Runtime.getRuntime().maxMemory() / 1024 / 1024 + "MB");
 
             try {
                 Thread.sleep(100);
