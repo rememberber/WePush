@@ -3,7 +3,7 @@ package com.fangxuele.tool.push.logic;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.ui.Init;
-import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
@@ -160,12 +160,12 @@ public class MsgHisManage {
         List<String[]> records = new ArrayList<String[]>();
 
         // 如果table为空，则初始化
-        if (MainWindow.mainWindow.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+        if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
             Init.initTemplateDataTable();
         }
 
         // 逐行读取
-        DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getTemplateMsgDataTable()
+        DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable()
                 .getModel();
         int rowCount = tableModel.getRowCount();
         String[] arryData;

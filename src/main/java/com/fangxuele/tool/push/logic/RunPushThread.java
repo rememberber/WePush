@@ -9,6 +9,7 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.component.TableInCellProgressBarRenderer;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import me.chanjar.weixin.mp.api.WxMpService;
 
 import javax.swing.*;
@@ -96,7 +97,7 @@ public class RunPushThread extends Thread {
         MainWindow.mainWindow.getPushThreadTable().updateUI();
 
         Object[] data;
-        String msgType = Objects.requireNonNull(MainWindow.mainWindow.getMsgTypeComboBox().getSelectedItem()).toString();
+        String msgType = Objects.requireNonNull(MessageEditForm.messageEditForm.getMsgTypeComboBox().getSelectedItem()).toString();
 
         int maxThreadPoolSize = Integer.parseInt(MainWindow.mainWindow.getMaxThreadPoolTextField().getText());
         ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(maxThreadPoolSize, maxThreadPoolSize);

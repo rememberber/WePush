@@ -15,6 +15,7 @@ import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.github.qcloudsms.SmsSingleSender;
 import com.github.qcloudsms.SmsSingleSenderResult;
@@ -38,7 +39,10 @@ import javax.swing.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * <pre>
@@ -65,11 +69,11 @@ public class PushManage {
     public static boolean preview() throws Exception {
         List<String[]> msgDataList = new ArrayList<>();
 
-        for (String data : MainWindow.mainWindow.getPreviewUserField().getText().split(";")) {
+        for (String data : MessageEditForm.messageEditForm.getPreviewUserField().getText().split(";")) {
             msgDataList.add(data.split(","));
         }
 
-        switch (Objects.requireNonNull(MainWindow.mainWindow.getMsgTypeComboBox().getSelectedItem()).toString()) {
+        switch (Objects.requireNonNull(MessageEditForm.messageEditForm.getMsgTypeComboBox().getSelectedItem()).toString()) {
             case MessageTypeConsts.MP_TEMPLATE:
                 WxMpTemplateMessage wxMessageTemplate;
                 WxMpService wxMpService = getWxMpService();
@@ -176,7 +180,7 @@ public class PushManage {
                 for (String[] msgData : msgDataList) {
                     String[] params = MessageMaker.makeTxyunMessage(msgData);
                     SmsSingleSenderResult result = ssender.sendWithParam("86", msgData[0],
-                            Integer.valueOf(MainWindow.mainWindow.getMsgTemplateIdTextField().getText()),
+                            Integer.valueOf(MessageEditForm.messageEditForm.getMsgTemplateIdTextField().getText()),
                             params, Init.configer.getAliyunSign(), "", "");
                     if (result.result != 0) {
                         throw new Exception(result.toString());
@@ -317,7 +321,7 @@ public class PushManage {
             pushHisDir.mkdirs();
         }
 
-        String msgName = MainWindow.mainWindow.getMsgNameField().getText();
+        String msgName = MessageEditForm.messageEditForm.getMsgNameField().getText();
         String nowTime = DateUtil.now().replaceAll(":", "_");
 
         String[] strArray;

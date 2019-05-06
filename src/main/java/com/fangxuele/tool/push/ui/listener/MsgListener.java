@@ -7,6 +7,7 @@ import com.fangxuele.tool.push.logic.MsgHisManage;
 import com.fangxuele.tool.push.logic.PushManage;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
 import org.apache.commons.lang3.StringUtils;
 
@@ -52,23 +53,23 @@ public class MsgListener {
         });
 
         // 消息类型切换事件
-        MainWindow.mainWindow.getMsgTypeComboBox().addItemListener(e -> Init.switchMsgType(e.getItem().toString()));
+        MessageEditForm.messageEditForm.getMsgTypeComboBox().addItemListener(e -> Init.switchMsgType(e.getItem().toString()));
 
         // 客服消息类型切换事件
-        MainWindow.mainWindow.getMsgKefuMsgTypeComboBox().addItemListener(e -> Init.switchKefuMsgType(e.getItem().toString()));
+        MessageEditForm.messageEditForm.getMsgKefuMsgTypeComboBox().addItemListener(e -> Init.switchKefuMsgType(e.getItem().toString()));
 
         // 模板数据-添加 按钮事件
-        MainWindow.mainWindow.getTemplateMsgDataAddButton().addActionListener(e -> {
+        MessageEditForm.messageEditForm.getTemplateMsgDataAddButton().addActionListener(e -> {
             String[] data = new String[3];
-            data[0] = MainWindow.mainWindow.getTemplateDataNameTextField().getText();
-            data[1] = MainWindow.mainWindow.getTemplateDataValueTextField().getText();
-            data[2] = MainWindow.mainWindow.getTemplateDataColorTextField().getText();
+            data[0] = MessageEditForm.messageEditForm.getTemplateDataNameTextField().getText();
+            data[1] = MessageEditForm.messageEditForm.getTemplateDataValueTextField().getText();
+            data[2] = MessageEditForm.messageEditForm.getTemplateDataColorTextField().getText();
 
-            if (MainWindow.mainWindow.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+            if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
                 Init.initTemplateDataTable();
             }
 
-            DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getTemplateMsgDataTable()
+            DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable()
                     .getModel();
             int rowCount = tableModel.getRowCount();
 
@@ -96,8 +97,8 @@ public class MsgListener {
         });
 
         // 保存按钮事件
-        MainWindow.mainWindow.getMsgSaveButton().addActionListener(e -> {
-            String msgName = MainWindow.mainWindow.getMsgNameField().getText();
+        MessageEditForm.messageEditForm.getMsgSaveButton().addActionListener(e -> {
+            String msgName = MessageEditForm.messageEditForm.getMsgNameField().getText();
             if (StringUtils.isBlank(msgName)) {
                 JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "请填写推送任务名称！\n\n", "失败",
                         JOptionPane.ERROR_MESSAGE);
@@ -116,18 +117,18 @@ public class MsgListener {
                 if (!msgMap.containsKey(msgName) || isCover == JOptionPane.YES_OPTION) {
                     String[] record = new String[MsgHisManage.ARRAY_LENGTH];
                     record[0] = msgName;
-                    record[1] = Objects.requireNonNull(MainWindow.mainWindow.getMsgTypeComboBox().getSelectedItem()).toString();
-                    record[2] = MainWindow.mainWindow.getMsgTemplateIdTextField().getText();
-                    record[3] = MainWindow.mainWindow.getMsgTemplateUrlTextField().getText();
-                    record[4] = Objects.requireNonNull(MainWindow.mainWindow.getMsgKefuMsgTypeComboBox().getSelectedItem()).toString();
-                    record[5] = MainWindow.mainWindow.getMsgKefuMsgTitleTextField().getText();
-                    record[6] = MainWindow.mainWindow.getMsgKefuPicUrlTextField().getText();
-                    record[7] = MainWindow.mainWindow.getMsgKefuDescTextField().getText();
-                    record[8] = MainWindow.mainWindow.getMsgKefuUrlTextField().getText();
-                    record[9] = MainWindow.mainWindow.getMsgTemplateMiniAppidTextField().getText();
-                    record[10] = MainWindow.mainWindow.getMsgTemplateMiniPagePathTextField().getText();
-                    record[11] = MainWindow.mainWindow.getMsgTemplateKeyWordTextField().getText();
-                    record[12] = MainWindow.mainWindow.getMsgYunpianMsgContentTextField().getText();
+                    record[1] = Objects.requireNonNull(MessageEditForm.messageEditForm.getMsgTypeComboBox().getSelectedItem()).toString();
+                    record[2] = MessageEditForm.messageEditForm.getMsgTemplateIdTextField().getText();
+                    record[3] = MessageEditForm.messageEditForm.getMsgTemplateUrlTextField().getText();
+                    record[4] = Objects.requireNonNull(MessageEditForm.messageEditForm.getMsgKefuMsgTypeComboBox().getSelectedItem()).toString();
+                    record[5] = MessageEditForm.messageEditForm.getMsgKefuMsgTitleTextField().getText();
+                    record[6] = MessageEditForm.messageEditForm.getMsgKefuPicUrlTextField().getText();
+                    record[7] = MessageEditForm.messageEditForm.getMsgKefuDescTextField().getText();
+                    record[8] = MessageEditForm.messageEditForm.getMsgKefuUrlTextField().getText();
+                    record[9] = MessageEditForm.messageEditForm.getMsgTemplateMiniAppidTextField().getText();
+                    record[10] = MessageEditForm.messageEditForm.getMsgTemplateMiniPagePathTextField().getText();
+                    record[11] = MessageEditForm.messageEditForm.getMsgTemplateKeyWordTextField().getText();
+                    record[12] = MessageEditForm.messageEditForm.getMsgYunpianMsgContentTextField().getText();
 
                     msgMap.put(msgName, record);
 
@@ -135,7 +136,7 @@ public class MsgListener {
                     msgHisManager.writeTemplateData(msgName);
 
                     Init.configer.setMsgName(msgName);
-                    Init.configer.setPreviewUser(MainWindow.mainWindow.getPreviewUserField().getText());
+                    Init.configer.setPreviewUser(MessageEditForm.messageEditForm.getPreviewUserField().getText());
                     Init.configer.save();
 
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存成功！", "成功",
@@ -153,9 +154,9 @@ public class MsgListener {
         });
 
         // 预览按钮事件
-        MainWindow.mainWindow.getPreviewMsgButton().addActionListener(e -> {
+        MessageEditForm.messageEditForm.getPreviewMsgButton().addActionListener(e -> {
             try {
-                if ("".equals(MainWindow.mainWindow.getPreviewUserField().getText().trim())) {
+                if ("".equals(MessageEditForm.messageEditForm.getPreviewUserField().getText().trim())) {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "预览消息用户不能为空！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
@@ -172,24 +173,24 @@ public class MsgListener {
         });
 
         // 编辑消息-新建
-        MainWindow.mainWindow.getCreateMsgButton().addActionListener(e -> {
-            MainWindow.mainWindow.getMsgNameField().setText("");
-            MainWindow.mainWindow.getMsgTemplateIdTextField().setText("");
-            MainWindow.mainWindow.getMsgTemplateUrlTextField().setText("");
-            MainWindow.mainWindow.getMsgKefuMsgTitleTextField().setText("");
-            MainWindow.mainWindow.getMsgKefuPicUrlTextField().setText("");
-            MainWindow.mainWindow.getMsgKefuDescTextField().setText("");
-            MainWindow.mainWindow.getMsgKefuUrlTextField().setText("");
-            MainWindow.mainWindow.getMsgTemplateMiniAppidTextField().setText("");
-            MainWindow.mainWindow.getMsgTemplateMiniPagePathTextField().setText("");
-            MainWindow.mainWindow.getMsgTemplateKeyWordTextField().setText("");
-            MainWindow.mainWindow.getMsgYunpianMsgContentTextField().setText("");
+        MessageEditForm.messageEditForm.getCreateMsgButton().addActionListener(e -> {
+            MessageEditForm.messageEditForm.getMsgNameField().setText("");
+            MessageEditForm.messageEditForm.getMsgTemplateIdTextField().setText("");
+            MessageEditForm.messageEditForm.getMsgTemplateUrlTextField().setText("");
+            MessageEditForm.messageEditForm.getMsgKefuMsgTitleTextField().setText("");
+            MessageEditForm.messageEditForm.getMsgKefuPicUrlTextField().setText("");
+            MessageEditForm.messageEditForm.getMsgKefuDescTextField().setText("");
+            MessageEditForm.messageEditForm.getMsgKefuUrlTextField().setText("");
+            MessageEditForm.messageEditForm.getMsgTemplateMiniAppidTextField().setText("");
+            MessageEditForm.messageEditForm.getMsgTemplateMiniPagePathTextField().setText("");
+            MessageEditForm.messageEditForm.getMsgTemplateKeyWordTextField().setText("");
+            MessageEditForm.messageEditForm.getMsgYunpianMsgContentTextField().setText("");
 
-            if (MainWindow.mainWindow.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+            if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
                 Init.initTemplateDataTable();
             }
 
-            DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getTemplateMsgDataTable()
+            DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable()
                     .getModel();
             int rowCount = tableModel.getRowCount();
             for (int i = 0; i < rowCount; i++) {

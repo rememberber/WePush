@@ -5,6 +5,7 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
@@ -44,7 +45,7 @@ public class TabListener {
                         }
                         break;
                     case 4:
-                        MainWindow.mainWindow.getPushMsgName().setText(MainWindow.mainWindow.getMsgNameField().getText());
+                        MainWindow.mainWindow.getPushMsgName().setText(MessageEditForm.messageEditForm.getMsgNameField().getText());
 
                         if (PushData.allUser != null && PushData.allUser.size() > 0) {
                             PushListener.refreshPushInfo();

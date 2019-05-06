@@ -9,6 +9,7 @@ import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.RunPushThread;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
@@ -43,7 +44,7 @@ public class PushListener {
             if (checkBeforePush()) {
                 int isPush = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getPushPanel(),
                         "确定开始推送吗？\n\n推送消息：" +
-                                MainWindow.mainWindow.getMsgNameField().getText() +
+                                MessageEditForm.messageEditForm.getMsgNameField().getText() +
                                 "\n推送人数：" + PushData.allUser.size() +
                                 "\n\n空跑模式：" +
                                 MainWindow.mainWindow.getDryRunCheckBox().isSelected(), "确认推送？",
@@ -123,7 +124,7 @@ public class PushListener {
                             "将在" +
                                     Init.configer.getTextStartAt() +
                                     "推送\n\n消息：" +
-                                    MainWindow.mainWindow.getMsgNameField().getText() +
+                                    MessageEditForm.messageEditForm.getMsgNameField().getText() +
                                     "\n\n推送人数：" + PushData.allUser.size() +
                                     "\n\n空跑模式：" +
                                     MainWindow.mainWindow.getDryRunCheckBox().isSelected(), "确认定时推送？",
@@ -154,7 +155,7 @@ public class PushListener {
                             "将在每天" +
                                     Init.configer.getTextPerDay() +
                                     "推送\n\n消息：" +
-                                    MainWindow.mainWindow.getMsgNameField().getText() +
+                                    MessageEditForm.messageEditForm.getMsgNameField().getText() +
                                     "\n\n推送人数：" + PushData.allUser.size() +
                                     "\n\n空跑模式：" +
                                     MainWindow.mainWindow.getDryRunCheckBox().isSelected(), "确认定时推送？",
@@ -190,7 +191,7 @@ public class PushListener {
                             "将在每周" + Init.configer.getTextPerWeekWeek() +
                                     Init.configer.getTextPerWeekTime() +
                                     "推送\n\n消息：" +
-                                    MainWindow.mainWindow.getMsgNameField().getText() +
+                                    MessageEditForm.messageEditForm.getMsgNameField().getText() +
                                     "\n\n推送人数：" + PushData.allUser.size() +
                                     "\n\n空跑模式：" +
                                     MainWindow.mainWindow.getDryRunCheckBox().isSelected(), "确认定时推送？",
@@ -328,7 +329,7 @@ public class PushListener {
 
             return false;
         }
-        if (StringUtils.isEmpty(MainWindow.mainWindow.getMsgNameField().getText())) {
+        if (StringUtils.isEmpty(MessageEditForm.messageEditForm.getMsgNameField().getText())) {
             JOptionPane.showMessageDialog(MainWindow.mainWindow.getPushPanel(), "请先编辑消息！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
 

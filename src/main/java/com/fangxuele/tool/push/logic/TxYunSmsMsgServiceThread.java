@@ -2,6 +2,7 @@ package com.fangxuele.tool.push.logic;
 
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.github.qcloudsms.SmsSingleSender;
 import com.github.qcloudsms.SmsSingleSenderResult;
 import org.apache.commons.lang3.StringUtils;
@@ -44,7 +45,7 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
         }
 
         SmsSingleSender ssender = new SmsSingleSender(Integer.valueOf(txyunAppId), txyunAppKey);
-        int templateId = Integer.parseInt(MainWindow.mainWindow.getMsgTemplateIdTextField().getText());
+        int templateId = Integer.parseInt(MessageEditForm.messageEditForm.getMsgTemplateIdTextField().getText());
         String smsSign = Init.configer.getAliyunSign();
 
         for (int i = 0; i < list.size(); i++) {
