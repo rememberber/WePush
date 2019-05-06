@@ -2,7 +2,7 @@ package com.fangxuele.tool.push.ui.listener;
 
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
-import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.HelpForm;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -23,7 +23,7 @@ public class HelpListener {
     private static final Log logger = LogFactory.get();
 
     public static void addListeners() {
-        MainWindow.mainWindow.getLabelOnlineHelp().addMouseListener(new MouseAdapter() {
+        HelpForm.helpForm.getLabelOnlineHelp().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
@@ -38,7 +38,7 @@ public class HelpListener {
             @Override
             public void mouseEntered(MouseEvent e) {
                 super.mouseEntered(e);
-                MainWindow.mainWindow.getLabelOnlineHelp().setCursor(new Cursor(Cursor.HAND_CURSOR));
+                HelpForm.helpForm.getLabelOnlineHelp().setCursor(new Cursor(Cursor.HAND_CURSOR));
             }
 
         });

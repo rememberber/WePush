@@ -12,6 +12,7 @@ import com.fangxuele.tool.push.logic.MsgHisManage;
 import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
 import com.fangxuele.tool.push.ui.component.TableInCellCheckBoxRenderer;
 import com.fangxuele.tool.push.ui.form.AboutForm;
+import com.fangxuele.tool.push.ui.form.HelpForm;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.listener.AboutListener;
 import com.fangxuele.tool.push.util.ConfigUtil;
@@ -143,13 +144,13 @@ public class Init {
     private static void initHelpTab() {
 
         try {
-            MainWindow.mainWindow.getHelpTextPane().setEditable(false);
+            HelpForm.helpForm.getHelpTextPane().setEditable(false);
             HTMLEditorKit kit = new HTMLEditorKit();
-            MainWindow.mainWindow.getHelpTextPane().setEditorKit(kit);
+            HelpForm.helpForm.getHelpTextPane().setEditorKit(kit);
             StyleSheet styleSheet = kit.getStyleSheet();
             styleSheet.addRule("h2{color:#FBC87A;}");
-            MainWindow.mainWindow.getHelpTextPane().setContentType("text/html; charset=utf-8");
-            MainWindow.mainWindow.getHelpTextPane().setPage(MainWindow.class.getResource("/page/help.html"));
+            HelpForm.helpForm.getHelpTextPane().setContentType("text/html; charset=utf-8");
+            HelpForm.helpForm.getHelpTextPane().setPage(MainWindow.class.getResource("/page/help.html"));
         } catch (IOException e) {
             e.printStackTrace();
         }
