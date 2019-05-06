@@ -7,6 +7,7 @@ import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.PushHisForm;
 import com.fangxuele.tool.push.util.SystemUtil;
 import org.apache.commons.lang3.StringUtils;
 
@@ -37,14 +38,14 @@ public class PushHisListener {
 
     public static void addListeners() {
         // 点击左侧表格事件
-        MainWindow.mainWindow.getPushHisLeftTable().addMouseListener(new MouseAdapter() {
+        PushHisForm.pushHisForm.getPushHisLeftTable().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 ThreadUtil.execute(() -> {
-                    MainWindow.mainWindow.getPushHisTextArea().setText("");
+                    PushHisForm.pushHisForm.getPushHisTextArea().setText("");
 
-                    int selectedRow = MainWindow.mainWindow.getPushHisLeftTable().getSelectedRow();
-                    String selectedFileName = MainWindow.mainWindow.getPushHisLeftTable()
+                    int selectedRow = PushHisForm.pushHisForm.getPushHisLeftTable().getSelectedRow();
+                    String selectedFileName = PushHisForm.pushHisForm.getPushHisLeftTable()
                             .getValueAt(selectedRow, 1).toString();
                     File pushHisFile = new File(SystemUtil.configHome + "data" + File.separator
                             + "push_his" + File.separator + selectedFileName);
@@ -54,13 +55,13 @@ public class PushHisListener {
                         String line = br.readLine();
                         long count = 0;
                         while (StringUtils.isNotEmpty(line)) {
-                            MainWindow.mainWindow.getPushHisTextArea().append(line);
-                            MainWindow.mainWindow.getPushHisTextArea().append("\n");
+                            PushHisForm.pushHisForm.getPushHisTextArea().append(line);
+                            PushHisForm.pushHisForm.getPushHisTextArea().append("\n");
                             line = br.readLine();
                             count++;
                         }
 
-                        MainWindow.mainWindow.getPushHisCountLabel().setText("共" + count + "条");
+                        PushHisForm.pushHisForm.getPushHisCountLabel().setText("共" + count + "条");
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
@@ -71,9 +72,9 @@ public class PushHisListener {
         });
 
         // 推送历史管理-全选
-        MainWindow.mainWindow.getPushHisLeftSelectAllButton().addActionListener(e -> ThreadUtil.execute(() -> {
+        PushHisForm.pushHisForm.getPushHisLeftSelectAllButton().addActionListener(e -> ThreadUtil.execute(() -> {
             toggleSelectAll();
-            DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getPushHisLeftTable()
+            DefaultTableModel tableModel = (DefaultTableModel) PushHisForm.pushHisForm.getPushHisLeftTable()
                     .getModel();
             int rowCount = tableModel.getRowCount();
             for (int i = 0; i < rowCount; i++) {
@@ -82,9 +83,9 @@ public class PushHisListener {
         }));
 
         // 推送历史管理-删除
-        MainWindow.mainWindow.getPushHisLeftDeleteButton().addActionListener(e -> ThreadUtil.execute(() -> {
+        PushHisForm.pushHisForm.getPushHisLeftDeleteButton().addActionListener(e -> ThreadUtil.execute(() -> {
             try {
-                DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getPushHisLeftTable()
+                DefaultTableModel tableModel = (DefaultTableModel) PushHisForm.pushHisForm.getPushHisLeftTable()
                         .getModel();
                 int rowCount = tableModel.getRowCount();
 
@@ -112,7 +113,7 @@ public class PushHisListener {
                                     msgTemplateDataFile.delete();
                                 }
                                 tableModel.removeRow(i);
-                                MainWindow.mainWindow.getPushHisLeftTable().updateUI();
+                                PushHisForm.pushHisForm.getPushHisLeftTable().updateUI();
                                 i = 0;
                                 rowCount = tableModel.getRowCount();
                             } else {
@@ -131,27 +132,27 @@ public class PushHisListener {
         }));
 
         // 推送历史管理-复制按钮
-        MainWindow.mainWindow.getPushHisCopyButton().addActionListener(e -> ThreadUtil.execute(() -> {
+        PushHisForm.pushHisForm.getPushHisCopyButton().addActionListener(e -> ThreadUtil.execute(() -> {
             try {
-                MainWindow.mainWindow.getPushHisCopyButton().setEnabled(false);
+                PushHisForm.pushHisForm.getPushHisCopyButton().setEnabled(false);
                 JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "内容已经复制到剪贴板！", "复制成功",
                         JOptionPane.INFORMATION_MESSAGE);
-                ClipboardUtil.setStr(MainWindow.mainWindow.getPushHisTextArea().getText());
+                ClipboardUtil.setStr(PushHisForm.pushHisForm.getPushHisTextArea().getText());
             } catch (Exception e1) {
                 logger.error(e1);
             } finally {
-                MainWindow.mainWindow.getPushHisCopyButton().setEnabled(true);
+                PushHisForm.pushHisForm.getPushHisCopyButton().setEnabled(true);
             }
 
         }));
 
         // 推送历史管理-导出按钮
-        MainWindow.mainWindow.getPushHisExportButton().addActionListener(e -> {
+        PushHisForm.pushHisForm.getPushHisExportButton().addActionListener(e -> {
             List<String> toExportFilePathList = new ArrayList<>();
             int selectedCount = 0;
 
             try {
-                DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getPushHisLeftTable()
+                DefaultTableModel tableModel = (DefaultTableModel) PushHisForm.pushHisForm.getPushHisLeftTable()
                         .getModel();
                 int rowCount = tableModel.getRowCount();
                 for (int i = 0; i < rowCount; i++) {

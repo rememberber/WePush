@@ -14,6 +14,7 @@ import com.fangxuele.tool.push.ui.component.TableInCellCheckBoxRenderer;
 import com.fangxuele.tool.push.ui.form.AboutForm;
 import com.fangxuele.tool.push.ui.form.HelpForm;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.PushHisForm;
 import com.fangxuele.tool.push.ui.form.ScheduleForm;
 import com.fangxuele.tool.push.ui.form.UserCaseForm;
 import com.fangxuele.tool.push.ui.listener.AboutListener;
@@ -473,13 +474,13 @@ public class Init {
         // 导入历史管理
         String[] headerNames = {"选择", "文件名称"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
-        MainWindow.mainWindow.getPushHisLeftTable().setModel(model);
+        PushHisForm.pushHisForm.getPushHisLeftTable().setModel(model);
 
         // 隐藏表头
-        MainWindow.mainWindow.getPushHisLeftTable().getTableHeader().setVisible(false);
+        PushHisForm.pushHisForm.getPushHisLeftTable().getTableHeader().setVisible(false);
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
         renderer.setPreferredSize(new Dimension(0, 0));
-        MainWindow.mainWindow.getPushHisLeftTable().getTableHeader().setDefaultRenderer(renderer);
+        PushHisForm.pushHisForm.getPushHisLeftTable().getTableHeader().setDefaultRenderer(renderer);
 
         File pushHisDir = new File(SystemUtil.configHome + "data" + File.separator + "push_his");
         if (!pushHisDir.exists()) {
@@ -496,11 +497,11 @@ public class Init {
                 model.addRow(data);
             }
         }
-        MainWindow.mainWindow.getPushHisLeftTable().getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(new JCheckBox()));
-        MainWindow.mainWindow.getPushHisLeftTable().getColumnModel().getColumn(0).setCellRenderer(new TableInCellCheckBoxRenderer());
+        PushHisForm.pushHisForm.getPushHisLeftTable().getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(new JCheckBox()));
+        PushHisForm.pushHisForm.getPushHisLeftTable().getColumnModel().getColumn(0).setCellRenderer(new TableInCellCheckBoxRenderer());
         // 设置列宽
-        MainWindow.mainWindow.getPushHisLeftTable().getColumnModel().getColumn(0).setPreferredWidth(30);
-        MainWindow.mainWindow.getPushHisLeftTable().getColumnModel().getColumn(0).setMaxWidth(30);
+        PushHisForm.pushHisForm.getPushHisLeftTable().getColumnModel().getColumn(0).setPreferredWidth(30);
+        PushHisForm.pushHisForm.getPushHisLeftTable().getColumnModel().getColumn(0).setMaxWidth(30);
     }
 
     /**

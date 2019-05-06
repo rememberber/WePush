@@ -3,10 +3,11 @@ package com.fangxuele.tool.push.ui.listener;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
-import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.logic.MsgHisManage;
 import com.fangxuele.tool.push.logic.PushManage;
+import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.PushHisForm;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
@@ -38,7 +39,7 @@ public class MsgListener {
             @Override
             public void mouseClicked(MouseEvent e) {
                 ThreadUtil.execute(() -> {
-                    MainWindow.mainWindow.getPushHisTextArea().setText("");
+                    PushHisForm.pushHisForm.getPushHisTextArea().setText("");
 
                     int selectedRow = MainWindow.mainWindow.getMsgHistable().getSelectedRow();
                     String selectedMsgName = MainWindow.mainWindow.getMsgHistable()
