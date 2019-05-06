@@ -16,6 +16,7 @@ import com.fangxuele.tool.push.ui.form.HelpForm;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
 import com.fangxuele.tool.push.ui.form.ScheduleForm;
+import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.ui.form.UserCaseForm;
 import com.fangxuele.tool.push.ui.listener.AboutListener;
 import com.fangxuele.tool.push.util.ConfigUtil;
@@ -104,8 +105,8 @@ public class Init {
      */
     public static void initOthers() {
         // 设置滚动条速度
-        MainWindow.mainWindow.getSettingScrollPane().getVerticalScrollBar().setUnitIncrement(15);
-        MainWindow.mainWindow.getSettingScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
+        SettingForm.settingForm.getSettingScrollPane().getVerticalScrollBar().setUnitIncrement(15);
+        SettingForm.settingForm.getSettingScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
 
         UserCaseForm.userCaseForm.getUserCaseScrollPane().getVerticalScrollBar().setUnitIncrement(15);
         UserCaseForm.userCaseForm.getUserCaseScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
@@ -509,49 +510,49 @@ public class Init {
      */
     public static void initSettingTab() {
         // 常规
-        MainWindow.mainWindow.getAutoCheckUpdateCheckBox().setSelected(configer.isAutoCheckUpdate());
+        SettingForm.settingForm.getAutoCheckUpdateCheckBox().setSelected(configer.isAutoCheckUpdate());
 
         // 微信公众号
-        MainWindow.mainWindow.getWechatAppIdTextField().setText(configer.getWechatAppId());
-        MainWindow.mainWindow.getWechatAppSecretPasswordField().setText(configer.getWechatAppSecret());
-        MainWindow.mainWindow.getWechatTokenPasswordField().setText(configer.getWechatToken());
-        MainWindow.mainWindow.getWechatAesKeyPasswordField().setText(configer.getWechatAesKey());
+        SettingForm.settingForm.getWechatAppIdTextField().setText(configer.getWechatAppId());
+        SettingForm.settingForm.getWechatAppSecretPasswordField().setText(configer.getWechatAppSecret());
+        SettingForm.settingForm.getWechatTokenPasswordField().setText(configer.getWechatToken());
+        SettingForm.settingForm.getWechatAesKeyPasswordField().setText(configer.getWechatAesKey());
 
         // 微信小程序
-        MainWindow.mainWindow.getMiniAppAppIdTextField().setText(configer.getMiniAppAppId());
-        MainWindow.mainWindow.getMiniAppAppSecretPasswordField().setText(configer.getMiniAppAppSecret());
-        MainWindow.mainWindow.getMiniAppTokenPasswordField().setText(configer.getMiniAppToken());
-        MainWindow.mainWindow.getMiniAppAesKeyPasswordField().setText(configer.getMiniAppAesKey());
+        SettingForm.settingForm.getMiniAppAppIdTextField().setText(configer.getMiniAppAppId());
+        SettingForm.settingForm.getMiniAppAppSecretPasswordField().setText(configer.getMiniAppAppSecret());
+        SettingForm.settingForm.getMiniAppTokenPasswordField().setText(configer.getMiniAppToken());
+        SettingForm.settingForm.getMiniAppAesKeyPasswordField().setText(configer.getMiniAppAesKey());
 
         // 阿里云短信
-        MainWindow.mainWindow.getAliyunAccessKeyIdTextField().setText(configer.getAliyunAccessKeyId());
-        MainWindow.mainWindow.getAliyunAccessKeySecretTextField().setText(configer.getAliyunAccessKeySecret());
-        MainWindow.mainWindow.getAliyunSignTextField().setText(configer.getAliyunSign());
+        SettingForm.settingForm.getAliyunAccessKeyIdTextField().setText(configer.getAliyunAccessKeyId());
+        SettingForm.settingForm.getAliyunAccessKeySecretTextField().setText(configer.getAliyunAccessKeySecret());
+        SettingForm.settingForm.getAliyunSignTextField().setText(configer.getAliyunSign());
 
         // 阿里大于
-        MainWindow.mainWindow.getAliServerUrlTextField().setText(configer.getAliServerUrl());
-        MainWindow.mainWindow.getAliAppKeyPasswordField().setText(configer.getAliAppKey());
-        MainWindow.mainWindow.getAliAppSecretPasswordField().setText(configer.getAliAppSecret());
-        MainWindow.mainWindow.getAliSignTextField().setText(configer.getAliSign());
+        SettingForm.settingForm.getAliServerUrlTextField().setText(configer.getAliServerUrl());
+        SettingForm.settingForm.getAliAppKeyPasswordField().setText(configer.getAliAppKey());
+        SettingForm.settingForm.getAliAppSecretPasswordField().setText(configer.getAliAppSecret());
+        SettingForm.settingForm.getAliSignTextField().setText(configer.getAliSign());
 
         // 腾讯云短信
-        MainWindow.mainWindow.getTxyunAppIdTextField().setText(configer.getTxyunAppId());
-        MainWindow.mainWindow.getTxyunAppKeyTextField().setText(configer.getTxyunAppKey());
-        MainWindow.mainWindow.getTxyunSignTextField().setText(configer.getTxyunSign());
+        SettingForm.settingForm.getTxyunAppIdTextField().setText(configer.getTxyunAppId());
+        SettingForm.settingForm.getTxyunAppKeyTextField().setText(configer.getTxyunAppKey());
+        SettingForm.settingForm.getTxyunSignTextField().setText(configer.getTxyunSign());
 
         // 云片网短信
-        MainWindow.mainWindow.getYunpianApiKeyTextField().setText(configer.getYunpianApiKey());
+        SettingForm.settingForm.getYunpianApiKeyTextField().setText(configer.getYunpianApiKey());
 
         // MySQL
-        MainWindow.mainWindow.getMysqlUrlTextField().setText(configer.getMysqlUrl());
-        MainWindow.mainWindow.getMysqlDatabaseTextField().setText(configer.getMysqlDatabase());
-        MainWindow.mainWindow.getMysqlUserTextField().setText(configer.getMysqlUser());
-        MainWindow.mainWindow.getMysqlPasswordField().setText(configer.getMysqlPassword());
+        SettingForm.settingForm.getMysqlUrlTextField().setText(configer.getMysqlUrl());
+        SettingForm.settingForm.getMysqlDatabaseTextField().setText(configer.getMysqlDatabase());
+        SettingForm.settingForm.getMysqlUserTextField().setText(configer.getMysqlUser());
+        SettingForm.settingForm.getMysqlPasswordField().setText(configer.getMysqlPassword());
 
         // 外观
-        MainWindow.mainWindow.getSettingThemeComboBox().setSelectedItem(configer.getTheme());
-        MainWindow.mainWindow.getSettingFontNameComboBox().setSelectedItem(configer.getFont());
-        MainWindow.mainWindow.getSettingFontSizeComboBox().setSelectedItem(configer.getFontSize());
+        SettingForm.settingForm.getSettingThemeComboBox().setSelectedItem(configer.getTheme());
+        SettingForm.settingForm.getSettingFontNameComboBox().setSelectedItem(configer.getFont());
+        SettingForm.settingForm.getSettingFontSizeComboBox().setSelectedItem(configer.getFontSize());
 
         // 历史消息管理
         String[] headerNames = {"选择", "消息名称"};

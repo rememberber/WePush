@@ -6,6 +6,7 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.util.DbUtilMySQL;
 import com.fangxuele.tool.push.util.SystemUtil;
 
@@ -32,161 +33,161 @@ public class SettingListener {
     public static void addListeners() {
 
         // 设置-常规-启动时自动检查更新
-        MainWindow.mainWindow.getAutoCheckUpdateCheckBox().addActionListener(e -> {
-            Init.configer.setAutoCheckUpdate(MainWindow.mainWindow.getAutoCheckUpdateCheckBox().isSelected());
+        SettingForm.settingForm.getAutoCheckUpdateCheckBox().addActionListener(e -> {
+            Init.configer.setAutoCheckUpdate(SettingForm.settingForm.getAutoCheckUpdateCheckBox().isSelected());
             Init.configer.save();
         });
 
         // 设置-公众号-保存
-        MainWindow.mainWindow.getSettingMpInfoSaveButton().addActionListener(e -> {
+        SettingForm.settingForm.getSettingMpInfoSaveButton().addActionListener(e -> {
             try {
-                Init.configer.setWechatAppId(MainWindow.mainWindow.getWechatAppIdTextField().getText());
-                Init.configer.setWechatAppSecret(new String(MainWindow.mainWindow.getWechatAppSecretPasswordField().getPassword()));
-                Init.configer.setWechatToken(new String(MainWindow.mainWindow.getWechatTokenPasswordField().getPassword()));
-                Init.configer.setWechatAesKey(new String(MainWindow.mainWindow.getWechatAesKeyPasswordField().getPassword()));
+                Init.configer.setWechatAppId(SettingForm.settingForm.getWechatAppIdTextField().getText());
+                Init.configer.setWechatAppSecret(new String(SettingForm.settingForm.getWechatAppSecretPasswordField().getPassword()));
+                Init.configer.setWechatToken(new String(SettingForm.settingForm.getWechatTokenPasswordField().getPassword()));
+                Init.configer.setWechatAesKey(new String(SettingForm.settingForm.getWechatAesKeyPasswordField().getPassword()));
                 Init.configer.save();
 
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存成功！", "成功",
+                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
         });
 
         // 设置-小程序-保存
-        MainWindow.mainWindow.getSettingMaInfoSaveButton().addActionListener(e -> {
+        SettingForm.settingForm.getSettingMaInfoSaveButton().addActionListener(e -> {
             try {
-                Init.configer.setMiniAppAppId(MainWindow.mainWindow.getMiniAppAppIdTextField().getText());
-                Init.configer.setMiniAppAppSecret(new String(MainWindow.mainWindow.getMiniAppAppSecretPasswordField().getPassword()));
-                Init.configer.setMiniAppToken(new String(MainWindow.mainWindow.getMiniAppTokenPasswordField().getPassword()));
-                Init.configer.setMiniAppAesKey(new String(MainWindow.mainWindow.getMiniAppAesKeyPasswordField().getPassword()));
+                Init.configer.setMiniAppAppId(SettingForm.settingForm.getMiniAppAppIdTextField().getText());
+                Init.configer.setMiniAppAppSecret(new String(SettingForm.settingForm.getMiniAppAppSecretPasswordField().getPassword()));
+                Init.configer.setMiniAppToken(new String(SettingForm.settingForm.getMiniAppTokenPasswordField().getPassword()));
+                Init.configer.setMiniAppAesKey(new String(SettingForm.settingForm.getMiniAppAesKeyPasswordField().getPassword()));
                 Init.configer.save();
 
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存成功！", "成功",
+                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
         });
 
         // 设置-阿里云短信-保存
-        MainWindow.mainWindow.getSettingAliyunSaveButton().addActionListener(e -> {
+        SettingForm.settingForm.getSettingAliyunSaveButton().addActionListener(e -> {
             try {
-                Init.configer.setAliyunAccessKeyId(MainWindow.mainWindow.getAliyunAccessKeyIdTextField().getText());
-                Init.configer.setAliyunAccessKeySecret(new String(MainWindow.mainWindow.getAliyunAccessKeySecretTextField().getPassword()));
-                Init.configer.setAliyunSign(MainWindow.mainWindow.getAliyunSignTextField().getText());
+                Init.configer.setAliyunAccessKeyId(SettingForm.settingForm.getAliyunAccessKeyIdTextField().getText());
+                Init.configer.setAliyunAccessKeySecret(new String(SettingForm.settingForm.getAliyunAccessKeySecretTextField().getPassword()));
+                Init.configer.setAliyunSign(SettingForm.settingForm.getAliyunSignTextField().getText());
                 Init.configer.save();
 
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存成功！", "成功",
+                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
         });
 
         // 设置-阿里大于-保存
-        MainWindow.mainWindow.getSettingAliInfoSaveButton().addActionListener(e -> {
+        SettingForm.settingForm.getSettingAliInfoSaveButton().addActionListener(e -> {
             try {
-                Init.configer.setAliServerUrl(MainWindow.mainWindow.getAliServerUrlTextField().getText());
-                Init.configer.setAliAppKey(new String(MainWindow.mainWindow.getAliAppKeyPasswordField().getPassword()));
-                Init.configer.setAliAppSecret(new String(MainWindow.mainWindow.getAliAppSecretPasswordField().getPassword()));
-                Init.configer.setAliSign(MainWindow.mainWindow.getAliSignTextField().getText());
+                Init.configer.setAliServerUrl(SettingForm.settingForm.getAliServerUrlTextField().getText());
+                Init.configer.setAliAppKey(new String(SettingForm.settingForm.getAliAppKeyPasswordField().getPassword()));
+                Init.configer.setAliAppSecret(new String(SettingForm.settingForm.getAliAppSecretPasswordField().getPassword()));
+                Init.configer.setAliSign(SettingForm.settingForm.getAliSignTextField().getText());
                 Init.configer.save();
 
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存成功！", "成功",
+                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
         });
 
         // 设置-腾讯云短信-保存
-        MainWindow.mainWindow.getSettingTxyunSaveButton().addActionListener(e -> {
+        SettingForm.settingForm.getSettingTxyunSaveButton().addActionListener(e -> {
             try {
-                Init.configer.setTxyunAppId(MainWindow.mainWindow.getTxyunAppIdTextField().getText());
-                Init.configer.setTxyunAppKey(new String(MainWindow.mainWindow.getTxyunAppKeyTextField().getPassword()));
-                Init.configer.setTxyunSign(MainWindow.mainWindow.getTxyunSignTextField().getText());
+                Init.configer.setTxyunAppId(SettingForm.settingForm.getTxyunAppIdTextField().getText());
+                Init.configer.setTxyunAppKey(new String(SettingForm.settingForm.getTxyunAppKeyTextField().getPassword()));
+                Init.configer.setTxyunSign(SettingForm.settingForm.getTxyunSignTextField().getText());
                 Init.configer.save();
 
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存成功！", "成功",
+                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
         });
 
         // 设置-云片网短信-保存
-        MainWindow.mainWindow.getSettingYunpianSaveButton().addActionListener(e -> {
+        SettingForm.settingForm.getSettingYunpianSaveButton().addActionListener(e -> {
             try {
-                Init.configer.setYunpianApiKey(new String(MainWindow.mainWindow.getYunpianApiKeyTextField().getPassword()));
+                Init.configer.setYunpianApiKey(new String(SettingForm.settingForm.getYunpianApiKeyTextField().getPassword()));
                 Init.configer.save();
 
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存成功！", "成功",
+                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
         });
 
         // mysql数据库-测试链接
-        MainWindow.mainWindow.getSettingTestDbLinkButton().addActionListener(e -> {
+        SettingForm.settingForm.getSettingTestDbLinkButton().addActionListener(e -> {
             try {
                 DbUtilMySQL dbMySQL = DbUtilMySQL.getInstance();
-                String dbUrl = MainWindow.mainWindow.getMysqlUrlTextField().getText();
-                String dbName = MainWindow.mainWindow.getMysqlDatabaseTextField().getText();
-                String dbUser = MainWindow.mainWindow.getMysqlUserTextField().getText();
-                String dbPassword = new String(MainWindow.mainWindow.getMysqlPasswordField().getPassword());
+                String dbUrl = SettingForm.settingForm.getMysqlUrlTextField().getText();
+                String dbName = SettingForm.settingForm.getMysqlDatabaseTextField().getText();
+                String dbUser = SettingForm.settingForm.getMysqlUserTextField().getText();
+                String dbPassword = new String(SettingForm.settingForm.getMysqlPasswordField().getPassword());
                 Connection conn = dbMySQL.testConnection(dbUrl, dbName, dbUser, dbPassword);
                 if (conn == null) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "连接失败", "失败",
+                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "连接失败", "失败",
                             JOptionPane.ERROR_MESSAGE);
                 } else {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "连接成功！", "成功",
+                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "连接成功！", "成功",
                             JOptionPane.INFORMATION_MESSAGE);
                 }
             } catch (Exception e1) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "连接失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "连接失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
         });
 
         // mysql数据库-保存
-        MainWindow.mainWindow.getSettingDbInfoSaveButton().addActionListener(e -> {
+        SettingForm.settingForm.getSettingDbInfoSaveButton().addActionListener(e -> {
             try {
-                Init.configer.setMysqlUrl(MainWindow.mainWindow.getMysqlUrlTextField().getText());
-                Init.configer.setMysqlDatabase(MainWindow.mainWindow.getMysqlDatabaseTextField().getText());
-                Init.configer.setMysqlUser(MainWindow.mainWindow.getMysqlUserTextField().getText());
-                Init.configer.setMysqlPassword(new String(MainWindow.mainWindow.getMysqlPasswordField().getPassword()));
+                Init.configer.setMysqlUrl(SettingForm.settingForm.getMysqlUrlTextField().getText());
+                Init.configer.setMysqlDatabase(SettingForm.settingForm.getMysqlDatabaseTextField().getText());
+                Init.configer.setMysqlUser(SettingForm.settingForm.getMysqlUserTextField().getText());
+                Init.configer.setMysqlPassword(new String(SettingForm.settingForm.getMysqlPasswordField().getPassword()));
                 Init.configer.save();
 
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存成功！", "成功",
+                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
         });
 
         // 外观-保存
-        MainWindow.mainWindow.getSettingAppearanceSaveButton().addActionListener(e -> {
+        SettingForm.settingForm.getSettingAppearanceSaveButton().addActionListener(e -> {
             try {
-                Init.configer.setTheme(Objects.requireNonNull(MainWindow.mainWindow.getSettingThemeComboBox().getSelectedItem()).toString());
-                Init.configer.setFont(Objects.requireNonNull(MainWindow.mainWindow.getSettingFontNameComboBox().getSelectedItem()).toString());
-                Init.configer.setFontSize(Integer.parseInt(Objects.requireNonNull(MainWindow.mainWindow.getSettingFontSizeComboBox().getSelectedItem()).toString()));
+                Init.configer.setTheme(Objects.requireNonNull(SettingForm.settingForm.getSettingThemeComboBox().getSelectedItem()).toString());
+                Init.configer.setFont(Objects.requireNonNull(SettingForm.settingForm.getSettingFontNameComboBox().getSelectedItem()).toString());
+                Init.configer.setFontSize(Integer.parseInt(Objects.requireNonNull(SettingForm.settingForm.getSettingFontSizeComboBox().getSelectedItem()).toString()));
                 Init.configer.save();
 
                 Init.initTheme();
@@ -194,10 +195,10 @@ public class SettingListener {
                 SwingUtilities.updateComponentTreeUI(App.mainFrame);
                 SwingUtilities.updateComponentTreeUI(MainWindow.mainWindow.getTabbedPane());
 
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存成功！\n\n部分细节将在下次启动时生效！\n\n", "成功",
+                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存成功！\n\n部分细节将在下次启动时生效！\n\n", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
@@ -230,10 +231,10 @@ public class SettingListener {
                 }
 
                 if (selectedCount == 0) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "请至少选择一个！", "提示",
+                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "请至少选择一个！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
-                    int isDelete = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getSettingPanel(), "确认删除？", "确认",
+                    int isDelete = JOptionPane.showConfirmDialog(SettingForm.settingForm.getSettingPanel(), "确认删除？", "确认",
                             JOptionPane.YES_NO_OPTION);
                     if (isDelete == JOptionPane.YES_OPTION) {
                         Map<String, String[]> msgMap = Init.msgHisManager.readMsgHis();
@@ -263,7 +264,7 @@ public class SettingListener {
                     }
                 }
             } catch (Exception e1) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "删除失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "删除失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
