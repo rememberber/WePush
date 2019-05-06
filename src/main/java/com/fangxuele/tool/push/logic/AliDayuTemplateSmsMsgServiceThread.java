@@ -1,7 +1,8 @@
 package com.fangxuele.tool.push.logic;
 
 import com.fangxuele.tool.push.ui.Init;
-import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.PushForm;
+import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.request.AlibabaAliqinFcSmsNumSendRequest;
@@ -42,7 +43,7 @@ public class AliDayuTemplateSmsMsgServiceThread extends BaseMsgServiceThread {
 
         if (StringUtils.isEmpty(aliServerUrl) || StringUtils.isEmpty(aliAppKey)
                 || StringUtils.isEmpty(aliAppSecret)) {
-            JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
+            JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
                     "请先在设置中填写并保存阿里大于相关配置！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
         }
@@ -69,12 +70,12 @@ public class AliDayuTemplateSmsMsgServiceThread extends BaseMsgServiceThread {
                 alibabaAliqinFcSmsNumSendRequest.setRecNum(telNum);
 
                 // 空跑控制
-                if (!MainWindow.mainWindow.getDryRunCheckBox().isSelected()) {
+                if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
                     response = client.execute(alibabaAliqinFcSmsNumSendRequest);
                     if (response.getResult() != null && response.getResult().getSuccess()) {
                         // 总发送成功+1
                         PushData.increaseSuccess();
-                        MainWindow.mainWindow.getPushSuccessCount().setText(String.valueOf(PushData.successRecords));
+                        PushForm.pushForm.getPushSuccessCount().setText(String.valueOf(PushData.successRecords));
 
                         // 当前线程发送成功+1
                         currentThreadSuccessCount++;
@@ -85,7 +86,7 @@ public class AliDayuTemplateSmsMsgServiceThread extends BaseMsgServiceThread {
                     } else {
                         // 总发送失败+1
                         PushData.increaseFail();
-                        MainWindow.mainWindow.getPushFailCount().setText(String.valueOf(PushData.failRecords));
+                        PushForm.pushForm.getPushFailCount().setText(String.valueOf(PushData.failRecords));
 
                         // 保存发送失败
                         PushData.sendFailList.add(msgData);
@@ -101,7 +102,7 @@ public class AliDayuTemplateSmsMsgServiceThread extends BaseMsgServiceThread {
                 } else {
                     // 总发送成功+1
                     PushData.increaseSuccess();
-                    MainWindow.mainWindow.getPushSuccessCount().setText(String.valueOf(PushData.successRecords));
+                    PushForm.pushForm.getPushSuccessCount().setText(String.valueOf(PushData.successRecords));
 
                     // 当前线程发送成功+1
                     currentThreadSuccessCount++;
@@ -114,7 +115,7 @@ public class AliDayuTemplateSmsMsgServiceThread extends BaseMsgServiceThread {
             } catch (Exception e) {
                 // 总发送失败+1
                 PushData.increaseFail();
-                MainWindow.mainWindow.getPushFailCount().setText(String.valueOf(PushData.failRecords));
+                PushForm.pushForm.getPushFailCount().setText(String.valueOf(PushData.failRecords));
 
                 // 保存发送失败
                 PushData.sendFailList.add(msgData);
@@ -130,7 +131,7 @@ public class AliDayuTemplateSmsMsgServiceThread extends BaseMsgServiceThread {
             tableModel.setValueAt((int) ((double) (i + 1) / list.size() * 100), tableRow, 5);
 
             // 总进度条
-            MainWindow.mainWindow.getPushTotalProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
+            PushForm.pushForm.getPushTotalProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
         }
 
         // 当前线程结束

@@ -1,6 +1,6 @@
 package com.fangxuele.tool.push.logic;
 
-import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.PushForm;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
 
 /**
@@ -47,13 +47,13 @@ public class TemplateMsgMpServiceThread extends BaseMsgServiceThread {
                 wxMessageTemplate = MessageMaker.makeMpTemplateMessage(msgData);
                 wxMessageTemplate.setToUser(openId);
                 // 空跑控制
-                if (!MainWindow.mainWindow.getDryRunCheckBox().isSelected()) {
+                if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
                     wxMpService.getTemplateMsgService().sendTemplateMsg(wxMessageTemplate);
                 }
 
                 // 总发送成功+1
                 PushData.increaseSuccess();
-                MainWindow.mainWindow.getPushSuccessCount().setText(String.valueOf(PushData.successRecords));
+                PushForm.pushForm.getPushSuccessCount().setText(String.valueOf(PushData.successRecords));
 
                 // 当前线程发送成功+1
                 currentThreadSuccessCount++;
@@ -64,7 +64,7 @@ public class TemplateMsgMpServiceThread extends BaseMsgServiceThread {
             } catch (Exception e) {
                 // 总发送失败+1
                 PushData.increaseFail();
-                MainWindow.mainWindow.getPushFailCount().setText(String.valueOf(PushData.failRecords));
+                PushForm.pushForm.getPushFailCount().setText(String.valueOf(PushData.failRecords));
 
                 // 保存发送失败
                 PushData.sendFailList.add(msgData);
@@ -80,7 +80,7 @@ public class TemplateMsgMpServiceThread extends BaseMsgServiceThread {
             tableModel.setValueAt((int) ((double) (i + 1) / list.size() * 100), tableRow, 5);
 
             // 总进度条
-            MainWindow.mainWindow.getPushTotalProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
+            PushForm.pushForm.getPushTotalProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
         }
 
         // 当前线程结束

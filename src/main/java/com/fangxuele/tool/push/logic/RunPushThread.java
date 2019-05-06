@@ -8,8 +8,8 @@ import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.component.TableInCellProgressBarRenderer;
-import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
+import com.fangxuele.tool.push.ui.form.PushForm;
 import me.chanjar.weixin.mp.api.WxMpService;
 
 import javax.swing.*;
@@ -35,18 +35,18 @@ public class RunPushThread extends Thread {
 
     @Override
     public void run() {
-        MainWindow.mainWindow.getPushStopButton().setText("停止");
+        PushForm.pushForm.getPushStopButton().setText("停止");
 
         // 初始化
-        MainWindow.mainWindow.getPushTotalProgressBar().setIndeterminate(true);
+        PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(true);
         PushData.running = true;
         PushData.successRecords.reset();
         PushData.failRecords.reset();
         PushData.stopedThreadCount.reset();
         PushData.threadCount = 0;
 
-        MainWindow.mainWindow.getPushSuccessCount().setText("0");
-        MainWindow.mainWindow.getPushFailCount().setText("0");
+        PushForm.pushForm.getPushSuccessCount().setText("0");
+        PushForm.pushForm.getPushFailCount().setText("0");
 
         PushData.toSendList = Collections.synchronizedList(new LinkedList<>());
         PushData.sendSuccessList = Collections.synchronizedList(new LinkedList<>());
@@ -60,46 +60,46 @@ public class RunPushThread extends Thread {
         long totalCount = PushData.toSendList.size();
         PushData.totalRecords = totalCount;
 
-        MainWindow.mainWindow.getPushTotalCountLabel().setText("消息总数：" + totalCount);
-        MainWindow.mainWindow.getPushTotalProgressBar().setMaximum((int) totalCount);
+        PushForm.pushForm.getPushTotalCountLabel().setText("消息总数：" + totalCount);
+        PushForm.pushForm.getPushTotalProgressBar().setMaximum((int) totalCount);
         PushManage.console("消息总数：" + totalCount);
         // 可用处理器核心数量
-        MainWindow.mainWindow.getAvailableProcessorLabel().setText("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
+        PushForm.pushForm.getAvailableProcessorLabel().setText("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
         PushManage.console("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
 
         // 线程数
-        Init.configer.setThreadCount(Integer.parseInt(MainWindow.mainWindow.getThreadCountTextField().getText()));
+        Init.configer.setThreadCount(Integer.parseInt(PushForm.pushForm.getThreadCountTextField().getText()));
         Init.configer.save();
-        PushManage.console("线程数：" + MainWindow.mainWindow.getThreadCountTextField().getText());
+        PushManage.console("线程数：" + PushForm.pushForm.getThreadCountTextField().getText());
 
         // 线程池大小
-        Init.configer.setMaxThreadPool(Integer.parseInt(MainWindow.mainWindow.getMaxThreadPoolTextField().getText()));
+        Init.configer.setMaxThreadPool(Integer.parseInt(PushForm.pushForm.getMaxThreadPoolTextField().getText()));
         Init.configer.save();
-        PushManage.console("线程池大小：" + MainWindow.mainWindow.getMaxThreadPoolTextField().getText());
+        PushManage.console("线程池大小：" + PushForm.pushForm.getMaxThreadPoolTextField().getText());
 
         // JVM内存占用
-        MainWindow.mainWindow.getJvmMemoryLabel().setText("JVM内存占用：" + Runtime.getRuntime().totalMemory() / 1024 / 1024 + "MB/" + Runtime.getRuntime().maxMemory() / 1024 / 1024 + "MB");
+        PushForm.pushForm.getJvmMemoryLabel().setText("JVM内存占用：" + Runtime.getRuntime().totalMemory() / 1024 / 1024 + "MB/" + Runtime.getRuntime().maxMemory() / 1024 / 1024 + "MB");
         // 线程数
-        int threadCount = Integer.parseInt(MainWindow.mainWindow.getThreadCountTextField().getText());
+        int threadCount = Integer.parseInt(PushForm.pushForm.getThreadCountTextField().getText());
         PushData.threadCount = threadCount;
-        PushManage.console("需要：" + MainWindow.mainWindow.getThreadCountTextField().getText() + "个线程宝宝齐力合作");
+        PushManage.console("需要：" + PushForm.pushForm.getThreadCountTextField().getText() + "个线程宝宝齐力合作");
 
         // 初始化线程table
         String[] headerNames = {"线程", "分片区间", "成功", "失败", "总数", "当前进度"};
         DefaultTableModel tableModel = new DefaultTableModel(null, headerNames);
-        MainWindow.mainWindow.getPushThreadTable().setModel(tableModel);
-        MainWindow.mainWindow.getPushThreadTable().getColumn("当前进度").setCellRenderer(new TableInCellProgressBarRenderer());
+        PushForm.pushForm.getPushThreadTable().setModel(tableModel);
+        PushForm.pushForm.getPushThreadTable().getColumn("当前进度").setCellRenderer(new TableInCellProgressBarRenderer());
 
-        DefaultTableCellRenderer hr = (DefaultTableCellRenderer) MainWindow.mainWindow.getPushThreadTable().getTableHeader()
+        DefaultTableCellRenderer hr = (DefaultTableCellRenderer) PushForm.pushForm.getPushThreadTable().getTableHeader()
                 .getDefaultRenderer();
         // 表头列名居中
         hr.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
-        MainWindow.mainWindow.getPushThreadTable().updateUI();
+        PushForm.pushForm.getPushThreadTable().updateUI();
 
         Object[] data;
         String msgType = Objects.requireNonNull(MessageEditForm.messageEditForm.getMsgTypeComboBox().getSelectedItem()).toString();
 
-        int maxThreadPoolSize = Integer.parseInt(MainWindow.mainWindow.getMaxThreadPoolTextField().getText());
+        int maxThreadPoolSize = Integer.parseInt(PushForm.pushForm.getMaxThreadPoolTextField().getText());
         ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(maxThreadPoolSize, maxThreadPoolSize);
         BaseMsgServiceThread thread = null;
         // 每个线程分配
@@ -163,7 +163,7 @@ public class RunPushThread extends Thread {
 
             threadPoolExecutor.execute(thread);
         }
-        MainWindow.mainWindow.getPushTotalProgressBar().setIndeterminate(false);
+        PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
         PushManage.console("所有线程宝宝启动完毕……");
 
         long startTimeMillis = System.currentTimeMillis();
@@ -171,43 +171,43 @@ public class RunPushThread extends Thread {
         while (true) {
             if (PushData.stopedThreadCount.intValue() == threadCount) {
                 if (!PushData.fixRateScheduling) {
-                    MainWindow.mainWindow.getPushStopButton().setEnabled(false);
-                    MainWindow.mainWindow.getPushStopButton().updateUI();
+                    PushForm.pushForm.getPushStopButton().setEnabled(false);
+                    PushForm.pushForm.getPushStopButton().updateUI();
                 }
 
                 String finishTip = "发送完毕！\n\n";
-                if (!MainWindow.mainWindow.getDryRunCheckBox().isSelected()) {
+                if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
                     finishTip = "发送完毕！\n\n接下来将保存结果数据，请等待……\n\n";
                 }
                 if (!PushData.fixRateScheduling) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getPushPanel(), finishTip, "提示",
+                    JOptionPane.showMessageDialog(PushForm.pushForm.getPushPanel(), finishTip, "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                 }
 
                 // 保存停止前的数据
                 try {
                     PushManage.console("正在保存结果数据……");
-                    MainWindow.mainWindow.getPushTotalProgressBar().setIndeterminate(true);
+                    PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(true);
                     // 空跑控制
-                    if (!MainWindow.mainWindow.getDryRunCheckBox().isSelected()) {
+                    if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
                         PushManage.savePushData();
                     }
                     PushManage.console("结果数据保存完毕！");
                 } catch (IOException e) {
                     logger.error(e);
                 } finally {
-                    MainWindow.mainWindow.getPushTotalProgressBar().setIndeterminate(false);
+                    PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
                 }
 
                 if (!PushData.fixRateScheduling) {
-                    MainWindow.mainWindow.getPushStartButton().setEnabled(true);
-                    MainWindow.mainWindow.getScheduleRunButton().setEnabled(true);
-                    MainWindow.mainWindow.getPushStartButton().updateUI();
-                    MainWindow.mainWindow.getScheduleRunButton().updateUI();
+                    PushForm.pushForm.getPushStartButton().setEnabled(true);
+                    PushForm.pushForm.getScheduleRunButton().setEnabled(true);
+                    PushForm.pushForm.getPushStartButton().updateUI();
+                    PushForm.pushForm.getScheduleRunButton().updateUI();
 
-                    MainWindow.mainWindow.getScheduleDetailLabel().setText("");
+                    PushForm.pushForm.getScheduleDetailLabel().setText("");
                 } else {
-                    MainWindow.mainWindow.getPushStopButton().setText("停止计划任务");
+                    PushForm.pushForm.getPushStopButton().setText("停止计划任务");
                 }
 
                 break;
@@ -218,12 +218,12 @@ public class RunPushThread extends Thread {
             long leftTimeMillis = (long) ((double) lastTimeMillis / (PushData.sendSuccessList.size() + PushData.sendFailList.size()) * (PushData.allUser.size() - PushData.sendSuccessList.size() - PushData.sendFailList.size()));
 
             String formatBetweenLast = DateUtil.formatBetween(lastTimeMillis, BetweenFormater.Level.SECOND);
-            MainWindow.mainWindow.getPushLastTimeLabel().setText("".equals(formatBetweenLast) ? "0s" : formatBetweenLast);
+            PushForm.pushForm.getPushLastTimeLabel().setText("".equals(formatBetweenLast) ? "0s" : formatBetweenLast);
 
             String formatBetweenLeft = DateUtil.formatBetween(leftTimeMillis, BetweenFormater.Level.SECOND);
-            MainWindow.mainWindow.getPushLeftTimeLabel().setText("".equals(formatBetweenLeft) ? "0s" : formatBetweenLeft);
+            PushForm.pushForm.getPushLeftTimeLabel().setText("".equals(formatBetweenLeft) ? "0s" : formatBetweenLeft);
 
-            MainWindow.mainWindow.getJvmMemoryLabel().setText("JVM内存占用：" + Runtime.getRuntime().totalMemory() / 1024 / 1024 + "MB/" + Runtime.getRuntime().maxMemory() / 1024 / 1024 + "MB");
+            PushForm.pushForm.getJvmMemoryLabel().setText("JVM内存占用：" + Runtime.getRuntime().totalMemory() / 1024 / 1024 + "MB/" + Runtime.getRuntime().maxMemory() / 1024 / 1024 + "MB");
 
             try {
                 Thread.sleep(100);

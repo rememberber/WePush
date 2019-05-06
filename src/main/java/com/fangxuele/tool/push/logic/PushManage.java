@@ -14,8 +14,9 @@ import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
 import com.fangxuele.tool.push.ui.Init;
-import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
+import com.fangxuele.tool.push.ui.form.PushForm;
+import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.github.qcloudsms.SmsSingleSender;
 import com.github.qcloudsms.SmsSingleSenderResult;
@@ -142,7 +143,7 @@ public class PushManage {
                 String aliyunAccessKeySecret = Init.configer.getAliyunAccessKeySecret();
 
                 if (StringUtils.isEmpty(aliyunAccessKeyId) || StringUtils.isEmpty(aliyunAccessKeySecret)) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
+                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
                             "请先在设置中填写并保存阿里云短信相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return false;
@@ -169,7 +170,7 @@ public class PushManage {
                 String txyunAppKey = Init.configer.getTxyunAppKey();
 
                 if (StringUtils.isEmpty(txyunAppId) || StringUtils.isEmpty(txyunAppKey)) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
+                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
                             "请先在设置中填写并保存腾讯云短信相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return false;
@@ -194,7 +195,7 @@ public class PushManage {
 
                 if (StringUtils.isEmpty(aliServerUrl) || StringUtils.isEmpty(aliAppKey)
                         || StringUtils.isEmpty(aliAppSecret)) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
+                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
                             "请先在设置中填写并保存阿里大于相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return false;
@@ -215,7 +216,7 @@ public class PushManage {
                 String yunpianApiKey = Init.configer.getYunpianApiKey();
 
                 if (StringUtils.isEmpty(yunpianApiKey)) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
+                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
                             "请先在设置中填写并保存云片网短信相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return false;
@@ -247,12 +248,12 @@ public class PushManage {
     private static WxMpConfigStorage wxMpConfigStorage() {
         WxMpInMemoryConfigStorage configStorage = new WxMpInMemoryConfigStorage();
         if (StringUtils.isEmpty(Init.configer.getWechatAppId()) || StringUtils.isEmpty(Init.configer.getWechatAppSecret())) {
-            JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "请先在设置中填写并保存公众号相关配置！", "提示",
+            JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "请先在设置中填写并保存公众号相关配置！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
-            MainWindow.mainWindow.getScheduleRunButton().setEnabled(true);
-            MainWindow.mainWindow.getPushStartButton().setEnabled(true);
-            MainWindow.mainWindow.getPushStopButton().setEnabled(false);
-            MainWindow.mainWindow.getPushTotalProgressBar().setIndeterminate(false);
+            PushForm.pushForm.getScheduleRunButton().setEnabled(true);
+            PushForm.pushForm.getPushStartButton().setEnabled(true);
+            PushForm.pushForm.getPushStopButton().setEnabled(false);
+            PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
             return null;
         }
         configStorage.setAppId(Init.configer.getWechatAppId());
@@ -271,12 +272,12 @@ public class PushManage {
         WxMaInMemoryConfig configStorage = new WxMaInMemoryConfig();
         if (StringUtils.isEmpty(Init.configer.getMiniAppAppId()) || StringUtils.isEmpty(Init.configer.getMiniAppAppSecret())
                 || StringUtils.isEmpty(Init.configer.getMiniAppToken()) || StringUtils.isEmpty(Init.configer.getMiniAppAesKey())) {
-            JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "请先在设置中填写并保存小程序相关配置！", "提示",
+            JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "请先在设置中填写并保存小程序相关配置！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
-            MainWindow.mainWindow.getScheduleRunButton().setEnabled(true);
-            MainWindow.mainWindow.getPushStartButton().setEnabled(true);
-            MainWindow.mainWindow.getPushStopButton().setEnabled(false);
-            MainWindow.mainWindow.getPushTotalProgressBar().setIndeterminate(false);
+            PushForm.pushForm.getScheduleRunButton().setEnabled(true);
+            PushForm.pushForm.getPushStartButton().setEnabled(true);
+            PushForm.pushForm.getPushStopButton().setEnabled(false);
+            PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
             return null;
         }
         configStorage.setAppid(Init.configer.getMiniAppAppId());
@@ -388,8 +389,8 @@ public class PushManage {
      * @param log
      */
     public static void console(String log) {
-        MainWindow.mainWindow.getPushConsoleTextArea().append(log + "\n");
-        MainWindow.mainWindow.getPushConsoleTextArea().setCaretPosition(MainWindow.mainWindow.getPushConsoleTextArea().getText().length());
+        PushForm.pushForm.getPushConsoleTextArea().append(log + "\n");
+        PushForm.pushForm.getPushConsoleTextArea().setCaretPosition(PushForm.pushForm.getPushConsoleTextArea().getText().length());
         logger.warn(log);
     }
 

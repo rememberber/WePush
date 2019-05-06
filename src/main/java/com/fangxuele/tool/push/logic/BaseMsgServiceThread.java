@@ -2,7 +2,7 @@ package com.fangxuele.tool.push.logic;
 
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
-import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.PushForm;
 import me.chanjar.weixin.mp.api.WxMpService;
 
 import javax.swing.table.DefaultTableModel;
@@ -91,7 +91,7 @@ public class BaseMsgServiceThread extends Thread {
         list = PushData.toSendList.subList(startIndex, endIndex);
 
         // 初始化线程列表行
-        tableModel = (DefaultTableModel) MainWindow.mainWindow.getPushThreadTable().getModel();
+        tableModel = (DefaultTableModel) PushForm.pushForm.getPushThreadTable().getModel();
         currentThreadSuccessCount = 0;
         currentThreadFailCount = 0;
         tableModel.setValueAt(currentThreadSuccessCount, tableRow, 2);

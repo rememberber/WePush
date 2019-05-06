@@ -17,6 +17,7 @@ import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.MessageManageForm;
+import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
 import com.fangxuele.tool.push.ui.form.ScheduleForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
@@ -447,10 +448,10 @@ public class Init {
      * 初始化推送tab
      */
     private static void initPushTab() {
-        MainWindow.mainWindow.getPushMsgName().setText(configer.getMsgName());
-        MainWindow.mainWindow.getMaxThreadPoolTextField().setText(String.valueOf(configer.getMaxThreadPool()));
-        MainWindow.mainWindow.getThreadCountTextField().setText(String.valueOf(configer.getThreadCount()));
-        MainWindow.mainWindow.getDryRunCheckBox().setSelected(configer.isDryRun());
+        PushForm.pushForm.getPushMsgName().setText(configer.getMsgName());
+        PushForm.pushForm.getMaxThreadPoolTextField().setText(String.valueOf(configer.getMaxThreadPool()));
+        PushForm.pushForm.getThreadCountTextField().setText(String.valueOf(configer.getThreadCount()));
+        PushForm.pushForm.getDryRunCheckBox().setSelected(configer.isDryRun());
     }
 
     /**

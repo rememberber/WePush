@@ -4,6 +4,7 @@ import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.PushForm;
 
 import javax.swing.*;
 import java.awt.event.WindowEvent;
@@ -50,7 +51,7 @@ public class FramListener {
 
             @Override
             public void windowClosing(WindowEvent e) {
-                if (!MainWindow.mainWindow.getPushStartButton().isEnabled()) {
+                if (!PushForm.pushForm.getPushStartButton().isEnabled()) {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getPushPanel(),
                             "有推送任务正在进行！\n\n为避免数据丢失，请先停止!\n\n", "Sorry~", JOptionPane.WARNING_MESSAGE);
                 } else {
