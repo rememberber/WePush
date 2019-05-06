@@ -32,7 +32,8 @@ public class App {
             Init.initGlobalFont();
             Init.initAllTab();
             Init.initOthers();
-            mainFrame.setContentPane(MainWindow.mainWindow.mainPanel);
+            MainWindow.mainWindow.init();
+            mainFrame.setContentPane(MainWindow.mainWindow.getMainPanel());
             mainFrame.addListeners();
             mainFrame.remove(loadingPanel);
         });
