@@ -14,6 +14,7 @@ import com.fangxuele.tool.push.ui.component.TableInCellCheckBoxRenderer;
 import com.fangxuele.tool.push.ui.form.AboutForm;
 import com.fangxuele.tool.push.ui.form.HelpForm;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
@@ -424,10 +425,10 @@ public class Init {
      * 初始化导入用户tab
      */
     public static void initMemberTab() {
-        MainWindow.mainWindow.getImportFromSqlTextArea().setText(configer.getMemberSql());
-        MainWindow.mainWindow.getMemberFilePathField().setText(configer.getMemberFilePath());
+        MemberForm.memberForm.getImportFromSqlTextArea().setText(configer.getMemberSql());
+        MemberForm.memberForm.getMemberFilePathField().setText(configer.getMemberFilePath());
 
-        MainWindow.mainWindow.getMemberHisComboBox().removeAllItems();
+        MemberForm.memberForm.getMemberHisComboBox().removeAllItems();
 
         File pushHisDir = new File(SystemUtil.configHome + "data" + File.separator + "push_his");
         if (!pushHisDir.exists()) {
@@ -437,7 +438,7 @@ public class Init {
         File[] files = pushHisDir.listFiles();
         if (Objects.requireNonNull(files).length > 0) {
             for (File file : files) {
-                MainWindow.mainWindow.getMemberHisComboBox().addItem(file.getName());
+                MemberForm.memberForm.getMemberHisComboBox().addItem(file.getName());
             }
         }
     }
