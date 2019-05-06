@@ -14,6 +14,7 @@ import com.fangxuele.tool.push.ui.component.TableInCellCheckBoxRenderer;
 import com.fangxuele.tool.push.ui.form.AboutForm;
 import com.fangxuele.tool.push.ui.form.HelpForm;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.UserCaseForm;
 import com.fangxuele.tool.push.ui.listener.AboutListener;
 import com.fangxuele.tool.push.util.ConfigUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
@@ -104,8 +105,8 @@ public class Init {
         MainWindow.mainWindow.getSettingScrollPane().getVerticalScrollBar().setUnitIncrement(15);
         MainWindow.mainWindow.getSettingScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
 
-        MainWindow.mainWindow.getUserCaseScrollPane().getVerticalScrollBar().setUnitIncrement(15);
-        MainWindow.mainWindow.getUserCaseScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
+        UserCaseForm.userCaseForm.getUserCaseScrollPane().getVerticalScrollBar().setUnitIncrement(15);
+        UserCaseForm.userCaseForm.getUserCaseScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
 
         // 设置版本
         AboutForm.aboutForm.getVersionLabel().setText(UiConsts.APP_VERSION);
@@ -166,7 +167,7 @@ public class Init {
         if (StringUtils.isNotEmpty(userCaseInfoContent)) {
             List<UserCase> userCaseInfoList = JSONUtil.toList(JSONUtil.parseArray(userCaseInfoContent), UserCase.class);
 
-            JPanel userCaseListPanel = MainWindow.mainWindow.getUserCaseListPanel();
+            JPanel userCaseListPanel = UserCaseForm.userCaseForm.getUserCaseListPanel();
             int listSize = userCaseInfoList.size();
             userCaseListPanel.setLayout(new GridLayoutManager((int) Math.ceil(listSize / 2.0) + 1, 3, new Insets(0, 0, 0, 0), -1, -1));
             for (int i = 0; i < listSize; i++) {

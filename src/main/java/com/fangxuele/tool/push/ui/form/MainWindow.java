@@ -163,8 +163,6 @@ public class MainWindow {
     private JButton settingMaInfoSaveButton;
     private JTextField msgTemplateKeyWordTextField;
     private JLabel templateKeyWordLabel;
-    private JPanel userCaseListPanel;
-    private JScrollPane userCaseScrollPane;
     private JTextField txyunAppIdTextField;
     private JPasswordField txyunAppKeyTextField;
     private JTextField txyunSignTextField;
@@ -173,12 +171,14 @@ public class MainWindow {
     private JButton settingYunpianSaveButton;
     private JTextArea msgYunpianMsgContentTextField;
     private JPanel yunpianMsgPanel;
+    private JPanel userCasePanel;
 
     public static MainWindow mainWindow = new MainWindow();
 
     public void init(){
         mainWindow.getAboutPanel().add(AboutForm.aboutForm.getAboutPanel(), new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));
         mainWindow.getHelpPanel().add(HelpForm.helpForm.getHelpPanel(), new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));
+        mainWindow.getUserCasePanel().add(UserCaseForm.userCaseForm.getUserCasePanel(), new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));
     }
 
     {
@@ -1065,34 +1065,9 @@ public class MainWindow {
         panel29.add(spacer37, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final Spacer spacer38 = new Spacer();
         panel28.add(spacer38, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-        final JPanel panel30 = new JPanel();
-        panel30.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 10, 0), -1, -1));
-        tabbedPane.addTab("他们都在用", panel30);
-        userCaseScrollPane = new JScrollPane();
-        panel30.add(userCaseScrollPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        userCaseListPanel = new JPanel();
-        userCaseListPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        userCaseScrollPane.setViewportView(userCaseListPanel);
-        final JPanel panel31 = new JPanel();
-        panel31.setLayout(new GridLayoutManager(5, 1, new Insets(10, 10, 0, 0), -1, -1));
-        panel30.add(panel31, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        final JLabel label42 = new JLabel();
-        label42.setText("产品信息将会在这里展示，帮助宣传您的产品");
-        panel31.add(label42, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label43 = new JLabel();
-        Font label43Font = this.$$$getFont$$$(null, Font.BOLD, -1, label43.getFont());
-        if (label43Font != null) label43.setFont(label43Font);
-        label43.setText("WePush不会收集用户的任何信息");
-        panel31.add(label43, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label44 = new JLabel();
-        label44.setText("也正因如此，我无法得知哪些优秀的企业或个人在使用WePush");
-        panel31.add(label44, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label45 = new JLabel();
-        label45.setText("如果WePush能给您带来一些便利");
-        panel31.add(label45, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label46 = new JLabel();
-        label46.setText("欢迎将您的产品邮件告诉我：rememberber@163.com");
-        panel31.add(label46, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        userCasePanel = new JPanel();
+        userCasePanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 10, 0), -1, -1));
+        tabbedPane.addTab("他们都在用", userCasePanel);
         msgTypeLabel.setLabelFor(msgTypeComboBox);
         msgNameLabel.setLabelFor(msgNameField);
         previewMemberLabel.setLabelFor(previewUserField);
