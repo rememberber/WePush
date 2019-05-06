@@ -8,6 +8,7 @@ import cn.hutool.log.LogFactory;
 import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.bean.VersionSummary;
 import com.fangxuele.tool.push.ui.UiConsts;
+import com.fangxuele.tool.push.ui.form.AboutForm;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import org.apache.commons.lang3.StringUtils;
 
@@ -36,7 +37,7 @@ public class AboutListener {
     private static final Log logger = LogFactory.get();
 
     public static void addListeners() {
-        MainWindow.mainWindow.getCompanyLabel().addMouseListener(new MouseAdapter() {
+        AboutForm.aboutForm.getCompanyLabel().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
@@ -51,13 +52,13 @@ public class AboutListener {
             @Override
             public void mouseEntered(MouseEvent e) {
                 super.mouseEntered(e);
-                MainWindow.mainWindow.getCompanyLabel().setCursor(new Cursor(Cursor.HAND_CURSOR));
+                AboutForm.aboutForm.getCompanyLabel().setCursor(new Cursor(Cursor.HAND_CURSOR));
             }
 
         });
 
         // 检查更新
-        MainWindow.mainWindow.getCheckUpdateLabel().addMouseListener(new MouseAdapter() {
+        AboutForm.aboutForm.getCheckUpdateLabel().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
@@ -67,7 +68,7 @@ public class AboutListener {
             @Override
             public void mouseEntered(MouseEvent e) {
                 super.mouseEntered(e);
-                MainWindow.mainWindow.getCheckUpdateLabel().setCursor(new Cursor(Cursor.HAND_CURSOR));
+                AboutForm.aboutForm.getCheckUpdateLabel().setCursor(new Cursor(Cursor.HAND_CURSOR));
             }
         });
     }
@@ -136,7 +137,7 @@ public class AboutListener {
         String qrCodeContent = HttpUtil.get(UiConsts.QR_CODE_URL);
         if (StringUtils.isNotEmpty(qrCodeContent)) {
             Map<String, String> urlMap = JSONUtil.toBean(qrCodeContent, Map.class);
-            JLabel qrCodeLabel = MainWindow.mainWindow.getQrCodeLabel();
+            JLabel qrCodeLabel = AboutForm.aboutForm.getQrCodeLabel();
 
             try {
                 URL url = new URL(urlMap.get("url"));

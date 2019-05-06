@@ -11,6 +11,7 @@ import com.fangxuele.tool.push.logic.MessageTypeConsts;
 import com.fangxuele.tool.push.logic.MsgHisManage;
 import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
 import com.fangxuele.tool.push.ui.component.TableInCellCheckBoxRenderer;
+import com.fangxuele.tool.push.ui.form.AboutForm;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.listener.AboutListener;
 import com.fangxuele.tool.push.util.ConfigUtil;
@@ -106,7 +107,7 @@ public class Init {
         MainWindow.mainWindow.getUserCaseScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
 
         // 设置版本
-        MainWindow.mainWindow.getVersionLabel().setText(UiConsts.APP_VERSION);
+        AboutForm.aboutForm.getVersionLabel().setText(UiConsts.APP_VERSION);
     }
 
     /**
