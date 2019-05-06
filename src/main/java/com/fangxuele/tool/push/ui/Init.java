@@ -14,6 +14,7 @@ import com.fangxuele.tool.push.ui.component.TableInCellCheckBoxRenderer;
 import com.fangxuele.tool.push.ui.form.AboutForm;
 import com.fangxuele.tool.push.ui.form.HelpForm;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.ScheduleForm;
 import com.fangxuele.tool.push.ui.form.UserCaseForm;
 import com.fangxuele.tool.push.ui.listener.AboutListener;
 import com.fangxuele.tool.push.util.ConfigUtil;
@@ -452,17 +453,17 @@ public class Init {
      */
     private static void initScheduleTab() {
         // 开始
-        MainWindow.mainWindow.getRunAtThisTimeRadioButton().setSelected(configer.isRadioStartAt());
-        MainWindow.mainWindow.getStartAtThisTimeTextField().setText(configer.getTextStartAt());
+        ScheduleForm.scheduleForm.getRunAtThisTimeRadioButton().setSelected(configer.isRadioStartAt());
+        ScheduleForm.scheduleForm.getStartAtThisTimeTextField().setText(configer.getTextStartAt());
 
         //每天
-        MainWindow.mainWindow.getRunPerDayRadioButton().setSelected(configer.isRadioPerDay());
-        MainWindow.mainWindow.getStartPerDayTextField().setText(configer.getTextPerDay());
+        ScheduleForm.scheduleForm.getRunPerDayRadioButton().setSelected(configer.isRadioPerDay());
+        ScheduleForm.scheduleForm.getStartPerDayTextField().setText(configer.getTextPerDay());
 
         // 每周
-        MainWindow.mainWindow.getRunPerWeekRadioButton().setSelected(configer.isRadioPerWeek());
-        MainWindow.mainWindow.getSchedulePerWeekComboBox().setSelectedItem(configer.getTextPerWeekWeek());
-        MainWindow.mainWindow.getStartPerWeekTextField().setText(configer.getTextPerWeekTime());
+        ScheduleForm.scheduleForm.getRunPerWeekRadioButton().setSelected(configer.isRadioPerWeek());
+        ScheduleForm.scheduleForm.getSchedulePerWeekComboBox().setSelectedItem(configer.getTextPerWeekWeek());
+        ScheduleForm.scheduleForm.getStartPerWeekTextField().setText(configer.getTextPerWeekTime());
     }
 
     /**
