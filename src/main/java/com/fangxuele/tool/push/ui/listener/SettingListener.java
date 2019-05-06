@@ -6,6 +6,7 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.util.DbUtilMySQL;
 import com.fangxuele.tool.push.util.SystemUtil;
@@ -205,9 +206,9 @@ public class SettingListener {
         });
 
         // 历史消息管理-全选
-        MainWindow.mainWindow.getMsgHisTableSelectAllButton().addActionListener(e -> ThreadUtil.execute(() -> {
+        MessageManageForm.messageManageForm.getMsgHisTableSelectAllButton().addActionListener(e -> ThreadUtil.execute(() -> {
             toggleSelectAll();
-            DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getMsgHistable()
+            DefaultTableModel tableModel = (DefaultTableModel) MessageManageForm.messageManageForm.getMsgHistable()
                     .getModel();
             int rowCount = tableModel.getRowCount();
             for (int i = 0; i < rowCount; i++) {
@@ -216,9 +217,9 @@ public class SettingListener {
         }));
 
         // 历史消息管理-删除
-        MainWindow.mainWindow.getMsgHisTableDeleteButton().addActionListener(e -> ThreadUtil.execute(() -> {
+        MessageManageForm.messageManageForm.getMsgHisTableDeleteButton().addActionListener(e -> ThreadUtil.execute(() -> {
             try {
-                DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getMsgHistable()
+                DefaultTableModel tableModel = (DefaultTableModel) MessageManageForm.messageManageForm.getMsgHistable()
                         .getModel();
                 int rowCount = tableModel.getRowCount();
 
@@ -251,7 +252,7 @@ public class SettingListener {
                                     }
                                 }
                                 tableModel.removeRow(i);
-                                MainWindow.mainWindow.getMsgHistable().updateUI();
+                                MessageManageForm.messageManageForm.getMsgHistable().updateUI();
                                 i = 0;
                                 rowCount = tableModel.getRowCount();
                             } else {

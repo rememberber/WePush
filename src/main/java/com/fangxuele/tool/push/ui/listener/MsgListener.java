@@ -8,6 +8,7 @@ import com.fangxuele.tool.push.logic.PushManage;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
+import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
 import org.apache.commons.lang3.StringUtils;
 
@@ -36,14 +37,14 @@ public class MsgListener {
     public static void addListeners() {
 
         // 点击左侧表格事件
-        MainWindow.mainWindow.getMsgHistable().addMouseListener(new MouseAdapter() {
+        MessageManageForm.messageManageForm.getMsgHistable().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 ThreadUtil.execute(() -> {
                     PushHisForm.pushHisForm.getPushHisTextArea().setText("");
 
-                    int selectedRow = MainWindow.mainWindow.getMsgHistable().getSelectedRow();
-                    String selectedMsgName = MainWindow.mainWindow.getMsgHistable()
+                    int selectedRow = MessageManageForm.messageManageForm.getMsgHistable().getSelectedRow();
+                    String selectedMsgName = MessageManageForm.messageManageForm.getMsgHistable()
                             .getValueAt(selectedRow, 1).toString();
 
                     Init.initMsgTab(selectedMsgName);

@@ -15,6 +15,7 @@ import com.fangxuele.tool.push.ui.form.AboutForm;
 import com.fangxuele.tool.push.ui.form.HelpForm;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
+import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
 import com.fangxuele.tool.push.ui.form.ScheduleForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
@@ -558,12 +559,12 @@ public class Init {
         // 历史消息管理
         String[] headerNames = {"选择", "消息名称"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
-        MainWindow.mainWindow.getMsgHistable().setModel(model);
+        MessageManageForm.messageManageForm.getMsgHistable().setModel(model);
         // 隐藏表头
-        MainWindow.mainWindow.getMsgHistable().getTableHeader().setVisible(false);
+        MessageManageForm.messageManageForm.getMsgHistable().getTableHeader().setVisible(false);
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
         renderer.setPreferredSize(new Dimension(0, 0));
-        MainWindow.mainWindow.getMsgHistable().getTableHeader().setDefaultRenderer(renderer);
+        MessageManageForm.messageManageForm.getMsgHistable().getTableHeader().setDefaultRenderer(renderer);
 
         Map<String, String[]> msgMap = msgHisManager.readMsgHis();
         Object[] data;
@@ -573,11 +574,11 @@ public class Init {
             data[1] = msgName;
             model.addRow(data);
         }
-        MainWindow.mainWindow.getMsgHistable().getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(new JCheckBox()));
-        MainWindow.mainWindow.getMsgHistable().getColumnModel().getColumn(0).setCellRenderer(new TableInCellCheckBoxRenderer());
+        MessageManageForm.messageManageForm.getMsgHistable().getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(new JCheckBox()));
+        MessageManageForm.messageManageForm.getMsgHistable().getColumnModel().getColumn(0).setCellRenderer(new TableInCellCheckBoxRenderer());
         // 设置列宽
-        MainWindow.mainWindow.getMsgHistable().getColumnModel().getColumn(0).setPreferredWidth(50);
-        MainWindow.mainWindow.getMsgHistable().getColumnModel().getColumn(0).setMaxWidth(50);
+        MessageManageForm.messageManageForm.getMsgHistable().getColumnModel().getColumn(0).setPreferredWidth(50);
+        MessageManageForm.messageManageForm.getMsgHistable().getColumnModel().getColumn(0).setMaxWidth(50);
     }
 
     /**
