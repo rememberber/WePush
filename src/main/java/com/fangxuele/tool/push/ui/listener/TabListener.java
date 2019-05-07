@@ -2,7 +2,6 @@ package com.fangxuele.tool.push.ui.listener;
 
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
-import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
@@ -47,10 +46,7 @@ public class TabListener {
                         break;
                     case 4:
                         PushForm.pushForm.getPushMsgName().setText(MessageEditForm.messageEditForm.getMsgNameField().getText());
-
-                        if (PushData.allUser != null && PushData.allUser.size() > 0) {
-                            PushListener.refreshPushInfo();
-                        }
+                        PushListener.refreshPushInfo();
                         break;
                     default:
                         break;

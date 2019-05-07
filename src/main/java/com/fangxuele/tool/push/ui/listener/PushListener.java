@@ -299,10 +299,14 @@ public class PushListener {
         long totalCount = PushData.allUser.size();
         PushForm.pushForm.getPushTotalCountLabel().setText("消息总数：" + totalCount);
         PushForm.pushForm.getPushTotalProgressBar().setMaximum((int) totalCount);
+        // 每个线程平均分配
+        int threadCount = Integer.parseInt(PushForm.pushForm.getThreadCountTextField().getText());
+        int perThread = (int) (totalCount / threadCount) + 1;
+        PushForm.pushForm.getCountPerThread().setText("每个线程平均分配：" + perThread);
         // 可用处理器核心
         PushForm.pushForm.getAvailableProcessorLabel().setText("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
         // JVM内存占用
-        PushForm.pushForm.getJvmMemoryLabel().setText("JVM内存占用：" + Runtime.getRuntime().maxMemory() + "/" + Runtime.getRuntime().totalMemory());
+        PushForm.pushForm.getJvmMemoryLabel().setText("JVM内存占用：" + Runtime.getRuntime().totalMemory() / 1024 / 1024 + "MB/" + Runtime.getRuntime().maxMemory() / 1024 / 1024 + "MB");
     }
 
     /**

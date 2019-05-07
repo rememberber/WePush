@@ -172,7 +172,7 @@
                   <text value=""/>
                 </properties>
               </component>
-              <component id="8567e" class="javax.swing.JLabel">
+              <component id="8567e" class="javax.swing.JLabel" binding="countPerThread">
                 <constraints>
                   <grid row="2" column="8" row-span="1" col-span="5" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>

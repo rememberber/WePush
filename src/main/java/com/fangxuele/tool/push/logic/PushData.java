@@ -1,5 +1,7 @@
 package com.fangxuele.tool.push.logic;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.LongAdder;
 
@@ -16,7 +18,7 @@ public class PushData {
     /**
      * 导入的用户
      */
-    public static List<String[]> allUser;
+    public static List<String[]> allUser = Collections.synchronizedList(new ArrayList<>());
 
     /**
      * 总记录数
