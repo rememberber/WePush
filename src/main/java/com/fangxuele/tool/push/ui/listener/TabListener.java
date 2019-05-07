@@ -26,7 +26,6 @@ public class TabListener {
     private static boolean warnFlag = true;
 
     public static void addListeners() {
-        // 暂时停止使用，仅留作demo，日后需要时再使用
         MainWindow.mainWindow.getTabbedPane().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {

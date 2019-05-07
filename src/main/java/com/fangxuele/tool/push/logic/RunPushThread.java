@@ -82,7 +82,6 @@ public class RunPushThread extends Thread {
         // 线程数
         int threadCount = Integer.parseInt(PushForm.pushForm.getThreadCountTextField().getText());
         PushData.threadCount = threadCount;
-        PushManage.console("需要：" + PushForm.pushForm.getThreadCountTextField().getText() + "个线程宝宝齐力合作");
 
         // 初始化线程table
         String[] headerNames = {"线程", "分片区间", "成功", "失败", "总数", "当前进度"};
@@ -106,6 +105,10 @@ public class RunPushThread extends Thread {
         int perThread = (int) (totalCount / threadCount) + 1;
         for (int i = 0; i < threadCount; i++) {
             int startIndex = i * perThread;
+            if (startIndex > totalCount - 1) {
+                threadCount = i;
+                break;
+            }
             int endIndex = i * perThread + perThread;
             if (endIndex > totalCount - 1) {
                 endIndex = (int) (totalCount - 1);

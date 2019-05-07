@@ -34,7 +34,6 @@ public class PushData {
      * 发送失败数
      */
     public static LongAdder failRecords = new LongAdder();
-    ;
 
     /**
      * 准备发送的列表
