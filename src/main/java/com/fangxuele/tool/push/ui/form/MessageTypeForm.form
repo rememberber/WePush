@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.fangxuele.tool.push.ui.form.MessageTypeForm">
-  <grid id="27dc6" binding="panel1" default-binding="true" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="27dc6" binding="messageTypePanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
       <xy x="20" y="20" width="500" height="400"/>
     </constraints>
-    <properties/>
+    <properties>
+      <autoscrolls value="true"/>
+    </properties>
     <border type="none"/>
     <children>
       <scrollpane id="b3ae8">
@@ -17,7 +19,7 @@
         </properties>
         <border type="none"/>
         <children>
-          <grid id="c7ec0" binding="messageTypePanel" layout-manager="GridLayoutManager" row-count="12" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="c7ec0" binding="panel2" layout-manager="GridLayoutManager" row-count="12" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="10" left="0" bottom="0" right="0"/>
             <constraints/>
             <properties>
@@ -25,12 +27,12 @@
             </properties>
             <border type="none"/>
             <children>
-              <component id="6b6cd" class="javax.swing.JRadioButton" binding="模板消息公众号RadioButton" default-binding="true">
+              <component id="6b6cd" class="javax.swing.JRadioButton" binding="公众号模板消息RadioButton" default-binding="true">
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="模板消息-公众号"/>
+                  <text value="公众号-模板消息"/>
                 </properties>
               </component>
               <hspacer id="825c4">
@@ -43,28 +45,28 @@
                   <grid row="11" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
                 </constraints>
               </vspacer>
-              <component id="6c911" class="javax.swing.JRadioButton" binding="模板消息小程序RadioButton" default-binding="true">
+              <component id="6c911" class="javax.swing.JRadioButton" binding="小程序模板消息RadioButton" default-binding="true">
                 <constraints>
                   <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="模板消息-小程序"/>
+                  <text value="小程序-模板消息"/>
                 </properties>
               </component>
-              <component id="114d7" class="javax.swing.JRadioButton" binding="客服消息RadioButton" default-binding="true">
+              <component id="114d7" class="javax.swing.JRadioButton" binding="公众号客服消息RadioButton" default-binding="true">
                 <constraints>
                   <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="客服消息"/>
+                  <text value="公众号-客服消息"/>
                 </properties>
               </component>
-              <component id="9317e" class="javax.swing.JRadioButton" binding="客服消息优先RadioButton" default-binding="true">
+              <component id="9317e" class="javax.swing.JRadioButton" binding="公众号客服消息优先优先尝试发送客服消息失败后则发送模板消息RadioButton" default-binding="true">
                 <constraints>
                   <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="客服消息优先"/>
+                  <text value="公众号-客服消息优先(优先尝试发送客服消息，失败后则发送模板消息)"/>
                 </properties>
               </component>
               <component id="3ba39" class="javax.swing.JRadioButton" binding="阿里云短信RadioButton" default-binding="true">
