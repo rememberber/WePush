@@ -56,10 +56,11 @@ public class MessageTypeForm {
         scrollPane1.setAutoscrolls(true);
         messageTypePanel.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(12, 2, new Insets(10, 0, 0, 0), -1, -1));
+        panel2.setLayout(new GridLayoutManager(12, 2, new Insets(20, 0, 0, 0), -1, -1));
         panel2.setAutoscrolls(true);
         scrollPane1.setViewportView(panel2);
         公众号模板消息RadioButton = new JRadioButton();
+        公众号模板消息RadioButton.setEnabled(true);
         公众号模板消息RadioButton.setText("公众号-模板消息");
         panel2.add(公众号模板消息RadioButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
@@ -88,12 +89,15 @@ public class MessageTypeForm {
         云片网短信RadioButton.setText("云片网短信");
         panel2.add(云片网短信RadioButton, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         又拍云短信RadioButton = new JRadioButton();
+        又拍云短信RadioButton.setEnabled(false);
         又拍云短信RadioButton.setText("又拍云短信");
         panel2.add(又拍云短信RadioButton, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         华为云短信RadioButton = new JRadioButton();
+        华为云短信RadioButton.setEnabled(false);
         华为云短信RadioButton.setText("华为云短信");
         panel2.add(华为云短信RadioButton, new GridConstraints(9, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         eMailRadioButton = new JRadioButton();
+        eMailRadioButton.setEnabled(false);
         eMailRadioButton.setText("E-Mail");
         panel2.add(eMailRadioButton, new GridConstraints(10, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
