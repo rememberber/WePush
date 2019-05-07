@@ -298,7 +298,6 @@ public class PushListener {
         // 总记录数
         long totalCount = PushData.allUser.size();
         PushForm.pushForm.getPushTotalCountLabel().setText("消息总数：" + totalCount);
-        PushForm.pushForm.getPushTotalProgressBar().setMaximum((int) totalCount);
         // 每个线程平均分配
         int threadCount = Integer.parseInt(PushForm.pushForm.getThreadCountTextField().getText());
         int perThread = (int) (totalCount / threadCount) + 1;
