@@ -30,6 +30,7 @@ public class MainWindow {
     private JPanel userCasePanel;
     private JPanel messageEditPanel;
     private JPanel messageManagePanel;
+    private JPanel messageTypePanel;
 
     public static MainWindow mainWindow = new MainWindow();
 
@@ -44,6 +45,7 @@ public class MainWindow {
         mainWindow.getMessageManagePanel().add(MessageManageForm.messageManageForm.getMessageManagePanel(), new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));
         mainWindow.getMemberPanel().add(MemberForm.memberForm.getMemberPanel(), new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));
         mainWindow.getPushPanel().add(PushForm.pushForm.getPushPanel(), new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));
+        mainWindow.getMessageTypePanel().add(MessageTypeForm.messageTypeForm.getMessageTypePanel(), new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));
     }
 
     {
@@ -71,9 +73,9 @@ public class MainWindow {
         aboutPanel = new JPanel();
         aboutPanel.setLayout(new GridLayoutManager(1, 1, new Insets(10, 10, 10, 10), -1, -1));
         tabbedPane.addTab("关于", aboutPanel);
-        helpPanel = new JPanel();
-        helpPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 10, 0), -1, -1));
-        tabbedPane.addTab("使用帮助", helpPanel);
+        messageTypePanel = new JPanel();
+        messageTypePanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        tabbedPane.addTab("消息类型", messageTypePanel);
         messagePanel = new JSplitPane();
         messagePanel.setContinuousLayout(true);
         messagePanel.setDividerLocation(280);
@@ -109,6 +111,9 @@ public class MainWindow {
         Font settingPanelFont = this.$$$getFont$$$("Microsoft YaHei UI", -1, -1, settingPanel.getFont());
         if (settingPanelFont != null) settingPanel.setFont(settingPanelFont);
         tabbedPane.addTab("设置", settingPanel);
+        helpPanel = new JPanel();
+        helpPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 10, 0), -1, -1));
+        tabbedPane.addTab("使用帮助", helpPanel);
         userCasePanel = new JPanel();
         userCasePanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 10, 0), -1, -1));
         tabbedPane.addTab("他们都在用", userCasePanel);
