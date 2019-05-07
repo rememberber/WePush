@@ -556,7 +556,7 @@ public class Init {
         // 外观
         SettingForm.settingForm.getSettingThemeComboBox().setSelectedItem(configer.getTheme());
         SettingForm.settingForm.getSettingFontNameComboBox().setSelectedItem(configer.getFont());
-        SettingForm.settingForm.getSettingFontSizeComboBox().setSelectedItem(configer.getFontSize());
+        SettingForm.settingForm.getSettingFontSizeComboBox().setSelectedItem(String.valueOf(configer.getFontSize()));
 
         // 历史消息管理
         String[] headerNames = {"选择", "消息名称"};
