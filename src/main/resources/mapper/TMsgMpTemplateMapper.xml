@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fangxuele.tool.push.dao.TMsgMpTemplateMapper">
+  <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TMsgMpTemplate">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="msg_type" jdbcType="INTEGER" property="msg_type" />
+    <result column="msg_name" jdbcType="VARCHAR" property="msg_name" />
+    <result column="template_id" jdbcType="VARCHAR" property="template_id" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="ma_appid" jdbcType="VARCHAR" property="ma_appid" />
+    <result column="ma_page_path" jdbcType="VARCHAR" property="ma_page_path" />
+    <result column="create_time" jdbcType="VARCHAR" property="create_time" />
+    <result column="modified_time" jdbcType="VARCHAR" property="modified_time" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, msg_type, msg_name, template_id, url, ma_appid, ma_page_path, create_time, modified_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_msg_mp_template
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_msg_mp_template
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TMsgMpTemplate">
+    insert into t_msg_mp_template (id, msg_type, msg_name, 
+      template_id, url, ma_appid, 
+      ma_page_path, create_time, modified_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{msg_type,jdbcType=INTEGER}, #{msg_name,jdbcType=VARCHAR}, 
+      #{template_id,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, #{ma_appid,jdbcType=VARCHAR}, 
+      #{ma_page_path,jdbcType=VARCHAR}, #{create_time,jdbcType=VARCHAR}, #{modified_time,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TMsgMpTemplate">
+    insert into t_msg_mp_template
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="msg_type != null">
+        msg_type,
+      </if>
+      <if test="msg_name != null">
+        msg_name,
+      </if>
+      <if test="template_id != null">
+        template_id,
+      </if>
+      <if test="url != null">
+        url,
+      </if>
+      <if test="ma_appid != null">
+        ma_appid,
+      </if>
+      <if test="ma_page_path != null">
+        ma_page_path,
+      </if>
+      <if test="create_time != null">
+        create_time,
+      </if>
+      <if test="modified_time != null">
+        modified_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="msg_type != null">
+        #{msg_type,jdbcType=INTEGER},
+      </if>
+      <if test="msg_name != null">
+        #{msg_name,jdbcType=VARCHAR},
+      </if>
+      <if test="template_id != null">
+        #{template_id,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null">
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="ma_appid != null">
+        #{ma_appid,jdbcType=VARCHAR},
+      </if>
+      <if test="ma_page_path != null">
+        #{ma_page_path,jdbcType=VARCHAR},
+      </if>
+      <if test="create_time != null">
+        #{create_time,jdbcType=VARCHAR},
+      </if>
+      <if test="modified_time != null">
+        #{modified_time,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fangxuele.tool.push.domain.TMsgMpTemplate">
+    update t_msg_mp_template
+    <set>
+      <if test="msg_type != null">
+        msg_type = #{msg_type,jdbcType=INTEGER},
+      </if>
+      <if test="msg_name != null">
+        msg_name = #{msg_name,jdbcType=VARCHAR},
+      </if>
+      <if test="template_id != null">
+        template_id = #{template_id,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null">
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="ma_appid != null">
+        ma_appid = #{ma_appid,jdbcType=VARCHAR},
+      </if>
+      <if test="ma_page_path != null">
+        ma_page_path = #{ma_page_path,jdbcType=VARCHAR},
+      </if>
+      <if test="create_time != null">
+        create_time = #{create_time,jdbcType=VARCHAR},
+      </if>
+      <if test="modified_time != null">
+        modified_time = #{modified_time,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TMsgMpTemplate">
+    update t_msg_mp_template
+    set msg_type = #{msg_type,jdbcType=INTEGER},
+      msg_name = #{msg_name,jdbcType=VARCHAR},
+      template_id = #{template_id,jdbcType=VARCHAR},
+      url = #{url,jdbcType=VARCHAR},
+      ma_appid = #{ma_appid,jdbcType=VARCHAR},
+      ma_page_path = #{ma_page_path,jdbcType=VARCHAR},
+      create_time = #{create_time,jdbcType=VARCHAR},
+      modified_time = #{modified_time,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
