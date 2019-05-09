@@ -1,10 +1,7 @@
 package com.fangxuele.tool.push.domain;
 
-import lombok.ToString;
-
 import java.io.Serializable;
 
-@ToString
 public class TMsgKefu implements Serializable {
     private Integer id;
 

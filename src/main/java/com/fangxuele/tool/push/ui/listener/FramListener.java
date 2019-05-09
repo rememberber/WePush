@@ -2,13 +2,15 @@ package com.fangxuele.tool.push.ui.listener;
 
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
-import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.ui.form.MainWindow;
-import com.fangxuele.tool.push.ui.form.PushForm;
+import com.fangxuele.tool.push.util.MybatisUtil;
 
 import javax.swing.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+
+import static com.fangxuele.tool.push.App.mainFrame;
+import static com.fangxuele.tool.push.ui.form.MainWindow.mainWindow;
+import static com.fangxuele.tool.push.ui.form.PushForm.pushForm;
 
 /**
  * <pre>
@@ -23,7 +25,7 @@ public class FramListener {
     private static final Log logger = LogFactory.get();
 
     public static void addListeners() {
-        App.mainFrame.addWindowListener(new WindowListener() {
+        mainFrame.addWindowListener(new WindowListener() {
 
             @Override
             public void windowOpened(WindowEvent e) {
@@ -51,11 +53,12 @@ public class FramListener {
 
             @Override
             public void windowClosing(WindowEvent e) {
-                if (!PushForm.pushForm.getPushStartButton().isEnabled()) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getPushPanel(),
+                if (!pushForm.getPushStartButton().isEnabled()) {
+                    JOptionPane.showMessageDialog(mainWindow.getPushPanel(),
                             "有推送任务正在进行！\n\n为避免数据丢失，请先停止!\n\n", "Sorry~", JOptionPane.WARNING_MESSAGE);
                 } else {
-                    App.mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    MybatisUtil.getSqlSession().close();
+                    mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 }
 
             }
