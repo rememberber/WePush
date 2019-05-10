@@ -2,8 +2,6 @@ package com.fangxuele.tool.push.util;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.CharsetUtil;
-import cn.hutool.log.Log;
-import cn.hutool.log.LogFactory;
 import cn.hutool.setting.Setting;
 
 import java.io.File;
@@ -17,9 +15,6 @@ import java.io.File;
  * @since 2017/6/14.
  */
 public class ConfigUtil {
-
-    private static final Log logger = LogFactory.get();
-
     /**
      * 设置文件路径
      */
@@ -27,7 +22,9 @@ public class ConfigUtil {
 
     private Setting setting;
 
-    private static ConfigUtil ourInstance = new ConfigUtil();
+    private static ConfigUtil configUtil = new ConfigUtil();
+
+    private int msgType;
 
     private String msgName;
 
@@ -42,10 +39,6 @@ public class ConfigUtil {
     private int threadCount;
 
     private boolean dryRun;
-
-    private boolean radioStopAt;
-
-    private String textStopAt;
 
     private boolean radioPerDay;
 
@@ -112,7 +105,7 @@ public class ConfigUtil {
     private int fontSize;
 
     public static ConfigUtil getInstance() {
-        return ourInstance;
+        return configUtil;
     }
 
     private ConfigUtil() {
@@ -133,6 +126,15 @@ public class ConfigUtil {
     public void save() {
         setting.store(settingFilePath);
     }
+
+    public int getMsgType() {
+        return setting.getInt("msgType", "msg", 1);
+    }
+
+    public void setMsgType(int msgType) {
+        setting.put("msg", "msgType", msgName);
+    }
+
 
     public String getMsgName() {
         return setting.getStr("msgName", "msg", "");
