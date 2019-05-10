@@ -54,9 +54,6 @@ public class MsgListener {
             }
         });
 
-        // 消息类型切换事件
-        MessageEditForm.messageEditForm.getMsgTypeComboBox().addItemListener(e -> MessageEditForm.switchMsgType(e.getItem().toString()));
-
         // 客服消息类型切换事件
         MessageEditForm.messageEditForm.getMsgKefuMsgTypeComboBox().addItemListener(e -> MessageEditForm.switchKefuMsgType(e.getItem().toString()));
 
@@ -119,7 +116,7 @@ public class MsgListener {
                 if (!msgMap.containsKey(msgName) || isCover == JOptionPane.YES_OPTION) {
                     String[] record = new String[MsgHisManage.ARRAY_LENGTH];
                     record[0] = msgName;
-                    record[1] = Objects.requireNonNull(MessageEditForm.messageEditForm.getMsgTypeComboBox().getSelectedItem()).toString();
+                    record[1] = String.valueOf(Init.config.getMsgType());
                     record[2] = MessageEditForm.messageEditForm.getMsgTemplateIdTextField().getText();
                     record[3] = MessageEditForm.messageEditForm.getMsgTemplateUrlTextField().getText();
                     record[4] = Objects.requireNonNull(MessageEditForm.messageEditForm.getMsgKefuMsgTypeComboBox().getSelectedItem()).toString();

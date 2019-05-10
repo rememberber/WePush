@@ -2,7 +2,7 @@ package com.fangxuele.tool.push.ui.form;
 
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPushHistoryMapper;
-import com.fangxuele.tool.push.logic.MessageTypeConsts;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.MsgHisManage;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
@@ -18,7 +18,6 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <pre>
@@ -31,8 +30,6 @@ import java.util.Objects;
 @Getter
 public class MessageEditForm {
     private JPanel messageEditPanel;
-    private JLabel msgTypeLabel;
-    private JComboBox msgTypeComboBox;
     private JLabel msgNameLabel;
     private JTextField msgNameField;
     private JButton createMsgButton;
@@ -90,7 +87,6 @@ public class MessageEditForm {
      */
     public static void init(String selectedMsgName) {
         // 初始化，清空所有相关的输入框内容
-        messageEditForm.getMsgTypeComboBox().setSelectedItem("");
         messageEditForm.getMsgTemplateIdTextField().setText("");
         messageEditForm.getMsgTemplateUrlTextField().setText("");
         messageEditForm.getMsgKefuMsgTypeComboBox().setSelectedItem("");
@@ -118,8 +114,7 @@ public class MessageEditForm {
         if (msgMap != null && msgMap.size() != 0) {
             if (msgMap.containsKey(msgName)) {
                 String[] msgDataArray = msgMap.get(msgName);
-                String msgType = msgDataArray[1];
-                messageEditForm.getMsgTypeComboBox().setSelectedItem(msgType);
+                int msgType = Init.config.getMsgType();
                 messageEditForm.getMsgTemplateIdTextField().setText(msgDataArray[2]);
                 messageEditForm.getMsgTemplateUrlTextField().setText(msgDataArray[3]);
                 String kefuMsgType = msgDataArray[4];
@@ -168,7 +163,7 @@ public class MessageEditForm {
                 messageEditForm.getTemplateMsgDataTable().updateUI();
             }
         } else {
-            switchMsgType(Objects.requireNonNull(messageEditForm.getMsgTypeComboBox().getSelectedItem()).toString());
+            switchMsgType(Init.config.getMsgType());
         }
     }
 
@@ -177,12 +172,12 @@ public class MessageEditForm {
      *
      * @param msgType
      */
-    public static void switchMsgType(String msgType) {
+    public static void switchMsgType(int msgType) {
         messageEditForm.getKefuMsgPanel().setVisible(false);
         messageEditForm.getTemplateMsgPanel().setVisible(false);
         messageEditForm.getYunpianMsgPanel().setVisible(false);
         switch (msgType) {
-            case MessageTypeConsts.MP_TEMPLATE:
+            case MessageTypeEnum.MP_TEMPLATE_CODE:
                 messageEditForm.getTemplateMsgPanel().setVisible(true);
                 messageEditForm.getTemplateUrlLabel().setVisible(true);
                 messageEditForm.getMsgTemplateUrlTextField().setVisible(true);
@@ -198,7 +193,7 @@ public class MessageEditForm {
                 messageEditForm.getTemplateKeyWordLabel().setVisible(false);
                 messageEditForm.getPreviewMemberLabel().setText("预览消息用户openid（多个以半角分号分隔）");
                 break;
-            case MessageTypeConsts.MA_TEMPLATE:
+            case MessageTypeEnum.MA_TEMPLATE_CODE:
                 messageEditForm.getTemplateMsgPanel().setVisible(true);
                 messageEditForm.getTemplateUrlLabel().setVisible(true);
                 messageEditForm.getMsgTemplateUrlTextField().setVisible(true);
@@ -214,11 +209,11 @@ public class MessageEditForm {
                 messageEditForm.getTemplateKeyWordLabel().setVisible(true);
                 messageEditForm.getPreviewMemberLabel().setText("预览消息用户openid（多个以半角分号分隔）");
                 break;
-            case MessageTypeConsts.KEFU:
+            case MessageTypeEnum.KEFU_CODE:
                 messageEditForm.getKefuMsgPanel().setVisible(true);
                 messageEditForm.getPreviewMemberLabel().setText("预览消息用户openid（多个以半角分号分隔）");
                 break;
-            case MessageTypeConsts.KEFU_PRIORITY:
+            case MessageTypeEnum.KEFU_PRIORITY_CODE:
                 messageEditForm.getKefuMsgPanel().setVisible(true);
                 messageEditForm.getTemplateMsgPanel().setVisible(true);
                 messageEditForm.getTemplateUrlLabel().setVisible(true);
@@ -235,9 +230,9 @@ public class MessageEditForm {
                 messageEditForm.getTemplateKeyWordLabel().setVisible(false);
                 messageEditForm.getPreviewMemberLabel().setText("预览消息用户openid（多个以半角分号分隔）");
                 break;
-            case MessageTypeConsts.ALI_YUN:
-            case MessageTypeConsts.TX_YUN:
-            case MessageTypeConsts.ALI_TEMPLATE:
+            case MessageTypeEnum.ALI_YUN_CODE:
+            case MessageTypeEnum.TX_YUN_CODE:
+            case MessageTypeEnum.ALI_TEMPLATE_CODE:
                 messageEditForm.getTemplateMsgPanel().setVisible(true);
                 messageEditForm.getTemplateUrlLabel().setVisible(false);
                 messageEditForm.getMsgTemplateUrlTextField().setVisible(false);
@@ -253,7 +248,7 @@ public class MessageEditForm {
                 messageEditForm.getTemplateKeyWordLabel().setVisible(false);
                 messageEditForm.getPreviewMemberLabel().setText("预览消息用户手机号（多个以半角分号分隔）");
                 break;
-            case MessageTypeConsts.YUN_PIAN:
+            case MessageTypeEnum.YUN_PIAN_CODE:
                 messageEditForm.getYunpianMsgPanel().setVisible(true);
                 messageEditForm.getPreviewMemberLabel().setText("预览消息用户手机号（多个以半角分号分隔）");
                 break;
@@ -342,32 +337,15 @@ public class MessageEditForm {
         messageEditPanel.setPreferredSize(new Dimension(-1, -1));
         panel1.add(messageEditPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(1, 7, new Insets(0, 0, 10, 0), -1, -1));
+        panel2.setLayout(new GridLayoutManager(1, 5, new Insets(0, 0, 10, 0), -1, -1));
         messageEditPanel.add(panel2, new GridConstraints(0, 0, 1, 5, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        msgTypeLabel = new JLabel();
-        Font msgTypeLabelFont = this.$$$getFont$$$(null, Font.BOLD, -1, msgTypeLabel.getFont());
-        if (msgTypeLabelFont != null) msgTypeLabel.setFont(msgTypeLabelFont);
-        msgTypeLabel.setText("消息类型");
-        panel2.add(msgTypeLabel, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        msgTypeComboBox = new JComboBox();
-        final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
-        defaultComboBoxModel1.addElement("模板消息");
-        defaultComboBoxModel1.addElement("模板消息-小程序");
-        defaultComboBoxModel1.addElement("客服消息");
-        defaultComboBoxModel1.addElement("客服消息优先");
-        defaultComboBoxModel1.addElement("阿里云短信");
-        defaultComboBoxModel1.addElement("阿里大于模板短信");
-        defaultComboBoxModel1.addElement("腾讯云短信");
-        defaultComboBoxModel1.addElement("云片网短信");
-        msgTypeComboBox.setModel(defaultComboBoxModel1);
-        panel2.add(msgTypeComboBox, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         msgNameLabel = new JLabel();
         Font msgNameLabelFont = this.$$$getFont$$$(null, Font.BOLD, -1, msgNameLabel.getFont());
         if (msgNameLabelFont != null) msgNameLabel.setFont(msgNameLabelFont);
         msgNameLabel.setText("推送任务名称");
-        panel2.add(msgNameLabel, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel2.add(msgNameLabel, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         msgNameField = new JTextField();
-        panel2.add(msgNameField, new GridConstraints(0, 4, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel2.add(msgNameField, new GridConstraints(0, 2, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         createMsgButton = new JButton();
         createMsgButton.setText("新建消息");
         panel2.add(createMsgButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -463,10 +441,10 @@ public class MessageEditForm {
         final Spacer spacer1 = new Spacer();
         kefuMsgPanel.add(spacer1, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         msgKefuMsgTypeComboBox = new JComboBox();
-        final DefaultComboBoxModel defaultComboBoxModel2 = new DefaultComboBoxModel();
-        defaultComboBoxModel2.addElement("文本消息");
-        defaultComboBoxModel2.addElement("图文消息");
-        msgKefuMsgTypeComboBox.setModel(defaultComboBoxModel2);
+        final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
+        defaultComboBoxModel1.addElement("文本消息");
+        defaultComboBoxModel1.addElement("图文消息");
+        msgKefuMsgTypeComboBox.setModel(defaultComboBoxModel1);
         kefuMsgPanel.add(msgKefuMsgTypeComboBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         kefuMsgTitleLabel = new JLabel();
         kefuMsgTitleLabel.setText("内容/标题");
@@ -498,7 +476,6 @@ public class MessageEditForm {
         yunpianMsgPanel.add(scrollPane2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(72, 19), null, 0, false));
         msgYunpianMsgContentTextField = new JTextArea();
         scrollPane2.setViewportView(msgYunpianMsgContentTextField);
-        msgTypeLabel.setLabelFor(msgTypeComboBox);
         msgNameLabel.setLabelFor(msgNameField);
         previewMemberLabel.setLabelFor(previewUserField);
         templateIdLabel.setLabelFor(msgTemplateIdTextField);
@@ -534,4 +511,5 @@ public class MessageEditForm {
         }
         return new Font(resultName, style >= 0 ? style : currentFont.getStyle(), size >= 0 ? size : currentFont.getSize());
     }
+
 }

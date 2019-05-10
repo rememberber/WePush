@@ -44,7 +44,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <pre>
@@ -75,8 +74,8 @@ public class PushManage {
             msgDataList.add(data.split(","));
         }
 
-        switch (Objects.requireNonNull(MessageEditForm.messageEditForm.getMsgTypeComboBox().getSelectedItem()).toString()) {
-            case MessageTypeConsts.MP_TEMPLATE:
+        switch (Init.config.getMsgType()) {
+            case MessageTypeEnum.MP_TEMPLATE_CODE:
                 WxMpTemplateMessage wxMessageTemplate;
                 WxMpService wxMpService = getWxMpService();
                 if (wxMpService.getWxMpConfigStorage() == null) {
@@ -90,7 +89,7 @@ public class PushManage {
                     wxMpService.getTemplateMsgService().sendTemplateMsg(wxMessageTemplate);
                 }
                 break;
-            case MessageTypeConsts.MA_TEMPLATE:
+            case MessageTypeEnum.MA_TEMPLATE_CODE:
                 WxMaTemplateMessage wxMaMessageTemplate;
                 WxMaService wxMaService = getWxMaService();
                 if (wxMaService.getWxMaConfig() == null) {
@@ -105,7 +104,7 @@ public class PushManage {
                     wxMaService.getMsgService().sendTemplateMsg(wxMaMessageTemplate);
                 }
                 break;
-            case MessageTypeConsts.KEFU:
+            case MessageTypeEnum.KEFU_CODE:
                 wxMpService = getWxMpService();
                 WxMpKefuMessage wxMpKefuMessage;
                 if (wxMpService.getWxMpConfigStorage() == null) {
@@ -119,7 +118,7 @@ public class PushManage {
                     wxMpService.getKefuService().sendKefuMessage(wxMpKefuMessage);
                 }
                 break;
-            case MessageTypeConsts.KEFU_PRIORITY:
+            case MessageTypeEnum.KEFU_PRIORITY_CODE:
                 wxMpService = getWxMpService();
                 if (wxMpService.getWxMpConfigStorage() == null) {
                     return false;
@@ -139,7 +138,7 @@ public class PushManage {
                     }
                 }
                 break;
-            case MessageTypeConsts.ALI_YUN:
+            case MessageTypeEnum.ALI_YUN_CODE:
                 String aliyunAccessKeyId = Init.config.getAliyunAccessKeyId();
                 String aliyunAccessKeySecret = Init.config.getAliyunAccessKeySecret();
 
@@ -166,7 +165,7 @@ public class PushManage {
                     }
                 }
                 break;
-            case MessageTypeConsts.TX_YUN:
+            case MessageTypeEnum.TX_YUN_CODE:
                 String txyunAppId = Init.config.getTxyunAppId();
                 String txyunAppKey = Init.config.getTxyunAppKey();
 
@@ -189,7 +188,7 @@ public class PushManage {
                     }
                 }
                 break;
-            case MessageTypeConsts.ALI_TEMPLATE:
+            case MessageTypeEnum.ALI_TEMPLATE_CODE:
                 String aliServerUrl = Init.config.getAliServerUrl();
                 String aliAppKey = Init.config.getAliAppKey();
                 String aliAppSecret = Init.config.getAliAppSecret();
@@ -213,7 +212,7 @@ public class PushManage {
                     }
                 }
                 break;
-            case MessageTypeConsts.YUN_PIAN:
+            case MessageTypeEnum.YUN_PIAN_CODE:
                 String yunpianApiKey = Init.config.getYunpianApiKey();
 
                 if (StringUtils.isEmpty(yunpianApiKey)) {

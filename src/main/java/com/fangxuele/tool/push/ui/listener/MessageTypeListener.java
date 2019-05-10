@@ -1,10 +1,8 @@
 package com.fangxuele.tool.push.ui.listener;
 
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.MessageTypeForm;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import static com.fangxuele.tool.push.ui.form.MessageTypeForm.messageTypeForm;
 
@@ -19,104 +17,71 @@ import static com.fangxuele.tool.push.ui.form.MessageTypeForm.messageTypeForm;
 public class MessageTypeListener {
 
     public static void addListeners() {
-        messageTypeForm.getMpTemplateRadioButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                MessageTypeForm.clearAllSelected();
-                Init.config.setMsgType(1);
-                Init.config.save();
-                MessageTypeForm.init();
-            }
+        messageTypeForm.getMpTemplateRadioButton().addActionListener(e -> {
+            MessageTypeForm.clearAllSelected();
+            Init.config.setMsgType(MessageTypeEnum.MP_TEMPLATE_CODE);
+            Init.config.save();
+            MessageTypeForm.init();
         });
-        messageTypeForm.getMaTemplateRadioButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                MessageTypeForm.clearAllSelected();
-                Init.config.setMsgType(2);
-                Init.config.save();
-                MessageTypeForm.init();
-            }
+        messageTypeForm.getMaTemplateRadioButton().addActionListener(e -> {
+            MessageTypeForm.clearAllSelected();
+            Init.config.setMsgType(MessageTypeEnum.MA_TEMPLATE_CODE);
+            Init.config.save();
+            MessageTypeForm.init();
         });
-        messageTypeForm.getKefuRadioButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                MessageTypeForm.clearAllSelected();
-                Init.config.setMsgType(3);
-                Init.config.save();
-                MessageTypeForm.init();
-            }
+        messageTypeForm.getKefuRadioButton().addActionListener(e -> {
+            MessageTypeForm.clearAllSelected();
+            Init.config.setMsgType(MessageTypeEnum.KEFU_CODE);
+            Init.config.save();
+            MessageTypeForm.init();
         });
-        messageTypeForm.getKefuPriorityRadioButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                MessageTypeForm.clearAllSelected();
-                Init.config.setMsgType(4);
-                Init.config.save();
-                MessageTypeForm.init();
-            }
+        messageTypeForm.getKefuPriorityRadioButton().addActionListener(e -> {
+            MessageTypeForm.clearAllSelected();
+            Init.config.setMsgType(MessageTypeEnum.KEFU_PRIORITY_CODE);
+            Init.config.save();
+            MessageTypeForm.init();
         });
-        messageTypeForm.getAliYunRadioButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                MessageTypeForm.clearAllSelected();
-                Init.config.setMsgType(5);
-                Init.config.save();
-                MessageTypeForm.init();
-            }
+        messageTypeForm.getAliYunRadioButton().addActionListener(e -> {
+            MessageTypeForm.clearAllSelected();
+            Init.config.setMsgType(MessageTypeEnum.ALI_YUN_CODE);
+            Init.config.save();
+            MessageTypeForm.init();
         });
-        messageTypeForm.getAliTemplateRadioButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                MessageTypeForm.clearAllSelected();
-                Init.config.setMsgType(6);
-                Init.config.save();
-                MessageTypeForm.init();
-            }
+        messageTypeForm.getAliTemplateRadioButton().addActionListener(e -> {
+            MessageTypeForm.clearAllSelected();
+            Init.config.setMsgType(MessageTypeEnum.ALI_TEMPLATE_CODE);
+            Init.config.save();
+            MessageTypeForm.init();
         });
-        messageTypeForm.getTxYunRadioButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                MessageTypeForm.clearAllSelected();
-                Init.config.setMsgType(7);
-                Init.config.save();
-                MessageTypeForm.init();
-            }
+        messageTypeForm.getTxYunRadioButton().addActionListener(e -> {
+            MessageTypeForm.clearAllSelected();
+            Init.config.setMsgType(MessageTypeEnum.TX_YUN_CODE);
+            Init.config.save();
+            MessageTypeForm.init();
         });
-        messageTypeForm.getYunPianRadioButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                MessageTypeForm.clearAllSelected();
-                Init.config.setMsgType(8);
-                Init.config.save();
-                MessageTypeForm.init();
-            }
+        messageTypeForm.getYunPianRadioButton().addActionListener(e -> {
+            MessageTypeForm.clearAllSelected();
+            Init.config.setMsgType(MessageTypeEnum.YUN_PIAN_CODE);
+            Init.config.save();
+            MessageTypeForm.init();
         });
-        messageTypeForm.getUpYunRadioButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                MessageTypeForm.clearAllSelected();
-                Init.config.setMsgType(9);
-                Init.config.save();
-                MessageTypeForm.init();
-            }
+        messageTypeForm.getUpYunRadioButton().addActionListener(e -> {
+            MessageTypeForm.clearAllSelected();
+            Init.config.setMsgType(MessageTypeEnum.UP_YUN_CODE);
+            Init.config.save();
+            MessageTypeForm.init();
         });
-        messageTypeForm.getHwYunRadioButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                MessageTypeForm.clearAllSelected();
-                Init.config.setMsgType(10);
-                Init.config.save();
-                MessageTypeForm.init();
-            }
+        messageTypeForm.getHwYunRadioButton().addActionListener(e -> {
+            MessageTypeForm.clearAllSelected();
+            Init.config.setMsgType(MessageTypeEnum.HW_YUN_CODE);
+            Init.config.save();
+            MessageTypeForm.init();
         });
-        messageTypeForm.getEMailRadioButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                MessageTypeForm.clearAllSelected();
-                Init.config.setMsgType(11);
-                Init.config.save();
-                MessageTypeForm.init();
-            }
+        messageTypeForm.getEMailRadioButton().addActionListener(e -> {
+            MessageTypeForm.clearAllSelected();
+            Init.config.setMsgType(MessageTypeEnum.EMAIL_CODE);
+            Init.config.save();
+            MessageTypeForm.init();
         });
     }
 }

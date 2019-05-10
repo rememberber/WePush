@@ -8,7 +8,6 @@ import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.component.TableInCellProgressBarRenderer;
-import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import me.chanjar.weixin.mp.api.WxMpService;
 
@@ -18,7 +17,6 @@ import javax.swing.table.DefaultTableModel;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Objects;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -96,7 +94,7 @@ public class RunPushThread extends Thread {
         PushForm.pushForm.getPushThreadTable().updateUI();
 
         Object[] data;
-        String msgType = Objects.requireNonNull(MessageEditForm.messageEditForm.getMsgTypeComboBox().getSelectedItem()).toString();
+        int msgType = Init.config.getMsgType();
 
         int maxThreadPoolSize = Integer.parseInt(PushForm.pushForm.getMaxThreadPoolTextField().getText());
         ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(maxThreadPoolSize, maxThreadPoolSize);
@@ -113,7 +111,7 @@ public class RunPushThread extends Thread {
             if (endIndex > totalCount - 1) {
                 endIndex = (int) (totalCount - 1);
             }
-            if (MessageTypeConsts.MP_TEMPLATE.equals(msgType)) {
+            if (MessageTypeEnum.MP_TEMPLATE_CODE == msgType) {
                 thread = new TemplateMsgMpServiceThread(startIndex, endIndex);
 
                 WxMpService wxMpService = PushManage.getWxMpService();
@@ -121,7 +119,7 @@ public class RunPushThread extends Thread {
                     return;
                 }
                 thread.setWxMpService(wxMpService);
-            } else if (MessageTypeConsts.MA_TEMPLATE.equals(msgType)) {
+            } else if (MessageTypeEnum.MA_TEMPLATE_CODE == msgType) {
                 thread = new TemplateMsgMaServiceThread(startIndex, endIndex);
 
                 WxMaService wxMaService = PushManage.getWxMaService();
@@ -129,7 +127,7 @@ public class RunPushThread extends Thread {
                     return;
                 }
                 ((TemplateMsgMaServiceThread) thread).setWxMaService(wxMaService);
-            } else if (MessageTypeConsts.KEFU.equals(msgType)) {
+            } else if (MessageTypeEnum.KEFU_CODE == msgType) {
                 thread = new KeFuMsgServiceThread(startIndex, endIndex);
 
                 WxMpService wxMpService = PushManage.getWxMpService();
@@ -137,7 +135,7 @@ public class RunPushThread extends Thread {
                     return;
                 }
                 thread.setWxMpService(wxMpService);
-            } else if (MessageTypeConsts.KEFU_PRIORITY.equals(msgType)) {
+            } else if (MessageTypeEnum.KEFU_PRIORITY_CODE == msgType) {
                 thread = new KeFuPriorMsgServiceThread(startIndex, endIndex);
 
                 WxMpService wxMpService = PushManage.getWxMpService();
@@ -145,13 +143,13 @@ public class RunPushThread extends Thread {
                     return;
                 }
                 thread.setWxMpService(wxMpService);
-            } else if (MessageTypeConsts.ALI_TEMPLATE.equals(msgType)) {
+            } else if (MessageTypeEnum.ALI_TEMPLATE_CODE == msgType) {
                 thread = new AliDayuTemplateSmsMsgServiceThread(startIndex, endIndex);
-            } else if (MessageTypeConsts.ALI_YUN.equals(msgType)) {
+            } else if (MessageTypeEnum.ALI_YUN_CODE == msgType) {
                 thread = new AliYunSmsMsgServiceThread(startIndex, endIndex);
-            } else if (MessageTypeConsts.TX_YUN.equals(msgType)) {
+            } else if (MessageTypeEnum.TX_YUN_CODE == msgType) {
                 thread = new TxYunSmsMsgServiceThread(startIndex, endIndex);
-            } else if (MessageTypeConsts.YUN_PIAN.equals(msgType)) {
+            } else if (MessageTypeEnum.YUN_PIAN_CODE == msgType) {
                 thread = new YunpianSmsMsgServiceThread(startIndex, endIndex);
             }
 

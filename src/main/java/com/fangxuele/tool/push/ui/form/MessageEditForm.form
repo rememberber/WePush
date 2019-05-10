@@ -20,7 +20,7 @@
         </properties>
         <border type="none"/>
         <children>
-          <grid id="956f5" layout-manager="GridLayoutManager" row-count="1" column-count="7" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="956f5" layout-manager="GridLayoutManager" row-count="1" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="10" right="0"/>
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="5" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -28,36 +28,9 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="b82bb" class="javax.swing.JLabel" binding="msgTypeLabel">
-                <constraints>
-                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <font style="1"/>
-                  <labelFor value="d891e"/>
-                  <text value="消息类型"/>
-                </properties>
-              </component>
-              <component id="d891e" class="javax.swing.JComboBox" binding="msgTypeComboBox">
-                <constraints>
-                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <model>
-                    <item value="模板消息"/>
-                    <item value="模板消息-小程序"/>
-                    <item value="客服消息"/>
-                    <item value="客服消息优先"/>
-                    <item value="阿里云短信"/>
-                    <item value="阿里大于模板短信"/>
-                    <item value="腾讯云短信"/>
-                    <item value="云片网短信"/>
-                  </model>
-                </properties>
-              </component>
               <component id="2285c" class="javax.swing.JLabel" binding="msgNameLabel">
                 <constraints>
-                  <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <font style="1"/>
@@ -67,7 +40,7 @@
               </component>
               <component id="5135c" class="javax.swing.JTextField" binding="msgNameField">
                 <constraints>
-                  <grid row="0" column="4" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                  <grid row="0" column="2" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="-1"/>
                   </grid>
                 </constraints>

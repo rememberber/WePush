@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.form;
 
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.Init;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -42,42 +43,43 @@ public class MessageTypeForm {
         int msgType = Init.config.getMsgType();
 
         switch (msgType) {
-            case 1:
+            case MessageTypeEnum.MP_TEMPLATE_CODE:
                 messageTypeForm.getMpTemplateRadioButton().setSelected(true);
                 break;
-            case 2:
+            case MessageTypeEnum.MA_TEMPLATE_CODE:
                 messageTypeForm.getMaTemplateRadioButton().setSelected(true);
                 break;
-            case 3:
+            case MessageTypeEnum.KEFU_CODE:
                 messageTypeForm.getKefuRadioButton().setSelected(true);
                 break;
-            case 4:
+            case MessageTypeEnum.KEFU_PRIORITY_CODE:
                 messageTypeForm.getKefuPriorityRadioButton().setSelected(true);
                 break;
-            case 5:
+            case MessageTypeEnum.ALI_YUN_CODE:
                 messageTypeForm.getAliYunRadioButton().setSelected(true);
                 break;
-            case 6:
+            case MessageTypeEnum.ALI_TEMPLATE_CODE:
                 messageTypeForm.getAliTemplateRadioButton().setSelected(true);
                 break;
-            case 7:
+            case MessageTypeEnum.TX_YUN_CODE:
                 messageTypeForm.getTxYunRadioButton().setSelected(true);
                 break;
-            case 8:
+            case MessageTypeEnum.YUN_PIAN_CODE:
                 messageTypeForm.getYunPianRadioButton().setSelected(true);
                 break;
-            case 9:
+            case MessageTypeEnum.UP_YUN_CODE:
                 messageTypeForm.getUpYunRadioButton().setSelected(true);
                 break;
-            case 10:
+            case MessageTypeEnum.HW_YUN_CODE:
                 messageTypeForm.getHwYunRadioButton().setSelected(true);
                 break;
-            case 11:
+            case MessageTypeEnum.EMAIL_CODE:
                 messageTypeForm.getEMailRadioButton().setSelected(true);
                 break;
 
             default:
         }
+        MessageEditForm.switchMsgType(msgType);
     }
 
     /**
