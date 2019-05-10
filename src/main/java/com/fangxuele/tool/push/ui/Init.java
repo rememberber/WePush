@@ -8,6 +8,7 @@ import com.fangxuele.tool.push.ui.form.AboutForm;
 import com.fangxuele.tool.push.ui.form.HelpForm;
 import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
+import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.ui.form.ScheduleForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
@@ -123,6 +124,7 @@ public class Init {
         HelpForm.init();
         ThreadUtil.execute(UserCaseForm::init);
         MessageEditForm.init(null);
+        MessageManageForm.init();
         MemberForm.init();
         PushForm.init();
         ScheduleForm.init();
