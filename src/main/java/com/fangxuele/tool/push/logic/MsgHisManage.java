@@ -2,10 +2,10 @@ package com.fangxuele.tool.push.logic;
 
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPushHistoryMapper;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
-import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
@@ -40,7 +40,7 @@ public class MsgHisManage {
      */
     public static final int ARRAY_LENGTH = 15;
 
-    private TPushHistoryMapper pushHistoryMapper = MybatisUtil.getSqlSession().getMapper(TPushHistoryMapper.class);
+    private TPushHistoryMapper pushHistoryMapper = App.sqlSession.getMapper(TPushHistoryMapper.class);
 
     public static MsgHisManage getInstance() {
         return ourInstance;

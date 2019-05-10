@@ -2,7 +2,7 @@ package com.fangxuele.tool.push.ui.listener;
 
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
-import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.App;
 
 import javax.swing.*;
 import java.awt.event.WindowEvent;
@@ -57,7 +57,7 @@ public class FramListener {
                     JOptionPane.showMessageDialog(mainWindow.getPushPanel(),
                             "有推送任务正在进行！\n\n为避免数据丢失，请先停止!\n\n", "Sorry~", JOptionPane.WARNING_MESSAGE);
                 } else {
-                    MybatisUtil.getSqlSession().close();
+                    App.sqlSession.close();
                     mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 }
 

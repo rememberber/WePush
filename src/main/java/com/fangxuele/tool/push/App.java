@@ -4,6 +4,8 @@ import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.LoadingForm;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.frame.MainFrame;
+import com.fangxuele.tool.push.util.MybatisUtil;
+import org.apache.ibatis.session.SqlSession;
 
 import javax.swing.*;
 
@@ -17,6 +19,8 @@ import javax.swing.*;
  */
 public class App {
     public static MainFrame mainFrame;
+
+    public static SqlSession sqlSession = MybatisUtil.getSqlSession();
 
     public static void main(String[] args) {
         Init.initTheme();
