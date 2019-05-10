@@ -34,53 +34,53 @@ public class ScheduleListener {
                                 JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-                    Init.configer.setRadioStartAt(isStartAt);
-                    Init.configer.setTextStartAt(textStartAt);
+                    Init.config.setRadioStartAt(isStartAt);
+                    Init.config.setTextStartAt(textStartAt);
                 } else if (isStartAt) {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getSchedulePanel(),
                             "保存失败！\n\n开始推送时间不能为空！", "失败",
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 } else {
-                    Init.configer.setRadioStartAt(isStartAt);
-                    Init.configer.setTextStartAt(textStartAt);
+                    Init.config.setRadioStartAt(isStartAt);
+                    Init.config.setTextStartAt(textStartAt);
                 }
 
                 String textPerDay = ScheduleForm.scheduleForm.getStartPerDayTextField().getText();
                 boolean isPerDay = ScheduleForm.scheduleForm.getRunPerDayRadioButton().isSelected();
                 if (StringUtils.isNotEmpty(textPerDay)) {
                     DateUtil.parse(textPerDay);
-                    Init.configer.setRadioPerDay(isPerDay);
-                    Init.configer.setTextPerDay(textPerDay);
+                    Init.config.setRadioPerDay(isPerDay);
+                    Init.config.setTextPerDay(textPerDay);
                 } else if (isPerDay) {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getSchedulePanel(),
                             "保存失败！\n\n每天固定推送时间不能为空！", "失败",
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 } else {
-                    Init.configer.setRadioPerDay(isPerDay);
-                    Init.configer.setTextPerDay(textPerDay);
+                    Init.config.setRadioPerDay(isPerDay);
+                    Init.config.setTextPerDay(textPerDay);
                 }
 
                 String textPerWeekTime = ScheduleForm.scheduleForm.getStartPerWeekTextField().getText();
                 boolean isPerWeek = ScheduleForm.scheduleForm.getRunPerWeekRadioButton().isSelected();
                 if (StringUtils.isNotEmpty(textPerWeekTime)) {
                     DateUtil.parse(textPerWeekTime);
-                    Init.configer.setRadioPerWeek(isPerWeek);
-                    Init.configer.setTextPerWeekWeek(Objects.requireNonNull(ScheduleForm.scheduleForm.getSchedulePerWeekComboBox().getSelectedItem()).toString());
-                    Init.configer.setTextPerWeekTime(textPerWeekTime);
+                    Init.config.setRadioPerWeek(isPerWeek);
+                    Init.config.setTextPerWeekWeek(Objects.requireNonNull(ScheduleForm.scheduleForm.getSchedulePerWeekComboBox().getSelectedItem()).toString());
+                    Init.config.setTextPerWeekTime(textPerWeekTime);
                 } else if (isPerWeek) {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getSchedulePanel(),
                             "保存失败！\n\n每周固定推送时间不能为空！", "失败",
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 } else {
-                    Init.configer.setRadioPerWeek(isPerWeek);
-                    Init.configer.setTextPerWeekWeek(Objects.requireNonNull(ScheduleForm.scheduleForm.getSchedulePerWeekComboBox().getSelectedItem()).toString());
-                    Init.configer.setTextPerWeekTime(textPerWeekTime);
+                    Init.config.setRadioPerWeek(isPerWeek);
+                    Init.config.setTextPerWeekWeek(Objects.requireNonNull(ScheduleForm.scheduleForm.getSchedulePerWeekComboBox().getSelectedItem()).toString());
+                    Init.config.setTextPerWeekTime(textPerWeekTime);
                 }
 
-                Init.configer.save();
+                Init.config.save();
                 JOptionPane.showMessageDialog(MainWindow.mainWindow.getSchedulePanel(), "保存成功！\n\n将在下一次按计划执行时生效！\n\n", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {

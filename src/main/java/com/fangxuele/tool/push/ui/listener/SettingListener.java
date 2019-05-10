@@ -35,18 +35,18 @@ public class SettingListener {
 
         // 设置-常规-启动时自动检查更新
         SettingForm.settingForm.getAutoCheckUpdateCheckBox().addActionListener(e -> {
-            Init.configer.setAutoCheckUpdate(SettingForm.settingForm.getAutoCheckUpdateCheckBox().isSelected());
-            Init.configer.save();
+            Init.config.setAutoCheckUpdate(SettingForm.settingForm.getAutoCheckUpdateCheckBox().isSelected());
+            Init.config.save();
         });
 
         // 设置-公众号-保存
         SettingForm.settingForm.getSettingMpInfoSaveButton().addActionListener(e -> {
             try {
-                Init.configer.setWechatAppId(SettingForm.settingForm.getWechatAppIdTextField().getText());
-                Init.configer.setWechatAppSecret(new String(SettingForm.settingForm.getWechatAppSecretPasswordField().getPassword()));
-                Init.configer.setWechatToken(new String(SettingForm.settingForm.getWechatTokenPasswordField().getPassword()));
-                Init.configer.setWechatAesKey(new String(SettingForm.settingForm.getWechatAesKeyPasswordField().getPassword()));
-                Init.configer.save();
+                Init.config.setWechatAppId(SettingForm.settingForm.getWechatAppIdTextField().getText());
+                Init.config.setWechatAppSecret(new String(SettingForm.settingForm.getWechatAppSecretPasswordField().getPassword()));
+                Init.config.setWechatToken(new String(SettingForm.settingForm.getWechatTokenPasswordField().getPassword()));
+                Init.config.setWechatAesKey(new String(SettingForm.settingForm.getWechatAesKeyPasswordField().getPassword()));
+                Init.config.save();
 
                 JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
@@ -60,11 +60,11 @@ public class SettingListener {
         // 设置-小程序-保存
         SettingForm.settingForm.getSettingMaInfoSaveButton().addActionListener(e -> {
             try {
-                Init.configer.setMiniAppAppId(SettingForm.settingForm.getMiniAppAppIdTextField().getText());
-                Init.configer.setMiniAppAppSecret(new String(SettingForm.settingForm.getMiniAppAppSecretPasswordField().getPassword()));
-                Init.configer.setMiniAppToken(new String(SettingForm.settingForm.getMiniAppTokenPasswordField().getPassword()));
-                Init.configer.setMiniAppAesKey(new String(SettingForm.settingForm.getMiniAppAesKeyPasswordField().getPassword()));
-                Init.configer.save();
+                Init.config.setMiniAppAppId(SettingForm.settingForm.getMiniAppAppIdTextField().getText());
+                Init.config.setMiniAppAppSecret(new String(SettingForm.settingForm.getMiniAppAppSecretPasswordField().getPassword()));
+                Init.config.setMiniAppToken(new String(SettingForm.settingForm.getMiniAppTokenPasswordField().getPassword()));
+                Init.config.setMiniAppAesKey(new String(SettingForm.settingForm.getMiniAppAesKeyPasswordField().getPassword()));
+                Init.config.save();
 
                 JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
@@ -78,10 +78,10 @@ public class SettingListener {
         // 设置-阿里云短信-保存
         SettingForm.settingForm.getSettingAliyunSaveButton().addActionListener(e -> {
             try {
-                Init.configer.setAliyunAccessKeyId(SettingForm.settingForm.getAliyunAccessKeyIdTextField().getText());
-                Init.configer.setAliyunAccessKeySecret(new String(SettingForm.settingForm.getAliyunAccessKeySecretTextField().getPassword()));
-                Init.configer.setAliyunSign(SettingForm.settingForm.getAliyunSignTextField().getText());
-                Init.configer.save();
+                Init.config.setAliyunAccessKeyId(SettingForm.settingForm.getAliyunAccessKeyIdTextField().getText());
+                Init.config.setAliyunAccessKeySecret(new String(SettingForm.settingForm.getAliyunAccessKeySecretTextField().getPassword()));
+                Init.config.setAliyunSign(SettingForm.settingForm.getAliyunSignTextField().getText());
+                Init.config.save();
 
                 JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
@@ -95,11 +95,11 @@ public class SettingListener {
         // 设置-阿里大于-保存
         SettingForm.settingForm.getSettingAliInfoSaveButton().addActionListener(e -> {
             try {
-                Init.configer.setAliServerUrl(SettingForm.settingForm.getAliServerUrlTextField().getText());
-                Init.configer.setAliAppKey(new String(SettingForm.settingForm.getAliAppKeyPasswordField().getPassword()));
-                Init.configer.setAliAppSecret(new String(SettingForm.settingForm.getAliAppSecretPasswordField().getPassword()));
-                Init.configer.setAliSign(SettingForm.settingForm.getAliSignTextField().getText());
-                Init.configer.save();
+                Init.config.setAliServerUrl(SettingForm.settingForm.getAliServerUrlTextField().getText());
+                Init.config.setAliAppKey(new String(SettingForm.settingForm.getAliAppKeyPasswordField().getPassword()));
+                Init.config.setAliAppSecret(new String(SettingForm.settingForm.getAliAppSecretPasswordField().getPassword()));
+                Init.config.setAliSign(SettingForm.settingForm.getAliSignTextField().getText());
+                Init.config.save();
 
                 JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
@@ -113,10 +113,10 @@ public class SettingListener {
         // 设置-腾讯云短信-保存
         SettingForm.settingForm.getSettingTxyunSaveButton().addActionListener(e -> {
             try {
-                Init.configer.setTxyunAppId(SettingForm.settingForm.getTxyunAppIdTextField().getText());
-                Init.configer.setTxyunAppKey(new String(SettingForm.settingForm.getTxyunAppKeyTextField().getPassword()));
-                Init.configer.setTxyunSign(SettingForm.settingForm.getTxyunSignTextField().getText());
-                Init.configer.save();
+                Init.config.setTxyunAppId(SettingForm.settingForm.getTxyunAppIdTextField().getText());
+                Init.config.setTxyunAppKey(new String(SettingForm.settingForm.getTxyunAppKeyTextField().getPassword()));
+                Init.config.setTxyunSign(SettingForm.settingForm.getTxyunSignTextField().getText());
+                Init.config.save();
 
                 JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
@@ -130,8 +130,8 @@ public class SettingListener {
         // 设置-云片网短信-保存
         SettingForm.settingForm.getSettingYunpianSaveButton().addActionListener(e -> {
             try {
-                Init.configer.setYunpianApiKey(new String(SettingForm.settingForm.getYunpianApiKeyTextField().getPassword()));
-                Init.configer.save();
+                Init.config.setYunpianApiKey(new String(SettingForm.settingForm.getYunpianApiKeyTextField().getPassword()));
+                Init.config.save();
 
                 JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
@@ -168,11 +168,11 @@ public class SettingListener {
         // mysql数据库-保存
         SettingForm.settingForm.getSettingDbInfoSaveButton().addActionListener(e -> {
             try {
-                Init.configer.setMysqlUrl(SettingForm.settingForm.getMysqlUrlTextField().getText());
-                Init.configer.setMysqlDatabase(SettingForm.settingForm.getMysqlDatabaseTextField().getText());
-                Init.configer.setMysqlUser(SettingForm.settingForm.getMysqlUserTextField().getText());
-                Init.configer.setMysqlPassword(new String(SettingForm.settingForm.getMysqlPasswordField().getPassword()));
-                Init.configer.save();
+                Init.config.setMysqlUrl(SettingForm.settingForm.getMysqlUrlTextField().getText());
+                Init.config.setMysqlDatabase(SettingForm.settingForm.getMysqlDatabaseTextField().getText());
+                Init.config.setMysqlUser(SettingForm.settingForm.getMysqlUserTextField().getText());
+                Init.config.setMysqlPassword(new String(SettingForm.settingForm.getMysqlPasswordField().getPassword()));
+                Init.config.save();
 
                 JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
@@ -186,10 +186,10 @@ public class SettingListener {
         // 外观-保存
         SettingForm.settingForm.getSettingAppearanceSaveButton().addActionListener(e -> {
             try {
-                Init.configer.setTheme(Objects.requireNonNull(SettingForm.settingForm.getSettingThemeComboBox().getSelectedItem()).toString());
-                Init.configer.setFont(Objects.requireNonNull(SettingForm.settingForm.getSettingFontNameComboBox().getSelectedItem()).toString());
-                Init.configer.setFontSize(Integer.parseInt(Objects.requireNonNull(SettingForm.settingForm.getSettingFontSizeComboBox().getSelectedItem()).toString()));
-                Init.configer.save();
+                Init.config.setTheme(Objects.requireNonNull(SettingForm.settingForm.getSettingThemeComboBox().getSelectedItem()).toString());
+                Init.config.setFont(Objects.requireNonNull(SettingForm.settingForm.getSettingFontNameComboBox().getSelectedItem()).toString());
+                Init.config.setFontSize(Integer.parseInt(Objects.requireNonNull(SettingForm.settingForm.getSettingFontSizeComboBox().getSelectedItem()).toString()));
+                Init.config.save();
 
                 Init.initTheme();
                 Init.initGlobalFont();

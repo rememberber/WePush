@@ -5,8 +5,8 @@ import cn.hutool.core.swing.ClipboardUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
-import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
 import com.fangxuele.tool.push.util.SystemUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -121,7 +121,7 @@ public class PushHisListener {
                             }
                         }
 
-                        Init.initMemberTab();
+                        MemberForm.init();
                     }
                 }
             } catch (Exception e1) {

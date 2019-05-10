@@ -14,6 +14,7 @@ import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
 import com.fangxuele.tool.push.ui.Init;
+import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
@@ -139,8 +140,8 @@ public class PushManage {
                 }
                 break;
             case MessageTypeConsts.ALI_YUN:
-                String aliyunAccessKeyId = Init.configer.getAliyunAccessKeyId();
-                String aliyunAccessKeySecret = Init.configer.getAliyunAccessKeySecret();
+                String aliyunAccessKeyId = Init.config.getAliyunAccessKeyId();
+                String aliyunAccessKeySecret = Init.config.getAliyunAccessKeySecret();
 
                 if (StringUtils.isEmpty(aliyunAccessKeyId) || StringUtils.isEmpty(aliyunAccessKeySecret)) {
                     JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
@@ -166,8 +167,8 @@ public class PushManage {
                 }
                 break;
             case MessageTypeConsts.TX_YUN:
-                String txyunAppId = Init.configer.getTxyunAppId();
-                String txyunAppKey = Init.configer.getTxyunAppKey();
+                String txyunAppId = Init.config.getTxyunAppId();
+                String txyunAppKey = Init.config.getTxyunAppKey();
 
                 if (StringUtils.isEmpty(txyunAppId) || StringUtils.isEmpty(txyunAppKey)) {
                     JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
@@ -182,16 +183,16 @@ public class PushManage {
                     String[] params = MessageMaker.makeTxyunMessage(msgData);
                     SmsSingleSenderResult result = ssender.sendWithParam("86", msgData[0],
                             Integer.valueOf(MessageEditForm.messageEditForm.getMsgTemplateIdTextField().getText()),
-                            params, Init.configer.getAliyunSign(), "", "");
+                            params, Init.config.getAliyunSign(), "", "");
                     if (result.result != 0) {
                         throw new Exception(result.toString());
                     }
                 }
                 break;
             case MessageTypeConsts.ALI_TEMPLATE:
-                String aliServerUrl = Init.configer.getAliServerUrl();
-                String aliAppKey = Init.configer.getAliAppKey();
-                String aliAppSecret = Init.configer.getAliAppSecret();
+                String aliServerUrl = Init.config.getAliServerUrl();
+                String aliAppKey = Init.config.getAliAppKey();
+                String aliAppSecret = Init.config.getAliAppSecret();
 
                 if (StringUtils.isEmpty(aliServerUrl) || StringUtils.isEmpty(aliAppKey)
                         || StringUtils.isEmpty(aliAppSecret)) {
@@ -213,7 +214,7 @@ public class PushManage {
                 }
                 break;
             case MessageTypeConsts.YUN_PIAN:
-                String yunpianApiKey = Init.configer.getYunpianApiKey();
+                String yunpianApiKey = Init.config.getYunpianApiKey();
 
                 if (StringUtils.isEmpty(yunpianApiKey)) {
                     JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
@@ -247,7 +248,7 @@ public class PushManage {
      */
     private static WxMpConfigStorage wxMpConfigStorage() {
         WxMpInMemoryConfigStorage configStorage = new WxMpInMemoryConfigStorage();
-        if (StringUtils.isEmpty(Init.configer.getWechatAppId()) || StringUtils.isEmpty(Init.configer.getWechatAppSecret())) {
+        if (StringUtils.isEmpty(Init.config.getWechatAppId()) || StringUtils.isEmpty(Init.config.getWechatAppSecret())) {
             JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "请先在设置中填写并保存公众号相关配置！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
             PushForm.pushForm.getScheduleRunButton().setEnabled(true);
@@ -256,10 +257,10 @@ public class PushManage {
             PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
             return null;
         }
-        configStorage.setAppId(Init.configer.getWechatAppId());
-        configStorage.setSecret(Init.configer.getWechatAppSecret());
-        configStorage.setToken(Init.configer.getWechatToken());
-        configStorage.setAesKey(Init.configer.getWechatAesKey());
+        configStorage.setAppId(Init.config.getWechatAppId());
+        configStorage.setSecret(Init.config.getWechatAppSecret());
+        configStorage.setToken(Init.config.getWechatToken());
+        configStorage.setAesKey(Init.config.getWechatAesKey());
         return configStorage;
     }
 
@@ -270,8 +271,8 @@ public class PushManage {
      */
     private static WxMaInMemoryConfig wxMaConfigStorage() {
         WxMaInMemoryConfig configStorage = new WxMaInMemoryConfig();
-        if (StringUtils.isEmpty(Init.configer.getMiniAppAppId()) || StringUtils.isEmpty(Init.configer.getMiniAppAppSecret())
-                || StringUtils.isEmpty(Init.configer.getMiniAppToken()) || StringUtils.isEmpty(Init.configer.getMiniAppAesKey())) {
+        if (StringUtils.isEmpty(Init.config.getMiniAppAppId()) || StringUtils.isEmpty(Init.config.getMiniAppAppSecret())
+                || StringUtils.isEmpty(Init.config.getMiniAppToken()) || StringUtils.isEmpty(Init.config.getMiniAppAesKey())) {
             JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "请先在设置中填写并保存小程序相关配置！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
             PushForm.pushForm.getScheduleRunButton().setEnabled(true);
@@ -280,10 +281,10 @@ public class PushManage {
             PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
             return null;
         }
-        configStorage.setAppid(Init.configer.getMiniAppAppId());
-        configStorage.setSecret(Init.configer.getMiniAppAppSecret());
-        configStorage.setToken(Init.configer.getMiniAppToken());
-        configStorage.setAesKey(Init.configer.getMiniAppAesKey());
+        configStorage.setAppid(Init.config.getMiniAppAppId());
+        configStorage.setSecret(Init.config.getMiniAppAppSecret());
+        configStorage.setToken(Init.config.getMiniAppToken());
+        configStorage.setAesKey(Init.config.getMiniAppAesKey());
         configStorage.setMsgDataFormat("JSON");
         return configStorage;
     }
@@ -379,8 +380,8 @@ public class PushManage {
             writer.close();
         }
 
-        Init.initMemberTab();
-        Init.initSettingTab();
+        MemberForm.init();
+        SettingForm.init();
     }
 
     /**

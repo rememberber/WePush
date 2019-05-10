@@ -68,13 +68,13 @@ public class RunPushThread extends Thread {
         PushManage.console("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
 
         // 线程数
-        Init.configer.setThreadCount(Integer.parseInt(PushForm.pushForm.getThreadCountTextField().getText()));
-        Init.configer.save();
+        Init.config.setThreadCount(Integer.parseInt(PushForm.pushForm.getThreadCountTextField().getText()));
+        Init.config.save();
         PushManage.console("线程数：" + PushForm.pushForm.getThreadCountTextField().getText());
 
         // 线程池大小
-        Init.configer.setMaxThreadPool(Integer.parseInt(PushForm.pushForm.getMaxThreadPoolTextField().getText()));
-        Init.configer.save();
+        Init.config.setMaxThreadPool(Integer.parseInt(PushForm.pushForm.getMaxThreadPoolTextField().getText()));
+        Init.config.save();
         PushManage.console("线程池大小：" + PushForm.pushForm.getMaxThreadPoolTextField().getText());
 
         // JVM内存占用

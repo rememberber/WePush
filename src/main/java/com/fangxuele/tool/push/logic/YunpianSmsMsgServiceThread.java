@@ -37,7 +37,7 @@ public class YunpianSmsMsgServiceThread extends BaseMsgServiceThread {
         // 初始化当前线程
         initCurrentThread();
 
-        String yunpianApiKey = Init.configer.getYunpianApiKey();
+        String yunpianApiKey = Init.config.getYunpianApiKey();
 
         if (StringUtils.isEmpty(yunpianApiKey)) {
             JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),

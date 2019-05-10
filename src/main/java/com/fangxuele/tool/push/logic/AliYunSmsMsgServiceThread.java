@@ -39,8 +39,8 @@ public class AliYunSmsMsgServiceThread extends BaseMsgServiceThread {
         // 初始化当前线程
         initCurrentThread();
 
-        String aliyunAccessKeyId = Init.configer.getAliyunAccessKeyId();
-        String aliyunAccessKeySecret = Init.configer.getAliyunAccessKeySecret();
+        String aliyunAccessKeyId = Init.config.getAliyunAccessKeyId();
+        String aliyunAccessKeySecret = Init.config.getAliyunAccessKeySecret();
 
         if (StringUtils.isEmpty(aliyunAccessKeyId) || StringUtils.isEmpty(aliyunAccessKeySecret)) {
             JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),

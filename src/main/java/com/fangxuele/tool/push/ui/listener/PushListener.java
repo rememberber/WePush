@@ -112,8 +112,8 @@ public class PushListener {
                 boolean existScheduleTask = false;
 
                 // 定时开始
-                if (Init.configer.isRadioStartAt()) {
-                    long startAtMills = DateUtil.parse(Init.configer.getTextStartAt(), DatePattern.NORM_DATETIME_PATTERN).getTime();
+                if (Init.config.isRadioStartAt()) {
+                    long startAtMills = DateUtil.parse(Init.config.getTextStartAt(), DatePattern.NORM_DATETIME_PATTERN).getTime();
                     if (startAtMills < System.currentTimeMillis()) {
                         JOptionPane.showMessageDialog(PushForm.pushForm.getPushPanel(), "计划开始推送时间不能小于系统当前时间！\n\n请检查计划任务设置！\n\n", "提示",
                                 JOptionPane.INFORMATION_MESSAGE);
@@ -122,7 +122,7 @@ public class PushListener {
 
                     int isSchedulePush = JOptionPane.showConfirmDialog(PushForm.pushForm.getPushPanel(),
                             "将在" +
-                                    Init.configer.getTextStartAt() +
+                                    Init.config.getTextStartAt() +
                                     "推送\n\n消息：" +
                                     MessageEditForm.messageEditForm.getMsgNameField().getText() +
                                     "\n\n推送人数：" + PushData.allUser.size() +
@@ -138,7 +138,7 @@ public class PushListener {
                         PushForm.pushForm.getPushStopButton().setEnabled(true);
 
                         PushForm.pushForm.getScheduleDetailLabel().setText("计划任务执行中：将在" +
-                                Init.configer.getTextStartAt() +
+                                Init.config.getTextStartAt() +
                                 "开始推送");
 
                         serviceStartAt = Executors.newSingleThreadScheduledExecutor();
@@ -148,12 +148,12 @@ public class PushListener {
                 }
 
                 // 每天固定时间开始
-                if (Init.configer.isRadioPerDay()) {
-                    long startPerDayMills = DateUtil.parse(DateUtil.today() + " " + Init.configer.getTextPerDay(), DatePattern.NORM_DATETIME_PATTERN).getTime();
+                if (Init.config.isRadioPerDay()) {
+                    long startPerDayMills = DateUtil.parse(DateUtil.today() + " " + Init.config.getTextPerDay(), DatePattern.NORM_DATETIME_PATTERN).getTime();
 
                     int isSchedulePush = JOptionPane.showConfirmDialog(PushForm.pushForm.getPushPanel(),
                             "将在每天" +
-                                    Init.configer.getTextPerDay() +
+                                    Init.config.getTextPerDay() +
                                     "推送\n\n消息：" +
                                     MessageEditForm.messageEditForm.getMsgNameField().getText() +
                                     "\n\n推送人数：" + PushData.allUser.size() +
@@ -169,7 +169,7 @@ public class PushListener {
                         PushForm.pushForm.getPushStopButton().setEnabled(true);
 
                         PushForm.pushForm.getScheduleDetailLabel().setText("计划任务执行中：将在每天" +
-                                Init.configer.getTextPerDay() +
+                                Init.config.getTextPerDay() +
                                 "开始推送");
 
                         serviceStartPerDay = Executors.newSingleThreadScheduledExecutor();
@@ -181,15 +181,15 @@ public class PushListener {
                 }
 
                 // 每周固定时间开始
-                if (Init.configer.isRadioPerWeek()) {
+                if (Init.config.isRadioPerWeek()) {
 
-                    long todaySetMills = DateUtil.parse(DateUtil.today() + " " + Init.configer.getTextPerWeekTime(), DatePattern.NORM_DATETIME_PATTERN).getTime();
-                    int dayBetween = getDayOfWeek(Init.configer.getTextPerWeekWeek()) - DateUtil.thisDayOfWeek();
+                    long todaySetMills = DateUtil.parse(DateUtil.today() + " " + Init.config.getTextPerWeekTime(), DatePattern.NORM_DATETIME_PATTERN).getTime();
+                    int dayBetween = getDayOfWeek(Init.config.getTextPerWeekWeek()) - DateUtil.thisDayOfWeek();
                     long startPerWeekMills = dayBetween < 0 ? (dayBetween + 7) * 24 * 60 * 60 * 1000 : dayBetween * 24 * 60 * 60 * 1000;
 
                     int isSchedulePush = JOptionPane.showConfirmDialog(PushForm.pushForm.getPushPanel(),
-                            "将在每周" + Init.configer.getTextPerWeekWeek() +
-                                    Init.configer.getTextPerWeekTime() +
+                            "将在每周" + Init.config.getTextPerWeekWeek() +
+                                    Init.config.getTextPerWeekTime() +
                                     "推送\n\n消息：" +
                                     MessageEditForm.messageEditForm.getMsgNameField().getText() +
                                     "\n\n推送人数：" + PushData.allUser.size() +
@@ -205,8 +205,8 @@ public class PushListener {
                         PushForm.pushForm.getPushStopButton().setEnabled(true);
 
                         PushForm.pushForm.getScheduleDetailLabel().setText("计划任务执行中：将在每周" +
-                                Init.configer.getTextPerWeekWeek() +
-                                Init.configer.getTextPerWeekTime() +
+                                Init.config.getTextPerWeekWeek() +
+                                Init.config.getTextPerWeekTime() +
                                 "开始推送");
 
                         serviceStartPerWeek = Executors.newSingleThreadScheduledExecutor();

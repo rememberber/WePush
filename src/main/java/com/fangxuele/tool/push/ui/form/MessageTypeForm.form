@@ -27,7 +27,7 @@
             </properties>
             <border type="none"/>
             <children>
-              <component id="6b6cd" class="javax.swing.JRadioButton" binding="公众号模板消息RadioButton" default-binding="true">
+              <component id="6b6cd" class="javax.swing.JRadioButton" binding="mpTemplateRadioButton">
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
@@ -46,7 +46,7 @@
                   <grid row="11" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
                 </constraints>
               </vspacer>
-              <component id="6c911" class="javax.swing.JRadioButton" binding="小程序模板消息RadioButton" default-binding="true">
+              <component id="6c911" class="javax.swing.JRadioButton" binding="maTemplateRadioButton">
                 <constraints>
                   <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
@@ -54,7 +54,7 @@
                   <text value="小程序-模板消息"/>
                 </properties>
               </component>
-              <component id="114d7" class="javax.swing.JRadioButton" binding="公众号客服消息RadioButton" default-binding="true">
+              <component id="114d7" class="javax.swing.JRadioButton" binding="kefuRadioButton">
                 <constraints>
                   <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
@@ -62,7 +62,7 @@
                   <text value="公众号-客服消息"/>
                 </properties>
               </component>
-              <component id="9317e" class="javax.swing.JRadioButton" binding="公众号客服消息优先优先尝试发送客服消息失败后则发送模板消息RadioButton" default-binding="true">
+              <component id="9317e" class="javax.swing.JRadioButton" binding="kefuPriorityRadioButton">
                 <constraints>
                   <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
@@ -70,7 +70,7 @@
                   <text value="公众号-客服消息优先(优先尝试发送客服消息，失败后则发送模板消息)"/>
                 </properties>
               </component>
-              <component id="3ba39" class="javax.swing.JRadioButton" binding="阿里云短信RadioButton" default-binding="true">
+              <component id="3ba39" class="javax.swing.JRadioButton" binding="aliYunRadioButton">
                 <constraints>
                   <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
@@ -78,7 +78,7 @@
                   <text value="阿里云短信"/>
                 </properties>
               </component>
-              <component id="2bd0b" class="javax.swing.JRadioButton" binding="阿里大于模板短信RadioButton" default-binding="true">
+              <component id="2bd0b" class="javax.swing.JRadioButton" binding="aliTemplateRadioButton">
                 <constraints>
                   <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
@@ -86,7 +86,7 @@
                   <text value="阿里大于模板短信"/>
                 </properties>
               </component>
-              <component id="4afe" class="javax.swing.JRadioButton" binding="腾讯云短信RadioButton" default-binding="true">
+              <component id="4afe" class="javax.swing.JRadioButton" binding="txYunRadioButton">
                 <constraints>
                   <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
@@ -94,7 +94,7 @@
                   <text value="腾讯云短信"/>
                 </properties>
               </component>
-              <component id="845d8" class="javax.swing.JRadioButton" binding="云片网短信RadioButton" default-binding="true">
+              <component id="845d8" class="javax.swing.JRadioButton" binding="yunPianRadioButton">
                 <constraints>
                   <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
@@ -102,7 +102,7 @@
                   <text value="云片网短信"/>
                 </properties>
               </component>
-              <component id="63100" class="javax.swing.JRadioButton" binding="又拍云短信RadioButton" default-binding="true">
+              <component id="63100" class="javax.swing.JRadioButton" binding="upYunRadioButton">
                 <constraints>
                   <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
@@ -111,7 +111,7 @@
                   <text value="又拍云短信"/>
                 </properties>
               </component>
-              <component id="fddfa" class="javax.swing.JRadioButton" binding="华为云短信RadioButton" default-binding="true">
+              <component id="fddfa" class="javax.swing.JRadioButton" binding="hwYunRadioButton">
                 <constraints>
                   <grid row="9" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>

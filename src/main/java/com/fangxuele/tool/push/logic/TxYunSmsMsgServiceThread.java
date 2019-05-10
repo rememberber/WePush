@@ -36,8 +36,8 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
         // 初始化当前线程
         initCurrentThread();
 
-        String txyunAppId = Init.configer.getTxyunAppId();
-        String txyunAppKey = Init.configer.getTxyunAppKey();
+        String txyunAppId = Init.config.getTxyunAppId();
+        String txyunAppKey = Init.config.getTxyunAppKey();
 
         if (StringUtils.isEmpty(txyunAppId) || StringUtils.isEmpty(txyunAppKey)) {
             JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
@@ -47,7 +47,7 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
 
         SmsSingleSender ssender = new SmsSingleSender(Integer.valueOf(txyunAppId), txyunAppKey);
         int templateId = Integer.parseInt(MessageEditForm.messageEditForm.getMsgTemplateIdTextField().getText());
-        String smsSign = Init.configer.getAliyunSign();
+        String smsSign = Init.config.getAliyunSign();
 
         for (int i = 0; i < list.size(); i++) {
             if (!PushData.running) {

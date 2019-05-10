@@ -1,5 +1,10 @@
 package com.fangxuele.tool.push.ui.form;
 
+import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.dao.TPushHistoryMapper;
+import com.fangxuele.tool.push.logic.MsgHisManage;
+import com.fangxuele.tool.push.ui.Init;
+import com.fangxuele.tool.push.ui.component.TableInCellCheckBoxRenderer;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -7,7 +12,10 @@ import lombok.Getter;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.Map;
 
 /**
  * <pre>
@@ -59,6 +67,87 @@ public class SettingForm {
     private JButton settingYunpianSaveButton;
 
     public static SettingForm settingForm = new SettingForm();
+
+    /**
+     * 消息管理
+     */
+    public static MsgHisManage msgHisManager = MsgHisManage.getInstance();
+
+    private TPushHistoryMapper pushHistoryMapper = App.sqlSession.getMapper(TPushHistoryMapper.class);
+
+    /**
+     * 初始化设置tab
+     */
+    public static void init() {
+        // 常规
+        settingForm.getAutoCheckUpdateCheckBox().setSelected(Init.config.isAutoCheckUpdate());
+
+        // 微信公众号
+        settingForm.getWechatAppIdTextField().setText(Init.config.getWechatAppId());
+        settingForm.getWechatAppSecretPasswordField().setText(Init.config.getWechatAppSecret());
+        settingForm.getWechatTokenPasswordField().setText(Init.config.getWechatToken());
+        settingForm.getWechatAesKeyPasswordField().setText(Init.config.getWechatAesKey());
+
+        // 微信小程序
+        settingForm.getMiniAppAppIdTextField().setText(Init.config.getMiniAppAppId());
+        settingForm.getMiniAppAppSecretPasswordField().setText(Init.config.getMiniAppAppSecret());
+        settingForm.getMiniAppTokenPasswordField().setText(Init.config.getMiniAppToken());
+        settingForm.getMiniAppAesKeyPasswordField().setText(Init.config.getMiniAppAesKey());
+
+        // 阿里云短信
+        settingForm.getAliyunAccessKeyIdTextField().setText(Init.config.getAliyunAccessKeyId());
+        settingForm.getAliyunAccessKeySecretTextField().setText(Init.config.getAliyunAccessKeySecret());
+        settingForm.getAliyunSignTextField().setText(Init.config.getAliyunSign());
+
+        // 阿里大于
+        settingForm.getAliServerUrlTextField().setText(Init.config.getAliServerUrl());
+        settingForm.getAliAppKeyPasswordField().setText(Init.config.getAliAppKey());
+        settingForm.getAliAppSecretPasswordField().setText(Init.config.getAliAppSecret());
+        settingForm.getAliSignTextField().setText(Init.config.getAliSign());
+
+        // 腾讯云短信
+        settingForm.getTxyunAppIdTextField().setText(Init.config.getTxyunAppId());
+        settingForm.getTxyunAppKeyTextField().setText(Init.config.getTxyunAppKey());
+        settingForm.getTxyunSignTextField().setText(Init.config.getTxyunSign());
+
+        // 云片网短信
+        settingForm.getYunpianApiKeyTextField().setText(Init.config.getYunpianApiKey());
+
+        // MySQL
+        settingForm.getMysqlUrlTextField().setText(Init.config.getMysqlUrl());
+        settingForm.getMysqlDatabaseTextField().setText(Init.config.getMysqlDatabase());
+        settingForm.getMysqlUserTextField().setText(Init.config.getMysqlUser());
+        settingForm.getMysqlPasswordField().setText(Init.config.getMysqlPassword());
+
+        // 外观
+        settingForm.getSettingThemeComboBox().setSelectedItem(Init.config.getTheme());
+        settingForm.getSettingFontNameComboBox().setSelectedItem(Init.config.getFont());
+        settingForm.getSettingFontSizeComboBox().setSelectedItem(String.valueOf(Init.config.getFontSize()));
+
+        // 历史消息管理
+        String[] headerNames = {"选择", "消息名称"};
+        DefaultTableModel model = new DefaultTableModel(null, headerNames);
+        MessageManageForm.messageManageForm.getMsgHistable().setModel(model);
+        // 隐藏表头
+        MessageManageForm.messageManageForm.getMsgHistable().getTableHeader().setVisible(false);
+        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+        renderer.setPreferredSize(new Dimension(0, 0));
+        MessageManageForm.messageManageForm.getMsgHistable().getTableHeader().setDefaultRenderer(renderer);
+
+        Map<String, String[]> msgMap = msgHisManager.readMsgHis();
+        Object[] data;
+        for (String msgName : msgMap.keySet()) {
+            data = new Object[2];
+            data[0] = false;
+            data[1] = msgName;
+            model.addRow(data);
+        }
+        MessageManageForm.messageManageForm.getMsgHistable().getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(new JCheckBox()));
+        MessageManageForm.messageManageForm.getMsgHistable().getColumnModel().getColumn(0).setCellRenderer(new TableInCellCheckBoxRenderer());
+        // 设置列宽
+        MessageManageForm.messageManageForm.getMsgHistable().getColumnModel().getColumn(0).setPreferredWidth(50);
+        MessageManageForm.messageManageForm.getMsgHistable().getColumnModel().getColumn(0).setMaxWidth(50);
+    }
 
     {
 // GUI initializer generated by IntelliJ IDEA GUI Designer

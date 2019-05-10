@@ -32,7 +32,7 @@ public class UiConsts {
     /**
      * 用户案例url
      */
-    final static String USER_CASE_URL = "http://download.zhoubochina.com/file/user_case.json";
+    public final static String USER_CASE_URL = "http://download.zhoubochina.com/file/user_case.json";
 
     /**
      * 用户案例url

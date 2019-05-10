@@ -119,8 +119,8 @@ public class MemberListener {
                 JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "导入完成！", "完成",
                         JOptionPane.INFORMATION_MESSAGE);
 
-                Init.configer.setMemberFilePath(MemberForm.memberForm.getMemberFilePathField().getText());
-                Init.configer.save();
+                Init.config.setMemberFilePath(MemberForm.memberForm.getMemberFilePathField().getText());
+                Init.config.save();
             } catch (Exception e1) {
                 JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "导入失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
@@ -318,8 +318,8 @@ public class MemberListener {
                     JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "导入完成！", "完成",
                             JOptionPane.INFORMATION_MESSAGE);
 
-                    Init.configer.setMemberSql(querySql);
-                    Init.configer.save();
+                    Init.config.setMemberSql(querySql);
+                    Init.config.save();
                 } catch (Exception e1) {
                     JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "导入失败！\n\n" + e1.getMessage(), "失败",
                             JOptionPane.ERROR_MESSAGE);

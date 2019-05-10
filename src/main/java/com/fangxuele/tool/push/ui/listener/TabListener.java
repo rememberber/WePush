@@ -2,10 +2,10 @@ package com.fangxuele.tool.push.ui.listener;
 
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
-import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
+import com.fangxuele.tool.push.ui.form.PushHisForm;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
@@ -33,7 +33,7 @@ public class TabListener {
                 int index = MainWindow.mainWindow.getTabbedPane().getSelectedIndex();
                 switch (index) {
                     case 6:
-                        Init.initPushHisTab();
+                        PushHisForm.init();
                         break;
                     case 3:
                         if (warnFlag) {

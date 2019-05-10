@@ -37,9 +37,9 @@ public class AliDayuTemplateSmsMsgServiceThread extends BaseMsgServiceThread {
         // 初始化当前线程
         initCurrentThread();
 
-        String aliServerUrl = Init.configer.getAliServerUrl();
-        String aliAppKey = Init.configer.getAliAppKey();
-        String aliAppSecret = Init.configer.getAliAppSecret();
+        String aliServerUrl = Init.config.getAliServerUrl();
+        String aliAppKey = Init.config.getAliAppKey();
+        String aliAppSecret = Init.config.getAliAppSecret();
 
         if (StringUtils.isEmpty(aliServerUrl) || StringUtils.isEmpty(aliAppKey)
                 || StringUtils.isEmpty(aliAppSecret)) {

@@ -10,6 +10,7 @@ import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
+import com.fangxuele.tool.push.ui.form.SettingForm;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
@@ -136,15 +137,15 @@ public class MsgListener {
                     msgHisManager.writeMsgHis(msgMap);
                     msgHisManager.writeTemplateData(msgName);
 
-                    Init.configer.setMsgName(msgName);
-                    Init.configer.setPreviewUser(MessageEditForm.messageEditForm.getPreviewUserField().getText());
-                    Init.configer.save();
+                    Init.config.setMsgName(msgName);
+                    Init.config.setPreviewUser(MessageEditForm.messageEditForm.getPreviewUserField().getText());
+                    Init.config.save();
 
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存成功！", "成功",
                             JOptionPane.INFORMATION_MESSAGE);
 
                     Init.initMsgTab(null);
-                    Init.initSettingTab();
+                    SettingForm.init();
                 }
             } catch (Exception e1) {
                 JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
