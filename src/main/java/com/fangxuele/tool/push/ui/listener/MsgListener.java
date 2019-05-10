@@ -3,6 +3,11 @@ package com.fangxuele.tool.push.ui.listener;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
+import com.fangxuele.tool.push.dao.TMsgKefuMapper;
+import com.fangxuele.tool.push.dao.TMsgKefuPriorityMapper;
+import com.fangxuele.tool.push.dao.TMsgMaTemplateMapper;
+import com.fangxuele.tool.push.dao.TMsgMpTemplateMapper;
+import com.fangxuele.tool.push.dao.TMsgSmsMapper;
 import com.fangxuele.tool.push.logic.MsgHisManage;
 import com.fangxuele.tool.push.logic.PushManage;
 import com.fangxuele.tool.push.ui.Init;
@@ -10,7 +15,7 @@ import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
-import com.fangxuele.tool.push.ui.form.SettingForm;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
@@ -34,6 +39,12 @@ public class MsgListener {
     private static final Log logger = LogFactory.get();
 
     public static MsgHisManage msgHisManager = MsgHisManage.getInstance();
+
+    private TMsgKefuMapper msgKefuMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuMapper.class);
+    private TMsgKefuPriorityMapper msgKefuPriorityMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuPriorityMapper.class);
+    private TMsgMaTemplateMapper msgMaTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMaTemplateMapper.class);
+    private TMsgMpTemplateMapper msgMpTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMpTemplateMapper.class);
+    private TMsgSmsMapper msgSmsMapper = MybatisUtil.getSqlSession().getMapper(TMsgSmsMapper.class);
 
     public static void addListeners() {
 
@@ -142,7 +153,7 @@ public class MsgListener {
                             JOptionPane.INFORMATION_MESSAGE);
 
                     MessageEditForm.init(null);
-                    SettingForm.init();
+                    MessageManageForm.init();
                 }
             } catch (Exception e1) {
                 JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
