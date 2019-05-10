@@ -6,6 +6,7 @@ import com.fangxuele.tool.push.ui.listener.AboutListener;
 import com.fangxuele.tool.push.ui.listener.FramListener;
 import com.fangxuele.tool.push.ui.listener.HelpListener;
 import com.fangxuele.tool.push.ui.listener.MemberListener;
+import com.fangxuele.tool.push.ui.listener.MessageTypeListener;
 import com.fangxuele.tool.push.ui.listener.MsgListener;
 import com.fangxuele.tool.push.ui.listener.PushHisListener;
 import com.fangxuele.tool.push.ui.listener.PushListener;
@@ -50,6 +51,7 @@ public class MainFrame extends JFrame {
      * 添加事件监听
      */
     public void addListeners() {
+        MessageTypeListener.addListeners();
         AboutListener.addListeners();
         HelpListener.addListeners();
         PushHisListener.addListeners();

@@ -132,7 +132,7 @@ public class ConfigUtil {
     }
 
     public void setMsgType(int msgType) {
-        setting.put("msg", "msgType", msgName);
+        setting.put("msg", "msgType", String.valueOf(msgType));
     }
 
 

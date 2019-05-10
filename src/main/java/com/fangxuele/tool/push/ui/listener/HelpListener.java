@@ -1,7 +1,5 @@
 package com.fangxuele.tool.push.ui.listener;
 
-import cn.hutool.log.Log;
-import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.ui.form.HelpForm;
 
 import java.awt.*;
@@ -20,7 +18,6 @@ import java.net.URISyntaxException;
  * @since 2018/2/9.
  */
 public class HelpListener {
-    private static final Log logger = LogFactory.get();
 
     public static void addListeners() {
         HelpForm.helpForm.getLabelOnlineHelp().addMouseListener(new MouseAdapter() {
