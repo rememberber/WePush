@@ -19,8 +19,8 @@
             modified_time datetime
         );
 
-        create unique index t_msg_kefu_msg_name_uindex
-            on t_msg_kefu (msg_name);
+        create unique index t_msg_kefu_msg_type_msg_name_uindex
+            on t_msg_kefu (msg_type, msg_name);
 
         create table t_msg_kefu_priority
         (
@@ -43,8 +43,8 @@
             modified_time datetime
         );
 
-        create unique index t_msg_kefu_priority_msg_name_uindex
-            on t_msg_kefu_priority (msg_name);
+        create unique index t_msg_kefu_priority_msg_type_msg_name_uindex
+            on t_msg_kefu_priority (msg_type, msg_name);
 
         create table t_msg_ma_template
         (
@@ -60,8 +60,8 @@
             modified_time    datetime
         );
 
-        create unique index t_msg_ma_template_msg_name_uindex
-            on t_msg_ma_template (msg_name);
+        create unique index t_msg_ma_template_msg_type_msg_name_uindex
+            on t_msg_ma_template (msg_type, msg_name);
 
         create table t_msg_mp_template
         (
@@ -78,8 +78,8 @@
             modified_time datetime
         );
 
-        create unique index t_msg_mp_template_msg_name_uindex
-            on t_msg_mp_template (msg_name);
+        create unique index t_msg_mp_template_msg_type_msg_name_uindex
+            on t_msg_mp_template (msg_type, msg_name);
 
         create table t_msg_sms
         (
@@ -94,8 +94,8 @@
             modified_time datetime
         );
 
-        create unique index t_msg_ali_template_msg_name_uindex
-            on t_msg_sms (msg_name);
+        create unique index t_msg_sms_msg_type_msg_name_uindex
+            on t_msg_sms (msg_type, msg_name);
 
         create table t_push_history
         (
