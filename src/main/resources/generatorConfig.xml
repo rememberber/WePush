@@ -45,8 +45,8 @@
 
         <table schema="main" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false"
                enableSelectByExample="false" selectByExampleQueryId="false"
-               tableName="t_push_history" domainObjectName="TPushHistory">
-            <property name="useActualColumnNames" value="true"/>
+               tableName="t_template_data" domainObjectName="TTemplateData">
+            <property name="useActualColumnNames" value="false"/>
             <!--<generatedKey column="ID" sqlStatement="DB2" identity="true"/>-->
         </table>
 

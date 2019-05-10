@@ -1,128 +1,129 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fangxuele.tool.push.dao.TMsgMaTemplateMapper">
-  <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TMsgMaTemplate">
-    <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="msg_type" jdbcType="INTEGER" property="msg_type" />
-    <result column="msg_name" jdbcType="VARCHAR" property="msg_name" />
-    <result column="template_id" jdbcType="VARCHAR" property="template_id" />
-    <result column="page" jdbcType="VARCHAR" property="page" />
-    <result column="emphasis_keyword" jdbcType="VARCHAR" property="emphasis_keyword" />
-    <result column="create_time" jdbcType="VARCHAR" property="create_time" />
-    <result column="modified_time" jdbcType="VARCHAR" property="modified_time" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    id, msg_type, msg_name, template_id, page, emphasis_keyword, create_time, modified_time
-  </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from t_msg_ma_template
-    where id = #{id,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from t_msg_ma_template
-    where id = #{id,jdbcType=INTEGER}
-  </delete>
-  <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TMsgMaTemplate">
-    insert into t_msg_ma_template (id, msg_type, msg_name, 
-      template_id, page, emphasis_keyword, 
-      create_time, modified_time)
-    values (#{id,jdbcType=INTEGER}, #{msg_type,jdbcType=INTEGER}, #{msg_name,jdbcType=VARCHAR}, 
-      #{template_id,jdbcType=VARCHAR}, #{page,jdbcType=VARCHAR}, #{emphasis_keyword,jdbcType=VARCHAR}, 
-      #{create_time,jdbcType=VARCHAR}, #{modified_time,jdbcType=VARCHAR})
-  </insert>
-  <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TMsgMaTemplate">
-    insert into t_msg_ma_template
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="msg_type != null">
-        msg_type,
-      </if>
-      <if test="msg_name != null">
-        msg_name,
-      </if>
-      <if test="template_id != null">
-        template_id,
-      </if>
-      <if test="page != null">
-        page,
-      </if>
-      <if test="emphasis_keyword != null">
-        emphasis_keyword,
-      </if>
-      <if test="create_time != null">
-        create_time,
-      </if>
-      <if test="modified_time != null">
-        modified_time,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=INTEGER},
-      </if>
-      <if test="msg_type != null">
-        #{msg_type,jdbcType=INTEGER},
-      </if>
-      <if test="msg_name != null">
-        #{msg_name,jdbcType=VARCHAR},
-      </if>
-      <if test="template_id != null">
-        #{template_id,jdbcType=VARCHAR},
-      </if>
-      <if test="page != null">
-        #{page,jdbcType=VARCHAR},
-      </if>
-      <if test="emphasis_keyword != null">
-        #{emphasis_keyword,jdbcType=VARCHAR},
-      </if>
-      <if test="create_time != null">
-        #{create_time,jdbcType=VARCHAR},
-      </if>
-      <if test="modified_time != null">
-        #{modified_time,jdbcType=VARCHAR},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.fangxuele.tool.push.domain.TMsgMaTemplate">
-    update t_msg_ma_template
-    <set>
-      <if test="msg_type != null">
-        msg_type = #{msg_type,jdbcType=INTEGER},
-      </if>
-      <if test="msg_name != null">
-        msg_name = #{msg_name,jdbcType=VARCHAR},
-      </if>
-      <if test="template_id != null">
-        template_id = #{template_id,jdbcType=VARCHAR},
-      </if>
-      <if test="page != null">
-        page = #{page,jdbcType=VARCHAR},
-      </if>
-      <if test="emphasis_keyword != null">
-        emphasis_keyword = #{emphasis_keyword,jdbcType=VARCHAR},
-      </if>
-      <if test="create_time != null">
-        create_time = #{create_time,jdbcType=VARCHAR},
-      </if>
-      <if test="modified_time != null">
-        modified_time = #{modified_time,jdbcType=VARCHAR},
-      </if>
-    </set>
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TMsgMaTemplate">
-    update t_msg_ma_template
-    set msg_type = #{msg_type,jdbcType=INTEGER},
-      msg_name = #{msg_name,jdbcType=VARCHAR},
-      template_id = #{template_id,jdbcType=VARCHAR},
-      page = #{page,jdbcType=VARCHAR},
-      emphasis_keyword = #{emphasis_keyword,jdbcType=VARCHAR},
-      create_time = #{create_time,jdbcType=VARCHAR},
-      modified_time = #{modified_time,jdbcType=VARCHAR}
-    where id = #{id,jdbcType=INTEGER}
-  </update>
+    <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TMsgMaTemplate">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="msg_type" jdbcType="INTEGER" property="msgType"/>
+        <result column="msg_name" jdbcType="VARCHAR" property="msgName"/>
+        <result column="template_id" jdbcType="VARCHAR" property="templateId"/>
+        <result column="page" jdbcType="VARCHAR" property="page"/>
+        <result column="emphasis_keyword" jdbcType="VARCHAR" property="emphasisKeyword"/>
+        <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
+        <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, msg_type, msg_name, template_id, page, emphasis_keyword, create_time, modified_time
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_msg_ma_template
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from t_msg_ma_template
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TMsgMaTemplate">
+        insert into t_msg_ma_template (id, msg_type, msg_name,
+                                       template_id, page, emphasis_keyword,
+                                       create_time, modified_time)
+        values (#{id,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER}, #{msgName,jdbcType=VARCHAR},
+                #{templateId,jdbcType=VARCHAR}, #{page,jdbcType=VARCHAR}, #{emphasisKeyword,jdbcType=VARCHAR},
+                #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TMsgMaTemplate">
+        insert into t_msg_ma_template
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="msgType != null">
+                msg_type,
+            </if>
+            <if test="msgName != null">
+                msg_name,
+            </if>
+            <if test="templateId != null">
+                template_id,
+            </if>
+            <if test="page != null">
+                page,
+            </if>
+            <if test="emphasisKeyword != null">
+                emphasis_keyword,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="modifiedTime != null">
+                modified_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="msgType != null">
+                #{msgType,jdbcType=INTEGER},
+            </if>
+            <if test="msgName != null">
+                #{msgName,jdbcType=VARCHAR},
+            </if>
+            <if test="templateId != null">
+                #{templateId,jdbcType=VARCHAR},
+            </if>
+            <if test="page != null">
+                #{page,jdbcType=VARCHAR},
+            </if>
+            <if test="emphasisKeyword != null">
+                #{emphasisKeyword,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=VARCHAR},
+            </if>
+            <if test="modifiedTime != null">
+                #{modifiedTime,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.fangxuele.tool.push.domain.TMsgMaTemplate">
+        update t_msg_ma_template
+        <set>
+            <if test="msgType != null">
+                msg_type = #{msgType,jdbcType=INTEGER},
+            </if>
+            <if test="msgName != null">
+                msg_name = #{msgName,jdbcType=VARCHAR},
+            </if>
+            <if test="templateId != null">
+                template_id = #{templateId,jdbcType=VARCHAR},
+            </if>
+            <if test="page != null">
+                page = #{page,jdbcType=VARCHAR},
+            </if>
+            <if test="emphasisKeyword != null">
+                emphasis_keyword = #{emphasisKeyword,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=VARCHAR},
+            </if>
+            <if test="modifiedTime != null">
+                modified_time = #{modifiedTime,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TMsgMaTemplate">
+        update t_msg_ma_template
+        set msg_type         = #{msgType,jdbcType=INTEGER},
+            msg_name         = #{msgName,jdbcType=VARCHAR},
+            template_id      = #{templateId,jdbcType=VARCHAR},
+            page             = #{page,jdbcType=VARCHAR},
+            emphasis_keyword = #{emphasisKeyword,jdbcType=VARCHAR},
+            create_time      = #{createTime,jdbcType=VARCHAR},
+            modified_time    = #{modifiedTime,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
 </mapper>

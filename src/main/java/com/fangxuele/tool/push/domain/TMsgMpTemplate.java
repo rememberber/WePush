@@ -5,21 +5,21 @@ import java.io.Serializable;
 public class TMsgMpTemplate implements Serializable {
     private Integer id;
 
-    private Integer msg_type;
+    private Integer msgType;
 
-    private String msg_name;
+    private String msgName;
 
-    private String template_id;
+    private String templateId;
 
     private String url;
 
-    private String ma_appid;
+    private String maAppid;
 
-    private String ma_page_path;
+    private String maPagePath;
 
-    private String create_time;
+    private String createTime;
 
-    private String modified_time;
+    private String modifiedTime;
 
     private static final long serialVersionUID = 1L;
 
@@ -31,28 +31,28 @@ public class TMsgMpTemplate implements Serializable {
         this.id = id;
     }
 
-    public Integer getMsg_type() {
-        return msg_type;
+    public Integer getMsgType() {
+        return msgType;
     }
 
-    public void setMsg_type(Integer msg_type) {
-        this.msg_type = msg_type;
+    public void setMsgType(Integer msgType) {
+        this.msgType = msgType;
     }
 
-    public String getMsg_name() {
-        return msg_name;
+    public String getMsgName() {
+        return msgName;
     }
 
-    public void setMsg_name(String msg_name) {
-        this.msg_name = msg_name == null ? null : msg_name.trim();
+    public void setMsgName(String msgName) {
+        this.msgName = msgName == null ? null : msgName.trim();
     }
 
-    public String getTemplate_id() {
-        return template_id;
+    public String getTemplateId() {
+        return templateId;
     }
 
-    public void setTemplate_id(String template_id) {
-        this.template_id = template_id == null ? null : template_id.trim();
+    public void setTemplateId(String templateId) {
+        this.templateId = templateId == null ? null : templateId.trim();
     }
 
     public String getUrl() {
@@ -63,35 +63,35 @@ public class TMsgMpTemplate implements Serializable {
         this.url = url == null ? null : url.trim();
     }
 
-    public String getMa_appid() {
-        return ma_appid;
+    public String getMaAppid() {
+        return maAppid;
     }
 
-    public void setMa_appid(String ma_appid) {
-        this.ma_appid = ma_appid == null ? null : ma_appid.trim();
+    public void setMaAppid(String maAppid) {
+        this.maAppid = maAppid == null ? null : maAppid.trim();
     }
 
-    public String getMa_page_path() {
-        return ma_page_path;
+    public String getMaPagePath() {
+        return maPagePath;
     }
 
-    public void setMa_page_path(String ma_page_path) {
-        this.ma_page_path = ma_page_path == null ? null : ma_page_path.trim();
+    public void setMaPagePath(String maPagePath) {
+        this.maPagePath = maPagePath == null ? null : maPagePath.trim();
     }
 
-    public String getCreate_time() {
-        return create_time;
+    public String getCreateTime() {
+        return createTime;
     }
 
-    public void setCreate_time(String create_time) {
-        this.create_time = create_time == null ? null : create_time.trim();
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime == null ? null : createTime.trim();
     }
 
-    public String getModified_time() {
-        return modified_time;
+    public String getModifiedTime() {
+        return modifiedTime;
     }
 
-    public void setModified_time(String modified_time) {
-        this.modified_time = modified_time == null ? null : modified_time.trim();
+    public void setModifiedTime(String modifiedTime) {
+        this.modifiedTime = modifiedTime == null ? null : modifiedTime.trim();
     }
 }

@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class TTemplateData implements Serializable {
     private Integer id;
 
-    private Integer msg_id;
+    private Integer msgId;
 
     private String name;
 
@@ -13,9 +13,9 @@ public class TTemplateData implements Serializable {
 
     private String color;
 
-    private String create_time;
+    private String createTime;
 
-    private String modified_time;
+    private String modifiedTime;
 
     private static final long serialVersionUID = 1L;
 
@@ -27,12 +27,12 @@ public class TTemplateData implements Serializable {
         this.id = id;
     }
 
-    public Integer getMsg_id() {
-        return msg_id;
+    public Integer getMsgId() {
+        return msgId;
     }
 
-    public void setMsg_id(Integer msg_id) {
-        this.msg_id = msg_id;
+    public void setMsgId(Integer msgId) {
+        this.msgId = msgId;
     }
 
     public String getName() {
@@ -59,19 +59,19 @@ public class TTemplateData implements Serializable {
         this.color = color == null ? null : color.trim();
     }
 
-    public String getCreate_time() {
-        return create_time;
+    public String getCreateTime() {
+        return createTime;
     }
 
-    public void setCreate_time(String create_time) {
-        this.create_time = create_time == null ? null : create_time.trim();
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime == null ? null : createTime.trim();
     }
 
-    public String getModified_time() {
-        return modified_time;
+    public String getModifiedTime() {
+        return modifiedTime;
     }
 
-    public void setModified_time(String modified_time) {
-        this.modified_time = modified_time == null ? null : modified_time.trim();
+    public void setModifiedTime(String modifiedTime) {
+        this.modifiedTime = modifiedTime == null ? null : modifiedTime.trim();
     }
 }

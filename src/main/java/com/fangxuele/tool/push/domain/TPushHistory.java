@@ -5,19 +5,19 @@ import java.io.Serializable;
 public class TPushHistory implements Serializable {
     private Integer id;
 
-    private Integer msg_id;
+    private Integer msgId;
 
-    private Integer msg_type;
+    private Integer msgType;
 
-    private String msg_name;
+    private String msgName;
 
     private String result;
 
-    private String csv_file;
+    private String csvFile;
 
-    private String create_time;
+    private String createTime;
 
-    private String modified_time;
+    private String modifiedTime;
 
     private static final long serialVersionUID = 1L;
 
@@ -29,28 +29,28 @@ public class TPushHistory implements Serializable {
         this.id = id;
     }
 
-    public Integer getMsg_id() {
-        return msg_id;
+    public Integer getMsgId() {
+        return msgId;
     }
 
-    public void setMsg_id(Integer msg_id) {
-        this.msg_id = msg_id;
+    public void setMsgId(Integer msgId) {
+        this.msgId = msgId;
     }
 
-    public Integer getMsg_type() {
-        return msg_type;
+    public Integer getMsgType() {
+        return msgType;
     }
 
-    public void setMsg_type(Integer msg_type) {
-        this.msg_type = msg_type;
+    public void setMsgType(Integer msgType) {
+        this.msgType = msgType;
     }
 
-    public String getMsg_name() {
-        return msg_name;
+    public String getMsgName() {
+        return msgName;
     }
 
-    public void setMsg_name(String msg_name) {
-        this.msg_name = msg_name == null ? null : msg_name.trim();
+    public void setMsgName(String msgName) {
+        this.msgName = msgName == null ? null : msgName.trim();
     }
 
     public String getResult() {
@@ -61,27 +61,27 @@ public class TPushHistory implements Serializable {
         this.result = result == null ? null : result.trim();
     }
 
-    public String getCsv_file() {
-        return csv_file;
+    public String getCsvFile() {
+        return csvFile;
     }
 
-    public void setCsv_file(String csv_file) {
-        this.csv_file = csv_file == null ? null : csv_file.trim();
+    public void setCsvFile(String csvFile) {
+        this.csvFile = csvFile == null ? null : csvFile.trim();
     }
 
-    public String getCreate_time() {
-        return create_time;
+    public String getCreateTime() {
+        return createTime;
     }
 
-    public void setCreate_time(String create_time) {
-        this.create_time = create_time == null ? null : create_time.trim();
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime == null ? null : createTime.trim();
     }
 
-    public String getModified_time() {
-        return modified_time;
+    public String getModifiedTime() {
+        return modifiedTime;
     }
 
-    public void setModified_time(String modified_time) {
-        this.modified_time = modified_time == null ? null : modified_time.trim();
+    public void setModifiedTime(String modifiedTime) {
+        this.modifiedTime = modifiedTime == null ? null : modifiedTime.trim();
     }
 }

@@ -5,25 +5,25 @@ import java.io.Serializable;
 public class TMsgKefu implements Serializable {
     private Integer id;
 
-    private Integer msg_type;
+    private Integer msgType;
 
-    private String msg_name;
+    private String msgName;
 
-    private String kefu_msg_type;
+    private String kefuMsgType;
 
     private String content;
 
     private String title;
 
-    private String img_url;
+    private String imgUrl;
 
     private String describe;
 
     private String url;
 
-    private String create_time;
+    private String createTime;
 
-    private String modified_time;
+    private String modifiedTime;
 
     private static final long serialVersionUID = 1L;
 
@@ -35,28 +35,28 @@ public class TMsgKefu implements Serializable {
         this.id = id;
     }
 
-    public Integer getMsg_type() {
-        return msg_type;
+    public Integer getMsgType() {
+        return msgType;
     }
 
-    public void setMsg_type(Integer msg_type) {
-        this.msg_type = msg_type;
+    public void setMsgType(Integer msgType) {
+        this.msgType = msgType;
     }
 
-    public String getMsg_name() {
-        return msg_name;
+    public String getMsgName() {
+        return msgName;
     }
 
-    public void setMsg_name(String msg_name) {
-        this.msg_name = msg_name == null ? null : msg_name.trim();
+    public void setMsgName(String msgName) {
+        this.msgName = msgName == null ? null : msgName.trim();
     }
 
-    public String getKefu_msg_type() {
-        return kefu_msg_type;
+    public String getKefuMsgType() {
+        return kefuMsgType;
     }
 
-    public void setKefu_msg_type(String kefu_msg_type) {
-        this.kefu_msg_type = kefu_msg_type == null ? null : kefu_msg_type.trim();
+    public void setKefuMsgType(String kefuMsgType) {
+        this.kefuMsgType = kefuMsgType == null ? null : kefuMsgType.trim();
     }
 
     public String getContent() {
@@ -75,12 +75,12 @@ public class TMsgKefu implements Serializable {
         this.title = title == null ? null : title.trim();
     }
 
-    public String getImg_url() {
-        return img_url;
+    public String getImgUrl() {
+        return imgUrl;
     }
 
-    public void setImg_url(String img_url) {
-        this.img_url = img_url == null ? null : img_url.trim();
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl == null ? null : imgUrl.trim();
     }
 
     public String getDescribe() {
@@ -99,19 +99,19 @@ public class TMsgKefu implements Serializable {
         this.url = url == null ? null : url.trim();
     }
 
-    public String getCreate_time() {
-        return create_time;
+    public String getCreateTime() {
+        return createTime;
     }
 
-    public void setCreate_time(String create_time) {
-        this.create_time = create_time == null ? null : create_time.trim();
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime == null ? null : createTime.trim();
     }
 
-    public String getModified_time() {
-        return modified_time;
+    public String getModifiedTime() {
+        return modifiedTime;
     }
 
-    public void setModified_time(String modified_time) {
-        this.modified_time = modified_time == null ? null : modified_time.trim();
+    public void setModifiedTime(String modifiedTime) {
+        this.modifiedTime = modifiedTime == null ? null : modifiedTime.trim();
     }
 }
