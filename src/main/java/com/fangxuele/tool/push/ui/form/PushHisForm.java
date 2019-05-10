@@ -77,6 +77,10 @@ public class PushHisForm {
         final JScrollPane scrollPane1 = new JScrollPane();
         panel2.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         pushHisLeftTable = new JTable();
+        pushHisLeftTable.setAlignmentX(0.5f);
+        pushHisLeftTable.setAutoResizeMode(2);
+        pushHisLeftTable.setDoubleBuffered(true);
+        pushHisLeftTable.setIntercellSpacing(new Dimension(10, 1));
         pushHisLeftTable.setRowHeight(40);
         scrollPane1.setViewportView(pushHisLeftTable);
         final JPanel panel4 = new JPanel();

@@ -20,7 +20,7 @@
         <border type="none"/>
         <children>
           <grid id="c7ec0" binding="panel2" layout-manager="GridLayoutManager" row-count="12" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-            <margin top="20" left="0" bottom="0" right="0"/>
+            <margin top="20" left="20" bottom="0" right="0"/>
             <constraints/>
             <properties>
               <autoscrolls value="true"/>

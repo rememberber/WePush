@@ -6,7 +6,9 @@ import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.alee.laf.WebLookAndFeel;
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.UserCase;
+import com.fangxuele.tool.push.dao.TPushHistoryMapper;
 import com.fangxuele.tool.push.logic.MessageTypeConsts;
 import com.fangxuele.tool.push.logic.MsgHisManage;
 import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
@@ -69,6 +71,8 @@ public class Init {
      * 消息管理
      */
     public static MsgHisManage msgHisManager = MsgHisManage.getInstance();
+
+    private TPushHistoryMapper pushHistoryMapper = App.sqlSession.getMapper(TPushHistoryMapper.class);
 
     /**
      * 设置全局字体

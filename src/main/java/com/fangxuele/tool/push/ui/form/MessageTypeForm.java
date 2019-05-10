@@ -56,7 +56,7 @@ public class MessageTypeForm {
         scrollPane1.setAutoscrolls(true);
         messageTypePanel.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(12, 2, new Insets(20, 0, 0, 0), -1, -1));
+        panel2.setLayout(new GridLayoutManager(12, 2, new Insets(20, 20, 0, 0), -1, -1));
         panel2.setAutoscrolls(true);
         scrollPane1.setViewportView(panel2);
         公众号模板消息RadioButton = new JRadioButton();
