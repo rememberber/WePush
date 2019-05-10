@@ -4,7 +4,6 @@ import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPushHistoryMapper;
-import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.opencsv.CSVReader;
@@ -165,7 +164,7 @@ public class MsgHisManage {
 
         // 如果table为空，则初始化
         if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-            Init.initTemplateDataTable();
+            MessageEditForm.initTemplateDataTable();
         }
 
         // 逐行读取

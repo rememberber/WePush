@@ -6,6 +6,7 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.util.DbUtilMySQL;
@@ -238,7 +239,7 @@ public class SettingListener {
                     int isDelete = JOptionPane.showConfirmDialog(SettingForm.settingForm.getSettingPanel(), "确认删除？", "确认",
                             JOptionPane.YES_NO_OPTION);
                     if (isDelete == JOptionPane.YES_OPTION) {
-                        Map<String, String[]> msgMap = Init.msgHisManager.readMsgHis();
+                        Map<String, String[]> msgMap = MessageEditForm.msgHisManager.readMsgHis();
                         for (int i = 0; i < rowCount; ) {
                             boolean delete = (boolean) tableModel.getValueAt(i, 0);
                             if (delete) {
@@ -259,9 +260,9 @@ public class SettingListener {
                                 i++;
                             }
                         }
-                        Init.msgHisManager.writeMsgHis(msgMap);
+                        MessageEditForm.msgHisManager.writeMsgHis(msgMap);
 
-                        Init.initMsgTab(null);
+                        MessageEditForm.init(null);
                     }
                 }
             } catch (Exception e1) {

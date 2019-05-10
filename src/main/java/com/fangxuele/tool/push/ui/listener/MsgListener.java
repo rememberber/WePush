@@ -48,17 +48,17 @@ public class MsgListener {
                     String selectedMsgName = MessageManageForm.messageManageForm.getMsgHistable()
                             .getValueAt(selectedRow, 1).toString();
 
-                    Init.initMsgTab(selectedMsgName);
+                    MessageEditForm.init(selectedMsgName);
                 });
                 super.mouseClicked(e);
             }
         });
 
         // 消息类型切换事件
-        MessageEditForm.messageEditForm.getMsgTypeComboBox().addItemListener(e -> Init.switchMsgType(e.getItem().toString()));
+        MessageEditForm.messageEditForm.getMsgTypeComboBox().addItemListener(e -> MessageEditForm.switchMsgType(e.getItem().toString()));
 
         // 客服消息类型切换事件
-        MessageEditForm.messageEditForm.getMsgKefuMsgTypeComboBox().addItemListener(e -> Init.switchKefuMsgType(e.getItem().toString()));
+        MessageEditForm.messageEditForm.getMsgKefuMsgTypeComboBox().addItemListener(e -> MessageEditForm.switchKefuMsgType(e.getItem().toString()));
 
         // 模板数据-添加 按钮事件
         MessageEditForm.messageEditForm.getTemplateMsgDataAddButton().addActionListener(e -> {
@@ -68,7 +68,7 @@ public class MsgListener {
             data[2] = MessageEditForm.messageEditForm.getTemplateDataColorTextField().getText();
 
             if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-                Init.initTemplateDataTable();
+                MessageEditForm.initTemplateDataTable();
             }
 
             DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable()
@@ -144,7 +144,7 @@ public class MsgListener {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存成功！", "成功",
                             JOptionPane.INFORMATION_MESSAGE);
 
-                    Init.initMsgTab(null);
+                    MessageEditForm.init(null);
                     SettingForm.init();
                 }
             } catch (Exception e1) {
@@ -189,7 +189,7 @@ public class MsgListener {
             MessageEditForm.messageEditForm.getMsgYunpianMsgContentTextField().setText("");
 
             if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-                Init.initTemplateDataTable();
+                MessageEditForm.initTemplateDataTable();
             }
 
             DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable()

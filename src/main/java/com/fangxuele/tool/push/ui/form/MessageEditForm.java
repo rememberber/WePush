@@ -1,13 +1,24 @@
 package com.fangxuele.tool.push.ui.form;
 
+import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.dao.TPushHistoryMapper;
+import com.fangxuele.tool.push.logic.MessageTypeConsts;
+import com.fangxuele.tool.push.logic.MsgHisManage;
+import com.fangxuele.tool.push.ui.Init;
+import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * <pre>
@@ -64,7 +75,248 @@ public class MessageEditForm {
     private JTextField msgKefuUrlTextField;
     private JPanel yunpianMsgPanel;
     private JTextArea msgYunpianMsgContentTextField;
+
     public static MessageEditForm messageEditForm = new MessageEditForm();
+
+    /**
+     * 消息管理
+     */
+    public static MsgHisManage msgHisManager = MsgHisManage.getInstance();
+
+    private TPushHistoryMapper pushHistoryMapper = App.sqlSession.getMapper(TPushHistoryMapper.class);
+
+    /**
+     * 初始化消息tab
+     */
+    public static void init(String selectedMsgName) {
+        // 初始化，清空所有相关的输入框内容
+        messageEditForm.getMsgTypeComboBox().setSelectedItem("");
+        messageEditForm.getMsgTemplateIdTextField().setText("");
+        messageEditForm.getMsgTemplateUrlTextField().setText("");
+        messageEditForm.getMsgKefuMsgTypeComboBox().setSelectedItem("");
+        messageEditForm.getMsgKefuMsgTitleTextField().setText("");
+        messageEditForm.getMsgKefuPicUrlTextField().setText("");
+        messageEditForm.getMsgKefuDescTextField().setText("");
+        messageEditForm.getMsgKefuUrlTextField().setText("");
+        messageEditForm.getMsgTemplateMiniAppidTextField().setText("");
+        messageEditForm.getMsgTemplateMiniPagePathTextField().setText("");
+        messageEditForm.getMsgTemplateKeyWordTextField().setText("");
+        messageEditForm.getMsgYunpianMsgContentTextField().setText("");
+
+        String msgName;
+        if (StringUtils.isEmpty(selectedMsgName)) {
+            msgName = Init.config.getMsgName();
+        } else {
+            msgName = selectedMsgName;
+        }
+
+        messageEditForm.getMsgNameField().setText(msgName);
+        messageEditForm.getPreviewUserField().setText(Init.config.getPreviewUser());
+
+        Map<String, String[]> msgMap = msgHisManager.readMsgHis();
+
+        if (msgMap != null && msgMap.size() != 0) {
+            if (msgMap.containsKey(msgName)) {
+                String[] msgDataArray = msgMap.get(msgName);
+                String msgType = msgDataArray[1];
+                messageEditForm.getMsgTypeComboBox().setSelectedItem(msgType);
+                messageEditForm.getMsgTemplateIdTextField().setText(msgDataArray[2]);
+                messageEditForm.getMsgTemplateUrlTextField().setText(msgDataArray[3]);
+                String kefuMsgType = msgDataArray[4];
+                messageEditForm.getMsgKefuMsgTypeComboBox().setSelectedItem(kefuMsgType);
+                messageEditForm.getMsgKefuMsgTitleTextField().setText(msgDataArray[5]);
+                messageEditForm.getMsgKefuPicUrlTextField().setText(msgDataArray[6]);
+                messageEditForm.getMsgKefuDescTextField().setText(msgDataArray[7]);
+                messageEditForm.getMsgKefuUrlTextField().setText(msgDataArray[8]);
+                if (msgDataArray.length > 12) {
+                    messageEditForm.getMsgYunpianMsgContentTextField().setText(msgDataArray[12]);
+                }
+                if (msgDataArray.length > 11) {
+                    messageEditForm.getMsgTemplateKeyWordTextField().setText(msgDataArray[11]);
+                }
+                if (msgDataArray.length > 9) {
+                    messageEditForm.getMsgTemplateMiniAppidTextField().setText(msgDataArray[9]);
+                    messageEditForm.getMsgTemplateMiniPagePathTextField().setText(msgDataArray[10]);
+                }
+                switchMsgType(msgType);
+                switchKefuMsgType(kefuMsgType);
+
+                // 模板消息Data表
+                List<String[]> list = msgHisManager.readTemplateData(msgName);
+                String[] headerNames = {"Name", "Value", "Color", "操作"};
+                Object[][] cellData = new String[list.size()][headerNames.length];
+                for (int i = 0; i < list.size(); i++) {
+                    cellData[i] = list.get(i);
+                }
+                DefaultTableModel model = new DefaultTableModel(cellData, headerNames);
+                messageEditForm.getTemplateMsgDataTable().setModel(model);
+                messageEditForm.getTemplateMsgDataTable().getColumnModel().
+                        getColumn(headerNames.length - 1).
+                        setCellRenderer(new TableInCellButtonColumn(messageEditForm.getTemplateMsgDataTable(), headerNames.length - 1));
+                messageEditForm.getTemplateMsgDataTable().getColumnModel().
+                        getColumn(headerNames.length - 1).
+                        setCellEditor(new TableInCellButtonColumn(messageEditForm.getTemplateMsgDataTable(), headerNames.length - 1));
+
+                // 设置列宽
+                messageEditForm.getTemplateMsgDataTable().getColumnModel().getColumn(0).setPreferredWidth(150);
+                messageEditForm.getTemplateMsgDataTable().getColumnModel().getColumn(0).setMaxWidth(150);
+                messageEditForm.getTemplateMsgDataTable().getColumnModel().getColumn(2).setPreferredWidth(130);
+                messageEditForm.getTemplateMsgDataTable().getColumnModel().getColumn(2).setMaxWidth(130);
+                messageEditForm.getTemplateMsgDataTable().getColumnModel().getColumn(3).setPreferredWidth(130);
+                messageEditForm.getTemplateMsgDataTable().getColumnModel().getColumn(3).setMaxWidth(130);
+
+                messageEditForm.getTemplateMsgDataTable().updateUI();
+            }
+        } else {
+            switchMsgType(Objects.requireNonNull(messageEditForm.getMsgTypeComboBox().getSelectedItem()).toString());
+        }
+    }
+
+    /**
+     * 根据消息类型转换界面显示
+     *
+     * @param msgType
+     */
+    public static void switchMsgType(String msgType) {
+        messageEditForm.getKefuMsgPanel().setVisible(false);
+        messageEditForm.getTemplateMsgPanel().setVisible(false);
+        messageEditForm.getYunpianMsgPanel().setVisible(false);
+        switch (msgType) {
+            case MessageTypeConsts.MP_TEMPLATE:
+                messageEditForm.getTemplateMsgPanel().setVisible(true);
+                messageEditForm.getTemplateUrlLabel().setVisible(true);
+                messageEditForm.getMsgTemplateUrlTextField().setVisible(true);
+                messageEditForm.getTemplateMiniProgramAppidLabel().setVisible(true);
+                messageEditForm.getMsgTemplateMiniAppidTextField().setVisible(true);
+                messageEditForm.getTemplateMiniProgramPagePathLabel().setVisible(true);
+                messageEditForm.getMsgTemplateMiniPagePathTextField().setVisible(true);
+                messageEditForm.getTemplateMiniProgramOptionalLabel1().setVisible(true);
+                messageEditForm.getTemplateMiniProgramOptionalLabel2().setVisible(true);
+                messageEditForm.getTemplateMsgColorLabel().setVisible(true);
+                messageEditForm.getTemplateDataColorTextField().setVisible(true);
+                messageEditForm.getMsgTemplateKeyWordTextField().setVisible(false);
+                messageEditForm.getTemplateKeyWordLabel().setVisible(false);
+                messageEditForm.getPreviewMemberLabel().setText("预览消息用户openid（多个以半角分号分隔）");
+                break;
+            case MessageTypeConsts.MA_TEMPLATE:
+                messageEditForm.getTemplateMsgPanel().setVisible(true);
+                messageEditForm.getTemplateUrlLabel().setVisible(true);
+                messageEditForm.getMsgTemplateUrlTextField().setVisible(true);
+                messageEditForm.getTemplateMiniProgramAppidLabel().setVisible(false);
+                messageEditForm.getMsgTemplateMiniAppidTextField().setVisible(false);
+                messageEditForm.getTemplateMiniProgramPagePathLabel().setVisible(false);
+                messageEditForm.getMsgTemplateMiniPagePathTextField().setVisible(false);
+                messageEditForm.getTemplateMiniProgramOptionalLabel1().setVisible(false);
+                messageEditForm.getTemplateMiniProgramOptionalLabel2().setVisible(false);
+                messageEditForm.getTemplateMsgColorLabel().setVisible(true);
+                messageEditForm.getTemplateDataColorTextField().setVisible(true);
+                messageEditForm.getMsgTemplateKeyWordTextField().setVisible(true);
+                messageEditForm.getTemplateKeyWordLabel().setVisible(true);
+                messageEditForm.getPreviewMemberLabel().setText("预览消息用户openid（多个以半角分号分隔）");
+                break;
+            case MessageTypeConsts.KEFU:
+                messageEditForm.getKefuMsgPanel().setVisible(true);
+                messageEditForm.getPreviewMemberLabel().setText("预览消息用户openid（多个以半角分号分隔）");
+                break;
+            case MessageTypeConsts.KEFU_PRIORITY:
+                messageEditForm.getKefuMsgPanel().setVisible(true);
+                messageEditForm.getTemplateMsgPanel().setVisible(true);
+                messageEditForm.getTemplateUrlLabel().setVisible(true);
+                messageEditForm.getMsgTemplateUrlTextField().setVisible(true);
+                messageEditForm.getTemplateMiniProgramAppidLabel().setVisible(true);
+                messageEditForm.getMsgTemplateMiniAppidTextField().setVisible(true);
+                messageEditForm.getTemplateMiniProgramPagePathLabel().setVisible(true);
+                messageEditForm.getMsgTemplateMiniPagePathTextField().setVisible(true);
+                messageEditForm.getTemplateMiniProgramOptionalLabel1().setVisible(true);
+                messageEditForm.getTemplateMiniProgramOptionalLabel2().setVisible(true);
+                messageEditForm.getTemplateMsgColorLabel().setVisible(true);
+                messageEditForm.getTemplateDataColorTextField().setVisible(true);
+                messageEditForm.getMsgTemplateKeyWordTextField().setVisible(false);
+                messageEditForm.getTemplateKeyWordLabel().setVisible(false);
+                messageEditForm.getPreviewMemberLabel().setText("预览消息用户openid（多个以半角分号分隔）");
+                break;
+            case MessageTypeConsts.ALI_YUN:
+            case MessageTypeConsts.TX_YUN:
+            case MessageTypeConsts.ALI_TEMPLATE:
+                messageEditForm.getTemplateMsgPanel().setVisible(true);
+                messageEditForm.getTemplateUrlLabel().setVisible(false);
+                messageEditForm.getMsgTemplateUrlTextField().setVisible(false);
+                messageEditForm.getTemplateMiniProgramAppidLabel().setVisible(false);
+                messageEditForm.getMsgTemplateMiniAppidTextField().setVisible(false);
+                messageEditForm.getTemplateMiniProgramPagePathLabel().setVisible(false);
+                messageEditForm.getMsgTemplateMiniPagePathTextField().setVisible(false);
+                messageEditForm.getTemplateMiniProgramOptionalLabel1().setVisible(false);
+                messageEditForm.getTemplateMiniProgramOptionalLabel2().setVisible(false);
+                messageEditForm.getTemplateMsgColorLabel().setVisible(false);
+                messageEditForm.getTemplateDataColorTextField().setVisible(false);
+                messageEditForm.getMsgTemplateKeyWordTextField().setVisible(false);
+                messageEditForm.getTemplateKeyWordLabel().setVisible(false);
+                messageEditForm.getPreviewMemberLabel().setText("预览消息用户手机号（多个以半角分号分隔）");
+                break;
+            case MessageTypeConsts.YUN_PIAN:
+                messageEditForm.getYunpianMsgPanel().setVisible(true);
+                messageEditForm.getPreviewMemberLabel().setText("预览消息用户手机号（多个以半角分号分隔）");
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * 根据客服消息类型转换界面显示
+     *
+     * @param msgType 消息类型
+     */
+    public static void switchKefuMsgType(String msgType) {
+        switch (msgType) {
+            case "文本消息":
+                messageEditForm.getKefuMsgTitleLabel().setText("内容");
+                messageEditForm.getKefuMsgDescLabel().setVisible(false);
+                messageEditForm.getMsgKefuDescTextField().setVisible(false);
+                messageEditForm.getKefuMsgPicUrlLabel().setVisible(false);
+                messageEditForm.getMsgKefuPicUrlTextField().setVisible(false);
+                messageEditForm.getMsgKefuDescTextField().setVisible(false);
+                messageEditForm.getKefuMsgUrlLabel().setVisible(false);
+                messageEditForm.getMsgKefuUrlTextField().setVisible(false);
+                break;
+            case "图文消息":
+                messageEditForm.getKefuMsgTitleLabel().setText("标题");
+                messageEditForm.getKefuMsgDescLabel().setVisible(true);
+                messageEditForm.getMsgKefuDescTextField().setVisible(true);
+                messageEditForm.getKefuMsgPicUrlLabel().setVisible(true);
+                messageEditForm.getMsgKefuPicUrlTextField().setVisible(true);
+                messageEditForm.getMsgKefuDescTextField().setVisible(true);
+                messageEditForm.getKefuMsgUrlLabel().setVisible(true);
+                messageEditForm.getMsgKefuUrlTextField().setVisible(true);
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * 初始化模板消息数据table
+     */
+    public static void initTemplateDataTable() {
+        String[] headerNames = {"Name", "Value", "Color", "操作"};
+        DefaultTableModel model = new DefaultTableModel(null, headerNames);
+        messageEditForm.getTemplateMsgDataTable().setModel(model);
+        messageEditForm.getTemplateMsgDataTable().updateUI();
+        messageEditForm.getTemplateMsgDataTable().getColumnModel().
+                getColumn(headerNames.length - 1).
+                setCellRenderer(new TableInCellButtonColumn(messageEditForm.getTemplateMsgDataTable(), headerNames.length - 1));
+        messageEditForm.getTemplateMsgDataTable().getColumnModel().
+                getColumn(headerNames.length - 1).
+                setCellEditor(new TableInCellButtonColumn(messageEditForm.getTemplateMsgDataTable(), headerNames.length - 1));
+
+        // 设置列宽
+        messageEditForm.getTemplateMsgDataTable().getColumnModel().getColumn(0).setPreferredWidth(150);
+        messageEditForm.getTemplateMsgDataTable().getColumnModel().getColumn(0).setMaxWidth(150);
+        messageEditForm.getTemplateMsgDataTable().getColumnModel().getColumn(2).setPreferredWidth(130);
+        messageEditForm.getTemplateMsgDataTable().getColumnModel().getColumn(2).setMaxWidth(130);
+        messageEditForm.getTemplateMsgDataTable().getColumnModel().getColumn(3).setPreferredWidth(130);
+        messageEditForm.getTemplateMsgDataTable().getColumnModel().getColumn(3).setMaxWidth(130);
+    }
 
     {
 // GUI initializer generated by IntelliJ IDEA GUI Designer

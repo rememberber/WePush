@@ -53,7 +53,7 @@ public class MessageMaker {
         wxMessageTemplate.setMiniProgram(miniProgram);
 
         if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-            Init.initTemplateDataTable();
+            MessageEditForm.initTemplateDataTable();
         }
 
         DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel();
@@ -86,7 +86,7 @@ public class MessageMaker {
         wxMessageTemplate.setEmphasisKeyword(MessageEditForm.messageEditForm.getMsgTemplateKeyWordTextField().getText().trim() + ".DATA");
 
         if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-            Init.initTemplateDataTable();
+            MessageEditForm.initTemplateDataTable();
         }
 
         DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel();
@@ -169,7 +169,7 @@ public class MessageMaker {
         Map<String, String> paramMap = new HashMap<String, String>();
 
         if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-            Init.initTemplateDataTable();
+            MessageEditForm.initTemplateDataTable();
         }
 
         DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel();
@@ -212,7 +212,7 @@ public class MessageMaker {
         Map<String, String> paramMap = new HashMap<String, String>();
 
         if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-            Init.initTemplateDataTable();
+            MessageEditForm.initTemplateDataTable();
         }
 
         DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel();
@@ -248,7 +248,7 @@ public class MessageMaker {
      */
     synchronized static String[] makeTxyunMessage(String[] msgData) {
         if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-            Init.initTemplateDataTable();
+            MessageEditForm.initTemplateDataTable();
         }
 
         DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel();
