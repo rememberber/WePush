@@ -9,9 +9,11 @@ public class TPushHistory implements Serializable {
 
     private Integer msg_type;
 
-    private String msg_primary;
+    private String msg_name;
 
-    private String msg_data;
+    private String result;
+
+    private String csv_file;
 
     private String create_time;
 
@@ -43,20 +45,28 @@ public class TPushHistory implements Serializable {
         this.msg_type = msg_type;
     }
 
-    public String getMsg_primary() {
-        return msg_primary;
+    public String getMsg_name() {
+        return msg_name;
     }
 
-    public void setMsg_primary(String msg_primary) {
-        this.msg_primary = msg_primary == null ? null : msg_primary.trim();
+    public void setMsg_name(String msg_name) {
+        this.msg_name = msg_name == null ? null : msg_name.trim();
     }
 
-    public String getMsg_data() {
-        return msg_data;
+    public String getResult() {
+        return result;
     }
 
-    public void setMsg_data(String msg_data) {
-        this.msg_data = msg_data == null ? null : msg_data.trim();
+    public void setResult(String result) {
+        this.result = result == null ? null : result.trim();
+    }
+
+    public String getCsv_file() {
+        return csv_file;
+    }
+
+    public void setCsv_file(String csv_file) {
+        this.csv_file = csv_file == null ? null : csv_file.trim();
     }
 
     public String getCreate_time() {

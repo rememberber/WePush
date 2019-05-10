@@ -104,8 +104,9 @@
                     primary key autoincrement,
             msg_id        integer,
             msg_type      integer,
-            msg_primary   text,
-            msg_data      text,
+            msg_name      text,
+            result        text,
+            csv_file      text,
             create_time   datetime,
             modified_time datetime
         );

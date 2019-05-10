@@ -17,7 +17,7 @@
         </commentGenerator>
 
         <jdbcConnection driverClass="org.sqlite.JDBC"
-                        connectionURL="jdbc:sqlite:D:\IdeaProjects\WePush\sqlite\test.db">
+                        connectionURL="jdbc:sqlite:D:\IdeaProjects\WePush\sqlite\WePush.db">
         </jdbcConnection>
 
         <javaTypeResolver>
@@ -45,7 +45,7 @@
 
         <table schema="main" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false"
                enableSelectByExample="false" selectByExampleQueryId="false"
-               tableName="t_template_data" domainObjectName="TTemplateData">
+               tableName="t_push_history" domainObjectName="TPushHistory">
             <property name="useActualColumnNames" value="true"/>
             <!--<generatedKey column="ID" sqlStatement="DB2" identity="true"/>-->
         </table>

@@ -80,7 +80,7 @@ public class PushHisForm {
         pushHisLeftTable.setAlignmentX(0.5f);
         pushHisLeftTable.setAutoResizeMode(2);
         pushHisLeftTable.setDoubleBuffered(true);
-        pushHisLeftTable.setIntercellSpacing(new Dimension(10, 1));
+        pushHisLeftTable.setIntercellSpacing(new Dimension(1, 1));
         pushHisLeftTable.setRowHeight(40);
         scrollPane1.setViewportView(pushHisLeftTable);
         final JPanel panel4 = new JPanel();
