@@ -109,7 +109,7 @@ public class RunPushThread extends Thread {
             }
             int endIndex = i * perThread + perThread;
             if (endIndex > totalCount - 1) {
-                endIndex = (int) (totalCount - 1);
+                endIndex = (int) (totalCount);
             }
             if (MessageTypeEnum.MP_TEMPLATE_CODE == msgType) {
                 thread = new TemplateMsgMpServiceThread(startIndex, endIndex);
