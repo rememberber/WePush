@@ -1,7 +1,5 @@
 package com.fangxuele.tool.push.logic;
 
-import lombok.Getter;
-
 /**
  * <pre>
  * 消息类型常量
@@ -10,7 +8,6 @@ import lombok.Getter;
  * @author <a href="https://github.com/rememberber">Zhou Bo</a>
  * @since 2019/3/26.
  */
-@Getter
 public enum MessageTypeEnum {
     /**
      * 消息类型
@@ -46,5 +43,46 @@ public enum MessageTypeEnum {
     MessageTypeEnum(int code, String name) {
         this.code = code;
         this.name = name;
+    }
+
+    public static String getName(int code) {
+        String name = "";
+        switch (code) {
+            case 1:
+                name = MP_TEMPLATE.name;
+                break;
+            case 2:
+                name = MA_TEMPLATE.name;
+                break;
+            case 3:
+                name = KEFU.name;
+                break;
+            case 4:
+                name = KEFU_PRIORITY.name;
+                break;
+            case 5:
+                name = ALI_YUN.name;
+                break;
+            case 6:
+                name = ALI_TEMPLATE.name;
+                break;
+            case 7:
+                name = TX_YUN.name;
+                break;
+            case 8:
+                name = YUN_PIAN.name;
+                break;
+            case 9:
+                name = UP_YUN.name;
+                break;
+            case 10:
+                name = HW_YUN.name;
+                break;
+            case 11:
+                name = EMAIL.name;
+                break;
+            default:
+        }
+        return name;
     }
 }

@@ -329,7 +329,7 @@ public class PushManage {
         }
 
         String msgName = MessageEditForm.messageEditForm.getMsgNameField().getText();
-        String nowTime = DateUtil.now().replaceAll(":", "_");
+        String nowTime = DateUtil.now().replace(":", "_").replace(" ", "_");
         CSVWriter writer;
         int msgType = Init.config.getMsgType();
         String now = SqliteUtil.nowDateForSqlite();
@@ -337,7 +337,7 @@ public class PushManage {
         // 保存已发送
         if (PushData.sendSuccessList.size() > 0) {
             File sendSuccessFile = new File(SystemUtil.configHome + "data" +
-                    File.separator + "push_his" + File.separator + msgName +
+                    File.separator + "push_his" + File.separator + MessageTypeEnum.getName(msgType) + "-" + msgName +
                     "-发送成功-" + nowTime + ".csv");
             if (!sendSuccessFile.exists()) {
                 sendSuccessFile.createNewFile();
@@ -370,7 +370,7 @@ public class PushManage {
         }
         if (PushData.toSendList.size() > 0) {
             File unSendFile = new File(SystemUtil.configHome + "data" + File.separator +
-                    "push_his" + File.separator + msgName + "-未发送-" + nowTime +
+                    "push_his" + File.separator + MessageTypeEnum.getName(msgType) + "-" + msgName + "-未发送-" + nowTime +
                     ".csv");
             if (!unSendFile.exists()) {
                 unSendFile.createNewFile();
@@ -396,7 +396,7 @@ public class PushManage {
         // 保存发送失败
         if (PushData.sendFailList.size() > 0) {
             File failSendFile = new File(SystemUtil.configHome + "data" + File.separator +
-                    "push_his" + File.separator + msgName + "-发送失败-" + nowTime + ".csv");
+                    "push_his" + File.separator + MessageTypeEnum.getName(msgType) + "-" + msgName + "-发送失败-" + nowTime + ".csv");
             if (!failSendFile.exists()) {
                 failSendFile.createNewFile();
             }

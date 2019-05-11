@@ -124,8 +124,10 @@ public class PushHisListener {
 
                                 File msgTemplateDataFile = new File(tPushHistory.getCsvFile());
                                 if (msgTemplateDataFile.exists()) {
-                                    msgTemplateDataFile.delete();
+                                   msgTemplateDataFile.delete();
                                 }
+
+                                pushHistoryMapper.deleteByPrimaryKey(selectedId);
                                 tableModel.removeRow(i);
                                 PushHisForm.pushHisForm.getPushHisLeftTable().updateUI();
                                 i = 0;
