@@ -124,10 +124,10 @@ public class MessageTypeForm {
         messageTypePanel.setAutoscrolls(false);
         final JScrollPane scrollPane1 = new JScrollPane();
         scrollPane1.setAutoscrolls(false);
-        messageTypePanel.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_NORTHWEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        messageTypePanel.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(16, 2, new Insets(20, 20, 0, 0), -1, -1));
-        panel2.setAutoscrolls(true);
+        panel2.setAutoscrolls(false);
         scrollPane1.setViewportView(panel2);
         mpTemplateRadioButton = new JRadioButton();
         mpTemplateRadioButton.setEnabled(true);

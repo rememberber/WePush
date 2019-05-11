@@ -23,7 +23,7 @@
             <margin top="20" left="20" bottom="0" right="0"/>
             <constraints/>
             <properties>
-              <autoscrolls value="true"/>
+              <autoscrolls value="false"/>
             </properties>
             <border type="none"/>
             <children>
