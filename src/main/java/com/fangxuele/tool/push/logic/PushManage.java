@@ -13,11 +13,15 @@ import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
+import com.fangxuele.tool.push.dao.TPushHistoryMapper;
+import com.fangxuele.tool.push.domain.TPushHistory;
 import com.fangxuele.tool.push.ui.Init;
-import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
+import com.fangxuele.tool.push.ui.form.PushHisForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
+import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.github.qcloudsms.SmsSingleSender;
 import com.github.qcloudsms.SmsSingleSenderResult;
@@ -56,6 +60,8 @@ import java.util.Map;
 public class PushManage {
 
     private static final Log logger = LogFactory.get();
+
+    private static TPushHistoryMapper pushHistoryMapper = MybatisUtil.getSqlSession().getMapper(TPushHistoryMapper.class);
 
     /**
      * 模板变量前缀
@@ -324,24 +330,35 @@ public class PushManage {
 
         String msgName = MessageEditForm.messageEditForm.getMsgNameField().getText();
         String nowTime = DateUtil.now().replaceAll(":", "_");
-
-        String[] strArray;
         CSVWriter writer;
+        int msgType = Init.config.getMsgType();
+        String now = SqliteUtil.nowDateForSqlite();
 
         // 保存已发送
         if (PushData.sendSuccessList.size() > 0) {
-            File toSendFile = new File(SystemUtil.configHome + "data" +
+            File sendSuccessFile = new File(SystemUtil.configHome + "data" +
                     File.separator + "push_his" + File.separator + msgName +
                     "-发送成功-" + nowTime + ".csv");
-            if (!toSendFile.exists()) {
-                toSendFile.createNewFile();
+            if (!sendSuccessFile.exists()) {
+                sendSuccessFile.createNewFile();
             }
-            writer = new CSVWriter(new FileWriter(toSendFile));
+            writer = new CSVWriter(new FileWriter(sendSuccessFile));
 
             for (String[] str : PushData.sendSuccessList) {
                 writer.writeNext(str);
             }
             writer.close();
+
+            TPushHistory tPushHistory = new TPushHistory();
+//          TODO  tPushHistory.setMsgId(0);
+            tPushHistory.setMsgType(msgType);
+            tPushHistory.setMsgName(msgName);
+            tPushHistory.setResult("发送成功");
+            tPushHistory.setCsvFile(sendSuccessFile.getAbsolutePath());
+            tPushHistory.setCreateTime(now);
+            tPushHistory.setModifiedTime(now);
+
+            pushHistoryMapper.insertSelective(tPushHistory);
         }
 
         // 保存未发送
@@ -363,6 +380,17 @@ public class PushManage {
                 writer.writeNext(str);
             }
             writer.close();
+
+            TPushHistory tPushHistory = new TPushHistory();
+//          TODO  tPushHistory.setMsgId(0);
+            tPushHistory.setMsgType(msgType);
+            tPushHistory.setMsgName(msgName);
+            tPushHistory.setResult("未发送");
+            tPushHistory.setCsvFile(unSendFile.getAbsolutePath());
+            tPushHistory.setCreateTime(now);
+            tPushHistory.setModifiedTime(now);
+
+            pushHistoryMapper.insertSelective(tPushHistory);
         }
 
         // 保存发送失败
@@ -377,10 +405,20 @@ public class PushManage {
                 writer.writeNext(str);
             }
             writer.close();
+
+            TPushHistory tPushHistory = new TPushHistory();
+//          TODO  tPushHistory.setMsgId(0);
+            tPushHistory.setMsgType(msgType);
+            tPushHistory.setMsgName(msgName);
+            tPushHistory.setResult("发送失败");
+            tPushHistory.setCsvFile(failSendFile.getAbsolutePath());
+            tPushHistory.setCreateTime(now);
+            tPushHistory.setModifiedTime(now);
+
+            pushHistoryMapper.insertSelective(tPushHistory);
         }
 
-        MemberForm.init();
-        SettingForm.init();
+        PushHisForm.init();
     }
 
     /**
