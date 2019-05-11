@@ -121,13 +121,13 @@ public class MessageTypeForm {
     private void $$$setupUI$$$() {
         messageTypePanel = new JPanel();
         messageTypePanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        messageTypePanel.setAutoscrolls(true);
+        messageTypePanel.setAutoscrolls(false);
         final JScrollPane scrollPane1 = new JScrollPane();
-        scrollPane1.setAutoscrolls(true);
-        messageTypePanel.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        scrollPane1.setAutoscrolls(false);
+        messageTypePanel.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_NORTHWEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(17, 2, new Insets(20, 20, 0, 0), -1, -1));
-        panel2.setAutoscrolls(false);
+        panel2.setLayout(new GridLayoutManager(16, 2, new Insets(20, 20, 0, 0), -1, -1));
+        panel2.setAutoscrolls(true);
         scrollPane1.setViewportView(panel2);
         mpTemplateRadioButton = new JRadioButton();
         mpTemplateRadioButton.setEnabled(true);
@@ -135,8 +135,6 @@ public class MessageTypeForm {
         panel2.add(mpTemplateRadioButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
         panel2.add(spacer1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-        final Spacer spacer2 = new Spacer();
-        panel2.add(spacer2, new GridConstraints(16, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         maTemplateRadioButton = new JRadioButton();
         maTemplateRadioButton.setText("小程序-模板消息");
         panel2.add(maTemplateRadioButton, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
