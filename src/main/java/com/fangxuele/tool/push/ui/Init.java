@@ -11,6 +11,7 @@ import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.ui.form.MessageTypeForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
+import com.fangxuele.tool.push.ui.form.PushHisForm;
 import com.fangxuele.tool.push.ui.form.ScheduleForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.ui.form.UserCaseForm;
@@ -131,6 +132,7 @@ public class Init {
         PushForm.init();
         ScheduleForm.init();
         SettingForm.init();
+        PushHisForm.init();
 
         // 检查新版版
         if (config.isAutoCheckUpdate()) {

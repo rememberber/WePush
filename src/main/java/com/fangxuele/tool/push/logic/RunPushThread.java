@@ -89,7 +89,7 @@ public class RunPushThread extends Thread {
 
         DefaultTableCellRenderer hr = (DefaultTableCellRenderer) PushForm.pushForm.getPushThreadTable().getTableHeader()
                 .getDefaultRenderer();
-        // 表头列名居中
+        // 表头列名居左
         hr.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
         PushForm.pushForm.getPushThreadTable().updateUI();
 

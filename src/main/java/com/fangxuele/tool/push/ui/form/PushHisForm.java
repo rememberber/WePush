@@ -12,6 +12,7 @@ import com.intellij.uiDesigner.core.Spacer;
 import lombok.Getter;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -50,6 +51,11 @@ public class PushHisForm {
         String[] headerNames = {"选择", "消息名称", "状态", "时间", "id"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
         pushHisForm.getPushHisLeftTable().setModel(model);
+
+        DefaultTableCellRenderer hr = (DefaultTableCellRenderer) pushHisForm.getPushHisLeftTable().getTableHeader()
+                .getDefaultRenderer();
+        // 表头列名居左
+        hr.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
 
         List<TPushHistory> pushHistoryList = pushHistoryMapper.selectByMsgType(Init.config.getMsgType());
         Object[] data;
