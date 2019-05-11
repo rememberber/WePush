@@ -1,7 +1,8 @@
 package com.fangxuele.tool.push.util;
 
 import cn.hutool.core.io.FileUtil;
-import com.fangxuele.tool.push.dao.InitMapper;
+import cn.hutool.core.util.CharsetUtil;
+import com.fangxuele.tool.push.ui.form.MainWindow;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
@@ -10,6 +11,10 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
 import java.io.File;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Properties;
 
 /**
@@ -60,9 +65,15 @@ public class MybatisUtil {
     /**
      * 初始化数据库文件
      */
-    private static void initDbFile() {
+    private static void initDbFile() throws SQLException {
         if (!dbFile.exists()) {
-            FileUtil.touch(dbFile);
+            // 不存在db文件时会自动创建一个
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:" + dbFile.getAbsolutePath());
+            Statement stmt = connection.createStatement();
+            String sql = FileUtil.readString(MainWindow.class.getResource("/db_init.sql"), CharsetUtil.UTF_8);
+            stmt.executeUpdate(sql);
+            stmt.close();
+            connection.close();
             needInit = true;
         }
     }
@@ -72,8 +83,9 @@ public class MybatisUtil {
      */
     private static void initTables() {
         if (needInit) {
-            InitMapper initMapper = sqlSession.getMapper(InitMapper.class);
-            initMapper.createAllTables();
+            // doesn't work
+//            InitMapper initMapper = sqlSession.getMapper(InitMapper.class);
+//            initMapper.createAllTables();
         }
     }
 }

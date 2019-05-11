@@ -4,12 +4,10 @@ import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPushHistoryMapper;
-import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 
-import javax.swing.table.DefaultTableModel;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -33,11 +31,6 @@ public class MsgHisManage {
     private static MsgHisManage ourInstance = new MsgHisManage();
 
     private File msgHisFile;
-
-    /**
-     * 历史消息保存的csv的列数
-     */
-    public static final int ARRAY_LENGTH = 15;
 
     private TPushHistoryMapper pushHistoryMapper = App.sqlSession.getMapper(TPushHistoryMapper.class);
 
@@ -127,62 +120,6 @@ public class MsgHisManage {
             }
         }
         return list;
-    }
-
-    /**
-     * 写入(保存)消息历史
-     *
-     * @param map key:消息名称 value:消息详情
-     * @throws IOException io异常
-     */
-    public void writeMsgHis(Map<String, String[]> map) throws IOException {
-        CSVWriter writer = new CSVWriter(new FileWriter(msgHisFile));
-        String[] entries = new String[]{"消息名称", "消息类型", "模板ID", "跳转URL", "客服消息类型", "客服消息标题/内容", "客服消息图片URL", "客服消息描述", "客服消息跳转URL"};
-        writer.writeNext(entries);
-        writer.writeAll(map.values());
-        writer.close();
-    }
-
-    /**
-     * 保持模板数据
-     *
-     * @param msgName 消息名称
-     * @throws IOException
-     */
-    public void writeTemplateData(String msgName) throws IOException {
-        File dir = new File(SystemUtil.configHome + "data" + File.separator + "template_data" + File.separator);
-        File file = new File(SystemUtil.configHome + "data" + File.separator + "template_data" + File.separator
-                + msgName + ".csv");
-        if (!file.exists()) {
-            dir.mkdirs();
-            file.createNewFile();
-        }
-
-        CSVWriter writer = new CSVWriter(new FileWriter(file));
-
-        List<String[]> records = new ArrayList<String[]>();
-
-        // 如果table为空，则初始化
-        if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-            MessageEditForm.initTemplateDataTable();
-        }
-
-        // 逐行读取
-        DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable()
-                .getModel();
-        int rowCount = tableModel.getRowCount();
-        String[] arryData;
-        for (int i = 0; i < rowCount; i++) {
-            arryData = new String[3];
-            arryData[0] = (String) tableModel.getValueAt(i, 0);
-            arryData[1] = (String) tableModel.getValueAt(i, 1);
-            arryData[2] = ((String) tableModel.getValueAt(i, 2)).trim();
-            records.add(arryData);
-        }
-
-        // 写入文件
-        writer.writeAll(records);
-        writer.close();
     }
 
 }

@@ -8,6 +8,14 @@ import com.fangxuele.tool.push.dao.TMsgKefuPriorityMapper;
 import com.fangxuele.tool.push.dao.TMsgMaTemplateMapper;
 import com.fangxuele.tool.push.dao.TMsgMpTemplateMapper;
 import com.fangxuele.tool.push.dao.TMsgSmsMapper;
+import com.fangxuele.tool.push.dao.TTemplateDataMapper;
+import com.fangxuele.tool.push.domain.TMsgKefu;
+import com.fangxuele.tool.push.domain.TMsgKefuPriority;
+import com.fangxuele.tool.push.domain.TMsgMaTemplate;
+import com.fangxuele.tool.push.domain.TMsgMpTemplate;
+import com.fangxuele.tool.push.domain.TMsgSms;
+import com.fangxuele.tool.push.domain.TTemplateData;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.MsgHisManage;
 import com.fangxuele.tool.push.logic.PushManage;
 import com.fangxuele.tool.push.ui.Init;
@@ -16,6 +24,7 @@ import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.SqliteUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
@@ -23,7 +32,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -40,11 +49,12 @@ public class MsgListener {
 
     public static MsgHisManage msgHisManager = MsgHisManage.getInstance();
 
-    private TMsgKefuMapper msgKefuMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuMapper.class);
-    private TMsgKefuPriorityMapper msgKefuPriorityMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuPriorityMapper.class);
-    private TMsgMaTemplateMapper msgMaTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMaTemplateMapper.class);
-    private TMsgMpTemplateMapper msgMpTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMpTemplateMapper.class);
-    private TMsgSmsMapper msgSmsMapper = MybatisUtil.getSqlSession().getMapper(TMsgSmsMapper.class);
+    private static TMsgKefuMapper msgKefuMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuMapper.class);
+    private static TMsgKefuPriorityMapper msgKefuPriorityMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuPriorityMapper.class);
+    private static TMsgMaTemplateMapper msgMaTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMaTemplateMapper.class);
+    private static TMsgMpTemplateMapper msgMpTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMpTemplateMapper.class);
+    private static TMsgSmsMapper msgSmsMapper = MybatisUtil.getSqlSession().getMapper(TMsgSmsMapper.class);
+    private static TTemplateDataMapper templateDataMapper = MybatisUtil.getSqlSession().getMapper(TTemplateDataMapper.class);
 
     public static void addListeners() {
 
@@ -114,38 +124,188 @@ public class MsgListener {
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            Map<String, String[]> msgMap = msgHisManager.readMsgHis();
+
+            int msgType = Init.config.getMsgType();
+            int msgId = 0;
+
+            boolean existSameMsg = false;
+            if (msgType == MessageTypeEnum.KEFU_CODE) {
+                List<TMsgKefu> tMsgKefuList = msgKefuMapper.selectByMsgTypeAndMsgName(msgType, msgName);
+                if (tMsgKefuList.size() > 0) {
+                    existSameMsg = true;
+                    msgId = tMsgKefuList.get(0).getId();
+                }
+            } else if (msgType == MessageTypeEnum.KEFU_PRIORITY_CODE) {
+                List<TMsgKefuPriority> tMsgKefuPriorityList = msgKefuPriorityMapper.selectByMsgTypeAndMsgName(msgType, msgName);
+                if (tMsgKefuPriorityList.size() > 0) {
+                    existSameMsg = true;
+                    msgId = tMsgKefuPriorityList.get(0).getId();
+                }
+            } else if (msgType == MessageTypeEnum.MA_TEMPLATE_CODE) {
+                List<TMsgMaTemplate> tMsgMaTemplateList = msgMaTemplateMapper.selectByMsgTypeAndMsgName(msgType, msgName);
+                if (tMsgMaTemplateList.size() > 0) {
+                    existSameMsg = true;
+                    msgId = tMsgMaTemplateList.get(0).getId();
+                }
+            } else if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE) {
+                List<TMsgMpTemplate> tMsgMpTemplateList = msgMpTemplateMapper.selectByMsgTypeAndMsgName(msgType, msgName);
+                if (tMsgMpTemplateList.size() > 0) {
+                    existSameMsg = true;
+                    msgId = tMsgMpTemplateList.get(0).getId();
+                }
+            } else {
+                List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgTypeAndMsgName(msgType, msgName);
+                if (tMsgSmsList.size() > 0) {
+                    existSameMsg = true;
+                    msgId = tMsgSmsList.get(0).getId();
+                }
+            }
 
             int isCover = JOptionPane.NO_OPTION;
-            if (msgMap.containsKey(msgName)) {
+            if (existSameMsg) {
                 // 如果存在，是否覆盖
                 isCover = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getMessagePanel(), "已经存在同名的历史消息，\n是否覆盖？", "确认",
                         JOptionPane.YES_NO_OPTION);
             }
 
             try {
-                if (!msgMap.containsKey(msgName) || isCover == JOptionPane.YES_OPTION) {
-                    String[] record = new String[MsgHisManage.ARRAY_LENGTH];
-                    record[0] = msgName;
-                    record[1] = String.valueOf(Init.config.getMsgType());
-                    record[2] = MessageEditForm.messageEditForm.getMsgTemplateIdTextField().getText();
-                    record[3] = MessageEditForm.messageEditForm.getMsgTemplateUrlTextField().getText();
-                    record[4] = Objects.requireNonNull(MessageEditForm.messageEditForm.getMsgKefuMsgTypeComboBox().getSelectedItem()).toString();
-                    record[5] = MessageEditForm.messageEditForm.getMsgKefuMsgTitleTextField().getText();
-                    record[6] = MessageEditForm.messageEditForm.getMsgKefuPicUrlTextField().getText();
-                    record[7] = MessageEditForm.messageEditForm.getMsgKefuDescTextField().getText();
-                    record[8] = MessageEditForm.messageEditForm.getMsgKefuUrlTextField().getText();
-                    record[9] = MessageEditForm.messageEditForm.getMsgTemplateMiniAppidTextField().getText();
-                    record[10] = MessageEditForm.messageEditForm.getMsgTemplateMiniPagePathTextField().getText();
-                    record[11] = MessageEditForm.messageEditForm.getMsgTemplateKeyWordTextField().getText();
-                    record[12] = MessageEditForm.messageEditForm.getMsgYunpianMsgContentTextField().getText();
+                if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
+                    String templateId = MessageEditForm.messageEditForm.getMsgTemplateIdTextField().getText();
+                    String templateUrl = MessageEditForm.messageEditForm.getMsgTemplateUrlTextField().getText();
+                    String kefuMsgType = Objects.requireNonNull(MessageEditForm.messageEditForm.getMsgKefuMsgTypeComboBox().getSelectedItem()).toString();
+                    String kefuMsgTitle = MessageEditForm.messageEditForm.getMsgKefuMsgTitleTextField().getText();
+                    String kefuPicUrl = MessageEditForm.messageEditForm.getMsgKefuPicUrlTextField().getText();
+                    String kefuDesc = MessageEditForm.messageEditForm.getMsgKefuDescTextField().getText();
+                    String kefuUrl = MessageEditForm.messageEditForm.getMsgKefuUrlTextField().getText();
+                    String templateMiniAppid = MessageEditForm.messageEditForm.getMsgTemplateMiniAppidTextField().getText();
+                    String templateMiniPagePath = MessageEditForm.messageEditForm.getMsgTemplateMiniPagePathTextField().getText();
+                    String templateKeyWord = MessageEditForm.messageEditForm.getMsgTemplateKeyWordTextField().getText();
+                    String yunpianMsgContent = MessageEditForm.messageEditForm.getMsgYunpianMsgContentTextField().getText();
 
-                    msgMap.put(msgName, record);
+                    String now = SqliteUtil.nowDateForSqlite();
 
-                    msgHisManager.writeMsgHis(msgMap);
-                    msgHisManager.writeTemplateData(msgName);
+                    if (msgType == MessageTypeEnum.KEFU_CODE) {
+                        TMsgKefu tMsgKefu = new TMsgKefu();
+                        tMsgKefu.setMsgType(msgType);
+                        tMsgKefu.setMsgName(msgName);
+                        tMsgKefu.setKefuMsgType(kefuMsgType);
+                        tMsgKefu.setContent(kefuMsgTitle);
+                        tMsgKefu.setTitle(kefuMsgTitle);
+                        tMsgKefu.setImgUrl(kefuPicUrl);
+                        tMsgKefu.setDescribe(kefuDesc);
+                        tMsgKefu.setUrl(kefuUrl);
+                        tMsgKefu.setCreateTime(now);
+                        tMsgKefu.setModifiedTime(now);
 
-                    Init.config.setMsgName(msgName);
+                        if (existSameMsg) {
+                            msgKefuMapper.updateByMsgTypeAndMsgName(tMsgKefu);
+                        } else {
+                            msgKefuMapper.insertSelective(tMsgKefu);
+                            msgId = tMsgKefu.getId();
+                        }
+                    } else if (msgType == MessageTypeEnum.KEFU_PRIORITY_CODE) {
+                        TMsgKefuPriority tMsgKefuPriority = new TMsgKefuPriority();
+                        tMsgKefuPriority.setMsgType(msgType);
+                        tMsgKefuPriority.setMsgName(msgName);
+                        tMsgKefuPriority.setTemplateId(templateId);
+                        tMsgKefuPriority.setUrl(templateUrl);
+                        tMsgKefuPriority.setMaAppid(templateMiniAppid);
+                        tMsgKefuPriority.setMaPagePath(templateMiniPagePath);
+                        tMsgKefuPriority.setKefuMsgType(kefuMsgType);
+                        tMsgKefuPriority.setContent(kefuMsgTitle);
+                        tMsgKefuPriority.setTitle(kefuMsgTitle);
+                        tMsgKefuPriority.setImgUrl(kefuPicUrl);
+                        tMsgKefuPriority.setDescribe(kefuDesc);
+                        tMsgKefuPriority.setKefuUrl(kefuUrl);
+                        tMsgKefuPriority.setCreateTime(now);
+                        tMsgKefuPriority.setModifiedTime(now);
+
+                        if (existSameMsg) {
+                            msgKefuPriorityMapper.updateByMsgTypeAndMsgName(tMsgKefuPriority);
+                        } else {
+                            msgKefuPriorityMapper.insertSelective(tMsgKefuPriority);
+                            msgId = tMsgKefuPriority.getId();
+                        }
+                    } else if (msgType == MessageTypeEnum.MA_TEMPLATE_CODE) {
+                        TMsgMaTemplate tMsgMaTemplate = new TMsgMaTemplate();
+                        tMsgMaTemplate.setMsgType(msgType);
+                        tMsgMaTemplate.setMsgName(msgName);
+                        tMsgMaTemplate.setTemplateId(templateId);
+                        tMsgMaTemplate.setPage(templateUrl);
+                        tMsgMaTemplate.setEmphasisKeyword(templateKeyWord);
+                        tMsgMaTemplate.setCreateTime(now);
+                        tMsgMaTemplate.setModifiedTime(now);
+
+                        if (existSameMsg) {
+                            msgMaTemplateMapper.updateByMsgTypeAndMsgName(tMsgMaTemplate);
+                        } else {
+                            msgMaTemplateMapper.insertSelective(tMsgMaTemplate);
+                            msgId = tMsgMaTemplate.getId();
+                        }
+                    } else if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE) {
+                        TMsgMpTemplate tMsgMpTemplate = new TMsgMpTemplate();
+                        tMsgMpTemplate.setMsgType(msgType);
+                        tMsgMpTemplate.setMsgName(msgName);
+                        tMsgMpTemplate.setTemplateId(templateId);
+                        tMsgMpTemplate.setUrl(templateUrl);
+                        tMsgMpTemplate.setMaAppid(templateMiniAppid);
+                        tMsgMpTemplate.setMaPagePath(templateMiniPagePath);
+                        tMsgMpTemplate.setCreateTime(now);
+                        tMsgMpTemplate.setModifiedTime(now);
+
+                        if (existSameMsg) {
+                            msgMpTemplateMapper.updateByMsgTypeAndMsgName(tMsgMpTemplate);
+                        } else {
+                            msgMpTemplateMapper.insertSelective(tMsgMpTemplate);
+                            msgId = tMsgMpTemplate.getId();
+                        }
+                    } else {
+                        TMsgSms tMsgSms = new TMsgSms();
+                        tMsgSms.setMsgType(msgType);
+                        tMsgSms.setMsgName(msgName);
+                        tMsgSms.setTemplateId(templateId);
+                        tMsgSms.setContent(yunpianMsgContent);
+                        tMsgSms.setCreateTime(now);
+                        tMsgSms.setModifiedTime(now);
+
+                        if (existSameMsg) {
+                            msgSmsMapper.updateByMsgTypeAndMsgName(tMsgSms);
+                        } else {
+                            msgSmsMapper.insertSelective(tMsgSms);
+                            msgId = tMsgSms.getId();
+                        }
+                    }
+
+                    // 保存模板数据
+                    if (msgType != MessageTypeEnum.KEFU_CODE && msgType != MessageTypeEnum.YUN_PIAN_CODE) {
+
+                        // 如果table为空，则初始化
+                        if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+                            MessageEditForm.initTemplateDataTable();
+                        }
+
+                        // 逐行读取
+                        DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable()
+                                .getModel();
+                        int rowCount = tableModel.getRowCount();
+                        for (int i = 0; i < rowCount; i++) {
+                            String name = (String) tableModel.getValueAt(i, 0);
+                            String value = (String) tableModel.getValueAt(i, 1);
+                            String color = ((String) tableModel.getValueAt(i, 2)).trim();
+
+                            TTemplateData tTemplateData = new TTemplateData();
+                            tTemplateData.setMsgId(msgId);
+                            tTemplateData.setName(name);
+                            tTemplateData.setValue(value);
+                            tTemplateData.setColor(color);
+                            tTemplateData.setCreateTime(now);
+                            tTemplateData.setModifiedTime(now);
+
+                            templateDataMapper.insert(tTemplateData);
+                        }
+
+                    }
+
                     Init.config.setPreviewUser(MessageEditForm.messageEditForm.getPreviewUserField().getText());
                     Init.config.save();
 

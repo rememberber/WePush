@@ -45,7 +45,8 @@
                 #{title,jdbcType=VARCHAR}, #{imgUrl,jdbcType=VARCHAR}, #{describe,jdbcType=VARCHAR},
                 #{kefuUrl,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR})
     </insert>
-    <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TMsgKefuPriority">
+    <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TMsgKefuPriority" useGeneratedKeys="true"
+            keyProperty="id" keyColumn="id">
         insert into t_msg_kefu_priority
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -207,5 +208,29 @@
             create_time   = #{createTime,jdbcType=VARCHAR},
             modified_time = #{modifiedTime,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
+    </update>
+    <select id="selectByMsgTypeAndMsgName" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_msg_kefu_priority
+        where msg_type = #{msgType,jdbcType=INTEGER}
+        and msg_name = #{msgName,jdbcType=VARCHAR}
+    </select>
+    <update id="updateByMsgTypeAndMsgName" parameterType="com.fangxuele.tool.push.domain.TMsgKefuPriority">
+        update t_msg_kefu_priority
+        set template_id   = #{templateId,jdbcType=VARCHAR},
+            url           = #{url,jdbcType=VARCHAR},
+            ma_appid      = #{maAppid,jdbcType=VARCHAR},
+            ma_page_path  = #{maPagePath,jdbcType=VARCHAR},
+            kefu_msg_type = #{kefuMsgType,jdbcType=VARCHAR},
+            content       = #{content,jdbcType=VARCHAR},
+            title         = #{title,jdbcType=VARCHAR},
+            img_url       = #{imgUrl,jdbcType=VARCHAR},
+            describe      = #{describe,jdbcType=VARCHAR},
+            kefu_url      = #{kefuUrl,jdbcType=VARCHAR},
+            create_time   = #{createTime,jdbcType=VARCHAR},
+            modified_time = #{modifiedTime,jdbcType=VARCHAR}
+        where msg_type = #{msgType,jdbcType=INTEGER}
+          and msg_name = #{msgName,jdbcType=VARCHAR}
     </update>
 </mapper>

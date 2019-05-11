@@ -33,7 +33,8 @@
                 #{templateId,jdbcType=VARCHAR}, #{page,jdbcType=VARCHAR}, #{emphasisKeyword,jdbcType=VARCHAR},
                 #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR})
     </insert>
-    <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TMsgMaTemplate">
+    <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TMsgMaTemplate" useGeneratedKeys="true"
+            keyColumn="id" keyProperty="id">
         insert into t_msg_ma_template
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -125,5 +126,22 @@
             create_time      = #{createTime,jdbcType=VARCHAR},
             modified_time    = #{modifiedTime,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
+    </update>
+    <select id="selectByMsgTypeAndMsgName" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_msg_ma_template
+        where msg_type = #{msgType,jdbcType=INTEGER}
+        and msg_name = #{msgName,jdbcType=VARCHAR}
+    </select>
+    <update id="updateByMsgTypeAndMsgName" parameterType="com.fangxuele.tool.push.domain.TMsgMaTemplate">
+        update t_msg_ma_template
+        set template_id      = #{templateId,jdbcType=VARCHAR},
+            page             = #{page,jdbcType=VARCHAR},
+            emphasis_keyword = #{emphasisKeyword,jdbcType=VARCHAR},
+            create_time      = #{createTime,jdbcType=VARCHAR},
+            modified_time    = #{modifiedTime,jdbcType=VARCHAR}
+        where msg_type = #{msgType,jdbcType=INTEGER}
+          and msg_name = #{msgName,jdbcType=VARCHAR}
     </update>
 </mapper>

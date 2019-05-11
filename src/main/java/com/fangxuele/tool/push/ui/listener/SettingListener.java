@@ -260,7 +260,7 @@ public class SettingListener {
                                 i++;
                             }
                         }
-                        MessageEditForm.msgHisManager.writeMsgHis(msgMap);
+//                        MessageEditForm.msgHisManager.writeMsgHis(msgMap);
 
                         MessageEditForm.init(null);
                     }

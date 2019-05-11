@@ -1,6 +1,9 @@
 package com.fangxuele.tool.push.dao;
 
 import com.fangxuele.tool.push.domain.TMsgKefuPriority;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface TMsgKefuPriorityMapper {
     int deleteByPrimaryKey(Integer id);
@@ -14,4 +17,8 @@ public interface TMsgKefuPriorityMapper {
     int updateByPrimaryKeySelective(TMsgKefuPriority record);
 
     int updateByPrimaryKey(TMsgKefuPriority record);
+
+    List<TMsgKefuPriority> selectByMsgTypeAndMsgName(@Param("msgType") int msgType, @Param("msgName") String msgName);
+
+    int updateByMsgTypeAndMsgName(TMsgKefuPriority tMsgKefuPriority);
 }

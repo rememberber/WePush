@@ -1,6 +1,9 @@
 package com.fangxuele.tool.push.dao;
 
 import com.fangxuele.tool.push.domain.TMsgMaTemplate;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface TMsgMaTemplateMapper {
     int deleteByPrimaryKey(Integer id);
@@ -14,4 +17,8 @@ public interface TMsgMaTemplateMapper {
     int updateByPrimaryKeySelective(TMsgMaTemplate record);
 
     int updateByPrimaryKey(TMsgMaTemplate record);
+
+    List<TMsgMaTemplate> selectByMsgTypeAndMsgName(@Param("msgType") int msgType, @Param("msgName") String msgName);
+
+    int updateByMsgTypeAndMsgName(TMsgMaTemplate tMsgMaTemplate);
 }
