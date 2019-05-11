@@ -21,4 +21,8 @@ public interface TMsgKefuPriorityMapper {
     List<TMsgKefuPriority> selectByMsgTypeAndMsgName(@Param("msgType") int msgType, @Param("msgName") String msgName);
 
     int updateByMsgTypeAndMsgName(TMsgKefuPriority tMsgKefuPriority);
+
+    List<TMsgKefuPriority> selectByMsgType(int msgType);
+
+    int deleteByMsgTypeAndName(@Param("msgType") int msgType, @Param("msgName") String msgName);
 }

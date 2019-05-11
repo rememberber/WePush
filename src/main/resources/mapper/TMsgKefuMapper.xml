@@ -183,4 +183,16 @@
         where msg_type = #{msgType,jdbcType=INTEGER}
           and msg_name = #{msgName,jdbcType=VARCHAR}
     </update>
+    <select id="selectByMsgType" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_msg_kefu
+        where msg_type = #{msgType,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByMsgTypeAndName">
+        delete
+        from t_msg_kefu
+        where msg_type = #{msgType,jdbcType=INTEGER}
+          and msg_name = #{msgName,jdbcType=VARCHAR}
+    </delete>
 </mapper>

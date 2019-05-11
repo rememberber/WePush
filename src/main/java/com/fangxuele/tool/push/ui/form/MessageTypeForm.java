@@ -85,6 +85,8 @@ public class MessageTypeForm {
             default:
         }
         MessageEditForm.switchMsgType(msgType);
+        MessageManageForm.init();
+        MessageEditForm.clearAllField();
     }
 
     /**

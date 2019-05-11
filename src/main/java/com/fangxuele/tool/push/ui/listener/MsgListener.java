@@ -16,13 +16,13 @@ import com.fangxuele.tool.push.domain.TMsgMpTemplate;
 import com.fangxuele.tool.push.domain.TMsgSms;
 import com.fangxuele.tool.push.domain.TTemplateData;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
-import com.fangxuele.tool.push.logic.MsgHisManage;
 import com.fangxuele.tool.push.logic.PushManage;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
+import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -47,14 +47,14 @@ import java.util.Set;
 public class MsgListener {
     private static final Log logger = LogFactory.get();
 
-    public static MsgHisManage msgHisManager = MsgHisManage.getInstance();
-
     private static TMsgKefuMapper msgKefuMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuMapper.class);
     private static TMsgKefuPriorityMapper msgKefuPriorityMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuPriorityMapper.class);
     private static TMsgMaTemplateMapper msgMaTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMaTemplateMapper.class);
     private static TMsgMpTemplateMapper msgMpTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMpTemplateMapper.class);
     private static TMsgSmsMapper msgSmsMapper = MybatisUtil.getSqlSession().getMapper(TMsgSmsMapper.class);
     private static TTemplateDataMapper templateDataMapper = MybatisUtil.getSqlSession().getMapper(TTemplateDataMapper.class);
+
+    private static boolean selectAllToggle = false;
 
     public static void addListeners() {
 
@@ -74,6 +74,73 @@ public class MsgListener {
                 super.mouseClicked(e);
             }
         });
+
+        // 历史消息管理-全选
+        MessageManageForm.messageManageForm.getMsgHisTableSelectAllButton().addActionListener(e -> ThreadUtil.execute(() -> {
+            toggleSelectAll();
+            DefaultTableModel tableModel = (DefaultTableModel) MessageManageForm.messageManageForm.getMsgHistable()
+                    .getModel();
+            int rowCount = tableModel.getRowCount();
+            for (int i = 0; i < rowCount; i++) {
+                tableModel.setValueAt(selectAllToggle, i, 0);
+            }
+        }));
+
+        // 历史消息管理-删除
+        MessageManageForm.messageManageForm.getMsgHisTableDeleteButton().addActionListener(e -> ThreadUtil.execute(() -> {
+            try {
+                DefaultTableModel tableModel = (DefaultTableModel) MessageManageForm.messageManageForm.getMsgHistable()
+                        .getModel();
+                int rowCount = tableModel.getRowCount();
+
+                int selectedCount = 0;
+                for (int i = 0; i < rowCount; i++) {
+                    boolean isSelected = (boolean) tableModel.getValueAt(i, 0);
+                    if (isSelected) {
+                        selectedCount++;
+                    }
+                }
+
+                if (selectedCount == 0) {
+                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "请至少选择一个！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    int isDelete = JOptionPane.showConfirmDialog(SettingForm.settingForm.getSettingPanel(), "确认删除？", "确认",
+                            JOptionPane.YES_NO_OPTION);
+                    if (isDelete == JOptionPane.YES_OPTION) {
+                        int msgType = Init.config.getMsgType();
+                        for (int i = 0; i < rowCount; ) {
+                            boolean delete = (boolean) tableModel.getValueAt(i, 0);
+                            if (delete) {
+                                String msgName = (String) tableModel.getValueAt(i, 1);
+                                if (msgType == MessageTypeEnum.KEFU_CODE) {
+                                    msgKefuMapper.deleteByMsgTypeAndName(msgType, msgName);
+                                } else if (msgType == MessageTypeEnum.KEFU_PRIORITY_CODE) {
+                                    msgKefuPriorityMapper.deleteByMsgTypeAndName(msgType, msgName);
+                                } else if (msgType == MessageTypeEnum.MA_TEMPLATE_CODE) {
+                                    msgMaTemplateMapper.deleteByMsgTypeAndName(msgType, msgName);
+                                } else if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE) {
+                                    msgMpTemplateMapper.deleteByMsgTypeAndName(msgType, msgName);
+                                } else {
+                                    msgSmsMapper.deleteByMsgTypeAndName(msgType, msgName);
+                                }
+                                tableModel.removeRow(i);
+                                MessageManageForm.messageManageForm.getMsgHistable().updateUI();
+                                i = 0;
+                                rowCount = tableModel.getRowCount();
+                            } else {
+                                i++;
+                            }
+                        }
+                        MessageEditForm.init(null);
+                    }
+                }
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "删除失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        }));
 
         // 客服消息类型切换事件
         MessageEditForm.messageEditForm.getMsgKefuMsgTypeComboBox().addItemListener(e -> MessageEditForm.switchKefuMsgType(e.getItem().toString()));
@@ -279,6 +346,11 @@ public class MsgListener {
                     // 保存模板数据
                     if (msgType != MessageTypeEnum.KEFU_CODE && msgType != MessageTypeEnum.YUN_PIAN_CODE) {
 
+                        // 如果是覆盖保存，则先清空之前的模板数据
+                        if (existSameMsg) {
+                            templateDataMapper.deleteByMsgId(msgId);
+                        }
+
                         // 如果table为空，则初始化
                         if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
                             MessageEditForm.initTemplateDataTable();
@@ -344,28 +416,15 @@ public class MsgListener {
 
         // 编辑消息-新建
         MessageEditForm.messageEditForm.getCreateMsgButton().addActionListener(e -> {
-            MessageEditForm.messageEditForm.getMsgNameField().setText("");
-            MessageEditForm.messageEditForm.getMsgTemplateIdTextField().setText("");
-            MessageEditForm.messageEditForm.getMsgTemplateUrlTextField().setText("");
-            MessageEditForm.messageEditForm.getMsgKefuMsgTitleTextField().setText("");
-            MessageEditForm.messageEditForm.getMsgKefuPicUrlTextField().setText("");
-            MessageEditForm.messageEditForm.getMsgKefuDescTextField().setText("");
-            MessageEditForm.messageEditForm.getMsgKefuUrlTextField().setText("");
-            MessageEditForm.messageEditForm.getMsgTemplateMiniAppidTextField().setText("");
-            MessageEditForm.messageEditForm.getMsgTemplateMiniPagePathTextField().setText("");
-            MessageEditForm.messageEditForm.getMsgTemplateKeyWordTextField().setText("");
-            MessageEditForm.messageEditForm.getMsgYunpianMsgContentTextField().setText("");
-
-            if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-                MessageEditForm.initTemplateDataTable();
-            }
-
-            DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable()
-                    .getModel();
-            int rowCount = tableModel.getRowCount();
-            for (int i = 0; i < rowCount; i++) {
-                tableModel.removeRow(0);
-            }
+            MessageEditForm.clearAllField();
+            MessageEditForm.initTemplateDataTable();
         });
+    }
+
+    /**
+     * 切换全选/全不选
+     */
+    private static void toggleSelectAll() {
+        selectAllToggle = !selectAllToggle;
     }
 }

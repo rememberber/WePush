@@ -21,4 +21,8 @@ public interface TMsgSmsMapper {
     List<TMsgSms> selectByMsgTypeAndMsgName(@Param("msgType") int msgType, @Param("msgName") String msgName);
 
     int updateByMsgTypeAndMsgName(TMsgSms tMsgSms);
+
+    List<TMsgSms> selectByMsgType(int msgType);
+
+    int deleteByMsgTypeAndName(@Param("msgType") int msgType, @Param("msgName") String msgName);
 }

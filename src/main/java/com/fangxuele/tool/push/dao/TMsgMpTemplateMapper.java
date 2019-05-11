@@ -21,4 +21,8 @@ public interface TMsgMpTemplateMapper {
     List<TMsgMpTemplate> selectByMsgTypeAndMsgName(@Param("msgType") int msgType, @Param("msgName") String msgName);
 
     int updateByMsgTypeAndMsgName(TMsgMpTemplate tMsgMpTemplate);
+
+    List<TMsgMpTemplate> selectByMsgType(int msgType);
+
+    int deleteByMsgTypeAndName(@Param("msgType") int msgType, @Param("msgName") String msgName);
 }

@@ -115,4 +115,15 @@
             modified_time = #{modifiedTime,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>
+    <select id="selectByMsgId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_template_data
+        where msg_id = #{msgId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByMsgId" parameterType="java.lang.Integer">
+        delete
+        from t_template_data
+        where msg_id = #{msgId,jdbcType=INTEGER}
+    </delete>
 </mapper>

@@ -1,22 +1,15 @@
 package com.fangxuele.tool.push.ui.listener;
 
-import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.MainWindow;
-import com.fangxuele.tool.push.ui.form.MessageEditForm;
-import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.util.DbUtilMySQL;
-import com.fangxuele.tool.push.util.SystemUtil;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.io.File;
 import java.sql.Connection;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -29,8 +22,6 @@ import java.util.Objects;
  */
 public class SettingListener {
     private static final Log logger = LogFactory.get();
-
-    private static boolean selectAllToggle = false;
 
     public static void addListeners() {
 
@@ -205,79 +196,6 @@ public class SettingListener {
                 logger.error(e1);
             }
         });
-
-        // 历史消息管理-全选
-        MessageManageForm.messageManageForm.getMsgHisTableSelectAllButton().addActionListener(e -> ThreadUtil.execute(() -> {
-            toggleSelectAll();
-            DefaultTableModel tableModel = (DefaultTableModel) MessageManageForm.messageManageForm.getMsgHistable()
-                    .getModel();
-            int rowCount = tableModel.getRowCount();
-            for (int i = 0; i < rowCount; i++) {
-                tableModel.setValueAt(selectAllToggle, i, 0);
-            }
-        }));
-
-        // 历史消息管理-删除
-        MessageManageForm.messageManageForm.getMsgHisTableDeleteButton().addActionListener(e -> ThreadUtil.execute(() -> {
-            try {
-                DefaultTableModel tableModel = (DefaultTableModel) MessageManageForm.messageManageForm.getMsgHistable()
-                        .getModel();
-                int rowCount = tableModel.getRowCount();
-
-                int selectedCount = 0;
-                for (int i = 0; i < rowCount; i++) {
-                    boolean isSelected = (boolean) tableModel.getValueAt(i, 0);
-                    if (isSelected) {
-                        selectedCount++;
-                    }
-                }
-
-                if (selectedCount == 0) {
-                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "请至少选择一个！", "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    int isDelete = JOptionPane.showConfirmDialog(SettingForm.settingForm.getSettingPanel(), "确认删除？", "确认",
-                            JOptionPane.YES_NO_OPTION);
-                    if (isDelete == JOptionPane.YES_OPTION) {
-                        Map<String, String[]> msgMap = MessageEditForm.msgHisManager.readMsgHis();
-                        for (int i = 0; i < rowCount; ) {
-                            boolean delete = (boolean) tableModel.getValueAt(i, 0);
-                            if (delete) {
-                                String msgName = (String) tableModel.getValueAt(i, 1);
-                                if (msgMap.containsKey(msgName)) {
-                                    msgMap.remove(msgName);
-                                    File msgTemplateDataFile = new File(SystemUtil.configHome + "data"
-                                            + File.separator + "template_data" + File.separator + msgName + ".csv");
-                                    if (msgTemplateDataFile.exists()) {
-                                        msgTemplateDataFile.delete();
-                                    }
-                                }
-                                tableModel.removeRow(i);
-                                MessageManageForm.messageManageForm.getMsgHistable().updateUI();
-                                i = 0;
-                                rowCount = tableModel.getRowCount();
-                            } else {
-                                i++;
-                            }
-                        }
-//                        MessageEditForm.msgHisManager.writeMsgHis(msgMap);
-
-                        MessageEditForm.init(null);
-                    }
-                }
-            } catch (Exception e1) {
-                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "删除失败！\n\n" + e1.getMessage(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
-                logger.error(e1);
-            }
-        }));
-
     }
 
-    /**
-     * 切换全选/全不选
-     */
-    private static void toggleSelectAll() {
-        selectAllToggle = !selectAllToggle;
-    }
 }

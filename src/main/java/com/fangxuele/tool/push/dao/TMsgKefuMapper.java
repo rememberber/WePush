@@ -21,4 +21,8 @@ public interface TMsgKefuMapper {
     List<TMsgKefu> selectByMsgTypeAndMsgName(@Param("msgType") int msgType, @Param("msgName") String msgName);
 
     int updateByMsgTypeAndMsgName(TMsgKefu tMsgKefu);
+
+    List<TMsgKefu> selectByMsgType(int msgType);
+
+    int deleteByMsgTypeAndName(@Param("msgType") int msgType, @Param("msgName") String msgName);
 }

@@ -1,9 +1,19 @@
 package com.fangxuele.tool.push.ui.form;
 
-import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.dao.TPushHistoryMapper;
-import com.fangxuele.tool.push.logic.MsgHisManage;
+import com.fangxuele.tool.push.dao.TMsgKefuMapper;
+import com.fangxuele.tool.push.dao.TMsgKefuPriorityMapper;
+import com.fangxuele.tool.push.dao.TMsgMaTemplateMapper;
+import com.fangxuele.tool.push.dao.TMsgMpTemplateMapper;
+import com.fangxuele.tool.push.dao.TMsgSmsMapper;
+import com.fangxuele.tool.push.domain.TMsgKefu;
+import com.fangxuele.tool.push.domain.TMsgKefuPriority;
+import com.fangxuele.tool.push.domain.TMsgMaTemplate;
+import com.fangxuele.tool.push.domain.TMsgMpTemplate;
+import com.fangxuele.tool.push.domain.TMsgSms;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.component.TableInCellCheckBoxRenderer;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -13,7 +23,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.Map;
+import java.util.List;
 
 /**
  * <pre>
@@ -25,6 +35,7 @@ import java.util.Map;
  */
 @Getter
 public class MessageManageForm {
+
     private JPanel messageManagePanel;
     private JTable msgHistable;
     private JButton msgHisTableSelectAllButton;
@@ -32,12 +43,11 @@ public class MessageManageForm {
 
     public static MessageManageForm messageManageForm = new MessageManageForm();
 
-    /**
-     * 消息管理
-     */
-    public static MsgHisManage msgHisManager = MsgHisManage.getInstance();
-
-    private TPushHistoryMapper pushHistoryMapper = App.sqlSession.getMapper(TPushHistoryMapper.class);
+    private static TMsgKefuMapper msgKefuMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuMapper.class);
+    private static TMsgKefuPriorityMapper msgKefuPriorityMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuPriorityMapper.class);
+    private static TMsgMaTemplateMapper msgMaTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMaTemplateMapper.class);
+    private static TMsgMpTemplateMapper msgMpTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMpTemplateMapper.class);
+    private static TMsgSmsMapper msgSmsMapper = MybatisUtil.getSqlSession().getMapper(TMsgSmsMapper.class);
 
     /**
      * 初始化消息列表
@@ -53,14 +63,52 @@ public class MessageManageForm {
         renderer.setPreferredSize(new Dimension(0, 0));
         messageManageForm.getMsgHistable().getTableHeader().setDefaultRenderer(renderer);
 
-        Map<String, String[]> msgMap = msgHisManager.readMsgHis();
+        int msgType = Init.config.getMsgType();
+
         Object[] data;
-        for (String msgName : msgMap.keySet()) {
-            data = new Object[2];
-            data[0] = false;
-            data[1] = msgName;
-            model.addRow(data);
+
+        if (msgType == MessageTypeEnum.KEFU_CODE) {
+            List<TMsgKefu> tMsgKefuList = msgKefuMapper.selectByMsgType(msgType);
+            for (TMsgKefu tMsgKefu : tMsgKefuList) {
+                data = new Object[2];
+                data[0] = false;
+                data[1] = tMsgKefu.getMsgName();
+                model.addRow(data);
+            }
+        } else if (msgType == MessageTypeEnum.KEFU_PRIORITY_CODE) {
+            List<TMsgKefuPriority> tMsgKefuPriorityList = msgKefuPriorityMapper.selectByMsgType(msgType);
+            for (TMsgKefuPriority tMsgKefuPriority : tMsgKefuPriorityList) {
+                data = new Object[2];
+                data[0] = false;
+                data[1] = tMsgKefuPriority.getMsgName();
+                model.addRow(data);
+            }
+        } else if (msgType == MessageTypeEnum.MA_TEMPLATE_CODE) {
+            List<TMsgMaTemplate> tMsgMaTemplateList = msgMaTemplateMapper.selectByMsgType(msgType);
+            for (TMsgMaTemplate tMsgMaTemplate : tMsgMaTemplateList) {
+                data = new Object[2];
+                data[0] = false;
+                data[1] = tMsgMaTemplate.getMsgName();
+                model.addRow(data);
+            }
+        } else if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE) {
+            List<TMsgMpTemplate> tMsgMpTemplateList = msgMpTemplateMapper.selectByMsgType(msgType);
+            for (TMsgMpTemplate tMsgMpTemplate : tMsgMpTemplateList) {
+                data = new Object[2];
+                data[0] = false;
+                data[1] = tMsgMpTemplate.getMsgName();
+                model.addRow(data);
+            }
+        } else {
+            List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgType(msgType);
+            for (TMsgSms tMsgSms : tMsgSmsList) {
+                data = new Object[2];
+                data[0] = false;
+                data[1] = tMsgSms.getMsgName();
+                model.addRow(data);
+            }
         }
+
         messageManageForm.getMsgHistable().getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(new JCheckBox()));
         messageManageForm.getMsgHistable().getColumnModel().getColumn(0).setCellRenderer(new TableInCellCheckBoxRenderer());
         // 设置列宽
