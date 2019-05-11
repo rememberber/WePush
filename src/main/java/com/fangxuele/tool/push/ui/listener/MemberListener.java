@@ -13,7 +13,6 @@ import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.util.CharSetUtil;
 import com.fangxuele.tool.push.util.DbUtilMySQL;
-import com.fangxuele.tool.push.util.SystemUtil;
 import com.opencsv.CSVReader;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
@@ -31,7 +30,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,7 +37,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -246,52 +243,6 @@ public class MemberListener {
                 tagUserSet = null;
             }
         });
-
-        // 从历史导入按钮事件
-        MemberForm.memberForm.getImportFromHisButton().addActionListener(e -> ThreadUtil.execute(() -> {
-            File file = new File(SystemUtil.configHome + "data/push_his" + File.separator
-                    + Objects.requireNonNull(MemberForm.memberForm.getMemberHisComboBox().getSelectedItem()).toString());
-            CSVReader reader = null;
-            FileReader fileReader = null;
-
-            int currentImported = 0;
-
-            try {
-                MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(true);
-                // 可以解决中文乱码问题
-                DataInputStream in = new DataInputStream(new FileInputStream(file));
-                reader = new CSVReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-                String[] nextLine;
-                PushData.allUser = Collections.synchronizedList(new ArrayList<>());
-                while ((nextLine = reader.readNext()) != null) {
-                    PushData.allUser.add(nextLine);
-                    currentImported++;
-                    MemberForm.memberForm.getMemberTabCountLabel().setText(String.valueOf(currentImported));
-                }
-                MemberForm.memberForm.getMemberTabImportProgressBar().setMaximum(100);
-                MemberForm.memberForm.getMemberTabImportProgressBar().setValue(100);
-                MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(false);
-                JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "导入完成！", "完成",
-                        JOptionPane.INFORMATION_MESSAGE);
-            } catch (Exception e1) {
-                JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "导入失败！\n\n" + e1.getMessage(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
-                logger.error(e1);
-                e1.printStackTrace();
-            } finally {
-                MemberForm.memberForm.getMemberTabImportProgressBar().setMaximum(100);
-                MemberForm.memberForm.getMemberTabImportProgressBar().setValue(100);
-                MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(false);
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException e1) {
-                        logger.error(e1);
-                        e1.printStackTrace();
-                    }
-                }
-            }
-        }));
 
         // 从sql导入 按钮事件
         MemberForm.memberForm.getImportFromSqlButton().addActionListener(e -> ThreadUtil.execute(() -> {

@@ -5,10 +5,12 @@ import cn.hutool.core.swing.ClipboardUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
+import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
 import com.fangxuele.tool.push.util.SystemUtil;
+import com.opencsv.CSVReader;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
@@ -17,10 +19,15 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -201,6 +208,71 @@ public class PushHisListener {
             }
 
         });
+
+        PushHisForm.pushHisForm.getResendFromHisButton().addActionListener(e -> ThreadUtil.execute(() -> {
+
+            List<String> toImportFilePathList = new ArrayList<>();
+            int selectedCount = 0;
+            CSVReader reader = null;
+            try {
+                DefaultTableModel tableModel = (DefaultTableModel) PushHisForm.pushHisForm.getPushHisLeftTable()
+                        .getModel();
+                int rowCount = tableModel.getRowCount();
+                for (int i = 0; i < rowCount; i++) {
+                    boolean selected = (boolean) tableModel.getValueAt(i, 0);
+                    if (selected) {
+                        selectedCount++;
+                        String fileName = (String) tableModel.getValueAt(i, 1);
+                        File msgTemplateDataFile = new File(SystemUtil.configHome + "data" + File.separator + "push_his" + File.separator + fileName);
+                        if (msgTemplateDataFile.exists()) {
+                            toImportFilePathList.add(msgTemplateDataFile.getAbsolutePath());
+                        }
+                    }
+                }
+
+                if (selectedCount > 0) {
+                    MainWindow.mainWindow.getTabbedPane().setSelectedIndex(3);
+                    PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+                    for (String toExportFilePath : toImportFilePathList) {
+                        MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(true);
+                        // 可以解决中文乱码问题
+                        DataInputStream in = new DataInputStream(new FileInputStream(toExportFilePath));
+                        reader = new CSVReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+                        String[] nextLine;
+
+                        while ((nextLine = reader.readNext()) != null) {
+                            PushData.allUser.add(nextLine);
+                            MemberForm.memberForm.getMemberTabCountLabel().setText(String.valueOf(PushData.allUser.size()));
+                        }
+                        MemberForm.memberForm.getMemberTabImportProgressBar().setMaximum(100);
+                        MemberForm.memberForm.getMemberTabImportProgressBar().setValue(100);
+                        MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(false);
+                    }
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "导入完成！", "完成",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "请至少选择一个！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "导入失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            } finally {
+                MemberForm.memberForm.getMemberTabImportProgressBar().setMaximum(100);
+                MemberForm.memberForm.getMemberTabImportProgressBar().setValue(100);
+                MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(false);
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e1) {
+                        logger.error(e1);
+                        e1.printStackTrace();
+                    }
+                }
+            }
+
+        }));
 
     }
 
