@@ -22,6 +22,7 @@ import lombok.Getter;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.util.List;
 
@@ -110,11 +111,12 @@ public class MessageManageForm {
             }
         }
 
-        messageManageForm.getMsgHistable().getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(new JCheckBox()));
-        messageManageForm.getMsgHistable().getColumnModel().getColumn(0).setCellRenderer(new TableInCellCheckBoxRenderer());
+        TableColumnModel tableColumnModel = messageManageForm.getMsgHistable().getColumnModel();
+        tableColumnModel.getColumn(0).setCellEditor(new DefaultCellEditor(new JCheckBox()));
+        tableColumnModel.getColumn(0).setCellRenderer(new TableInCellCheckBoxRenderer());
         // 设置列宽
-        messageManageForm.getMsgHistable().getColumnModel().getColumn(0).setPreferredWidth(50);
-        messageManageForm.getMsgHistable().getColumnModel().getColumn(0).setMaxWidth(50);
+        tableColumnModel.getColumn(0).setPreferredWidth(50);
+        tableColumnModel.getColumn(0).setMaxWidth(50);
     }
 
     {

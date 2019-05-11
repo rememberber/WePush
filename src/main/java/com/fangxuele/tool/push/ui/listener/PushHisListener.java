@@ -5,11 +5,13 @@ import cn.hutool.core.swing.ClipboardUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
+import com.fangxuele.tool.push.dao.TPushHistoryMapper;
+import com.fangxuele.tool.push.domain.TPushHistory;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
-import com.fangxuele.tool.push.util.SystemUtil;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import com.opencsv.CSVReader;
 import org.apache.commons.lang3.StringUtils;
 
@@ -43,6 +45,8 @@ public class PushHisListener {
 
     private static boolean selectAllToggle = false;
 
+    private static TPushHistoryMapper pushHistoryMapper = MybatisUtil.getSqlSession().getMapper(TPushHistoryMapper.class);
+
     public static void addListeners() {
         // 点击左侧表格事件
         PushHisForm.pushHisForm.getPushHisLeftTable().addMouseListener(new MouseAdapter() {
@@ -52,10 +56,10 @@ public class PushHisListener {
                     PushHisForm.pushHisForm.getPushHisTextArea().setText("");
 
                     int selectedRow = PushHisForm.pushHisForm.getPushHisLeftTable().getSelectedRow();
-                    String selectedFileName = PushHisForm.pushHisForm.getPushHisLeftTable()
-                            .getValueAt(selectedRow, 1).toString();
-                    File pushHisFile = new File(SystemUtil.configHome + "data" + File.separator
-                            + "push_his" + File.separator + selectedFileName);
+                    String selectedId = PushHisForm.pushHisForm.getPushHisLeftTable()
+                            .getValueAt(selectedRow, 4).toString();
+                    TPushHistory tPushHistory = pushHistoryMapper.selectByPrimaryKey(Integer.valueOf(selectedId));
+                    File pushHisFile = new File(tPushHistory.getCsvFile());
 
                     try {
                         BufferedReader br = new BufferedReader(new FileReader(pushHisFile));
@@ -114,8 +118,11 @@ public class PushHisListener {
                         for (int i = 0; i < rowCount; ) {
                             boolean delete = (boolean) tableModel.getValueAt(i, 0);
                             if (delete) {
-                                String fileName = (String) tableModel.getValueAt(i, 1);
-                                File msgTemplateDataFile = new File(SystemUtil.configHome + "data" + File.separator + "push_his" + File.separator + fileName);
+                                Integer selectedId = (Integer) tableModel.getValueAt(i, 4);
+
+                                TPushHistory tPushHistory = pushHistoryMapper.selectByPrimaryKey(selectedId);
+
+                                File msgTemplateDataFile = new File(tPushHistory.getCsvFile());
                                 if (msgTemplateDataFile.exists()) {
                                     msgTemplateDataFile.delete();
                                 }
@@ -166,8 +173,9 @@ public class PushHisListener {
                     boolean selected = (boolean) tableModel.getValueAt(i, 0);
                     if (selected) {
                         selectedCount++;
-                        String fileName = (String) tableModel.getValueAt(i, 1);
-                        File msgTemplateDataFile = new File(SystemUtil.configHome + "data" + File.separator + "push_his" + File.separator + fileName);
+                        Integer selectedId = (Integer) tableModel.getValueAt(i, 4);
+                        TPushHistory tPushHistory = pushHistoryMapper.selectByPrimaryKey(selectedId);
+                        File msgTemplateDataFile = new File(tPushHistory.getCsvFile());
                         if (msgTemplateDataFile.exists()) {
                             toExportFilePathList.add(msgTemplateDataFile.getAbsolutePath());
                         }
@@ -209,6 +217,7 @@ public class PushHisListener {
 
         });
 
+        // 重发
         PushHisForm.pushHisForm.getResendFromHisButton().addActionListener(e -> ThreadUtil.execute(() -> {
 
             List<String> toImportFilePathList = new ArrayList<>();
@@ -222,8 +231,9 @@ public class PushHisListener {
                     boolean selected = (boolean) tableModel.getValueAt(i, 0);
                     if (selected) {
                         selectedCount++;
-                        String fileName = (String) tableModel.getValueAt(i, 1);
-                        File msgTemplateDataFile = new File(SystemUtil.configHome + "data" + File.separator + "push_his" + File.separator + fileName);
+                        Integer selectedId = (Integer) tableModel.getValueAt(i, 4);
+                        TPushHistory tPushHistory = pushHistoryMapper.selectByPrimaryKey(selectedId);
+                        File msgTemplateDataFile = new File(tPushHistory.getCsvFile());
                         if (msgTemplateDataFile.exists()) {
                             toImportFilePathList.add(msgTemplateDataFile.getAbsolutePath());
                         }

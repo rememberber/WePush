@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.util.List;
 
@@ -195,20 +196,19 @@ public class MessageEditForm {
             }
             DefaultTableModel model = new DefaultTableModel(cellData, headerNames);
             messageEditForm.getTemplateMsgDataTable().setModel(model);
-            messageEditForm.getTemplateMsgDataTable().getColumnModel().
-                    getColumn(headerNames.length - 1).
+            TableColumnModel tableColumnModel = messageEditForm.getTemplateMsgDataTable().getColumnModel();
+            tableColumnModel.getColumn(headerNames.length - 1).
                     setCellRenderer(new TableInCellButtonColumn(messageEditForm.getTemplateMsgDataTable(), headerNames.length - 1));
-            messageEditForm.getTemplateMsgDataTable().getColumnModel().
-                    getColumn(headerNames.length - 1).
+            tableColumnModel.getColumn(headerNames.length - 1).
                     setCellEditor(new TableInCellButtonColumn(messageEditForm.getTemplateMsgDataTable(), headerNames.length - 1));
 
             // 设置列宽
-            messageEditForm.getTemplateMsgDataTable().getColumnModel().getColumn(0).setPreferredWidth(150);
-            messageEditForm.getTemplateMsgDataTable().getColumnModel().getColumn(0).setMaxWidth(150);
-            messageEditForm.getTemplateMsgDataTable().getColumnModel().getColumn(2).setPreferredWidth(130);
-            messageEditForm.getTemplateMsgDataTable().getColumnModel().getColumn(2).setMaxWidth(130);
-            messageEditForm.getTemplateMsgDataTable().getColumnModel().getColumn(3).setPreferredWidth(130);
-            messageEditForm.getTemplateMsgDataTable().getColumnModel().getColumn(3).setMaxWidth(130);
+            tableColumnModel.getColumn(0).setPreferredWidth(150);
+            tableColumnModel.getColumn(0).setMaxWidth(150);
+            tableColumnModel.getColumn(2).setPreferredWidth(130);
+            tableColumnModel.getColumn(2).setMaxWidth(130);
+            tableColumnModel.getColumn(3).setPreferredWidth(130);
+            tableColumnModel.getColumn(3).setMaxWidth(130);
 
             messageEditForm.getTemplateMsgDataTable().updateUI();
         }
@@ -366,20 +366,19 @@ public class MessageEditForm {
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
         messageEditForm.getTemplateMsgDataTable().setModel(model);
         messageEditForm.getTemplateMsgDataTable().updateUI();
-        messageEditForm.getTemplateMsgDataTable().getColumnModel().
-                getColumn(headerNames.length - 1).
+        TableColumnModel tableColumnModel = messageEditForm.getTemplateMsgDataTable().getColumnModel();
+        tableColumnModel.getColumn(headerNames.length - 1).
                 setCellRenderer(new TableInCellButtonColumn(messageEditForm.getTemplateMsgDataTable(), headerNames.length - 1));
-        messageEditForm.getTemplateMsgDataTable().getColumnModel().
-                getColumn(headerNames.length - 1).
+        tableColumnModel.getColumn(headerNames.length - 1).
                 setCellEditor(new TableInCellButtonColumn(messageEditForm.getTemplateMsgDataTable(), headerNames.length - 1));
 
         // 设置列宽
-        messageEditForm.getTemplateMsgDataTable().getColumnModel().getColumn(0).setPreferredWidth(150);
-        messageEditForm.getTemplateMsgDataTable().getColumnModel().getColumn(0).setMaxWidth(150);
-        messageEditForm.getTemplateMsgDataTable().getColumnModel().getColumn(2).setPreferredWidth(130);
-        messageEditForm.getTemplateMsgDataTable().getColumnModel().getColumn(2).setMaxWidth(130);
-        messageEditForm.getTemplateMsgDataTable().getColumnModel().getColumn(3).setPreferredWidth(130);
-        messageEditForm.getTemplateMsgDataTable().getColumnModel().getColumn(3).setMaxWidth(130);
+        tableColumnModel.getColumn(0).setPreferredWidth(150);
+        tableColumnModel.getColumn(0).setMaxWidth(150);
+        tableColumnModel.getColumn(2).setPreferredWidth(130);
+        tableColumnModel.getColumn(2).setMaxWidth(130);
+        tableColumnModel.getColumn(3).setPreferredWidth(130);
+        tableColumnModel.getColumn(3).setMaxWidth(130);
     }
 
     {

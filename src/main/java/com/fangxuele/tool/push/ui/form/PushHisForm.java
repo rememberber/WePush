@@ -4,6 +4,7 @@ import com.fangxuele.tool.push.dao.TPushHistoryMapper;
 import com.fangxuele.tool.push.domain.TPushHistory;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.component.TableInCellCheckBoxRenderer;
+import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -12,6 +13,8 @@ import lombok.Getter;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.util.List;
 
@@ -44,26 +47,34 @@ public class PushHisForm {
      */
     public static void init() {
         // 导入历史管理
-        String[] headerNames = {"选择", "消息名称", "状态", "时间"};
+        String[] headerNames = {"选择", "消息名称", "状态", "时间", "id"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
         pushHisForm.getPushHisLeftTable().setModel(model);
 
         List<TPushHistory> pushHistoryList = pushHistoryMapper.selectByMsgType(Init.config.getMsgType());
         Object[] data;
         for (TPushHistory tPushHistory : pushHistoryList) {
-            data = new Object[4];
+            data = new Object[5];
             data[0] = false;
             data[1] = tPushHistory.getMsgName();
             data[2] = tPushHistory.getResult();
             data[3] = tPushHistory.getCreateTime();
+            data[4] = tPushHistory.getId();
             model.addRow(data);
         }
 
-        pushHisForm.getPushHisLeftTable().getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(new JCheckBox()));
-        pushHisForm.getPushHisLeftTable().getColumnModel().getColumn(0).setCellRenderer(new TableInCellCheckBoxRenderer());
+        TableColumnModel tableColumnModel = pushHisForm.getPushHisLeftTable().getColumnModel();
+
+        TableColumn tableColumn0 = tableColumnModel.getColumn(0);
+
+        tableColumn0.setCellEditor(new DefaultCellEditor(new JCheckBox()));
+        tableColumn0.setCellRenderer(new TableInCellCheckBoxRenderer());
         // 设置列宽
-        pushHisForm.getPushHisLeftTable().getColumnModel().getColumn(0).setPreferredWidth(60);
-        pushHisForm.getPushHisLeftTable().getColumnModel().getColumn(0).setMaxWidth(100);
+        tableColumn0.setPreferredWidth(60);
+        tableColumn0.setMaxWidth(100);
+
+        // 隐藏id列
+        JTableUtil.hideColumn(pushHisForm.getPushHisLeftTable(), 4);
     }
 
     {
