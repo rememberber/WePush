@@ -1,18 +1,19 @@
 package com.fangxuele.tool.push.ui.form;
 
+import com.fangxuele.tool.push.dao.TPushHistoryMapper;
+import com.fangxuele.tool.push.domain.TPushHistory;
+import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.component.TableInCellCheckBoxRenderer;
-import com.fangxuele.tool.push.util.SystemUtil;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import lombok.Getter;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.io.File;
-import java.util.Objects;
+import java.util.List;
 
 /**
  * <pre>
@@ -36,45 +37,33 @@ public class PushHisForm {
 
     public static PushHisForm pushHisForm = new PushHisForm();
 
-    public PushHisForm() {
-
-    }
+    private static TPushHistoryMapper pushHistoryMapper = MybatisUtil.getSqlSession().getMapper(TPushHistoryMapper.class);
 
     /**
      * 初始化推送历史tab
      */
     public static void init() {
         // 导入历史管理
-        String[] headerNames = {"选择", "文件名称"};
+        String[] headerNames = {"选择", "消息名称", "状态", "时间"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
         pushHisForm.getPushHisLeftTable().setModel(model);
 
-        // 隐藏表头
-        pushHisForm.getPushHisLeftTable().getTableHeader().setVisible(false);
-        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-        renderer.setPreferredSize(new Dimension(0, 0));
-        pushHisForm.getPushHisLeftTable().getTableHeader().setDefaultRenderer(renderer);
-
-        File pushHisDir = new File(SystemUtil.configHome + "data" + File.separator + "push_his");
-        if (!pushHisDir.exists()) {
-            pushHisDir.mkdirs();
-        }
-
-        File[] files = pushHisDir.listFiles();
+        List<TPushHistory> pushHistoryList = pushHistoryMapper.selectByMsgType(Init.config.getMsgType());
         Object[] data;
-        if (Objects.requireNonNull(files).length > 0) {
-            for (File file : files) {
-                data = new Object[2];
-                data[0] = false;
-                data[1] = file.getName();
-                model.addRow(data);
-            }
+        for (TPushHistory tPushHistory : pushHistoryList) {
+            data = new Object[4];
+            data[0] = false;
+            data[1] = tPushHistory.getMsgName();
+            data[2] = tPushHistory.getResult();
+            data[3] = tPushHistory.getCreateTime();
+            model.addRow(data);
         }
+
         pushHisForm.getPushHisLeftTable().getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(new JCheckBox()));
         pushHisForm.getPushHisLeftTable().getColumnModel().getColumn(0).setCellRenderer(new TableInCellCheckBoxRenderer());
         // 设置列宽
-        pushHisForm.getPushHisLeftTable().getColumnModel().getColumn(0).setPreferredWidth(30);
-        pushHisForm.getPushHisLeftTable().getColumnModel().getColumn(0).setMaxWidth(30);
+        pushHisForm.getPushHisLeftTable().getColumnModel().getColumn(0).setPreferredWidth(60);
+        pushHisForm.getPushHisLeftTable().getColumnModel().getColumn(0).setMaxWidth(100);
     }
 
     {
@@ -105,8 +94,8 @@ public class PushHisForm {
         pushHisPanel.add(splitPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
-        panel2.setMinimumSize(new Dimension(50, 24));
-        panel2.setPreferredSize(new Dimension(460, 24));
+        panel2.setMinimumSize(new Dimension(100, 24));
+        panel2.setPreferredSize(new Dimension(740, 24));
         splitPane1.setLeftComponent(panel2);
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new GridLayoutManager(1, 5, new Insets(0, 10, 0, 0), -1, -1));

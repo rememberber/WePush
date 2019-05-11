@@ -36,8 +36,8 @@
                   <splitpane position="left"/>
                 </constraints>
                 <properties>
-                  <minimumSize width="50" height="24"/>
-                  <preferredSize width="460" height="24"/>
+                  <minimumSize width="100" height="24"/>
+                  <preferredSize width="740" height="24"/>
                 </properties>
                 <border type="none"/>
                 <children>

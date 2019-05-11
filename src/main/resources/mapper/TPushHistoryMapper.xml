@@ -126,4 +126,11 @@
             modified_time = #{modifiedTime,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>
+
+    <select id="selectByMsgType" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_push_history
+        where msg_type = #{msgType,jdbcType=INTEGER}
+    </select>
 </mapper>
