@@ -3,6 +3,7 @@
 <mapper namespace="com.fangxuele.tool.push.dao.TTemplateDataMapper">
     <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TTemplateData">
         <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="msg_type" jdbcType="INTEGER" property="msgType"/>
         <result column="msg_id" jdbcType="INTEGER" property="msgId"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="value" jdbcType="VARCHAR" property="value"/>
@@ -11,7 +12,7 @@
         <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, msg_id, name, value, color, create_time, modified_time
+        id, msg_type, msg_id, name, value, color, create_time, modified_time
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -25,18 +26,21 @@
         where id = #{id,jdbcType=INTEGER}
     </delete>
     <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TTemplateData">
-        insert into t_template_data (id, msg_id, name,
-                                     value, color, create_time,
-                                     modified_time)
-        values (#{id,jdbcType=INTEGER}, #{msgId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR},
-                #{value,jdbcType=VARCHAR}, #{color,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR},
-                #{modifiedTime,jdbcType=VARCHAR})
+        insert into t_template_data (id, msg_type, msg_id,
+                                     name, value, color,
+                                     create_time, modified_time)
+        values (#{id,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER}, #{msgId,jdbcType=INTEGER},
+                #{name,jdbcType=VARCHAR}, #{value,jdbcType=VARCHAR}, #{color,jdbcType=VARCHAR},
+                #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TTemplateData">
         insert into t_template_data
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
                 id,
+            </if>
+            <if test="msgType != null">
+                msg_type,
             </if>
             <if test="msgId != null">
                 msg_id,
@@ -61,6 +65,9 @@
             <if test="id != null">
                 #{id,jdbcType=INTEGER},
             </if>
+            <if test="msgType != null">
+                #{msgType,jdbcType=INTEGER},
+            </if>
             <if test="msgId != null">
                 #{msgId,jdbcType=INTEGER},
             </if>
@@ -84,6 +91,9 @@
     <update id="updateByPrimaryKeySelective" parameterType="com.fangxuele.tool.push.domain.TTemplateData">
         update t_template_data
         <set>
+            <if test="msgType != null">
+                msg_type = #{msgType,jdbcType=INTEGER},
+            </if>
             <if test="msgId != null">
                 msg_id = #{msgId,jdbcType=INTEGER},
             </if>
@@ -107,7 +117,8 @@
     </update>
     <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TTemplateData">
         update t_template_data
-        set msg_id        = #{msgId,jdbcType=INTEGER},
+        set msg_type      = #{msgType,jdbcType=INTEGER},
+            msg_id        = #{msgId,jdbcType=INTEGER},
             name          = #{name,jdbcType=VARCHAR},
             value         = #{value,jdbcType=VARCHAR},
             color         = #{color,jdbcType=VARCHAR},
@@ -115,15 +126,17 @@
             modified_time = #{modifiedTime,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>
-    <select id="selectByMsgId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <select id="selectByMsgTypeAndMsgId" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from t_template_data
         where msg_id = #{msgId,jdbcType=INTEGER}
+        and msg_type = #{msgType,jdbcType=INTEGER}
     </select>
-    <delete id="deleteByMsgId" parameterType="java.lang.Integer">
+    <delete id="deleteByMsgTypeAndMsgId">
         delete
         from t_template_data
         where msg_id = #{msgId,jdbcType=INTEGER}
+          and msg_type = #{msgType,jdbcType=INTEGER}
     </delete>
 </mapper>

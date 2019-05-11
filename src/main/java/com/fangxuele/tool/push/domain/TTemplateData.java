@@ -5,6 +5,8 @@ import java.io.Serializable;
 public class TTemplateData implements Serializable {
     private Integer id;
 
+    private Integer msgType;
+
     private Integer msgId;
 
     private String name;
@@ -25,6 +27,14 @@ public class TTemplateData implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getMsgType() {
+        return msgType;
+    }
+
+    public void setMsgType(Integer msgType) {
+        this.msgType = msgType;
     }
 
     public Integer getMsgId() {

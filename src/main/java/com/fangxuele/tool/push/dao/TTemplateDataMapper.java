@@ -1,6 +1,7 @@
 package com.fangxuele.tool.push.dao;
 
 import com.fangxuele.tool.push.domain.TTemplateData;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public interface TTemplateDataMapper {
 
     int updateByPrimaryKey(TTemplateData record);
 
-    List<TTemplateData> selectByMsgId(int msgId);
+    List<TTemplateData> selectByMsgTypeAndMsgId(@Param("msgType") int msgType, @Param("msgId") int msgId);
 
-    int deleteByMsgId(int msgId);
+    int deleteByMsgTypeAndMsgId(@Param("msgType") int msgType, @Param("msgId") int msgId);
 }

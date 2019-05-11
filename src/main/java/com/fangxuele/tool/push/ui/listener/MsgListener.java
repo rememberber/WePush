@@ -348,7 +348,7 @@ public class MsgListener {
 
                         // 如果是覆盖保存，则先清空之前的模板数据
                         if (existSameMsg) {
-                            templateDataMapper.deleteByMsgId(msgId);
+                            templateDataMapper.deleteByMsgTypeAndMsgId(msgType, msgId);
                         }
 
                         // 如果table为空，则初始化
@@ -366,6 +366,7 @@ public class MsgListener {
                             String color = ((String) tableModel.getValueAt(i, 2)).trim();
 
                             TTemplateData tTemplateData = new TTemplateData();
+                            tTemplateData.setMsgType(msgType);
                             tTemplateData.setMsgId(msgId);
                             tTemplateData.setName(name);
                             tTemplateData.setValue(value);

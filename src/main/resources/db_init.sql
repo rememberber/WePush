@@ -101,6 +101,7 @@ create table if not exists t_template_data
     id            integer
         constraint t_template_data_ma_pk
             primary key autoincrement,
+    msg_type      integer,
     msg_id        integer,
     name          text,
     value         text,

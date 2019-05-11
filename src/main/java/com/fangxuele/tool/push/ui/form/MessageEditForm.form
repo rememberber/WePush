@@ -334,8 +334,8 @@
                 </constraints>
                 <properties>
                   <model>
-                    <item value="文本消息"/>
                     <item value="图文消息"/>
+                    <item value="文本消息"/>
                   </model>
                 </properties>
               </component>

@@ -185,7 +185,7 @@ public class MessageEditForm {
         }
         if (msgType != MessageTypeEnum.KEFU_CODE) {
             // 模板消息Data表
-            List<TTemplateData> templateDataList = templateDataMapper.selectByMsgId(msgId);
+            List<TTemplateData> templateDataList = templateDataMapper.selectByMsgTypeAndMsgId(msgType, msgId);
             String[] headerNames = {"Name", "Value", "Color", "操作"};
             Object[][] cellData = new String[templateDataList.size()][headerNames.length];
             for (int i = 0; i < templateDataList.size(); i++) {
@@ -230,10 +230,10 @@ public class MessageEditForm {
         messageEditForm.getMsgTemplateMiniPagePathTextField().setText("");
         messageEditForm.getMsgTemplateKeyWordTextField().setText("");
         messageEditForm.getMsgYunpianMsgContentTextField().setText("");
-        messageEditForm.getPreviewUserField().setText("");
         messageEditForm.getTemplateDataNameTextField().setText("");
         messageEditForm.getTemplateDataValueTextField().setText("");
         messageEditForm.getTemplateDataColorTextField().setText("");
+        messageEditForm.getPreviewUserField().setText("");
         initTemplateDataTable();
     }
 
