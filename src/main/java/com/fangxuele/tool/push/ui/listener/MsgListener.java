@@ -416,9 +416,10 @@ public class MsgListener {
         });
 
         // 编辑消息-新建
-        MessageEditForm.messageEditForm.getCreateMsgButton().addActionListener(e -> {
+        MessageManageForm.messageManageForm.getCreateMsgButton().addActionListener(e -> {
             MessageEditForm.clearAllField();
             MessageEditForm.initTemplateDataTable();
+            MessageEditForm.messageEditForm.getMsgNameField().grabFocus();
         });
     }
 
