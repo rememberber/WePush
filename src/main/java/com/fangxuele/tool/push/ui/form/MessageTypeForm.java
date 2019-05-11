@@ -33,6 +33,11 @@ public class MessageTypeForm {
     private JRadioButton hwYunRadioButton;
     private JRadioButton eMailRadioButton;
     private JPanel panel2;
+    private JRadioButton 网易云信短信RadioButton;
+    private JRadioButton 榛子云短信RadioButton;
+    private JRadioButton luosimao短信RadioButton;
+    private JRadioButton 极光短信RadioButton;
+    private JRadioButton 极光推送RadioButton;
 
     public static MessageTypeForm messageTypeForm = new MessageTypeForm();
 
@@ -121,8 +126,8 @@ public class MessageTypeForm {
         scrollPane1.setAutoscrolls(true);
         messageTypePanel.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(12, 2, new Insets(20, 20, 0, 0), -1, -1));
-        panel2.setAutoscrolls(true);
+        panel2.setLayout(new GridLayoutManager(17, 2, new Insets(20, 20, 0, 0), -1, -1));
+        panel2.setAutoscrolls(false);
         scrollPane1.setViewportView(panel2);
         mpTemplateRadioButton = new JRadioButton();
         mpTemplateRadioButton.setEnabled(true);
@@ -131,7 +136,7 @@ public class MessageTypeForm {
         final Spacer spacer1 = new Spacer();
         panel2.add(spacer1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
-        panel2.add(spacer2, new GridConstraints(11, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        panel2.add(spacer2, new GridConstraints(16, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         maTemplateRadioButton = new JRadioButton();
         maTemplateRadioButton.setText("小程序-模板消息");
         panel2.add(maTemplateRadioButton, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -164,7 +169,27 @@ public class MessageTypeForm {
         eMailRadioButton = new JRadioButton();
         eMailRadioButton.setEnabled(false);
         eMailRadioButton.setText("E-Mail");
-        panel2.add(eMailRadioButton, new GridConstraints(10, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel2.add(eMailRadioButton, new GridConstraints(15, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        网易云信短信RadioButton = new JRadioButton();
+        网易云信短信RadioButton.setEnabled(false);
+        网易云信短信RadioButton.setText("网易云信短信");
+        panel2.add(网易云信短信RadioButton, new GridConstraints(10, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        榛子云短信RadioButton = new JRadioButton();
+        榛子云短信RadioButton.setEnabled(false);
+        榛子云短信RadioButton.setText("榛子云短信");
+        panel2.add(榛子云短信RadioButton, new GridConstraints(11, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        luosimao短信RadioButton = new JRadioButton();
+        luosimao短信RadioButton.setEnabled(false);
+        luosimao短信RadioButton.setText("Luosimao短信");
+        panel2.add(luosimao短信RadioButton, new GridConstraints(12, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        极光短信RadioButton = new JRadioButton();
+        极光短信RadioButton.setEnabled(false);
+        极光短信RadioButton.setText("极光短信");
+        panel2.add(极光短信RadioButton, new GridConstraints(13, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        极光推送RadioButton = new JRadioButton();
+        极光推送RadioButton.setEnabled(false);
+        极光推送RadioButton.setText("极光推送");
+        panel2.add(极光推送RadioButton, new GridConstraints(14, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
