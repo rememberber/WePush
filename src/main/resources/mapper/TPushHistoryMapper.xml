@@ -132,5 +132,6 @@
         <include refid="Base_Column_List"/>
         from t_push_history
         where msg_type = #{msgType,jdbcType=INTEGER}
+        order by create_time desc
     </select>
 </mapper>
