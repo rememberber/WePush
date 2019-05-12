@@ -8,11 +8,14 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.RunPushThread;
 import com.fangxuele.tool.push.ui.Init;
+import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
@@ -224,14 +227,18 @@ public class PushListener {
             }
         })));
 
-        // 每页分配用户数失去焦点
+        // 线程池数失去焦点
         PushForm.pushForm.getMaxThreadPoolTextField().addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
                 try {
-                    if (PushData.allUser != null && PushData.allUser.size() > 0) {
-                        refreshPushInfo();
+                    if (Integer.parseInt(PushForm.pushForm.getMaxThreadPoolTextField().getText()) > 1000) {
+                        JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "最大输入1000", "提示",
+                                JOptionPane.INFORMATION_MESSAGE);
+                        PushForm.pushForm.getMaxThreadPoolTextField().setText("1000");
                     }
+                    PushForm.pushForm.getThreadCountSlider().setMaximum(Integer.parseInt(PushForm.pushForm.getMaxThreadPoolTextField().getText()));
+                    refreshPushInfo();
                 } catch (Exception e1) {
                     logger.error(e1);
                 } finally {
@@ -240,55 +247,34 @@ public class PushListener {
             }
         });
 
-        // 每页分配用户数键入回车
+        // 线程池数键入回车
         PushForm.pushForm.getMaxThreadPoolTextField().addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    try {
-                        if (PushData.allUser != null && PushData.allUser.size() > 0) {
-                            refreshPushInfo();
-                        }
-                    } catch (Exception e1) {
-                        logger.error(e1);
-                    } finally {
-                        super.keyPressed(e);
-                    }
-                }
-            }
-        });
-
-        // 每个线程分配的页数失去焦点
-        PushForm.pushForm.getThreadCountTextField().addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusLost(FocusEvent e) {
                 try {
-                    if (PushData.allUser != null && PushData.allUser.size() > 0) {
-                        refreshPushInfo();
+                    if (Integer.parseInt(PushForm.pushForm.getMaxThreadPoolTextField().getText()) > 1000) {
+                        JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "最大输入1000", "提示",
+                                JOptionPane.INFORMATION_MESSAGE);
+                        PushForm.pushForm.getMaxThreadPoolTextField().setText("1000");
                     }
+                    PushForm.pushForm.getThreadCountSlider().setMaximum(Integer.parseInt(PushForm.pushForm.getMaxThreadPoolTextField().getText()));
+                    refreshPushInfo();
                 } catch (Exception e1) {
                     logger.error(e1);
                 } finally {
-                    super.focusLost(e);
+                    super.keyPressed(e);
                 }
             }
         });
 
-        // 每个线程分配的页数键入回车
-        PushForm.pushForm.getThreadCountTextField().addKeyListener(new KeyAdapter() {
+        // 线程数滑块
+        PushForm.pushForm.getThreadCountSlider().addChangeListener(new ChangeListener() {
             @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    try {
-                        if (PushData.allUser != null && PushData.allUser.size() > 0) {
-                            refreshPushInfo();
-                        }
-                    } catch (Exception e1) {
-                        logger.error(e1);
-                    } finally {
-                        super.keyPressed(e);
-                    }
-                }
+            public void stateChanged(ChangeEvent e) {
+                int slideValue = PushForm.pushForm.getThreadCountSlider().getValue();
+                PushForm.pushForm.getThreadCountTextField().setText(String.valueOf(slideValue));
+                Init.config.setThreadCount(slideValue);
+                refreshPushInfo();
             }
         });
 
