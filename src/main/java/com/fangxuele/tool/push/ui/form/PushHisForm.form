@@ -105,8 +105,9 @@
                           <alignmentX value="0.5"/>
                           <autoResizeMode value="2"/>
                           <doubleBuffered value="true"/>
+                          <gridColor color="-12236470"/>
                           <intercellSpacing width="1" height="1"/>
-                          <rowHeight value="40"/>
+                          <rowHeight value="46"/>
                         </properties>
                       </component>
                     </children>

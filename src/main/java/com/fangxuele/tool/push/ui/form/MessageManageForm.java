@@ -13,6 +13,7 @@ import com.fangxuele.tool.push.domain.TMsgSms;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.component.TableInCellCheckBoxRenderer;
+import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -20,7 +21,6 @@ import com.intellij.uiDesigner.core.Spacer;
 import lombok.Getter;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
@@ -60,10 +60,7 @@ public class MessageManageForm {
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
         messageManageForm.getMsgHistable().setModel(model);
         // 隐藏表头
-        messageManageForm.getMsgHistable().getTableHeader().setVisible(false);
-        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-        renderer.setPreferredSize(new Dimension(0, 0));
-        messageManageForm.getMsgHistable().getTableHeader().setDefaultRenderer(renderer);
+        JTableUtil.hideTableHeader(messageManageForm.getMsgHistable());
 
         int msgType = Init.config.getMsgType();
 
@@ -146,7 +143,7 @@ public class MessageManageForm {
         messageManagePanel.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         msgHistable = new JTable();
         msgHistable.setGridColor(new Color(-12236470));
-        msgHistable.setRowHeight(40);
+        msgHistable.setRowHeight(46);
         scrollPane1.setViewportView(msgHistable);
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 4, new Insets(0, 0, 0, 0), -1, -1));

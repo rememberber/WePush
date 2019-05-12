@@ -14,6 +14,7 @@ import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.util.CharSetUtil;
 import com.fangxuele.tool.push.util.DbUtilMySQL;
+import com.fangxuele.tool.push.util.JTableUtil;
 import com.opencsv.CSVReader;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
@@ -29,7 +30,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-import java.awt.*;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
@@ -87,10 +87,7 @@ public class MemberListener {
                 hr.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
 
                 // 隐藏表头
-                MemberForm.memberForm.getMemberListTable().getTableHeader().setVisible(false);
-                DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-                renderer.setPreferredSize(new Dimension(0, 0));
-                MemberForm.memberForm.getMemberListTable().getTableHeader().setDefaultRenderer(renderer);
+                JTableUtil.hideTableHeader(MemberForm.memberForm.getMemberListTable());
 
                 Object[] data;
 

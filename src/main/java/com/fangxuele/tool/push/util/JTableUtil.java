@@ -1,7 +1,9 @@
 package com.fangxuele.tool.push.util;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+import java.awt.*;
 
 /**
  * <pre>
@@ -27,5 +29,17 @@ public class JTableUtil {
 
         table.getTableHeader().getColumnModel().getColumn(index).setMaxWidth(0);
         table.getTableHeader().getColumnModel().getColumn(index).setMinWidth(0);
+    }
+
+    /**
+     * 隐藏表头
+     *
+     * @param table
+     */
+    public static void hideTableHeader(JTable table) {
+        table.getTableHeader().setVisible(false);
+        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+        renderer.setPreferredSize(new Dimension(0, 0));
+        table.getTableHeader().setDefaultRenderer(renderer);
     }
 }

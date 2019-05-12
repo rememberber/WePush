@@ -45,7 +45,8 @@
                   <component id="f633e" class="javax.swing.JTable" binding="memberListTable">
                     <constraints/>
                     <properties>
-                      <rowHeight value="40"/>
+                      <gridColor color="-12236470"/>
+                      <rowHeight value="46"/>
                     </properties>
                   </component>
                 </children>
