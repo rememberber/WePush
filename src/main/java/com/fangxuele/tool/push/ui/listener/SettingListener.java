@@ -7,6 +7,7 @@ import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.util.DbUtilMySQL;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.sql.Connection;
@@ -137,11 +138,18 @@ public class SettingListener {
         // mysql数据库-测试链接
         SettingForm.settingForm.getSettingTestDbLinkButton().addActionListener(e -> {
             try {
-                DbUtilMySQL dbMySQL = DbUtilMySQL.getInstance();
                 String dbUrl = SettingForm.settingForm.getMysqlUrlTextField().getText();
                 String dbName = SettingForm.settingForm.getMysqlDatabaseTextField().getText();
                 String dbUser = SettingForm.settingForm.getMysqlUserTextField().getText();
                 String dbPassword = new String(SettingForm.settingForm.getMysqlPasswordField().getPassword());
+                if (StringUtils.isEmpty(dbUrl) || StringUtils.isEmpty(dbName)
+                        || StringUtils.isEmpty(dbUser) || StringUtils.isEmpty(dbPassword)) {
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
+                            "请先在设置中填写并保存MySQL数据库相关配置！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+                DbUtilMySQL dbMySQL = DbUtilMySQL.getInstance();
                 Connection conn = dbMySQL.testConnection(dbUrl, dbName, dbUser, dbPassword);
                 if (conn == null) {
                     JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "连接失败", "失败",

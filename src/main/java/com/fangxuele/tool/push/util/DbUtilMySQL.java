@@ -3,10 +3,7 @@ package com.fangxuele.tool.push.util;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.ui.Init;
-import com.fangxuele.tool.push.ui.form.MainWindow;
-import org.apache.commons.lang3.StringUtils;
 
-import javax.swing.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -64,14 +61,6 @@ public class DbUtilMySQL {
             DBName = Init.config.getMysqlDatabase();
             DBUser = Init.config.getMysqlUser();
             DBPassword = Init.config.getMysqlPassword();
-
-            if (StringUtils.isEmpty(DBUrl) || StringUtils.isEmpty(DBName)
-                    || StringUtils.isEmpty(DBUser) || StringUtils.isEmpty(DBPassword)) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
-                        "请先在设置中填写并保存MySQL数据库相关配置！", "提示",
-                        JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
 
             Class.forName(dbclassname);
         } catch (Exception e) {

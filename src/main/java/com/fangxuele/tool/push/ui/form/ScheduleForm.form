@@ -98,6 +98,7 @@
             </constraints>
             <properties>
               <horizontalAlignment value="0"/>
+              <icon value="icon/menu-saveall_dark.png"/>
               <text value="保存"/>
             </properties>
           </component>
