@@ -74,15 +74,15 @@ public class MemberForm {
     private void $$$setupUI$$$() {
         memberPanel = new JPanel();
         memberPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        memberPanel.setMinimumSize(new Dimension(1200, 738));
+        memberPanel.setMinimumSize(new Dimension(1280, 738));
         memberPanel.setOpaque(true);
-        memberPanel.setPreferredSize(new Dimension(1200, 738));
+        memberPanel.setPreferredSize(new Dimension(1280, 738));
         final JSplitPane splitPane1 = new JSplitPane();
         splitPane1.setContinuousLayout(true);
-        splitPane1.setDividerLocation(720);
+        splitPane1.setDividerLocation(800);
         splitPane1.setDividerSize(4);
         splitPane1.setDoubleBuffered(true);
-        splitPane1.setLastDividerLocation(700);
+        splitPane1.setLastDividerLocation(720);
         memberPanel.add(splitPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));

@@ -3,12 +3,12 @@
   <grid id="27dc6" binding="memberPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="1200" height="738"/>
+      <xy x="20" y="20" width="1280" height="738"/>
     </constraints>
     <properties>
-      <minimumSize width="1200" height="738"/>
+      <minimumSize width="1280" height="738"/>
       <opaque value="true"/>
-      <preferredSize width="1200" height="738"/>
+      <preferredSize width="1280" height="738"/>
     </properties>
     <border type="none"/>
     <children>
@@ -20,10 +20,10 @@
         </constraints>
         <properties>
           <continuousLayout value="true"/>
-          <dividerLocation value="720"/>
+          <dividerLocation value="800"/>
           <dividerSize value="4"/>
           <doubleBuffered value="true"/>
-          <lastDividerLocation value="700"/>
+          <lastDividerLocation value="720"/>
         </properties>
         <border type="none"/>
         <children>
