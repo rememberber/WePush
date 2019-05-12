@@ -165,16 +165,19 @@ public class PushForm {
         pushControlPanel.add(label5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         maxThreadPoolTextField = new JTextField();
         maxThreadPoolTextField.setHorizontalAlignment(10);
-        maxThreadPoolTextField.setMargin(new Insets(2, 3, 2, 5));
+        maxThreadPoolTextField.setMargin(new Insets(2, 5, 2, 5));
         maxThreadPoolTextField.setRequestFocusEnabled(true);
+        maxThreadPoolTextField.setToolTipText("输入结束后请按回车键确认");
         pushControlPanel.add(maxThreadPoolTextField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(60, -1), null, 0, false));
         final JLabel label6 = new JLabel();
         label6.setText("线程数");
+        label6.setToolTipText("当前版本受http连接池限制建议不要设置过多线程，推荐100以内");
         pushControlPanel.add(label6, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         threadCountTextField = new JTextField();
         threadCountTextField.setEditable(false);
         threadCountTextField.setFocusable(false);
         threadCountTextField.setRequestFocusEnabled(false);
+        threadCountTextField.setToolTipText("当前版本受http连接池限制建议不要设置过多线程，推荐100以内");
         pushControlPanel.add(threadCountTextField, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(60, -1), null, 0, false));
         ScheduleRunButton = new JButton();
         ScheduleRunButton.setIcon(new ImageIcon(getClass().getResource("/icon/clock.png")));
@@ -191,6 +194,7 @@ public class PushForm {
         pushControlPanel.add(pushStartButton, new GridConstraints(0, 9, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         dryRunCheckBox = new JCheckBox();
         dryRunCheckBox.setText("空跑");
+        dryRunCheckBox.setToolTipText("空跑勾选时不会真实发送消息");
         pushControlPanel.add(dryRunCheckBox, new GridConstraints(0, 6, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
         pushControlPanel.add(spacer1, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));

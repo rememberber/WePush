@@ -59,6 +59,7 @@ public class AboutForm {
         qrCodeLabel = new JLabel();
         qrCodeLabel.setIcon(new ImageIcon(getClass().getResource("/icon/weixin-qrcode.png")));
         qrCodeLabel.setText("");
+        qrCodeLabel.setToolTipText("感谢您的鼓励和支持！");
         aboutPanel.add(qrCodeLabel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         versionLabel = new JLabel();
         Font versionLabelFont = this.$$$getFont$$$("Microsoft YaHei UI", -1, -1, versionLabel.getFont());

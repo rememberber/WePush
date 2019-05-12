@@ -140,6 +140,11 @@
             </constraints>
             <properties/>
           </component>
+          <hspacer id="4a6f9">
+            <constraints>
+              <grid row="3" column="1" row-span="1" col-span="6" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+          </hspacer>
         </children>
       </grid>
     </children>

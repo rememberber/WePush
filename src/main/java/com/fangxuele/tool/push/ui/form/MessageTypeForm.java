@@ -144,7 +144,8 @@ public class MessageTypeForm {
         kefuRadioButton.setText("公众号-客服消息");
         panel2.add(kefuRadioButton, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         kefuPriorityRadioButton = new JRadioButton();
-        kefuPriorityRadioButton.setText("公众号-客服消息优先(优先尝试发送客服消息，失败后则发送模板消息)");
+        kefuPriorityRadioButton.setText("公众号-客服消息优先");
+        kefuPriorityRadioButton.setToolTipText("优先尝试发送客服消息，如果失败则发送模板消息");
         panel2.add(kefuPriorityRadioButton, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         aliYunRadioButton = new JRadioButton();
         aliYunRadioButton.setText("阿里云短信");

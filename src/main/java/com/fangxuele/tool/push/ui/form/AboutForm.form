@@ -42,6 +42,7 @@
         <properties>
           <icon value="icon/weixin-qrcode.png"/>
           <text value=""/>
+          <toolTipText value="感谢您的鼓励和支持！"/>
         </properties>
       </component>
       <component id="68142" class="javax.swing.JLabel" binding="versionLabel">

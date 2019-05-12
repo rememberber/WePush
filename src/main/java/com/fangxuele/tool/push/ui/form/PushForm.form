@@ -214,8 +214,9 @@
                     </constraints>
                     <properties>
                       <horizontalAlignment value="10"/>
-                      <margin top="2" left="3" bottom="2" right="5"/>
+                      <margin top="2" left="5" bottom="2" right="5"/>
                       <requestFocusEnabled value="true"/>
+                      <toolTipText value="输入结束后请按回车键确认"/>
                     </properties>
                   </component>
                   <component id="37c19" class="javax.swing.JLabel">
@@ -224,6 +225,7 @@
                     </constraints>
                     <properties>
                       <text value="线程数"/>
+                      <toolTipText value="当前版本受http连接池限制建议不要设置过多线程，推荐100以内"/>
                     </properties>
                   </component>
                   <component id="e020b" class="javax.swing.JTextField" binding="threadCountTextField">
@@ -236,6 +238,7 @@
                       <editable value="false"/>
                       <focusable value="false"/>
                       <requestFocusEnabled value="false"/>
+                      <toolTipText value="当前版本受http连接池限制建议不要设置过多线程，推荐100以内"/>
                     </properties>
                   </component>
                   <component id="56a74" class="javax.swing.JButton" binding="ScheduleRunButton">
@@ -272,6 +275,7 @@
                     </constraints>
                     <properties>
                       <text value="空跑"/>
+                      <toolTipText value="空跑勾选时不会真实发送消息"/>
                     </properties>
                   </component>
                   <hspacer id="e90d0">

@@ -62,7 +62,8 @@
                   <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="公众号-客服消息优先(优先尝试发送客服消息，失败后则发送模板消息)"/>
+                  <text value="公众号-客服消息优先"/>
+                  <toolTipText value="优先尝试发送客服消息，如果失败则发送模板消息"/>
                 </properties>
               </component>
               <component id="3ba39" class="javax.swing.JRadioButton" binding="aliYunRadioButton">

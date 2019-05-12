@@ -142,6 +142,7 @@
                 </constraints>
                 <properties>
                   <text value="SELECT openid FROM"/>
+                  <toolTipText value="只要查询出的结果集只有一列openid（短信时对应的是手机号）就可以，列名不重要"/>
                 </properties>
               </component>
               <component id="dc69" class="javax.swing.JButton" binding="importFromSqlButton">

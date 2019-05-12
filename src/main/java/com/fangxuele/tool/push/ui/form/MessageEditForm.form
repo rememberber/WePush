@@ -36,6 +36,7 @@
                   <font style="1"/>
                   <labelFor value="5135c"/>
                   <text value="消息名称"/>
+                  <toolTipText value="给本次推送任务起个名字"/>
                 </properties>
               </component>
               <component id="5135c" class="javax.swing.JTextField" binding="msgNameField">
@@ -44,7 +45,9 @@
                     <preferred-size width="150" height="-1"/>
                   </grid>
                 </constraints>
-                <properties/>
+                <properties>
+                  <toolTipText value="给本次推送任务起个名字"/>
+                </properties>
               </component>
             </children>
           </grid>
@@ -150,6 +153,7 @@
                     <properties>
                       <labelFor value="e84d1"/>
                       <text value="name"/>
+                      <toolTipText value="当消息类型是模板消息时的示例：first或者keyword1或者remark之类的"/>
                     </properties>
                   </component>
                   <component id="e84d1" class="javax.swing.JTextField" binding="templateDataNameTextField">
@@ -158,7 +162,9 @@
                         <preferred-size width="150" height="-1"/>
                       </grid>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <toolTipText value="当消息类型是模板消息时的示例：first或者keyword1或者remark之类的"/>
+                    </properties>
                   </component>
                   <component id="623c9" class="javax.swing.JLabel" binding="templateMsgValueLabel">
                     <constraints>
@@ -184,6 +190,7 @@
                     <properties>
                       <labelFor value="d59db"/>
                       <text value="color"/>
+                      <toolTipText value="示例值：FF0000"/>
                     </properties>
                   </component>
                   <component id="d59db" class="javax.swing.JTextField" binding="templateDataColorTextField">
@@ -192,7 +199,9 @@
                         <preferred-size width="150" height="-1"/>
                       </grid>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <toolTipText value="示例值：FF0000"/>
+                    </properties>
                   </component>
                   <component id="26b48" class="javax.swing.JButton" binding="templateMsgDataAddButton">
                     <constraints>
@@ -230,6 +239,7 @@
                 <properties>
                   <labelFor value="5d5e9"/>
                   <text value="小程序appid"/>
+                  <toolTipText value="非必填"/>
                 </properties>
               </component>
               <component id="5d5e9" class="javax.swing.JTextField" binding="msgTemplateMiniAppidTextField">
@@ -240,6 +250,7 @@
                 </constraints>
                 <properties>
                   <text value=""/>
+                  <toolTipText value="非必填"/>
                 </properties>
               </component>
               <component id="9a69a" class="javax.swing.JLabel" binding="templateMiniProgramPagePathLabel">
@@ -249,6 +260,7 @@
                 <properties>
                   <labelFor value="559c5"/>
                   <text value="小程序页面路径"/>
+                  <toolTipText value="非必填"/>
                 </properties>
               </component>
               <component id="559c5" class="javax.swing.JTextField" binding="msgTemplateMiniPagePathTextField">
@@ -259,6 +271,7 @@
                 </constraints>
                 <properties>
                   <text value=""/>
+                  <toolTipText value="非必填"/>
                 </properties>
               </component>
               <component id="bb7a9" class="javax.swing.JLabel" binding="templateMiniProgramOptionalLabel1">
