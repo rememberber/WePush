@@ -3,12 +3,8 @@ package com.fangxuele.tool.push.logic;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
-import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.github.qcloudsms.SmsSingleSender;
 import com.github.qcloudsms.SmsSingleSenderResult;
-import org.apache.commons.lang3.StringUtils;
-
-import javax.swing.*;
 
 /**
  * <pre>
@@ -38,12 +34,6 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
 
         String txyunAppId = Init.config.getTxyunAppId();
         String txyunAppKey = Init.config.getTxyunAppKey();
-
-        if (StringUtils.isEmpty(txyunAppId) || StringUtils.isEmpty(txyunAppKey)) {
-            JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
-                    "请先在设置中填写并保存腾讯云短信相关配置！", "提示",
-                    JOptionPane.INFORMATION_MESSAGE);
-        }
 
         SmsSingleSender ssender = new SmsSingleSender(Integer.valueOf(txyunAppId), txyunAppKey);
         int templateId = Integer.parseInt(MessageEditForm.messageEditForm.getMsgTemplateIdTextField().getText());

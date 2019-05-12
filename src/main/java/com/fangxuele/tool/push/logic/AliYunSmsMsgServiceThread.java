@@ -8,10 +8,6 @@ import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.PushForm;
-import com.fangxuele.tool.push.ui.form.SettingForm;
-import org.apache.commons.lang3.StringUtils;
-
-import javax.swing.*;
 
 /**
  * <pre>
@@ -41,12 +37,6 @@ public class AliYunSmsMsgServiceThread extends BaseMsgServiceThread {
 
         String aliyunAccessKeyId = Init.config.getAliyunAccessKeyId();
         String aliyunAccessKeySecret = Init.config.getAliyunAccessKeySecret();
-
-        if (StringUtils.isEmpty(aliyunAccessKeyId) || StringUtils.isEmpty(aliyunAccessKeySecret)) {
-            JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
-                    "请先在设置中填写并保存阿里云短信相关配置！", "提示",
-                    JOptionPane.INFORMATION_MESSAGE);
-        }
 
         //初始化acsClient,暂不支持region化
         IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", aliyunAccessKeyId, aliyunAccessKeySecret);

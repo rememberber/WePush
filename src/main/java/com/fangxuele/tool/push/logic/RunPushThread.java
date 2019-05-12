@@ -146,10 +146,51 @@ public class RunPushThread extends Thread {
                 }
                 thread.setWxMpService(wxMpService);
             } else if (MessageTypeEnum.ALI_TEMPLATE_CODE == msgType) {
+                String aliServerUrl = Init.config.getAliServerUrl();
+                String aliAppKey = Init.config.getAliAppKey();
+                String aliAppSecret = Init.config.getAliAppSecret();
+
+                if (StringUtils.isEmpty(aliServerUrl) || StringUtils.isEmpty(aliAppKey)
+                        || StringUtils.isEmpty(aliAppSecret)) {
+                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
+                            "请先在设置中填写并保存阿里大于相关配置！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    PushForm.pushForm.getScheduleRunButton().setEnabled(true);
+                    PushForm.pushForm.getPushStartButton().setEnabled(true);
+                    PushForm.pushForm.getPushStopButton().setEnabled(false);
+                    PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
+                    return;
+                }
                 thread = new AliDayuTemplateSmsMsgServiceThread(startIndex, endIndex);
             } else if (MessageTypeEnum.ALI_YUN_CODE == msgType) {
+                String aliyunAccessKeyId = Init.config.getAliyunAccessKeyId();
+                String aliyunAccessKeySecret = Init.config.getAliyunAccessKeySecret();
+
+                if (StringUtils.isEmpty(aliyunAccessKeyId) || StringUtils.isEmpty(aliyunAccessKeySecret)) {
+                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
+                            "请先在设置中填写并保存阿里云短信相关配置！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    PushForm.pushForm.getScheduleRunButton().setEnabled(true);
+                    PushForm.pushForm.getPushStartButton().setEnabled(true);
+                    PushForm.pushForm.getPushStopButton().setEnabled(false);
+                    PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
+                    return;
+                }
                 thread = new AliYunSmsMsgServiceThread(startIndex, endIndex);
             } else if (MessageTypeEnum.TX_YUN_CODE == msgType) {
+                String txyunAppId = Init.config.getTxyunAppId();
+                String txyunAppKey = Init.config.getTxyunAppKey();
+
+                if (StringUtils.isEmpty(txyunAppId) || StringUtils.isEmpty(txyunAppKey)) {
+                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
+                            "请先在设置中填写并保存腾讯云短信相关配置！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    PushForm.pushForm.getScheduleRunButton().setEnabled(true);
+                    PushForm.pushForm.getPushStartButton().setEnabled(true);
+                    PushForm.pushForm.getPushStopButton().setEnabled(false);
+                    PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
+                    return;
+                }
                 thread = new TxYunSmsMsgServiceThread(startIndex, endIndex);
             } else if (MessageTypeEnum.YUN_PIAN_CODE == msgType) {
                 String yunpianApiKey = Init.config.getYunpianApiKey();

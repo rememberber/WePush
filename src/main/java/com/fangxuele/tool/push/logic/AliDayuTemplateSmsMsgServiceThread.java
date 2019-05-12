@@ -2,14 +2,10 @@ package com.fangxuele.tool.push.logic;
 
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.PushForm;
-import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.request.AlibabaAliqinFcSmsNumSendRequest;
 import com.taobao.api.response.AlibabaAliqinFcSmsNumSendResponse;
-import org.apache.commons.lang3.StringUtils;
-
-import javax.swing.*;
 
 /**
  * <pre>
@@ -40,13 +36,6 @@ public class AliDayuTemplateSmsMsgServiceThread extends BaseMsgServiceThread {
         String aliServerUrl = Init.config.getAliServerUrl();
         String aliAppKey = Init.config.getAliAppKey();
         String aliAppSecret = Init.config.getAliAppSecret();
-
-        if (StringUtils.isEmpty(aliServerUrl) || StringUtils.isEmpty(aliAppKey)
-                || StringUtils.isEmpty(aliAppSecret)) {
-            JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
-                    "请先在设置中填写并保存阿里大于相关配置！", "提示",
-                    JOptionPane.INFORMATION_MESSAGE);
-        }
 
         TaobaoClient client = new DefaultTaobaoClient(aliServerUrl, aliAppKey, aliAppSecret);
 
