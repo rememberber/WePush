@@ -116,10 +116,12 @@ public class PushForm {
         if (pushLastTimeLabelFont != null) pushLastTimeLabel.setFont(pushLastTimeLabelFont);
         pushLastTimeLabel.setForeground(new Color(-6710887));
         pushLastTimeLabel.setText("0s");
-        pushUpPanel.add(pushLastTimeLabel, new GridConstraints(0, 6, 4, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushUpPanel.add(pushLastTimeLabel, new GridConstraints(0, 6, 4, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label3 = new JLabel();
+        label3.setHorizontalAlignment(0);
+        label3.setHorizontalTextPosition(0);
         label3.setText("耗时");
-        pushUpPanel.add(label3, new GridConstraints(1, 5, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushUpPanel.add(label3, new GridConstraints(0, 5, 4, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         pushLeftTimeLabel = new JLabel();
         Font pushLeftTimeLabelFont = this.$$$getFont$$$(null, -1, 36, pushLeftTimeLabel.getFont());
         if (pushLeftTimeLabelFont != null) pushLeftTimeLabel.setFont(pushLeftTimeLabelFont);
