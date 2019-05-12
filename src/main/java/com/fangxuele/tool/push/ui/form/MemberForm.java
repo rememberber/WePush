@@ -68,11 +68,15 @@ public class MemberForm {
     private void $$$setupUI$$$() {
         memberPanel = new JPanel();
         memberPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        memberPanel.setMinimumSize(new Dimension(1200, 738));
+        memberPanel.setOpaque(true);
+        memberPanel.setPreferredSize(new Dimension(1200, 738));
         final JSplitPane splitPane1 = new JSplitPane();
         splitPane1.setContinuousLayout(true);
-        splitPane1.setDividerLocation(386);
+        splitPane1.setDividerLocation(720);
         splitPane1.setDividerSize(4);
         splitPane1.setDoubleBuffered(true);
+        splitPane1.setLastDividerLocation(700);
         memberPanel.add(splitPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
@@ -91,16 +95,13 @@ public class MemberForm {
         memberTabUpPanel.setLayout(new GridLayoutManager(6, 6, new Insets(0, 0, 0, 0), -1, -1));
         memberPanelRight.add(memberTabUpPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         memberTabCountLabel = new JLabel();
-        Font memberTabCountLabelFont = this.$$$getFont$$$("Microsoft JhengHei UI", -1, 36, memberTabCountLabel.getFont());
+        Font memberTabCountLabelFont = this.$$$getFont$$$("Microsoft YaHei UI Light", -1, 72, memberTabCountLabel.getFont());
         if (memberTabCountLabelFont != null) memberTabCountLabel.setFont(memberTabCountLabelFont);
         memberTabCountLabel.setForeground(new Color(-276358));
         memberTabCountLabel.setText("0");
         memberTabUpPanel.add(memberTabCountLabel, new GridConstraints(0, 0, 4, 3, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        memberTabImportProgressLabel = new JLabel();
-        memberTabImportProgressLabel.setText("导入进度");
-        memberTabUpPanel.add(memberTabImportProgressLabel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         memberTabImportProgressBar = new JProgressBar();
-        memberTabUpPanel.add(memberTabImportProgressBar, new GridConstraints(4, 1, 1, 5, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        memberTabUpPanel.add(memberTabImportProgressBar, new GridConstraints(4, 0, 1, 6, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
         memberTabUpPanel.add(spacer1, new GridConstraints(0, 5, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
