@@ -400,7 +400,7 @@ public class MsgListener {
         MessageEditForm.messageEditForm.getPreviewMsgButton().addActionListener(e -> {
             try {
                 if ("".equals(MessageEditForm.messageEditForm.getPreviewUserField().getText().trim())) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "预览消息用户不能为空！", "提示",
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "预览用户不能为空！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     if (PushManage.preview()) {

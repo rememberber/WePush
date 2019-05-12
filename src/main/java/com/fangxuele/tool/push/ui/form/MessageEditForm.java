@@ -64,8 +64,6 @@ public class MessageEditForm {
     private JTextField msgTemplateMiniAppidTextField;
     private JLabel templateMiniProgramPagePathLabel;
     private JTextField msgTemplateMiniPagePathTextField;
-    private JLabel templateMiniProgramOptionalLabel1;
-    private JLabel templateMiniProgramOptionalLabel2;
     private JLabel templateKeyWordLabel;
     private JTextField msgTemplateKeyWordTextField;
     private JPanel kefuMsgPanel;
@@ -254,13 +252,11 @@ public class MessageEditForm {
                 messageEditForm.getMsgTemplateMiniAppidTextField().setVisible(true);
                 messageEditForm.getTemplateMiniProgramPagePathLabel().setVisible(true);
                 messageEditForm.getMsgTemplateMiniPagePathTextField().setVisible(true);
-                messageEditForm.getTemplateMiniProgramOptionalLabel1().setVisible(true);
-                messageEditForm.getTemplateMiniProgramOptionalLabel2().setVisible(true);
                 messageEditForm.getTemplateMsgColorLabel().setVisible(true);
                 messageEditForm.getTemplateDataColorTextField().setVisible(true);
                 messageEditForm.getMsgTemplateKeyWordTextField().setVisible(false);
                 messageEditForm.getTemplateKeyWordLabel().setVisible(false);
-                messageEditForm.getPreviewMemberLabel().setText("预览消息用户openid（多个以半角分号分隔）");
+                messageEditForm.getPreviewMemberLabel().setText("预览用户openid");
                 break;
             case MessageTypeEnum.MA_TEMPLATE_CODE:
                 messageEditForm.getTemplateMsgPanel().setVisible(true);
@@ -270,17 +266,15 @@ public class MessageEditForm {
                 messageEditForm.getMsgTemplateMiniAppidTextField().setVisible(false);
                 messageEditForm.getTemplateMiniProgramPagePathLabel().setVisible(false);
                 messageEditForm.getMsgTemplateMiniPagePathTextField().setVisible(false);
-                messageEditForm.getTemplateMiniProgramOptionalLabel1().setVisible(false);
-                messageEditForm.getTemplateMiniProgramOptionalLabel2().setVisible(false);
                 messageEditForm.getTemplateMsgColorLabel().setVisible(true);
                 messageEditForm.getTemplateDataColorTextField().setVisible(true);
                 messageEditForm.getMsgTemplateKeyWordTextField().setVisible(true);
                 messageEditForm.getTemplateKeyWordLabel().setVisible(true);
-                messageEditForm.getPreviewMemberLabel().setText("预览消息用户openid（多个以半角分号分隔）");
+                messageEditForm.getPreviewMemberLabel().setText("预览用户openid");
                 break;
             case MessageTypeEnum.KEFU_CODE:
                 messageEditForm.getKefuMsgPanel().setVisible(true);
-                messageEditForm.getPreviewMemberLabel().setText("预览消息用户openid（多个以半角分号分隔）");
+                messageEditForm.getPreviewMemberLabel().setText("预览用户openid");
                 break;
             case MessageTypeEnum.KEFU_PRIORITY_CODE:
                 messageEditForm.getKefuMsgPanel().setVisible(true);
@@ -291,13 +285,11 @@ public class MessageEditForm {
                 messageEditForm.getMsgTemplateMiniAppidTextField().setVisible(true);
                 messageEditForm.getTemplateMiniProgramPagePathLabel().setVisible(true);
                 messageEditForm.getMsgTemplateMiniPagePathTextField().setVisible(true);
-                messageEditForm.getTemplateMiniProgramOptionalLabel1().setVisible(true);
-                messageEditForm.getTemplateMiniProgramOptionalLabel2().setVisible(true);
                 messageEditForm.getTemplateMsgColorLabel().setVisible(true);
                 messageEditForm.getTemplateDataColorTextField().setVisible(true);
                 messageEditForm.getMsgTemplateKeyWordTextField().setVisible(false);
                 messageEditForm.getTemplateKeyWordLabel().setVisible(false);
-                messageEditForm.getPreviewMemberLabel().setText("预览消息用户openid（多个以半角分号分隔）");
+                messageEditForm.getPreviewMemberLabel().setText("预览用户openid");
                 break;
             case MessageTypeEnum.ALI_YUN_CODE:
             case MessageTypeEnum.TX_YUN_CODE:
@@ -309,17 +301,15 @@ public class MessageEditForm {
                 messageEditForm.getMsgTemplateMiniAppidTextField().setVisible(false);
                 messageEditForm.getTemplateMiniProgramPagePathLabel().setVisible(false);
                 messageEditForm.getMsgTemplateMiniPagePathTextField().setVisible(false);
-                messageEditForm.getTemplateMiniProgramOptionalLabel1().setVisible(false);
-                messageEditForm.getTemplateMiniProgramOptionalLabel2().setVisible(false);
                 messageEditForm.getTemplateMsgColorLabel().setVisible(false);
                 messageEditForm.getTemplateDataColorTextField().setVisible(false);
                 messageEditForm.getMsgTemplateKeyWordTextField().setVisible(false);
                 messageEditForm.getTemplateKeyWordLabel().setVisible(false);
-                messageEditForm.getPreviewMemberLabel().setText("预览消息用户手机号（多个以半角分号分隔）");
+                messageEditForm.getPreviewMemberLabel().setText("预览用户手机号");
                 break;
             case MessageTypeEnum.YUN_PIAN_CODE:
                 messageEditForm.getYunpianMsgPanel().setVisible(true);
-                messageEditForm.getPreviewMemberLabel().setText("预览消息用户手机号（多个以半角分号分隔）");
+                messageEditForm.getPreviewMemberLabel().setText("预览用户手机号");
                 break;
             default:
                 break;
@@ -410,7 +400,7 @@ public class MessageEditForm {
         msgNameLabel = new JLabel();
         Font msgNameLabelFont = this.$$$getFont$$$(null, Font.BOLD, -1, msgNameLabel.getFont());
         if (msgNameLabelFont != null) msgNameLabel.setFont(msgNameLabelFont);
-        msgNameLabel.setText("消息名称");
+        msgNameLabel.setText("消息名称 *");
         msgNameLabel.setToolTipText("给本次推送任务起个名字");
         panel2.add(msgNameLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         msgNameField = new JTextField();
@@ -420,9 +410,11 @@ public class MessageEditForm {
         panel3.setLayout(new GridLayoutManager(1, 5, new Insets(0, 10, 0, 0), -1, -1));
         messageEditPanel.add(panel3, new GridConstraints(3, 0, 1, 5, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         previewMemberLabel = new JLabel();
-        previewMemberLabel.setText("预览用户openid/手机号（以半角分号分隔）");
+        previewMemberLabel.setText("预览用户openid/手机号");
+        previewMemberLabel.setToolTipText("多个以半角分号分隔");
         panel3.add(previewMemberLabel, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         previewUserField = new JTextField();
+        previewUserField.setToolTipText("多个以半角分号分隔");
         panel3.add(previewUserField, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         previewMsgButton = new JButton();
         previewMsgButton.setIcon(new ImageIcon(getClass().getResource("/icon/preview_dark.png")));
@@ -437,7 +429,7 @@ public class MessageEditForm {
         messageEditPanel.add(templateMsgPanel, new GridConstraints(1, 0, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         templateMsgPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "模板消息编辑", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, templateMsgPanel.getFont())));
         templateIdLabel = new JLabel();
-        templateIdLabel.setText("模板ID");
+        templateIdLabel.setText("模板ID *");
         templateMsgPanel.add(templateIdLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         msgTemplateIdTextField = new JTextField();
         templateMsgPanel.add(msgTemplateIdTextField, new GridConstraints(0, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
@@ -488,7 +480,7 @@ public class MessageEditForm {
         msgTemplateMiniAppidTextField = new JTextField();
         msgTemplateMiniAppidTextField.setText("");
         msgTemplateMiniAppidTextField.setToolTipText("非必填");
-        templateMsgPanel.add(msgTemplateMiniAppidTextField, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        templateMsgPanel.add(msgTemplateMiniAppidTextField, new GridConstraints(3, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         templateMiniProgramPagePathLabel = new JLabel();
         templateMiniProgramPagePathLabel.setText("小程序页面路径");
         templateMiniProgramPagePathLabel.setToolTipText("非必填");
@@ -496,13 +488,7 @@ public class MessageEditForm {
         msgTemplateMiniPagePathTextField = new JTextField();
         msgTemplateMiniPagePathTextField.setText("");
         msgTemplateMiniPagePathTextField.setToolTipText("非必填");
-        templateMsgPanel.add(msgTemplateMiniPagePathTextField, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        templateMiniProgramOptionalLabel1 = new JLabel();
-        templateMiniProgramOptionalLabel1.setText("（选填）");
-        templateMsgPanel.add(templateMiniProgramOptionalLabel1, new GridConstraints(3, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        templateMiniProgramOptionalLabel2 = new JLabel();
-        templateMiniProgramOptionalLabel2.setText("（选填）");
-        templateMsgPanel.add(templateMiniProgramOptionalLabel2, new GridConstraints(4, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        templateMsgPanel.add(msgTemplateMiniPagePathTextField, new GridConstraints(4, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         templateKeyWordLabel = new JLabel();
         templateKeyWordLabel.setText("放大关键词");
         templateMsgPanel.add(templateKeyWordLabel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));

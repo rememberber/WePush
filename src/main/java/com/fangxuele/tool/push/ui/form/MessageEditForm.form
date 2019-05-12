@@ -35,7 +35,7 @@
                 <properties>
                   <font style="1"/>
                   <labelFor value="5135c"/>
-                  <text value="消息名称"/>
+                  <text value="消息名称 *"/>
                   <toolTipText value="给本次推送任务起个名字"/>
                 </properties>
               </component>
@@ -65,7 +65,8 @@
                 </constraints>
                 <properties>
                   <labelFor value="b213b"/>
-                  <text value="预览用户openid/手机号（以半角分号分隔）"/>
+                  <text value="预览用户openid/手机号"/>
+                  <toolTipText value="多个以半角分号分隔"/>
                 </properties>
               </component>
               <component id="b213b" class="javax.swing.JTextField" binding="previewUserField">
@@ -74,7 +75,9 @@
                     <preferred-size width="150" height="-1"/>
                   </grid>
                 </constraints>
-                <properties/>
+                <properties>
+                  <toolTipText value="多个以半角分号分隔"/>
+                </properties>
               </component>
               <component id="b7890" class="javax.swing.JButton" binding="previewMsgButton">
                 <constraints>
@@ -112,7 +115,7 @@
                 </constraints>
                 <properties>
                   <labelFor value="fa9e4"/>
-                  <text value="模板ID"/>
+                  <text value="模板ID *"/>
                 </properties>
               </component>
               <component id="fa9e4" class="javax.swing.JTextField" binding="msgTemplateIdTextField">
@@ -246,7 +249,7 @@
               </component>
               <component id="5d5e9" class="javax.swing.JTextField" binding="msgTemplateMiniAppidTextField">
                 <constraints>
-                  <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                  <grid row="3" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="-1"/>
                   </grid>
                 </constraints>
@@ -267,29 +270,13 @@
               </component>
               <component id="559c5" class="javax.swing.JTextField" binding="msgTemplateMiniPagePathTextField">
                 <constraints>
-                  <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                  <grid row="4" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="-1"/>
                   </grid>
                 </constraints>
                 <properties>
                   <text value=""/>
                   <toolTipText value="非必填"/>
-                </properties>
-              </component>
-              <component id="bb7a9" class="javax.swing.JLabel" binding="templateMiniProgramOptionalLabel1">
-                <constraints>
-                  <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text value="（选填）"/>
-                </properties>
-              </component>
-              <component id="b9a20" class="javax.swing.JLabel" binding="templateMiniProgramOptionalLabel2">
-                <constraints>
-                  <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text value="（选填）"/>
                 </properties>
               </component>
               <component id="1e2ab" class="javax.swing.JLabel" binding="templateKeyWordLabel">
