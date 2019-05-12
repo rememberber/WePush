@@ -2,13 +2,10 @@ package com.fangxuele.tool.push.logic;
 
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.PushForm;
-import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.yunpian.sdk.YunpianClient;
 import com.yunpian.sdk.model.Result;
 import com.yunpian.sdk.model.SmsSingleSend;
-import org.apache.commons.lang3.StringUtils;
 
-import javax.swing.*;
 import java.util.Map;
 
 /**
@@ -38,12 +35,6 @@ public class YunpianSmsMsgServiceThread extends BaseMsgServiceThread {
         initCurrentThread();
 
         String yunpianApiKey = Init.config.getYunpianApiKey();
-
-        if (StringUtils.isEmpty(yunpianApiKey)) {
-            JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
-                    "请先在设置中填写并保存云片网短信相关配置！", "提示",
-                    JOptionPane.INFORMATION_MESSAGE);
-        }
 
         YunpianClient clnt = new YunpianClient(yunpianApiKey).init();
 

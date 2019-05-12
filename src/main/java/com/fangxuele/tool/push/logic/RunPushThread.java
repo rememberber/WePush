@@ -9,7 +9,9 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.component.TableInCellProgressBarRenderer;
 import com.fangxuele.tool.push.ui.form.PushForm;
+import com.fangxuele.tool.push.ui.form.SettingForm;
 import me.chanjar.weixin.mp.api.WxMpService;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -150,6 +152,18 @@ public class RunPushThread extends Thread {
             } else if (MessageTypeEnum.TX_YUN_CODE == msgType) {
                 thread = new TxYunSmsMsgServiceThread(startIndex, endIndex);
             } else if (MessageTypeEnum.YUN_PIAN_CODE == msgType) {
+                String yunpianApiKey = Init.config.getYunpianApiKey();
+                if (StringUtils.isEmpty(yunpianApiKey)) {
+                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
+                            "请先在设置中填写并保存云片网短信相关配置！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    PushForm.pushForm.getScheduleRunButton().setEnabled(true);
+                    PushForm.pushForm.getPushStartButton().setEnabled(true);
+                    PushForm.pushForm.getPushStopButton().setEnabled(false);
+                    PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
+                    return;
+                }
+
                 thread = new YunpianSmsMsgServiceThread(startIndex, endIndex);
             }
 
