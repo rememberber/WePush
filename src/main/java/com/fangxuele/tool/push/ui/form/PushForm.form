@@ -29,7 +29,7 @@
                   <grid row="0" column="0" row-span="7" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <font name="Microsoft JhengHei UI" size="48"/>
+                  <font name="Microsoft YaHei UI Light" size="72"/>
                   <foreground color="-13587376"/>
                   <text value="0"/>
                 </properties>
@@ -39,7 +39,7 @@
                   <grid row="0" column="2" row-span="7" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <font name="Microsoft YaHei UI" size="48"/>
+                  <font name="Microsoft YaHei UI Light" size="72"/>
                   <foreground color="-2200483"/>
                   <text value="0"/>
                 </properties>
@@ -62,7 +62,7 @@
               </component>
               <component id="4df82" class="javax.swing.JLabel">
                 <constraints>
-                  <grid row="3" column="1" row-span="2" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="2" column="1" row-span="3" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text value="成功"/>
@@ -70,7 +70,7 @@
               </component>
               <component id="dfc" class="javax.swing.JLabel">
                 <constraints>
-                  <grid row="3" column="3" row-span="2" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="2" column="3" row-span="3" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text value="失败"/>
@@ -90,7 +90,7 @@
                 </constraints>
                 <properties>
                   <enabled value="true"/>
-                  <font size="36"/>
+                  <font name="Microsoft YaHei UI Light" size="36"/>
                   <foreground color="-6710887"/>
                   <text value="0s"/>
                 </properties>
@@ -110,7 +110,7 @@
                   <grid row="4" column="6" row-span="3" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="2" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <font size="36"/>
+                  <font name="Microsoft YaHei UI Light" size="36"/>
                   <foreground color="-6710887"/>
                   <text value="0s"/>
                 </properties>
