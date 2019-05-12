@@ -29,6 +29,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
@@ -84,6 +85,12 @@ public class MemberListener {
                         .getDefaultRenderer();
                 // 表头列名居左
                 hr.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
+
+                // 隐藏表头
+                MemberForm.memberForm.getMemberListTable().getTableHeader().setVisible(false);
+                DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+                renderer.setPreferredSize(new Dimension(0, 0));
+                MemberForm.memberForm.getMemberListTable().getTableHeader().setDefaultRenderer(renderer);
 
                 Object[] data;
 
