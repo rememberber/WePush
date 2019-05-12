@@ -14,8 +14,6 @@ import com.fangxuele.tool.push.ui.form.PushForm;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
@@ -268,14 +266,11 @@ public class PushListener {
         });
 
         // 线程数滑块
-        PushForm.pushForm.getThreadCountSlider().addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                int slideValue = PushForm.pushForm.getThreadCountSlider().getValue();
-                PushForm.pushForm.getThreadCountTextField().setText(String.valueOf(slideValue));
-                Init.config.setThreadCount(slideValue);
-                refreshPushInfo();
-            }
+        PushForm.pushForm.getThreadCountSlider().addChangeListener(e -> {
+            int slideValue = PushForm.pushForm.getThreadCountSlider().getValue();
+            PushForm.pushForm.getThreadCountTextField().setText(String.valueOf(slideValue));
+            Init.config.setThreadCount(slideValue);
+            refreshPushInfo();
         });
 
     }
