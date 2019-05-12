@@ -83,7 +83,7 @@ public class MainWindow {
         messagePanel.setDoubleBuffered(true);
         tabbedPane.addTab("②编辑消息", messagePanel);
         messageEditPanel = new JPanel();
-        messageEditPanel.setLayout(new GridLayoutManager(1, 1, new Insets(10, 8, 0, 8), -1, -1));
+        messageEditPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         messageEditPanel.setMaximumSize(new Dimension(-1, -1));
         messageEditPanel.setMinimumSize(new Dimension(-1, -1));
         messageEditPanel.setPreferredSize(new Dimension(-1, -1));

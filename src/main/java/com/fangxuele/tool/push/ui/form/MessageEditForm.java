@@ -399,7 +399,7 @@ public class MessageEditForm {
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         messageEditPanel = new JPanel();
-        messageEditPanel.setLayout(new GridLayoutManager(4, 5, new Insets(10, 8, 0, 8), -1, -1));
+        messageEditPanel.setLayout(new GridLayoutManager(4, 5, new Insets(6, 2, 0, 0), -1, -1));
         messageEditPanel.setMaximumSize(new Dimension(-1, -1));
         messageEditPanel.setMinimumSize(new Dimension(-1, -1));
         messageEditPanel.setPreferredSize(new Dimension(-1, -1));

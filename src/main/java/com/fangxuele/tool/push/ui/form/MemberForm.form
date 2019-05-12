@@ -111,7 +111,7 @@
             <border type="none"/>
             <children>
               <grid id="77364" binding="memberPanelRight" layout-manager="GridLayoutManager" row-count="6" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-                <margin top="10" left="10" bottom="10" right="10"/>
+                <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
@@ -235,8 +235,8 @@
                           </grid>
                         </constraints>
                         <properties>
-                          <text value="SELECT openid FROM"/>
-                          <toolTipText value="只要查询出的结果集只有一列openid（短信时对应的是手机号）就可以，列名不重要"/>
+                          <text value=""/>
+                          <toolTipText value="只要查询出的结果集只有一列openid（短信时对应的是手机号）就可以，列名不重要；例如：SELECT openid FROM t_user"/>
                         </properties>
                       </component>
                       <component id="dc69" class="javax.swing.JButton" binding="importFromSqlButton">
