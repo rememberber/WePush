@@ -153,7 +153,7 @@ public class ConfigUtil {
     }
 
     public String getMemberSql() {
-        return setting.getStr("sql", "member", "SELECT openid FROM");
+        return setting.getStr("sql", "member", "");
     }
 
     public void setMemberSql(String memberSql) {
