@@ -41,10 +41,11 @@ public class MemberForm {
     private JTable memberListTable;
     private JPanel memberPanel;
     private JButton 全选Button;
-    private JButton 重新导入Button;
+    private JButton 选择导入Button;
     private JButton 删除Button;
     private JTextField textField1;
     private JButton 搜索Button;
+    private JButton 导出Button;
 
     public static MemberForm memberForm = new MemberForm();
 
@@ -97,9 +98,9 @@ public class MemberForm {
         全选Button = new JButton();
         全选Button.setText("全选");
         panel2.add(全选Button, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        重新导入Button = new JButton();
-        重新导入Button.setText("重新导入");
-        panel2.add(重新导入Button, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        选择导入Button = new JButton();
+        选择导入Button.setText("重新导入");
+        panel2.add(选择导入Button, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         删除Button = new JButton();
         删除Button.setText("删除");
         panel2.add(删除Button, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
