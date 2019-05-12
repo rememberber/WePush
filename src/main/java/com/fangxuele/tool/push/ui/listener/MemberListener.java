@@ -106,20 +106,20 @@ public class MemberListener {
                         MemberForm.memberForm.getMemberTabCountLabel().setText(String.valueOf(currentImported));
                     }
                 } else {
-                    JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "不支持该格式的文件！", "文件格式不支持",
+                    JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanelRight(), "不支持该格式的文件！", "文件格式不支持",
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
                 MemberForm.memberForm.getMemberTabImportProgressBar().setMaximum(100);
                 MemberForm.memberForm.getMemberTabImportProgressBar().setValue(100);
                 MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(false);
-                JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "导入完成！", "完成",
+                JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanelRight(), "导入完成！", "完成",
                         JOptionPane.INFORMATION_MESSAGE);
 
                 Init.config.setMemberFilePath(MemberForm.memberForm.getMemberFilePathField().getText());
                 Init.config.save();
             } catch (Exception e1) {
-                JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "导入失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanelRight(), "导入失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
                 e1.printStackTrace();
@@ -142,10 +142,10 @@ public class MemberListener {
         MemberForm.memberForm.getMemberImportAllButton().addActionListener(e -> ThreadUtil.execute(() -> {
             try {
                 getMpUserList();
-                JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "导入完成！", "完成",
+                JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanelRight(), "导入完成！", "完成",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (WxErrorException e1) {
-                JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "导入失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanelRight(), "导入失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
                 e1.printStackTrace();
@@ -174,7 +174,7 @@ public class MemberListener {
                 }
 
             } catch (WxErrorException e1) {
-                JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "刷新失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanelRight(), "刷新失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
                 e1.printStackTrace();
@@ -189,14 +189,14 @@ public class MemberListener {
 
                     long selectedTagId = userTagMap.get(MemberForm.memberForm.getMemberImportTagComboBox().getSelectedItem());
                     getMpUserListByTag(selectedTagId, false);
-                    JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "导入完成！", "完成",
+                    JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanelRight(), "导入完成！", "完成",
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
-                    JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "请先选择需要导入的标签！", "提示",
+                    JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanelRight(), "请先选择需要导入的标签！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                 }
             } catch (WxErrorException e1) {
-                JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "导入失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanelRight(), "导入失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
                 e1.printStackTrace();
@@ -214,14 +214,14 @@ public class MemberListener {
 
                     long selectedTagId = userTagMap.get(MemberForm.memberForm.getMemberImportTagComboBox().getSelectedItem());
                     getMpUserListByTag(selectedTagId, true);
-                    JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "导入完成！", "完成",
+                    JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanelRight(), "导入完成！", "完成",
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
-                    JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "请先选择需要导入的标签！", "提示",
+                    JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanelRight(), "请先选择需要导入的标签！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                 }
             } catch (WxErrorException e1) {
-                JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "导入失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanelRight(), "导入失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
                 e1.printStackTrace();
@@ -233,7 +233,7 @@ public class MemberListener {
 
         // 清除按钮事件
         MemberForm.memberForm.getClearImportButton().addActionListener(e -> {
-            int isClear = JOptionPane.showConfirmDialog(MemberForm.memberForm.getMemberPanel(), "确认清除？", "确认",
+            int isClear = JOptionPane.showConfirmDialog(MemberForm.memberForm.getMemberPanelRight(), "确认清除？", "确认",
                     JOptionPane.YES_NO_OPTION);
             if (isClear == JOptionPane.YES_OPTION) {
                 if (PushData.allUser != null) {
@@ -266,13 +266,13 @@ public class MemberListener {
                         MemberForm.memberForm.getMemberTabCountLabel().setText(String.valueOf(currentImported));
                     }
 
-                    JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "导入完成！", "完成",
+                    JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanelRight(), "导入完成！", "完成",
                             JOptionPane.INFORMATION_MESSAGE);
 
                     Init.config.setMemberSql(querySql);
                     Init.config.save();
                 } catch (Exception e1) {
-                    JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "导入失败！\n\n" + e1.getMessage(), "失败",
+                    JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanelRight(), "导入失败！\n\n" + e1.getMessage(), "失败",
                             JOptionPane.ERROR_MESSAGE);
                     logger.error(e1);
                     e1.printStackTrace();

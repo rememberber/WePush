@@ -95,7 +95,7 @@ public class MainWindow {
         messageManagePanel.setPreferredSize(new Dimension(280, -1));
         messagePanel.setLeftComponent(messageManagePanel);
         memberPanel = new JPanel();
-        memberPanel.setLayout(new GridLayoutManager(1, 1, new Insets(10, 10, 10, 10), -1, -1));
+        memberPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane.addTab("③准备目标用户", memberPanel);
         pushPanel = new JPanel();
         pushPanel.setLayout(new GridLayoutManager(1, 1, new Insets(10, 10, 10, 10), -1, -1));
