@@ -9,6 +9,7 @@ import cn.hutool.poi.excel.ExcelUtil;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.PushManage;
 import com.fangxuele.tool.push.ui.Init;
+import com.fangxuele.tool.push.ui.component.TableInCellCheckBoxRenderer;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.util.CharSetUtil;
@@ -24,6 +25,10 @@ import org.apache.commons.lang3.StringUtils;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
@@ -69,21 +74,49 @@ public class MemberListener {
             try {
                 MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(true);
                 String fileNameLowerCase = file.getName().toLowerCase();
+
+                // 导入列表
+                String[] headerNames = {"选择", "数据"};
+                DefaultTableModel model = new DefaultTableModel(null, headerNames);
+                MemberForm.memberForm.getMemberListTable().setModel(model);
+
+                DefaultTableCellRenderer hr = (DefaultTableCellRenderer) MemberForm.memberForm.getMemberListTable().getTableHeader()
+                        .getDefaultRenderer();
+                // 表头列名居左
+                hr.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
+
+                Object[] data;
+
+                TableColumnModel tableColumnModel = MemberForm.memberForm.getMemberListTable().getColumnModel();
+
+                TableColumn tableColumn0 = tableColumnModel.getColumn(0);
+
+                tableColumn0.setCellEditor(new DefaultCellEditor(new JCheckBox()));
+                tableColumn0.setCellRenderer(new TableInCellCheckBoxRenderer());
+                // 设置列宽
+                tableColumn0.setPreferredWidth(60);
+                tableColumn0.setMaxWidth(100);
                 if (fileNameLowerCase.endsWith(".csv")) {
                     // 可以解决中文乱码问题
                     DataInputStream in = new DataInputStream(new FileInputStream(file));
                     reader = new CSVReader(new InputStreamReader(in, CharSetUtil.getCharSet(file)));
                     String[] nextLine;
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+
                     while ((nextLine = reader.readNext()) != null) {
                         PushData.allUser.add(nextLine);
                         currentImported++;
                         MemberForm.memberForm.getMemberTabCountLabel().setText(String.valueOf(currentImported));
+                        data = new Object[2];
+                        data[0] = false;
+                        data[1] = nextLine;
+                        model.addRow(data);
                     }
                 } else if (fileNameLowerCase.endsWith(".xlsx") || fileNameLowerCase.endsWith(".xls")) {
                     ExcelReader excelReader = ExcelUtil.getReader(file);
                     List<List<Object>> readAll = excelReader.read(1, Integer.MAX_VALUE);
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+
                     for (List<Object> objects : readAll) {
                         if (objects != null && objects.size() > 0) {
                             String[] nextLine = new String[objects.size()];
@@ -93,6 +126,10 @@ public class MemberListener {
                             PushData.allUser.add(nextLine);
                             currentImported++;
                             MemberForm.memberForm.getMemberTabCountLabel().setText(String.valueOf(currentImported));
+                            data = new Object[2];
+                            data[0] = false;
+                            data[1] = nextLine;
+                            model.addRow(data);
                         }
                     }
                 } else if (fileNameLowerCase.endsWith(".txt")) {
@@ -104,6 +141,10 @@ public class MemberListener {
                         PushData.allUser.add(line.split(","));
                         currentImported++;
                         MemberForm.memberForm.getMemberTabCountLabel().setText(String.valueOf(currentImported));
+                        data = new Object[2];
+                        data[0] = false;
+                        data[1] = line;
+                        model.addRow(data);
                     }
                 } else {
                     JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "不支持该格式的文件！", "文件格式不支持",

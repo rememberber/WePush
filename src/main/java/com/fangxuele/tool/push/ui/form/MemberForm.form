@@ -42,9 +42,11 @@
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <component id="f633e" class="javax.swing.JTable" binding="table1" default-binding="true">
+                  <component id="f633e" class="javax.swing.JTable" binding="memberListTable">
                     <constraints/>
-                    <properties/>
+                    <properties>
+                      <rowHeight value="40"/>
+                    </properties>
                   </component>
                 </children>
               </scrollpane>

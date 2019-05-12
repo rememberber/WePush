@@ -38,7 +38,7 @@ public class MemberForm {
     private JButton memberImportTagFreshButton;
     private JButton memberImportTagRetainButton;
     private JButton memberImportAllButton;
-    private JTable table1;
+    private JTable memberListTable;
     private JPanel memberPanel;
 
     public static MemberForm memberForm = new MemberForm();
@@ -83,8 +83,9 @@ public class MemberForm {
         splitPane1.setLeftComponent(panel1);
         final JScrollPane scrollPane1 = new JScrollPane();
         panel1.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        table1 = new JTable();
-        scrollPane1.setViewportView(table1);
+        memberListTable = new JTable();
+        memberListTable.setRowHeight(40);
+        scrollPane1.setViewportView(memberListTable);
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         splitPane1.setRightComponent(panel2);
