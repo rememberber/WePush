@@ -226,7 +226,7 @@
                         </constraints>
                         <properties>
                           <icon value="icon/fromVCS.png"/>
-                          <text value="导入openid/手机号"/>
+                          <text value="导入"/>
                         </properties>
                       </component>
                     </children>
@@ -258,7 +258,7 @@
                         </constraints>
                         <properties>
                           <icon value="icon/fromVCS.png"/>
-                          <text value="导入openid/手机号"/>
+                          <text value="导入"/>
                         </properties>
                       </component>
                     </children>
@@ -318,7 +318,7 @@
                         <properties>
                           <font style="0"/>
                           <icon value="icon/fromVCS.png"/>
-                          <text value="导入选择的标签-取并集"/>
+                          <text value="导入选择的标签分组-取并集"/>
                         </properties>
                       </component>
                       <component id="62c5c" class="javax.swing.JButton" binding="memberImportTagRetainButton">
@@ -328,7 +328,7 @@
                         <properties>
                           <font style="0"/>
                           <icon value="icon/fromVCS.png"/>
-                          <text value="导入选择的标签-取交集"/>
+                          <text value="导入选择的标签分组-取交集"/>
                         </properties>
                       </component>
                     </children>

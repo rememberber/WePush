@@ -160,7 +160,7 @@ public class MemberForm {
         memberTabDownPanel.add(memberImportExploreButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         importFromFileButton = new JButton();
         importFromFileButton.setIcon(new ImageIcon(getClass().getResource("/icon/fromVCS.png")));
-        importFromFileButton.setText("导入openid/手机号");
+        importFromFileButton.setText("导入");
         memberTabDownPanel.add(importFromFileButton, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         memberTabCenterPanel = new JPanel();
         memberTabCenterPanel.setLayout(new GridLayoutManager(3, 1, new Insets(10, 5, 0, 0), -1, -1));
@@ -172,7 +172,7 @@ public class MemberForm {
         memberTabCenterPanel.add(importFromSqlTextArea, new GridConstraints(0, 0, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 150), null, 0, false));
         importFromSqlButton = new JButton();
         importFromSqlButton.setIcon(new ImageIcon(getClass().getResource("/icon/fromVCS.png")));
-        importFromSqlButton.setText("导入openid/手机号");
+        importFromSqlButton.setText("导入");
         memberTabCenterPanel.add(importFromSqlButton, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
         memberPanelRight.add(spacer2, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
@@ -190,26 +190,26 @@ public class MemberForm {
         Font memberImportAllButtonFont = this.$$$getFont$$$(null, Font.PLAIN, -1, memberImportAllButton.getFont());
         if (memberImportAllButtonFont != null) memberImportAllButton.setFont(memberImportAllButtonFont);
         memberImportAllButton.setIcon(new ImageIcon(getClass().getResource("/icon/fromVCS.png")));
-        memberImportAllButton.setText("导入全员（所有关注公众号的用户）");
+        memberImportAllButton.setText("导入所有关注公众号的用户");
         panel4.add(memberImportAllButton, new GridConstraints(3, 0, 1, 6, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         memberImportTagFreshButton = new JButton();
         Font memberImportTagFreshButtonFont = this.$$$getFont$$$(null, Font.PLAIN, -1, memberImportTagFreshButton.getFont());
         if (memberImportTagFreshButtonFont != null) memberImportTagFreshButton.setFont(memberImportTagFreshButtonFont);
         memberImportTagFreshButton.setIcon(new ImageIcon(getClass().getResource("/icon/refresh.png")));
-        memberImportTagFreshButton.setText("刷新可选的标签");
+        memberImportTagFreshButton.setText("刷新可选的标签分组");
         panel4.add(memberImportTagFreshButton, new GridConstraints(0, 3, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         memberImportTagButton = new JButton();
         Font memberImportTagButtonFont = this.$$$getFont$$$(null, Font.PLAIN, -1, memberImportTagButton.getFont());
         if (memberImportTagButtonFont != null) memberImportTagButton.setFont(memberImportTagButtonFont);
         memberImportTagButton.setIcon(new ImageIcon(getClass().getResource("/icon/fromVCS.png")));
-        memberImportTagButton.setText("导入选择的标签-取并集");
+        memberImportTagButton.setText("导入选择的标签分组-取并集");
         panel4.add(memberImportTagButton, new GridConstraints(1, 0, 1, 6, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         memberImportTagRetainButton = new JButton();
         Font memberImportTagRetainButtonFont = this.$$$getFont$$$(null, Font.PLAIN, -1, memberImportTagRetainButton.getFont());
         if (memberImportTagRetainButtonFont != null)
             memberImportTagRetainButton.setFont(memberImportTagRetainButtonFont);
         memberImportTagRetainButton.setIcon(new ImageIcon(getClass().getResource("/icon/fromVCS.png")));
-        memberImportTagRetainButton.setText("导入选择的标签-取交集");
+        memberImportTagRetainButton.setText("导入选择的标签分组-取交集");
         panel4.add(memberImportTagRetainButton, new GridConstraints(2, 0, 1, 6, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
