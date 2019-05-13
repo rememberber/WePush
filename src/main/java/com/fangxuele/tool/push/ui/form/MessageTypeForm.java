@@ -93,6 +93,8 @@ public class MessageTypeForm {
         MessageEditForm.switchMsgType(msgType);
         MessageManageForm.init();
         MessageEditForm.clearAllField();
+        MemberForm.init();
+        PushHisForm.init();
     }
 
     /**

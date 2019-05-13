@@ -1,6 +1,8 @@
 package com.fangxuele.tool.push.ui.form;
 
+import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.ui.Init;
+import com.fangxuele.tool.push.util.JTableUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -8,7 +10,10 @@ import lombok.Getter;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * <pre>
@@ -56,6 +61,16 @@ public class MemberForm {
     public static void init() {
         memberForm.getImportFromSqlTextArea().setText(Init.config.getMemberSql());
         memberForm.getMemberFilePathField().setText(Init.config.getMemberFilePath());
+        PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+        PushData.allUser.clear();
+        MemberForm.memberForm.getMemberTabCountLabel().setText("0");
+
+        String[] headerNames = {"选择", "数据"};
+        DefaultTableModel model = new DefaultTableModel(null, headerNames);
+        MemberForm.memberForm.getMemberListTable().setModel(model);
+
+        // 隐藏表头
+        JTableUtil.hideTableHeader(MemberForm.memberForm.getMemberListTable());
     }
 
     {
