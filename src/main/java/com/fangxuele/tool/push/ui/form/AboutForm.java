@@ -54,7 +54,7 @@ public class AboutForm {
         label1.setText("WePush");
         aboutPanel.add(label1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
-        label2.setText("Proudly by 周波");
+        label2.setText("Proudly by RememBerBer 周波");
         aboutPanel.add(label2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         qrCodeLabel = new JLabel();
         qrCodeLabel.setIcon(new ImageIcon(getClass().getResource("/icon/weixin-qrcode.png")));
