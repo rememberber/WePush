@@ -63,6 +63,8 @@ public class MemberListener {
      */
     public static Set<String> tagUserSet;
 
+    private static boolean selectAllToggle = false;
+
     public static void addListeners() {
         // 从文件导入按钮事件
         MemberForm.memberForm.getImportFromFileButton().addActionListener(e -> ThreadUtil.execute(() -> {
@@ -351,6 +353,30 @@ public class MemberListener {
             }
 
         });
+
+        // 全选按钮事件
+        MemberForm.memberForm.getSelectAllButton().addActionListener(e -> ThreadUtil.execute(() -> {
+            toggleSelectAll();
+            DefaultTableModel tableModel = (DefaultTableModel) MemberForm.memberForm.getMemberListTable()
+                    .getModel();
+            int rowCount = tableModel.getRowCount();
+            for (int i = 0; i < rowCount; i++) {
+                tableModel.setValueAt(selectAllToggle, i, 0);
+            }
+        }));
+    }
+
+    /**
+     * 切换全选/全不选
+     *
+     * @return
+     */
+    private static void toggleSelectAll() {
+        if (!selectAllToggle) {
+            selectAllToggle = true;
+        } else {
+            selectAllToggle = false;
+        }
     }
 
     /**

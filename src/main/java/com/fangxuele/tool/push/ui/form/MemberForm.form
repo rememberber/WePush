@@ -59,7 +59,7 @@
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <component id="8000a" class="javax.swing.JButton" binding="全选Button" default-binding="true">
+                  <component id="8000a" class="javax.swing.JButton" binding="selectAllButton">
                     <constraints>
                       <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -68,7 +68,7 @@
                       <text value="全选"/>
                     </properties>
                   </component>
-                  <component id="92c16" class="javax.swing.JButton" binding="选择导入Button" default-binding="true">
+                  <component id="92c16" class="javax.swing.JButton" binding="importSelectedButton">
                     <constraints>
                       <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -77,7 +77,7 @@
                       <text value="选择导入"/>
                     </properties>
                   </component>
-                  <component id="f8537" class="javax.swing.JButton" binding="导出Button" default-binding="true">
+                  <component id="f8537" class="javax.swing.JButton" binding="exportButton">
                     <constraints>
                       <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -86,7 +86,7 @@
                       <text value="导出"/>
                     </properties>
                   </component>
-                  <component id="8195" class="javax.swing.JButton" binding="删除Button" default-binding="true">
+                  <component id="8195" class="javax.swing.JButton" binding="deleteButton">
                     <constraints>
                       <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -110,7 +110,7 @@
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <component id="b384d" class="javax.swing.JTextField" binding="textField1" default-binding="true">
+                  <component id="b384d" class="javax.swing.JTextField" binding="searchTextField">
                     <constraints>
                       <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                         <preferred-size width="150" height="-1"/>
@@ -118,7 +118,7 @@
                     </constraints>
                     <properties/>
                   </component>
-                  <component id="5ff10" class="javax.swing.JButton" binding="搜索Button" default-binding="true">
+                  <component id="5ff10" class="javax.swing.JButton" binding="searchButton">
                     <constraints>
                       <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
