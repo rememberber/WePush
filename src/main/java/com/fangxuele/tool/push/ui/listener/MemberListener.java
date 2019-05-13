@@ -10,6 +10,7 @@ import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.PushManage;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.component.TableInCellCheckBoxRenderer;
+import com.fangxuele.tool.push.ui.component.TableInCellImageLabelRenderer;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.util.CharSetUtil;
@@ -18,10 +19,12 @@ import com.fangxuele.tool.push.util.JTableUtil;
 import com.opencsv.CSVReader;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
+import me.chanjar.weixin.mp.bean.result.WxMpUser;
 import me.chanjar.weixin.mp.bean.result.WxMpUserList;
 import me.chanjar.weixin.mp.bean.tag.WxTagListUser;
 import me.chanjar.weixin.mp.bean.tag.WxUserTag;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -188,6 +191,7 @@ public class MemberListener {
         MemberForm.memberForm.getMemberImportAllButton().addActionListener(e -> ThreadUtil.execute(() -> {
             try {
                 getMpUserList();
+                getWeixinUserInfoList();
                 JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "导入完成！", "完成",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (WxErrorException e1) {
@@ -236,6 +240,7 @@ public class MemberListener {
 
                     long selectedTagId = userTagMap.get(MemberForm.memberForm.getMemberImportTagComboBox().getSelectedItem());
                     getMpUserListByTag(selectedTagId, false);
+                    getWeixinUserInfoList();
                     JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "导入完成！", "完成",
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
@@ -262,6 +267,7 @@ public class MemberListener {
 
                     long selectedTagId = userTagMap.get(MemberForm.memberForm.getMemberImportTagComboBox().getSelectedItem());
                     getMpUserListByTag(selectedTagId, true);
+                    getWeixinUserInfoList();
                     JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "导入完成！", "完成",
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
@@ -361,7 +367,7 @@ public class MemberListener {
                     .getModel();
             int rowCount = tableModel.getRowCount();
             for (int i = 0; i < rowCount; i++) {
-                tableModel.setValueAt(selectAllToggle, i, 0);
+                tableModel.setValueAt(selectAllToggle, i, 1);
             }
         }));
     }
@@ -506,5 +512,63 @@ public class MemberListener {
         MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(false);
         MemberForm.memberForm.getMemberTabImportProgressBar().setValue(MemberForm.memberForm.getMemberTabImportProgressBar().getMaximum());
 
+    }
+
+    /**
+     * 获取微信用户信息列表
+     */
+    private static void getWeixinUserInfoList() {
+        MemberForm.memberForm.getMemberTabImportProgressBar().setVisible(true);
+        MemberForm.memberForm.getMemberTabImportProgressBar().setMaximum(PushData.allUser.size());
+
+        // 导入列表
+        String[] headerNames = {"头像", "选择", "openId", "昵称", "性别", "地区", "关注时间"};
+        DefaultTableModel model = new DefaultTableModel(null, headerNames);
+        MemberForm.memberForm.getMemberListTable().setModel(model);
+        MemberForm.memberForm.getMemberListTable().getColumn("头像").setCellRenderer(new TableInCellImageLabelRenderer());
+
+        DefaultTableCellRenderer hr = (DefaultTableCellRenderer) MemberForm.memberForm.getMemberListTable().getTableHeader()
+                .getDefaultRenderer();
+        // 表头列名居左
+        hr.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
+
+        Object[] data;
+
+        TableColumnModel tableColumnModel = MemberForm.memberForm.getMemberListTable().getColumnModel();
+
+        TableColumn tableColumn1 = tableColumnModel.getColumn(1);
+        tableColumn1.setCellEditor(new DefaultCellEditor(new JCheckBox()));
+        tableColumn1.setCellRenderer(new TableInCellCheckBoxRenderer());
+        // 设置列宽
+        tableColumn1.setPreferredWidth(60);
+        tableColumn1.setMaxWidth(100);
+
+        // 设置行高
+        MemberForm.memberForm.getMemberListTable().setRowHeight(66);
+
+        WxMpService wxMpService = PushManage.getWxMpService();
+        List<String[]> allUser = PushData.allUser;
+        for (int i = 0; i < allUser.size(); i++) {
+            String[] openIds = allUser.get(i);
+            try {
+                String openId = openIds[0];
+                WxMpUser wxMpUser = wxMpService.getUserService().userInfo(openId);
+
+                data = new Object[7];
+                data[1] = false;
+                data[2] = openId;
+                if (wxMpUser != null) {
+                    data[3] = wxMpUser.getNickname();
+                    data[4] = wxMpUser.getSexDesc();
+                    data[5] = wxMpUser.getCountry() + "-" + wxMpUser.getProvince() + "-" + wxMpUser.getCity();
+                    data[6] = DateFormatUtils.format(wxMpUser.getSubscribeTime() * 1000, "yyyy-MM-dd HH:mm:ss");
+                    data[0] = wxMpUser.getHeadImgUrl();
+                }
+                model.addRow(data);
+            } catch (WxErrorException e) {
+                logger.error(e);
+            }
+            MemberForm.memberForm.getMemberTabImportProgressBar().setValue(i + 1);
+        }
     }
 }
