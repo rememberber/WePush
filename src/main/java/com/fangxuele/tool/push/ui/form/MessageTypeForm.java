@@ -84,6 +84,12 @@ public class MessageTypeForm {
 
             default:
         }
+        if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE || msgType == MessageTypeEnum.MA_TEMPLATE_CODE
+                || msgType == MessageTypeEnum.KEFU_CODE || msgType == MessageTypeEnum.KEFU_PRIORITY_CODE) {
+            MemberForm.memberForm.getImportFromWeixinPanel().setVisible(true);
+        } else {
+            MemberForm.memberForm.getImportFromWeixinPanel().setVisible(false);
+        }
         MessageEditForm.switchMsgType(msgType);
         MessageManageForm.init();
         MessageEditForm.clearAllField();
