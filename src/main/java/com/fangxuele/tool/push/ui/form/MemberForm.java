@@ -2,6 +2,7 @@ package com.fangxuele.tool.push.ui.form;
 
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.ui.Init;
+import com.fangxuele.tool.push.ui.listener.MemberListener;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -59,18 +60,27 @@ public class MemberForm {
      * 初始化导入用户tab
      */
     public static void init() {
+        memberForm.getMemberTabImportProgressBar().setVisible(false);
         memberForm.getImportFromSqlTextArea().setText(Init.config.getMemberSql());
         memberForm.getMemberFilePathField().setText(Init.config.getMemberFilePath());
+
+    }
+
+    /**
+     * 清除
+     */
+    public static void clearMember() {
         PushData.allUser = Collections.synchronizedList(new ArrayList<>());
         PushData.allUser.clear();
-        MemberForm.memberForm.getMemberTabCountLabel().setText("0");
+        memberForm.getMemberTabCountLabel().setText("0");
 
         String[] headerNames = {"选择", "数据"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
-        MemberForm.memberForm.getMemberListTable().setModel(model);
+        memberForm.getMemberListTable().setModel(model);
 
         // 隐藏表头
-        JTableUtil.hideTableHeader(MemberForm.memberForm.getMemberListTable());
+        JTableUtil.hideTableHeader(memberForm.getMemberListTable());
+        MemberListener.tagUserSet = null;
     }
 
     {
@@ -136,7 +146,7 @@ public class MemberForm {
         textField1 = new JTextField();
         panel3.add(textField1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         搜索Button = new JButton();
-        搜索Button.setIcon(new ImageIcon(getClass().getResource("/icon/search.png")));
+        搜索Button.setIcon(new ImageIcon(getClass().getResource("/icon/find_dark.png")));
         搜索Button.setText("搜索");
         panel3.add(搜索Button, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel4 = new JPanel();
@@ -181,7 +191,7 @@ public class MemberForm {
         memberImportExploreButton.setText("浏览");
         memberTabDownPanel.add(memberImportExploreButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         importFromFileButton = new JButton();
-        importFromFileButton.setIcon(new ImageIcon(getClass().getResource("/icon/fromVCS.png")));
+        importFromFileButton.setIcon(new ImageIcon(getClass().getResource("/icon/import_dark.png")));
         importFromFileButton.setText("导入");
         memberTabDownPanel.add(importFromFileButton, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         memberTabCenterPanel = new JPanel();
@@ -193,7 +203,7 @@ public class MemberForm {
         importFromSqlTextArea.setToolTipText("只要查询出的结果集只有一列openid（短信时对应的是手机号）就可以，列名不重要；例如：SELECT openid FROM t_user");
         memberTabCenterPanel.add(importFromSqlTextArea, new GridConstraints(0, 0, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 150), null, 0, false));
         importFromSqlButton = new JButton();
-        importFromSqlButton.setIcon(new ImageIcon(getClass().getResource("/icon/fromVCS.png")));
+        importFromSqlButton.setIcon(new ImageIcon(getClass().getResource("/icon/import_dark.png")));
         importFromSqlButton.setText("导入");
         memberTabCenterPanel.add(importFromSqlButton, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer3 = new Spacer();
@@ -211,7 +221,7 @@ public class MemberForm {
         memberImportAllButton = new JButton();
         Font memberImportAllButtonFont = this.$$$getFont$$$(null, Font.PLAIN, -1, memberImportAllButton.getFont());
         if (memberImportAllButtonFont != null) memberImportAllButton.setFont(memberImportAllButtonFont);
-        memberImportAllButton.setIcon(new ImageIcon(getClass().getResource("/icon/fromVCS.png")));
+        memberImportAllButton.setIcon(new ImageIcon(getClass().getResource("/icon/import_dark.png")));
         memberImportAllButton.setText("导入所有关注公众号的用户");
         importFromWeixinPanel.add(memberImportAllButton, new GridConstraints(3, 0, 1, 6, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         memberImportTagFreshButton = new JButton();
@@ -223,14 +233,14 @@ public class MemberForm {
         memberImportTagButton = new JButton();
         Font memberImportTagButtonFont = this.$$$getFont$$$(null, Font.PLAIN, -1, memberImportTagButton.getFont());
         if (memberImportTagButtonFont != null) memberImportTagButton.setFont(memberImportTagButtonFont);
-        memberImportTagButton.setIcon(new ImageIcon(getClass().getResource("/icon/fromVCS.png")));
+        memberImportTagButton.setIcon(new ImageIcon(getClass().getResource("/icon/import_dark.png")));
         memberImportTagButton.setText("导入选择的标签分组-取并集");
         importFromWeixinPanel.add(memberImportTagButton, new GridConstraints(1, 0, 1, 6, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         memberImportTagRetainButton = new JButton();
         Font memberImportTagRetainButtonFont = this.$$$getFont$$$(null, Font.PLAIN, -1, memberImportTagRetainButton.getFont());
         if (memberImportTagRetainButtonFont != null)
             memberImportTagRetainButton.setFont(memberImportTagRetainButtonFont);
-        memberImportTagRetainButton.setIcon(new ImageIcon(getClass().getResource("/icon/fromVCS.png")));
+        memberImportTagRetainButton.setIcon(new ImageIcon(getClass().getResource("/icon/import_dark.png")));
         memberImportTagRetainButton.setText("导入选择的标签分组-取交集");
         importFromWeixinPanel.add(memberImportTagRetainButton, new GridConstraints(2, 0, 1, 6, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }

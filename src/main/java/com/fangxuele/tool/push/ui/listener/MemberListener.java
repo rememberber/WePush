@@ -61,7 +61,7 @@ public class MemberListener {
     /**
      * 用于导入多个标签的用户时去重判断
      */
-    private static Set<String> tagUserSet;
+    public static Set<String> tagUserSet;
 
     public static void addListeners() {
         // 从文件导入按钮事件
@@ -73,6 +73,7 @@ public class MemberListener {
             int currentImported = 0;
 
             try {
+                MemberForm.memberForm.getMemberTabImportProgressBar().setVisible(true);
                 MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(true);
                 String fileNameLowerCase = file.getName().toLowerCase();
 
@@ -155,9 +156,6 @@ public class MemberListener {
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                MemberForm.memberForm.getMemberTabImportProgressBar().setMaximum(100);
-                MemberForm.memberForm.getMemberTabImportProgressBar().setValue(100);
-                MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(false);
                 JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "导入完成！", "完成",
                         JOptionPane.INFORMATION_MESSAGE);
 
@@ -172,6 +170,7 @@ public class MemberListener {
                 MemberForm.memberForm.getMemberTabImportProgressBar().setMaximum(100);
                 MemberForm.memberForm.getMemberTabImportProgressBar().setValue(100);
                 MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(false);
+                MemberForm.memberForm.getMemberTabImportProgressBar().setVisible(false);
                 if (reader != null) {
                     try {
                         reader.close();
@@ -196,6 +195,7 @@ public class MemberListener {
                 e1.printStackTrace();
             } finally {
                 MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(false);
+                MemberForm.memberForm.getMemberTabImportProgressBar().setVisible(false);
             }
         }));
 
@@ -248,6 +248,7 @@ public class MemberListener {
             } finally {
                 MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(false);
                 MemberForm.memberForm.getMemberTabImportProgressBar().setValue(MemberForm.memberForm.getMemberTabImportProgressBar().getMaximum());
+                MemberForm.memberForm.getMemberTabImportProgressBar().setVisible(false);
             }
         }));
 
@@ -273,6 +274,7 @@ public class MemberListener {
             } finally {
                 MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(false);
                 MemberForm.memberForm.getMemberTabImportProgressBar().setValue(MemberForm.memberForm.getMemberTabImportProgressBar().getMaximum());
+                MemberForm.memberForm.getMemberTabImportProgressBar().setVisible(false);
             }
         }));
 
@@ -281,11 +283,7 @@ public class MemberListener {
             int isClear = JOptionPane.showConfirmDialog(MemberForm.memberForm.getMemberPanel(), "确认清除？", "确认",
                     JOptionPane.YES_NO_OPTION);
             if (isClear == JOptionPane.YES_OPTION) {
-                if (PushData.allUser != null) {
-                    PushData.allUser.clear();
-                    MemberForm.memberForm.getMemberTabCountLabel().setText("0");
-                }
-                tagUserSet = null;
+                MemberForm.clearMember();
             }
         });
 
@@ -298,6 +296,7 @@ public class MemberListener {
 
             String querySql = MemberForm.memberForm.getImportFromSqlTextArea().getText();
 
+            MemberForm.memberForm.getMemberTabImportProgressBar().setVisible(true);
             MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(true);
             if (StringUtils.isNotEmpty(querySql)) {
                 try {
@@ -327,6 +326,7 @@ public class MemberListener {
                     MemberForm.memberForm.getMemberTabImportProgressBar().setMaximum(100);
                     MemberForm.memberForm.getMemberTabImportProgressBar().setValue(100);
                     MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(false);
+                    MemberForm.memberForm.getMemberTabImportProgressBar().setVisible(false);
                 }
             }
         }));
@@ -357,6 +357,7 @@ public class MemberListener {
      * 拉取公众平台用户列表
      */
     public static void getMpUserList() throws WxErrorException {
+        MemberForm.memberForm.getMemberTabImportProgressBar().setVisible(true);
         MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(true);
 
         WxMpService wxMpService = PushManage.getWxMpService();
@@ -417,6 +418,7 @@ public class MemberListener {
      * @throws WxErrorException
      */
     public static void getMpUserListByTag(Long tagId, boolean retain) throws WxErrorException {
+        MemberForm.memberForm.getMemberTabImportProgressBar().setVisible(true);
         MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(true);
 
         WxMpService wxMpService = PushManage.getWxMpService();
