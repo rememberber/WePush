@@ -346,6 +346,7 @@
                     <properties>
                       <gridColor color="-12236470"/>
                       <rowHeight value="40"/>
+                      <showVerticalLines value="false"/>
                     </properties>
                   </component>
                 </children>

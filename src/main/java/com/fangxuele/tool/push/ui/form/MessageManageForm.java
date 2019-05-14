@@ -144,6 +144,7 @@ public class MessageManageForm {
         msgHistable = new JTable();
         msgHistable.setGridColor(new Color(-12236470));
         msgHistable.setRowHeight(46);
+        msgHistable.setShowVerticalLines(false);
         scrollPane1.setViewportView(msgHistable);
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 4, new Insets(0, 0, 0, 0), -1, -1));

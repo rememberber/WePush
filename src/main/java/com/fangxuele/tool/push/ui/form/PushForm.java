@@ -231,6 +231,7 @@ public class PushForm {
         pushThreadTable = new JTable();
         pushThreadTable.setGridColor(new Color(-12236470));
         pushThreadTable.setRowHeight(40);
+        pushThreadTable.setShowVerticalLines(false);
         scrollPane2.setViewportView(pushThreadTable);
     }
 
