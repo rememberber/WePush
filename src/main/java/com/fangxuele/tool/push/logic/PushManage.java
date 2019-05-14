@@ -68,6 +68,10 @@ public class PushManage {
      */
     public static final String TEMPLATE_VAR_PREFIX = "var";
 
+    private volatile static WxMpService wxMpService;
+
+    private volatile static WxMpConfigStorage wxMpConfigStorage;
+
     /**
      * 预览消息
      *
@@ -252,7 +256,6 @@ public class PushManage {
      * @return WxMpConfigStorage
      */
     private static WxMpConfigStorage wxMpConfigStorage() {
-        WxMpInMemoryConfigStorage configStorage = new WxMpInMemoryConfigStorage();
         if (StringUtils.isEmpty(Init.config.getWechatAppId()) || StringUtils.isEmpty(Init.config.getWechatAppSecret())) {
             JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "请先在设置中填写并保存公众号相关配置！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
@@ -262,6 +265,7 @@ public class PushManage {
             PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
             return null;
         }
+        WxMpInMemoryConfigStorage configStorage = new WxMpInMemoryConfigStorage();
         configStorage.setAppId(Init.config.getWechatAppId());
         configStorage.setSecret(Init.config.getWechatAppSecret());
         configStorage.setToken(Init.config.getWechatToken());
@@ -300,10 +304,22 @@ public class PushManage {
      * @return WxMpService
      */
     public static WxMpService getWxMpService() {
-        WxMpService wxMpService = new WxMpServiceImpl();
-        WxMpConfigStorage wxMpConfigStorage = wxMpConfigStorage();
-        if (wxMpConfigStorage != null) {
-            wxMpService.setWxMpConfigStorage(wxMpConfigStorage);
+        if (wxMpService == null) {
+            synchronized (PushManage.class) {
+                if (wxMpService == null) {
+                    wxMpService = new WxMpServiceImpl();
+                }
+            }
+        }
+        if (wxMpConfigStorage == null) {
+            synchronized (PushManage.class) {
+                if (wxMpConfigStorage == null) {
+                    wxMpConfigStorage = wxMpConfigStorage();
+                    if (wxMpConfigStorage != null) {
+                        wxMpService.setWxMpConfigStorage(wxMpConfigStorage);
+                    }
+                }
+            }
         }
         return wxMpService;
     }

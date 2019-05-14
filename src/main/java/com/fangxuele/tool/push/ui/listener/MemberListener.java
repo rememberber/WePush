@@ -518,6 +518,7 @@ public class MemberListener {
      * 获取微信用户信息列表
      */
     private static void getWeixinUserInfoList() {
+        MemberForm.memberForm.getMemberListTable().removeAll();
         MemberForm.memberForm.getMemberTabImportProgressBar().setVisible(true);
         MemberForm.memberForm.getMemberTabImportProgressBar().setMaximum(PushData.allUser.size());
 
@@ -544,6 +545,9 @@ public class MemberListener {
         tableColumn1.setMaxWidth(100);
 
         // 设置行高
+//        if(){
+//            MemberForm.memberForm.getMemberListTable().setRowHeight(46);
+//        }else
         MemberForm.memberForm.getMemberListTable().setRowHeight(66);
 
         WxMpService wxMpService = PushManage.getWxMpService();
@@ -570,5 +574,6 @@ public class MemberListener {
             }
             MemberForm.memberForm.getMemberTabImportProgressBar().setValue(i + 1);
         }
+        MemberForm.memberForm.getMemberListTable().updateUI();
     }
 }
