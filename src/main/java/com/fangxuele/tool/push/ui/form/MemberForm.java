@@ -53,6 +53,10 @@ public class MemberForm {
     private JButton searchButton;
     private JButton exportButton;
     private JPanel importFromWeixinPanel;
+    private JCheckBox importOptionOpenIdCheckBox;
+    private JCheckBox importOptionBasicInfoCheckBox;
+    private JCheckBox importOptionAvatarCheckBox;
+    private JPanel importOptionPanel;
 
     public static MemberForm memberForm = new MemberForm();
 
@@ -153,7 +157,7 @@ public class MemberForm {
         panel4.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         splitPane1.setRightComponent(panel4);
         memberPanelRight = new JPanel();
-        memberPanelRight.setLayout(new GridLayoutManager(6, 1, new Insets(0, 0, 0, 0), -1, -1));
+        memberPanelRight.setLayout(new GridLayoutManager(7, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel4.add(memberPanelRight, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         memberTabUpPanel = new JPanel();
         memberTabUpPanel.setLayout(new GridLayoutManager(6, 6, new Insets(0, 0, 0, 0), -1, -1));
@@ -243,6 +247,25 @@ public class MemberForm {
         memberImportTagRetainButton.setIcon(new ImageIcon(getClass().getResource("/icon/import_dark.png")));
         memberImportTagRetainButton.setText("导入选择的标签分组-取交集");
         importFromWeixinPanel.add(memberImportTagRetainButton, new GridConstraints(2, 0, 1, 6, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        importOptionPanel = new JPanel();
+        importOptionPanel.setLayout(new GridLayoutManager(1, 4, new Insets(0, 0, 0, 0), -1, -1));
+        memberPanelRight.add(importOptionPanel, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        importOptionPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(new Color(-276358)), "导入选项", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, importOptionPanel.getFont())));
+        importOptionOpenIdCheckBox = new JCheckBox();
+        importOptionOpenIdCheckBox.setEnabled(false);
+        importOptionOpenIdCheckBox.setSelected(true);
+        importOptionOpenIdCheckBox.setText("openId");
+        importOptionPanel.add(importOptionOpenIdCheckBox, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final Spacer spacer5 = new Spacer();
+        importOptionPanel.add(spacer5, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        importOptionBasicInfoCheckBox = new JCheckBox();
+        importOptionBasicInfoCheckBox.setText("昵称、性别等基本信息");
+        importOptionBasicInfoCheckBox.setToolTipText("每获取一条信息会花费一次每日接口调用量");
+        importOptionPanel.add(importOptionBasicInfoCheckBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        importOptionAvatarCheckBox = new JCheckBox();
+        importOptionAvatarCheckBox.setText("头像");
+        importOptionAvatarCheckBox.setToolTipText("勾选会导致左侧列表甚至WePush变卡哦");
+        importOptionPanel.add(importOptionAvatarCheckBox, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
