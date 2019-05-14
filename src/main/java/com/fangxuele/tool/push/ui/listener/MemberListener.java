@@ -6,6 +6,7 @@ import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.PushManage;
 import com.fangxuele.tool.push.ui.Init;
@@ -15,7 +16,6 @@ import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.util.CharSetUtil;
 import com.fangxuele.tool.push.util.DbUtilMySQL;
-import com.fangxuele.tool.push.util.JTableUtil;
 import com.opencsv.CSVReader;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
@@ -23,6 +23,7 @@ import me.chanjar.weixin.mp.bean.result.WxMpUser;
 import me.chanjar.weixin.mp.bean.result.WxMpUserList;
 import me.chanjar.weixin.mp.bean.tag.WxTagListUser;
 import me.chanjar.weixin.mp.bean.tag.WxUserTag;
+import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
@@ -91,9 +92,6 @@ public class MemberListener {
                         .getDefaultRenderer();
                 // 表头列名居左
                 hr.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
-
-                // 隐藏表头
-                JTableUtil.hideTableHeader(MemberForm.memberForm.getMemberListTable());
 
                 Object[] data;
 
@@ -299,8 +297,8 @@ public class MemberListener {
         MemberForm.memberForm.getImportFromSqlButton().addActionListener(e -> ThreadUtil.execute(() -> {
             MemberForm.memberForm.getImportFromSqlButton().setEnabled(false);
             MemberForm.memberForm.getImportFromSqlButton().updateUI();
-
-            DbUtilMySQL dbUtilMySQL = DbUtilMySQL.getInstance();// 获取SQLServer连接实例
+            // 获取SQLServer连接实例
+            DbUtilMySQL dbUtilMySQL = DbUtilMySQL.getInstance();
 
             String querySql = MemberForm.memberForm.getImportFromSqlTextArea().getText();
 
@@ -308,7 +306,8 @@ public class MemberListener {
             MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(true);
             if (StringUtils.isNotEmpty(querySql)) {
                 try {
-                    ResultSet rs = dbUtilMySQL.executeQuery(querySql);// 表查询
+                    // 表查询
+                    ResultSet rs = dbUtilMySQL.executeQuery(querySql);
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());
                     int currentImported = 0;
 
@@ -367,7 +366,7 @@ public class MemberListener {
                     .getModel();
             int rowCount = tableModel.getRowCount();
             for (int i = 0; i < rowCount; i++) {
-                tableModel.setValueAt(selectAllToggle, i, 1);
+                tableModel.setValueAt(selectAllToggle, i, 0);
             }
         }));
     }
@@ -523,52 +522,77 @@ public class MemberListener {
         MemberForm.memberForm.getMemberTabImportProgressBar().setMaximum(PushData.allUser.size());
 
         // 导入列表
-        String[] headerNames = {"头像", "选择", "openId", "昵称", "性别", "地区", "关注时间"};
+        List<String> headerNameList = Lists.newArrayList();
+        headerNameList.add("选择");
+        if (MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
+            headerNameList.add("头像");
+        }
+        if (MemberForm.memberForm.getImportOptionBasicInfoCheckBox().isSelected()) {
+            headerNameList.add("昵称");
+            headerNameList.add("性别");
+            headerNameList.add("地区");
+            headerNameList.add("关注时间");
+        }
+        headerNameList.add("openId");
+        String[] headerNames = new String[headerNameList.size()];
+        headerNameList.toArray(headerNames);
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
         MemberForm.memberForm.getMemberListTable().setModel(model);
-        MemberForm.memberForm.getMemberListTable().getColumn("头像").setCellRenderer(new TableInCellImageLabelRenderer());
+        if (MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
+            MemberForm.memberForm.getMemberListTable().getColumn("头像").setCellRenderer(new TableInCellImageLabelRenderer());
+        }
 
         DefaultTableCellRenderer hr = (DefaultTableCellRenderer) MemberForm.memberForm.getMemberListTable().getTableHeader()
                 .getDefaultRenderer();
         // 表头列名居左
         hr.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
 
-        Object[] data;
+        List<Object> rowDataList;
 
         TableColumnModel tableColumnModel = MemberForm.memberForm.getMemberListTable().getColumnModel();
 
-        TableColumn tableColumn1 = tableColumnModel.getColumn(1);
-        tableColumn1.setCellEditor(new DefaultCellEditor(new JCheckBox()));
-        tableColumn1.setCellRenderer(new TableInCellCheckBoxRenderer());
+        TableColumn tableColumn0 = tableColumnModel.getColumn(0);
+        tableColumn0.setCellEditor(new DefaultCellEditor(new JCheckBox()));
+        tableColumn0.setCellRenderer(new TableInCellCheckBoxRenderer());
         // 设置列宽
-        tableColumn1.setPreferredWidth(60);
-        tableColumn1.setMaxWidth(100);
+        tableColumn0.setPreferredWidth(60);
+        tableColumn0.setMaxWidth(100);
 
         // 设置行高
-//        if(){
-//            MemberForm.memberForm.getMemberListTable().setRowHeight(46);
-//        }else
-        MemberForm.memberForm.getMemberListTable().setRowHeight(66);
+        int msgType = Init.config.getMsgType();
+        if ((msgType == MessageTypeEnum.MP_TEMPLATE_CODE || msgType == MessageTypeEnum.MA_TEMPLATE_CODE
+                || msgType == MessageTypeEnum.KEFU_CODE || msgType == MessageTypeEnum.KEFU_PRIORITY_CODE)
+                && MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
+            MemberForm.memberForm.getMemberListTable().setRowHeight(66);
+        } else {
+            MemberForm.memberForm.getMemberListTable().setRowHeight(46);
+        }
 
         WxMpService wxMpService = PushManage.getWxMpService();
         List<String[]> allUser = PushData.allUser;
         for (int i = 0; i < allUser.size(); i++) {
-            String[] openIds = allUser.get(i);
+            String[] importedData = allUser.get(i);
             try {
-                String openId = openIds[0];
-                WxMpUser wxMpUser = wxMpService.getUserService().userInfo(openId);
-
-                data = new Object[7];
-                data[1] = false;
-                data[2] = openId;
-                if (wxMpUser != null) {
-                    data[3] = wxMpUser.getNickname();
-                    data[4] = wxMpUser.getSexDesc();
-                    data[5] = wxMpUser.getCountry() + "-" + wxMpUser.getProvince() + "-" + wxMpUser.getCity();
-                    data[6] = DateFormatUtils.format(wxMpUser.getSubscribeTime() * 1000, "yyyy-MM-dd HH:mm:ss");
-                    data[0] = wxMpUser.getHeadImgUrl();
+                String openId = importedData[0];
+                rowDataList = new ArrayList<>();
+                rowDataList.add(false);
+                if (MemberForm.memberForm.getImportOptionBasicInfoCheckBox().isSelected() ||
+                        MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
+                    WxMpUser wxMpUser = wxMpService.getUserService().userInfo(openId);
+                    if (wxMpUser != null) {
+                        if (MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
+                            rowDataList.add(wxMpUser.getHeadImgUrl());
+                        }
+                        if (MemberForm.memberForm.getImportOptionBasicInfoCheckBox().isSelected()) {
+                            rowDataList.add(wxMpUser.getNickname());
+                            rowDataList.add(wxMpUser.getSexDesc());
+                            rowDataList.add(wxMpUser.getCountry() + "-" + wxMpUser.getProvince() + "-" + wxMpUser.getCity());
+                            rowDataList.add(DateFormatUtils.format(wxMpUser.getSubscribeTime() * 1000, "yyyy-MM-dd HH:mm:ss"));
+                        }
+                    }
                 }
-                model.addRow(data);
+                rowDataList.add(openId);
+                model.addRow(rowDataList.toArray());
             } catch (WxErrorException e) {
                 logger.error(e);
             }
