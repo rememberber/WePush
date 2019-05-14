@@ -250,7 +250,7 @@ public class MemberForm {
         importOptionPanel = new JPanel();
         importOptionPanel.setLayout(new GridLayoutManager(1, 4, new Insets(0, 0, 0, 0), -1, -1));
         memberPanelRight.add(importOptionPanel, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        importOptionPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(new Color(-276358)), "导入选项", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, importOptionPanel.getFont())));
+        importOptionPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(new Color(-276358)), "导入选项", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, importOptionPanel.getFont()), new Color(-276358)));
         importOptionOpenIdCheckBox = new JCheckBox();
         importOptionOpenIdCheckBox.setEnabled(false);
         importOptionOpenIdCheckBox.setSelected(true);

@@ -357,6 +357,7 @@
                     <properties/>
                     <border type="line" title="导入选项">
                       <font style="1"/>
+                      <title-color color="-276358"/>
                       <color color="-276358"/>
                     </border>
                     <children>

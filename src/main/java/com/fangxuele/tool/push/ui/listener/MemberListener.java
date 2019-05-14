@@ -16,6 +16,7 @@ import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.util.CharSetUtil;
 import com.fangxuele.tool.push.util.DbUtilMySQL;
+import com.fangxuele.tool.push.util.JTableUtil;
 import com.opencsv.CSVReader;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
@@ -126,7 +127,7 @@ public class MemberListener {
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                getWeixinUserInfoList();
+                renderMemberListTable();
                 JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "导入完成！", "完成",
                         JOptionPane.INFORMATION_MESSAGE);
 
@@ -157,7 +158,7 @@ public class MemberListener {
         MemberForm.memberForm.getMemberImportAllButton().addActionListener(e -> ThreadUtil.execute(() -> {
             try {
                 getMpUserList();
-                getWeixinUserInfoList();
+                renderMemberListTable();
                 JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "导入完成！", "完成",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (WxErrorException e1) {
@@ -206,7 +207,7 @@ public class MemberListener {
 
                     long selectedTagId = userTagMap.get(MemberForm.memberForm.getMemberImportTagComboBox().getSelectedItem());
                     getMpUserListByTag(selectedTagId, false);
-                    getWeixinUserInfoList();
+                    renderMemberListTable();
                     JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "导入完成！", "完成",
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
@@ -233,7 +234,7 @@ public class MemberListener {
 
                     long selectedTagId = userTagMap.get(MemberForm.memberForm.getMemberImportTagComboBox().getSelectedItem());
                     getMpUserListByTag(selectedTagId, true);
-                    getWeixinUserInfoList();
+                    renderMemberListTable();
                     JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "导入完成！", "完成",
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
@@ -334,7 +335,7 @@ public class MemberListener {
                     .getModel();
             int rowCount = tableModel.getRowCount();
             for (int i = 0; i < rowCount; i++) {
-                tableModel.setValueAt(selectAllToggle, i, 0);
+                tableModel.setValueAt(selectAllToggle, i, 1);
             }
         }));
     }
@@ -482,31 +483,45 @@ public class MemberListener {
     }
 
     /**
-     * 获取微信用户信息列表
+     * 获取导入数据信息列表
      */
-    private static void getWeixinUserInfoList() {
+    private static void renderMemberListTable() {
         MemberForm.memberForm.getMemberListTable().removeAll();
         MemberForm.memberForm.getMemberTabImportProgressBar().setVisible(true);
         MemberForm.memberForm.getMemberTabImportProgressBar().setMaximum(PushData.allUser.size());
 
+        int msgType = Init.config.getMsgType();
+
+        // 是否是微信平台类消息
+        boolean isWeixinTypeMsg = false;
+        if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE || msgType == MessageTypeEnum.MA_TEMPLATE_CODE
+                || msgType == MessageTypeEnum.KEFU_CODE || msgType == MessageTypeEnum.KEFU_PRIORITY_CODE) {
+            isWeixinTypeMsg = true;
+        }
         // 导入列表
         List<String> headerNameList = Lists.newArrayList();
+        headerNameList.add("Data");
         headerNameList.add("选择");
-        if (MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
-            headerNameList.add("头像");
+        if (isWeixinTypeMsg) {
+            if (MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
+                headerNameList.add("头像");
+            }
+            if (MemberForm.memberForm.getImportOptionBasicInfoCheckBox().isSelected()) {
+                headerNameList.add("昵称");
+                headerNameList.add("性别");
+                headerNameList.add("地区");
+                headerNameList.add("关注时间");
+            }
+            headerNameList.add("openId");
+        } else {
+            headerNameList.add("数据");
         }
-        if (MemberForm.memberForm.getImportOptionBasicInfoCheckBox().isSelected()) {
-            headerNameList.add("昵称");
-            headerNameList.add("性别");
-            headerNameList.add("地区");
-            headerNameList.add("关注时间");
-        }
-        headerNameList.add("openId");
+
         String[] headerNames = new String[headerNameList.size()];
         headerNameList.toArray(headerNames);
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
         MemberForm.memberForm.getMemberListTable().setModel(model);
-        if (MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
+        if (isWeixinTypeMsg && MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
             MemberForm.memberForm.getMemberListTable().getColumn("头像").setCellRenderer(new TableInCellImageLabelRenderer());
         }
 
@@ -515,51 +530,54 @@ public class MemberListener {
         // 表头列名居左
         hr.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
 
-        List<Object> rowDataList;
-
+        // 设置checkBox列
         TableColumnModel tableColumnModel = MemberForm.memberForm.getMemberListTable().getColumnModel();
+        TableColumn tableColumn1 = tableColumnModel.getColumn(1);
+        tableColumn1.setCellEditor(new DefaultCellEditor(new JCheckBox()));
+        tableColumn1.setCellRenderer(new TableInCellCheckBoxRenderer());
+        tableColumn1.setPreferredWidth(60);
+        tableColumn1.setMaxWidth(100);
 
-        TableColumn tableColumn0 = tableColumnModel.getColumn(0);
-        tableColumn0.setCellEditor(new DefaultCellEditor(new JCheckBox()));
-        tableColumn0.setCellRenderer(new TableInCellCheckBoxRenderer());
-        // 设置列宽
-        tableColumn0.setPreferredWidth(60);
-        tableColumn0.setMaxWidth(100);
+        // 隐藏第0列Data数据列
+        JTableUtil.hideColumn(MemberForm.memberForm.getMemberListTable(), 0);
 
         // 设置行高
-        int msgType = Init.config.getMsgType();
-        if ((msgType == MessageTypeEnum.MP_TEMPLATE_CODE || msgType == MessageTypeEnum.MA_TEMPLATE_CODE
-                || msgType == MessageTypeEnum.KEFU_CODE || msgType == MessageTypeEnum.KEFU_PRIORITY_CODE)
-                && MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
+        if (isWeixinTypeMsg && MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
             MemberForm.memberForm.getMemberListTable().setRowHeight(66);
         } else {
             MemberForm.memberForm.getMemberListTable().setRowHeight(46);
         }
 
-        WxMpService wxMpService = PushManage.getWxMpService();
-        List<String[]> allUser = PushData.allUser;
-        for (int i = 0; i < allUser.size(); i++) {
-            String[] importedData = allUser.get(i);
+        List<Object> rowDataList;
+        for (int i = 0; i < PushData.allUser.size(); i++) {
+            String[] importedData = PushData.allUser.get(i);
             try {
                 String openId = importedData[0];
                 rowDataList = new ArrayList<>();
+                rowDataList.add(String.join("|", importedData));
                 rowDataList.add(false);
-                if (MemberForm.memberForm.getImportOptionBasicInfoCheckBox().isSelected() ||
-                        MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
-                    WxMpUser wxMpUser = wxMpService.getUserService().userInfo(openId);
-                    if (wxMpUser != null) {
-                        if (MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
-                            rowDataList.add(wxMpUser.getHeadImgUrl());
-                        }
-                        if (MemberForm.memberForm.getImportOptionBasicInfoCheckBox().isSelected()) {
-                            rowDataList.add(wxMpUser.getNickname());
-                            rowDataList.add(wxMpUser.getSexDesc());
-                            rowDataList.add(wxMpUser.getCountry() + "-" + wxMpUser.getProvince() + "-" + wxMpUser.getCity());
-                            rowDataList.add(DateFormatUtils.format(wxMpUser.getSubscribeTime() * 1000, "yyyy-MM-dd HH:mm:ss"));
+                if (isWeixinTypeMsg) {
+                    if (MemberForm.memberForm.getImportOptionBasicInfoCheckBox().isSelected() ||
+                            MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
+                        WxMpService wxMpService = PushManage.getWxMpService();
+                        WxMpUser wxMpUser = wxMpService.getUserService().userInfo(openId);
+                        if (wxMpUser != null) {
+                            if (MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
+                                rowDataList.add(wxMpUser.getHeadImgUrl());
+                            }
+                            if (MemberForm.memberForm.getImportOptionBasicInfoCheckBox().isSelected()) {
+                                rowDataList.add(wxMpUser.getNickname());
+                                rowDataList.add(wxMpUser.getSexDesc());
+                                rowDataList.add(wxMpUser.getCountry() + "-" + wxMpUser.getProvince() + "-" + wxMpUser.getCity());
+                                rowDataList.add(DateFormatUtils.format(wxMpUser.getSubscribeTime() * 1000, "yyyy-MM-dd HH:mm:ss"));
+                            }
                         }
                     }
+                    rowDataList.add(openId);
+                } else {
+                    rowDataList.add(String.join("|", importedData));
                 }
-                rowDataList.add(openId);
+
                 model.addRow(rowDataList.toArray());
             } catch (WxErrorException e) {
                 logger.error(e);
