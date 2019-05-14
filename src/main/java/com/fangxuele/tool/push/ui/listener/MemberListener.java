@@ -662,9 +662,21 @@ public class MemberListener {
                                 rowDataList.add(wxMpUser.getCountry() + "-" + wxMpUser.getProvince() + "-" + wxMpUser.getCity());
                                 rowDataList.add(DateFormatUtils.format(wxMpUser.getSubscribeTime() * 1000, "yyyy-MM-dd HH:mm:ss"));
                             }
+                        } else {
+                            if (MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
+                                rowDataList.add("");
+                            }
+                            if (MemberForm.memberForm.getImportOptionBasicInfoCheckBox().isSelected()) {
+                                rowDataList.add("");
+                                rowDataList.add("");
+                                rowDataList.add("");
+                                rowDataList.add("");
+                            }
                         }
+                        rowDataList.add(openId);
+                    } else {
+                        rowDataList.add(String.join("|", importedData));
                     }
-                    rowDataList.add(openId);
                 } else {
                     rowDataList.add(String.join("|", importedData));
                 }
