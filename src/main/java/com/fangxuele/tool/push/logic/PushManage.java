@@ -33,7 +33,6 @@ import com.taobao.api.response.AlibabaAliqinFcSmsNumSendResponse;
 import com.yunpian.sdk.YunpianClient;
 import com.yunpian.sdk.model.Result;
 import com.yunpian.sdk.model.SmsSingleSend;
-import me.chanjar.weixin.mp.api.WxMpConfigStorage;
 import me.chanjar.weixin.mp.api.WxMpInMemoryConfigStorage;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.api.impl.WxMpServiceImpl;
@@ -70,7 +69,11 @@ public class PushManage {
 
     private volatile static WxMpService wxMpService;
 
-    private volatile static WxMpConfigStorage wxMpConfigStorage;
+    private volatile static WxMpInMemoryConfigStorage wxMpConfigStorage;
+
+    private volatile static WxMaService wxMaService;
+
+    private volatile static WxMaInMemoryConfig wxMaConfigStorage;
 
     /**
      * 预览消息
@@ -255,7 +258,7 @@ public class PushManage {
      *
      * @return WxMpConfigStorage
      */
-    private static WxMpConfigStorage wxMpConfigStorage() {
+    private static WxMpInMemoryConfigStorage wxMpConfigStorage() {
         if (StringUtils.isEmpty(Init.config.getWechatAppId()) || StringUtils.isEmpty(Init.config.getWechatAppSecret())) {
             JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "请先在设置中填写并保存公众号相关配置！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
@@ -330,8 +333,23 @@ public class PushManage {
      * @return WxMaService
      */
     static WxMaService getWxMaService() {
-        WxMaService wxMaService = new WxMaServiceImpl();
-        wxMaService.setWxMaConfig(wxMaConfigStorage());
+        if (wxMaService == null) {
+            synchronized (PushManage.class) {
+                if (wxMaService == null) {
+                    wxMaService = new WxMaServiceImpl();
+                }
+            }
+        }
+        if (wxMaConfigStorage == null) {
+            synchronized (PushManage.class) {
+                if (wxMaConfigStorage == null) {
+                    wxMaConfigStorage = wxMaConfigStorage();
+                    if (wxMaConfigStorage != null) {
+                        wxMaService.setWxMaConfig(wxMaConfigStorage);
+                    }
+                }
+            }
+        }
         return wxMaService;
     }
 
