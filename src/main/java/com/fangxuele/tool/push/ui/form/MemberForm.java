@@ -3,7 +3,6 @@ package com.fangxuele.tool.push.ui.form;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.listener.MemberListener;
-import com.fangxuele.tool.push.util.JTableUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -82,8 +81,6 @@ public class MemberForm {
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
         memberForm.getMemberListTable().setModel(model);
 
-        // 隐藏表头
-        JTableUtil.hideTableHeader(memberForm.getMemberListTable());
         MemberListener.tagUserSet = null;
     }
 
