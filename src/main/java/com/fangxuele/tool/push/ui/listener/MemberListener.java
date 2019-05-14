@@ -83,27 +83,6 @@ public class MemberListener {
                 MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(true);
                 String fileNameLowerCase = file.getName().toLowerCase();
 
-                // 导入列表
-                String[] headerNames = {"选择", "数据"};
-                DefaultTableModel model = new DefaultTableModel(null, headerNames);
-                MemberForm.memberForm.getMemberListTable().setModel(model);
-
-                DefaultTableCellRenderer hr = (DefaultTableCellRenderer) MemberForm.memberForm.getMemberListTable().getTableHeader()
-                        .getDefaultRenderer();
-                // 表头列名居左
-                hr.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
-
-                Object[] data;
-
-                TableColumnModel tableColumnModel = MemberForm.memberForm.getMemberListTable().getColumnModel();
-
-                TableColumn tableColumn0 = tableColumnModel.getColumn(0);
-
-                tableColumn0.setCellEditor(new DefaultCellEditor(new JCheckBox()));
-                tableColumn0.setCellRenderer(new TableInCellCheckBoxRenderer());
-                // 设置列宽
-                tableColumn0.setPreferredWidth(60);
-                tableColumn0.setMaxWidth(100);
                 if (fileNameLowerCase.endsWith(".csv")) {
                     // 可以解决中文乱码问题
                     DataInputStream in = new DataInputStream(new FileInputStream(file));
@@ -115,10 +94,6 @@ public class MemberListener {
                         PushData.allUser.add(nextLine);
                         currentImported++;
                         MemberForm.memberForm.getMemberTabCountLabel().setText(String.valueOf(currentImported));
-                        data = new Object[2];
-                        data[0] = false;
-                        data[1] = nextLine;
-                        model.addRow(data);
                     }
                 } else if (fileNameLowerCase.endsWith(".xlsx") || fileNameLowerCase.endsWith(".xls")) {
                     ExcelReader excelReader = ExcelUtil.getReader(file);
@@ -134,10 +109,6 @@ public class MemberListener {
                             PushData.allUser.add(nextLine);
                             currentImported++;
                             MemberForm.memberForm.getMemberTabCountLabel().setText(String.valueOf(currentImported));
-                            data = new Object[2];
-                            data[0] = false;
-                            data[1] = nextLine;
-                            model.addRow(data);
                         }
                     }
                 } else if (fileNameLowerCase.endsWith(".txt")) {
@@ -149,16 +120,13 @@ public class MemberListener {
                         PushData.allUser.add(line.split(","));
                         currentImported++;
                         MemberForm.memberForm.getMemberTabCountLabel().setText(String.valueOf(currentImported));
-                        data = new Object[2];
-                        data[0] = false;
-                        data[1] = line;
-                        model.addRow(data);
                     }
                 } else {
                     JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "不支持该格式的文件！", "文件格式不支持",
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
+                getWeixinUserInfoList();
                 JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "导入完成！", "完成",
                         JOptionPane.INFORMATION_MESSAGE);
 
@@ -316,7 +284,7 @@ public class MemberListener {
                         currentImported++;
                         MemberForm.memberForm.getMemberTabCountLabel().setText(String.valueOf(currentImported));
                     }
-
+                    getMpUserList();
                     JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "导入完成！", "完成",
                             JOptionPane.INFORMATION_MESSAGE);
 
