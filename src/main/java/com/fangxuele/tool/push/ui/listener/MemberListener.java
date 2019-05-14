@@ -338,6 +338,48 @@ public class MemberListener {
                 tableModel.setValueAt(selectAllToggle, i, 1);
             }
         }));
+
+        // 删除按钮事件
+        MemberForm.memberForm.getDeleteButton().addActionListener(e -> ThreadUtil.execute(() -> {
+            try {
+                DefaultTableModel tableModel = (DefaultTableModel) MemberForm.memberForm.getMemberListTable()
+                        .getModel();
+                int rowCount = tableModel.getRowCount();
+
+                int selectedCount = 0;
+                for (int i = 0; i < rowCount; i++) {
+                    boolean isSelected = (boolean) tableModel.getValueAt(i, 1);
+                    if (isSelected) {
+                        selectedCount++;
+                    }
+                }
+
+                if (selectedCount == 0) {
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "请至少选择一个！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    int isDelete = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getMemberPanel(), "确认删除？", "确认",
+                            JOptionPane.YES_NO_OPTION);
+                    if (isDelete == JOptionPane.YES_OPTION) {
+                        for (int i = 0; i < rowCount; ) {
+                            boolean delete = (boolean) tableModel.getValueAt(i, 1);
+                            if (delete) {
+                                tableModel.removeRow(i);
+                                MemberForm.memberForm.getMemberListTable().updateUI();
+                                i = 0;
+                                rowCount = tableModel.getRowCount();
+                            } else {
+                                i++;
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "删除失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        }));
     }
 
     /**
