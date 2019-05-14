@@ -245,8 +245,9 @@ public class PushHisListener {
                 if (selectedCount > 0) {
                     MainWindow.mainWindow.getTabbedPane().setSelectedIndex(3);
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+                    MemberForm.memberForm.getMemberTabImportProgressBar().setVisible(true);
+                    MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(true);
                     for (String toExportFilePath : toImportFilePathList) {
-                        MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(true);
                         // 可以解决中文乱码问题
                         DataInputStream in = new DataInputStream(new FileInputStream(toExportFilePath));
                         reader = new CSVReader(new InputStreamReader(in, StandardCharsets.UTF_8));
@@ -274,6 +275,7 @@ public class PushHisListener {
                 MemberForm.memberForm.getMemberTabImportProgressBar().setMaximum(100);
                 MemberForm.memberForm.getMemberTabImportProgressBar().setValue(100);
                 MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(false);
+                MemberForm.memberForm.getMemberTabImportProgressBar().setVisible(false);
                 if (reader != null) {
                     try {
                         reader.close();
