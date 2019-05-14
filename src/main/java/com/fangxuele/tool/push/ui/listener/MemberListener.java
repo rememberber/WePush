@@ -70,12 +70,14 @@ public class MemberListener {
 
     private static boolean selectAllToggle = false;
 
+    private static final String TXT_FILE_DATA_SEPERATOR_REGEX = "\\|";
+
     public static void addListeners() {
         // 从文件导入按钮事件
         MemberForm.memberForm.getImportFromFileButton().addActionListener(e -> ThreadUtil.execute(() -> {
             File file = new File(MemberForm.memberForm.getMemberFilePathField().getText());
             CSVReader reader = null;
-            FileReader fileReader = null;
+            FileReader fileReader;
 
             int currentImported = 0;
 
@@ -118,7 +120,7 @@ public class MemberListener {
                     BufferedReader br = fileReader.getReader();
                     String line;
                     while ((line = br.readLine()) != null) {
-                        PushData.allUser.add(line.split(","));
+                        PushData.allUser.add(line.split(TXT_FILE_DATA_SEPERATOR_REGEX));
                         currentImported++;
                         MemberForm.memberForm.getMemberTabCountLabel().setText(String.valueOf(currentImported));
                     }
@@ -378,6 +380,53 @@ public class MemberListener {
                 JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "删除失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
+            }
+        }));
+
+        // 导入按钮事件
+        MemberForm.memberForm.getImportSelectedButton().addActionListener(e -> ThreadUtil.execute(() -> {
+            try {
+                DefaultTableModel tableModel = (DefaultTableModel) MemberForm.memberForm.getMemberListTable()
+                        .getModel();
+                int rowCount = tableModel.getRowCount();
+
+                int selectedCount = 0;
+                List<String> toImportDataList = new ArrayList<>();
+                for (int i = 0; i < rowCount; i++) {
+                    boolean isSelected = (boolean) tableModel.getValueAt(i, 1);
+                    if (isSelected) {
+                        selectedCount++;
+                        String toImportData = (String) tableModel.getValueAt(i, 0);
+                        toImportDataList.add(toImportData);
+                    }
+                }
+
+                if (selectedCount <= 0) {
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "请至少选择一个！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+                    MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(true);
+                    MemberForm.memberForm.getMemberTabImportProgressBar().setVisible(true);
+                    for (String toImportData : toImportDataList) {
+                        PushData.allUser.add(toImportData.split(TXT_FILE_DATA_SEPERATOR_REGEX));
+                        MemberForm.memberForm.getMemberTabCountLabel().setText(String.valueOf(PushData.allUser.size()));
+                        MemberForm.memberForm.getMemberTabImportProgressBar().setMaximum(100);
+                        MemberForm.memberForm.getMemberTabImportProgressBar().setValue(100);
+                        MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(false);
+                    }
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "导入完成！", "完成",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导入失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            } finally {
+                MemberForm.memberForm.getMemberTabImportProgressBar().setMaximum(100);
+                MemberForm.memberForm.getMemberTabImportProgressBar().setValue(100);
+                MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(false);
+                MemberForm.memberForm.getMemberTabImportProgressBar().setVisible(false);
             }
         }));
     }
