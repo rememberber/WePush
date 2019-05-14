@@ -367,13 +367,13 @@ public class MemberListener {
                             boolean delete = (boolean) tableModel.getValueAt(i, 1);
                             if (delete) {
                                 tableModel.removeRow(i);
-                                MemberForm.memberForm.getMemberListTable().updateUI();
                                 i = 0;
                                 rowCount = tableModel.getRowCount();
                             } else {
                                 i++;
                             }
                         }
+                        MemberForm.memberForm.getMemberListTable().updateUI();
                     }
                 }
             } catch (Exception e1) {

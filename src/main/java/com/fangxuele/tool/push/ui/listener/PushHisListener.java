@@ -126,17 +126,16 @@ public class PushHisListener {
                                 if (msgTemplateDataFile.exists()) {
                                    msgTemplateDataFile.delete();
                                 }
-
                                 pushHistoryMapper.deleteByPrimaryKey(selectedId);
                                 tableModel.removeRow(i);
-                                PushHisForm.pushHisForm.getPushHisLeftTable().updateUI();
+
                                 i = 0;
                                 rowCount = tableModel.getRowCount();
                             } else {
                                 i++;
                             }
                         }
-
+                        PushHisForm.pushHisForm.getPushHisLeftTable().updateUI();
                         MemberForm.init();
                     }
                 }
