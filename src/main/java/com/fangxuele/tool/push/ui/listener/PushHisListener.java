@@ -82,9 +82,7 @@ public class PushHisListener {
         // 推送历史管理-删除
         PushHisForm.pushHisForm.getPushHisLeftDeleteButton().addActionListener(e -> ThreadUtil.execute(() -> {
             try {
-
                 int[] selectedRows = PushHisForm.pushHisForm.getPushHisLeftTable().getSelectedRows();
-
                 if (selectedRows.length == 0) {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "请至少选择一个！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
@@ -92,9 +90,7 @@ public class PushHisListener {
                     int isDelete = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getSettingPanel(), "确认删除？", "确认",
                             JOptionPane.YES_NO_OPTION);
                     if (isDelete == JOptionPane.YES_OPTION) {
-                        DefaultTableModel tableModel = (DefaultTableModel) PushHisForm.pushHisForm.getPushHisLeftTable()
-                                .getModel();
-
+                        DefaultTableModel tableModel = (DefaultTableModel) PushHisForm.pushHisForm.getPushHisLeftTable().getModel();
                         for (int i = selectedRows.length; i > 0; i--) {
                             int selectedRow = PushHisForm.pushHisForm.getPushHisLeftTable().getSelectedRow();
                             Integer selectedId = (Integer) tableModel.getValueAt(selectedRow, 3);

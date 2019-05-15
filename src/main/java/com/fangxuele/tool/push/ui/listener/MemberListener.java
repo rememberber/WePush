@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.listener;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.FileReader;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
@@ -10,7 +11,6 @@ import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.PushManage;
 import com.fangxuele.tool.push.ui.Init;
-import com.fangxuele.tool.push.ui.component.TableInCellCheckBoxRenderer;
 import com.fangxuele.tool.push.ui.component.TableInCellImageLabelRenderer;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MemberForm;
@@ -33,8 +33,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
@@ -67,8 +66,6 @@ public class MemberListener {
      * 用于导入多个标签的用户时去重判断
      */
     public static Set<String> tagUserSet;
-
-    private static boolean selectAllToggle = false;
 
     private static final String TXT_FILE_DATA_SEPERATOR_REGEX = "\\|";
 
@@ -331,47 +328,22 @@ public class MemberListener {
         });
 
         // 全选按钮事件
-        MemberForm.memberForm.getSelectAllButton().addActionListener(e -> ThreadUtil.execute(() -> {
-            toggleSelectAll();
-            DefaultTableModel tableModel = (DefaultTableModel) MemberForm.memberForm.getMemberListTable()
-                    .getModel();
-            int rowCount = tableModel.getRowCount();
-            for (int i = 0; i < rowCount; i++) {
-                tableModel.setValueAt(selectAllToggle, i, 1);
-            }
-        }));
+        MemberForm.memberForm.getSelectAllButton().addActionListener(e -> ThreadUtil.execute(() -> MemberForm.memberForm.getMemberListTable().selectAll()));
 
         // 删除按钮事件
         MemberForm.memberForm.getDeleteButton().addActionListener(e -> ThreadUtil.execute(() -> {
             try {
-                DefaultTableModel tableModel = (DefaultTableModel) MemberForm.memberForm.getMemberListTable()
-                        .getModel();
-                int rowCount = tableModel.getRowCount();
-
-                int selectedCount = 0;
-                for (int i = 0; i < rowCount; i++) {
-                    boolean isSelected = (boolean) tableModel.getValueAt(i, 1);
-                    if (isSelected) {
-                        selectedCount++;
-                    }
-                }
-
-                if (selectedCount == 0) {
+                int[] selectedRows = MemberForm.memberForm.getMemberListTable().getSelectedRows();
+                if (selectedRows.length == 0) {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "请至少选择一个！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     int isDelete = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getMemberPanel(), "确认删除？", "确认",
                             JOptionPane.YES_NO_OPTION);
                     if (isDelete == JOptionPane.YES_OPTION) {
-                        for (int i = 0; i < rowCount; ) {
-                            boolean delete = (boolean) tableModel.getValueAt(i, 1);
-                            if (delete) {
-                                tableModel.removeRow(i);
-                                i = 0;
-                                rowCount = tableModel.getRowCount();
-                            } else {
-                                i++;
-                            }
+                        DefaultTableModel tableModel = (DefaultTableModel) MemberForm.memberForm.getMemberListTable().getModel();
+                        for (int i = selectedRows.length; i > 0; i--) {
+                            tableModel.removeRow(MemberForm.memberForm.getMemberListTable().getSelectedRow());
                         }
                         MemberForm.memberForm.getMemberListTable().updateUI();
                     }
@@ -386,29 +358,16 @@ public class MemberListener {
         // 导入按钮事件
         MemberForm.memberForm.getImportSelectedButton().addActionListener(e -> ThreadUtil.execute(() -> {
             try {
-                DefaultTableModel tableModel = (DefaultTableModel) MemberForm.memberForm.getMemberListTable()
-                        .getModel();
-                int rowCount = tableModel.getRowCount();
-
-                int selectedCount = 0;
-                List<String> toImportDataList = new ArrayList<>();
-                for (int i = 0; i < rowCount; i++) {
-                    boolean isSelected = (boolean) tableModel.getValueAt(i, 1);
-                    if (isSelected) {
-                        selectedCount++;
-                        String toImportData = (String) tableModel.getValueAt(i, 0);
-                        toImportDataList.add(toImportData);
-                    }
-                }
-
-                if (selectedCount <= 0) {
+                int[] selectedRows = MemberForm.memberForm.getMemberListTable().getSelectedRows();
+                if (selectedRows.length <= 0) {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "请至少选择一个！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());
                     MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(true);
                     MemberForm.memberForm.getMemberTabImportProgressBar().setVisible(true);
-                    for (String toImportData : toImportDataList) {
+                    for (int selectedRow : selectedRows) {
+                        String toImportData = (String) MemberForm.memberForm.getMemberListTable().getValueAt(selectedRow, 0);
                         PushData.allUser.add(toImportData.split(TXT_FILE_DATA_SEPERATOR_REGEX));
                         MemberForm.memberForm.getMemberTabCountLabel().setText(String.valueOf(PushData.allUser.size()));
                         MemberForm.memberForm.getMemberTabImportProgressBar().setMaximum(100);
@@ -429,19 +388,57 @@ public class MemberListener {
                 MemberForm.memberForm.getMemberTabImportProgressBar().setVisible(false);
             }
         }));
-    }
 
-    /**
-     * 切换全选/全不选
-     *
-     * @return
-     */
-    private static void toggleSelectAll() {
-        if (!selectAllToggle) {
-            selectAllToggle = true;
-        } else {
-            selectAllToggle = false;
-        }
+        // 导出按钮事件
+        MemberForm.memberForm.getExportButton().addActionListener(e -> ThreadUtil.execute(() -> {
+            List<String> toExportFilePathList = new ArrayList<>();
+            int selectedCount = 0;
+
+            try {
+                DefaultTableModel tableModel = (DefaultTableModel) MemberForm.memberForm.getMemberListTable().getModel();
+                int rowCount = tableModel.getRowCount();
+                for (int i = 0; i < rowCount; i++) {
+                    boolean selected = (boolean) tableModel.getValueAt(i, 1);
+                    if (selected) {
+                        selectedCount++;
+                        Integer selectedId = (Integer) tableModel.getValueAt(i, 4);
+                    }
+                }
+
+                if (selectedCount > 0) {
+                    JFileChooser fileChooser = new JFileChooser();
+                    fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                    int approve = fileChooser.showOpenDialog(MainWindow.mainWindow.getMemberPanel());
+                    String exportPath;
+                    if (approve == JFileChooser.APPROVE_OPTION) {
+                        exportPath = fileChooser.getSelectedFile().getAbsolutePath();
+                    } else {
+                        return;
+                    }
+
+//                    Excel
+                    for (String toExportFilePath : toExportFilePathList) {
+                        FileUtil.copy(toExportFilePath, exportPath, true);
+                    }
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导出成功！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    try {
+                        Desktop desktop = Desktop.getDesktop();
+                        desktop.open(new File(exportPath));
+                    } catch (Exception e2) {
+                        logger.error(e2);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "请至少选择一个！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导出失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        }));
     }
 
     /**
@@ -592,7 +589,6 @@ public class MemberListener {
         // 导入列表
         List<String> headerNameList = Lists.newArrayList();
         headerNameList.add("Data");
-        headerNameList.add("选择");
         if (isWeixinTypeMsg) {
             if (MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
                 headerNameList.add("头像");
@@ -621,14 +617,6 @@ public class MemberListener {
         // 表头列名居左
         hr.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
 
-        // 设置checkBox列
-        TableColumnModel tableColumnModel = MemberForm.memberForm.getMemberListTable().getColumnModel();
-        TableColumn tableColumn1 = tableColumnModel.getColumn(1);
-        tableColumn1.setCellEditor(new DefaultCellEditor(new JCheckBox()));
-        tableColumn1.setCellRenderer(new TableInCellCheckBoxRenderer());
-        tableColumn1.setPreferredWidth(60);
-        tableColumn1.setMaxWidth(100);
-
         // 隐藏第0列Data数据列
         JTableUtil.hideColumn(MemberForm.memberForm.getMemberListTable(), 0);
 
@@ -646,7 +634,6 @@ public class MemberListener {
                 String openId = importedData[0];
                 rowDataList = new ArrayList<>();
                 rowDataList.add(String.join("|", importedData));
-                rowDataList.add(false);
                 if (isWeixinTypeMsg) {
                     if (MemberForm.memberForm.getImportOptionBasicInfoCheckBox().isSelected() ||
                             MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {

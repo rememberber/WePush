@@ -77,7 +77,7 @@ public class MemberForm {
         PushData.allUser.clear();
         memberForm.getMemberTabCountLabel().setText("0");
 
-        String[] headerNames = {"选择", "数据"};
+        String[] headerNames = {"数据"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
         memberForm.getMemberListTable().setModel(model);
 
