@@ -71,6 +71,26 @@ public class AboutListener {
                 AboutForm.aboutForm.getCheckUpdateLabel().setCursor(new Cursor(Cursor.HAND_CURSOR));
             }
         });
+
+        // 帮助文档
+        AboutForm.aboutForm.getHelpDocLabel().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                Desktop desktop = Desktop.getDesktop();
+                try {
+                    desktop.browse(new URI("https://github.com/rememberber/WePush/wiki"));
+                } catch (IOException | URISyntaxException e1) {
+                    e1.printStackTrace();
+                }
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                super.mouseEntered(e);
+                AboutForm.aboutForm.getHelpDocLabel().setCursor(new Cursor(Cursor.HAND_CURSOR));
+            }
+        });
     }
 
     public static void checkUpdate(boolean initCheck) {

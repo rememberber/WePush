@@ -23,7 +23,6 @@ public class MainWindow {
     private JSplitPane messagePanel;
     private JPanel memberPanel;
     private JPanel pushPanel;
-    private JPanel helpPanel;
     private JPanel settingPanel;
     private JPanel schedulePanel;
     private JPanel pushHisPanel;
@@ -36,7 +35,6 @@ public class MainWindow {
 
     public void init() {
         mainWindow.getAboutPanel().add(AboutForm.aboutForm.getAboutPanel(), new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));
-        mainWindow.getHelpPanel().add(HelpForm.helpForm.getHelpPanel(), new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));
         mainWindow.getUserCasePanel().add(UserCaseForm.userCaseForm.getUserCasePanel(), new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));
         mainWindow.getSchedulePanel().add(ScheduleForm.scheduleForm.getSchedulePanel(), new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));
         mainWindow.getPushHisPanel().add(PushHisForm.pushHisForm.getPushHisPanel(), new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));
@@ -111,9 +109,6 @@ public class MainWindow {
         Font settingPanelFont = this.$$$getFont$$$("Microsoft YaHei UI", -1, -1, settingPanel.getFont());
         if (settingPanelFont != null) settingPanel.setFont(settingPanelFont);
         tabbedPane.addTab("设置", settingPanel);
-        helpPanel = new JPanel();
-        helpPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 10, 0), -1, -1));
-        tabbedPane.addTab("使用帮助", helpPanel);
         userCasePanel = new JPanel();
         userCasePanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 10, 0), -1, -1));
         tabbedPane.addTab("他们都在用", userCasePanel);
