@@ -230,13 +230,7 @@ public class PushListener {
             @Override
             public void focusLost(FocusEvent e) {
                 try {
-                    if (Integer.parseInt(PushForm.pushForm.getMaxThreadPoolTextField().getText()) > 1000) {
-                        JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "最大输入1000", "提示",
-                                JOptionPane.INFORMATION_MESSAGE);
-                        PushForm.pushForm.getMaxThreadPoolTextField().setText("1000");
-                    }
-                    PushForm.pushForm.getThreadCountSlider().setMaximum(Integer.parseInt(PushForm.pushForm.getMaxThreadPoolTextField().getText()));
-                    refreshPushInfo();
+                    tEvent();
                 } catch (Exception e1) {
                     logger.error(e1);
                 } finally {
@@ -250,13 +244,7 @@ public class PushListener {
             @Override
             public void keyPressed(KeyEvent e) {
                 try {
-                    if (Integer.parseInt(PushForm.pushForm.getMaxThreadPoolTextField().getText()) > 1000) {
-                        JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "最大输入1000", "提示",
-                                JOptionPane.INFORMATION_MESSAGE);
-                        PushForm.pushForm.getMaxThreadPoolTextField().setText("1000");
-                    }
-                    PushForm.pushForm.getThreadCountSlider().setMaximum(Integer.parseInt(PushForm.pushForm.getMaxThreadPoolTextField().getText()));
-                    refreshPushInfo();
+                    tEvent();
                 } catch (Exception e1) {
                     logger.error(e1);
                 } finally {
@@ -273,6 +261,16 @@ public class PushListener {
             refreshPushInfo();
         });
 
+    }
+
+    private static void tEvent() {
+        if (Integer.parseInt(PushForm.pushForm.getMaxThreadPoolTextField().getText()) > 1000) {
+            JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "最大输入1000", "提示",
+                    JOptionPane.INFORMATION_MESSAGE);
+            PushForm.pushForm.getMaxThreadPoolTextField().setText("1000");
+        }
+        PushForm.pushForm.getThreadCountSlider().setMaximum(Integer.parseInt(PushForm.pushForm.getMaxThreadPoolTextField().getText()));
+        refreshPushInfo();
     }
 
     static void refreshPushInfo() {

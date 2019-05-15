@@ -36,6 +36,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
@@ -458,7 +460,25 @@ public class MemberListener {
         }));
 
         // 搜索按钮事件
-        MemberForm.memberForm.getSearchButton().addActionListener(e -> ThreadUtil.execute(() -> {
+        MemberForm.memberForm.getSearchButton().addActionListener(e -> searchEvent());
+
+        // 线程池数键入回车
+        MemberForm.memberForm.getSearchTextField().addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                try {
+                    searchEvent();
+                } catch (Exception e1) {
+                    logger.error(e1);
+                } finally {
+                    super.keyPressed(e);
+                }
+            }
+        });
+    }
+
+    private static void searchEvent() {
+        ThreadUtil.execute(() -> {
             int rowCount = MemberForm.memberForm.getMemberListTable().getRowCount();
             int columnCount = MemberForm.memberForm.getMemberListTable().getColumnCount();
             try {
@@ -488,7 +508,7 @@ public class MemberListener {
             } catch (Exception e1) {
                 logger.error(e1);
             }
-        }));
+        });
     }
 
     /**
