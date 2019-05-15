@@ -54,8 +54,6 @@ public class MsgListener {
     private static TMsgSmsMapper msgSmsMapper = MybatisUtil.getSqlSession().getMapper(TMsgSmsMapper.class);
     private static TTemplateDataMapper templateDataMapper = MybatisUtil.getSqlSession().getMapper(TTemplateDataMapper.class);
 
-    private static boolean selectAllToggle = false;
-
     public static void addListeners() {
 
         // 点击左侧表格事件
@@ -67,7 +65,7 @@ public class MsgListener {
 
                     int selectedRow = MessageManageForm.messageManageForm.getMsgHistable().getSelectedRow();
                     String selectedMsgName = MessageManageForm.messageManageForm.getMsgHistable()
-                            .getValueAt(selectedRow, 1).toString();
+                            .getValueAt(selectedRow, 0).toString();
 
                     MessageEditForm.init(selectedMsgName);
                 });
@@ -75,62 +73,38 @@ public class MsgListener {
             }
         });
 
-        // 历史消息管理-全选
-        MessageManageForm.messageManageForm.getMsgHisTableSelectAllButton().addActionListener(e -> ThreadUtil.execute(() -> {
-            toggleSelectAll();
-            DefaultTableModel tableModel = (DefaultTableModel) MessageManageForm.messageManageForm.getMsgHistable()
-                    .getModel();
-            int rowCount = tableModel.getRowCount();
-            for (int i = 0; i < rowCount; i++) {
-                tableModel.setValueAt(selectAllToggle, i, 0);
-            }
-        }));
-
         // 历史消息管理-删除
         MessageManageForm.messageManageForm.getMsgHisTableDeleteButton().addActionListener(e -> ThreadUtil.execute(() -> {
             try {
-                DefaultTableModel tableModel = (DefaultTableModel) MessageManageForm.messageManageForm.getMsgHistable()
-                        .getModel();
-                int rowCount = tableModel.getRowCount();
+                int[] selectedRows = MessageManageForm.messageManageForm.getMsgHistable().getSelectedRows();
 
-                int selectedCount = 0;
-                for (int i = 0; i < rowCount; i++) {
-                    boolean isSelected = (boolean) tableModel.getValueAt(i, 0);
-                    if (isSelected) {
-                        selectedCount++;
-                    }
-                }
-
-                if (selectedCount == 0) {
+                if (selectedRows.length == 0) {
                     JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "请至少选择一个！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     int isDelete = JOptionPane.showConfirmDialog(SettingForm.settingForm.getSettingPanel(), "确认删除？", "确认",
                             JOptionPane.YES_NO_OPTION);
                     if (isDelete == JOptionPane.YES_OPTION) {
+                        DefaultTableModel tableModel = (DefaultTableModel) MessageManageForm.messageManageForm.getMsgHistable()
+                                .getModel();
                         int msgType = Init.config.getMsgType();
-                        for (int i = 0; i < rowCount; ) {
-                            boolean delete = (boolean) tableModel.getValueAt(i, 0);
-                            if (delete) {
-                                String msgName = (String) tableModel.getValueAt(i, 1);
-                                if (msgType == MessageTypeEnum.KEFU_CODE) {
-                                    msgKefuMapper.deleteByMsgTypeAndName(msgType, msgName);
-                                } else if (msgType == MessageTypeEnum.KEFU_PRIORITY_CODE) {
-                                    msgKefuPriorityMapper.deleteByMsgTypeAndName(msgType, msgName);
-                                } else if (msgType == MessageTypeEnum.MA_TEMPLATE_CODE) {
-                                    msgMaTemplateMapper.deleteByMsgTypeAndName(msgType, msgName);
-                                } else if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE) {
-                                    msgMpTemplateMapper.deleteByMsgTypeAndName(msgType, msgName);
-                                } else {
-                                    msgSmsMapper.deleteByMsgTypeAndName(msgType, msgName);
-                                }
-                                tableModel.removeRow(i);
-                                MessageManageForm.messageManageForm.getMsgHistable().updateUI();
-                                i = 0;
-                                rowCount = tableModel.getRowCount();
+
+                        for (int i = selectedRows.length; i > 0; i--) {
+                            int selectedRow = MessageManageForm.messageManageForm.getMsgHistable().getSelectedRow();
+                            String msgName = (String) tableModel.getValueAt(selectedRow, 0);
+                            if (msgType == MessageTypeEnum.KEFU_CODE) {
+                                msgKefuMapper.deleteByMsgTypeAndName(msgType, msgName);
+                            } else if (msgType == MessageTypeEnum.KEFU_PRIORITY_CODE) {
+                                msgKefuPriorityMapper.deleteByMsgTypeAndName(msgType, msgName);
+                            } else if (msgType == MessageTypeEnum.MA_TEMPLATE_CODE) {
+                                msgMaTemplateMapper.deleteByMsgTypeAndName(msgType, msgName);
+                            } else if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE) {
+                                msgMpTemplateMapper.deleteByMsgTypeAndName(msgType, msgName);
                             } else {
-                                i++;
+                                msgSmsMapper.deleteByMsgTypeAndName(msgType, msgName);
                             }
+
+                            tableModel.removeRow(selectedRow);
                         }
                         MessageEditForm.init(null);
                     }
@@ -421,12 +395,5 @@ public class MsgListener {
             MessageEditForm.initTemplateDataTable();
             MessageEditForm.messageEditForm.getMsgNameField().grabFocus();
         });
-    }
-
-    /**
-     * 切换全选/全不选
-     */
-    private static void toggleSelectAll() {
-        selectAllToggle = !selectAllToggle;
     }
 }

@@ -102,7 +102,7 @@ public class PushHisListener {
                             }
                             pushHistoryMapper.deleteByPrimaryKey(selectedId);
 
-                            tableModel.removeRow(PushHisForm.pushHisForm.getPushHisLeftTable().getSelectedRow());
+                            tableModel.removeRow(selectedRow);
                         }
                         PushHisForm.pushHisForm.getPushHisLeftTable().updateUI();
                         PushHisForm.init();
