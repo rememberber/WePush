@@ -44,7 +44,7 @@
             </constraints>
             <properties>
               <continuousLayout value="true"/>
-              <dividerLocation value="300"/>
+              <dividerLocation value="440"/>
               <dividerSize value="4"/>
               <doubleBuffered value="true"/>
             </properties>
