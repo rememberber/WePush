@@ -30,7 +30,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * <pre>
@@ -42,8 +41,6 @@ import java.util.List;
  */
 public class PushHisListener {
     private static final Log logger = LogFactory.get();
-
-    private static boolean selectAllToggle = false;
 
     private static TPushHistoryMapper pushHistoryMapper = MybatisUtil.getSqlSession().getMapper(TPushHistoryMapper.class);
 
@@ -57,7 +54,7 @@ public class PushHisListener {
 
                     int selectedRow = PushHisForm.pushHisForm.getPushHisLeftTable().getSelectedRow();
                     String selectedId = PushHisForm.pushHisForm.getPushHisLeftTable()
-                            .getValueAt(selectedRow, 4).toString();
+                            .getValueAt(selectedRow, 3).toString();
                     TPushHistory tPushHistory = pushHistoryMapper.selectByPrimaryKey(Integer.valueOf(selectedId));
                     File pushHisFile = new File(tPushHistory.getCsvFile());
 
@@ -82,61 +79,37 @@ public class PushHisListener {
             }
         });
 
-        // 推送历史管理-全选
-        PushHisForm.pushHisForm.getPushHisLeftSelectAllButton().addActionListener(e -> ThreadUtil.execute(() -> {
-            toggleSelectAll();
-            DefaultTableModel tableModel = (DefaultTableModel) PushHisForm.pushHisForm.getPushHisLeftTable()
-                    .getModel();
-            int rowCount = tableModel.getRowCount();
-            for (int i = 0; i < rowCount; i++) {
-                tableModel.setValueAt(selectAllToggle, i, 0);
-            }
-        }));
-
         // 推送历史管理-删除
         PushHisForm.pushHisForm.getPushHisLeftDeleteButton().addActionListener(e -> ThreadUtil.execute(() -> {
             try {
-                DefaultTableModel tableModel = (DefaultTableModel) PushHisForm.pushHisForm.getPushHisLeftTable()
-                        .getModel();
-                int rowCount = tableModel.getRowCount();
 
-                int selectedCount = 0;
-                for (int i = 0; i < rowCount; i++) {
-                    boolean isSelected = (boolean) tableModel.getValueAt(i, 0);
-                    if (isSelected) {
-                        selectedCount++;
-                    }
-                }
+                int[] selectedRows = PushHisForm.pushHisForm.getPushHisLeftTable().getSelectedRows();
 
-                if (selectedCount == 0) {
+                if (selectedRows.length == 0) {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "请至少选择一个！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     int isDelete = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getSettingPanel(), "确认删除？", "确认",
                             JOptionPane.YES_NO_OPTION);
                     if (isDelete == JOptionPane.YES_OPTION) {
-                        for (int i = 0; i < rowCount; ) {
-                            boolean delete = (boolean) tableModel.getValueAt(i, 0);
-                            if (delete) {
-                                Integer selectedId = (Integer) tableModel.getValueAt(i, 4);
+                        DefaultTableModel tableModel = (DefaultTableModel) PushHisForm.pushHisForm.getPushHisLeftTable()
+                                .getModel();
 
-                                TPushHistory tPushHistory = pushHistoryMapper.selectByPrimaryKey(selectedId);
+                        for (int i = selectedRows.length; i > 0; i--) {
+                            int selectedRow = PushHisForm.pushHisForm.getPushHisLeftTable().getSelectedRow();
+                            Integer selectedId = (Integer) tableModel.getValueAt(selectedRow, 3);
+                            TPushHistory tPushHistory = pushHistoryMapper.selectByPrimaryKey(selectedId);
 
-                                File msgTemplateDataFile = new File(tPushHistory.getCsvFile());
-                                if (msgTemplateDataFile.exists()) {
-                                   msgTemplateDataFile.delete();
-                                }
-                                pushHistoryMapper.deleteByPrimaryKey(selectedId);
-                                tableModel.removeRow(i);
-
-                                i = 0;
-                                rowCount = tableModel.getRowCount();
-                            } else {
-                                i++;
+                            File msgTemplateDataFile = new File(tPushHistory.getCsvFile());
+                            if (msgTemplateDataFile.exists()) {
+                                msgTemplateDataFile.delete();
                             }
+                            pushHistoryMapper.deleteByPrimaryKey(selectedId);
+
+                            tableModel.removeRow(PushHisForm.pushHisForm.getPushHisLeftTable().getSelectedRow());
                         }
                         PushHisForm.pushHisForm.getPushHisLeftTable().updateUI();
-                        MemberForm.init();
+                        PushHisForm.init();
                     }
                 }
             } catch (Exception e1) {
@@ -163,39 +136,27 @@ public class PushHisListener {
 
         // 推送历史管理-导出按钮
         PushHisForm.pushHisForm.getPushHisExportButton().addActionListener(e -> {
-            List<String> toExportFilePathList = new ArrayList<>();
-            int selectedCount = 0;
+            int[] selectedRows = PushHisForm.pushHisForm.getPushHisLeftTable().getSelectedRows();
 
             try {
-                DefaultTableModel tableModel = (DefaultTableModel) PushHisForm.pushHisForm.getPushHisLeftTable()
-                        .getModel();
-                int rowCount = tableModel.getRowCount();
-                for (int i = 0; i < rowCount; i++) {
-                    boolean selected = (boolean) tableModel.getValueAt(i, 0);
-                    if (selected) {
-                        selectedCount++;
-                        Integer selectedId = (Integer) tableModel.getValueAt(i, 4);
-                        TPushHistory tPushHistory = pushHistoryMapper.selectByPrimaryKey(selectedId);
-                        File msgTemplateDataFile = new File(tPushHistory.getCsvFile());
-                        if (msgTemplateDataFile.exists()) {
-                            toExportFilePathList.add(msgTemplateDataFile.getAbsolutePath());
-                        }
-                    }
-                }
-
-                if (selectedCount > 0) {
+                if (selectedRows.length > 0) {
                     JFileChooser fileChooser = new JFileChooser();
                     fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
                     int approve = fileChooser.showOpenDialog(MainWindow.mainWindow.getSettingPanel());
-                    String exportPath = "";
+                    String exportPath;
                     if (approve == JFileChooser.APPROVE_OPTION) {
                         exportPath = fileChooser.getSelectedFile().getAbsolutePath();
                     } else {
                         return;
                     }
 
-                    for (String toExportFilePath : toExportFilePathList) {
-                        FileUtil.copy(toExportFilePath, exportPath, true);
+                    for (int row : selectedRows) {
+                        Integer selectedId = (Integer) PushHisForm.pushHisForm.getPushHisLeftTable().getValueAt(row, 4);
+                        TPushHistory tPushHistory = pushHistoryMapper.selectByPrimaryKey(selectedId);
+                        File msgTemplateDataFile = new File(tPushHistory.getCsvFile());
+                        if (msgTemplateDataFile.exists()) {
+                            FileUtil.copy(msgTemplateDataFile.getAbsolutePath(), exportPath, true);
+                        }
                     }
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "导出成功！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
@@ -220,45 +181,28 @@ public class PushHisListener {
 
         // 重发
         PushHisForm.pushHisForm.getResendFromHisButton().addActionListener(e -> ThreadUtil.execute(() -> {
-
-            List<String> toImportFilePathList = new ArrayList<>();
-            int selectedCount = 0;
+            int[] selectedRows = PushHisForm.pushHisForm.getPushHisLeftTable().getSelectedRows();
             CSVReader reader = null;
             try {
-                DefaultTableModel tableModel = (DefaultTableModel) PushHisForm.pushHisForm.getPushHisLeftTable()
-                        .getModel();
-                int rowCount = tableModel.getRowCount();
-                for (int i = 0; i < rowCount; i++) {
-                    boolean selected = (boolean) tableModel.getValueAt(i, 0);
-                    if (selected) {
-                        selectedCount++;
-                        Integer selectedId = (Integer) tableModel.getValueAt(i, 4);
-                        TPushHistory tPushHistory = pushHistoryMapper.selectByPrimaryKey(selectedId);
-                        File msgTemplateDataFile = new File(tPushHistory.getCsvFile());
-                        if (msgTemplateDataFile.exists()) {
-                            toImportFilePathList.add(msgTemplateDataFile.getAbsolutePath());
-                        }
-                    }
-                }
-
-                if (selectedCount > 0) {
+                if (selectedRows.length > 0) {
                     MainWindow.mainWindow.getTabbedPane().setSelectedIndex(3);
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());
                     MemberForm.memberForm.getMemberTabImportProgressBar().setVisible(true);
                     MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(true);
-                    for (String toExportFilePath : toImportFilePathList) {
-                        // 可以解决中文乱码问题
-                        DataInputStream in = new DataInputStream(new FileInputStream(toExportFilePath));
-                        reader = new CSVReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-                        String[] nextLine;
-
-                        while ((nextLine = reader.readNext()) != null) {
-                            PushData.allUser.add(nextLine);
-                            MemberForm.memberForm.getMemberTabCountLabel().setText(String.valueOf(PushData.allUser.size()));
+                    for (int selectedRow : selectedRows) {
+                        Integer selectedId = (Integer) PushHisForm.pushHisForm.getPushHisLeftTable().getValueAt(selectedRow, 3);
+                        TPushHistory tPushHistory = pushHistoryMapper.selectByPrimaryKey(selectedId);
+                        File msgTemplateDataFile = new File(tPushHistory.getCsvFile());
+                        if (msgTemplateDataFile.exists()) {
+                            // 可以解决中文乱码问题
+                            DataInputStream in = new DataInputStream(new FileInputStream(msgTemplateDataFile));
+                            reader = new CSVReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+                            String[] nextLine;
+                            while ((nextLine = reader.readNext()) != null) {
+                                PushData.allUser.add(nextLine);
+                                MemberForm.memberForm.getMemberTabCountLabel().setText(String.valueOf(PushData.allUser.size()));
+                            }
                         }
-                        MemberForm.memberForm.getMemberTabImportProgressBar().setMaximum(100);
-                        MemberForm.memberForm.getMemberTabImportProgressBar().setValue(100);
-                        MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(false);
                     }
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "导入完成！", "完成",
                             JOptionPane.INFORMATION_MESSAGE);
@@ -289,16 +233,4 @@ public class PushHisListener {
 
     }
 
-    /**
-     * 切换全选/全不选
-     *
-     * @return
-     */
-    private static void toggleSelectAll() {
-        if (!selectAllToggle) {
-            selectAllToggle = true;
-        } else {
-            selectAllToggle = false;
-        }
-    }
 }
