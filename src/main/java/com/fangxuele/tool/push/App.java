@@ -29,6 +29,7 @@ public class App {
         JPanel loadingPanel = new LoadingForm().getLoadingPanel();
         mainFrame.add(loadingPanel);
         mainFrame.pack();
+        mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         mainFrame.setVisible(true);
 
         SwingUtilities.invokeLater(() -> {

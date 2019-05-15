@@ -39,11 +39,11 @@ public class MainFrame extends JFrame {
 
         //得到屏幕的尺寸
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setBounds((int) (screenSize.width * 0.1), (int) (screenSize.height * 0.08), (int) (screenSize.width * 0.8),
-                (int) (screenSize.height * 0.8));
+        this.setBounds((int) (screenSize.width * 0.1), (int) (screenSize.height * 0.06), (int) (screenSize.width * 0.8),
+                (int) (screenSize.height * 0.83));
 
         Dimension preferSize = new Dimension((int) (screenSize.width * 0.8),
-                (int) (screenSize.height * 0.8));
+                (int) (screenSize.height * 0.83));
         this.setPreferredSize(preferSize);
     }
 
