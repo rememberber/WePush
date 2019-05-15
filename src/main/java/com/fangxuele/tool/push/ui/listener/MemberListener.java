@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.listener;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.FileReader;
 import cn.hutool.core.thread.ThreadUtil;
@@ -7,6 +8,7 @@ import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
+import cn.hutool.poi.excel.ExcelWriter;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.PushManage;
@@ -391,21 +393,11 @@ public class MemberListener {
 
         // 导出按钮事件
         MemberForm.memberForm.getExportButton().addActionListener(e -> ThreadUtil.execute(() -> {
-            List<String> toExportFilePathList = new ArrayList<>();
-            int selectedCount = 0;
-
+            int[] selectedRows = MemberForm.memberForm.getMemberListTable().getSelectedRows();
+            int columnCount = MemberForm.memberForm.getMemberListTable().getColumnCount();
+            ExcelWriter writer = null;
             try {
-                DefaultTableModel tableModel = (DefaultTableModel) MemberForm.memberForm.getMemberListTable().getModel();
-                int rowCount = tableModel.getRowCount();
-                for (int i = 0; i < rowCount; i++) {
-                    boolean selected = (boolean) tableModel.getValueAt(i, 1);
-                    if (selected) {
-                        selectedCount++;
-                        Integer selectedId = (Integer) tableModel.getValueAt(i, 4);
-                    }
-                }
-
-                if (selectedCount > 0) {
+                if (selectedRows.length > 0) {
                     JFileChooser fileChooser = new JFileChooser();
                     fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
                     int approve = fileChooser.showOpenDialog(MainWindow.mainWindow.getMemberPanel());
@@ -416,15 +408,33 @@ public class MemberListener {
                         return;
                     }
 
-//                    Excel
-                    for (String toExportFilePath : toExportFilePathList) {
-                        FileUtil.copy(toExportFilePath, exportPath, true);
+                    List<String> rowData;
+                    List<List<String>> rows = Lists.newArrayList();
+                    for (int selectedRow : selectedRows) {
+                        rowData = Lists.newArrayList();
+                        for (int i = 0; i < columnCount; i++) {
+                            String data = (String) MemberForm.memberForm.getMemberListTable().getValueAt(selectedRow, i);
+                            rowData.add(data);
+                        }
+                        rows.add(rowData);
                     }
+
+                    String nowTime = DateUtil.now().replace(":", "_").replace(" ", "_");
+                    String fileName = "MemberExport_" + MessageTypeEnum.getName(Init.config.getMsgType()) + "_" + nowTime + ".xlsx";
+                    //通过工具类创建writer
+                    writer = ExcelUtil.getWriter(exportPath + File.separator + fileName);
+
+                    //合并单元格后的标题行，使用默认标题样式
+                    writer.merge(rows.get(0).size() - 1, "目标用户列表导出");
+                    //一次性写出内容，强制输出标题
+                    writer.write(rows);
+
+                    writer.flush();
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导出成功！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     try {
                         Desktop desktop = Desktop.getDesktop();
-                        desktop.open(new File(exportPath));
+                        desktop.open(FileUtil.file(exportPath + File.separator + fileName));
                     } catch (Exception e2) {
                         logger.error(e2);
                     }
@@ -432,11 +442,15 @@ public class MemberListener {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "请至少选择一个！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                 }
-
             } catch (Exception e1) {
                 JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "导出失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
+            } finally {
+                //关闭writer，释放内存
+                if (writer != null) {
+                    writer.close();
+                }
             }
         }));
     }
