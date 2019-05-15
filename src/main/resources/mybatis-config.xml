@@ -21,5 +21,6 @@
         <mapper resource="mapper/TMsgSmsMapper.xml"/>
         <mapper resource="mapper/TPushHistoryMapper.xml"/>
         <mapper resource="mapper/TTemplateDataMapper.xml"/>
+        <mapper resource="mapper/TWxMpUserMapper.xml"/>
     </mappers>
 </configuration>

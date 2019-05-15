@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.listener;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.FileReader;
@@ -9,6 +10,8 @@ import cn.hutool.log.LogFactory;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
+import com.fangxuele.tool.push.dao.TWxMpUserMapper;
+import com.fangxuele.tool.push.domain.TWxMpUser;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.PushManage;
@@ -19,6 +22,7 @@ import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.util.CharSetUtil;
 import com.fangxuele.tool.push.util.DbUtilMySQL;
 import com.fangxuele.tool.push.util.JTableUtil;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import com.opencsv.CSVReader;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
@@ -75,6 +79,8 @@ public class MemberListener {
     private static final String TXT_FILE_DATA_SEPERATOR_REGEX = "\\|";
 
     private static List<String> toSearchRowsList;
+
+    private static TWxMpUserMapper tWxMpUserMapper = MybatisUtil.getSqlSession().getMapper(TWxMpUserMapper.class);
 
     public static void addListeners() {
         // 从文件导入按钮事件
@@ -475,6 +481,13 @@ public class MemberListener {
                 }
             }
         });
+
+        // 清空本地缓存按钮事件
+        MemberForm.memberForm.getClearDbCacheButton().addActionListener(e -> {
+            int count = tWxMpUserMapper.deleteAll();
+            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMemberPanel(), "清理完毕！\n\n共清理：" + count + "条本地数据", "提示",
+                    JOptionPane.INFORMATION_MESSAGE);
+        });
     }
 
     private static void searchEvent() {
@@ -709,8 +722,22 @@ public class MemberListener {
                 if (isWeixinTypeMsg) {
                     if (MemberForm.memberForm.getImportOptionBasicInfoCheckBox().isSelected() ||
                             MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
-                        WxMpService wxMpService = PushManage.getWxMpService();
-                        WxMpUser wxMpUser = wxMpService.getUserService().userInfo(openId);
+
+                        WxMpUser wxMpUser;
+                        TWxMpUser tWxMpUser = tWxMpUserMapper.selectByPrimaryKey(openId);
+                        if (tWxMpUser != null) {
+                            wxMpUser = new WxMpUser();
+                            BeanUtil.copyProperties(tWxMpUser, wxMpUser);
+                        } else {
+                            WxMpService wxMpService = PushManage.getWxMpService();
+                            wxMpUser = wxMpService.getUserService().userInfo(openId);
+                            if (wxMpUser != null) {
+                                tWxMpUser = new TWxMpUser();
+                                BeanUtil.copyProperties(wxMpUser, tWxMpUser);
+                                tWxMpUserMapper.insertSelective(tWxMpUser);
+                            }
+                        }
+
                         if (wxMpUser != null) {
                             if (MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
                                 rowDataList.add(wxMpUser.getHeadImgUrl());

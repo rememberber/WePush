@@ -109,3 +109,26 @@ create table if not exists t_template_data
     create_time   datetime,
     modified_time datetime
 );
+create table t_wx_mp_user
+(
+    open_id         text
+        constraint t_wx_mp_user_pk
+            primary key,
+    nickname        text,
+    sex_desc        text,
+    sex             INTEGER,
+    language        text,
+    city            text,
+    province        text,
+    country         text,
+    head_img_url    text,
+    subscribe_time  text,
+    union_id        text,
+    remark          text,
+    group_id        integer,
+    subscribe_scene text,
+    qr_scene        text,
+    qr_scene_str    text,
+    create_time     text,
+    modified_time   text
+);
