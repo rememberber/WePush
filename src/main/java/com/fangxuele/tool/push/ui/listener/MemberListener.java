@@ -50,6 +50,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * <pre>
@@ -70,6 +71,8 @@ public class MemberListener {
     public static Set<String> tagUserSet;
 
     private static final String TXT_FILE_DATA_SEPERATOR_REGEX = "\\|";
+
+    private static List<String> toSearchRowsList;
 
     public static void addListeners() {
         // 从文件导入按钮事件
@@ -453,6 +456,39 @@ public class MemberListener {
                 }
             }
         }));
+
+        // 搜索按钮事件
+        MemberForm.memberForm.getSearchButton().addActionListener(e -> ThreadUtil.execute(() -> {
+            int rowCount = MemberForm.memberForm.getMemberListTable().getRowCount();
+            int columnCount = MemberForm.memberForm.getMemberListTable().getColumnCount();
+            try {
+                if (rowCount > 0 || toSearchRowsList != null) {
+                    if (toSearchRowsList == null) {
+                        toSearchRowsList = Lists.newArrayList();
+                        List<String> rowData;
+                        for (int i = 0; i < rowCount; i++) {
+                            rowData = Lists.newArrayList();
+                            for (int j = 0; j < columnCount; j++) {
+                                String data = (String) MemberForm.memberForm.getMemberListTable().getValueAt(i, j);
+                                rowData.add(data);
+                            }
+                            toSearchRowsList.add(String.join("==", rowData));
+                        }
+                    }
+
+                    String keyWord = MemberForm.memberForm.getSearchTextField().getText();
+                    List<String> searchResultList = toSearchRowsList.parallelStream().filter(rowStr -> rowStr.contains(keyWord)).collect(Collectors.toList());
+
+                    DefaultTableModel tableModel = (DefaultTableModel) MemberForm.memberForm.getMemberListTable().getModel();
+                    tableModel.setRowCount(0);
+                    for (String rowString : searchResultList) {
+                        tableModel.addRow(rowString.split("=="));
+                    }
+                }
+            } catch (Exception e1) {
+                logger.error(e1);
+            }
+        }));
     }
 
     /**
@@ -588,7 +624,9 @@ public class MemberListener {
      * 获取导入数据信息列表
      */
     private static void renderMemberListTable() {
-        MemberForm.memberForm.getMemberListTable().removeAll();
+        toSearchRowsList = null;
+        DefaultTableModel tableModel = (DefaultTableModel) MemberForm.memberForm.getMemberListTable().getModel();
+        tableModel.setRowCount(0);
         MemberForm.memberForm.getMemberTabImportProgressBar().setVisible(true);
         MemberForm.memberForm.getMemberTabImportProgressBar().setMaximum(PushData.allUser.size());
 
