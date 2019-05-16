@@ -8,8 +8,10 @@ import cn.hutool.log.LogFactory;
 import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.bean.VersionSummary;
 import com.fangxuele.tool.push.ui.UiConsts;
+import com.fangxuele.tool.push.ui.dialog.UpdateDialog;
 import com.fangxuele.tool.push.ui.form.AboutForm;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.util.SystemUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.imageio.ImageIO;
@@ -94,59 +96,70 @@ public class AboutListener {
     }
 
     public static void checkUpdate(boolean initCheck) {
-        Desktop desktop = Desktop.getDesktop();
-        try {
-            // 当前版本
-            String currentVersion = UiConsts.APP_VERSION;
+        // 当前版本
+        String currentVersion = UiConsts.APP_VERSION;
 
-            // 从github获取最新版本相关信息
-            String content = HttpUtil.get(UiConsts.CHECK_VERSION_URL);
-            if (StringUtils.isEmpty(content) && !initCheck) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "检查超时，请关注GitHub Release！", "网络错误",
+        // 从github获取最新版本相关信息
+        String content = HttpUtil.get(UiConsts.CHECK_VERSION_URL);
+        if (StringUtils.isEmpty(content) && !initCheck) {
+            JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "检查超时，请关注GitHub Release！", "网络错误",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        content = content.replace("\n", "");
+
+        VersionSummary versionSummary = JSON.parseObject(content, VersionSummary.class);
+        // 最新版本
+        String newVersion = versionSummary.getCurrentVersion();
+        String versionIndex = versionSummary.getVersionIndex();
+        // 版本索引
+        Map<String, String> versionIndexMap = JSON.parseObject(versionIndex, Map.class);
+        // 版本明细列表
+        List<VersionSummary.Version> versionDetailList = versionSummary.getVersionDetailList();
+
+        if (newVersion.compareTo(currentVersion) > 0) {
+            // 当前版本索引
+            int currentVersionIndex = Integer.parseInt(versionIndexMap.get(currentVersion));
+            // 版本更新日志：
+            StringBuilder versionLogBuilder = new StringBuilder("惊现新版本！立即下载？\n\n");
+            VersionSummary.Version version;
+            for (int i = currentVersionIndex + 1; i < versionDetailList.size(); i++) {
+                version = versionDetailList.get(i);
+                versionLogBuilder.append(version.getVersion()).append("\n");
+                versionLogBuilder.append(version.getTitle()).append("\n");
+                versionLogBuilder.append(version.getLog()).append("\n");
+            }
+            String versionLog = versionLogBuilder.toString();
+
+            int downLoadNow = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getPushPanel(),
+                    versionLog, "惊现新版本！立即下载？",
+                    JOptionPane.YES_NO_OPTION);
+
+            if (downLoadNow == JOptionPane.YES_OPTION) {
+                if (SystemUtil.isMacOs()) {
+                    Desktop desktop = Desktop.getDesktop();
+                    try {
+                        desktop.browse(new URI("https://github.com/rememberber/WePush/releases"));
+                    } catch (IOException | URISyntaxException ex) {
+                        ex.printStackTrace();
+                    }
+                } else {
+                    UpdateDialog dialog = new UpdateDialog();
+                    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                    dialog.setBounds(screenSize.width / 2 - 300, screenSize.height / 2 - 50, 600, 100);
+
+                    Dimension preferSize = new Dimension(600, 100);
+                    dialog.setMaximumSize(preferSize);
+                    dialog.pack();
+                    dialog.downLoad(newVersion);
+                    dialog.setVisible(true);
+                }
+            }
+        } else {
+            if (!initCheck) {
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "当前已经是最新版本！", "恭喜",
                         JOptionPane.INFORMATION_MESSAGE);
-                return;
             }
-            content = content.replace("\n", "");
-
-            VersionSummary versionSummary = JSON.parseObject(content, VersionSummary.class);
-            // 最新版本
-            String newVersion = versionSummary.getCurrentVersion();
-            String versionIndex = versionSummary.getVersionIndex();
-            // 版本索引
-            Map<String, String> versionIndexMap = JSON.parseObject(versionIndex, Map.class);
-            // 版本明细列表
-            List<VersionSummary.Version> versionDetailList = versionSummary.getVersionDetailList();
-
-            if (newVersion.compareTo(currentVersion) > 0) {
-                // 当前版本索引
-                int currentVersionIndex = Integer.parseInt(versionIndexMap.get(currentVersion));
-                // 版本更新日志：
-                StringBuilder versionLogBuilder = new StringBuilder("惊现新版本！立即下载？\n\n");
-                VersionSummary.Version version;
-                for (int i = currentVersionIndex + 1; i < versionDetailList.size(); i++) {
-                    version = versionDetailList.get(i);
-                    versionLogBuilder.append(version.getVersion()).append("\n");
-                    versionLogBuilder.append(version.getTitle()).append("\n");
-                    versionLogBuilder.append(version.getLog()).append("\n");
-                }
-                String versionLog = versionLogBuilder.toString();
-
-                int isPush = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getPushPanel(),
-                        versionLog, "惊现新版本！立即下载？",
-                        JOptionPane.YES_NO_OPTION);
-
-                if (isPush == JOptionPane.YES_OPTION) {
-                    desktop.browse(new URI("https://github.com/rememberber/WePush/releases"));
-                }
-            } else {
-                if (!initCheck) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "当前已经是最新版本！", "恭喜",
-                            JOptionPane.INFORMATION_MESSAGE);
-                }
-            }
-
-        } catch (IOException | URISyntaxException e1) {
-            e1.printStackTrace();
         }
     }
 

@@ -3,6 +3,7 @@ package com.fangxuele.tool.push.logic;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.hutool.core.date.BetweenFormater;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
@@ -78,7 +79,7 @@ public class RunPushThread extends Thread {
         PushManage.console("线程池大小：" + PushForm.pushForm.getMaxThreadPoolTextField().getText());
 
         // JVM内存占用
-        PushForm.pushForm.getJvmMemoryLabel().setText("JVM内存占用：" + Runtime.getRuntime().totalMemory() / 1024 / 1024 + "MB/" + Runtime.getRuntime().maxMemory() / 1024 / 1024 + "MB");
+        PushForm.pushForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
         // 线程数
         int threadCount = Integer.parseInt(PushForm.pushForm.getThreadCountTextField().getText());
         PushData.threadCount = threadCount;
@@ -279,7 +280,7 @@ public class RunPushThread extends Thread {
             String formatBetweenLeft = DateUtil.formatBetween(leftTimeMillis, BetweenFormater.Level.SECOND);
             PushForm.pushForm.getPushLeftTimeLabel().setText("".equals(formatBetweenLeft) ? "0s" : formatBetweenLeft);
 
-            PushForm.pushForm.getJvmMemoryLabel().setText("JVM内存占用：" + Runtime.getRuntime().totalMemory() / 1024 / 1024 + "MB/" + Runtime.getRuntime().maxMemory() / 1024 / 1024 + "MB");
+            PushForm.pushForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
 
             try {
                 Thread.sleep(100);

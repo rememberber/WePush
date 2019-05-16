@@ -2,6 +2,7 @@ package com.fangxuele.tool.push.ui.listener;
 
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
@@ -284,7 +285,7 @@ public class PushListener {
         // 可用处理器核心
         PushForm.pushForm.getAvailableProcessorLabel().setText("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
         // JVM内存占用
-        PushForm.pushForm.getJvmMemoryLabel().setText("JVM内存占用：" + Runtime.getRuntime().totalMemory() / 1024 / 1024 + "MB/" + Runtime.getRuntime().maxMemory() / 1024 / 1024 + "MB");
+        PushForm.pushForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
     }
 
     /**
