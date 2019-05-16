@@ -142,10 +142,10 @@ public class MsgListener {
             }
 
             if (StringUtils.isEmpty(data[0]) || StringUtils.isEmpty(data[1])) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "key或value不能为空！", "提示",
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "Name或value不能为空！", "提示",
                         JOptionPane.INFORMATION_MESSAGE);
             } else if (keySet.contains(data[0])) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "key不能重复！", "提示",
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "Name不能重复！", "提示",
                         JOptionPane.INFORMATION_MESSAGE);
             } else {
                 if (StringUtils.isEmpty(data[2])) {
