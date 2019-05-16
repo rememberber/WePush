@@ -84,13 +84,13 @@ public class PushForm {
         pushUpPanel.setLayout(new GridLayoutManager(8, 13, new Insets(0, 0, 0, 0), -1, -1));
         pushPanel.add(pushUpPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         pushSuccessCount = new JLabel();
-        Font pushSuccessCountFont = this.$$$getFont$$$("Microsoft YaHei UI Light", -1, 72, pushSuccessCount.getFont());
+        Font pushSuccessCountFont = this.$$$getFont$$$(null, -1, 72, pushSuccessCount.getFont());
         if (pushSuccessCountFont != null) pushSuccessCount.setFont(pushSuccessCountFont);
         pushSuccessCount.setForeground(new Color(-13587376));
         pushSuccessCount.setText("0");
         pushUpPanel.add(pushSuccessCount, new GridConstraints(0, 0, 7, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         pushFailCount = new JLabel();
-        Font pushFailCountFont = this.$$$getFont$$$("Microsoft YaHei UI Light", -1, 72, pushFailCount.getFont());
+        Font pushFailCountFont = this.$$$getFont$$$(null, -1, 72, pushFailCount.getFont());
         if (pushFailCountFont != null) pushFailCount.setFont(pushFailCountFont);
         pushFailCount.setForeground(new Color(-2200483));
         pushFailCount.setText("0");

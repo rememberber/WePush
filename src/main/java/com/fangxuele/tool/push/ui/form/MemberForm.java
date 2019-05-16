@@ -161,7 +161,7 @@ public class MemberForm {
         memberTabUpPanel.setLayout(new GridLayoutManager(6, 6, new Insets(0, 0, 0, 0), -1, -1));
         memberPanelRight.add(memberTabUpPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         memberTabCountLabel = new JLabel();
-        Font memberTabCountLabelFont = this.$$$getFont$$$("Microsoft YaHei UI Light", -1, 72, memberTabCountLabel.getFont());
+        Font memberTabCountLabelFont = this.$$$getFont$$$(null, -1, 72, memberTabCountLabel.getFont());
         if (memberTabCountLabelFont != null) memberTabCountLabel.setFont(memberTabCountLabelFont);
         memberTabCountLabel.setForeground(new Color(-276358));
         memberTabCountLabel.setText("0");
