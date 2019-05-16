@@ -196,6 +196,16 @@ public class MessageEditForm {
             }
             DefaultTableModel model = new DefaultTableModel(cellData, headerNames);
             messageEditForm.getTemplateMsgDataTable().setModel(model);
+            TableColumnModel tableColumnModel = messageEditForm.getTemplateMsgDataTable().getColumnModel();
+            tableColumnModel.getColumn(headerNames.length - 1).
+                    setCellRenderer(new TableInCellButtonColumn(messageEditForm.getTemplateMsgDataTable(), headerNames.length - 1));
+            tableColumnModel.getColumn(headerNames.length - 1).
+                    setCellEditor(new TableInCellButtonColumn(messageEditForm.getTemplateMsgDataTable(), headerNames.length - 1));
+
+            // 设置列宽
+            tableColumnModel.getColumn(3).setPreferredWidth(130);
+            tableColumnModel.getColumn(3).setMaxWidth(130);
+
             messageEditForm.getTemplateMsgDataTable().updateUI();
         }
     }

@@ -76,7 +76,7 @@ public class MemberListener {
      */
     public static Set<String> tagUserSet;
 
-    private static final String TXT_FILE_DATA_SEPERATOR_REGEX = "\\|";
+    public static final String TXT_FILE_DATA_SEPERATOR_REGEX = "\\|";
 
     private static List<String> toSearchRowsList;
 
@@ -297,7 +297,7 @@ public class MemberListener {
                         currentImported++;
                         MemberForm.memberForm.getMemberTabCountLabel().setText(String.valueOf(currentImported));
                     }
-                    getMpUserList();
+                    renderMemberListTable();
                     JOptionPane.showMessageDialog(MemberForm.memberForm.getMemberPanel(), "导入完成！", "完成",
                             JOptionPane.INFORMATION_MESSAGE);
 

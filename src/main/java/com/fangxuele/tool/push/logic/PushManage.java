@@ -20,6 +20,7 @@ import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
+import com.fangxuele.tool.push.ui.listener.MemberListener;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
@@ -84,7 +85,7 @@ public class PushManage {
         List<String[]> msgDataList = new ArrayList<>();
 
         for (String data : MessageEditForm.messageEditForm.getPreviewUserField().getText().split(";")) {
-            msgDataList.add(data.split(","));
+            msgDataList.add(data.split(MemberListener.TXT_FILE_DATA_SEPERATOR_REGEX));
         }
 
         switch (Init.config.getMsgType()) {

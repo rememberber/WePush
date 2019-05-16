@@ -188,6 +188,7 @@
         <include refid="Base_Column_List"/>
         from t_msg_kefu
         where msg_type = #{msgType,jdbcType=INTEGER}
+        order by create_time desc
     </select>
     <delete id="deleteByMsgTypeAndName">
         delete
