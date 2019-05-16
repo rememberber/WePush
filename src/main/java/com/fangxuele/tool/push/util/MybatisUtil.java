@@ -67,6 +67,10 @@ public class MybatisUtil {
      */
     private static void initDbFile() throws SQLException {
         if (!dbFile.exists()) {
+            File configHomeDir = new File(SystemUtil.configHome);
+            if (!configHomeDir.exists()) {
+                FileUtil.touch(configHomeDir);
+            }
             // 不存在db文件时会自动创建一个
             Connection connection = DriverManager.getConnection("jdbc:sqlite:" + dbFile.getAbsolutePath());
             Statement stmt = connection.createStatement();
