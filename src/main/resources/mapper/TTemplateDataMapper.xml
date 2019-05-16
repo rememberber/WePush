@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fangxuele.tool.push.dao.TTemplateDataMapper">
+    <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TTemplateData">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="msg_type" jdbcType="INTEGER" property="msgType"/>
+        <result column="msg_id" jdbcType="INTEGER" property="msgId"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="value" jdbcType="VARCHAR" property="value"/>
+        <result column="color" jdbcType="VARCHAR" property="color"/>
+        <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
+        <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, msg_type, msg_id, name, value, color, create_time, modified_time
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_template_data
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from t_template_data
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TTemplateData">
+        insert into t_template_data (id, msg_type, msg_id,
+                                     name, value, color,
+                                     create_time, modified_time)
+        values (#{id,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER}, #{msgId,jdbcType=INTEGER},
+                #{name,jdbcType=VARCHAR}, #{value,jdbcType=VARCHAR}, #{color,jdbcType=VARCHAR},
+                #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TTemplateData">
+        insert into t_template_data
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="msgType != null">
+                msg_type,
+            </if>
+            <if test="msgId != null">
+                msg_id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="value != null">
+                value,
+            </if>
+            <if test="color != null">
+                color,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="modifiedTime != null">
+                modified_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="msgType != null">
+                #{msgType,jdbcType=INTEGER},
+            </if>
+            <if test="msgId != null">
+                #{msgId,jdbcType=INTEGER},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="value != null">
+                #{value,jdbcType=VARCHAR},
+            </if>
+            <if test="color != null">
+                #{color,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=VARCHAR},
+            </if>
+            <if test="modifiedTime != null">
+                #{modifiedTime,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.fangxuele.tool.push.domain.TTemplateData">
+        update t_template_data
+        <set>
+            <if test="msgType != null">
+                msg_type = #{msgType,jdbcType=INTEGER},
+            </if>
+            <if test="msgId != null">
+                msg_id = #{msgId,jdbcType=INTEGER},
+            </if>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="value != null">
+                value = #{value,jdbcType=VARCHAR},
+            </if>
+            <if test="color != null">
+                color = #{color,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=VARCHAR},
+            </if>
+            <if test="modifiedTime != null">
+                modified_time = #{modifiedTime,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TTemplateData">
+        update t_template_data
+        set msg_type      = #{msgType,jdbcType=INTEGER},
+            msg_id        = #{msgId,jdbcType=INTEGER},
+            name          = #{name,jdbcType=VARCHAR},
+            value         = #{value,jdbcType=VARCHAR},
+            color         = #{color,jdbcType=VARCHAR},
+            create_time   = #{createTime,jdbcType=VARCHAR},
+            modified_time = #{modifiedTime,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <select id="selectByMsgTypeAndMsgId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_template_data
+        where msg_id = #{msgId,jdbcType=INTEGER}
+        and msg_type = #{msgType,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByMsgTypeAndMsgId">
+        delete
+        from t_template_data
+        where msg_id = #{msgId,jdbcType=INTEGER}
+          and msg_type = #{msgType,jdbcType=INTEGER}
+    </delete>
+</mapper>

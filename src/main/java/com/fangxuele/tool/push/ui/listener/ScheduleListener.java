@@ -5,6 +5,7 @@ import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.ScheduleForm;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
@@ -22,10 +23,10 @@ public class ScheduleListener {
     private static final Log logger = LogFactory.get();
 
     public static void addListeners() {
-        MainWindow.mainWindow.getScheduleSaveButton().addActionListener(e -> {
+        ScheduleForm.scheduleForm.getScheduleSaveButton().addActionListener(e -> {
             try {
-                String textStartAt = MainWindow.mainWindow.getStartAtThisTimeTextField().getText();
-                boolean isStartAt = MainWindow.mainWindow.getRunAtThisTimeRadioButton().isSelected();
+                String textStartAt = ScheduleForm.scheduleForm.getStartAtThisTimeTextField().getText();
+                boolean isStartAt = ScheduleForm.scheduleForm.getRunAtThisTimeRadioButton().isSelected();
                 if (StringUtils.isNotEmpty(textStartAt)) {
                     if (DateUtil.parse(textStartAt).getTime() <= System.currentTimeMillis() && isStartAt) {
                         JOptionPane.showMessageDialog(MainWindow.mainWindow.getSchedulePanel(),
@@ -33,53 +34,53 @@ public class ScheduleListener {
                                 JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-                    Init.configer.setRadioStartAt(isStartAt);
-                    Init.configer.setTextStartAt(textStartAt);
+                    Init.config.setRadioStartAt(isStartAt);
+                    Init.config.setTextStartAt(textStartAt);
                 } else if (isStartAt) {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getSchedulePanel(),
                             "保存失败！\n\n开始推送时间不能为空！", "失败",
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 } else {
-                    Init.configer.setRadioStartAt(isStartAt);
-                    Init.configer.setTextStartAt(textStartAt);
+                    Init.config.setRadioStartAt(isStartAt);
+                    Init.config.setTextStartAt(textStartAt);
                 }
 
-                String textPerDay = MainWindow.mainWindow.getStartPerDayTextField().getText();
-                boolean isPerDay = MainWindow.mainWindow.getRunPerDayRadioButton().isSelected();
+                String textPerDay = ScheduleForm.scheduleForm.getStartPerDayTextField().getText();
+                boolean isPerDay = ScheduleForm.scheduleForm.getRunPerDayRadioButton().isSelected();
                 if (StringUtils.isNotEmpty(textPerDay)) {
                     DateUtil.parse(textPerDay);
-                    Init.configer.setRadioPerDay(isPerDay);
-                    Init.configer.setTextPerDay(textPerDay);
+                    Init.config.setRadioPerDay(isPerDay);
+                    Init.config.setTextPerDay(textPerDay);
                 } else if (isPerDay) {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getSchedulePanel(),
                             "保存失败！\n\n每天固定推送时间不能为空！", "失败",
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 } else {
-                    Init.configer.setRadioPerDay(isPerDay);
-                    Init.configer.setTextPerDay(textPerDay);
+                    Init.config.setRadioPerDay(isPerDay);
+                    Init.config.setTextPerDay(textPerDay);
                 }
 
-                String textPerWeekTime = MainWindow.mainWindow.getStartPerWeekTextField().getText();
-                boolean isPerWeek = MainWindow.mainWindow.getRunPerWeekRadioButton().isSelected();
+                String textPerWeekTime = ScheduleForm.scheduleForm.getStartPerWeekTextField().getText();
+                boolean isPerWeek = ScheduleForm.scheduleForm.getRunPerWeekRadioButton().isSelected();
                 if (StringUtils.isNotEmpty(textPerWeekTime)) {
                     DateUtil.parse(textPerWeekTime);
-                    Init.configer.setRadioPerWeek(isPerWeek);
-                    Init.configer.setTextPerWeekWeek(Objects.requireNonNull(MainWindow.mainWindow.getSchedulePerWeekComboBox().getSelectedItem()).toString());
-                    Init.configer.setTextPerWeekTime(textPerWeekTime);
+                    Init.config.setRadioPerWeek(isPerWeek);
+                    Init.config.setTextPerWeekWeek(Objects.requireNonNull(ScheduleForm.scheduleForm.getSchedulePerWeekComboBox().getSelectedItem()).toString());
+                    Init.config.setTextPerWeekTime(textPerWeekTime);
                 } else if (isPerWeek) {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getSchedulePanel(),
                             "保存失败！\n\n每周固定推送时间不能为空！", "失败",
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 } else {
-                    Init.configer.setRadioPerWeek(isPerWeek);
-                    Init.configer.setTextPerWeekWeek(Objects.requireNonNull(MainWindow.mainWindow.getSchedulePerWeekComboBox().getSelectedItem()).toString());
-                    Init.configer.setTextPerWeekTime(textPerWeekTime);
+                    Init.config.setRadioPerWeek(isPerWeek);
+                    Init.config.setTextPerWeekWeek(Objects.requireNonNull(ScheduleForm.scheduleForm.getSchedulePerWeekComboBox().getSelectedItem()).toString());
+                    Init.config.setTextPerWeekTime(textPerWeekTime);
                 }
 
-                Init.configer.save();
+                Init.config.save();
                 JOptionPane.showMessageDialog(MainWindow.mainWindow.getSchedulePanel(), "保存成功！\n\n将在下一次按计划执行时生效！\n\n", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {
@@ -88,24 +89,24 @@ public class ScheduleListener {
             }
         });
 
-        MainWindow.mainWindow.getRunAtThisTimeRadioButton().addActionListener(e -> {
-            if (MainWindow.mainWindow.getRunAtThisTimeRadioButton().isSelected()) {
-                MainWindow.mainWindow.getRunPerDayRadioButton().setSelected(false);
-                MainWindow.mainWindow.getRunPerWeekRadioButton().setSelected(false);
+        ScheduleForm.scheduleForm.getRunAtThisTimeRadioButton().addActionListener(e -> {
+            if (ScheduleForm.scheduleForm.getRunAtThisTimeRadioButton().isSelected()) {
+                ScheduleForm.scheduleForm.getRunPerDayRadioButton().setSelected(false);
+                ScheduleForm.scheduleForm.getRunPerWeekRadioButton().setSelected(false);
             }
         });
 
-        MainWindow.mainWindow.getRunPerDayRadioButton().addActionListener(e -> {
-            if (MainWindow.mainWindow.getRunPerDayRadioButton().isSelected()) {
-                MainWindow.mainWindow.getRunAtThisTimeRadioButton().setSelected(false);
-                MainWindow.mainWindow.getRunPerWeekRadioButton().setSelected(false);
+        ScheduleForm.scheduleForm.getRunPerDayRadioButton().addActionListener(e -> {
+            if (ScheduleForm.scheduleForm.getRunPerDayRadioButton().isSelected()) {
+                ScheduleForm.scheduleForm.getRunAtThisTimeRadioButton().setSelected(false);
+                ScheduleForm.scheduleForm.getRunPerWeekRadioButton().setSelected(false);
             }
         });
 
-        MainWindow.mainWindow.getRunPerWeekRadioButton().addActionListener(e -> {
-            if (MainWindow.mainWindow.getRunPerWeekRadioButton().isSelected()) {
-                MainWindow.mainWindow.getRunAtThisTimeRadioButton().setSelected(false);
-                MainWindow.mainWindow.getRunPerDayRadioButton().setSelected(false);
+        ScheduleForm.scheduleForm.getRunPerWeekRadioButton().addActionListener(e -> {
+            if (ScheduleForm.scheduleForm.getRunPerWeekRadioButton().isSelected()) {
+                ScheduleForm.scheduleForm.getRunAtThisTimeRadioButton().setSelected(false);
+                ScheduleForm.scheduleForm.getRunPerDayRadioButton().setSelected(false);
             }
         });
     }

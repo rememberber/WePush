@@ -7,10 +7,7 @@ import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
 import com.fangxuele.tool.push.ui.Init;
-import com.fangxuele.tool.push.ui.form.MainWindow;
-import org.apache.commons.lang3.StringUtils;
-
-import javax.swing.*;
+import com.fangxuele.tool.push.ui.form.PushForm;
 
 /**
  * <pre>
@@ -25,12 +22,11 @@ public class AliYunSmsMsgServiceThread extends BaseMsgServiceThread {
     /**
      * 构造函数
      *
-     * @param pageFrom 起始页
-     * @param pageTo   截止页
-     * @param pageSize 页大小
+     * @param startIndex 起始索引
+     * @param endIndex   截止索引
      */
-    public AliYunSmsMsgServiceThread(int pageFrom, int pageTo, int pageSize) {
-        super(pageFrom, pageTo, pageSize);
+    public AliYunSmsMsgServiceThread(int startIndex, int endIndex) {
+        super(startIndex, endIndex);
     }
 
     @Override
@@ -39,14 +35,8 @@ public class AliYunSmsMsgServiceThread extends BaseMsgServiceThread {
         // 初始化当前线程
         initCurrentThread();
 
-        String aliyunAccessKeyId = Init.configer.getAliyunAccessKeyId();
-        String aliyunAccessKeySecret = Init.configer.getAliyunAccessKeySecret();
-
-        if (StringUtils.isEmpty(aliyunAccessKeyId) || StringUtils.isEmpty(aliyunAccessKeySecret)) {
-            JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
-                    "请先在设置中填写并保存阿里云短信相关配置！", "提示",
-                    JOptionPane.INFORMATION_MESSAGE);
-        }
+        String aliyunAccessKeyId = Init.config.getAliyunAccessKeyId();
+        String aliyunAccessKeySecret = Init.config.getAliyunAccessKeySecret();
 
         //初始化acsClient,暂不支持region化
         IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", aliyunAccessKeyId, aliyunAccessKeySecret);
@@ -73,12 +63,12 @@ public class AliYunSmsMsgServiceThread extends BaseMsgServiceThread {
                 sendSmsRequest.setPhoneNumbers(telNum);
 
                 // 空跑控制
-                if (!MainWindow.mainWindow.getDryRunCheckBox().isSelected()) {
+                if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
                     response = acsClient.getAcsResponse(sendSmsRequest);
                     if (response.getCode() != null && "OK".equals(response.getCode())) {
                         // 总发送成功+1
                         PushData.increaseSuccess();
-                        MainWindow.mainWindow.getPushSuccessCount().setText(String.valueOf(PushData.successRecords));
+                        PushForm.pushForm.getPushSuccessCount().setText(String.valueOf(PushData.successRecords));
 
                         // 当前线程发送成功+1
                         currentThreadSuccessCount++;
@@ -89,7 +79,7 @@ public class AliYunSmsMsgServiceThread extends BaseMsgServiceThread {
                     } else {
                         // 总发送失败+1
                         PushData.increaseFail();
-                        MainWindow.mainWindow.getPushFailCount().setText(String.valueOf(PushData.failRecords));
+                        PushForm.pushForm.getPushFailCount().setText(String.valueOf(PushData.failRecords));
 
                         // 保存发送失败
                         PushData.sendFailList.add(msgData);
@@ -105,7 +95,7 @@ public class AliYunSmsMsgServiceThread extends BaseMsgServiceThread {
                 } else {
                     // 总发送成功+1
                     PushData.increaseSuccess();
-                    MainWindow.mainWindow.getPushSuccessCount().setText(String.valueOf(PushData.successRecords));
+                    PushForm.pushForm.getPushSuccessCount().setText(String.valueOf(PushData.successRecords));
 
                     // 当前线程发送成功+1
                     currentThreadSuccessCount++;
@@ -118,7 +108,7 @@ public class AliYunSmsMsgServiceThread extends BaseMsgServiceThread {
             } catch (Exception e) {
                 // 总发送失败+1
                 PushData.increaseFail();
-                MainWindow.mainWindow.getPushFailCount().setText(String.valueOf(PushData.failRecords));
+                PushForm.pushForm.getPushFailCount().setText(String.valueOf(PushData.failRecords));
 
                 // 保存发送失败
                 PushData.sendFailList.add(msgData);
@@ -134,7 +124,7 @@ public class AliYunSmsMsgServiceThread extends BaseMsgServiceThread {
             tableModel.setValueAt((int) ((double) (i + 1) / list.size() * 100), tableRow, 5);
 
             // 总进度条
-            MainWindow.mainWindow.getPushTotalProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
+            PushForm.pushForm.getPushTotalProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
         }
 
         // 当前线程结束

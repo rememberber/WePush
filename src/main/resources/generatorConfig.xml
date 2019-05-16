@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <classPathEntry location="D:\maven_repository\org\xerial\sqlite-jdbc\3.25.2\sqlite-jdbc-3.25.2.jar"/>
+
+    <context id="SQLiteTables" targetRuntime="MyBatis3">
+        <!-- JavaBean 实现 序列化 接口 -->
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin">
+        </plugin>
+        <!-- 消除插件自动生成的注释 -->
+        <commentGenerator>
+            <property name="suppressAllComments" value="true"/>
+            <property name="suppressDate" value="true"/>
+        </commentGenerator>
+
+        <jdbcConnection driverClass="org.sqlite.JDBC"
+                        connectionURL="jdbc:sqlite:D:\IdeaProjects\WePush\sqlite\WePush.db">
+        </jdbcConnection>
+
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="true"/>
+        </javaTypeResolver>
+
+        <!-- Model文件保存位置 -->
+        <javaModelGenerator targetPackage="com.fangxuele.tool.push.domain"
+                            targetProject="D:\IdeaProjects\WePush\src\main\java">
+            <property name="enableSubPackages" value="false"/>
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+
+        <!-- 生成的mapper文件 -->
+        <sqlMapGenerator targetPackage="mapper"
+                         targetProject="D:\IdeaProjects\WePush\src\main\resources">
+            <property name="enableSubPackages" value="false"/>
+        </sqlMapGenerator>
+
+        <!-- 生成的查询条件的类 -->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.fangxuele.tool.push.dao"
+                             targetProject="D:\IdeaProjects\WePush\src\main\java">
+            <property name="enableSubPackages" value="false"/>
+        </javaClientGenerator>
+
+        <table schema="main" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false"
+               enableSelectByExample="false" selectByExampleQueryId="false"
+               tableName="t_wx_mp_user" domainObjectName="TWxMpUser">
+            <property name="useActualColumnNames" value="false"/>
+            <!--<generatedKey column="ID" sqlStatement="DB2" identity="true"/>-->
+        </table>
+
+    </context>
+</generatorConfiguration>

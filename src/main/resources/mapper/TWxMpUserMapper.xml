@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fangxuele.tool.push.dao.TWxMpUserMapper">
+    <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TWxMpUser">
+        <id column="open_id" jdbcType="VARCHAR" property="openId"/>
+        <result column="nickname" jdbcType="VARCHAR" property="nickname"/>
+        <result column="sex_desc" jdbcType="VARCHAR" property="sexDesc"/>
+        <result column="sex" jdbcType="INTEGER" property="sex"/>
+        <result column="language" jdbcType="VARCHAR" property="language"/>
+        <result column="city" jdbcType="VARCHAR" property="city"/>
+        <result column="province" jdbcType="VARCHAR" property="province"/>
+        <result column="country" jdbcType="VARCHAR" property="country"/>
+        <result column="head_img_url" jdbcType="VARCHAR" property="headImgUrl"/>
+        <result column="subscribe_time" jdbcType="VARCHAR" property="subscribeTime"/>
+        <result column="union_id" jdbcType="VARCHAR" property="unionId"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="group_id" jdbcType="INTEGER" property="groupId"/>
+        <result column="subscribe_scene" jdbcType="VARCHAR" property="subscribeScene"/>
+        <result column="qr_scene" jdbcType="VARCHAR" property="qrScene"/>
+        <result column="qr_scene_str" jdbcType="VARCHAR" property="qrSceneStr"/>
+        <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
+        <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        open_id, nickname, sex_desc, sex, language, city, province, country, head_img_url,
+    subscribe_time, union_id, remark, group_id, subscribe_scene, qr_scene, qr_scene_str, 
+    create_time, modified_time
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_wx_mp_user
+        where open_id = #{openId,jdbcType=VARCHAR}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+        delete
+        from t_wx_mp_user
+        where open_id = #{openId,jdbcType=VARCHAR}
+    </delete>
+    <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TWxMpUser">
+        insert into t_wx_mp_user (open_id, nickname, sex_desc,
+                                  sex, language, city,
+                                  province, country, head_img_url,
+                                  subscribe_time, union_id, remark,
+                                  group_id, subscribe_scene, qr_scene,
+                                  qr_scene_str, create_time, modified_time)
+        values (#{openId,jdbcType=VARCHAR}, #{nickname,jdbcType=VARCHAR}, #{sexDesc,jdbcType=VARCHAR},
+                #{sex,jdbcType=INTEGER}, #{language,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR},
+                #{province,jdbcType=VARCHAR}, #{country,jdbcType=VARCHAR}, #{headImgUrl,jdbcType=VARCHAR},
+                #{subscribeTime,jdbcType=VARCHAR}, #{unionId,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR},
+                #{groupId,jdbcType=INTEGER}, #{subscribeScene,jdbcType=VARCHAR}, #{qrScene,jdbcType=VARCHAR},
+                #{qrSceneStr,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TWxMpUser">
+        insert into t_wx_mp_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="openId != null">
+                open_id,
+            </if>
+            <if test="nickname != null">
+                nickname,
+            </if>
+            <if test="sexDesc != null">
+                sex_desc,
+            </if>
+            <if test="sex != null">
+                sex,
+            </if>
+            <if test="language != null">
+                language,
+            </if>
+            <if test="city != null">
+                city,
+            </if>
+            <if test="province != null">
+                province,
+            </if>
+            <if test="country != null">
+                country,
+            </if>
+            <if test="headImgUrl != null">
+                head_img_url,
+            </if>
+            <if test="subscribeTime != null">
+                subscribe_time,
+            </if>
+            <if test="unionId != null">
+                union_id,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="groupId != null">
+                group_id,
+            </if>
+            <if test="subscribeScene != null">
+                subscribe_scene,
+            </if>
+            <if test="qrScene != null">
+                qr_scene,
+            </if>
+            <if test="qrSceneStr != null">
+                qr_scene_str,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="modifiedTime != null">
+                modified_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="openId != null">
+                #{openId,jdbcType=VARCHAR},
+            </if>
+            <if test="nickname != null">
+                #{nickname,jdbcType=VARCHAR},
+            </if>
+            <if test="sexDesc != null">
+                #{sexDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null">
+                #{sex,jdbcType=INTEGER},
+            </if>
+            <if test="language != null">
+                #{language,jdbcType=VARCHAR},
+            </if>
+            <if test="city != null">
+                #{city,jdbcType=VARCHAR},
+            </if>
+            <if test="province != null">
+                #{province,jdbcType=VARCHAR},
+            </if>
+            <if test="country != null">
+                #{country,jdbcType=VARCHAR},
+            </if>
+            <if test="headImgUrl != null">
+                #{headImgUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="subscribeTime != null">
+                #{subscribeTime,jdbcType=VARCHAR},
+            </if>
+            <if test="unionId != null">
+                #{unionId,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="groupId != null">
+                #{groupId,jdbcType=INTEGER},
+            </if>
+            <if test="subscribeScene != null">
+                #{subscribeScene,jdbcType=VARCHAR},
+            </if>
+            <if test="qrScene != null">
+                #{qrScene,jdbcType=VARCHAR},
+            </if>
+            <if test="qrSceneStr != null">
+                #{qrSceneStr,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=VARCHAR},
+            </if>
+            <if test="modifiedTime != null">
+                #{modifiedTime,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.fangxuele.tool.push.domain.TWxMpUser">
+        update t_wx_mp_user
+        <set>
+            <if test="nickname != null">
+                nickname = #{nickname,jdbcType=VARCHAR},
+            </if>
+            <if test="sexDesc != null">
+                sex_desc = #{sexDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null">
+                sex = #{sex,jdbcType=INTEGER},
+            </if>
+            <if test="language != null">
+                language = #{language,jdbcType=VARCHAR},
+            </if>
+            <if test="city != null">
+                city = #{city,jdbcType=VARCHAR},
+            </if>
+            <if test="province != null">
+                province = #{province,jdbcType=VARCHAR},
+            </if>
+            <if test="country != null">
+                country = #{country,jdbcType=VARCHAR},
+            </if>
+            <if test="headImgUrl != null">
+                head_img_url = #{headImgUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="subscribeTime != null">
+                subscribe_time = #{subscribeTime,jdbcType=VARCHAR},
+            </if>
+            <if test="unionId != null">
+                union_id = #{unionId,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="groupId != null">
+                group_id = #{groupId,jdbcType=INTEGER},
+            </if>
+            <if test="subscribeScene != null">
+                subscribe_scene = #{subscribeScene,jdbcType=VARCHAR},
+            </if>
+            <if test="qrScene != null">
+                qr_scene = #{qrScene,jdbcType=VARCHAR},
+            </if>
+            <if test="qrSceneStr != null">
+                qr_scene_str = #{qrSceneStr,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=VARCHAR},
+            </if>
+            <if test="modifiedTime != null">
+                modified_time = #{modifiedTime,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where open_id = #{openId,jdbcType=VARCHAR}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TWxMpUser">
+        update t_wx_mp_user
+        set nickname        = #{nickname,jdbcType=VARCHAR},
+            sex_desc        = #{sexDesc,jdbcType=VARCHAR},
+            sex             = #{sex,jdbcType=INTEGER},
+            language        = #{language,jdbcType=VARCHAR},
+            city            = #{city,jdbcType=VARCHAR},
+            province        = #{province,jdbcType=VARCHAR},
+            country         = #{country,jdbcType=VARCHAR},
+            head_img_url    = #{headImgUrl,jdbcType=VARCHAR},
+            subscribe_time  = #{subscribeTime,jdbcType=VARCHAR},
+            union_id        = #{unionId,jdbcType=VARCHAR},
+            remark          = #{remark,jdbcType=VARCHAR},
+            group_id        = #{groupId,jdbcType=INTEGER},
+            subscribe_scene = #{subscribeScene,jdbcType=VARCHAR},
+            qr_scene        = #{qrScene,jdbcType=VARCHAR},
+            qr_scene_str    = #{qrSceneStr,jdbcType=VARCHAR},
+            create_time     = #{createTime,jdbcType=VARCHAR},
+            modified_time   = #{modifiedTime,jdbcType=VARCHAR}
+        where open_id = #{openId,jdbcType=VARCHAR}
+    </update>
+    <delete id="deleteAll">
+        delete
+        from t_wx_mp_user
+    </delete>
+</mapper>

@@ -2,7 +2,7 @@ package com.fangxuele.tool.push.logic;
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
-import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.PushForm;
 
 /**
  * <pre>
@@ -22,12 +22,11 @@ public class TemplateMsgMaServiceThread extends BaseMsgServiceThread {
     /**
      * 构造函数
      *
-     * @param pageFrom 起始页
-     * @param pageTo   截止页
-     * @param pageSize 页大小
+     * @param startIndex 开始索引
+     * @param endIndex   截止索引
      */
-    TemplateMsgMaServiceThread(int pageFrom, int pageTo, int pageSize) {
-        super(pageFrom, pageTo, pageSize);
+    TemplateMsgMaServiceThread(int startIndex, int endIndex) {
+        super(startIndex, endIndex);
     }
 
     @Override
@@ -55,13 +54,13 @@ public class TemplateMsgMaServiceThread extends BaseMsgServiceThread {
                 wxMaTemplateMessage.setToUser(openId);
                 wxMaTemplateMessage.setFormId(msgData[1]);
                 // 空跑控制
-                if (!MainWindow.mainWindow.getDryRunCheckBox().isSelected()) {
+                if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
                     wxMaService.getMsgService().sendTemplateMsg(wxMaTemplateMessage);
                 }
 
                 // 总发送成功+1
                 PushData.increaseSuccess();
-                MainWindow.mainWindow.getPushSuccessCount().setText(String.valueOf(PushData.successRecords));
+                PushForm.pushForm.getPushSuccessCount().setText(String.valueOf(PushData.successRecords));
 
                 // 当前线程发送成功+1
                 currentThreadSuccessCount++;
@@ -72,7 +71,7 @@ public class TemplateMsgMaServiceThread extends BaseMsgServiceThread {
             } catch (Exception e) {
                 // 总发送失败+1
                 PushData.increaseFail();
-                MainWindow.mainWindow.getPushFailCount().setText(String.valueOf(PushData.failRecords));
+                PushForm.pushForm.getPushFailCount().setText(String.valueOf(PushData.failRecords));
 
                 // 保存发送失败
                 PushData.sendFailList.add(msgData);
@@ -88,7 +87,7 @@ public class TemplateMsgMaServiceThread extends BaseMsgServiceThread {
             tableModel.setValueAt((int) ((double) (i + 1) / list.size() * 100), tableRow, 5);
 
             // 总进度条
-            MainWindow.mainWindow.getPushTotalProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
+            PushForm.pushForm.getPushTotalProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
         }
 
         // 当前线程结束

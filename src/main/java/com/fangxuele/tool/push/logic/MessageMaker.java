@@ -6,7 +6,7 @@ import cn.hutool.json.JSONUtil;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
 import com.aliyuncs.http.MethodType;
 import com.fangxuele.tool.push.ui.Init;
-import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import com.taobao.api.request.AlibabaAliqinFcSmsNumSendRequest;
 import com.yunpian.sdk.YunpianClient;
@@ -38,11 +38,11 @@ public class MessageMaker {
     synchronized static WxMpTemplateMessage makeMpTemplateMessage(String[] msgData) {
         // 拼模板
         WxMpTemplateMessage wxMessageTemplate = WxMpTemplateMessage.builder().build();
-        wxMessageTemplate.setTemplateId(MainWindow.mainWindow.getMsgTemplateIdTextField().getText().trim());
-        wxMessageTemplate.setUrl(MainWindow.mainWindow.getMsgTemplateUrlTextField().getText().trim());
+        wxMessageTemplate.setTemplateId(MessageEditForm.messageEditForm.getMsgTemplateIdTextField().getText().trim());
+        wxMessageTemplate.setUrl(MessageEditForm.messageEditForm.getMsgTemplateUrlTextField().getText().trim());
 
-        String appid = MainWindow.mainWindow.getMsgTemplateMiniAppidTextField().getText().trim();
-        String pagePath = MainWindow.mainWindow.getMsgTemplateMiniPagePathTextField().getText().trim();
+        String appid = MessageEditForm.messageEditForm.getMsgTemplateMiniAppidTextField().getText().trim();
+        String pagePath = MessageEditForm.messageEditForm.getMsgTemplateMiniPagePathTextField().getText().trim();
 
         VelocityContext velocityContext = new VelocityContext();
         for (int i = 0; i < msgData.length; i++) {
@@ -52,11 +52,11 @@ public class MessageMaker {
         WxMpTemplateMessage.MiniProgram miniProgram = new WxMpTemplateMessage.MiniProgram(appid, pagePath, true);
         wxMessageTemplate.setMiniProgram(miniProgram);
 
-        if (MainWindow.mainWindow.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-            Init.initTemplateDataTable();
+        if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+            MessageEditForm.initTemplateDataTable();
         }
 
-        DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getTemplateMsgDataTable().getModel();
+        DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel();
         int rowCount = tableModel.getRowCount();
         for (int i = 0; i < rowCount; i++) {
             String name = ((String) tableModel.getValueAt(i, 0)).trim();
@@ -81,15 +81,15 @@ public class MessageMaker {
     synchronized static WxMaTemplateMessage makeMaTemplateMessage(String[] msgData) {
         // 拼模板
         WxMaTemplateMessage wxMessageTemplate = WxMaTemplateMessage.builder().build();
-        wxMessageTemplate.setTemplateId(MainWindow.mainWindow.getMsgTemplateIdTextField().getText().trim());
-        wxMessageTemplate.setPage(MainWindow.mainWindow.getMsgTemplateUrlTextField().getText().trim());
-        wxMessageTemplate.setEmphasisKeyword(MainWindow.mainWindow.getMsgTemplateKeyWordTextField().getText().trim() + ".DATA");
+        wxMessageTemplate.setTemplateId(MessageEditForm.messageEditForm.getMsgTemplateIdTextField().getText().trim());
+        wxMessageTemplate.setPage(MessageEditForm.messageEditForm.getMsgTemplateUrlTextField().getText().trim());
+        wxMessageTemplate.setEmphasisKeyword(MessageEditForm.messageEditForm.getMsgTemplateKeyWordTextField().getText().trim() + ".DATA");
 
-        if (MainWindow.mainWindow.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-            Init.initTemplateDataTable();
+        if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+            MessageEditForm.initTemplateDataTable();
         }
 
-        DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getTemplateMsgDataTable().getModel();
+        DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel();
         int rowCount = tableModel.getRowCount();
 
         VelocityContext velocityContext = new VelocityContext();
@@ -123,28 +123,28 @@ public class MessageMaker {
         for (int i = 0; i < msgData.length; i++) {
             velocityContext.put(PushManage.TEMPLATE_VAR_PREFIX + i, msgData[i]);
         }
-        if ("图文消息".equals(Objects.requireNonNull(MainWindow.mainWindow.getMsgKefuMsgTypeComboBox().getSelectedItem()).toString())) {
+        if ("图文消息".equals(Objects.requireNonNull(MessageEditForm.messageEditForm.getMsgKefuMsgTypeComboBox().getSelectedItem()).toString())) {
             WxMpKefuMessage.WxArticle article = new WxMpKefuMessage.WxArticle();
 
             // 标题
-            String title = MainWindow.mainWindow.getMsgKefuMsgTitleTextField().getText();
+            String title = MessageEditForm.messageEditForm.getMsgKefuMsgTitleTextField().getText();
             title = TemplateUtil.evaluate(title, velocityContext);
             article.setTitle(title);
 
             // 图片url
-            article.setPicUrl(MainWindow.mainWindow.getMsgKefuPicUrlTextField().getText());
+            article.setPicUrl(MessageEditForm.messageEditForm.getMsgKefuPicUrlTextField().getText());
 
             // 描述
-            String description = MainWindow.mainWindow.getMsgKefuDescTextField().getText();
+            String description = MessageEditForm.messageEditForm.getMsgKefuDescTextField().getText();
             description = TemplateUtil.evaluate(description, velocityContext);
             article.setDescription(description);
 
             // 跳转url
-            article.setUrl(MainWindow.mainWindow.getMsgKefuUrlTextField().getText());
+            article.setUrl(MessageEditForm.messageEditForm.getMsgKefuUrlTextField().getText());
 
             kefuMessage = WxMpKefuMessage.NEWS().addArticle(article).build();
-        } else if ("文本消息".equals(MainWindow.mainWindow.getMsgKefuMsgTypeComboBox().getSelectedItem().toString())) {
-            String content = MainWindow.mainWindow.getMsgKefuMsgTitleTextField().getText();
+        } else if ("文本消息".equals(MessageEditForm.messageEditForm.getMsgKefuMsgTypeComboBox().getSelectedItem().toString())) {
+            String content = MessageEditForm.messageEditForm.getMsgKefuMsgTitleTextField().getText();
             content = TemplateUtil.evaluate(content, velocityContext);
             kefuMessage = WxMpKefuMessage.TEXT().content(content).build();
         }
@@ -163,16 +163,16 @@ public class MessageMaker {
         //使用post提交
         request.setMethod(MethodType.POST);
         //必填:短信签名-可在短信控制台中找到
-        request.setSignName(Init.configer.getAliyunSign());
+        request.setSignName(Init.config.getAliyunSign());
 
         // 模板参数
         Map<String, String> paramMap = new HashMap<String, String>();
 
-        if (MainWindow.mainWindow.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-            Init.initTemplateDataTable();
+        if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+            MessageEditForm.initTemplateDataTable();
         }
 
-        DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getTemplateMsgDataTable().getModel();
+        DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel();
         int rowCount = tableModel.getRowCount();
 
         VelocityContext velocityContext = new VelocityContext();
@@ -190,7 +190,7 @@ public class MessageMaker {
         request.setTemplateParam(JSONUtil.parseFromMap(paramMap).toJSONString(0));
 
         // 短信模板ID，传入的模板必须是在阿里阿里云短信中的可用模板。示例：SMS_585014
-        request.setTemplateCode(MainWindow.mainWindow.getMsgTemplateIdTextField().getText());
+        request.setTemplateCode(MessageEditForm.messageEditForm.getMsgTemplateIdTextField().getText());
 
         return request;
     }
@@ -211,11 +211,11 @@ public class MessageMaker {
         // 模板参数
         Map<String, String> paramMap = new HashMap<String, String>();
 
-        if (MainWindow.mainWindow.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-            Init.initTemplateDataTable();
+        if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+            MessageEditForm.initTemplateDataTable();
         }
 
-        DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getTemplateMsgDataTable().getModel();
+        DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel();
         int rowCount = tableModel.getRowCount();
         VelocityContext velocityContext = new VelocityContext();
         for (int i = 0; i < msgData.length; i++) {
@@ -233,9 +233,9 @@ public class MessageMaker {
 
         // 短信签名，传入的短信签名必须是在阿里大鱼“管理中心-短信签名管理”中的可用签名。如“阿里大鱼”已在短信签名管理中通过审核，
         // 则可传入”阿里大鱼“（传参时去掉引号）作为短信签名。短信效果示例：【阿里大鱼】欢迎使用阿里大鱼服务。
-        request.setSmsFreeSignName(Init.configer.getAliSign());
+        request.setSmsFreeSignName(Init.config.getAliSign());
         // 短信模板ID，传入的模板必须是在阿里大鱼“管理中心-短信模板管理”中的可用模板。示例：SMS_585014
-        request.setSmsTemplateCode(MainWindow.mainWindow.getMsgTemplateIdTextField().getText());
+        request.setSmsTemplateCode(MessageEditForm.messageEditForm.getMsgTemplateIdTextField().getText());
 
         return request;
     }
@@ -247,11 +247,11 @@ public class MessageMaker {
      * @return String[]
      */
     synchronized static String[] makeTxyunMessage(String[] msgData) {
-        if (MainWindow.mainWindow.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-            Init.initTemplateDataTable();
+        if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+            MessageEditForm.initTemplateDataTable();
         }
 
-        DefaultTableModel tableModel = (DefaultTableModel) MainWindow.mainWindow.getTemplateMsgDataTable().getModel();
+        DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel();
         int rowCount = tableModel.getRowCount();
         String[] params = new String[rowCount];
 
@@ -283,7 +283,7 @@ public class MessageMaker {
             velocityContext.put(PushManage.TEMPLATE_VAR_PREFIX + i, msgData[i]);
         }
 
-        String text = MainWindow.mainWindow.getMsgYunpianMsgContentTextField().getText();
+        String text = MessageEditForm.messageEditForm.getMsgYunpianMsgContentTextField().getText();
         text = TemplateUtil.evaluate(text, velocityContext);
 
         params.put(YunpianClient.TEXT, text);

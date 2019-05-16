@@ -1,6 +1,6 @@
 package com.fangxuele.tool.push.logic;
 
-import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.PushForm;
 import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
 
 /**
@@ -16,12 +16,11 @@ public class KeFuMsgServiceThread extends BaseMsgServiceThread {
     /**
      * 构造函数
      *
-     * @param pageFrom 起始页
-     * @param pageTo   截止页
-     * @param pageSize 页大小
+     * @param pageFrom 开始索引
+     * @param pageTo   截止索引
      */
-    KeFuMsgServiceThread(int pageFrom, int pageTo, int pageSize) {
-        super(pageFrom, pageTo, pageSize);
+    KeFuMsgServiceThread(int pageFrom, int pageTo) {
+        super(pageFrom, pageTo);
     }
 
     @Override
@@ -47,13 +46,13 @@ public class KeFuMsgServiceThread extends BaseMsgServiceThread {
                 wxMpKefuMessage = MessageMaker.makeKefuMessage(msgData);
                 wxMpKefuMessage.setToUser(openId);
                 // 空跑控制
-                if (!MainWindow.mainWindow.getDryRunCheckBox().isSelected()) {
+                if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
                     wxMpService.getKefuService().sendKefuMessage(wxMpKefuMessage);
                 }
 
                 // 总发送成功+1
                 PushData.increaseSuccess();
-                MainWindow.mainWindow.getPushSuccessCount().setText(String.valueOf(PushData.successRecords));
+                PushForm.pushForm.getPushSuccessCount().setText(String.valueOf(PushData.successRecords));
 
                 // 当前线程发送成功+1
                 currentThreadSuccessCount++;
@@ -64,7 +63,7 @@ public class KeFuMsgServiceThread extends BaseMsgServiceThread {
             } catch (Exception e) {
                 // 总发送失败+1
                 PushData.increaseFail();
-                MainWindow.mainWindow.getPushFailCount().setText(String.valueOf(PushData.failRecords));
+                PushForm.pushForm.getPushFailCount().setText(String.valueOf(PushData.failRecords));
 
                 // 保存发送失败
                 PushData.sendFailList.add(msgData);
@@ -80,7 +79,7 @@ public class KeFuMsgServiceThread extends BaseMsgServiceThread {
             tableModel.setValueAt((int) ((double) (i + 1) / list.size() * 100), tableRow, 5);
 
             // 总进度条
-            MainWindow.mainWindow.getPushTotalProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
+            PushForm.pushForm.getPushTotalProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
         }
 
         // 当前线程结束

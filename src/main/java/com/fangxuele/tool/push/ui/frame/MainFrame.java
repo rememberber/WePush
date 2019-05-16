@@ -6,6 +6,7 @@ import com.fangxuele.tool.push.ui.listener.AboutListener;
 import com.fangxuele.tool.push.ui.listener.FramListener;
 import com.fangxuele.tool.push.ui.listener.HelpListener;
 import com.fangxuele.tool.push.ui.listener.MemberListener;
+import com.fangxuele.tool.push.ui.listener.MessageTypeListener;
 import com.fangxuele.tool.push.ui.listener.MsgListener;
 import com.fangxuele.tool.push.ui.listener.PushHisListener;
 import com.fangxuele.tool.push.ui.listener.PushListener;
@@ -38,11 +39,11 @@ public class MainFrame extends JFrame {
 
         //得到屏幕的尺寸
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setBounds((int) (screenSize.width * 0.1), (int) (screenSize.height * 0.08), (int) (screenSize.width * 0.8),
-                (int) (screenSize.height * 0.8));
+        this.setBounds((int) (screenSize.width * 0.1), (int) (screenSize.height * 0.06), (int) (screenSize.width * 0.8),
+                (int) (screenSize.height * 0.83));
 
         Dimension preferSize = new Dimension((int) (screenSize.width * 0.8),
-                (int) (screenSize.height * 0.8));
+                (int) (screenSize.height * 0.83));
         this.setPreferredSize(preferSize);
     }
 
@@ -50,6 +51,7 @@ public class MainFrame extends JFrame {
      * 添加事件监听
      */
     public void addListeners() {
+        MessageTypeListener.addListeners();
         AboutListener.addListeners();
         HelpListener.addListeners();
         PushHisListener.addListeners();

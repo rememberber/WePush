@@ -2,9 +2,10 @@ package com.fangxuele.tool.push.ui.listener;
 
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
-import com.fangxuele.tool.push.logic.PushData;
-import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
+import com.fangxuele.tool.push.ui.form.PushForm;
+import com.fangxuele.tool.push.ui.form.PushHisForm;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
@@ -25,7 +26,6 @@ public class TabListener {
     private static boolean warnFlag = true;
 
     public static void addListeners() {
-        // 暂时停止使用，仅留作demo，日后需要时再使用
         MainWindow.mainWindow.getTabbedPane().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -33,7 +33,7 @@ public class TabListener {
                 int index = MainWindow.mainWindow.getTabbedPane().getSelectedIndex();
                 switch (index) {
                     case 6:
-                        Init.initPushHisTab();
+                        PushHisForm.init();
                         break;
                     case 3:
                         if (warnFlag) {
@@ -44,11 +44,8 @@ public class TabListener {
                         }
                         break;
                     case 4:
-                        MainWindow.mainWindow.getPushMsgName().setText(MainWindow.mainWindow.getMsgNameField().getText());
-
-                        if (PushData.allUser != null && PushData.allUser.size() > 0) {
-                            PushListener.refreshPushInfo();
-                        }
+                        PushForm.pushForm.getPushMsgName().setText(MessageEditForm.messageEditForm.getMsgNameField().getText());
+                        PushListener.refreshPushInfo();
                         break;
                     default:
                         break;

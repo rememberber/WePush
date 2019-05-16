@@ -1,14 +1,10 @@
 package com.fangxuele.tool.push.util;
 
-
 import cn.hutool.core.io.FileUtil;
-import cn.hutool.log.Log;
-import cn.hutool.log.LogFactory;
-import cn.hutool.setting.dialect.Props;
+import cn.hutool.core.util.CharsetUtil;
+import cn.hutool.setting.Setting;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 /**
  * <pre>
@@ -19,52 +15,30 @@ import java.io.IOException;
  * @since 2017/6/14.
  */
 public class ConfigUtil {
+    /**
+     * 设置文件路径
+     */
+    private String settingFilePath = SystemUtil.configHome + "config" + File.separator + "config.setting";
 
-    private static final Log logger = LogFactory.get();
+    private Setting setting;
 
-    private File file;
+    private static ConfigUtil configUtil = new ConfigUtil();
 
-    private Props props;
-
-    private static ConfigUtil ourInstance = new ConfigUtil();
+    private int msgType;
 
     private String msgName;
 
     private String previewUser;
 
-    private int memberCount;
-
     private String memberSql;
 
     private String memberFilePath;
 
-    private int pushSuccess;
+    private int maxThreadPool;
 
-    private int pushFail;
-
-    private long pushLastTime;
-
-    private long pushLeftTime;
-
-    private int totalRecord;
-
-    private int totalPage;
-
-    private int totalThread;
-
-    private int recordPerPage;
-
-    private int pagePerThread;
+    private int threadCount;
 
     private boolean dryRun;
-
-    private boolean radioStartAt;
-
-    private String textStartAt;
-
-    private boolean radioStopAt;
-
-    private String textStopAt;
 
     private boolean radioPerDay;
 
@@ -131,527 +105,362 @@ public class ConfigUtil {
     private int fontSize;
 
     public static ConfigUtil getInstance() {
-        return ourInstance;
+        return configUtil;
     }
 
     private ConfigUtil() {
-        // --旧版本配置文件迁移初始化开始--
-        File configHomeDir = new File(SystemUtil.configHome);
-        if (!configHomeDir.exists()) {
-            configHomeDir.mkdirs();
-        }
-        File oldConfigDir = new File("config");
-        if (oldConfigDir.exists()) {
-            FileUtil.copy(oldConfigDir.getAbsolutePath(), SystemUtil.configHome, true);
-            FileUtil.del(oldConfigDir.getAbsolutePath());
-        }
-
-        File oldDataDir = new File("data");
-        if (oldDataDir.exists()) {
-            FileUtil.copy(oldDataDir.getAbsolutePath(), SystemUtil.configHome, true);
-            FileUtil.del(oldDataDir.getAbsolutePath());
-        }
-        // --旧版本配置文件迁移初始化结束--
-
-        file = new File(SystemUtil.configHome + "config" + File.separator + "config.properties");
-        File configDir = new File(SystemUtil.configHome + "config" + File.separator);
-        if (!file.exists()) {
-            try {
-                configDir.mkdirs();
-                file.createNewFile();
-                originInit();
-            } catch (IOException e) {
-                logger.error(e);
-            }
-        }
-        props = new Props(file);
+        setting = new Setting(FileUtil.touch(settingFilePath), CharsetUtil.CHARSET_UTF_8, false);
     }
 
     public void setProps(String key, String value) {
-        props.setProperty(key, value);
+        setting.put(key, value);
     }
 
     public String getProps(String key) {
-        return props.getProperty(key);
+        return setting.get(key);
     }
 
     /**
      * 存盘
      */
     public void save() {
-        try {
-            props.store(new FileOutputStream(file), null);
-        } catch (IOException e) {
-            logger.error(e);
-        }
+        setting.store(settingFilePath);
     }
 
-    /**
-     * 初始化原始数据
-     */
-    private void originInit() {
-        props = new Props(file);
-
-        props.setProperty("msg.msgName", "");
-        props.setProperty("msg.previewUser", "");
-        props.setProperty("member.count", "0");
-        props.setProperty("member.sql", "SELECT openid FROM");
-        props.setProperty("member.filePath", "");
-        props.setProperty("push.success", "0");
-        props.setProperty("push.fail", "0");
-        props.setProperty("push.lastTime", "0");
-        props.setProperty("push.leftTime", "0");
-        props.setProperty("push.totalRecord", "0");
-        props.setProperty("push.totalPage", "0");
-        props.setProperty("push.totalThread", "0");
-        props.setProperty("push.recordPerPage", "500");
-        props.setProperty("push.pagePerThread", "3");
-        props.setProperty("push.dryRun", "true");
-        props.setProperty("schedule.radioStartAt", "false");
-        props.setProperty("schedule.textStartAt", "");
-        props.setProperty("schedule.radioStopAt", "false");
-        props.setProperty("schedule.textStopAt", "");
-        props.setProperty("schedule.radioPerDay", "false");
-        props.setProperty("schedule.textPerDay", "");
-        props.setProperty("schedule.radioPerWeek", "false");
-        props.setProperty("schedule.textPerWeek.week", "一");
-        props.setProperty("schedule.textPerWeek.time", "");
-        props.setProperty("setting.normal.autoCheckUpdate", "true");
-        props.setProperty("setting.wechat.appId", "");
-        props.setProperty("setting.wechat.AppSecret", "");
-        props.setProperty("setting.wechat.token", "");
-        props.setProperty("setting.wechat.aesKey", "");
-        props.setProperty("setting.miniApp.appId", "");
-        props.setProperty("setting.miniApp.AppSecret", "");
-        props.setProperty("setting.miniApp.token", "");
-        props.setProperty("setting.miniApp.aesKey", "");
-        props.setProperty("setting.aliyun.accessKeyId", "");
-        props.setProperty("setting.aliyun.accessKeySecret", "");
-        props.setProperty("setting.aliyun.aliyunSign", "");
-        props.setProperty("setting.ali.serverUrl", "");
-        props.setProperty("setting.ali.appKey", "");
-        props.setProperty("setting.ali.appSecret", "");
-        props.setProperty("setting.ali.sign", "");
-        props.setProperty("setting.txyun.appId", "");
-        props.setProperty("setting.txyun.appKey", "");
-        props.setProperty("setting.txyun.txyunSign", "");
-        props.setProperty("setting.yunpian.apiKey", "");
-        props.setProperty("setting.mysql.url", "");
-        props.setProperty("setting.mysql.database", "");
-        props.setProperty("setting.mysql.user", "");
-        props.setProperty("setting.mysql.password", "");
-        props.setProperty("setting.appearance.theme", "Darcula(推荐)");
-        props.setProperty("setting.appearance.font", "Microsoft YaHei UI");
-        props.setProperty("setting.appearance.fontSize", "18");
-
-        save();
+    public int getMsgType() {
+        return setting.getInt("msgType", "msg", 1);
     }
+
+    public void setMsgType(int msgType) {
+        setting.put("msg", "msgType", String.valueOf(msgType));
+    }
+
 
     public String getMsgName() {
-        return props.getProperty("msg.msgName");
+        return setting.getStr("msgName", "msg", "");
     }
 
     public void setMsgName(String msgName) {
-        props.setProperty("msg.msgName", msgName);
+        setting.put("msg", "msgName", msgName);
     }
 
     public String getPreviewUser() {
-        return props.getProperty("msg.previewUser");
+        return setting.getStr("previewUser", "msg", "");
     }
 
     public void setPreviewUser(String previewUser) {
-        props.setProperty("msg.previewUser", previewUser);
-    }
-
-    public int getMemberCount() {
-        return props.getInt("member.count");
-    }
-
-    public void setMemberCount(int memberCount) {
-        props.setProperty("member.count", memberCount);
+        setting.put("msg", "previewUser", previewUser);
     }
 
     public String getMemberSql() {
-        return props.getProperty("member.sql");
+        return setting.getStr("sql", "member", "");
     }
 
     public void setMemberSql(String memberSql) {
-        props.setProperty("member.sql", memberSql);
+        setting.put("member", "sql", memberSql);
     }
 
     public String getMemberFilePath() {
-        return props.getProperty("member.filePath");
+        return setting.getStr("filePath", "member", "");
     }
 
     public void setMemberFilePath(String memberFilePath) {
-        props.setProperty("member.filePath", memberFilePath);
+        setting.put("member", "filePath", memberFilePath);
     }
 
-    public int getPushSuccess() {
-        return props.getInt("push.success");
+    public int getMaxThreadPool() {
+        return setting.getInt("maxThreadPool", "push", 100);
     }
 
-    public void setPushSuccess(int pushSuccess) {
-        props.setProperty("push.success", pushSuccess);
+    public void setMaxThreadPool(int maxThreadPool) {
+        setting.put("push", "maxThreadPool", String.valueOf(maxThreadPool));
     }
 
-    public int getPushFail() {
-        return props.getInt("push.fail");
+    public int getThreadCount() {
+        return setting.getInt("threadCount", "push", 60);
     }
 
-    public void setPushFail(int pushFail) {
-        props.setProperty("push.fail", pushFail);
-    }
-
-    public long getPushLastTime() {
-        return props.getLong("push.lastTime");
-    }
-
-    public void setPushLastTime(long pushLastTime) {
-        props.setProperty("push.lastTime", pushLastTime);
-    }
-
-    public long getPushLeftTime() {
-        return props.getLong("push.leftTime");
-    }
-
-    public void setPushLeftTime(long pushLeftTime) {
-        props.setProperty("push.leftTime", pushLeftTime);
-    }
-
-    public int getTotalRecord() {
-        return props.getInt("push.totalRecord");
-    }
-
-    public void setTotalRecord(int totalRecord) {
-        props.setProperty("push.totalRecord", totalRecord);
-    }
-
-    public int getTotalPage() {
-        return props.getInt("push.totalPage");
-    }
-
-    public void setTotalPage(int totalPage) {
-        props.setProperty("push.totalPage", totalPage);
-    }
-
-    public int getTotalThread() {
-        return props.getInt("push.totalThread");
-    }
-
-    public void setTotalThread(int totalThread) {
-        props.setProperty("push.totalThread", totalThread);
-    }
-
-    public int getRecordPerPage() {
-        return props.getInt("push.recordPerPage");
-    }
-
-    public void setRecordPerPage(int recordPerPage) {
-        props.setProperty("push.recordPerPage", recordPerPage);
-    }
-
-    public int getPagePerThread() {
-        return props.getInt("push.pagePerThread");
-    }
-
-    public void setPagePerThread(int pagePerThread) {
-        props.setProperty("push.pagePerThread", pagePerThread);
+    public void setThreadCount(int threadCount) {
+        setting.put("push", "threadCount", String.valueOf(threadCount));
     }
 
     public boolean isDryRun() {
-        return props.getBool("push.dryRun");
+        return setting.getBool("dryRun", "push", true);
     }
 
     public void setDryRun(boolean dryRun) {
-        props.setProperty("push.dryRun", dryRun);
+        setting.put("push", "dryRun", String.valueOf(dryRun));
     }
 
     public boolean isRadioStartAt() {
-        return props.getBool("schedule.radioStartAt");
+        return setting.getBool("radioStartAt", "schedule", false);
     }
 
     public void setRadioStartAt(boolean radioStartAt) {
-        props.setProperty("schedule.radioStartAt", radioStartAt);
+        setting.put("schedule", "radioStartAt", String.valueOf(radioStartAt));
     }
 
     public String getTextStartAt() {
-        return props.getProperty("schedule.textStartAt");
+        return setting.getStr("textStartAt", "schedule", "");
     }
 
     public void setTextStartAt(String textStartAt) {
-        props.setProperty("schedule.textStartAt", textStartAt);
-    }
-
-    public boolean isRadioStopAt() {
-        return props.getBool("schedule.radioStopAt");
-    }
-
-    public void setRadioStopAt(boolean radioStopAt) {
-        props.setProperty("schedule.radioStopAt", radioStopAt);
-    }
-
-    public String getTextStopAt() {
-        return props.getProperty("schedule.textStopAt");
-    }
-
-    public void setTextStopAt(String textStopAt) {
-        props.setProperty("schedule.textStopAt", textStopAt);
+        setting.put("schedule", "textStartAt", textStartAt);
     }
 
     public boolean isRadioPerDay() {
-        return props.getBool("schedule.radioPerDay");
+        return setting.getBool("radioPerDay", "schedule", false);
     }
 
     public void setRadioPerDay(boolean radioPerDay) {
-        props.setProperty("schedule.radioPerDay", radioPerDay);
+        setting.put("schedule", "radioPerDay", String.valueOf(radioPerDay));
     }
 
     public String getTextPerDay() {
-        return props.getProperty("schedule.textPerDay");
+        return setting.getStr("textPerDay", "schedule", "");
     }
 
     public void setTextPerDay(String textPerDay) {
-        props.setProperty("schedule.textPerDay", textPerDay);
+        setting.put("schedule", "textPerDay", textPerDay);
     }
 
     public boolean isRadioPerWeek() {
-        return props.getBool("schedule.radioPerWeek");
+        return setting.getBool("radioPerWeek", "schedule", false);
     }
 
     public void setRadioPerWeek(boolean radioPerWeek) {
-        props.setProperty("schedule.radioPerWeek", radioPerWeek);
+        setting.put("schedule", "radioPerWeek", String.valueOf(radioPerWeek));
     }
 
     public String getTextPerWeekWeek() {
-        return props.getProperty("schedule.textPerWeek.week");
+        return setting.getStr("textPerWeek.week", "schedule", "一");
     }
 
     public void setTextPerWeekWeek(String textPerWeekWeek) {
-        props.setProperty("schedule.textPerWeek.week", textPerWeekWeek);
+        setting.put("schedule", "textPerWeek.week", textPerWeekWeek);
     }
 
     public String getTextPerWeekTime() {
-        return props.getProperty("schedule.textPerWeek.time");
+        return setting.getStr("textPerWeek.time", "schedule", "");
     }
 
     public void setTextPerWeekTime(String textPerWeekTime) {
-        props.setProperty("schedule.textPerWeek.time", textPerWeekTime);
+        setting.put("schedule", "textPerWeek.time", textPerWeekTime);
     }
 
     public boolean isAutoCheckUpdate() {
-        return props.getBool("setting.normal.autoCheckUpdate") == null ? true : props.getBool("setting.normal.autoCheckUpdate");
+        return setting.getBool("autoCheckUpdate", "setting.normal", true);
     }
 
     public void setAutoCheckUpdate(boolean autoCheckUpdate) {
-        props.setProperty("setting.normal.autoCheckUpdate", autoCheckUpdate);
+        setting.put("setting.normal", "autoCheckUpdate", String.valueOf(autoCheckUpdate));
     }
 
     public String getWechatAppId() {
-        return props.getProperty("setting.wechat.appId");
+        return setting.getStr("appId", "setting.wechat", "");
     }
 
     public void setWechatAppId(String wechatAppId) {
-        props.setProperty("setting.wechat.appId", wechatAppId);
+        setting.put("setting.wechat", "appId", wechatAppId);
     }
 
     public String getWechatAppSecret() {
-        return props.getProperty("setting.wechat.AppSecret");
+        return setting.getStr("AppSecret", "setting.wechat", "");
     }
 
     public void setWechatAppSecret(String wechatAppSecret) {
-        props.setProperty("setting.wechat.AppSecret", wechatAppSecret);
+        setting.put("setting.wechat", "AppSecret", wechatAppSecret);
     }
 
     public String getWechatToken() {
-        return props.getProperty("setting.wechat.token");
+        return setting.getStr("token", "setting.wechat", "");
     }
 
     public void setWechatToken(String wechatToken) {
-        props.setProperty("setting.wechat.token", wechatToken);
+        setting.put("setting.wechat", "token", wechatToken);
     }
 
     public String getWechatAesKey() {
-        return props.getProperty("setting.wechat.aesKey");
+        return setting.getStr("aesKey", "setting.wechat", "");
     }
 
     public void setWechatAesKey(String wechatAesKey) {
-        props.setProperty("setting.wechat.aesKey", wechatAesKey);
+        setting.put("setting.wechat", "aesKey", wechatAesKey);
     }
 
     public String getAliServerUrl() {
-        return props.getProperty("setting.ali.serverUrl");
+        return setting.getStr("serverUrl", "setting.ali", "");
     }
 
     public void setAliServerUrl(String aliServerUrl) {
-        props.setProperty("setting.ali.serverUrl", aliServerUrl);
+        setting.put("setting.ali", "serverUrl", aliServerUrl);
     }
 
     public String getAliAppKey() {
-        return props.getProperty("setting.ali.appKey");
+        return setting.getStr("appKey", "setting.ali", "");
     }
 
     public void setAliAppKey(String aliAppKey) {
-        props.setProperty("setting.ali.appKey", aliAppKey);
+        setting.put("setting.ali", "appKey", aliAppKey);
     }
 
     public String getAliAppSecret() {
-        return props.getProperty("setting.ali.appSecret");
+        return setting.getStr("appSecret", "setting.ali", "");
     }
 
     public void setAliAppSecret(String aliAppSecret) {
-        props.setProperty("setting.ali.appSecret", aliAppSecret);
+        setting.put("setting.ali", "appSecret", aliAppSecret);
     }
 
     public String getAliSign() {
-        return props.getProperty("setting.ali.sign");
+        return setting.getStr("sign", "setting.ali", "");
     }
 
     public void setAliSign(String aliSign) {
-        props.setProperty("setting.ali.sign", aliSign);
+        setting.put("setting.ali", "sign", aliSign);
     }
 
     public String getMysqlUrl() {
-        return props.getProperty("setting.mysql.url");
+        return setting.getStr("url", "setting.mysql", "");
     }
 
     public void setMysqlUrl(String mysqlUrl) {
-        props.setProperty("setting.mysql.url", mysqlUrl);
+        setting.put("setting.mysql", "url", mysqlUrl);
     }
 
     public String getMysqlDatabase() {
-        return props.getProperty("setting.mysql.database");
+        return setting.getStr("database", "setting.mysql", "");
     }
 
     public void setMysqlDatabase(String mysqlDatabase) {
-        props.setProperty("setting.mysql.database", mysqlDatabase);
+        setting.put("setting.mysql", "database", mysqlDatabase);
     }
 
     public String getMysqlUser() {
-        return props.getProperty("setting.mysql.user");
+        return setting.getStr("user", "setting.mysql", "");
     }
 
     public void setMysqlUser(String mysqlUser) {
-        props.setProperty("setting.mysql.user", mysqlUser);
+        setting.put("setting.mysql", "user", mysqlUser);
     }
 
     public String getMysqlPassword() {
-        return props.getProperty("setting.mysql.password");
+        return setting.getStr("password", "setting.mysql", "");
     }
 
     public void setMysqlPassword(String mysqlPassword) {
-        props.setProperty("setting.mysql.password", mysqlPassword);
+        setting.put("setting.mysql", "password", mysqlPassword);
     }
 
     public String getTheme() {
-        return props.getProperty("setting.appearance.theme");
+        return setting.getStr("theme", "setting.appearance", "Darcula(推荐)");
     }
 
     public void setTheme(String theme) {
-        props.setProperty("setting.appearance.theme", theme);
+        setting.put("setting.appearance", "theme", theme);
     }
 
     public String getFont() {
-        return props.getProperty("setting.appearance.font");
+        return setting.getStr("font", "setting.appearance", "Microsoft YaHei UI");
     }
 
     public void setFont(String font) {
-        props.setProperty("setting.appearance.font", font);
+        setting.put("setting.appearance", "font", font);
     }
 
     public int getFontSize() {
-        return props.getInt("setting.appearance.fontSize");
+        return setting.getInt("fontSize", "setting.appearance", 18);
     }
 
     public void setFontSize(int fontSize) {
-        props.setProperty("setting.appearance.fontSize", fontSize);
+        setting.put("setting.appearance", "fontSize", String.valueOf(fontSize));
     }
 
     public String getAliyunAccessKeyId() {
-        return props.getProperty("setting.aliyun.accessKeyId");
+        return setting.getStr("accessKeyId", "setting.aliyun", "");
     }
 
     public void setAliyunAccessKeyId(String aliyunAccessKeyId) {
-        props.setProperty("setting.aliyun.accessKeyId", aliyunAccessKeyId);
+        setting.put("setting.aliyun", "accessKeyId", aliyunAccessKeyId);
     }
 
     public String getAliyunAccessKeySecret() {
-        return props.getProperty("setting.aliyun.accessKeySecret");
+        return setting.getStr("accessKeySecret", "setting.aliyun", "");
     }
 
     public void setAliyunAccessKeySecret(String aliyunAccessKeySecret) {
-        props.setProperty("setting.aliyun.accessKeySecret", aliyunAccessKeySecret);
+        setting.put("setting.aliyun", "accessKeySecret", aliyunAccessKeySecret);
     }
 
     public String getAliyunSign() {
-        return props.getProperty("setting.aliyun.aliyunSign");
+        return setting.getStr("aliyunSign", "setting.aliyun", "");
     }
 
     public void setAliyunSign(String aliyunSign) {
-        props.setProperty("setting.aliyun.aliyunSign", aliyunSign);
+        setting.put("setting.aliyun", "aliyunSign", aliyunSign);
     }
 
     public String getMiniAppAppId() {
-        return props.getProperty("setting.miniApp.appId");
+        return setting.getStr("appId", "setting.miniApp", "");
     }
 
     public void setMiniAppAppId(String miniAppAppId) {
-        props.setProperty("setting.miniApp.appId", miniAppAppId);
+        setting.put("setting.miniApp", "appId", miniAppAppId);
     }
 
     public String getMiniAppAppSecret() {
-        return props.getProperty("setting.miniApp.AppSecret");
+        return setting.getStr("AppSecret", "setting.miniApp", "");
     }
 
     public void setMiniAppAppSecret(String miniAppAppSecret) {
-        props.setProperty("setting.miniApp.AppSecret", miniAppAppSecret);
+        setting.put("setting.miniApp", "AppSecret", miniAppAppSecret);
     }
 
     public String getMiniAppToken() {
-        return props.getProperty("setting.miniApp.token");
+        return setting.getStr("token", "setting.miniApp", "");
     }
 
     public void setMiniAppToken(String miniAppToken) {
-        props.setProperty("setting.miniApp.token", miniAppToken);
+        setting.put("setting.miniApp", "token", miniAppToken);
     }
 
     public String getMiniAppAesKey() {
-        return props.getProperty("setting.miniApp.aesKey");
+        return setting.getStr("aesKey", "setting.miniApp", "");
     }
 
     public void setMiniAppAesKey(String miniAppAesKey) {
-        props.setProperty("setting.miniApp.aesKey", miniAppAesKey);
+        setting.put("setting.miniApp", "aesKey", miniAppAesKey);
     }
 
     public String getTxyunAppId() {
-        return props.getProperty("setting.txyun.appId");
+        return setting.getStr("appId", "setting.txyun", "");
     }
 
     public void setTxyunAppId(String txyunAppId) {
-        props.setProperty("setting.txyun.appId", txyunAppId);
+        setting.put("setting.txyun", "appId", txyunAppId);
     }
 
     public String getTxyunAppKey() {
-        return props.getProperty("setting.txyun.appKey");
+        return setting.getStr("appKey", "setting.txyun", "");
     }
 
     public void setTxyunAppKey(String txyunAppKey) {
-        props.setProperty("setting.txyun.appKey", txyunAppKey);
+        setting.put("setting.txyun", "appKey", txyunAppKey);
     }
 
     public String getTxyunSign() {
-        return props.getProperty("setting.txyun.txyunSign");
+        return setting.getStr("txyunSign", "setting.txyun", "");
     }
 
     public void setTxyunSign(String txyunSign) {
-        props.setProperty("setting.txyun.txyunSign", txyunSign);
+        setting.put("setting.txyun", "txyunSign", txyunSign);
     }
 
     public String getYunpianApiKey() {
-        return props.getProperty("setting.yunpian.apiKey");
+        return setting.getStr("apiKey", "setting.yunpian", "");
     }
 
     public void setYunpianApiKey(String yunpianApiKey) {
-        props.setProperty("setting.yunpian.apiKey", yunpianApiKey);
+        setting.put("setting.yunpian", "apiKey", yunpianApiKey);
     }
 }

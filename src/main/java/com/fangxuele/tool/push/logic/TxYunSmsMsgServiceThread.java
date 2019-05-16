@@ -1,12 +1,10 @@
 package com.fangxuele.tool.push.logic;
 
 import com.fangxuele.tool.push.ui.Init;
-import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
+import com.fangxuele.tool.push.ui.form.PushForm;
 import com.github.qcloudsms.SmsSingleSender;
 import com.github.qcloudsms.SmsSingleSenderResult;
-import org.apache.commons.lang3.StringUtils;
-
-import javax.swing.*;
 
 /**
  * <pre>
@@ -21,12 +19,11 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
     /**
      * 构造函数
      *
-     * @param pageFrom 起始页
-     * @param pageTo   截止页
-     * @param pageSize 页大小
+     * @param startIndex 起始页
+     * @param endIndex   截止页
      */
-    TxYunSmsMsgServiceThread(int pageFrom, int pageTo, int pageSize) {
-        super(pageFrom, pageTo, pageSize);
+    TxYunSmsMsgServiceThread(int startIndex, int endIndex) {
+        super(startIndex, endIndex);
     }
 
     @Override
@@ -35,18 +32,12 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
         // 初始化当前线程
         initCurrentThread();
 
-        String txyunAppId = Init.configer.getTxyunAppId();
-        String txyunAppKey = Init.configer.getTxyunAppKey();
-
-        if (StringUtils.isEmpty(txyunAppId) || StringUtils.isEmpty(txyunAppKey)) {
-            JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
-                    "请先在设置中填写并保存腾讯云短信相关配置！", "提示",
-                    JOptionPane.INFORMATION_MESSAGE);
-        }
+        String txyunAppId = Init.config.getTxyunAppId();
+        String txyunAppKey = Init.config.getTxyunAppKey();
 
         SmsSingleSender ssender = new SmsSingleSender(Integer.valueOf(txyunAppId), txyunAppKey);
-        int templateId = Integer.parseInt(MainWindow.mainWindow.getMsgTemplateIdTextField().getText());
-        String smsSign = Init.configer.getAliyunSign();
+        int templateId = Integer.parseInt(MessageEditForm.messageEditForm.getMsgTemplateIdTextField().getText());
+        String smsSign = Init.config.getAliyunSign();
 
         for (int i = 0; i < list.size(); i++) {
             if (!PushData.running) {
@@ -62,14 +53,14 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
                 String[] params = MessageMaker.makeTxyunMessage(msgData);
 
                 // 空跑控制
-                if (!MainWindow.mainWindow.getDryRunCheckBox().isSelected()) {
+                if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
                     SmsSingleSenderResult result = ssender.sendWithParam("86", telNum,
                             templateId, params, smsSign, "", "");
 
                     if (result.result == 0) {
                         // 总发送成功+1
                         PushData.increaseSuccess();
-                        MainWindow.mainWindow.getPushSuccessCount().setText(String.valueOf(PushData.successRecords));
+                        PushForm.pushForm.getPushSuccessCount().setText(String.valueOf(PushData.successRecords));
 
                         // 当前线程发送成功+1
                         currentThreadSuccessCount++;
@@ -80,7 +71,7 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
                     } else {
                         // 总发送失败+1
                         PushData.increaseFail();
-                        MainWindow.mainWindow.getPushFailCount().setText(String.valueOf(PushData.failRecords));
+                        PushForm.pushForm.getPushFailCount().setText(String.valueOf(PushData.failRecords));
 
                         // 保存发送失败
                         PushData.sendFailList.add(msgData);
@@ -96,7 +87,7 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
                 } else {
                     // 总发送成功+1
                     PushData.increaseSuccess();
-                    MainWindow.mainWindow.getPushSuccessCount().setText(String.valueOf(PushData.successRecords));
+                    PushForm.pushForm.getPushSuccessCount().setText(String.valueOf(PushData.successRecords));
 
                     // 当前线程发送成功+1
                     currentThreadSuccessCount++;
@@ -109,7 +100,7 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
             } catch (Exception e) {
                 // 总发送失败+1
                 PushData.increaseFail();
-                MainWindow.mainWindow.getPushFailCount().setText(String.valueOf(PushData.failRecords));
+                PushForm.pushForm.getPushFailCount().setText(String.valueOf(PushData.failRecords));
 
                 // 保存发送失败
                 PushData.sendFailList.add(msgData);
@@ -125,7 +116,7 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
             tableModel.setValueAt((int) ((double) (i + 1) / list.size() * 100), tableRow, 5);
 
             // 总进度条
-            MainWindow.mainWindow.getPushTotalProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
+            PushForm.pushForm.getPushTotalProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
         }
 
         // 当前线程结束

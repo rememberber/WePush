@@ -13,8 +13,16 @@ import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
+import com.fangxuele.tool.push.dao.TPushHistoryMapper;
+import com.fangxuele.tool.push.domain.TPushHistory;
 import com.fangxuele.tool.push.ui.Init;
-import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
+import com.fangxuele.tool.push.ui.form.PushForm;
+import com.fangxuele.tool.push.ui.form.PushHisForm;
+import com.fangxuele.tool.push.ui.form.SettingForm;
+import com.fangxuele.tool.push.ui.listener.MemberListener;
+import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.github.qcloudsms.SmsSingleSender;
 import com.github.qcloudsms.SmsSingleSenderResult;
@@ -26,7 +34,6 @@ import com.taobao.api.response.AlibabaAliqinFcSmsNumSendResponse;
 import com.yunpian.sdk.YunpianClient;
 import com.yunpian.sdk.model.Result;
 import com.yunpian.sdk.model.SmsSingleSend;
-import me.chanjar.weixin.mp.api.WxMpConfigStorage;
 import me.chanjar.weixin.mp.api.WxMpInMemoryConfigStorage;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.api.impl.WxMpServiceImpl;
@@ -38,7 +45,9 @@ import javax.swing.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <pre>
@@ -52,10 +61,20 @@ public class PushManage {
 
     private static final Log logger = LogFactory.get();
 
+    private static TPushHistoryMapper pushHistoryMapper = MybatisUtil.getSqlSession().getMapper(TPushHistoryMapper.class);
+
     /**
      * 模板变量前缀
      */
     public static final String TEMPLATE_VAR_PREFIX = "var";
+
+    private volatile static WxMpService wxMpService;
+
+    private volatile static WxMpInMemoryConfigStorage wxMpConfigStorage;
+
+    private volatile static WxMaService wxMaService;
+
+    private volatile static WxMaInMemoryConfig wxMaConfigStorage;
 
     /**
      * 预览消息
@@ -65,12 +84,12 @@ public class PushManage {
     public static boolean preview() throws Exception {
         List<String[]> msgDataList = new ArrayList<>();
 
-        for (String data : MainWindow.mainWindow.getPreviewUserField().getText().split(";")) {
-            msgDataList.add(data.split(","));
+        for (String data : MessageEditForm.messageEditForm.getPreviewUserField().getText().split(";")) {
+            msgDataList.add(data.split(MemberListener.TXT_FILE_DATA_SEPERATOR_REGEX));
         }
 
-        switch (Objects.requireNonNull(MainWindow.mainWindow.getMsgTypeComboBox().getSelectedItem()).toString()) {
-            case MessageTypeConsts.MP_TEMPLATE:
+        switch (Init.config.getMsgType()) {
+            case MessageTypeEnum.MP_TEMPLATE_CODE:
                 WxMpTemplateMessage wxMessageTemplate;
                 WxMpService wxMpService = getWxMpService();
                 if (wxMpService.getWxMpConfigStorage() == null) {
@@ -84,7 +103,7 @@ public class PushManage {
                     wxMpService.getTemplateMsgService().sendTemplateMsg(wxMessageTemplate);
                 }
                 break;
-            case MessageTypeConsts.MA_TEMPLATE:
+            case MessageTypeEnum.MA_TEMPLATE_CODE:
                 WxMaTemplateMessage wxMaMessageTemplate;
                 WxMaService wxMaService = getWxMaService();
                 if (wxMaService.getWxMaConfig() == null) {
@@ -99,7 +118,7 @@ public class PushManage {
                     wxMaService.getMsgService().sendTemplateMsg(wxMaMessageTemplate);
                 }
                 break;
-            case MessageTypeConsts.KEFU:
+            case MessageTypeEnum.KEFU_CODE:
                 wxMpService = getWxMpService();
                 WxMpKefuMessage wxMpKefuMessage;
                 if (wxMpService.getWxMpConfigStorage() == null) {
@@ -113,7 +132,7 @@ public class PushManage {
                     wxMpService.getKefuService().sendKefuMessage(wxMpKefuMessage);
                 }
                 break;
-            case MessageTypeConsts.KEFU_PRIORITY:
+            case MessageTypeEnum.KEFU_PRIORITY_CODE:
                 wxMpService = getWxMpService();
                 if (wxMpService.getWxMpConfigStorage() == null) {
                     return false;
@@ -133,12 +152,12 @@ public class PushManage {
                     }
                 }
                 break;
-            case MessageTypeConsts.ALI_YUN:
-                String aliyunAccessKeyId = Init.configer.getAliyunAccessKeyId();
-                String aliyunAccessKeySecret = Init.configer.getAliyunAccessKeySecret();
+            case MessageTypeEnum.ALI_YUN_CODE:
+                String aliyunAccessKeyId = Init.config.getAliyunAccessKeyId();
+                String aliyunAccessKeySecret = Init.config.getAliyunAccessKeySecret();
 
                 if (StringUtils.isEmpty(aliyunAccessKeyId) || StringUtils.isEmpty(aliyunAccessKeySecret)) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
+                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
                             "请先在设置中填写并保存阿里云短信相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return false;
@@ -160,12 +179,12 @@ public class PushManage {
                     }
                 }
                 break;
-            case MessageTypeConsts.TX_YUN:
-                String txyunAppId = Init.configer.getTxyunAppId();
-                String txyunAppKey = Init.configer.getTxyunAppKey();
+            case MessageTypeEnum.TX_YUN_CODE:
+                String txyunAppId = Init.config.getTxyunAppId();
+                String txyunAppKey = Init.config.getTxyunAppKey();
 
                 if (StringUtils.isEmpty(txyunAppId) || StringUtils.isEmpty(txyunAppKey)) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
+                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
                             "请先在设置中填写并保存腾讯云短信相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return false;
@@ -176,21 +195,21 @@ public class PushManage {
                 for (String[] msgData : msgDataList) {
                     String[] params = MessageMaker.makeTxyunMessage(msgData);
                     SmsSingleSenderResult result = ssender.sendWithParam("86", msgData[0],
-                            Integer.valueOf(MainWindow.mainWindow.getMsgTemplateIdTextField().getText()),
-                            params, Init.configer.getAliyunSign(), "", "");
+                            Integer.valueOf(MessageEditForm.messageEditForm.getMsgTemplateIdTextField().getText()),
+                            params, Init.config.getAliyunSign(), "", "");
                     if (result.result != 0) {
                         throw new Exception(result.toString());
                     }
                 }
                 break;
-            case MessageTypeConsts.ALI_TEMPLATE:
-                String aliServerUrl = Init.configer.getAliServerUrl();
-                String aliAppKey = Init.configer.getAliAppKey();
-                String aliAppSecret = Init.configer.getAliAppSecret();
+            case MessageTypeEnum.ALI_TEMPLATE_CODE:
+                String aliServerUrl = Init.config.getAliServerUrl();
+                String aliAppKey = Init.config.getAliAppKey();
+                String aliAppSecret = Init.config.getAliAppSecret();
 
                 if (StringUtils.isEmpty(aliServerUrl) || StringUtils.isEmpty(aliAppKey)
                         || StringUtils.isEmpty(aliAppSecret)) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
+                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
                             "请先在设置中填写并保存阿里大于相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return false;
@@ -207,11 +226,11 @@ public class PushManage {
                     }
                 }
                 break;
-            case MessageTypeConsts.YUN_PIAN:
-                String yunpianApiKey = Init.configer.getYunpianApiKey();
+            case MessageTypeEnum.YUN_PIAN_CODE:
+                String yunpianApiKey = Init.config.getYunpianApiKey();
 
                 if (StringUtils.isEmpty(yunpianApiKey)) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
+                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
                             "请先在设置中填写并保存云片网短信相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return false;
@@ -240,21 +259,21 @@ public class PushManage {
      *
      * @return WxMpConfigStorage
      */
-    private static WxMpConfigStorage wxMpConfigStorage() {
-        WxMpInMemoryConfigStorage configStorage = new WxMpInMemoryConfigStorage();
-        if (StringUtils.isEmpty(Init.configer.getWechatAppId()) || StringUtils.isEmpty(Init.configer.getWechatAppSecret())) {
-            JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "请先在设置中填写并保存公众号相关配置！", "提示",
+    private static WxMpInMemoryConfigStorage wxMpConfigStorage() {
+        if (StringUtils.isEmpty(Init.config.getWechatAppId()) || StringUtils.isEmpty(Init.config.getWechatAppSecret())) {
+            JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "请先在设置中填写并保存公众号相关配置！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
-            MainWindow.mainWindow.getScheduleRunButton().setEnabled(true);
-            MainWindow.mainWindow.getPushStartButton().setEnabled(true);
-            MainWindow.mainWindow.getPushStopButton().setEnabled(false);
-            MainWindow.mainWindow.getPushTotalProgressBar().setIndeterminate(false);
+            PushForm.pushForm.getScheduleRunButton().setEnabled(true);
+            PushForm.pushForm.getPushStartButton().setEnabled(true);
+            PushForm.pushForm.getPushStopButton().setEnabled(false);
+            PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
             return null;
         }
-        configStorage.setAppId(Init.configer.getWechatAppId());
-        configStorage.setSecret(Init.configer.getWechatAppSecret());
-        configStorage.setToken(Init.configer.getWechatToken());
-        configStorage.setAesKey(Init.configer.getWechatAesKey());
+        WxMpInMemoryConfigStorage configStorage = new WxMpInMemoryConfigStorage();
+        configStorage.setAppId(Init.config.getWechatAppId());
+        configStorage.setSecret(Init.config.getWechatAppSecret());
+        configStorage.setToken(Init.config.getWechatToken());
+        configStorage.setAesKey(Init.config.getWechatAesKey());
         return configStorage;
     }
 
@@ -265,20 +284,20 @@ public class PushManage {
      */
     private static WxMaInMemoryConfig wxMaConfigStorage() {
         WxMaInMemoryConfig configStorage = new WxMaInMemoryConfig();
-        if (StringUtils.isEmpty(Init.configer.getMiniAppAppId()) || StringUtils.isEmpty(Init.configer.getMiniAppAppSecret())
-                || StringUtils.isEmpty(Init.configer.getMiniAppToken()) || StringUtils.isEmpty(Init.configer.getMiniAppAesKey())) {
-            JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "请先在设置中填写并保存小程序相关配置！", "提示",
+        if (StringUtils.isEmpty(Init.config.getMiniAppAppId()) || StringUtils.isEmpty(Init.config.getMiniAppAppSecret())
+                || StringUtils.isEmpty(Init.config.getMiniAppToken()) || StringUtils.isEmpty(Init.config.getMiniAppAesKey())) {
+            JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "请先在设置中填写并保存小程序相关配置！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
-            MainWindow.mainWindow.getScheduleRunButton().setEnabled(true);
-            MainWindow.mainWindow.getPushStartButton().setEnabled(true);
-            MainWindow.mainWindow.getPushStopButton().setEnabled(false);
-            MainWindow.mainWindow.getPushTotalProgressBar().setIndeterminate(false);
+            PushForm.pushForm.getScheduleRunButton().setEnabled(true);
+            PushForm.pushForm.getPushStartButton().setEnabled(true);
+            PushForm.pushForm.getPushStopButton().setEnabled(false);
+            PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
             return null;
         }
-        configStorage.setAppid(Init.configer.getMiniAppAppId());
-        configStorage.setSecret(Init.configer.getMiniAppAppSecret());
-        configStorage.setToken(Init.configer.getMiniAppToken());
-        configStorage.setAesKey(Init.configer.getMiniAppAesKey());
+        configStorage.setAppid(Init.config.getMiniAppAppId());
+        configStorage.setSecret(Init.config.getMiniAppAppSecret());
+        configStorage.setToken(Init.config.getMiniAppToken());
+        configStorage.setAesKey(Init.config.getMiniAppAesKey());
         configStorage.setMsgDataFormat("JSON");
         return configStorage;
     }
@@ -289,10 +308,22 @@ public class PushManage {
      * @return WxMpService
      */
     public static WxMpService getWxMpService() {
-        WxMpService wxMpService = new WxMpServiceImpl();
-        WxMpConfigStorage wxMpConfigStorage = wxMpConfigStorage();
-        if (wxMpConfigStorage != null) {
-            wxMpService.setWxMpConfigStorage(wxMpConfigStorage);
+        if (wxMpService == null) {
+            synchronized (PushManage.class) {
+                if (wxMpService == null) {
+                    wxMpService = new WxMpServiceImpl();
+                }
+            }
+        }
+        if (wxMpConfigStorage == null) {
+            synchronized (PushManage.class) {
+                if (wxMpConfigStorage == null) {
+                    wxMpConfigStorage = wxMpConfigStorage();
+                    if (wxMpConfigStorage != null) {
+                        wxMpService.setWxMpConfigStorage(wxMpConfigStorage);
+                    }
+                }
+            }
         }
         return wxMpService;
     }
@@ -303,8 +334,23 @@ public class PushManage {
      * @return WxMaService
      */
     static WxMaService getWxMaService() {
-        WxMaService wxMaService = new WxMaServiceImpl();
-        wxMaService.setWxMaConfig(wxMaConfigStorage());
+        if (wxMaService == null) {
+            synchronized (PushManage.class) {
+                if (wxMaService == null) {
+                    wxMaService = new WxMaServiceImpl();
+                }
+            }
+        }
+        if (wxMaConfigStorage == null) {
+            synchronized (PushManage.class) {
+                if (wxMaConfigStorage == null) {
+                    wxMaConfigStorage = wxMaConfigStorage();
+                    if (wxMaConfigStorage != null) {
+                        wxMaService.setWxMaConfig(wxMaConfigStorage);
+                    }
+                }
+            }
+        }
         return wxMaService;
     }
 
@@ -317,26 +363,37 @@ public class PushManage {
             pushHisDir.mkdirs();
         }
 
-        String msgName = MainWindow.mainWindow.getMsgNameField().getText();
-        String nowTime = DateUtil.now().replaceAll(":", "_");
-
-        String[] strArray;
+        String msgName = MessageEditForm.messageEditForm.getMsgNameField().getText();
+        String nowTime = DateUtil.now().replace(":", "_").replace(" ", "_");
         CSVWriter writer;
+        int msgType = Init.config.getMsgType();
+        String now = SqliteUtil.nowDateForSqlite();
 
         // 保存已发送
         if (PushData.sendSuccessList.size() > 0) {
-            File toSendFile = new File(SystemUtil.configHome + "data" +
-                    File.separator + "push_his" + File.separator + msgName +
+            File sendSuccessFile = new File(SystemUtil.configHome + "data" +
+                    File.separator + "push_his" + File.separator + MessageTypeEnum.getName(msgType) + "-" + msgName +
                     "-发送成功-" + nowTime + ".csv");
-            if (!toSendFile.exists()) {
-                toSendFile.createNewFile();
+            if (!sendSuccessFile.exists()) {
+                sendSuccessFile.createNewFile();
             }
-            writer = new CSVWriter(new FileWriter(toSendFile));
+            writer = new CSVWriter(new FileWriter(sendSuccessFile));
 
             for (String[] str : PushData.sendSuccessList) {
                 writer.writeNext(str);
             }
             writer.close();
+
+            TPushHistory tPushHistory = new TPushHistory();
+//          TODO  tPushHistory.setMsgId(0);
+            tPushHistory.setMsgType(msgType);
+            tPushHistory.setMsgName(msgName);
+            tPushHistory.setResult("发送成功");
+            tPushHistory.setCsvFile(sendSuccessFile.getAbsolutePath());
+            tPushHistory.setCreateTime(now);
+            tPushHistory.setModifiedTime(now);
+
+            pushHistoryMapper.insertSelective(tPushHistory);
         }
 
         // 保存未发送
@@ -348,7 +405,7 @@ public class PushManage {
         }
         if (PushData.toSendList.size() > 0) {
             File unSendFile = new File(SystemUtil.configHome + "data" + File.separator +
-                    "push_his" + File.separator + msgName + "-未发送-" + nowTime +
+                    "push_his" + File.separator + MessageTypeEnum.getName(msgType) + "-" + msgName + "-未发送-" + nowTime +
                     ".csv");
             if (!unSendFile.exists()) {
                 unSendFile.createNewFile();
@@ -358,12 +415,23 @@ public class PushManage {
                 writer.writeNext(str);
             }
             writer.close();
+
+            TPushHistory tPushHistory = new TPushHistory();
+//          TODO  tPushHistory.setMsgId(0);
+            tPushHistory.setMsgType(msgType);
+            tPushHistory.setMsgName(msgName);
+            tPushHistory.setResult("未发送");
+            tPushHistory.setCsvFile(unSendFile.getAbsolutePath());
+            tPushHistory.setCreateTime(now);
+            tPushHistory.setModifiedTime(now);
+
+            pushHistoryMapper.insertSelective(tPushHistory);
         }
 
         // 保存发送失败
         if (PushData.sendFailList.size() > 0) {
             File failSendFile = new File(SystemUtil.configHome + "data" + File.separator +
-                    "push_his" + File.separator + msgName + "-发送失败-" + nowTime + ".csv");
+                    "push_his" + File.separator + MessageTypeEnum.getName(msgType) + "-" + msgName + "-发送失败-" + nowTime + ".csv");
             if (!failSendFile.exists()) {
                 failSendFile.createNewFile();
             }
@@ -372,10 +440,20 @@ public class PushManage {
                 writer.writeNext(str);
             }
             writer.close();
+
+            TPushHistory tPushHistory = new TPushHistory();
+//          TODO  tPushHistory.setMsgId(0);
+            tPushHistory.setMsgType(msgType);
+            tPushHistory.setMsgName(msgName);
+            tPushHistory.setResult("发送失败");
+            tPushHistory.setCsvFile(failSendFile.getAbsolutePath());
+            tPushHistory.setCreateTime(now);
+            tPushHistory.setModifiedTime(now);
+
+            pushHistoryMapper.insertSelective(tPushHistory);
         }
 
-        Init.initMemberTab();
-        Init.initSettingTab();
+        PushHisForm.init();
     }
 
     /**
@@ -384,8 +462,8 @@ public class PushManage {
      * @param log
      */
     public static void console(String log) {
-        MainWindow.mainWindow.getPushConsoleTextArea().append(log + "\n");
-        MainWindow.mainWindow.getPushConsoleTextArea().setCaretPosition(MainWindow.mainWindow.getPushConsoleTextArea().getText().length());
+        PushForm.pushForm.getPushConsoleTextArea().append(log + "\n");
+        PushForm.pushForm.getPushConsoleTextArea().setCaretPosition(PushForm.pushForm.getPushConsoleTextArea().getText().length());
         logger.warn(log);
     }
 
