@@ -147,7 +147,7 @@ public class PushHisListener {
                     }
 
                     for (int row : selectedRows) {
-                        Integer selectedId = (Integer) PushHisForm.pushHisForm.getPushHisLeftTable().getValueAt(row, 4);
+                        Integer selectedId = (Integer) PushHisForm.pushHisForm.getPushHisLeftTable().getValueAt(row, 3);
                         TPushHistory tPushHistory = pushHistoryMapper.selectByPrimaryKey(selectedId);
                         File msgTemplateDataFile = new File(tPushHistory.getCsvFile());
                         if (msgTemplateDataFile.exists()) {
