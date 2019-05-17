@@ -313,8 +313,9 @@ public class PushListener {
             return false;
         }
         if (StringUtils.isEmpty(MessageEditForm.messageEditForm.getMsgNameField().getText())) {
-            JOptionPane.showMessageDialog(PushForm.pushForm.getPushPanel(), "请先编辑消息！", "提示",
+            JOptionPane.showMessageDialog(PushForm.pushForm.getPushPanel(), "请先选择一条消息！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
+            MainWindow.mainWindow.getTabbedPane().setSelectedIndex(2);
 
             return false;
         }
