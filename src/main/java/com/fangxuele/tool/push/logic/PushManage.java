@@ -308,20 +308,18 @@ public class PushManage {
      * @return WxMpService
      */
     public static WxMpService getWxMpService() {
-        if (wxMpService == null) {
-            synchronized (PushManage.class) {
-                if (wxMpService == null) {
-                    wxMpService = new WxMpServiceImpl();
-                }
-            }
-        }
         if (wxMpConfigStorage == null) {
             synchronized (PushManage.class) {
                 if (wxMpConfigStorage == null) {
                     wxMpConfigStorage = wxMpConfigStorage();
-                    if (wxMpConfigStorage != null) {
-                        wxMpService.setWxMpConfigStorage(wxMpConfigStorage);
-                    }
+                }
+            }
+        }
+        if (wxMpService == null && wxMpConfigStorage != null) {
+            synchronized (PushManage.class) {
+                if (wxMpService == null && wxMpConfigStorage != null) {
+                    wxMpService = new WxMpServiceImpl();
+                    wxMpService.setWxMpConfigStorage(wxMpConfigStorage);
                 }
             }
         }
