@@ -713,62 +713,70 @@ public class MemberListener {
         }
 
         List<Object> rowDataList;
+        WxMpService wxMpService = null;
+        boolean needToGetInfoFromWeiXin = false;
+        if (isWeixinTypeMsg && (MemberForm.memberForm.getImportOptionBasicInfoCheckBox().isSelected() ||
+                MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected())) {
+            needToGetInfoFromWeiXin = true;
+        }
+        if (needToGetInfoFromWeiXin) {
+            wxMpService = PushManage.getWxMpService();
+        }
         for (int i = 0; i < PushData.allUser.size(); i++) {
             String[] importedData = PushData.allUser.get(i);
             try {
                 String openId = importedData[0];
                 rowDataList = new ArrayList<>();
                 rowDataList.add(String.join("|", importedData));
-                if (isWeixinTypeMsg) {
-                    if (MemberForm.memberForm.getImportOptionBasicInfoCheckBox().isSelected() ||
-                            MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
-
-                        WxMpUser wxMpUser;
-                        TWxMpUser tWxMpUser = tWxMpUserMapper.selectByPrimaryKey(openId);
-                        if (tWxMpUser != null) {
-                            wxMpUser = new WxMpUser();
-                            BeanUtil.copyProperties(tWxMpUser, wxMpUser);
-                        } else {
-                            WxMpService wxMpService = PushManage.getWxMpService();
-                            wxMpUser = wxMpService.getUserService().userInfo(openId);
-                            if (wxMpUser != null) {
-                                tWxMpUser = new TWxMpUser();
-                                BeanUtil.copyProperties(wxMpUser, tWxMpUser);
-                                tWxMpUserMapper.insertSelective(tWxMpUser);
-                            }
-                        }
-
-                        if (wxMpUser != null) {
-                            if (MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
-                                rowDataList.add(wxMpUser.getHeadImgUrl());
-                            }
-                            if (MemberForm.memberForm.getImportOptionBasicInfoCheckBox().isSelected()) {
-                                rowDataList.add(wxMpUser.getNickname());
-                                rowDataList.add(wxMpUser.getSexDesc());
-                                rowDataList.add(wxMpUser.getCountry() + "-" + wxMpUser.getProvince() + "-" + wxMpUser.getCity());
-                                rowDataList.add(DateFormatUtils.format(wxMpUser.getSubscribeTime() * 1000, "yyyy-MM-dd HH:mm:ss"));
-                            }
-                        } else {
-                            if (MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
-                                rowDataList.add("");
-                            }
-                            if (MemberForm.memberForm.getImportOptionBasicInfoCheckBox().isSelected()) {
-                                rowDataList.add("");
-                                rowDataList.add("");
-                                rowDataList.add("");
-                                rowDataList.add("");
-                            }
-                        }
-                        rowDataList.add(openId);
+                if (needToGetInfoFromWeiXin) {
+                    WxMpUser wxMpUser = null;
+                    TWxMpUser tWxMpUser = tWxMpUserMapper.selectByPrimaryKey(openId);
+                    if (tWxMpUser != null) {
+                        wxMpUser = new WxMpUser();
+                        BeanUtil.copyProperties(tWxMpUser, wxMpUser);
                     } else {
-                        rowDataList.add(String.join("|", importedData));
+                        if (wxMpService != null) {
+                            try {
+                                wxMpUser = wxMpService.getUserService().userInfo(openId);
+                                if (wxMpUser != null) {
+                                    tWxMpUser = new TWxMpUser();
+                                    BeanUtil.copyProperties(wxMpUser, tWxMpUser);
+                                    tWxMpUserMapper.insertSelective(tWxMpUser);
+                                }
+                            } catch (Exception e) {
+                                logger.error(e);
+                            }
+                        }
                     }
+
+                    if (wxMpUser != null) {
+                        if (MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
+                            rowDataList.add(wxMpUser.getHeadImgUrl());
+                        }
+                        if (MemberForm.memberForm.getImportOptionBasicInfoCheckBox().isSelected()) {
+                            rowDataList.add(wxMpUser.getNickname());
+                            rowDataList.add(wxMpUser.getSexDesc());
+                            rowDataList.add(wxMpUser.getCountry() + "-" + wxMpUser.getProvince() + "-" + wxMpUser.getCity());
+                            rowDataList.add(DateFormatUtils.format(wxMpUser.getSubscribeTime() * 1000, "yyyy-MM-dd HH:mm:ss"));
+                        }
+                    } else {
+                        if (MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
+                            rowDataList.add("");
+                        }
+                        if (MemberForm.memberForm.getImportOptionBasicInfoCheckBox().isSelected()) {
+                            rowDataList.add("");
+                            rowDataList.add("");
+                            rowDataList.add("");
+                            rowDataList.add("");
+                        }
+                    }
+                    rowDataList.add(openId);
                 } else {
                     rowDataList.add(String.join("|", importedData));
                 }
 
                 model.addRow(rowDataList.toArray());
-            } catch (WxErrorException e) {
+            } catch (Exception e) {
                 logger.error(e);
             }
             MemberForm.memberForm.getMemberTabImportProgressBar().setValue(i + 1);
