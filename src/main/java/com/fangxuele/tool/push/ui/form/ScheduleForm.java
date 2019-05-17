@@ -36,17 +36,17 @@ public class ScheduleForm {
      */
     public static void init() {
         // 开始
-        ScheduleForm.scheduleForm.getRunAtThisTimeRadioButton().setSelected(Init.config.isRadioStartAt());
-        ScheduleForm.scheduleForm.getStartAtThisTimeTextField().setText(Init.config.getTextStartAt());
+        scheduleForm.getRunAtThisTimeRadioButton().setSelected(Init.config.isRadioStartAt());
+        scheduleForm.getStartAtThisTimeTextField().setText(Init.config.getTextStartAt());
 
         //每天
-        ScheduleForm.scheduleForm.getRunPerDayRadioButton().setSelected(Init.config.isRadioPerDay());
-        ScheduleForm.scheduleForm.getStartPerDayTextField().setText(Init.config.getTextPerDay());
+        scheduleForm.getRunPerDayRadioButton().setSelected(Init.config.isRadioPerDay());
+        scheduleForm.getStartPerDayTextField().setText(Init.config.getTextPerDay());
 
         // 每周
-        ScheduleForm.scheduleForm.getRunPerWeekRadioButton().setSelected(Init.config.isRadioPerWeek());
-        ScheduleForm.scheduleForm.getSchedulePerWeekComboBox().setSelectedItem(Init.config.getTextPerWeekWeek());
-        ScheduleForm.scheduleForm.getStartPerWeekTextField().setText(Init.config.getTextPerWeekTime());
+        scheduleForm.getRunPerWeekRadioButton().setSelected(Init.config.isRadioPerWeek());
+        scheduleForm.getSchedulePerWeekComboBox().setSelectedItem(Init.config.getTextPerWeekWeek());
+        scheduleForm.getStartPerWeekTextField().setText(Init.config.getTextPerWeekTime());
     }
 
     {
