@@ -1,7 +1,5 @@
 package com.fangxuele.tool.push.ui.listener;
 
-import cn.hutool.log.Log;
-import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
@@ -20,8 +18,6 @@ import java.awt.event.MouseEvent;
  * @since 2017/6/21.
  */
 public class TabListener {
-
-    private static final Log logger = LogFactory.get();
 
     private static boolean warnFlag = true;
 

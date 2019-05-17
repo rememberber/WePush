@@ -102,7 +102,8 @@ public class AboutListener {
         // 从github获取最新版本相关信息
         String content = HttpUtil.get(UiConsts.CHECK_VERSION_URL);
         if (StringUtils.isEmpty(content) && !initCheck) {
-            JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "检查超时，请关注GitHub Release！", "网络错误",
+            JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
+                    "检查超时，请关注GitHub Release！", "网络错误",
                     JOptionPane.INFORMATION_MESSAGE);
             return;
         }
@@ -146,7 +147,8 @@ public class AboutListener {
                 } else {
                     UpdateDialog dialog = new UpdateDialog();
                     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-                    dialog.setBounds(screenSize.width / 2 - 300, screenSize.height / 2 - 50, 600, 100);
+                    dialog.setBounds(screenSize.width / 2 - 300, screenSize.height / 2 - 50,
+                            600, 100);
 
                     Dimension preferSize = new Dimension(600, 100);
                     dialog.setMaximumSize(preferSize);
@@ -157,7 +159,8 @@ public class AboutListener {
             }
         } else {
             if (!initCheck) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "当前已经是最新版本！", "恭喜",
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
+                        "当前已经是最新版本！", "恭喜",
                         JOptionPane.INFORMATION_MESSAGE);
             }
         }

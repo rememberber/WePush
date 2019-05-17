@@ -22,7 +22,6 @@ import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
-import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -54,17 +53,20 @@ public class MsgListener {
     private static TMsgSmsMapper msgSmsMapper = MybatisUtil.getSqlSession().getMapper(TMsgSmsMapper.class);
     private static TTemplateDataMapper templateDataMapper = MybatisUtil.getSqlSession().getMapper(TTemplateDataMapper.class);
 
+    private static JTable msgHistable = MessageManageForm.messageManageForm.getMsgHistable();
+    private static JSplitPane messagePanel = MainWindow.mainWindow.getMessagePanel();
+
     public static void addListeners() {
 
         // 点击左侧表格事件
-        MessageManageForm.messageManageForm.getMsgHistable().addMouseListener(new MouseAdapter() {
+        msgHistable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 ThreadUtil.execute(() -> {
                     PushHisForm.pushHisForm.getPushHisTextArea().setText("");
 
-                    int selectedRow = MessageManageForm.messageManageForm.getMsgHistable().getSelectedRow();
-                    String selectedMsgName = MessageManageForm.messageManageForm.getMsgHistable()
+                    int selectedRow = msgHistable.getSelectedRow();
+                    String selectedMsgName = msgHistable
                             .getValueAt(selectedRow, 0).toString();
 
                     MessageEditForm.init(selectedMsgName);
@@ -76,21 +78,21 @@ public class MsgListener {
         // 历史消息管理-删除
         MessageManageForm.messageManageForm.getMsgHisTableDeleteButton().addActionListener(e -> ThreadUtil.execute(() -> {
             try {
-                int[] selectedRows = MessageManageForm.messageManageForm.getMsgHistable().getSelectedRows();
+                int[] selectedRows = msgHistable.getSelectedRows();
 
                 if (selectedRows.length == 0) {
-                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "请至少选择一个！", "提示",
+                    JOptionPane.showMessageDialog(messagePanel, "请至少选择一个！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
-                    int isDelete = JOptionPane.showConfirmDialog(SettingForm.settingForm.getSettingPanel(), "确认删除？", "确认",
+                    int isDelete = JOptionPane.showConfirmDialog(messagePanel, "确认删除？", "确认",
                             JOptionPane.YES_NO_OPTION);
                     if (isDelete == JOptionPane.YES_OPTION) {
-                        DefaultTableModel tableModel = (DefaultTableModel) MessageManageForm.messageManageForm.getMsgHistable()
+                        DefaultTableModel tableModel = (DefaultTableModel) msgHistable
                                 .getModel();
                         int msgType = Init.config.getMsgType();
 
                         for (int i = selectedRows.length; i > 0; i--) {
-                            int selectedRow = MessageManageForm.messageManageForm.getMsgHistable().getSelectedRow();
+                            int selectedRow = msgHistable.getSelectedRow();
                             String msgName = (String) tableModel.getValueAt(selectedRow, 0);
                             if (msgType == MessageTypeEnum.KEFU_CODE) {
                                 msgKefuMapper.deleteByMsgTypeAndName(msgType, msgName);
@@ -110,7 +112,7 @@ public class MsgListener {
                     }
                 }
             } catch (Exception e1) {
-                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "删除失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(messagePanel, "删除失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
@@ -142,10 +144,10 @@ public class MsgListener {
             }
 
             if (StringUtils.isEmpty(data[0]) || StringUtils.isEmpty(data[1])) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "Name或value不能为空！", "提示",
+                JOptionPane.showMessageDialog(messagePanel, "Name或value不能为空！", "提示",
                         JOptionPane.INFORMATION_MESSAGE);
             } else if (keySet.contains(data[0])) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "Name不能重复！", "提示",
+                JOptionPane.showMessageDialog(messagePanel, "Name不能重复！", "提示",
                         JOptionPane.INFORMATION_MESSAGE);
             } else {
                 if (StringUtils.isEmpty(data[2])) {
@@ -161,7 +163,7 @@ public class MsgListener {
         MessageEditForm.messageEditForm.getMsgSaveButton().addActionListener(e -> {
             String msgName = MessageEditForm.messageEditForm.getMsgNameField().getText();
             if (StringUtils.isBlank(msgName)) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "请填写推送任务名称！\n\n", "失败",
+                JOptionPane.showMessageDialog(messagePanel, "请填写推送任务名称！\n\n", "失败",
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -205,7 +207,7 @@ public class MsgListener {
             int isCover = JOptionPane.NO_OPTION;
             if (existSameMsg) {
                 // 如果存在，是否覆盖
-                isCover = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getMessagePanel(), "已经存在同名的历史消息，\n是否覆盖？", "确认",
+                isCover = JOptionPane.showConfirmDialog(messagePanel, "已经存在同名的历史消息，\n是否覆盖？", "确认",
                         JOptionPane.YES_NO_OPTION);
             }
 
@@ -356,14 +358,14 @@ public class MsgListener {
                     Init.config.setPreviewUser(MessageEditForm.messageEditForm.getPreviewUserField().getText());
                     Init.config.save();
 
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存成功！", "成功",
+                    JOptionPane.showMessageDialog(messagePanel, "保存成功！", "成功",
                             JOptionPane.INFORMATION_MESSAGE);
 
                     MessageEditForm.init(null);
                     MessageManageForm.init();
                 }
             } catch (Exception e1) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(messagePanel, "保存失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
@@ -374,16 +376,16 @@ public class MsgListener {
         MessageEditForm.messageEditForm.getPreviewMsgButton().addActionListener(e -> {
             try {
                 if ("".equals(MessageEditForm.messageEditForm.getPreviewUserField().getText().trim())) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "预览用户不能为空！", "提示",
+                    JOptionPane.showMessageDialog(messagePanel, "预览用户不能为空！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     if (PushManage.preview()) {
-                        JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "发送预览消息成功！", "成功",
+                        JOptionPane.showMessageDialog(messagePanel, "发送预览消息成功！", "成功",
                                 JOptionPane.INFORMATION_MESSAGE);
                     }
                 }
             } catch (Exception e1) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "发送预览消息失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(messagePanel, "发送预览消息失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
