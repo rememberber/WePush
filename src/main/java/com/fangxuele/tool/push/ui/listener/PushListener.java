@@ -34,17 +34,19 @@ import java.util.concurrent.TimeUnit;
 public class PushListener {
     private static final Log logger = LogFactory.get();
 
-    public static ScheduledExecutorService serviceStartAt;
+    private static ScheduledExecutorService serviceStartAt;
 
-    public static ScheduledExecutorService serviceStartPerDay;
+    private static ScheduledExecutorService serviceStartPerDay;
 
-    public static ScheduledExecutorService serviceStartPerWeek;
+    private static ScheduledExecutorService serviceStartPerWeek;
+
+    private static JPanel pushPanel = PushForm.pushForm.getPushPanel();
 
     public static void addListeners() {
         // 开始按钮事件
         PushForm.pushForm.getPushStartButton().addActionListener((e) -> ThreadUtil.execute(() -> {
             if (checkBeforePush()) {
-                int isPush = JOptionPane.showConfirmDialog(PushForm.pushForm.getPushPanel(),
+                int isPush = JOptionPane.showConfirmDialog(pushPanel,
                         "确定开始推送吗？\n\n推送消息：" +
                                 MessageEditForm.messageEditForm.getMsgNameField().getText() +
                                 "\n推送人数：" + PushData.allUser.size() +
@@ -97,7 +99,7 @@ public class PushListener {
             }
 
             if (PushData.running) {
-                int isStop = JOptionPane.showConfirmDialog(PushForm.pushForm.getPushPanel(),
+                int isStop = JOptionPane.showConfirmDialog(pushPanel,
                         "确定停止当前的推送吗？", "确认停止？",
                         JOptionPane.YES_NO_OPTION);
                 if (isStop == JOptionPane.YES_OPTION) {
@@ -117,12 +119,12 @@ public class PushListener {
                 if (Init.config.isRadioStartAt()) {
                     long startAtMills = DateUtil.parse(Init.config.getTextStartAt(), DatePattern.NORM_DATETIME_PATTERN).getTime();
                     if (startAtMills < System.currentTimeMillis()) {
-                        JOptionPane.showMessageDialog(PushForm.pushForm.getPushPanel(), "计划开始推送时间不能小于系统当前时间！\n\n请检查计划任务设置！\n\n", "提示",
+                        JOptionPane.showMessageDialog(pushPanel, "计划开始推送时间不能小于系统当前时间！\n\n请检查计划任务设置！\n\n", "提示",
                                 JOptionPane.INFORMATION_MESSAGE);
                         return;
                     }
 
-                    int isSchedulePush = JOptionPane.showConfirmDialog(PushForm.pushForm.getPushPanel(),
+                    int isSchedulePush = JOptionPane.showConfirmDialog(pushPanel,
                             "将在" +
                                     Init.config.getTextStartAt() +
                                     "推送\n\n消息：" +
@@ -153,7 +155,7 @@ public class PushListener {
                 if (Init.config.isRadioPerDay()) {
                     long startPerDayMills = DateUtil.parse(DateUtil.today() + " " + Init.config.getTextPerDay(), DatePattern.NORM_DATETIME_PATTERN).getTime();
 
-                    int isSchedulePush = JOptionPane.showConfirmDialog(PushForm.pushForm.getPushPanel(),
+                    int isSchedulePush = JOptionPane.showConfirmDialog(pushPanel,
                             "将在每天" +
                                     Init.config.getTextPerDay() +
                                     "推送\n\n消息：" +
@@ -189,7 +191,7 @@ public class PushListener {
                     int dayBetween = getDayOfWeek(Init.config.getTextPerWeekWeek()) - DateUtil.thisDayOfWeek();
                     long startPerWeekMills = dayBetween < 0 ? (dayBetween + 7) * 24 * 60 * 60 * 1000 : dayBetween * 24 * 60 * 60 * 1000;
 
-                    int isSchedulePush = JOptionPane.showConfirmDialog(PushForm.pushForm.getPushPanel(),
+                    int isSchedulePush = JOptionPane.showConfirmDialog(pushPanel,
                             "将在每周" + Init.config.getTextPerWeekWeek() +
                                     Init.config.getTextPerWeekTime() +
                                     "推送\n\n消息：" +
@@ -220,7 +222,7 @@ public class PushListener {
                 }
 
                 if (!existScheduleTask) {
-                    JOptionPane.showMessageDialog(PushForm.pushForm.getPushPanel(), "请先设置计划任务！", "提示",
+                    JOptionPane.showMessageDialog(pushPanel, "请先设置计划任务！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                 }
             }
@@ -266,7 +268,7 @@ public class PushListener {
 
     private static void tEvent() {
         if (Integer.parseInt(PushForm.pushForm.getMaxThreadPoolTextField().getText()) > 1000) {
-            JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "最大输入1000", "提示",
+            JOptionPane.showMessageDialog(pushPanel, "最大输入1000", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
             PushForm.pushForm.getMaxThreadPoolTextField().setText("1000");
         }
@@ -295,25 +297,25 @@ public class PushListener {
      */
     private static boolean checkBeforePush() {
         if (PushData.allUser == null || PushData.allUser.size() == 0) {
-            JOptionPane.showMessageDialog(PushForm.pushForm.getPushPanel(), "请先准备目标用户！", "提示",
+            JOptionPane.showMessageDialog(pushPanel, "请先准备目标用户！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
 
             return false;
         }
         if ("0".equals(PushForm.pushForm.getMaxThreadPoolTextField().getText()) || StringUtils.isEmpty(PushForm.pushForm.getMaxThreadPoolTextField().getText())) {
-            JOptionPane.showMessageDialog(PushForm.pushForm.getPushPanel(), "请设置每页分配用户数！", "提示",
+            JOptionPane.showMessageDialog(pushPanel, "请设置每页分配用户数！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
 
             return false;
         }
         if ("0".equals(PushForm.pushForm.getThreadCountTextField().getText()) || StringUtils.isEmpty(PushForm.pushForm.getThreadCountTextField().getText())) {
-            JOptionPane.showMessageDialog(PushForm.pushForm.getPushPanel(), "请设置每个线程分配的页数！", "提示",
+            JOptionPane.showMessageDialog(pushPanel, "请设置每个线程分配的页数！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
 
             return false;
         }
         if (StringUtils.isEmpty(MessageEditForm.messageEditForm.getMsgNameField().getText())) {
-            JOptionPane.showMessageDialog(PushForm.pushForm.getPushPanel(), "请先选择一条消息！", "提示",
+            JOptionPane.showMessageDialog(pushPanel, "请先选择一条消息！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
             MainWindow.mainWindow.getTabbedPane().setSelectedIndex(2);
 

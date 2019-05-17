@@ -24,6 +24,8 @@ import java.util.Objects;
 public class SettingListener {
     private static final Log logger = LogFactory.get();
 
+    private static JPanel settingPanel = SettingForm.settingForm.getSettingPanel();
+
     public static void addListeners() {
 
         // 设置-常规-启动时自动检查更新
@@ -41,10 +43,10 @@ public class SettingListener {
                 Init.config.setWechatAesKey(new String(SettingForm.settingForm.getWechatAesKeyPasswordField().getPassword()));
                 Init.config.save();
 
-                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存成功！", "成功",
+                JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {
-                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
@@ -59,10 +61,10 @@ public class SettingListener {
                 Init.config.setMiniAppAesKey(new String(SettingForm.settingForm.getMiniAppAesKeyPasswordField().getPassword()));
                 Init.config.save();
 
-                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存成功！", "成功",
+                JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {
-                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
@@ -76,10 +78,10 @@ public class SettingListener {
                 Init.config.setAliyunSign(SettingForm.settingForm.getAliyunSignTextField().getText());
                 Init.config.save();
 
-                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存成功！", "成功",
+                JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {
-                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
@@ -94,10 +96,10 @@ public class SettingListener {
                 Init.config.setAliSign(SettingForm.settingForm.getAliSignTextField().getText());
                 Init.config.save();
 
-                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存成功！", "成功",
+                JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {
-                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
@@ -111,10 +113,10 @@ public class SettingListener {
                 Init.config.setTxyunSign(SettingForm.settingForm.getTxyunSignTextField().getText());
                 Init.config.save();
 
-                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存成功！", "成功",
+                JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {
-                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
@@ -126,10 +128,10 @@ public class SettingListener {
                 Init.config.setYunpianApiKey(new String(SettingForm.settingForm.getYunpianApiKeyTextField().getPassword()));
                 Init.config.save();
 
-                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存成功！", "成功",
+                JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {
-                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
@@ -144,7 +146,7 @@ public class SettingListener {
                 String dbPassword = new String(SettingForm.settingForm.getMysqlPasswordField().getPassword());
                 if (StringUtils.isEmpty(dbUrl) || StringUtils.isEmpty(dbName)
                         || StringUtils.isEmpty(dbUser) || StringUtils.isEmpty(dbPassword)) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
+                    JOptionPane.showMessageDialog(settingPanel,
                             "请先在设置中填写并保存MySQL数据库相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return;
@@ -152,14 +154,14 @@ public class SettingListener {
                 DbUtilMySQL dbMySQL = DbUtilMySQL.getInstance();
                 Connection conn = dbMySQL.testConnection(dbUrl, dbName, dbUser, dbPassword);
                 if (conn == null) {
-                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "连接失败", "失败",
+                    JOptionPane.showMessageDialog(settingPanel, "连接失败", "失败",
                             JOptionPane.ERROR_MESSAGE);
                 } else {
-                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "连接成功！", "成功",
+                    JOptionPane.showMessageDialog(settingPanel, "连接成功！", "成功",
                             JOptionPane.INFORMATION_MESSAGE);
                 }
             } catch (Exception e1) {
-                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "连接失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(settingPanel, "连接失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
@@ -174,10 +176,10 @@ public class SettingListener {
                 Init.config.setMysqlPassword(new String(SettingForm.settingForm.getMysqlPasswordField().getPassword()));
                 Init.config.save();
 
-                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存成功！", "成功",
+                JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {
-                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
@@ -196,10 +198,10 @@ public class SettingListener {
                 SwingUtilities.updateComponentTreeUI(App.mainFrame);
                 SwingUtilities.updateComponentTreeUI(MainWindow.mainWindow.getTabbedPane());
 
-                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存成功！\n\n部分细节将在下次启动时生效！\n\n", "成功",
+                JOptionPane.showMessageDialog(settingPanel, "保存成功！\n\n部分细节将在下次启动时生效！\n\n", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {
-                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }

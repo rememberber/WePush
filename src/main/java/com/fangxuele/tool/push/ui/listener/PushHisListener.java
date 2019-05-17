@@ -44,16 +44,19 @@ public class PushHisListener {
 
     private static TPushHistoryMapper pushHistoryMapper = MybatisUtil.getSqlSession().getMapper(TPushHistoryMapper.class);
 
+    private static JTable pushHisLeftTable = PushHisForm.pushHisForm.getPushHisLeftTable();
+    private static JPanel pushHisPanel = MainWindow.mainWindow.getPushHisPanel();
+
     public static void addListeners() {
         // 点击左侧表格事件
-        PushHisForm.pushHisForm.getPushHisLeftTable().addMouseListener(new MouseAdapter() {
+        pushHisLeftTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 ThreadUtil.execute(() -> {
                     PushHisForm.pushHisForm.getPushHisTextArea().setText("");
 
-                    int selectedRow = PushHisForm.pushHisForm.getPushHisLeftTable().getSelectedRow();
-                    String selectedId = PushHisForm.pushHisForm.getPushHisLeftTable()
+                    int selectedRow = pushHisLeftTable.getSelectedRow();
+                    String selectedId = pushHisLeftTable
                             .getValueAt(selectedRow, 3).toString();
                     TPushHistory tPushHistory = pushHistoryMapper.selectByPrimaryKey(Integer.valueOf(selectedId));
                     File pushHisFile = new File(tPushHistory.getCsvFile());
@@ -82,17 +85,17 @@ public class PushHisListener {
         // 推送历史管理-删除
         PushHisForm.pushHisForm.getPushHisLeftDeleteButton().addActionListener(e -> ThreadUtil.execute(() -> {
             try {
-                int[] selectedRows = PushHisForm.pushHisForm.getPushHisLeftTable().getSelectedRows();
+                int[] selectedRows = pushHisLeftTable.getSelectedRows();
                 if (selectedRows.length == 0) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "请至少选择一个！", "提示",
+                    JOptionPane.showMessageDialog(pushHisPanel, "请至少选择一个！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
-                    int isDelete = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getSettingPanel(), "确认删除？", "确认",
+                    int isDelete = JOptionPane.showConfirmDialog(pushHisPanel, "确认删除？", "确认",
                             JOptionPane.YES_NO_OPTION);
                     if (isDelete == JOptionPane.YES_OPTION) {
-                        DefaultTableModel tableModel = (DefaultTableModel) PushHisForm.pushHisForm.getPushHisLeftTable().getModel();
+                        DefaultTableModel tableModel = (DefaultTableModel) pushHisLeftTable.getModel();
                         for (int i = selectedRows.length; i > 0; i--) {
-                            int selectedRow = PushHisForm.pushHisForm.getPushHisLeftTable().getSelectedRow();
+                            int selectedRow = pushHisLeftTable.getSelectedRow();
                             Integer selectedId = (Integer) tableModel.getValueAt(selectedRow, 3);
                             TPushHistory tPushHistory = pushHistoryMapper.selectByPrimaryKey(selectedId);
 
@@ -104,12 +107,12 @@ public class PushHisListener {
 
                             tableModel.removeRow(selectedRow);
                         }
-                        PushHisForm.pushHisForm.getPushHisLeftTable().updateUI();
+                        pushHisLeftTable.updateUI();
                         PushHisForm.init();
                     }
                 }
             } catch (Exception e1) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "删除失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(pushHisPanel, "删除失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
@@ -119,7 +122,7 @@ public class PushHisListener {
         PushHisForm.pushHisForm.getPushHisCopyButton().addActionListener(e -> ThreadUtil.execute(() -> {
             try {
                 PushHisForm.pushHisForm.getPushHisCopyButton().setEnabled(false);
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "内容已经复制到剪贴板！", "复制成功",
+                JOptionPane.showMessageDialog(pushHisPanel, "内容已经复制到剪贴板！", "复制成功",
                         JOptionPane.INFORMATION_MESSAGE);
                 ClipboardUtil.setStr(PushHisForm.pushHisForm.getPushHisTextArea().getText());
             } catch (Exception e1) {
@@ -132,13 +135,13 @@ public class PushHisListener {
 
         // 推送历史管理-导出按钮
         PushHisForm.pushHisForm.getPushHisExportButton().addActionListener(e -> {
-            int[] selectedRows = PushHisForm.pushHisForm.getPushHisLeftTable().getSelectedRows();
+            int[] selectedRows = pushHisLeftTable.getSelectedRows();
 
             try {
                 if (selectedRows.length > 0) {
                     JFileChooser fileChooser = new JFileChooser();
                     fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                    int approve = fileChooser.showOpenDialog(MainWindow.mainWindow.getSettingPanel());
+                    int approve = fileChooser.showOpenDialog(pushHisPanel);
                     String exportPath;
                     if (approve == JFileChooser.APPROVE_OPTION) {
                         exportPath = fileChooser.getSelectedFile().getAbsolutePath();
@@ -147,14 +150,14 @@ public class PushHisListener {
                     }
 
                     for (int row : selectedRows) {
-                        Integer selectedId = (Integer) PushHisForm.pushHisForm.getPushHisLeftTable().getValueAt(row, 3);
+                        Integer selectedId = (Integer) pushHisLeftTable.getValueAt(row, 3);
                         TPushHistory tPushHistory = pushHistoryMapper.selectByPrimaryKey(selectedId);
                         File msgTemplateDataFile = new File(tPushHistory.getCsvFile());
                         if (msgTemplateDataFile.exists()) {
                             FileUtil.copy(msgTemplateDataFile.getAbsolutePath(), exportPath, true);
                         }
                     }
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "导出成功！", "提示",
+                    JOptionPane.showMessageDialog(pushHisPanel, "导出成功！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     try {
                         Desktop desktop = Desktop.getDesktop();
@@ -163,12 +166,12 @@ public class PushHisListener {
                         logger.error(e2);
                     }
                 } else {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "请至少选择一个！", "提示",
+                    JOptionPane.showMessageDialog(pushHisPanel, "请至少选择一个！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                 }
 
             } catch (Exception e1) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "导出失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(pushHisPanel, "导出失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
@@ -177,16 +180,17 @@ public class PushHisListener {
 
         // 重发
         PushHisForm.pushHisForm.getResendFromHisButton().addActionListener(e -> ThreadUtil.execute(() -> {
-            int[] selectedRows = PushHisForm.pushHisForm.getPushHisLeftTable().getSelectedRows();
+            JProgressBar memberTabImportProgressBar = MemberForm.memberForm.getMemberTabImportProgressBar();
+            int[] selectedRows = pushHisLeftTable.getSelectedRows();
             CSVReader reader = null;
             try {
                 if (selectedRows.length > 0) {
                     MainWindow.mainWindow.getTabbedPane().setSelectedIndex(3);
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());
-                    MemberForm.memberForm.getMemberTabImportProgressBar().setVisible(true);
-                    MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(true);
+                    memberTabImportProgressBar.setVisible(true);
+                    memberTabImportProgressBar.setIndeterminate(true);
                     for (int selectedRow : selectedRows) {
-                        Integer selectedId = (Integer) PushHisForm.pushHisForm.getPushHisLeftTable().getValueAt(selectedRow, 3);
+                        Integer selectedId = (Integer) pushHisLeftTable.getValueAt(selectedRow, 3);
                         TPushHistory tPushHistory = pushHistoryMapper.selectByPrimaryKey(selectedId);
                         File msgTemplateDataFile = new File(tPushHistory.getCsvFile());
                         if (msgTemplateDataFile.exists()) {
@@ -200,21 +204,21 @@ public class PushHisListener {
                             }
                         }
                     }
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "导入完成！", "完成",
+                    JOptionPane.showMessageDialog(pushHisPanel, "导入完成！", "完成",
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "请至少选择一个！", "提示",
+                    JOptionPane.showMessageDialog(pushHisPanel, "请至少选择一个！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                 }
             } catch (Exception e1) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "导入失败！\n\n" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(pushHisPanel, "导入失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             } finally {
-                MemberForm.memberForm.getMemberTabImportProgressBar().setMaximum(100);
-                MemberForm.memberForm.getMemberTabImportProgressBar().setValue(100);
-                MemberForm.memberForm.getMemberTabImportProgressBar().setIndeterminate(false);
-                MemberForm.memberForm.getMemberTabImportProgressBar().setVisible(false);
+                memberTabImportProgressBar.setMaximum(100);
+                memberTabImportProgressBar.setValue(100);
+                memberTabImportProgressBar.setIndeterminate(false);
+                memberTabImportProgressBar.setVisible(false);
                 if (reader != null) {
                     try {
                         reader.close();

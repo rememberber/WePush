@@ -55,7 +55,8 @@ public class FramListener {
             public void windowClosing(WindowEvent e) {
                 if (!pushForm.getPushStartButton().isEnabled()) {
                     JOptionPane.showMessageDialog(mainWindow.getPushPanel(),
-                            "有推送任务正在进行！\n\n为避免数据丢失，请先停止!\n\n", "Sorry~", JOptionPane.WARNING_MESSAGE);
+                            "有推送任务正在进行！\n\n为避免数据丢失，请先停止!\n\n", "Sorry~",
+                            JOptionPane.WARNING_MESSAGE);
                 } else {
                     App.sqlSession.close();
                     mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
