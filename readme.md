@@ -18,7 +18,7 @@
 ### 截图速览
 <p align="center">
   <a href="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20198.png">
-   <img alt="WePush" src="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20198.png" style="border-radius: 0 0 5px 5px;">
+   <img alt="WePush" src="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20198.png">
   </a>
 </p>  
 <p align="center">
