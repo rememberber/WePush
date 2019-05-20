@@ -55,16 +55,22 @@ public class Init {
         if (screenSize.width <= 1366 && StringUtils.isEmpty(config.getProps(lowDpiKey))) {
             config.setFontSize(13);
             config.setProps(lowDpiKey, "true");
-            config.save();
         }
 
-        // Mac高分辨率屏幕字号初始化
+        // Mac等高分辨率屏幕字号初始化
         String highDpiKey = "highDpiInit";
         if (SystemUtil.isMacOs() && StringUtils.isEmpty(config.getProps(highDpiKey))) {
             config.setFontSize(15);
             config.setProps(highDpiKey, "true");
-            config.save();
+        } else if (screenSize.width == 1920 && StringUtils.isEmpty(config.getProps(highDpiKey))) {
+            config.setFontSize(12);
+            config.setProps(highDpiKey, "true");
+        } else if (screenSize.width > 1920 && StringUtils.isEmpty(config.getProps(highDpiKey))) {
+            config.setFontSize(14);
+            config.setProps(highDpiKey, "true");
         }
+
+        config.save();
 
         Font fnt = new Font(config.getFont(), Font.PLAIN, config.getFontSize());
         FontUIResource fontRes = new FontUIResource(fnt);
