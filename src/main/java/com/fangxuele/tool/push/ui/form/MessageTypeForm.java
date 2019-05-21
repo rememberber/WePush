@@ -38,6 +38,8 @@ public class MessageTypeForm {
     private JRadioButton luosimao短信RadioButton;
     private JRadioButton 极光短信RadioButton;
     private JRadioButton 极光推送RadioButton;
+    private JRadioButton 企业号企业微信RadioButton;
+    private JRadioButton 钉钉RadioButton;
 
     public static MessageTypeForm messageTypeForm = new MessageTypeForm();
 
