@@ -140,7 +140,7 @@ public class MessageTypeForm {
         scrollPane1.setAutoscrolls(true);
         messageTypePanel.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(16, 2, new Insets(20, 20, 0, 0), -1, -1));
+        panel2.setLayout(new GridLayoutManager(18, 2, new Insets(20, 20, 0, 0), -1, -1));
         panel2.setAutoscrolls(true);
         scrollPane1.setViewportView(panel2);
         mpTemplateRadioButton = new JRadioButton();
@@ -203,6 +203,14 @@ public class MessageTypeForm {
         极光推送RadioButton.setEnabled(false);
         极光推送RadioButton.setText("极光推送");
         panel2.add(极光推送RadioButton, new GridConstraints(14, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        企业号企业微信RadioButton = new JRadioButton();
+        企业号企业微信RadioButton.setEnabled(false);
+        企业号企业微信RadioButton.setText("企业号/企业微信");
+        panel2.add(企业号企业微信RadioButton, new GridConstraints(16, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        钉钉RadioButton = new JRadioButton();
+        钉钉RadioButton.setEnabled(false);
+        钉钉RadioButton.setText("钉钉");
+        panel2.add(钉钉RadioButton, new GridConstraints(17, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(2, 1, new Insets(8, 8, 8, 0), -1, -1));
         messageTypePanel.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
