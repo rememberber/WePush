@@ -37,6 +37,7 @@ public class SettingListener {
         // 设置-公众号-保存
         SettingForm.settingForm.getSettingMpInfoSaveButton().addActionListener(e -> {
             try {
+                Init.config.setWechatMpName(SettingForm.settingForm.getMpNameTextField().getText());
                 Init.config.setWechatAppId(SettingForm.settingForm.getWechatAppIdTextField().getText());
                 Init.config.setWechatAppSecret(new String(SettingForm.settingForm.getWechatAppSecretPasswordField().getPassword()));
                 Init.config.setWechatToken(new String(SettingForm.settingForm.getWechatTokenPasswordField().getPassword()));
@@ -55,6 +56,7 @@ public class SettingListener {
         // 设置-小程序-保存
         SettingForm.settingForm.getSettingMaInfoSaveButton().addActionListener(e -> {
             try {
+                Init.config.setMiniAppName(SettingForm.settingForm.getMaNameTextField().getText());
                 Init.config.setMiniAppAppId(SettingForm.settingForm.getMiniAppAppIdTextField().getText());
                 Init.config.setMiniAppAppSecret(new String(SettingForm.settingForm.getMiniAppAppSecretPasswordField().getPassword()));
                 Init.config.setMiniAppToken(new String(SettingForm.settingForm.getMiniAppTokenPasswordField().getPassword()));

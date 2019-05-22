@@ -73,12 +73,14 @@ public class SettingForm {
         settingForm.getAutoCheckUpdateCheckBox().setSelected(Init.config.isAutoCheckUpdate());
 
         // 微信公众号
+        settingForm.getMpNameTextField().setText(Init.config.getWechatMpName());
         settingForm.getWechatAppIdTextField().setText(Init.config.getWechatAppId());
         settingForm.getWechatAppSecretPasswordField().setText(Init.config.getWechatAppSecret());
         settingForm.getWechatTokenPasswordField().setText(Init.config.getWechatToken());
         settingForm.getWechatAesKeyPasswordField().setText(Init.config.getWechatAesKey());
 
         // 微信小程序
+        settingForm.getMaNameTextField().setText(Init.config.getMiniAppName());
         settingForm.getMiniAppAppIdTextField().setText(Init.config.getMiniAppAppId());
         settingForm.getMiniAppAppSecretPasswordField().setText(Init.config.getMiniAppAppSecret());
         settingForm.getMiniAppTokenPasswordField().setText(Init.config.getMiniAppToken());

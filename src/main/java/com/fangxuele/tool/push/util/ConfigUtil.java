@@ -52,6 +52,8 @@ public class ConfigUtil {
 
     private boolean autoCheckUpdate;
 
+    private String wechatMpName;
+
     private String wechatAppId;
 
     private String wechatAppSecret;
@@ -59,6 +61,8 @@ public class ConfigUtil {
     private String wechatToken;
 
     private String wechatAesKey;
+
+    private String miniAppName;
 
     private String miniAppAppId;
 
@@ -256,6 +260,14 @@ public class ConfigUtil {
         setting.put("setting.normal", "autoCheckUpdate", String.valueOf(autoCheckUpdate));
     }
 
+    public String getWechatMpName() {
+        return setting.getStr("mpName", "setting.wechat", "默认公众号");
+    }
+
+    public void setWechatMpName(String wechatMpName) {
+        setting.put("setting.wechat", "mpName", wechatMpName);
+    }
+
     public String getWechatAppId() {
         return setting.getStr("appId", "setting.wechat", "");
     }
@@ -398,6 +410,14 @@ public class ConfigUtil {
 
     public void setAliyunSign(String aliyunSign) {
         setting.put("setting.aliyun", "aliyunSign", aliyunSign);
+    }
+
+    public String getMiniAppName() {
+        return setting.getStr("name", "setting.miniApp", "默认小程序");
+    }
+
+    public void setMiniAppName(String miniAppName) {
+        setting.put("setting.miniApp", "name", miniAppName);
     }
 
     public String getMiniAppAppId() {
