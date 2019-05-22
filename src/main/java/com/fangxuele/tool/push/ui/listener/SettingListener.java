@@ -4,6 +4,7 @@ import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.Init;
+import com.fangxuele.tool.push.ui.dialog.SwitchWxAccountDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.util.DbUtilMySQL;
@@ -53,6 +54,13 @@ public class SettingListener {
             }
         });
 
+        // 设置-公众号-多账号管理
+        SettingForm.settingForm.getMpAccountManageButton().addActionListener(e -> {
+            SwitchWxAccountDialog dialog = new SwitchWxAccountDialog();
+            dialog.pack();
+            dialog.setVisible(true);
+        });
+
         // 设置-小程序-保存
         SettingForm.settingForm.getSettingMaInfoSaveButton().addActionListener(e -> {
             try {
@@ -70,6 +78,13 @@ public class SettingListener {
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
+        });
+
+        // 设置-小程序-多账号管理
+        SettingForm.settingForm.getMaAccountManageButton().addActionListener(e -> {
+            SwitchWxAccountDialog dialog = new SwitchWxAccountDialog();
+            dialog.pack();
+            dialog.setVisible(true);
         });
 
         // 设置-阿里云短信-保存
