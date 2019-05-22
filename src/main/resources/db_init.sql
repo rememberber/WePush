@@ -109,7 +109,7 @@ create table if not exists t_template_data
     create_time   datetime,
     modified_time datetime
 );
-create table t_wx_mp_user
+create table if not exists t_wx_mp_user
 (
     open_id         text
         constraint t_wx_mp_user_pk
