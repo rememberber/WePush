@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fangxuele.tool.push.dao.TWxAccountMapper">
+  <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TWxAccount">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="account_type" jdbcType="VARCHAR" property="accountType" />
+    <result column="account_name" jdbcType="VARCHAR" property="accountName" />
+    <result column="app_id" jdbcType="VARCHAR" property="appId" />
+    <result column="app_secret" jdbcType="VARCHAR" property="appSecret" />
+    <result column="token" jdbcType="VARCHAR" property="token" />
+    <result column="aes_key" jdbcType="VARCHAR" property="aesKey" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+    <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, account_type, account_name, app_id, app_secret, token, aes_key, create_time, 
+    modified_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_wx_account
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_wx_account
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TWxAccount">
+    insert into t_wx_account (id, account_type, account_name, 
+      app_id, app_secret, token, 
+      aes_key, create_time, modified_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{accountType,jdbcType=VARCHAR}, #{accountName,jdbcType=VARCHAR}, 
+      #{appId,jdbcType=VARCHAR}, #{appSecret,jdbcType=VARCHAR}, #{token,jdbcType=VARCHAR}, 
+      #{aesKey,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TWxAccount">
+    insert into t_wx_account
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="accountType != null">
+        account_type,
+      </if>
+      <if test="accountName != null">
+        account_name,
+      </if>
+      <if test="appId != null">
+        app_id,
+      </if>
+      <if test="appSecret != null">
+        app_secret,
+      </if>
+      <if test="token != null">
+        token,
+      </if>
+      <if test="aesKey != null">
+        aes_key,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="modifiedTime != null">
+        modified_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="accountType != null">
+        #{accountType,jdbcType=VARCHAR},
+      </if>
+      <if test="accountName != null">
+        #{accountName,jdbcType=VARCHAR},
+      </if>
+      <if test="appId != null">
+        #{appId,jdbcType=VARCHAR},
+      </if>
+      <if test="appSecret != null">
+        #{appSecret,jdbcType=VARCHAR},
+      </if>
+      <if test="token != null">
+        #{token,jdbcType=VARCHAR},
+      </if>
+      <if test="aesKey != null">
+        #{aesKey,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="modifiedTime != null">
+        #{modifiedTime,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fangxuele.tool.push.domain.TWxAccount">
+    update t_wx_account
+    <set>
+      <if test="accountType != null">
+        account_type = #{accountType,jdbcType=VARCHAR},
+      </if>
+      <if test="accountName != null">
+        account_name = #{accountName,jdbcType=VARCHAR},
+      </if>
+      <if test="appId != null">
+        app_id = #{appId,jdbcType=VARCHAR},
+      </if>
+      <if test="appSecret != null">
+        app_secret = #{appSecret,jdbcType=VARCHAR},
+      </if>
+      <if test="token != null">
+        token = #{token,jdbcType=VARCHAR},
+      </if>
+      <if test="aesKey != null">
+        aes_key = #{aesKey,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="modifiedTime != null">
+        modified_time = #{modifiedTime,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TWxAccount">
+    update t_wx_account
+    set account_type = #{accountType,jdbcType=VARCHAR},
+      account_name = #{accountName,jdbcType=VARCHAR},
+      app_id = #{appId,jdbcType=VARCHAR},
+      app_secret = #{appSecret,jdbcType=VARCHAR},
+      token = #{token,jdbcType=VARCHAR},
+      aes_key = #{aesKey,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=VARCHAR},
+      modified_time = #{modifiedTime,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
