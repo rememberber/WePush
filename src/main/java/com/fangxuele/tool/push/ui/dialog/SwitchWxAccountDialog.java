@@ -1,5 +1,8 @@
 package com.fangxuele.tool.push.ui.dialog;
 
+import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.log.Log;
+import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TWxAccountMapper;
 import com.fangxuele.tool.push.domain.TWxAccount;
@@ -29,6 +32,7 @@ import java.util.List;
  * @since 2019/5/23.
  */
 public class SwitchWxAccountDialog extends JDialog {
+    Log logger = LogFactory.get();
     private JPanel contentPane;
     private JButton buttonOk;
     private JTable accountsTable;
@@ -38,6 +42,7 @@ public class SwitchWxAccountDialog extends JDialog {
     private JTextField tokenTextField;
     private JTextField aesKeyTextField;
     private JButton addButton;
+    private JButton deleteButton;
 
     private static TWxAccountMapper wxAccountMapper = MybatisUtil.getSqlSession().getMapper(TWxAccountMapper.class);
 
@@ -92,9 +97,35 @@ public class SwitchWxAccountDialog extends JDialog {
             tWxAccount.setModifiedTime(now);
 
             wxAccountMapper.insert(tWxAccount);
+            renderTable();
             JOptionPane.showMessageDialog(this, "添加成功！", "成功",
                     JOptionPane.INFORMATION_MESSAGE);
         });
+        deleteButton.addActionListener(e -> ThreadUtil.execute(() -> {
+            try {
+                int[] selectedRows = accountsTable.getSelectedRows();
+                if (selectedRows.length == 0) {
+                    JOptionPane.showMessageDialog(this, "请至少选择一个！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    int isDelete = JOptionPane.showConfirmDialog(this, "确认删除？", "确认",
+                            JOptionPane.YES_NO_OPTION);
+                    if (isDelete == JOptionPane.YES_OPTION) {
+                        DefaultTableModel tableModel = (DefaultTableModel) accountsTable.getModel();
+                        for (int i = selectedRows.length; i > 0; i--) {
+                            int selectedRow = accountsTable.getSelectedRow();
+                            Integer selectedId = (Integer) tableModel.getValueAt(selectedRow, 0);
+                            wxAccountMapper.deleteByPrimaryKey(selectedId);
+                            tableModel.removeRow(selectedRow);
+                        }
+                    }
+                }
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(this, "删除失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        }));
     }
 
     private void onCancel() {
@@ -155,11 +186,14 @@ public class SwitchWxAccountDialog extends JDialog {
         final Spacer spacer1 = new Spacer();
         panel1.add(spacer1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel2.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel2, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonOk = new JButton();
         buttonOk.setText("好了");
-        panel2.add(buttonOk, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel2.add(buttonOk, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        deleteButton = new JButton();
+        deleteButton.setText("删除");
+        panel2.add(deleteButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new GridLayoutManager(4, 6, new Insets(5, 5, 0, 5), -1, -1));
         contentPane.add(panel3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
