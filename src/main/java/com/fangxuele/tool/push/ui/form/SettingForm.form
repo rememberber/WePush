@@ -86,7 +86,7 @@
                           </component>
                           <component id="dd319" class="javax.swing.JTextField" binding="wechatAppIdTextField">
                             <constraints>
-                              <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="2" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
                               </grid>
                             </constraints>
@@ -102,7 +102,7 @@
                           </component>
                           <component id="d01c9" class="javax.swing.JPasswordField" binding="wechatAppSecretPasswordField">
                             <constraints>
-                              <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="3" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
                               </grid>
                             </constraints>
@@ -118,7 +118,7 @@
                           </component>
                           <component id="b3ace" class="javax.swing.JPasswordField" binding="wechatTokenPasswordField">
                             <constraints>
-                              <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="4" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
                               </grid>
                             </constraints>
@@ -134,7 +134,7 @@
                           </component>
                           <component id="b3baf" class="javax.swing.JPasswordField" binding="wechatAesKeyPasswordField">
                             <constraints>
-                              <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="5" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
                               </grid>
                             </constraints>
@@ -183,7 +183,7 @@
                           </component>
                           <component id="bc925" class="javax.swing.JTextField" binding="mpNameTextField">
                             <constraints>
-                              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="1" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
                               </grid>
                             </constraints>
@@ -199,7 +199,7 @@
                           </component>
                           <component id="ae71d" class="javax.swing.JComboBox" binding="mpAccountSwitchComboBox">
                             <constraints>
-                              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="0" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <minimum-size width="300" height="-1"/>
                                 <preferred-size width="300" height="-1"/>
                               </grid>
@@ -230,7 +230,7 @@
                           </component>
                           <component id="e6ea3" class="javax.swing.JTextField" binding="miniAppAppIdTextField">
                             <constraints>
-                              <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="2" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
                               </grid>
                             </constraints>
@@ -246,7 +246,7 @@
                           </component>
                           <component id="d22d7" class="javax.swing.JPasswordField" binding="miniAppAppSecretPasswordField">
                             <constraints>
-                              <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="3" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
                               </grid>
                             </constraints>
@@ -262,7 +262,7 @@
                           </component>
                           <component id="921b9" class="javax.swing.JPasswordField" binding="miniAppTokenPasswordField">
                             <constraints>
-                              <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="4" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
                               </grid>
                             </constraints>
@@ -280,7 +280,7 @@
                           </component>
                           <component id="c4abd" class="javax.swing.JPasswordField" binding="miniAppAesKeyPasswordField">
                             <constraints>
-                              <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="5" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
                               </grid>
                             </constraints>
@@ -329,7 +329,7 @@
                           </component>
                           <component id="dc5ba" class="javax.swing.JTextField" binding="maNameTextField">
                             <constraints>
-                              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="1" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
                               </grid>
                             </constraints>
@@ -345,7 +345,7 @@
                           </component>
                           <component id="28449" class="javax.swing.JComboBox" binding="maAccountSwitchComboBox">
                             <constraints>
-                              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="0" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <minimum-size width="300" height="-1"/>
                                 <preferred-size width="300" height="-1"/>
                               </grid>
@@ -390,7 +390,7 @@
                           </component>
                           <component id="4a11a" class="javax.swing.JTextField" binding="aliyunSignTextField">
                             <constraints>
-                              <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="2" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
                               </grid>
                             </constraints>
@@ -398,7 +398,7 @@
                           </component>
                           <component id="6199b" class="javax.swing.JPasswordField" binding="aliyunAccessKeySecretTextField">
                             <constraints>
-                              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="1" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
                               </grid>
                             </constraints>
@@ -430,7 +430,7 @@
                           </grid>
                           <component id="6450" class="javax.swing.JTextField" binding="aliyunAccessKeyIdTextField">
                             <constraints>
-                              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="0" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <minimum-size width="300" height="-1"/>
                                 <preferred-size width="300" height="-1"/>
                               </grid>
@@ -459,7 +459,7 @@
                           </component>
                           <component id="55eab" class="javax.swing.JTextField" binding="aliServerUrlTextField">
                             <constraints>
-                              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="0" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <minimum-size width="300" height="-1"/>
                                 <preferred-size width="300" height="-1"/>
                               </grid>
@@ -476,7 +476,7 @@
                           </component>
                           <component id="4164" class="javax.swing.JPasswordField" binding="aliAppKeyPasswordField">
                             <constraints>
-                              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="1" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
                               </grid>
                             </constraints>
@@ -500,7 +500,7 @@
                           </component>
                           <component id="d9304" class="javax.swing.JTextField" binding="aliSignTextField">
                             <constraints>
-                              <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="3" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
                               </grid>
                             </constraints>
@@ -508,7 +508,7 @@
                           </component>
                           <component id="4a197" class="javax.swing.JPasswordField" binding="aliAppSecretPasswordField">
                             <constraints>
-                              <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="2" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
                               </grid>
                             </constraints>
@@ -576,7 +576,7 @@
                           </component>
                           <component id="68b02" class="javax.swing.JTextField" binding="txyunSignTextField">
                             <constraints>
-                              <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="2" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
                               </grid>
                             </constraints>
@@ -584,7 +584,7 @@
                           </component>
                           <component id="2b8a0" class="javax.swing.JPasswordField" binding="txyunAppKeyTextField">
                             <constraints>
-                              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="1" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
                               </grid>
                             </constraints>
@@ -618,7 +618,7 @@
                           </grid>
                           <component id="95eae" class="javax.swing.JTextField" binding="txyunAppIdTextField">
                             <constraints>
-                              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="0" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <minimum-size width="300" height="-1"/>
                                 <preferred-size width="300" height="-1"/>
                               </grid>
@@ -647,7 +647,7 @@
                           </component>
                           <component id="df750" class="javax.swing.JPasswordField" binding="yunpianApiKeyTextField">
                             <constraints>
-                              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="0" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <minimum-size width="300" height="-1"/>
                                 <preferred-size width="300" height="-1"/>
                               </grid>
@@ -702,7 +702,7 @@
                           </component>
                           <component id="43779" class="javax.swing.JTextField" binding="mysqlUrlTextField">
                             <constraints>
-                              <grid row="0" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="0" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <minimum-size width="300" height="-1"/>
                                 <preferred-size width="300" height="-1"/>
                               </grid>
@@ -719,7 +719,7 @@
                           </component>
                           <component id="fac70" class="javax.swing.JTextField" binding="mysqlDatabaseTextField">
                             <constraints>
-                              <grid row="1" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="1" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
                               </grid>
                             </constraints>
@@ -735,7 +735,7 @@
                           </component>
                           <component id="25469" class="javax.swing.JTextField" binding="mysqlUserTextField">
                             <constraints>
-                              <grid row="2" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="2" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
                               </grid>
                             </constraints>
@@ -751,7 +751,7 @@
                           </component>
                           <component id="57d9" class="javax.swing.JPasswordField" binding="mysqlPasswordField">
                             <constraints>
-                              <grid row="3" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="3" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
                               </grid>
                             </constraints>
@@ -812,7 +812,7 @@
                           </component>
                           <component id="a8c76" class="javax.swing.JComboBox" binding="settingThemeComboBox">
                             <constraints>
-                              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="0" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                                 <minimum-size width="300" height="-1"/>
                                 <preferred-size width="300" height="-1"/>
                               </grid>
@@ -836,7 +836,7 @@
                           </component>
                           <component id="1587c" class="javax.swing.JComboBox" binding="settingFontNameComboBox">
                             <constraints>
-                              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                              <grid row="1" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
                               <model>
@@ -857,7 +857,7 @@
                           </component>
                           <component id="31b00" class="javax.swing.JComboBox" binding="settingFontSizeComboBox">
                             <constraints>
-                              <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                              <grid row="2" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
                               <model>
