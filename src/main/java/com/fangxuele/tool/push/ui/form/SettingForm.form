@@ -176,7 +176,10 @@
                       </component>
                       <component id="ae71d" class="javax.swing.JComboBox" binding="mpAccountSwitchComboBox">
                         <constraints>
-                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                            <minimum-size width="300" height="-1"/>
+                            <preferred-size width="300" height="-1"/>
+                          </grid>
                         </constraints>
                         <properties/>
                       </component>
@@ -218,7 +221,8 @@
                       <component id="43779" class="javax.swing.JTextField" binding="mysqlUrlTextField">
                         <constraints>
                           <grid row="0" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                            <preferred-size width="150" height="-1"/>
+                            <minimum-size width="300" height="-1"/>
+                            <preferred-size width="300" height="-1"/>
                           </grid>
                         </constraints>
                         <properties/>
@@ -337,7 +341,8 @@
                       <component id="55eab" class="javax.swing.JTextField" binding="aliServerUrlTextField">
                         <constraints>
                           <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                            <preferred-size width="150" height="-1"/>
+                            <minimum-size width="300" height="-1"/>
+                            <preferred-size width="300" height="-1"/>
                           </grid>
                         </constraints>
                         <properties/>
@@ -441,7 +446,10 @@
                       </hspacer>
                       <component id="a8c76" class="javax.swing.JComboBox" binding="settingThemeComboBox">
                         <constraints>
-                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                            <minimum-size width="300" height="-1"/>
+                            <preferred-size width="300" height="-1"/>
+                          </grid>
                         </constraints>
                         <properties>
                           <model>
@@ -650,7 +658,8 @@
                       <component id="6450" class="javax.swing.JTextField" binding="aliyunAccessKeyIdTextField">
                         <constraints>
                           <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                            <preferred-size width="150" height="-1"/>
+                            <minimum-size width="300" height="-1"/>
+                            <preferred-size width="300" height="-1"/>
                           </grid>
                         </constraints>
                         <properties/>
@@ -804,7 +813,10 @@
                       </component>
                       <component id="28449" class="javax.swing.JComboBox" binding="maAccountSwitchComboBox">
                         <constraints>
-                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                            <minimum-size width="300" height="-1"/>
+                            <preferred-size width="300" height="-1"/>
+                          </grid>
                         </constraints>
                         <properties/>
                       </component>
@@ -899,7 +911,8 @@
                       <component id="95eae" class="javax.swing.JTextField" binding="txyunAppIdTextField">
                         <constraints>
                           <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                            <preferred-size width="150" height="-1"/>
+                            <minimum-size width="300" height="-1"/>
+                            <preferred-size width="300" height="-1"/>
                           </grid>
                         </constraints>
                         <properties/>
@@ -932,7 +945,8 @@
                       <component id="df750" class="javax.swing.JPasswordField" binding="yunpianApiKeyTextField">
                         <constraints>
                           <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                            <preferred-size width="150" height="-1"/>
+                            <minimum-size width="300" height="-1"/>
+                            <preferred-size width="300" height="-1"/>
                           </grid>
                         </constraints>
                         <properties>
