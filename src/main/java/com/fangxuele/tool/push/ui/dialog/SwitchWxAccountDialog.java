@@ -4,6 +4,7 @@ import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TWxAccountMapper;
 import com.fangxuele.tool.push.domain.TWxAccount;
 import com.fangxuele.tool.push.ui.listener.SettingListener;
+import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -12,6 +13,8 @@ import com.intellij.uiDesigner.core.Spacer;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -28,7 +31,7 @@ import java.util.List;
 public class SwitchWxAccountDialog extends JDialog {
     private JPanel contentPane;
     private JButton buttonOk;
-    private JTable table1;
+    private JTable accountsTable;
     private JTextField nameTextField;
     private JTextField appIdTextField;
     private JTextField appSecretTextField;
@@ -42,6 +45,15 @@ public class SwitchWxAccountDialog extends JDialog {
         super(App.mainFrame, "多账号管理");
         setContentPane(contentPane);
         setModal(true);
+
+        //得到屏幕的尺寸
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        setBounds((int) (screenSize.width * 0.2), (int) (screenSize.height * 0.12), (int) (screenSize.width * 0.6),
+                (int) (screenSize.height * 0.63));
+
+        Dimension preferSize = new Dimension((int) (screenSize.width * 0.6),
+                (int) (screenSize.height * 0.63));
+        setPreferredSize(preferSize);
 
         buttonOk.addActionListener(e -> onCancel());
 
@@ -88,6 +100,36 @@ public class SwitchWxAccountDialog extends JDialog {
     private void onCancel() {
         // add your code here if necessary
         dispose();
+    }
+
+    /**
+     * 多账号表格
+     */
+    public void renderTable() {
+        String[] headerNames = {"id", "账号名称", "AppId", "AppSecret", "Token", "AesKey"};
+        DefaultTableModel model = new DefaultTableModel(null, headerNames);
+        accountsTable.setModel(model);
+
+        DefaultTableCellRenderer hr = (DefaultTableCellRenderer) accountsTable.getTableHeader()
+                .getDefaultRenderer();
+        // 表头列名居左
+        hr.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
+
+        List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountType(SettingListener.wxAccountType);
+        Object[] data;
+        for (TWxAccount tWxAccount : wxAccountList) {
+            data = new Object[6];
+            data[0] = tWxAccount.getId();
+            data[1] = tWxAccount.getAccountName();
+            data[2] = tWxAccount.getAppId();
+            data[3] = tWxAccount.getAppSecret();
+            data[4] = tWxAccount.getToken();
+            data[5] = tWxAccount.getAesKey();
+            model.addRow(data);
+        }
+
+        // 隐藏id列
+        JTableUtil.hideColumn(accountsTable, 0);
     }
 
     {
@@ -154,8 +196,9 @@ public class SwitchWxAccountDialog extends JDialog {
         panel3.add(addButton, new GridConstraints(3, 5, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JScrollPane scrollPane1 = new JScrollPane();
         contentPane.add(scrollPane1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        table1 = new JTable();
-        scrollPane1.setViewportView(table1);
+        accountsTable = new JTable();
+        accountsTable.setRowHeight(30);
+        scrollPane1.setViewportView(accountsTable);
     }
 
     /**

@@ -60,6 +60,7 @@ public class SettingListener {
         SettingForm.settingForm.getMpAccountManageButton().addActionListener(e -> {
             SwitchWxAccountDialog dialog = new SwitchWxAccountDialog();
             wxAccountType = "mp";
+            dialog.renderTable();
             dialog.pack();
             dialog.setVisible(true);
         });

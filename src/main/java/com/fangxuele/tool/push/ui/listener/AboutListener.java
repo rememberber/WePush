@@ -146,12 +146,6 @@ public class AboutListener {
                     }
                 } else {
                     UpdateDialog dialog = new UpdateDialog();
-                    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-                    dialog.setBounds(screenSize.width / 2 - 300, screenSize.height / 2 - 50,
-                            600, 100);
-
-                    Dimension preferSize = new Dimension(600, 100);
-                    dialog.setMaximumSize(preferSize);
                     dialog.pack();
                     dialog.downLoad(newVersion);
                     dialog.setVisible(true);

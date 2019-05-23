@@ -151,9 +151,11 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="791df" class="javax.swing.JTable" binding="table1" default-binding="true">
+          <component id="791df" class="javax.swing.JTable" binding="accountsTable">
             <constraints/>
-            <properties/>
+            <properties>
+              <rowHeight value="30"/>
+            </properties>
           </component>
         </children>
       </scrollpane>

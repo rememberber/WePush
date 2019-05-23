@@ -145,4 +145,10 @@
         where account_name = #{accountName,jdbcType=VARCHAR}
         and account_type = #{accountType,jdbcType=VARCHAR}
     </select>
+    <select id="selectByAccountType" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_wx_account
+        where account_type = #{accountType,jdbcType=VARCHAR}
+    </select>
 </mapper>

@@ -19,4 +19,6 @@ public interface TWxAccountMapper {
     int updateByPrimaryKey(TWxAccount record);
 
     List<TWxAccount> selectByAccountTypeAndAccountName(@Param("accountType") String accountType, @Param("accountName") String accountName);
+
+    List<TWxAccount> selectByAccountType(String wxAccountType);
 }
