@@ -132,3 +132,17 @@ create table if not exists t_wx_mp_user
     create_time     text,
     modified_time   text
 );
+create table if not exists t_wx_account
+(
+    id            INTEGER
+        constraint t_wx_account_pk
+            primary key autoincrement,
+    account_type  text,
+    account_name  text,
+    app_id        text,
+    app_secret    text,
+    token         text,
+    aes_key       text,
+    create_time   datetime,
+    modified_time datetime
+);
