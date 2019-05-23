@@ -27,6 +27,8 @@ public class SettingListener {
 
     private static JPanel settingPanel = SettingForm.settingForm.getSettingPanel();
 
+    public static String wxAccountType;
+
     public static void addListeners() {
 
         // 设置-常规-启动时自动检查更新
@@ -57,6 +59,7 @@ public class SettingListener {
         // 设置-公众号-多账号管理
         SettingForm.settingForm.getMpAccountManageButton().addActionListener(e -> {
             SwitchWxAccountDialog dialog = new SwitchWxAccountDialog();
+            wxAccountType = "mp";
             dialog.pack();
             dialog.setVisible(true);
         });
@@ -83,6 +86,7 @@ public class SettingListener {
         // 设置-小程序-多账号管理
         SettingForm.settingForm.getMaAccountManageButton().addActionListener(e -> {
             SwitchWxAccountDialog dialog = new SwitchWxAccountDialog();
+            wxAccountType = "ma";
             dialog.pack();
             dialog.setVisible(true);
         });
