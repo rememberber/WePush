@@ -508,7 +508,7 @@ public class MessageEditForm {
         templateMsgDataTable.setAutoCreateColumnsFromModel(true);
         templateMsgDataTable.setAutoCreateRowSorter(true);
         templateMsgDataTable.setGridColor(new Color(-12236470));
-        templateMsgDataTable.setRowHeight(40);
+        templateMsgDataTable.setRowHeight(36);
         scrollPane1.setViewportView(templateMsgDataTable);
         templateMiniProgramAppidLabel = new JLabel();
         templateMiniProgramAppidLabel.setText("小程序appid");

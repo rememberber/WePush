@@ -3,15 +3,19 @@ package com.fangxuele.tool.push.ui.listener;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.dao.TWxAccountMapper;
+import com.fangxuele.tool.push.domain.TWxAccount;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.dialog.SwitchWxAccountDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.util.DbUtilMySQL;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.sql.Connection;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -29,6 +33,8 @@ public class SettingListener {
 
     public static String wxAccountType;
 
+    private static TWxAccountMapper wxAccountMapper = MybatisUtil.getSqlSession().getMapper(TWxAccountMapper.class);
+
     public static void addListeners() {
 
         // 设置-常规-启动时自动检查更新
@@ -40,7 +46,7 @@ public class SettingListener {
         // 设置-公众号-保存
         SettingForm.settingForm.getSettingMpInfoSaveButton().addActionListener(e -> {
             try {
-                Init.config.setWechatMpName(SettingForm.settingForm.getMpNameTextField().getText());
+                Init.config.setWechatMpName(SettingForm.settingForm.getMpAccountSwitchComboBox().getSelectedItem().toString());
                 Init.config.setWechatAppId(SettingForm.settingForm.getWechatAppIdTextField().getText());
                 Init.config.setWechatAppSecret(new String(SettingForm.settingForm.getWechatAppSecretPasswordField().getPassword()));
                 Init.config.setWechatToken(new String(SettingForm.settingForm.getWechatTokenPasswordField().getPassword()));
@@ -59,16 +65,30 @@ public class SettingListener {
         // 设置-公众号-多账号管理
         SettingForm.settingForm.getMpAccountManageButton().addActionListener(e -> {
             SwitchWxAccountDialog dialog = new SwitchWxAccountDialog();
-            wxAccountType = "mp";
+            wxAccountType = SettingForm.WX_ACCOUNT_TYPE_MP;
             dialog.renderTable();
             dialog.pack();
             dialog.setVisible(true);
         });
 
+        // 公众号切换账号事件
+        SettingForm.settingForm.getMpAccountSwitchComboBox().addItemListener(e -> {
+            String accountName = e.getItem().toString();
+            List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(SettingForm.WX_ACCOUNT_TYPE_MP, accountName);
+            if (wxAccountList.size() > 0) {
+                TWxAccount tWxAccount = wxAccountList.get(0);
+                SettingForm.settingForm.getMpAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
+                SettingForm.settingForm.getWechatAppIdTextField().setText(tWxAccount.getAppId());
+                SettingForm.settingForm.getWechatAppSecretPasswordField().setText(tWxAccount.getAppSecret());
+                SettingForm.settingForm.getWechatTokenPasswordField().setText(tWxAccount.getToken());
+                SettingForm.settingForm.getWechatAesKeyPasswordField().setText(tWxAccount.getAesKey());
+            }
+        });
+
         // 设置-小程序-保存
         SettingForm.settingForm.getSettingMaInfoSaveButton().addActionListener(e -> {
             try {
-                Init.config.setMiniAppName(SettingForm.settingForm.getMaNameTextField().getText());
+                Init.config.setMiniAppName(SettingForm.settingForm.getMaAccountSwitchComboBox().getSelectedItem().toString());
                 Init.config.setMiniAppAppId(SettingForm.settingForm.getMiniAppAppIdTextField().getText());
                 Init.config.setMiniAppAppSecret(new String(SettingForm.settingForm.getMiniAppAppSecretPasswordField().getPassword()));
                 Init.config.setMiniAppToken(new String(SettingForm.settingForm.getMiniAppTokenPasswordField().getPassword()));
@@ -87,9 +107,23 @@ public class SettingListener {
         // 设置-小程序-多账号管理
         SettingForm.settingForm.getMaAccountManageButton().addActionListener(e -> {
             SwitchWxAccountDialog dialog = new SwitchWxAccountDialog();
-            wxAccountType = "ma";
+            wxAccountType = SettingForm.WX_ACCOUNT_TYPE_MA;
             dialog.pack();
             dialog.setVisible(true);
+        });
+
+        // 小程序切换账号事件
+        SettingForm.settingForm.getMaAccountSwitchComboBox().addItemListener(e -> {
+            String accountName = e.getItem().toString();
+            List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(SettingForm.WX_ACCOUNT_TYPE_MA, accountName);
+            if (wxAccountList.size() > 0) {
+                TWxAccount tWxAccount = wxAccountList.get(0);
+                SettingForm.settingForm.getMaAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
+                SettingForm.settingForm.getMiniAppAppIdTextField().setText(tWxAccount.getAppId());
+                SettingForm.settingForm.getMiniAppAppSecretPasswordField().setText(tWxAccount.getAppSecret());
+                SettingForm.settingForm.getMiniAppTokenPasswordField().setText(tWxAccount.getToken());
+                SettingForm.settingForm.getMiniAppAesKeyPasswordField().setText(tWxAccount.getAesKey());
+            }
         });
 
         // 设置-阿里云短信-保存

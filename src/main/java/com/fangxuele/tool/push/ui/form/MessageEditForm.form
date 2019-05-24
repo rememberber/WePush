@@ -346,7 +346,7 @@
                               <autoCreateColumnsFromModel value="true"/>
                               <autoCreateRowSorter value="true"/>
                               <gridColor color="-12236470"/>
-                              <rowHeight value="40"/>
+                              <rowHeight value="36"/>
                             </properties>
                           </component>
                         </children>
