@@ -434,6 +434,11 @@ public class SettingForm {
         panel19.add(label30, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         settingFontSizeComboBox = new JComboBox();
         final DefaultComboBoxModel defaultComboBoxModel3 = new DefaultComboBoxModel();
+        defaultComboBoxModel3.addElement("5");
+        defaultComboBoxModel3.addElement("6");
+        defaultComboBoxModel3.addElement("7");
+        defaultComboBoxModel3.addElement("8");
+        defaultComboBoxModel3.addElement("9");
         defaultComboBoxModel3.addElement("10");
         defaultComboBoxModel3.addElement("11");
         defaultComboBoxModel3.addElement("12");

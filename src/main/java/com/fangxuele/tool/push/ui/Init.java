@@ -53,7 +53,7 @@ public class Init {
         // 得到屏幕的尺寸
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         if (screenSize.width <= 1366 && StringUtils.isEmpty(config.getProps(lowDpiKey))) {
-            config.setFontSize(13);
+            config.setFontSize(12);
             config.setProps(lowDpiKey, "true");
         }
 
@@ -62,9 +62,6 @@ public class Init {
         if (SystemUtil.isMacOs() && StringUtils.isEmpty(config.getProps(highDpiKey))) {
             config.setFontSize(15);
             config.setProps(highDpiKey, "true");
-        } else if (screenSize.width == 1920 && StringUtils.isEmpty(config.getProps(highDpiKey))) {
-            config.setFontSize(12);
-            config.setProps(highDpiKey, "true");
         } else if (screenSize.width > 1920 && StringUtils.isEmpty(config.getProps(highDpiKey))) {
             config.setFontSize(14);
             config.setProps(highDpiKey, "true");
@@ -72,8 +69,8 @@ public class Init {
 
         config.save();
 
-        Font fnt = new Font(config.getFont(), Font.PLAIN, config.getFontSize());
-        FontUIResource fontRes = new FontUIResource(fnt);
+        Font font = new Font(config.getFont(), Font.PLAIN, config.getFontSize());
+        FontUIResource fontRes = new FontUIResource(font);
         for (Enumeration<Object> keys = UIManager.getDefaults().keys(); keys.hasMoreElements(); ) {
             Object key = keys.nextElement();
             Object value = UIManager.get(key);

@@ -381,7 +381,7 @@ public class ConfigUtil {
     }
 
     public int getFontSize() {
-        return setting.getInt("fontSize", "setting.appearance", 18);
+        return setting.getInt("fontSize", "setting.appearance", 13);
     }
 
     public void setFontSize(int fontSize) {

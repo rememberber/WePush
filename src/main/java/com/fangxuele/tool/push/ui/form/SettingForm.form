@@ -861,6 +861,11 @@
                             </constraints>
                             <properties>
                               <model>
+                                <item value="5"/>
+                                <item value="6"/>
+                                <item value="7"/>
+                                <item value="8"/>
+                                <item value="9"/>
                                 <item value="10"/>
                                 <item value="11"/>
                                 <item value="12"/>
