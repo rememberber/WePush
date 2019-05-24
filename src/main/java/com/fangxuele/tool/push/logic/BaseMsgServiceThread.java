@@ -85,8 +85,8 @@ public class BaseMsgServiceThread extends Thread {
      * 初始化当前线程
      */
     void initCurrentThread() {
-        PushManage.console("线程" + this.getName() + "负责处理:" + startIndex + "-" +
-                endIndex + "的分片数据");
+        PushManage.console("线程" + this.getName() + "负责处理第:" + startIndex + "-" +
+                endIndex + "条的数据");
 
         list = PushData.toSendList.subList(startIndex, endIndex);
 
@@ -105,7 +105,7 @@ public class BaseMsgServiceThread extends Thread {
      */
     void currentThreadFinish() {
         PushManage.console(this.getName() + "已处理完第" + startIndex + "-" +
-                endIndex + "页的数据");
+                endIndex + "条的数据");
 
         PushData.increaseStopedThread();
     }
