@@ -4,13 +4,18 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.CharsetUtil;
 import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.bean.VersionSummary;
+import com.fangxuele.tool.push.dao.TWxAccountMapper;
+import com.fangxuele.tool.push.domain.TWxAccount;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.UiConsts;
+import com.fangxuele.tool.push.ui.form.SettingForm;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,6 +46,7 @@ public class UpgradeUtil {
                 MybatisUtil.initDbFile();
             } catch (Exception e) {
                 log.error("执行平滑升级时先执行db_init.sql操作失败", e);
+                return;
             }
             // 然后取两个版本对应的索引
             String versionSummaryJsonContent = FileUtil.readString(UiConsts.class.getResource("version_summary.json"), CharsetUtil.UTF_8);
@@ -70,6 +76,7 @@ public class UpgradeUtil {
             }
             // 升级完毕且成功，则赋值升级前版本号为当前版本
             Init.config.setBeforeVersion(currentVersion);
+            Init.config.save();
         }
     }
 
@@ -81,6 +88,59 @@ public class UpgradeUtil {
     private static void upgrade(int versionIndex) {
         switch (versionIndex) {
             case 21:
+                String accountName = "默认账号";
+                TWxAccountMapper wxAccountMapper = MybatisUtil.getSqlSession().getMapper(TWxAccountMapper.class);
+                if (StringUtils.isNotBlank(Init.config.getWechatAppId())) {
+                    boolean update = false;
+                    List<TWxAccount> tWxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(SettingForm.WX_ACCOUNT_TYPE_MP, accountName);
+                    if (tWxAccountList.size() > 0) {
+                        update = true;
+                    }
+
+                    TWxAccount tWxAccount = new TWxAccount();
+                    String now = SqliteUtil.nowDateForSqlite();
+                    tWxAccount.setAccountType(SettingForm.WX_ACCOUNT_TYPE_MP);
+                    tWxAccount.setAccountName(accountName);
+                    tWxAccount.setAppId(Init.config.getWechatAppId());
+                    tWxAccount.setAppSecret(Init.config.getWechatAppSecret());
+                    tWxAccount.setToken(Init.config.getWechatToken());
+                    tWxAccount.setAesKey(Init.config.getWechatAesKey());
+                    tWxAccount.setModifiedTime(now);
+                    if (update) {
+                        tWxAccount.setId(tWxAccountList.get(0).getId());
+                        wxAccountMapper.updateByPrimaryKeySelective(tWxAccount);
+                    } else {
+                        tWxAccount.setCreateTime(now);
+                        wxAccountMapper.insert(tWxAccount);
+                    }
+
+                    SettingForm.initSwitchMultiAccount();
+                }
+                if (StringUtils.isNotBlank(Init.config.getMiniAppAppId())) {
+                    boolean update = false;
+                    List<TWxAccount> tWxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(SettingForm.WX_ACCOUNT_TYPE_MA, accountName);
+                    if (tWxAccountList.size() > 0) {
+                        update = true;
+                    }
+
+                    TWxAccount tWxAccount = new TWxAccount();
+                    String now = SqliteUtil.nowDateForSqlite();
+                    tWxAccount.setAccountType(SettingForm.WX_ACCOUNT_TYPE_MA);
+                    tWxAccount.setAccountName(accountName);
+                    tWxAccount.setAppId(Init.config.getMiniAppAppId());
+                    tWxAccount.setAppSecret(Init.config.getMiniAppAppSecret());
+                    tWxAccount.setToken(Init.config.getMiniAppToken());
+                    tWxAccount.setAesKey(Init.config.getMiniAppAesKey());
+                    tWxAccount.setModifiedTime(now);
+                    if (update) {
+                        tWxAccount.setId(tWxAccountList.get(0).getId());
+                        wxAccountMapper.updateByPrimaryKeySelective(tWxAccount);
+                    } else {
+                        tWxAccount.setCreateTime(now);
+                        wxAccountMapper.insert(tWxAccount);
+                    }
+                    SettingForm.initSwitchMultiAccount();
+                }
                 break;
             case 22:
                 break;
