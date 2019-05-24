@@ -31,7 +31,7 @@
                 <constraints/>
                 <properties>
                   <gridColor color="-12236470"/>
-                  <rowHeight value="46"/>
+                  <rowHeight value="35"/>
                   <showVerticalLines value="false"/>
                 </properties>
               </component>

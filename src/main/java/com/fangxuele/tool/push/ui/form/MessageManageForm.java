@@ -128,7 +128,7 @@ public class MessageManageForm {
         messageManagePanel.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         msgHistable = new JTable();
         msgHistable.setGridColor(new Color(-12236470));
-        msgHistable.setRowHeight(46);
+        msgHistable.setRowHeight(35);
         msgHistable.setShowVerticalLines(false);
         scrollPane1.setViewportView(msgHistable);
         final JPanel panel2 = new JPanel();

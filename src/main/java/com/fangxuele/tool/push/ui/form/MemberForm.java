@@ -119,7 +119,7 @@ public class MemberForm {
         panel1.add(scrollPane1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         memberListTable = new JTable();
         memberListTable.setGridColor(new Color(-12236470));
-        memberListTable.setRowHeight(46);
+        memberListTable.setRowHeight(35);
         scrollPane1.setViewportView(memberListTable);
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 5, new Insets(0, 5, 0, 0), -1, -1));

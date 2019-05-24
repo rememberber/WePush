@@ -714,7 +714,7 @@ public class MemberListener {
         if (isWeixinTypeMsg && MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
             memberListTable.setRowHeight(66);
         } else {
-            memberListTable.setRowHeight(46);
+            memberListTable.setRowHeight(36);
         }
 
         List<Object> rowDataList;
@@ -786,6 +786,5 @@ public class MemberListener {
             }
             progressBar.setValue(i + 1);
         }
-        memberListTable.updateUI();
     }
 }
