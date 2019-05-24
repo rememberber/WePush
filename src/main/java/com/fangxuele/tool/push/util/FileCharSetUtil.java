@@ -17,7 +17,7 @@ import java.nio.charset.StandardCharsets;
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
  * @since 2018/12/25.
  */
-public class CharSetUtil {
+public class FileCharSetUtil {
     private static final Log logger = LogFactory.get();
 
     /**

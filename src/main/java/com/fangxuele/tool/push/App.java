@@ -5,6 +5,7 @@ import com.fangxuele.tool.push.ui.form.LoadingForm;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.frame.MainFrame;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.UpgradeUtil;
 import org.apache.ibatis.session.SqlSession;
 
 import javax.swing.*;
@@ -23,6 +24,7 @@ public class App {
     public static SqlSession sqlSession = MybatisUtil.getSqlSession();
 
     public static void main(String[] args) {
+        UpgradeUtil.smoothUpgrade();
         Init.initTheme();
         mainFrame = new MainFrame();
 //        实验性代码

@@ -52,6 +52,8 @@ public class ConfigUtil {
 
     private boolean autoCheckUpdate;
 
+    private String beforeVersion;
+
     private String wechatMpName;
 
     private String wechatAppId;
@@ -258,6 +260,14 @@ public class ConfigUtil {
 
     public void setAutoCheckUpdate(boolean autoCheckUpdate) {
         setting.put("setting.normal", "autoCheckUpdate", String.valueOf(autoCheckUpdate));
+    }
+
+    public String getBeforeVersion() {
+        return setting.getStr("beforeVersion", "setting.normal", "v_3.0.0_190516");
+    }
+
+    public void setBeforeVersion(String beforeVersion) {
+        setting.put("setting.normal", "beforeVersion", beforeVersion);
     }
 
     public String getWechatMpName() {

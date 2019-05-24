@@ -65,19 +65,15 @@ public class MybatisUtil {
     /**
      * 初始化数据库文件
      */
-    private static void initDbFile() throws SQLException {
+    public static void initDbFile() throws SQLException {
         if (!dbFile.exists()) {
             File configHomeDir = new File(SystemUtil.configHome);
             if (!configHomeDir.exists()) {
                 configHomeDir.mkdirs();
             }
             // 不存在db文件时会自动创建一个
-            Connection connection = DriverManager.getConnection("jdbc:sqlite:" + dbFile.getAbsolutePath());
-            Statement stmt = connection.createStatement();
             String sql = FileUtil.readString(MainWindow.class.getResource("/db_init.sql"), CharsetUtil.UTF_8);
-            stmt.executeUpdate(sql);
-            stmt.close();
-            connection.close();
+            executeSql(sql);
             needInit = true;
         }
     }
@@ -91,5 +87,18 @@ public class MybatisUtil {
 //            InitMapper initMapper = sqlSession.getMapper(InitMapper.class);
 //            initMapper.createAllTables();
         }
+    }
+
+    /**
+     * 执行sql
+     *
+     * @param sql
+     */
+    public static void executeSql(String sql) throws SQLException {
+        Connection connection = DriverManager.getConnection("jdbc:sqlite:" + dbFile.getAbsolutePath());
+        Statement stmt = connection.createStatement();
+        stmt.executeUpdate(sql);
+        stmt.close();
+        connection.close();
     }
 }

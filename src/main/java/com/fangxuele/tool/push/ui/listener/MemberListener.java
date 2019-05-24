@@ -18,7 +18,7 @@ import com.fangxuele.tool.push.logic.PushManage;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.component.TableInCellImageLabelRenderer;
 import com.fangxuele.tool.push.ui.form.MemberForm;
-import com.fangxuele.tool.push.util.CharSetUtil;
+import com.fangxuele.tool.push.util.FileCharSetUtil;
 import com.fangxuele.tool.push.util.DbUtilMySQL;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
@@ -104,7 +104,7 @@ public class MemberListener {
                 if (fileNameLowerCase.endsWith(".csv")) {
                     // 可以解决中文乱码问题
                     DataInputStream in = new DataInputStream(new FileInputStream(file));
-                    reader = new CSVReader(new InputStreamReader(in, CharSetUtil.getCharSet(file)));
+                    reader = new CSVReader(new InputStreamReader(in, FileCharSetUtil.getCharSet(file)));
                     String[] nextLine;
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());
 
@@ -130,7 +130,7 @@ public class MemberListener {
                         }
                     }
                 } else if (fileNameLowerCase.endsWith(".txt")) {
-                    fileReader = new FileReader(file, CharSetUtil.getCharSetName(file));
+                    fileReader = new FileReader(file, FileCharSetUtil.getCharSetName(file));
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());
                     BufferedReader br = fileReader.getReader();
                     String line;
