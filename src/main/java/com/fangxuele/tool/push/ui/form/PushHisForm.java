@@ -124,7 +124,7 @@ public class PushHisForm {
         pushHisLeftTable.setDoubleBuffered(true);
         pushHisLeftTable.setGridColor(new Color(-12236470));
         pushHisLeftTable.setIntercellSpacing(new Dimension(1, 1));
-        pushHisLeftTable.setRowHeight(35);
+        pushHisLeftTable.setRowHeight(36);
         pushHisLeftTable.setShowVerticalLines(false);
         scrollPane1.setViewportView(pushHisLeftTable);
         final JPanel panel4 = new JPanel();

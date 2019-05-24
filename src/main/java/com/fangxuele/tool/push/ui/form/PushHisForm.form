@@ -98,7 +98,7 @@
                           <doubleBuffered value="true"/>
                           <gridColor color="-12236470"/>
                           <intercellSpacing width="1" height="1"/>
-                          <rowHeight value="35"/>
+                          <rowHeight value="36"/>
                           <showVerticalLines value="false"/>
                         </properties>
                       </component>

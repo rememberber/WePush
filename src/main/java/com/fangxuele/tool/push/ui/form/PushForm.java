@@ -230,7 +230,7 @@ public class PushForm {
         pushCenterPanel.add(scrollPane2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         pushThreadTable = new JTable();
         pushThreadTable.setGridColor(new Color(-12236470));
-        pushThreadTable.setRowHeight(35);
+        pushThreadTable.setRowHeight(36);
         pushThreadTable.setShowVerticalLines(false);
         scrollPane2.setViewportView(pushThreadTable);
     }
