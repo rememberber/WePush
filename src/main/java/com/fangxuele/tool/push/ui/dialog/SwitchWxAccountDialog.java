@@ -20,6 +20,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
@@ -79,6 +81,7 @@ public class SwitchWxAccountDialog extends JDialog {
             }
         });
 
+        // 保存按钮事件
         addButton.addActionListener(e -> {
             String accountName = nameTextField.getText();
             if (StringUtils.isBlank(accountName)) {
@@ -86,11 +89,11 @@ public class SwitchWxAccountDialog extends JDialog {
                         JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
+
+            boolean update = false;
             List<TWxAccount> tWxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(SettingListener.wxAccountType, accountName);
             if (tWxAccountList.size() > 0) {
-                JOptionPane.showMessageDialog(this, "已存在同名账号，请重新命名！", "提示",
-                        JOptionPane.INFORMATION_MESSAGE);
-                return;
+                update = true;
             }
 
             TWxAccount tWxAccount = new TWxAccount();
@@ -104,12 +107,19 @@ public class SwitchWxAccountDialog extends JDialog {
             tWxAccount.setCreateTime(now);
             tWxAccount.setModifiedTime(now);
 
-            wxAccountMapper.insert(tWxAccount);
+            if (update) {
+                tWxAccount.setId(tWxAccountList.get(0).getId());
+                wxAccountMapper.updateByPrimaryKeySelective(tWxAccount);
+            } else {
+                wxAccountMapper.insert(tWxAccount);
+            }
             renderTable();
             SettingForm.initSwitchMultiAccount();
-            JOptionPane.showMessageDialog(this, "添加成功！", "成功",
+            JOptionPane.showMessageDialog(this, "保存成功！", "成功",
                     JOptionPane.INFORMATION_MESSAGE);
         });
+
+        // 删除按钮事件
         deleteButton.addActionListener(e -> ThreadUtil.execute(() -> {
             try {
                 int[] selectedRows = accountsTable.getSelectedRows();
@@ -136,6 +146,23 @@ public class SwitchWxAccountDialog extends JDialog {
                 logger.error(e1);
             }
         }));
+
+        accountsTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                clearFields();
+
+                int selectedRow = accountsTable.getSelectedRow();
+                String selectedId = accountsTable.getValueAt(selectedRow, 0).toString();
+                TWxAccount tWxAccount = wxAccountMapper.selectByPrimaryKey(Integer.valueOf(selectedId));
+                nameTextField.setText(tWxAccount.getAccountName());
+                appIdTextField.setText(tWxAccount.getAppId());
+                appSecretTextField.setText(tWxAccount.getAppSecret());
+                tokenTextField.setText(tWxAccount.getToken());
+                aesKeyTextField.setText(tWxAccount.getAesKey());
+                super.mouseClicked(e);
+            }
+        });
     }
 
     private void onCancel() {
@@ -171,6 +198,17 @@ public class SwitchWxAccountDialog extends JDialog {
 
         // 隐藏id列
         JTableUtil.hideColumn(accountsTable, 0);
+    }
+
+    /**
+     * 清空表单
+     */
+    public void clearFields() {
+        nameTextField.setText("");
+        appIdTextField.setText("");
+        appSecretTextField.setText("");
+        tokenTextField.setText("");
+        aesKeyTextField.setText("");
     }
 
     {
@@ -236,7 +274,7 @@ public class SwitchWxAccountDialog extends JDialog {
         final Spacer spacer2 = new Spacer();
         panel3.add(spacer2, new GridConstraints(3, 0, 1, 5, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         addButton = new JButton();
-        addButton.setText("添加");
+        addButton.setText("保存");
         panel3.add(addButton, new GridConstraints(3, 5, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JScrollPane scrollPane1 = new JScrollPane();
         contentPane.add(scrollPane1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
