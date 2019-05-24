@@ -12,7 +12,6 @@ import com.fangxuele.tool.push.ui.form.SettingForm;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.File;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
@@ -49,7 +48,7 @@ public class UpgradeUtil {
                 return;
             }
             // 然后取两个版本对应的索引
-            String versionSummaryJsonContent = FileUtil.readString(UiConsts.class.getResource("version_summary.json"), CharsetUtil.UTF_8);
+            String versionSummaryJsonContent = FileUtil.readString(UiConsts.class.getResource("/version_summary.json"), CharsetUtil.UTF_8);
             versionSummaryJsonContent = versionSummaryJsonContent.replace("\n", "");
             VersionSummary versionSummary = JSON.parseObject(versionSummaryJsonContent, VersionSummary.class);
             String versionIndex = versionSummary.getVersionIndex();
@@ -61,7 +60,7 @@ public class UpgradeUtil {
             for (int i = beforeVersionIndex; i <= currentVersionIndex; i++) {
                 // 执行每个版本索引的更新内容，按时间由远到近
                 // 取得resources:upgrade下对应版本的sql，如存在，则先执行sql进行表结构或者数据更新等操作
-                String sqlFile = "upgrade" + File.separator + i + ".sql";
+                String sqlFile = "/upgrade/" + i + ".sql";
                 URL sqlFileUrl = UiConsts.class.getResource(sqlFile);
                 if (sqlFileUrl != null) {
                     String sql = FileUtil.readString(sqlFileUrl, CharsetUtil.UTF_8);
