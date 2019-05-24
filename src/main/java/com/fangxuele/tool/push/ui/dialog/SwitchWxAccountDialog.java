@@ -104,13 +104,13 @@ public class SwitchWxAccountDialog extends JDialog {
             tWxAccount.setAppSecret(appSecretTextField.getText());
             tWxAccount.setToken(tokenTextField.getText());
             tWxAccount.setAesKey(aesKeyTextField.getText());
-            tWxAccount.setCreateTime(now);
             tWxAccount.setModifiedTime(now);
 
             if (update) {
                 tWxAccount.setId(tWxAccountList.get(0).getId());
                 wxAccountMapper.updateByPrimaryKeySelective(tWxAccount);
             } else {
+                tWxAccount.setCreateTime(now);
                 wxAccountMapper.insert(tWxAccount);
             }
             renderTable();

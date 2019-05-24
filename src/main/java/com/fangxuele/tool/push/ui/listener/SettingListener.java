@@ -11,6 +11,7 @@ import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.util.DbUtilMySQL;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.SqliteUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
@@ -46,13 +47,43 @@ public class SettingListener {
         // 设置-公众号-保存
         SettingForm.settingForm.getSettingMpInfoSaveButton().addActionListener(e -> {
             try {
-                Init.config.setWechatMpName(SettingForm.settingForm.getMpAccountSwitchComboBox().getSelectedItem().toString());
+                String accountName;
+                if (SettingForm.settingForm.getMpAccountSwitchComboBox().getSelectedItem() == null || StringUtils.isEmpty(SettingForm.settingForm.getMpAccountSwitchComboBox().getSelectedItem().toString())) {
+                    accountName = "默认账号";
+                } else {
+                    accountName = SettingForm.settingForm.getMpAccountSwitchComboBox().getSelectedItem().toString();
+                }
+                Init.config.setWechatMpName(accountName);
                 Init.config.setWechatAppId(SettingForm.settingForm.getWechatAppIdTextField().getText());
                 Init.config.setWechatAppSecret(new String(SettingForm.settingForm.getWechatAppSecretPasswordField().getPassword()));
                 Init.config.setWechatToken(new String(SettingForm.settingForm.getWechatTokenPasswordField().getPassword()));
                 Init.config.setWechatAesKey(new String(SettingForm.settingForm.getWechatAesKeyPasswordField().getPassword()));
                 Init.config.save();
 
+                boolean update = false;
+                List<TWxAccount> tWxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(SettingForm.WX_ACCOUNT_TYPE_MP, accountName);
+                if (tWxAccountList.size() > 0) {
+                    update = true;
+                }
+
+                TWxAccount tWxAccount = new TWxAccount();
+                String now = SqliteUtil.nowDateForSqlite();
+                tWxAccount.setAccountType(SettingForm.WX_ACCOUNT_TYPE_MP);
+                tWxAccount.setAccountName(accountName);
+                tWxAccount.setAppId(Init.config.getWechatAppId());
+                tWxAccount.setAppSecret(Init.config.getWechatAppSecret());
+                tWxAccount.setToken(Init.config.getWechatToken());
+                tWxAccount.setAesKey(Init.config.getWechatAesKey());
+                tWxAccount.setModifiedTime(now);
+                if (update) {
+                    tWxAccount.setId(tWxAccountList.get(0).getId());
+                    wxAccountMapper.updateByPrimaryKeySelective(tWxAccount);
+                } else {
+                    tWxAccount.setCreateTime(now);
+                    wxAccountMapper.insert(tWxAccount);
+                }
+
+                SettingForm.initSwitchMultiAccount();
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {
@@ -88,13 +119,43 @@ public class SettingListener {
         // 设置-小程序-保存
         SettingForm.settingForm.getSettingMaInfoSaveButton().addActionListener(e -> {
             try {
-                Init.config.setMiniAppName(SettingForm.settingForm.getMaAccountSwitchComboBox().getSelectedItem().toString());
+                String accountName;
+                if (SettingForm.settingForm.getMaAccountSwitchComboBox().getSelectedItem() == null || StringUtils.isEmpty(SettingForm.settingForm.getMaAccountSwitchComboBox().getSelectedItem().toString())) {
+                    accountName = "默认账号";
+                } else {
+                    accountName = SettingForm.settingForm.getMaAccountSwitchComboBox().getSelectedItem().toString();
+                }
+                Init.config.setMiniAppName(accountName);
                 Init.config.setMiniAppAppId(SettingForm.settingForm.getMiniAppAppIdTextField().getText());
                 Init.config.setMiniAppAppSecret(new String(SettingForm.settingForm.getMiniAppAppSecretPasswordField().getPassword()));
                 Init.config.setMiniAppToken(new String(SettingForm.settingForm.getMiniAppTokenPasswordField().getPassword()));
                 Init.config.setMiniAppAesKey(new String(SettingForm.settingForm.getMiniAppAesKeyPasswordField().getPassword()));
                 Init.config.save();
 
+                boolean update = false;
+                List<TWxAccount> tWxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(SettingForm.WX_ACCOUNT_TYPE_MA, accountName);
+                if (tWxAccountList.size() > 0) {
+                    update = true;
+                }
+
+                TWxAccount tWxAccount = new TWxAccount();
+                String now = SqliteUtil.nowDateForSqlite();
+                tWxAccount.setAccountType(SettingForm.WX_ACCOUNT_TYPE_MA);
+                tWxAccount.setAccountName(accountName);
+                tWxAccount.setAppId(Init.config.getMiniAppAppId());
+                tWxAccount.setAppSecret(Init.config.getMiniAppAppSecret());
+                tWxAccount.setToken(Init.config.getMiniAppToken());
+                tWxAccount.setAesKey(Init.config.getMiniAppAesKey());
+                tWxAccount.setModifiedTime(now);
+                if (update) {
+                    tWxAccount.setId(tWxAccountList.get(0).getId());
+                    wxAccountMapper.updateByPrimaryKeySelective(tWxAccount);
+                } else {
+                    tWxAccount.setCreateTime(now);
+                    wxAccountMapper.insert(tWxAccount);
+                }
+
+                SettingForm.initSwitchMultiAccount();
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {
@@ -108,6 +169,7 @@ public class SettingListener {
         SettingForm.settingForm.getMaAccountManageButton().addActionListener(e -> {
             SwitchWxAccountDialog dialog = new SwitchWxAccountDialog();
             wxAccountType = SettingForm.WX_ACCOUNT_TYPE_MA;
+            dialog.renderTable();
             dialog.pack();
             dialog.setVisible(true);
         });
