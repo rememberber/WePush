@@ -36,10 +36,12 @@ public class UpgradeUtil {
         String currentVersion = UiConsts.APP_VERSION;
         // 取得升级前版本
         String beforeVersion = Init.config.getBeforeVersion();
+
         if (currentVersion.equals(beforeVersion)) {
             // 如果两者一致则不执行任何升级操作
             return;
         } else {
+            log.info("平滑升级开始");
             // 否则先执行db_init.sql更新数据库新增表
             try {
                 MybatisUtil.initDbFile();
@@ -47,6 +49,7 @@ public class UpgradeUtil {
                 log.error("执行平滑升级时先执行db_init.sql操作失败", e);
                 return;
             }
+
             // 然后取两个版本对应的索引
             String versionSummaryJsonContent = FileUtil.readString(UiConsts.class.getResource("/version_summary.json"), CharsetUtil.UTF_8);
             versionSummaryJsonContent = versionSummaryJsonContent.replace("\n", "");
@@ -55,9 +58,12 @@ public class UpgradeUtil {
             Map<String, String> versionIndexMap = JSON.parseObject(versionIndex, Map.class);
             int currentVersionIndex = Integer.parseInt(versionIndexMap.get(currentVersion));
             int beforeVersionIndex = Integer.parseInt(versionIndexMap.get(beforeVersion));
+            log.info("旧版本{}", beforeVersion);
+            log.info("当前版本{}", currentVersion);
             // 遍历索引范围
             beforeVersionIndex++;
             for (int i = beforeVersionIndex; i <= currentVersionIndex; i++) {
+                log.info("更新版本索引{}开始", i);
                 // 执行每个版本索引的更新内容，按时间由远到近
                 // 取得resources:upgrade下对应版本的sql，如存在，则先执行sql进行表结构或者数据更新等操作
                 String sqlFile = "/upgrade/" + i + ".sql";
@@ -72,10 +78,13 @@ public class UpgradeUtil {
                     }
                 }
                 upgrade(i);
+                log.info("更新版本索引{}结束", i);
             }
+
             // 升级完毕且成功，则赋值升级前版本号为当前版本
             Init.config.setBeforeVersion(currentVersion);
             Init.config.save();
+            log.info("平滑升级结束");
         }
     }
 
@@ -85,6 +94,7 @@ public class UpgradeUtil {
      * @param versionIndex 版本索引
      */
     private static void upgrade(int versionIndex) {
+        log.info("执行升级脚本开始，版本索引：{}", versionIndex);
         switch (versionIndex) {
             case 21:
                 String accountName = "默认账号";
@@ -145,5 +155,6 @@ public class UpgradeUtil {
                 break;
             default:
         }
+        log.info("执行升级脚本结束，版本索引：{}", versionIndex);
     }
 }
