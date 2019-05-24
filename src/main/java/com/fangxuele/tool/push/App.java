@@ -27,11 +27,6 @@ public class App {
         UpgradeUtil.smoothUpgrade();
         Init.initTheme();
         mainFrame = new MainFrame();
-//        实验性代码
-//        mainFrame.setUndecorated(true);
-//        mainFrame.setLocationRelativeTo(null);
-//        AWTUtilities.setWindowOpacity(mainFrame,0.95f);
-//        mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         mainFrame.init();
         JPanel loadingPanel = new LoadingForm().getLoadingPanel();
         mainFrame.add(loadingPanel);

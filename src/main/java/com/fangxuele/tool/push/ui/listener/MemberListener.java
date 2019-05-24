@@ -90,7 +90,17 @@ public class MemberListener {
     public static void addListeners() {
         // 从文件导入按钮事件
         MemberForm.memberForm.getImportFromFileButton().addActionListener(e -> ThreadUtil.execute(() -> {
+            if (StringUtils.isBlank(filePathField.getText())) {
+                JOptionPane.showMessageDialog(memberPanel, "请填写或点击浏览按钮选择要导入的文件的路径！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
             File file = new File(filePathField.getText());
+            if (!file.exists()) {
+                JOptionPane.showMessageDialog(memberPanel, filePathField.getText() + "\n该文件不存在！", "文件不存在",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             CSVReader reader = null;
             FileReader fileReader;
 
