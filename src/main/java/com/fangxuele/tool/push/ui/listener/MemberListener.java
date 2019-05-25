@@ -291,17 +291,28 @@ public class MemberListener {
 
         // 从sql导入 按钮事件
         MemberForm.memberForm.getImportFromSqlButton().addActionListener(e -> ThreadUtil.execute(() -> {
-            MemberForm.memberForm.getImportFromSqlButton().setEnabled(false);
-            MemberForm.memberForm.getImportFromSqlButton().updateUI();
-            // 获取SQLServer连接实例
-            DbUtilMySQL dbUtilMySQL = DbUtilMySQL.getInstance();
-
+            if (StringUtils.isBlank(Init.config.getMysqlUrl()) || StringUtils.isBlank(Init.config.getMysqlUser())) {
+                JOptionPane.showMessageDialog(memberPanel, "请先在设置中填写并保存MySQL的配置信息！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
             String querySql = MemberForm.memberForm.getImportFromSqlTextArea().getText();
+            if (StringUtils.isBlank(querySql)) {
+                JOptionPane.showMessageDialog(memberPanel, "请先填写要执行导入的SQL！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
 
-            progressBar.setVisible(true);
-            progressBar.setIndeterminate(true);
             if (StringUtils.isNotEmpty(querySql)) {
                 try {
+                    MemberForm.memberForm.getImportFromSqlButton().setEnabled(false);
+                    MemberForm.memberForm.getImportFromSqlButton().updateUI();
+                    progressBar.setVisible(true);
+                    progressBar.setIndeterminate(true);
+
+                    // 获取SQLServer连接实例
+                    DbUtilMySQL dbUtilMySQL = DbUtilMySQL.getInstance();
+
                     // 表查询
                     ResultSet rs = dbUtilMySQL.executeQuery(querySql);
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());

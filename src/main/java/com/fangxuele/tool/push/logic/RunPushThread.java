@@ -118,7 +118,7 @@ public class RunPushThread extends Thread {
                 thread = new TemplateMsgMpServiceThread(startIndex, endIndex);
 
                 WxMpService wxMpService = PushManage.getWxMpService();
-                if (wxMpService.getWxMpConfigStorage() == null) {
+                if (wxMpService == null || wxMpService.getWxMpConfigStorage() == null) {
                     return;
                 }
                 thread.setWxMpService(wxMpService);
@@ -126,7 +126,7 @@ public class RunPushThread extends Thread {
                 thread = new TemplateMsgMaServiceThread(startIndex, endIndex);
 
                 WxMaService wxMaService = PushManage.getWxMaService();
-                if (wxMaService.getWxMaConfig() == null) {
+                if (wxMaService == null || wxMaService.getWxMaConfig() == null) {
                     return;
                 }
                 ((TemplateMsgMaServiceThread) thread).setWxMaService(wxMaService);
