@@ -4,6 +4,7 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.alee.laf.WebLookAndFeel;
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.form.AboutForm;
 import com.fangxuele.tool.push.ui.form.HelpForm;
 import com.fangxuele.tool.push.ui.form.MemberForm;
@@ -16,7 +17,6 @@ import com.fangxuele.tool.push.ui.form.ScheduleForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.ui.form.UserCaseForm;
 import com.fangxuele.tool.push.ui.listener.AboutListener;
-import com.fangxuele.tool.push.util.ConfigUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
@@ -39,11 +39,6 @@ public class Init {
     private static final Log logger = LogFactory.get();
 
     /**
-     * 配置文件管理器对象
-     */
-    public static ConfigUtil config = ConfigUtil.getInstance();
-
-    /**
      * 设置全局字体
      */
     public static void initGlobalFont() {
@@ -52,24 +47,24 @@ public class Init {
         String lowDpiKey = "lowDpiInit";
         // 得到屏幕的尺寸
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        if (screenSize.width <= 1366 && StringUtils.isEmpty(config.getProps(lowDpiKey))) {
-            config.setFontSize(12);
-            config.setProps(lowDpiKey, "true");
+        if (screenSize.width <= 1366 && StringUtils.isEmpty(App.config.getProps(lowDpiKey))) {
+            App.config.setFontSize(12);
+            App.config.setProps(lowDpiKey, "true");
         }
 
         // Mac等高分辨率屏幕字号初始化
         String highDpiKey = "highDpiInit";
-        if (SystemUtil.isMacOs() && StringUtils.isEmpty(config.getProps(highDpiKey))) {
-            config.setFontSize(15);
-            config.setProps(highDpiKey, "true");
-        } else if (screenSize.width > 1920 && StringUtils.isEmpty(config.getProps(highDpiKey))) {
-            config.setFontSize(14);
-            config.setProps(highDpiKey, "true");
+        if (SystemUtil.isMacOs() && StringUtils.isEmpty(App.config.getProps(highDpiKey))) {
+            App.config.setFontSize(15);
+            App.config.setProps(highDpiKey, "true");
+        } else if (screenSize.width > 1920 && StringUtils.isEmpty(App.config.getProps(highDpiKey))) {
+            App.config.setFontSize(14);
+            App.config.setProps(highDpiKey, "true");
         }
 
-        config.save();
+        App.config.save();
 
-        Font font = new Font(config.getFont(), Font.PLAIN, config.getFontSize());
+        Font font = new Font(App.config.getFont(), Font.PLAIN, App.config.getFontSize());
         FontUIResource fontRes = new FontUIResource(font);
         for (Enumeration<Object> keys = UIManager.getDefaults().keys(); keys.hasMoreElements(); ) {
             Object key = keys.nextElement();
@@ -101,7 +96,7 @@ public class Init {
     public static void initTheme() {
 
         try {
-            switch (config.getTheme()) {
+            switch (App.config.getTheme()) {
                 case "BeautyEye":
                     BeautyEyeLNFHelper.launchBeautyEyeLNF();
                     UIManager.put("RootPane.setupButtonVisible", false);
@@ -138,7 +133,7 @@ public class Init {
         PushHisForm.init();
 
         // 检查新版版
-        if (config.isAutoCheckUpdate()) {
+        if (App.config.isAutoCheckUpdate()) {
             ThreadUtil.execute(() -> AboutListener.checkUpdate(true));
         }
         // 更新二维码

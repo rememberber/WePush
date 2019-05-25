@@ -3,6 +3,7 @@ package com.fangxuele.tool.push.ui.listener;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TMsgKefuMapper;
 import com.fangxuele.tool.push.dao.TMsgKefuPriorityMapper;
 import com.fangxuele.tool.push.dao.TMsgMaTemplateMapper;
@@ -17,7 +18,6 @@ import com.fangxuele.tool.push.domain.TMsgSms;
 import com.fangxuele.tool.push.domain.TTemplateData;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.PushManage;
-import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.MessageManageForm;
@@ -89,7 +89,7 @@ public class MsgListener {
                     if (isDelete == JOptionPane.YES_OPTION) {
                         DefaultTableModel tableModel = (DefaultTableModel) msgHistable
                                 .getModel();
-                        int msgType = Init.config.getMsgType();
+                        int msgType = App.config.getMsgType();
 
                         for (int i = selectedRows.length; i > 0; i--) {
                             int selectedRow = msgHistable.getSelectedRow();
@@ -168,7 +168,7 @@ public class MsgListener {
                 return;
             }
 
-            int msgType = Init.config.getMsgType();
+            int msgType = App.config.getMsgType();
             int msgId = 0;
 
             boolean existSameMsg = false;
@@ -355,8 +355,8 @@ public class MsgListener {
 
                     }
 
-                    Init.config.setPreviewUser(MessageEditForm.messageEditForm.getPreviewUserField().getText());
-                    Init.config.save();
+                    App.config.setPreviewUser(MessageEditForm.messageEditForm.getPreviewUserField().getText());
+                    App.config.save();
 
                     JOptionPane.showMessageDialog(messagePanel, "保存成功！", "成功",
                             JOptionPane.INFORMATION_MESSAGE);

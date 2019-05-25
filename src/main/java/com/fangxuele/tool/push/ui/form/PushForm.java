@@ -1,6 +1,6 @@
 package com.fangxuele.tool.push.ui.form;
 
-import com.fangxuele.tool.push.ui.Init;
+import com.fangxuele.tool.push.App;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -52,12 +52,12 @@ public class PushForm {
      * 初始化推送tab
      */
     public static void init() {
-        pushForm.getPushMsgName().setText(Init.config.getMsgName());
-        pushForm.getMaxThreadPoolTextField().setText(String.valueOf(Init.config.getMaxThreadPool()));
-        pushForm.getThreadCountTextField().setText(String.valueOf(Init.config.getThreadCount()));
-        pushForm.getThreadCountSlider().setMaximum(Init.config.getMaxThreadPool());
-        pushForm.getThreadCountSlider().setValue(Init.config.getThreadCount());
-        pushForm.getDryRunCheckBox().setSelected(Init.config.isDryRun());
+        pushForm.getPushMsgName().setText(App.config.getMsgName());
+        pushForm.getMaxThreadPoolTextField().setText(String.valueOf(App.config.getMaxThreadPool()));
+        pushForm.getThreadCountTextField().setText(String.valueOf(App.config.getThreadCount()));
+        pushForm.getThreadCountSlider().setMaximum(App.config.getMaxThreadPool());
+        pushForm.getThreadCountSlider().setValue(App.config.getThreadCount());
+        pushForm.getDryRunCheckBox().setSelected(App.config.isDryRun());
     }
 
     {

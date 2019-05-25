@@ -7,7 +7,7 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
-import com.fangxuele.tool.push.ui.Init;
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.component.TableInCellProgressBarRenderer;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
@@ -69,13 +69,13 @@ public class RunPushThread extends Thread {
         PushManage.console("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
 
         // 线程数
-        Init.config.setThreadCount(Integer.parseInt(PushForm.pushForm.getThreadCountTextField().getText()));
-        Init.config.save();
+        App.config.setThreadCount(Integer.parseInt(PushForm.pushForm.getThreadCountTextField().getText()));
+        App.config.save();
         PushManage.console("线程数：" + PushForm.pushForm.getThreadCountTextField().getText());
 
         // 线程池大小
-        Init.config.setMaxThreadPool(Integer.parseInt(PushForm.pushForm.getMaxThreadPoolTextField().getText()));
-        Init.config.save();
+        App.config.setMaxThreadPool(Integer.parseInt(PushForm.pushForm.getMaxThreadPoolTextField().getText()));
+        App.config.save();
         PushManage.console("线程池大小：" + PushForm.pushForm.getMaxThreadPoolTextField().getText());
 
         // JVM内存占用
@@ -97,7 +97,7 @@ public class RunPushThread extends Thread {
         PushForm.pushForm.getPushThreadTable().updateUI();
 
         Object[] data;
-        int msgType = Init.config.getMsgType();
+        int msgType = App.config.getMsgType();
 
         int maxThreadPoolSize = Integer.parseInt(PushForm.pushForm.getMaxThreadPoolTextField().getText());
         ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(maxThreadPoolSize, maxThreadPoolSize);
@@ -147,9 +147,9 @@ public class RunPushThread extends Thread {
                 }
                 thread.setWxMpService(wxMpService);
             } else if (MessageTypeEnum.ALI_TEMPLATE_CODE == msgType) {
-                String aliServerUrl = Init.config.getAliServerUrl();
-                String aliAppKey = Init.config.getAliAppKey();
-                String aliAppSecret = Init.config.getAliAppSecret();
+                String aliServerUrl = App.config.getAliServerUrl();
+                String aliAppKey = App.config.getAliAppKey();
+                String aliAppSecret = App.config.getAliAppSecret();
 
                 if (StringUtils.isEmpty(aliServerUrl) || StringUtils.isEmpty(aliAppKey)
                         || StringUtils.isEmpty(aliAppSecret)) {
@@ -164,8 +164,8 @@ public class RunPushThread extends Thread {
                 }
                 thread = new AliDayuTemplateSmsMsgServiceThread(startIndex, endIndex);
             } else if (MessageTypeEnum.ALI_YUN_CODE == msgType) {
-                String aliyunAccessKeyId = Init.config.getAliyunAccessKeyId();
-                String aliyunAccessKeySecret = Init.config.getAliyunAccessKeySecret();
+                String aliyunAccessKeyId = App.config.getAliyunAccessKeyId();
+                String aliyunAccessKeySecret = App.config.getAliyunAccessKeySecret();
 
                 if (StringUtils.isEmpty(aliyunAccessKeyId) || StringUtils.isEmpty(aliyunAccessKeySecret)) {
                     JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
@@ -179,8 +179,8 @@ public class RunPushThread extends Thread {
                 }
                 thread = new AliYunSmsMsgServiceThread(startIndex, endIndex);
             } else if (MessageTypeEnum.TX_YUN_CODE == msgType) {
-                String txyunAppId = Init.config.getTxyunAppId();
-                String txyunAppKey = Init.config.getTxyunAppKey();
+                String txyunAppId = App.config.getTxyunAppId();
+                String txyunAppKey = App.config.getTxyunAppKey();
 
                 if (StringUtils.isEmpty(txyunAppId) || StringUtils.isEmpty(txyunAppKey)) {
                     JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
@@ -194,7 +194,7 @@ public class RunPushThread extends Thread {
                 }
                 thread = new TxYunSmsMsgServiceThread(startIndex, endIndex);
             } else if (MessageTypeEnum.YUN_PIAN_CODE == msgType) {
-                String yunpianApiKey = Init.config.getYunpianApiKey();
+                String yunpianApiKey = App.config.getYunpianApiKey();
                 if (StringUtils.isEmpty(yunpianApiKey)) {
                     JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
                             "请先在设置中填写并保存云片网短信相关配置！", "提示",

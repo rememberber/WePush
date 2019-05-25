@@ -10,16 +10,16 @@ import cn.hutool.log.LogFactory;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TWxMpUserMapper;
 import com.fangxuele.tool.push.domain.TWxMpUser;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.PushManage;
-import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.component.TableInCellImageLabelRenderer;
 import com.fangxuele.tool.push.ui.form.MemberForm;
-import com.fangxuele.tool.push.util.FileCharSetUtil;
 import com.fangxuele.tool.push.util.DbUtilMySQL;
+import com.fangxuele.tool.push.util.FileCharSetUtil;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.opencsv.CSVReader;
@@ -158,8 +158,8 @@ public class MemberListener {
                 JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成",
                         JOptionPane.INFORMATION_MESSAGE);
 
-                Init.config.setMemberFilePath(filePathField.getText());
-                Init.config.save();
+                App.config.setMemberFilePath(filePathField.getText());
+                App.config.save();
             } catch (Exception e1) {
                 JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
@@ -291,7 +291,7 @@ public class MemberListener {
 
         // 从sql导入 按钮事件
         MemberForm.memberForm.getImportFromSqlButton().addActionListener(e -> ThreadUtil.execute(() -> {
-            if (StringUtils.isBlank(Init.config.getMysqlUrl()) || StringUtils.isBlank(Init.config.getMysqlUser())) {
+            if (StringUtils.isBlank(App.config.getMysqlUrl()) || StringUtils.isBlank(App.config.getMysqlUser())) {
                 JOptionPane.showMessageDialog(memberPanel, "请先在设置中填写并保存MySQL的配置信息！", "提示",
                         JOptionPane.INFORMATION_MESSAGE);
                 return;
@@ -327,8 +327,8 @@ public class MemberListener {
                     JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成",
                             JOptionPane.INFORMATION_MESSAGE);
 
-                    Init.config.setMemberSql(querySql);
-                    Init.config.save();
+                    App.config.setMemberSql(querySql);
+                    App.config.save();
                 } catch (Exception e1) {
                     JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + e1.getMessage(), "失败",
                             JOptionPane.ERROR_MESSAGE);
@@ -457,7 +457,7 @@ public class MemberListener {
                     }
 
                     String nowTime = DateUtil.now().replace(":", "_").replace(" ", "_");
-                    String fileName = "MemberExport_" + MessageTypeEnum.getName(Init.config.getMsgType()) + "_" + nowTime + ".xlsx";
+                    String fileName = "MemberExport_" + MessageTypeEnum.getName(App.config.getMsgType()) + "_" + nowTime + ".xlsx";
                     //通过工具类创建writer
                     writer = ExcelUtil.getWriter(exportPath + File.separator + fileName);
 
@@ -689,7 +689,7 @@ public class MemberListener {
         progressBar.setVisible(true);
         progressBar.setMaximum(PushData.allUser.size());
 
-        int msgType = Init.config.getMsgType();
+        int msgType = App.config.getMsgType();
 
         // 是否是微信平台类消息
         boolean isWeixinTypeMsg = false;

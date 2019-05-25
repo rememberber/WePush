@@ -4,6 +4,7 @@ import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.LoadingForm;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.frame.MainFrame;
+import com.fangxuele.tool.push.util.ConfigUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.UpgradeUtil;
 import org.apache.ibatis.session.SqlSession;
@@ -20,6 +21,8 @@ import javax.swing.*;
  */
 public class App {
     public static MainFrame mainFrame;
+
+    public static ConfigUtil config = ConfigUtil.getInstance();
 
     public static SqlSession sqlSession = MybatisUtil.getSqlSession();
 

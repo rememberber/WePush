@@ -2,7 +2,7 @@ package com.fangxuele.tool.push.util;
 
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
-import com.fangxuele.tool.push.ui.Init;
+import com.fangxuele.tool.push.App;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -57,10 +57,10 @@ public class DbUtilMySQL {
     private void loadConfig() {
         try {
             String dbclassname = "com.mysql.cj.jdbc.Driver";
-            DBUrl = Init.config.getMysqlUrl();
-            DBName = Init.config.getMysqlDatabase();
-            DBUser = Init.config.getMysqlUser();
-            DBPassword = Init.config.getMysqlPassword();
+            DBUrl = App.config.getMysqlUrl();
+            DBName = App.config.getMysqlDatabase();
+            DBUser = App.config.getMysqlUser();
+            DBPassword = App.config.getMysqlPassword();
 
             Class.forName(dbclassname);
         } catch (Exception e) {
@@ -77,12 +77,12 @@ public class DbUtilMySQL {
      * @throws SQLException
      */
     private synchronized void getConnection() throws SQLException {
-        String user = Init.config.getMysqlUser();
-        String password = Init.config.getMysqlPassword();
+        String user = App.config.getMysqlUser();
+        String password = App.config.getMysqlPassword();
         // 当DB配置变更时重新获取
-        if (!Init.config.getMysqlUrl().equals(DBUrl) || !Init.config.getMysqlDatabase().equals(DBName)
-                || !Init.config.getMysqlUser().equals(DBUser)
-                || !Init.config.getMysqlPassword().equals(DBPassword)) {
+        if (!App.config.getMysqlUrl().equals(DBUrl) || !App.config.getMysqlDatabase().equals(DBName)
+                || !App.config.getMysqlUser().equals(DBUser)
+                || !App.config.getMysqlPassword().equals(DBPassword)) {
             loadConfig();
             // "jdbc:mysql://localhost/pxp2p_branch"
             connection = DriverManager.getConnection(
@@ -113,8 +113,8 @@ public class DbUtilMySQL {
      */
     public synchronized Connection testConnection() throws SQLException {
         loadConfig();
-        String user = Init.config.getMysqlUser();
-        String password = Init.config.getMysqlPassword();
+        String user = App.config.getMysqlUser();
+        String password = App.config.getMysqlPassword();
         connection = DriverManager.getConnection("jdbc:mysql://" + DBUrl + "/" + DBName, user, password);
         // 把事务提交方式改为手工提交
         connection.setAutoCommit(false);

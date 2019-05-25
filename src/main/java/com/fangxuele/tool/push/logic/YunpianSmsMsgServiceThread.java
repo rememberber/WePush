@@ -1,6 +1,6 @@
 package com.fangxuele.tool.push.logic;
 
-import com.fangxuele.tool.push.ui.Init;
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.yunpian.sdk.YunpianClient;
 import com.yunpian.sdk.model.Result;
@@ -34,7 +34,7 @@ public class YunpianSmsMsgServiceThread extends BaseMsgServiceThread {
         // 初始化当前线程
         initCurrentThread();
 
-        String yunpianApiKey = Init.config.getYunpianApiKey();
+        String yunpianApiKey = App.config.getYunpianApiKey();
 
         YunpianClient clnt = new YunpianClient(yunpianApiKey).init();
 

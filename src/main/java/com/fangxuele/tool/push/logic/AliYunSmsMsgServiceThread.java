@@ -6,7 +6,7 @@ import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
-import com.fangxuele.tool.push.ui.Init;
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.form.PushForm;
 
 /**
@@ -35,8 +35,8 @@ public class AliYunSmsMsgServiceThread extends BaseMsgServiceThread {
         // 初始化当前线程
         initCurrentThread();
 
-        String aliyunAccessKeyId = Init.config.getAliyunAccessKeyId();
-        String aliyunAccessKeySecret = Init.config.getAliyunAccessKeySecret();
+        String aliyunAccessKeyId = App.config.getAliyunAccessKeyId();
+        String aliyunAccessKeySecret = App.config.getAliyunAccessKeySecret();
 
         //初始化acsClient,暂不支持region化
         IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", aliyunAccessKeyId, aliyunAccessKeySecret);

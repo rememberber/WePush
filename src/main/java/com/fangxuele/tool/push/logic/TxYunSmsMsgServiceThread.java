@@ -1,6 +1,6 @@
 package com.fangxuele.tool.push.logic;
 
-import com.fangxuele.tool.push.ui.Init;
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.github.qcloudsms.SmsSingleSender;
@@ -32,12 +32,12 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
         // 初始化当前线程
         initCurrentThread();
 
-        String txyunAppId = Init.config.getTxyunAppId();
-        String txyunAppKey = Init.config.getTxyunAppKey();
+        String txyunAppId = App.config.getTxyunAppId();
+        String txyunAppKey = App.config.getTxyunAppKey();
 
         SmsSingleSender ssender = new SmsSingleSender(Integer.valueOf(txyunAppId), txyunAppKey);
         int templateId = Integer.parseInt(MessageEditForm.messageEditForm.getMsgTemplateIdTextField().getText());
-        String smsSign = Init.config.getAliyunSign();
+        String smsSign = App.config.getAliyunSign();
 
         for (int i = 0; i < list.size(); i++) {
             if (!PushData.running) {

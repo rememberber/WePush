@@ -1,7 +1,7 @@
 package com.fangxuele.tool.push.ui.form;
 
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.PushData;
-import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.listener.MemberListener;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -65,8 +65,8 @@ public class MemberForm {
      */
     public static void init() {
         memberForm.getMemberTabImportProgressBar().setVisible(false);
-        memberForm.getImportFromSqlTextArea().setText(Init.config.getMemberSql());
-        memberForm.getMemberFilePathField().setText(Init.config.getMemberFilePath());
+        memberForm.getImportFromSqlTextArea().setText(App.config.getMemberSql());
+        memberForm.getMemberFilePathField().setText(App.config.getMemberFilePath());
 
     }
 

@@ -3,7 +3,7 @@ package com.fangxuele.tool.push.ui.listener;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
-import com.fangxuele.tool.push.ui.Init;
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.ScheduleForm;
 import org.apache.commons.lang3.StringUtils;
@@ -34,53 +34,53 @@ public class ScheduleListener {
                                 JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-                    Init.config.setRadioStartAt(isStartAt);
-                    Init.config.setTextStartAt(textStartAt);
+                    App.config.setRadioStartAt(isStartAt);
+                    App.config.setTextStartAt(textStartAt);
                 } else if (isStartAt) {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getSchedulePanel(),
                             "保存失败！\n\n开始推送时间不能为空！", "失败",
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 } else {
-                    Init.config.setRadioStartAt(isStartAt);
-                    Init.config.setTextStartAt(textStartAt);
+                    App.config.setRadioStartAt(isStartAt);
+                    App.config.setTextStartAt(textStartAt);
                 }
 
                 String textPerDay = ScheduleForm.scheduleForm.getStartPerDayTextField().getText();
                 boolean isPerDay = ScheduleForm.scheduleForm.getRunPerDayRadioButton().isSelected();
                 if (StringUtils.isNotEmpty(textPerDay)) {
                     DateUtil.parse(textPerDay);
-                    Init.config.setRadioPerDay(isPerDay);
-                    Init.config.setTextPerDay(textPerDay);
+                    App.config.setRadioPerDay(isPerDay);
+                    App.config.setTextPerDay(textPerDay);
                 } else if (isPerDay) {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getSchedulePanel(),
                             "保存失败！\n\n每天固定推送时间不能为空！", "失败",
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 } else {
-                    Init.config.setRadioPerDay(isPerDay);
-                    Init.config.setTextPerDay(textPerDay);
+                    App.config.setRadioPerDay(isPerDay);
+                    App.config.setTextPerDay(textPerDay);
                 }
 
                 String textPerWeekTime = ScheduleForm.scheduleForm.getStartPerWeekTextField().getText();
                 boolean isPerWeek = ScheduleForm.scheduleForm.getRunPerWeekRadioButton().isSelected();
                 if (StringUtils.isNotEmpty(textPerWeekTime)) {
                     DateUtil.parse(textPerWeekTime);
-                    Init.config.setRadioPerWeek(isPerWeek);
-                    Init.config.setTextPerWeekWeek(Objects.requireNonNull(ScheduleForm.scheduleForm.getSchedulePerWeekComboBox().getSelectedItem()).toString());
-                    Init.config.setTextPerWeekTime(textPerWeekTime);
+                    App.config.setRadioPerWeek(isPerWeek);
+                    App.config.setTextPerWeekWeek(Objects.requireNonNull(ScheduleForm.scheduleForm.getSchedulePerWeekComboBox().getSelectedItem()).toString());
+                    App.config.setTextPerWeekTime(textPerWeekTime);
                 } else if (isPerWeek) {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getSchedulePanel(),
                             "保存失败！\n\n每周固定推送时间不能为空！", "失败",
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 } else {
-                    Init.config.setRadioPerWeek(isPerWeek);
-                    Init.config.setTextPerWeekWeek(Objects.requireNonNull(ScheduleForm.scheduleForm.getSchedulePerWeekComboBox().getSelectedItem()).toString());
-                    Init.config.setTextPerWeekTime(textPerWeekTime);
+                    App.config.setRadioPerWeek(isPerWeek);
+                    App.config.setTextPerWeekWeek(Objects.requireNonNull(ScheduleForm.scheduleForm.getSchedulePerWeekComboBox().getSelectedItem()).toString());
+                    App.config.setTextPerWeekTime(textPerWeekTime);
                 }
 
-                Init.config.save();
+                App.config.save();
                 JOptionPane.showMessageDialog(MainWindow.mainWindow.getSchedulePanel(), "保存成功！\n\n将在下一次按计划执行时生效！\n\n", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {

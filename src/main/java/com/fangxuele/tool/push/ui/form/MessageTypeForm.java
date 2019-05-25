@@ -1,7 +1,7 @@
 package com.fangxuele.tool.push.ui.form;
 
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
-import com.fangxuele.tool.push.ui.Init;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -47,7 +47,7 @@ public class MessageTypeForm {
      * 初始化消息类型tab
      */
     public static void init() {
-        int msgType = Init.config.getMsgType();
+        int msgType = App.config.getMsgType();
 
         switch (msgType) {
             case MessageTypeEnum.MP_TEMPLATE_CODE:

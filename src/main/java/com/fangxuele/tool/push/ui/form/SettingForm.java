@@ -1,8 +1,8 @@
 package com.fangxuele.tool.push.ui.form;
 
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TWxAccountMapper;
 import com.fangxuele.tool.push.domain.TWxAccount;
-import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -85,53 +85,53 @@ public class SettingForm {
      */
     public static void init() {
         // 常规
-        settingForm.getAutoCheckUpdateCheckBox().setSelected(Init.config.isAutoCheckUpdate());
+        settingForm.getAutoCheckUpdateCheckBox().setSelected(App.config.isAutoCheckUpdate());
 
         // 微信公众号
-        settingForm.getMpAccountSwitchComboBox().setSelectedItem(Init.config.getWechatMpName());
-        settingForm.getWechatAppIdTextField().setText(Init.config.getWechatAppId());
-        settingForm.getWechatAppSecretPasswordField().setText(Init.config.getWechatAppSecret());
-        settingForm.getWechatTokenPasswordField().setText(Init.config.getWechatToken());
-        settingForm.getWechatAesKeyPasswordField().setText(Init.config.getWechatAesKey());
+        settingForm.getMpAccountSwitchComboBox().setSelectedItem(App.config.getWechatMpName());
+        settingForm.getWechatAppIdTextField().setText(App.config.getWechatAppId());
+        settingForm.getWechatAppSecretPasswordField().setText(App.config.getWechatAppSecret());
+        settingForm.getWechatTokenPasswordField().setText(App.config.getWechatToken());
+        settingForm.getWechatAesKeyPasswordField().setText(App.config.getWechatAesKey());
 
         // 微信小程序
-        settingForm.getMaAccountSwitchComboBox().setSelectedItem(Init.config.getMiniAppName());
-        settingForm.getMiniAppAppIdTextField().setText(Init.config.getMiniAppAppId());
-        settingForm.getMiniAppAppSecretPasswordField().setText(Init.config.getMiniAppAppSecret());
-        settingForm.getMiniAppTokenPasswordField().setText(Init.config.getMiniAppToken());
-        settingForm.getMiniAppAesKeyPasswordField().setText(Init.config.getMiniAppAesKey());
+        settingForm.getMaAccountSwitchComboBox().setSelectedItem(App.config.getMiniAppName());
+        settingForm.getMiniAppAppIdTextField().setText(App.config.getMiniAppAppId());
+        settingForm.getMiniAppAppSecretPasswordField().setText(App.config.getMiniAppAppSecret());
+        settingForm.getMiniAppTokenPasswordField().setText(App.config.getMiniAppToken());
+        settingForm.getMiniAppAesKeyPasswordField().setText(App.config.getMiniAppAesKey());
 
         initSwitchMultiAccount();
 
         // 阿里云短信
-        settingForm.getAliyunAccessKeyIdTextField().setText(Init.config.getAliyunAccessKeyId());
-        settingForm.getAliyunAccessKeySecretTextField().setText(Init.config.getAliyunAccessKeySecret());
-        settingForm.getAliyunSignTextField().setText(Init.config.getAliyunSign());
+        settingForm.getAliyunAccessKeyIdTextField().setText(App.config.getAliyunAccessKeyId());
+        settingForm.getAliyunAccessKeySecretTextField().setText(App.config.getAliyunAccessKeySecret());
+        settingForm.getAliyunSignTextField().setText(App.config.getAliyunSign());
 
         // 阿里大于
-        settingForm.getAliServerUrlTextField().setText(Init.config.getAliServerUrl());
-        settingForm.getAliAppKeyPasswordField().setText(Init.config.getAliAppKey());
-        settingForm.getAliAppSecretPasswordField().setText(Init.config.getAliAppSecret());
-        settingForm.getAliSignTextField().setText(Init.config.getAliSign());
+        settingForm.getAliServerUrlTextField().setText(App.config.getAliServerUrl());
+        settingForm.getAliAppKeyPasswordField().setText(App.config.getAliAppKey());
+        settingForm.getAliAppSecretPasswordField().setText(App.config.getAliAppSecret());
+        settingForm.getAliSignTextField().setText(App.config.getAliSign());
 
         // 腾讯云短信
-        settingForm.getTxyunAppIdTextField().setText(Init.config.getTxyunAppId());
-        settingForm.getTxyunAppKeyTextField().setText(Init.config.getTxyunAppKey());
-        settingForm.getTxyunSignTextField().setText(Init.config.getTxyunSign());
+        settingForm.getTxyunAppIdTextField().setText(App.config.getTxyunAppId());
+        settingForm.getTxyunAppKeyTextField().setText(App.config.getTxyunAppKey());
+        settingForm.getTxyunSignTextField().setText(App.config.getTxyunSign());
 
         // 云片网短信
-        settingForm.getYunpianApiKeyTextField().setText(Init.config.getYunpianApiKey());
+        settingForm.getYunpianApiKeyTextField().setText(App.config.getYunpianApiKey());
 
         // MySQL
-        settingForm.getMysqlUrlTextField().setText(Init.config.getMysqlUrl());
-        settingForm.getMysqlDatabaseTextField().setText(Init.config.getMysqlDatabase());
-        settingForm.getMysqlUserTextField().setText(Init.config.getMysqlUser());
-        settingForm.getMysqlPasswordField().setText(Init.config.getMysqlPassword());
+        settingForm.getMysqlUrlTextField().setText(App.config.getMysqlUrl());
+        settingForm.getMysqlDatabaseTextField().setText(App.config.getMysqlDatabase());
+        settingForm.getMysqlUserTextField().setText(App.config.getMysqlUser());
+        settingForm.getMysqlPasswordField().setText(App.config.getMysqlPassword());
 
         // 外观
-        settingForm.getSettingThemeComboBox().setSelectedItem(Init.config.getTheme());
-        settingForm.getSettingFontNameComboBox().setSelectedItem(Init.config.getFont());
-        settingForm.getSettingFontSizeComboBox().setSelectedItem(String.valueOf(Init.config.getFontSize()));
+        settingForm.getSettingThemeComboBox().setSelectedItem(App.config.getTheme());
+        settingForm.getSettingFontNameComboBox().setSelectedItem(App.config.getFont());
+        settingForm.getSettingFontSizeComboBox().setSelectedItem(String.valueOf(App.config.getFontSize()));
     }
 
     /**
@@ -144,14 +144,14 @@ public class SettingForm {
         for (TWxAccount tWxAccount : wxAccountList) {
             settingForm.getMpAccountSwitchComboBox().addItem(tWxAccount.getAccountName());
         }
-        settingForm.getMpAccountSwitchComboBox().setSelectedItem(Init.config.getWechatMpName());
+        settingForm.getMpAccountSwitchComboBox().setSelectedItem(App.config.getWechatMpName());
         // 多账号切换-小程序
         settingForm.getMaAccountSwitchComboBox().removeAllItems();
         wxAccountList = wxAccountMapper.selectByAccountType(WX_ACCOUNT_TYPE_MA);
         for (TWxAccount tWxAccount : wxAccountList) {
             settingForm.getMaAccountSwitchComboBox().addItem(tWxAccount.getAccountName());
         }
-        settingForm.getMaAccountSwitchComboBox().setSelectedItem(Init.config.getMiniAppName());
+        settingForm.getMaAccountSwitchComboBox().setSelectedItem(App.config.getMiniAppName());
     }
 
     {

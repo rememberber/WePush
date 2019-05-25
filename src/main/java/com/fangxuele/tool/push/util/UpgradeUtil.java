@@ -3,10 +3,10 @@ package com.fangxuele.tool.push.util;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.CharsetUtil;
 import com.alibaba.fastjson.JSON;
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.VersionSummary;
 import com.fangxuele.tool.push.dao.TWxAccountMapper;
 import com.fangxuele.tool.push.domain.TWxAccount;
-import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.form.SettingForm;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +35,7 @@ public class UpgradeUtil {
         // 取得当前版本
         String currentVersion = UiConsts.APP_VERSION;
         // 取得升级前版本
-        String beforeVersion = Init.config.getBeforeVersion();
+        String beforeVersion = App.config.getBeforeVersion();
 
         if (currentVersion.equals(beforeVersion)) {
             // 如果两者一致则不执行任何升级操作
@@ -82,8 +82,8 @@ public class UpgradeUtil {
             }
 
             // 升级完毕且成功，则赋值升级前版本号为当前版本
-            Init.config.setBeforeVersion(currentVersion);
-            Init.config.save();
+            App.config.setBeforeVersion(currentVersion);
+            App.config.save();
             log.info("平滑升级结束");
         }
     }
@@ -99,7 +99,7 @@ public class UpgradeUtil {
             case 21:
                 String accountName = "默认账号";
                 TWxAccountMapper wxAccountMapper = MybatisUtil.getSqlSession().getMapper(TWxAccountMapper.class);
-                if (StringUtils.isNotBlank(Init.config.getWechatAppId())) {
+                if (StringUtils.isNotBlank(App.config.getWechatAppId())) {
                     boolean update = false;
                     List<TWxAccount> tWxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(SettingForm.WX_ACCOUNT_TYPE_MP, accountName);
                     if (tWxAccountList.size() > 0) {
@@ -110,10 +110,10 @@ public class UpgradeUtil {
                     String now = SqliteUtil.nowDateForSqlite();
                     tWxAccount.setAccountType(SettingForm.WX_ACCOUNT_TYPE_MP);
                     tWxAccount.setAccountName(accountName);
-                    tWxAccount.setAppId(Init.config.getWechatAppId());
-                    tWxAccount.setAppSecret(Init.config.getWechatAppSecret());
-                    tWxAccount.setToken(Init.config.getWechatToken());
-                    tWxAccount.setAesKey(Init.config.getWechatAesKey());
+                    tWxAccount.setAppId(App.config.getWechatAppId());
+                    tWxAccount.setAppSecret(App.config.getWechatAppSecret());
+                    tWxAccount.setToken(App.config.getWechatToken());
+                    tWxAccount.setAesKey(App.config.getWechatAesKey());
                     tWxAccount.setModifiedTime(now);
                     if (update) {
                         tWxAccount.setId(tWxAccountList.get(0).getId());
@@ -125,7 +125,7 @@ public class UpgradeUtil {
 
                     SettingForm.initSwitchMultiAccount();
                 }
-                if (StringUtils.isNotBlank(Init.config.getMiniAppAppId())) {
+                if (StringUtils.isNotBlank(App.config.getMiniAppAppId())) {
                     boolean update = false;
                     List<TWxAccount> tWxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(SettingForm.WX_ACCOUNT_TYPE_MA, accountName);
                     if (tWxAccountList.size() > 0) {
@@ -136,10 +136,10 @@ public class UpgradeUtil {
                     String now = SqliteUtil.nowDateForSqlite();
                     tWxAccount.setAccountType(SettingForm.WX_ACCOUNT_TYPE_MA);
                     tWxAccount.setAccountName(accountName);
-                    tWxAccount.setAppId(Init.config.getMiniAppAppId());
-                    tWxAccount.setAppSecret(Init.config.getMiniAppAppSecret());
-                    tWxAccount.setToken(Init.config.getMiniAppToken());
-                    tWxAccount.setAesKey(Init.config.getMiniAppAesKey());
+                    tWxAccount.setAppId(App.config.getMiniAppAppId());
+                    tWxAccount.setAppSecret(App.config.getMiniAppAppSecret());
+                    tWxAccount.setToken(App.config.getMiniAppToken());
+                    tWxAccount.setAesKey(App.config.getMiniAppAesKey());
                     tWxAccount.setModifiedTime(now);
                     if (update) {
                         tWxAccount.setId(tWxAccountList.get(0).getId());

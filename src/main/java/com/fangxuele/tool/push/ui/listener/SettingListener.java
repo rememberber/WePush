@@ -40,8 +40,8 @@ public class SettingListener {
 
         // 设置-常规-启动时自动检查更新
         SettingForm.settingForm.getAutoCheckUpdateCheckBox().addActionListener(e -> {
-            Init.config.setAutoCheckUpdate(SettingForm.settingForm.getAutoCheckUpdateCheckBox().isSelected());
-            Init.config.save();
+            App.config.setAutoCheckUpdate(SettingForm.settingForm.getAutoCheckUpdateCheckBox().isSelected());
+            App.config.save();
         });
 
         // 设置-公众号-保存
@@ -53,12 +53,12 @@ public class SettingListener {
                 } else {
                     accountName = SettingForm.settingForm.getMpAccountSwitchComboBox().getSelectedItem().toString();
                 }
-                Init.config.setWechatMpName(accountName);
-                Init.config.setWechatAppId(SettingForm.settingForm.getWechatAppIdTextField().getText());
-                Init.config.setWechatAppSecret(new String(SettingForm.settingForm.getWechatAppSecretPasswordField().getPassword()));
-                Init.config.setWechatToken(new String(SettingForm.settingForm.getWechatTokenPasswordField().getPassword()));
-                Init.config.setWechatAesKey(new String(SettingForm.settingForm.getWechatAesKeyPasswordField().getPassword()));
-                Init.config.save();
+                App.config.setWechatMpName(accountName);
+                App.config.setWechatAppId(SettingForm.settingForm.getWechatAppIdTextField().getText());
+                App.config.setWechatAppSecret(new String(SettingForm.settingForm.getWechatAppSecretPasswordField().getPassword()));
+                App.config.setWechatToken(new String(SettingForm.settingForm.getWechatTokenPasswordField().getPassword()));
+                App.config.setWechatAesKey(new String(SettingForm.settingForm.getWechatAesKeyPasswordField().getPassword()));
+                App.config.save();
 
                 boolean update = false;
                 List<TWxAccount> tWxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(SettingForm.WX_ACCOUNT_TYPE_MP, accountName);
@@ -70,10 +70,10 @@ public class SettingListener {
                 String now = SqliteUtil.nowDateForSqlite();
                 tWxAccount.setAccountType(SettingForm.WX_ACCOUNT_TYPE_MP);
                 tWxAccount.setAccountName(accountName);
-                tWxAccount.setAppId(Init.config.getWechatAppId());
-                tWxAccount.setAppSecret(Init.config.getWechatAppSecret());
-                tWxAccount.setToken(Init.config.getWechatToken());
-                tWxAccount.setAesKey(Init.config.getWechatAesKey());
+                tWxAccount.setAppId(App.config.getWechatAppId());
+                tWxAccount.setAppSecret(App.config.getWechatAppSecret());
+                tWxAccount.setToken(App.config.getWechatToken());
+                tWxAccount.setAesKey(App.config.getWechatAesKey());
                 tWxAccount.setModifiedTime(now);
                 if (update) {
                     tWxAccount.setId(tWxAccountList.get(0).getId());
@@ -125,12 +125,12 @@ public class SettingListener {
                 } else {
                     accountName = SettingForm.settingForm.getMaAccountSwitchComboBox().getSelectedItem().toString();
                 }
-                Init.config.setMiniAppName(accountName);
-                Init.config.setMiniAppAppId(SettingForm.settingForm.getMiniAppAppIdTextField().getText());
-                Init.config.setMiniAppAppSecret(new String(SettingForm.settingForm.getMiniAppAppSecretPasswordField().getPassword()));
-                Init.config.setMiniAppToken(new String(SettingForm.settingForm.getMiniAppTokenPasswordField().getPassword()));
-                Init.config.setMiniAppAesKey(new String(SettingForm.settingForm.getMiniAppAesKeyPasswordField().getPassword()));
-                Init.config.save();
+                App.config.setMiniAppName(accountName);
+                App.config.setMiniAppAppId(SettingForm.settingForm.getMiniAppAppIdTextField().getText());
+                App.config.setMiniAppAppSecret(new String(SettingForm.settingForm.getMiniAppAppSecretPasswordField().getPassword()));
+                App.config.setMiniAppToken(new String(SettingForm.settingForm.getMiniAppTokenPasswordField().getPassword()));
+                App.config.setMiniAppAesKey(new String(SettingForm.settingForm.getMiniAppAesKeyPasswordField().getPassword()));
+                App.config.save();
 
                 boolean update = false;
                 List<TWxAccount> tWxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(SettingForm.WX_ACCOUNT_TYPE_MA, accountName);
@@ -142,10 +142,10 @@ public class SettingListener {
                 String now = SqliteUtil.nowDateForSqlite();
                 tWxAccount.setAccountType(SettingForm.WX_ACCOUNT_TYPE_MA);
                 tWxAccount.setAccountName(accountName);
-                tWxAccount.setAppId(Init.config.getMiniAppAppId());
-                tWxAccount.setAppSecret(Init.config.getMiniAppAppSecret());
-                tWxAccount.setToken(Init.config.getMiniAppToken());
-                tWxAccount.setAesKey(Init.config.getMiniAppAesKey());
+                tWxAccount.setAppId(App.config.getMiniAppAppId());
+                tWxAccount.setAppSecret(App.config.getMiniAppAppSecret());
+                tWxAccount.setToken(App.config.getMiniAppToken());
+                tWxAccount.setAesKey(App.config.getMiniAppAesKey());
                 tWxAccount.setModifiedTime(now);
                 if (update) {
                     tWxAccount.setId(tWxAccountList.get(0).getId());
@@ -191,10 +191,10 @@ public class SettingListener {
         // 设置-阿里云短信-保存
         SettingForm.settingForm.getSettingAliyunSaveButton().addActionListener(e -> {
             try {
-                Init.config.setAliyunAccessKeyId(SettingForm.settingForm.getAliyunAccessKeyIdTextField().getText());
-                Init.config.setAliyunAccessKeySecret(new String(SettingForm.settingForm.getAliyunAccessKeySecretTextField().getPassword()));
-                Init.config.setAliyunSign(SettingForm.settingForm.getAliyunSignTextField().getText());
-                Init.config.save();
+                App.config.setAliyunAccessKeyId(SettingForm.settingForm.getAliyunAccessKeyIdTextField().getText());
+                App.config.setAliyunAccessKeySecret(new String(SettingForm.settingForm.getAliyunAccessKeySecretTextField().getPassword()));
+                App.config.setAliyunSign(SettingForm.settingForm.getAliyunSignTextField().getText());
+                App.config.save();
 
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
@@ -208,11 +208,11 @@ public class SettingListener {
         // 设置-阿里大于-保存
         SettingForm.settingForm.getSettingAliInfoSaveButton().addActionListener(e -> {
             try {
-                Init.config.setAliServerUrl(SettingForm.settingForm.getAliServerUrlTextField().getText());
-                Init.config.setAliAppKey(new String(SettingForm.settingForm.getAliAppKeyPasswordField().getPassword()));
-                Init.config.setAliAppSecret(new String(SettingForm.settingForm.getAliAppSecretPasswordField().getPassword()));
-                Init.config.setAliSign(SettingForm.settingForm.getAliSignTextField().getText());
-                Init.config.save();
+                App.config.setAliServerUrl(SettingForm.settingForm.getAliServerUrlTextField().getText());
+                App.config.setAliAppKey(new String(SettingForm.settingForm.getAliAppKeyPasswordField().getPassword()));
+                App.config.setAliAppSecret(new String(SettingForm.settingForm.getAliAppSecretPasswordField().getPassword()));
+                App.config.setAliSign(SettingForm.settingForm.getAliSignTextField().getText());
+                App.config.save();
 
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
@@ -226,10 +226,10 @@ public class SettingListener {
         // 设置-腾讯云短信-保存
         SettingForm.settingForm.getSettingTxyunSaveButton().addActionListener(e -> {
             try {
-                Init.config.setTxyunAppId(SettingForm.settingForm.getTxyunAppIdTextField().getText());
-                Init.config.setTxyunAppKey(new String(SettingForm.settingForm.getTxyunAppKeyTextField().getPassword()));
-                Init.config.setTxyunSign(SettingForm.settingForm.getTxyunSignTextField().getText());
-                Init.config.save();
+                App.config.setTxyunAppId(SettingForm.settingForm.getTxyunAppIdTextField().getText());
+                App.config.setTxyunAppKey(new String(SettingForm.settingForm.getTxyunAppKeyTextField().getPassword()));
+                App.config.setTxyunSign(SettingForm.settingForm.getTxyunSignTextField().getText());
+                App.config.save();
 
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
@@ -243,8 +243,8 @@ public class SettingListener {
         // 设置-云片网短信-保存
         SettingForm.settingForm.getSettingYunpianSaveButton().addActionListener(e -> {
             try {
-                Init.config.setYunpianApiKey(new String(SettingForm.settingForm.getYunpianApiKeyTextField().getPassword()));
-                Init.config.save();
+                App.config.setYunpianApiKey(new String(SettingForm.settingForm.getYunpianApiKeyTextField().getPassword()));
+                App.config.save();
 
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
@@ -288,11 +288,11 @@ public class SettingListener {
         // mysql数据库-保存
         SettingForm.settingForm.getSettingDbInfoSaveButton().addActionListener(e -> {
             try {
-                Init.config.setMysqlUrl(SettingForm.settingForm.getMysqlUrlTextField().getText());
-                Init.config.setMysqlDatabase(SettingForm.settingForm.getMysqlDatabaseTextField().getText());
-                Init.config.setMysqlUser(SettingForm.settingForm.getMysqlUserTextField().getText());
-                Init.config.setMysqlPassword(new String(SettingForm.settingForm.getMysqlPasswordField().getPassword()));
-                Init.config.save();
+                App.config.setMysqlUrl(SettingForm.settingForm.getMysqlUrlTextField().getText());
+                App.config.setMysqlDatabase(SettingForm.settingForm.getMysqlDatabaseTextField().getText());
+                App.config.setMysqlUser(SettingForm.settingForm.getMysqlUserTextField().getText());
+                App.config.setMysqlPassword(new String(SettingForm.settingForm.getMysqlPasswordField().getPassword()));
+                App.config.save();
 
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
@@ -306,10 +306,10 @@ public class SettingListener {
         // 外观-保存
         SettingForm.settingForm.getSettingAppearanceSaveButton().addActionListener(e -> {
             try {
-                Init.config.setTheme(Objects.requireNonNull(SettingForm.settingForm.getSettingThemeComboBox().getSelectedItem()).toString());
-                Init.config.setFont(Objects.requireNonNull(SettingForm.settingForm.getSettingFontNameComboBox().getSelectedItem()).toString());
-                Init.config.setFontSize(Integer.parseInt(Objects.requireNonNull(SettingForm.settingForm.getSettingFontSizeComboBox().getSelectedItem()).toString()));
-                Init.config.save();
+                App.config.setTheme(Objects.requireNonNull(SettingForm.settingForm.getSettingThemeComboBox().getSelectedItem()).toString());
+                App.config.setFont(Objects.requireNonNull(SettingForm.settingForm.getSettingFontNameComboBox().getSelectedItem()).toString());
+                App.config.setFontSize(Integer.parseInt(Objects.requireNonNull(SettingForm.settingForm.getSettingFontSizeComboBox().getSelectedItem()).toString()));
+                App.config.save();
 
                 Init.initTheme();
                 Init.initGlobalFont();
