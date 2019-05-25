@@ -195,12 +195,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.weblaf</groupId>
-            <artifactId>weblaf-lnf</artifactId>
-            <version>1.2.9</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.taobao</groupId>
             <artifactId>top-auto-sdk</artifactId>
             <version>1.0</version>
@@ -313,22 +307,6 @@
                 <artifactId>maven-install-plugin</artifactId>
                 <version>2.5.2</version>
                 <executions>
-                    <execution>
-                        <id>install-weblaf</id>
-                        <phase>clean</phase>
-                        <configuration>
-                            <file>./src/main/lib/weblaf-1.29.jar</file>
-                            <repositoryLayout>default</repositoryLayout>
-                            <groupId>com.weblaf</groupId>
-                            <artifactId>weblaf-lnf</artifactId>
-                            <version>1.2.9</version>
-                            <packaging>jar</packaging>
-                            <generatePom>true</generatePom>
-                        </configuration>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                    </execution>
                     <execution>
                         <id>install-beautyeye</id>
                         <phase>clean</phase>
