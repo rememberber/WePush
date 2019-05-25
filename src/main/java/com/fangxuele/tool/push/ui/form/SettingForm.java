@@ -440,7 +440,6 @@ public class SettingForm {
         defaultComboBoxModel1.addElement("Darcula(推荐)");
         defaultComboBoxModel1.addElement("BeautyEye");
         defaultComboBoxModel1.addElement("系统默认");
-        defaultComboBoxModel1.addElement("weblaf");
         settingThemeComboBox.setModel(defaultComboBoxModel1);
         panel19.add(settingThemeComboBox, new GridConstraints(0, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, new Dimension(300, -1), new Dimension(300, -1), null, 0, false));
         final JLabel label27 = new JLabel();
