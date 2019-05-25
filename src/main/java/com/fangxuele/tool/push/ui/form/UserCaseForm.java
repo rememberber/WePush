@@ -2,8 +2,8 @@ package com.fangxuele.tool.push.ui.form;
 
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.UserCase;
-import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -65,7 +65,7 @@ public class UserCaseForm {
                 }
                 JLabel titleLabel = new JLabel();
                 titleLabel.setText(userCase.getTitle());
-                Font fnt = new Font(Init.config.getFont(), Font.BOLD, 20);
+                Font fnt = new Font(App.config.getFont(), Font.BOLD, 20);
                 titleLabel.setFont(fnt);
                 JLabel descLabel = new JLabel();
                 descLabel.setText(userCase.getDesc());

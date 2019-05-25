@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.form;
 
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TMsgKefuMapper;
 import com.fangxuele.tool.push.dao.TMsgKefuPriorityMapper;
 import com.fangxuele.tool.push.dao.TMsgMaTemplateMapper;
@@ -11,7 +12,6 @@ import com.fangxuele.tool.push.domain.TMsgMaTemplate;
 import com.fangxuele.tool.push.domain.TMsgMpTemplate;
 import com.fangxuele.tool.push.domain.TMsgSms;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
-import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -59,7 +59,7 @@ public class MessageManageForm {
         // 隐藏表头
         JTableUtil.hideTableHeader(messageManageForm.getMsgHistable());
 
-        int msgType = Init.config.getMsgType();
+        int msgType = App.config.getMsgType();
 
         Object[] data;
 
@@ -128,7 +128,7 @@ public class MessageManageForm {
         messageManagePanel.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         msgHistable = new JTable();
         msgHistable.setGridColor(new Color(-12236470));
-        msgHistable.setRowHeight(46);
+        msgHistable.setRowHeight(36);
         msgHistable.setShowVerticalLines(false);
         scrollPane1.setViewportView(msgHistable);
         final JPanel panel2 = new JPanel();

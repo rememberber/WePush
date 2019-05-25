@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.form;
 
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TMsgKefuMapper;
 import com.fangxuele.tool.push.dao.TMsgKefuPriorityMapper;
 import com.fangxuele.tool.push.dao.TMsgMaTemplateMapper;
@@ -13,7 +14,6 @@ import com.fangxuele.tool.push.domain.TMsgMpTemplate;
 import com.fangxuele.tool.push.domain.TMsgSms;
 import com.fangxuele.tool.push.domain.TTemplateData;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
-import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -99,15 +99,15 @@ public class MessageEditForm {
 
         String msgName;
         if (StringUtils.isEmpty(selectedMsgName)) {
-            msgName = Init.config.getMsgName();
+            msgName = App.config.getMsgName();
         } else {
             msgName = selectedMsgName;
         }
 
         messageEditForm.getMsgNameField().setText(msgName);
-        messageEditForm.getPreviewUserField().setText(Init.config.getPreviewUser());
+        messageEditForm.getPreviewUserField().setText(App.config.getPreviewUser());
 
-        int msgType = Init.config.getMsgType();
+        int msgType = App.config.getMsgType();
 
         int msgId = 0;
         if (msgType == MessageTypeEnum.KEFU_CODE) {
@@ -478,7 +478,7 @@ public class MessageEditForm {
         templateMsgDataPanel = new JPanel();
         templateMsgDataPanel.setLayout(new GridLayoutManager(2, 7, new Insets(10, 0, 0, 0), -1, -1));
         templateMsgPanel.add(templateMsgDataPanel, new GridConstraints(5, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        templateMsgDataPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "模板变量（可使用\"$ENTER$\"作为换行符）", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.ABOVE_TOP));
+        templateMsgDataPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "模板变量（可使用\"$ENTER$\"作为换行符）", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.ABOVE_TOP, this.$$$getFont$$$(null, Font.BOLD, -1, templateMsgDataPanel.getFont())));
         templateMsgNameLabel = new JLabel();
         templateMsgNameLabel.setText("name");
         templateMsgNameLabel.setToolTipText("当消息类型是模板消息时的示例：first或者keyword1或者remark之类的");
@@ -508,7 +508,7 @@ public class MessageEditForm {
         templateMsgDataTable.setAutoCreateColumnsFromModel(true);
         templateMsgDataTable.setAutoCreateRowSorter(true);
         templateMsgDataTable.setGridColor(new Color(-12236470));
-        templateMsgDataTable.setRowHeight(40);
+        templateMsgDataTable.setRowHeight(36);
         scrollPane1.setViewportView(templateMsgDataTable);
         templateMiniProgramAppidLabel = new JLabel();
         templateMiniProgramAppidLabel.setText("小程序appid");

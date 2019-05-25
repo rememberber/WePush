@@ -6,9 +6,9 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.RunPushThread;
-import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
@@ -116,8 +116,8 @@ public class PushListener {
                 boolean existScheduleTask = false;
 
                 // 定时开始
-                if (Init.config.isRadioStartAt()) {
-                    long startAtMills = DateUtil.parse(Init.config.getTextStartAt(), DatePattern.NORM_DATETIME_PATTERN).getTime();
+                if (App.config.isRadioStartAt()) {
+                    long startAtMills = DateUtil.parse(App.config.getTextStartAt(), DatePattern.NORM_DATETIME_PATTERN).getTime();
                     if (startAtMills < System.currentTimeMillis()) {
                         JOptionPane.showMessageDialog(pushPanel, "计划开始推送时间不能小于系统当前时间！\n\n请检查计划任务设置！\n\n", "提示",
                                 JOptionPane.INFORMATION_MESSAGE);
@@ -126,7 +126,7 @@ public class PushListener {
 
                     int isSchedulePush = JOptionPane.showConfirmDialog(pushPanel,
                             "将在" +
-                                    Init.config.getTextStartAt() +
+                                    App.config.getTextStartAt() +
                                     "推送\n\n消息：" +
                                     MessageEditForm.messageEditForm.getMsgNameField().getText() +
                                     "\n\n推送人数：" + PushData.allUser.size() +
@@ -142,7 +142,7 @@ public class PushListener {
                         PushForm.pushForm.getPushStopButton().setEnabled(true);
 
                         PushForm.pushForm.getScheduleDetailLabel().setText("计划任务执行中：将在" +
-                                Init.config.getTextStartAt() +
+                                App.config.getTextStartAt() +
                                 "开始推送");
 
                         serviceStartAt = Executors.newSingleThreadScheduledExecutor();
@@ -152,12 +152,12 @@ public class PushListener {
                 }
 
                 // 每天固定时间开始
-                if (Init.config.isRadioPerDay()) {
-                    long startPerDayMills = DateUtil.parse(DateUtil.today() + " " + Init.config.getTextPerDay(), DatePattern.NORM_DATETIME_PATTERN).getTime();
+                if (App.config.isRadioPerDay()) {
+                    long startPerDayMills = DateUtil.parse(DateUtil.today() + " " + App.config.getTextPerDay(), DatePattern.NORM_DATETIME_PATTERN).getTime();
 
                     int isSchedulePush = JOptionPane.showConfirmDialog(pushPanel,
                             "将在每天" +
-                                    Init.config.getTextPerDay() +
+                                    App.config.getTextPerDay() +
                                     "推送\n\n消息：" +
                                     MessageEditForm.messageEditForm.getMsgNameField().getText() +
                                     "\n\n推送人数：" + PushData.allUser.size() +
@@ -173,7 +173,7 @@ public class PushListener {
                         PushForm.pushForm.getPushStopButton().setEnabled(true);
 
                         PushForm.pushForm.getScheduleDetailLabel().setText("计划任务执行中：将在每天" +
-                                Init.config.getTextPerDay() +
+                                App.config.getTextPerDay() +
                                 "开始推送");
 
                         serviceStartPerDay = Executors.newSingleThreadScheduledExecutor();
@@ -185,15 +185,15 @@ public class PushListener {
                 }
 
                 // 每周固定时间开始
-                if (Init.config.isRadioPerWeek()) {
+                if (App.config.isRadioPerWeek()) {
 
-                    long todaySetMills = DateUtil.parse(DateUtil.today() + " " + Init.config.getTextPerWeekTime(), DatePattern.NORM_DATETIME_PATTERN).getTime();
-                    int dayBetween = getDayOfWeek(Init.config.getTextPerWeekWeek()) - DateUtil.thisDayOfWeek();
+                    long todaySetMills = DateUtil.parse(DateUtil.today() + " " + App.config.getTextPerWeekTime(), DatePattern.NORM_DATETIME_PATTERN).getTime();
+                    int dayBetween = getDayOfWeek(App.config.getTextPerWeekWeek()) - DateUtil.thisDayOfWeek();
                     long startPerWeekMills = dayBetween < 0 ? (dayBetween + 7) * 24 * 60 * 60 * 1000 : dayBetween * 24 * 60 * 60 * 1000;
 
                     int isSchedulePush = JOptionPane.showConfirmDialog(pushPanel,
-                            "将在每周" + Init.config.getTextPerWeekWeek() +
-                                    Init.config.getTextPerWeekTime() +
+                            "将在每周" + App.config.getTextPerWeekWeek() +
+                                    App.config.getTextPerWeekTime() +
                                     "推送\n\n消息：" +
                                     MessageEditForm.messageEditForm.getMsgNameField().getText() +
                                     "\n\n推送人数：" + PushData.allUser.size() +
@@ -209,8 +209,8 @@ public class PushListener {
                         PushForm.pushForm.getPushStopButton().setEnabled(true);
 
                         PushForm.pushForm.getScheduleDetailLabel().setText("计划任务执行中：将在每周" +
-                                Init.config.getTextPerWeekWeek() +
-                                Init.config.getTextPerWeekTime() +
+                                App.config.getTextPerWeekWeek() +
+                                App.config.getTextPerWeekTime() +
                                 "开始推送");
 
                         serviceStartPerWeek = Executors.newSingleThreadScheduledExecutor();
@@ -260,7 +260,7 @@ public class PushListener {
         PushForm.pushForm.getThreadCountSlider().addChangeListener(e -> {
             int slideValue = PushForm.pushForm.getThreadCountSlider().getValue();
             PushForm.pushForm.getThreadCountTextField().setText(String.valueOf(slideValue));
-            Init.config.setThreadCount(slideValue);
+            App.config.setThreadCount(slideValue);
             refreshPushInfo();
         });
 

@@ -1,7 +1,7 @@
 package com.fangxuele.tool.push.ui.form;
 
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.PushData;
-import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.listener.MemberListener;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -65,8 +65,8 @@ public class MemberForm {
      */
     public static void init() {
         memberForm.getMemberTabImportProgressBar().setVisible(false);
-        memberForm.getImportFromSqlTextArea().setText(Init.config.getMemberSql());
-        memberForm.getMemberFilePathField().setText(Init.config.getMemberFilePath());
+        memberForm.getImportFromSqlTextArea().setText(App.config.getMemberSql());
+        memberForm.getMemberFilePathField().setText(App.config.getMemberFilePath());
 
     }
 
@@ -119,7 +119,7 @@ public class MemberForm {
         panel1.add(scrollPane1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         memberListTable = new JTable();
         memberListTable.setGridColor(new Color(-12236470));
-        memberListTable.setRowHeight(46);
+        memberListTable.setRowHeight(36);
         scrollPane1.setViewportView(memberListTable);
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 5, new Insets(0, 5, 0, 0), -1, -1));

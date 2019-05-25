@@ -1,8 +1,8 @@
 package com.fangxuele.tool.push.ui.form;
 
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPushHistoryMapper;
 import com.fangxuele.tool.push.domain.TPushHistory;
-import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -53,7 +53,7 @@ public class PushHisForm {
         // 表头列名居左
         hr.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
 
-        List<TPushHistory> pushHistoryList = pushHistoryMapper.selectByMsgType(Init.config.getMsgType());
+        List<TPushHistory> pushHistoryList = pushHistoryMapper.selectByMsgType(App.config.getMsgType());
         Object[] data;
         for (TPushHistory tPushHistory : pushHistoryList) {
             data = new Object[4];
@@ -124,7 +124,7 @@ public class PushHisForm {
         pushHisLeftTable.setDoubleBuffered(true);
         pushHisLeftTable.setGridColor(new Color(-12236470));
         pushHisLeftTable.setIntercellSpacing(new Dimension(1, 1));
-        pushHisLeftTable.setRowHeight(46);
+        pushHisLeftTable.setRowHeight(36);
         pushHisLeftTable.setShowVerticalLines(false);
         scrollPane1.setViewportView(pushHisLeftTable);
         final JPanel panel4 = new JPanel();

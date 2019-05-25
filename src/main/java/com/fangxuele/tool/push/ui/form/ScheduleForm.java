@@ -1,6 +1,6 @@
 package com.fangxuele.tool.push.ui.form;
 
-import com.fangxuele.tool.push.ui.Init;
+import com.fangxuele.tool.push.App;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -36,17 +36,17 @@ public class ScheduleForm {
      */
     public static void init() {
         // 开始
-        scheduleForm.getRunAtThisTimeRadioButton().setSelected(Init.config.isRadioStartAt());
-        scheduleForm.getStartAtThisTimeTextField().setText(Init.config.getTextStartAt());
+        scheduleForm.getRunAtThisTimeRadioButton().setSelected(App.config.isRadioStartAt());
+        scheduleForm.getStartAtThisTimeTextField().setText(App.config.getTextStartAt());
 
         //每天
-        scheduleForm.getRunPerDayRadioButton().setSelected(Init.config.isRadioPerDay());
-        scheduleForm.getStartPerDayTextField().setText(Init.config.getTextPerDay());
+        scheduleForm.getRunPerDayRadioButton().setSelected(App.config.isRadioPerDay());
+        scheduleForm.getStartPerDayTextField().setText(App.config.getTextPerDay());
 
         // 每周
-        scheduleForm.getRunPerWeekRadioButton().setSelected(Init.config.isRadioPerWeek());
-        scheduleForm.getSchedulePerWeekComboBox().setSelectedItem(Init.config.getTextPerWeekWeek());
-        scheduleForm.getStartPerWeekTextField().setText(Init.config.getTextPerWeekTime());
+        scheduleForm.getRunPerWeekRadioButton().setSelected(App.config.isRadioPerWeek());
+        scheduleForm.getSchedulePerWeekComboBox().setSelectedItem(App.config.getTextPerWeekWeek());
+        scheduleForm.getStartPerWeekTextField().setText(App.config.getTextPerWeekTime());
     }
 
     {

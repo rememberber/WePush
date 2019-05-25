@@ -37,6 +37,13 @@ public class UpdateDialog extends JDialog {
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
 
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        setBounds(screenSize.width / 2 - 300, screenSize.height / 2 - 50,
+                600, 100);
+
+        Dimension preferSize = new Dimension(600, 100);
+        setMaximumSize(preferSize);
+
         buttonOK.addActionListener(e -> onOK());
 
         buttonCancel.addActionListener(e -> onCancel());

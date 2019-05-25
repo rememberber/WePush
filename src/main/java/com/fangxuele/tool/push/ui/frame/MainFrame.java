@@ -14,9 +14,11 @@ import com.fangxuele.tool.push.ui.listener.ScheduleListener;
 import com.fangxuele.tool.push.ui.listener.SettingListener;
 import com.fangxuele.tool.push.ui.listener.TabListener;
 import com.fangxuele.tool.push.util.SystemUtil;
+import org.apache.commons.compress.utils.Lists;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 /**
  * <pre>
@@ -30,11 +32,16 @@ public class MainFrame extends JFrame {
     public void init() {
         this.setName(UiConsts.APP_NAME);
         this.setTitle(UiConsts.APP_NAME);
-        this.setIconImage(UiConsts.IMAGE_ICON);
+        List<Image> images = Lists.newArrayList();
+        images.add(UiConsts.IMAGE_ICON_LG);
+        images.add(UiConsts.IMAGE_ICON_MD);
+        images.add(UiConsts.IMAGE_ICON_SM);
+        images.add(UiConsts.IMAGE_ICON_XS);
+        this.setIconImages(images);
         // Mac系统Dock图标
         if (SystemUtil.isMacOs()) {
             Application application = Application.getApplication();
-            application.setDockIconImage(UiConsts.IMAGE_ICON);
+            application.setDockIconImage(UiConsts.IMAGE_ICON_LG);
         }
 
         //得到屏幕的尺寸

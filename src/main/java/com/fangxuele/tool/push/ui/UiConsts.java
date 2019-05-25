@@ -16,13 +16,31 @@ public class UiConsts {
      * 软件名称,版本
      */
     public final static String APP_NAME = "WePush";
-    public final static String APP_VERSION = "v_3.0.0_190516";
+    public final static String APP_VERSION = "v_3.1.0_190524";
 
     /**
-     * 主窗口图标
+     * 主窗口图标-大
      */
-    public final static Image IMAGE_ICON = Toolkit.getDefaultToolkit()
+    public final static Image IMAGE_ICON_LG = Toolkit.getDefaultToolkit()
             .getImage(UiConsts.class.getResource("/icon/logo-lg.png"));
+
+    /**
+     * 主窗口图标-中
+     */
+    public final static Image IMAGE_ICON_MD = Toolkit.getDefaultToolkit()
+            .getImage(UiConsts.class.getResource("/icon/logo-md.png"));
+
+    /**
+     * 主窗口图标-小
+     */
+    public final static Image IMAGE_ICON_SM = Toolkit.getDefaultToolkit()
+            .getImage(UiConsts.class.getResource("/icon/logo-sm.png"));
+
+    /**
+     * 主窗口图标-超小
+     */
+    public final static Image IMAGE_ICON_XS = Toolkit.getDefaultToolkit()
+            .getImage(UiConsts.class.getResource("/icon/logo-xs.png"));
 
     /**
      * 软件版本检查url

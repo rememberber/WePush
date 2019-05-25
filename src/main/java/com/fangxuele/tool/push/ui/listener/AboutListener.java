@@ -100,21 +100,21 @@ public class AboutListener {
         String currentVersion = UiConsts.APP_VERSION;
 
         // 从github获取最新版本相关信息
-        String content = HttpUtil.get(UiConsts.CHECK_VERSION_URL);
-        if (StringUtils.isEmpty(content) && !initCheck) {
+        String versionSummaryJsonContent = HttpUtil.get(UiConsts.CHECK_VERSION_URL);
+        if (StringUtils.isEmpty(versionSummaryJsonContent) && !initCheck) {
             JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
                     "检查超时，请关注GitHub Release！", "网络错误",
                     JOptionPane.INFORMATION_MESSAGE);
             return;
         }
-        content = content.replace("\n", "");
+        versionSummaryJsonContent = versionSummaryJsonContent.replace("\n", "");
 
-        VersionSummary versionSummary = JSON.parseObject(content, VersionSummary.class);
+        VersionSummary versionSummary = JSON.parseObject(versionSummaryJsonContent, VersionSummary.class);
         // 最新版本
         String newVersion = versionSummary.getCurrentVersion();
-        String versionIndex = versionSummary.getVersionIndex();
+        String versionIndexJsonContent = versionSummary.getVersionIndex();
         // 版本索引
-        Map<String, String> versionIndexMap = JSON.parseObject(versionIndex, Map.class);
+        Map<String, String> versionIndexMap = JSON.parseObject(versionIndexJsonContent, Map.class);
         // 版本明细列表
         List<VersionSummary.Version> versionDetailList = versionSummary.getVersionDetailList();
 
@@ -146,12 +146,6 @@ public class AboutListener {
                     }
                 } else {
                     UpdateDialog dialog = new UpdateDialog();
-                    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-                    dialog.setBounds(screenSize.width / 2 - 300, screenSize.height / 2 - 50,
-                            600, 100);
-
-                    Dimension preferSize = new Dimension(600, 100);
-                    dialog.setMaximumSize(preferSize);
                     dialog.pack();
                     dialog.downLoad(newVersion);
                     dialog.setVisible(true);

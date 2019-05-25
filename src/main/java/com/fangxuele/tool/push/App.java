@@ -4,7 +4,9 @@ import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.LoadingForm;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.frame.MainFrame;
+import com.fangxuele.tool.push.util.ConfigUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.UpgradeUtil;
 import org.apache.ibatis.session.SqlSession;
 
 import javax.swing.*;
@@ -20,16 +22,18 @@ import javax.swing.*;
 public class App {
     public static MainFrame mainFrame;
 
+    public static ConfigUtil config = ConfigUtil.getInstance();
+
     public static SqlSession sqlSession = MybatisUtil.getSqlSession();
 
     public static void main(String[] args) {
+        UpgradeUtil.smoothUpgrade();
         Init.initTheme();
         mainFrame = new MainFrame();
         mainFrame.init();
         JPanel loadingPanel = new LoadingForm().getLoadingPanel();
         mainFrame.add(loadingPanel);
         mainFrame.pack();
-        mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         mainFrame.setVisible(true);
 
         SwingUtilities.invokeLater(() -> {

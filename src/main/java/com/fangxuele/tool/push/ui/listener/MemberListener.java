@@ -10,16 +10,16 @@ import cn.hutool.log.LogFactory;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TWxMpUserMapper;
 import com.fangxuele.tool.push.domain.TWxMpUser;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.PushManage;
-import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.component.TableInCellImageLabelRenderer;
 import com.fangxuele.tool.push.ui.form.MemberForm;
-import com.fangxuele.tool.push.util.CharSetUtil;
 import com.fangxuele.tool.push.util.DbUtilMySQL;
+import com.fangxuele.tool.push.util.FileCharSetUtil;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.opencsv.CSVReader;
@@ -90,7 +90,17 @@ public class MemberListener {
     public static void addListeners() {
         // 从文件导入按钮事件
         MemberForm.memberForm.getImportFromFileButton().addActionListener(e -> ThreadUtil.execute(() -> {
+            if (StringUtils.isBlank(filePathField.getText())) {
+                JOptionPane.showMessageDialog(memberPanel, "请填写或点击浏览按钮选择要导入的文件的路径！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
             File file = new File(filePathField.getText());
+            if (!file.exists()) {
+                JOptionPane.showMessageDialog(memberPanel, filePathField.getText() + "\n该文件不存在！", "文件不存在",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             CSVReader reader = null;
             FileReader fileReader;
 
@@ -104,7 +114,7 @@ public class MemberListener {
                 if (fileNameLowerCase.endsWith(".csv")) {
                     // 可以解决中文乱码问题
                     DataInputStream in = new DataInputStream(new FileInputStream(file));
-                    reader = new CSVReader(new InputStreamReader(in, CharSetUtil.getCharSet(file)));
+                    reader = new CSVReader(new InputStreamReader(in, FileCharSetUtil.getCharSet(file)));
                     String[] nextLine;
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());
 
@@ -130,7 +140,7 @@ public class MemberListener {
                         }
                     }
                 } else if (fileNameLowerCase.endsWith(".txt")) {
-                    fileReader = new FileReader(file, CharSetUtil.getCharSetName(file));
+                    fileReader = new FileReader(file, FileCharSetUtil.getCharSetName(file));
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());
                     BufferedReader br = fileReader.getReader();
                     String line;
@@ -148,8 +158,8 @@ public class MemberListener {
                 JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成",
                         JOptionPane.INFORMATION_MESSAGE);
 
-                Init.config.setMemberFilePath(filePathField.getText());
-                Init.config.save();
+                App.config.setMemberFilePath(filePathField.getText());
+                App.config.save();
             } catch (Exception e1) {
                 JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
@@ -281,17 +291,28 @@ public class MemberListener {
 
         // 从sql导入 按钮事件
         MemberForm.memberForm.getImportFromSqlButton().addActionListener(e -> ThreadUtil.execute(() -> {
-            MemberForm.memberForm.getImportFromSqlButton().setEnabled(false);
-            MemberForm.memberForm.getImportFromSqlButton().updateUI();
-            // 获取SQLServer连接实例
-            DbUtilMySQL dbUtilMySQL = DbUtilMySQL.getInstance();
-
+            if (StringUtils.isBlank(App.config.getMysqlUrl()) || StringUtils.isBlank(App.config.getMysqlUser())) {
+                JOptionPane.showMessageDialog(memberPanel, "请先在设置中填写并保存MySQL的配置信息！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
             String querySql = MemberForm.memberForm.getImportFromSqlTextArea().getText();
+            if (StringUtils.isBlank(querySql)) {
+                JOptionPane.showMessageDialog(memberPanel, "请先填写要执行导入的SQL！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
 
-            progressBar.setVisible(true);
-            progressBar.setIndeterminate(true);
             if (StringUtils.isNotEmpty(querySql)) {
                 try {
+                    MemberForm.memberForm.getImportFromSqlButton().setEnabled(false);
+                    MemberForm.memberForm.getImportFromSqlButton().updateUI();
+                    progressBar.setVisible(true);
+                    progressBar.setIndeterminate(true);
+
+                    // 获取SQLServer连接实例
+                    DbUtilMySQL dbUtilMySQL = DbUtilMySQL.getInstance();
+
                     // 表查询
                     ResultSet rs = dbUtilMySQL.executeQuery(querySql);
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());
@@ -306,8 +327,8 @@ public class MemberListener {
                     JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成",
                             JOptionPane.INFORMATION_MESSAGE);
 
-                    Init.config.setMemberSql(querySql);
-                    Init.config.save();
+                    App.config.setMemberSql(querySql);
+                    App.config.save();
                 } catch (Exception e1) {
                     JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + e1.getMessage(), "失败",
                             JOptionPane.ERROR_MESSAGE);
@@ -436,7 +457,7 @@ public class MemberListener {
                     }
 
                     String nowTime = DateUtil.now().replace(":", "_").replace(" ", "_");
-                    String fileName = "MemberExport_" + MessageTypeEnum.getName(Init.config.getMsgType()) + "_" + nowTime + ".xlsx";
+                    String fileName = "MemberExport_" + MessageTypeEnum.getName(App.config.getMsgType()) + "_" + nowTime + ".xlsx";
                     //通过工具类创建writer
                     writer = ExcelUtil.getWriter(exportPath + File.separator + fileName);
 
@@ -668,7 +689,7 @@ public class MemberListener {
         progressBar.setVisible(true);
         progressBar.setMaximum(PushData.allUser.size());
 
-        int msgType = Init.config.getMsgType();
+        int msgType = App.config.getMsgType();
 
         // 是否是微信平台类消息
         boolean isWeixinTypeMsg = false;
@@ -714,7 +735,7 @@ public class MemberListener {
         if (isWeixinTypeMsg && MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
             memberListTable.setRowHeight(66);
         } else {
-            memberListTable.setRowHeight(46);
+            memberListTable.setRowHeight(36);
         }
 
         List<Object> rowDataList;
@@ -786,6 +807,5 @@ public class MemberListener {
             }
             progressBar.setValue(i + 1);
         }
-        memberListTable.updateUI();
     }
 }

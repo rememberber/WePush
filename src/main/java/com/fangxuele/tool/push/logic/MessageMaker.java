@@ -5,7 +5,7 @@ import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
 import cn.hutool.json.JSONUtil;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
 import com.aliyuncs.http.MethodType;
-import com.fangxuele.tool.push.ui.Init;
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import com.taobao.api.request.AlibabaAliqinFcSmsNumSendRequest;
@@ -163,7 +163,7 @@ public class MessageMaker {
         //使用post提交
         request.setMethod(MethodType.POST);
         //必填:短信签名-可在短信控制台中找到
-        request.setSignName(Init.config.getAliyunSign());
+        request.setSignName(App.config.getAliyunSign());
 
         // 模板参数
         Map<String, String> paramMap = new HashMap<String, String>();
@@ -233,7 +233,7 @@ public class MessageMaker {
 
         // 短信签名，传入的短信签名必须是在阿里大鱼“管理中心-短信签名管理”中的可用签名。如“阿里大鱼”已在短信签名管理中通过审核，
         // 则可传入”阿里大鱼“（传参时去掉引号）作为短信签名。短信效果示例：【阿里大鱼】欢迎使用阿里大鱼服务。
-        request.setSmsFreeSignName(Init.config.getAliSign());
+        request.setSmsFreeSignName(App.config.getAliSign());
         // 短信模板ID，传入的模板必须是在阿里大鱼“管理中心-短信模板管理”中的可用模板。示例：SMS_585014
         request.setSmsTemplateCode(MessageEditForm.messageEditForm.getMsgTemplateIdTextField().getText());
 
