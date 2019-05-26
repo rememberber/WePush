@@ -3,7 +3,6 @@ package com.fangxuele.tool.push.ui;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
-import com.alee.laf.WebLookAndFeel;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.form.AboutForm;
 import com.fangxuele.tool.push.ui.form.HelpForm;
@@ -101,12 +100,10 @@ public class Init {
                     BeautyEyeLNFHelper.launchBeautyEyeLNF();
                     UIManager.put("RootPane.setupButtonVisible", false);
                     break;
-                case "weblaf":
-                    UIManager.setLookAndFeel(new WebLookAndFeel());
-                    break;
                 case "系统默认":
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                     break;
+                case "weblaf":
                 case "Darcula(推荐)":
                 default:
                     UIManager.setLookAndFeel("com.bulenkov.darcula.DarculaLaf");
