@@ -64,7 +64,7 @@ public class MainWindow {
      */
     private void $$$setupUI$$$() {
         mainPanel = new JPanel();
-        mainPanel.setLayout(new GridLayoutManager(1, 1, new Insets(8, 0, 0, 0), -1, -1));
+        mainPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane = new JTabbedPane();
         tabbedPane.setDoubleBuffered(true);
         Font tabbedPaneFont = this.$$$getFont$$$(null, -1, -1, tabbedPane.getFont());
