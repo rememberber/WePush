@@ -61,7 +61,7 @@ public class MsgListener {
         // 点击左侧表格事件
         msgHistable.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mousePressed(MouseEvent e) {
                 ThreadUtil.execute(() -> {
                     PushHisForm.pushHisForm.getPushHisTextArea().setText("");
 
@@ -71,7 +71,7 @@ public class MsgListener {
 
                     MessageEditForm.init(selectedMsgName);
                 });
-                super.mouseClicked(e);
+                super.mousePressed(e);
             }
         });
 
@@ -163,7 +163,7 @@ public class MsgListener {
         MessageEditForm.messageEditForm.getMsgSaveButton().addActionListener(e -> {
             String msgName = MessageEditForm.messageEditForm.getMsgNameField().getText();
             if (StringUtils.isBlank(msgName)) {
-                JOptionPane.showMessageDialog(messagePanel, "请填写推送任务名称！\n\n", "失败",
+                JOptionPane.showMessageDialog(messagePanel, "请填写消息名称！\n\n", "失败",
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }

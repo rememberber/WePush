@@ -51,7 +51,7 @@ public class PushHisListener {
         // 点击左侧表格事件
         pushHisLeftTable.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mousePressed(MouseEvent e) {
                 ThreadUtil.execute(() -> {
                     PushHisForm.pushHisForm.getPushHisTextArea().setText("");
 
@@ -78,7 +78,7 @@ public class PushHisListener {
                     }
 
                 });
-                super.mouseClicked(e);
+                super.mousePressed(e);
             }
         });
 
