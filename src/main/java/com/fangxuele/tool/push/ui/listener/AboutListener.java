@@ -41,8 +41,8 @@ public class AboutListener {
     public static void addListeners() {
         AboutForm.aboutForm.getCompanyLabel().addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
+            public void mousePressed(MouseEvent e) {
+                super.mousePressed(e);
                 Desktop desktop = Desktop.getDesktop();
                 try {
                     desktop.browse(new URI("https://gitee.com/zhoubochina/WePush"));
@@ -62,8 +62,8 @@ public class AboutListener {
         // 检查更新
         AboutForm.aboutForm.getCheckUpdateLabel().addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
+            public void mousePressed(MouseEvent e) {
+                super.mousePressed(e);
                 ThreadUtil.execute(() -> checkUpdate(false));
             }
 
@@ -77,8 +77,8 @@ public class AboutListener {
         // 帮助文档
         AboutForm.aboutForm.getHelpDocLabel().addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
+            public void mousePressed(MouseEvent e) {
+                super.mousePressed(e);
                 Desktop desktop = Desktop.getDesktop();
                 try {
                     desktop.browse(new URI("https://github.com/rememberber/WePush/wiki"));

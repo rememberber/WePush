@@ -22,14 +22,14 @@ public class HelpListener {
     public static void addListeners() {
         HelpForm.helpForm.getLabelOnlineHelp().addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
+            public void mousePressed(MouseEvent e) {
                 Desktop desktop = Desktop.getDesktop();
                 try {
                     desktop.browse(new URI("https://gitee.com/zhoubochina/WePush/wikis/help"));
                 } catch (IOException | URISyntaxException e1) {
                     e1.printStackTrace();
                 }
+                super.mousePressed(e);
             }
 
             @Override
