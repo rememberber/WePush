@@ -3,11 +3,10 @@ package com.fangxuele.tool.push.ui.listener;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
-import com.fangxuele.tool.push.ui.form.PushHisForm;
 
 import javax.swing.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  * <pre>
@@ -22,15 +21,16 @@ public class TabListener {
     private static boolean warnFlag = true;
 
     public static void addListeners() {
-        MainWindow.mainWindow.getTabbedPane().addMouseListener(new MouseAdapter() {
+        MainWindow.mainWindow.getTabbedPane().addChangeListener(new ChangeListener() {
+            /**
+             * Invoked when the target of the listener has changed its state.
+             *
+             * @param e a ChangeEvent object
+             */
             @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
+            public void stateChanged(ChangeEvent e) {
                 int index = MainWindow.mainWindow.getTabbedPane().getSelectedIndex();
                 switch (index) {
-                    case 6:
-                        PushHisForm.init();
-                        break;
                     case 3:
                         if (warnFlag) {
                             JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "\n请确认您了解所要发送消息类型的使用频率、使用规范和限制规则，\n" +
