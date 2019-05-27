@@ -378,11 +378,19 @@ public class MsgListener {
                 if ("".equals(MessageEditForm.messageEditForm.getPreviewUserField().getText().trim())) {
                     JOptionPane.showMessageDialog(messagePanel, "预览用户不能为空！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    if (PushManage.preview()) {
-                        JOptionPane.showMessageDialog(messagePanel, "发送预览消息成功！", "成功",
-                                JOptionPane.INFORMATION_MESSAGE);
-                    }
+                    return;
+                }
+                if (App.config.getMsgType() == MessageTypeEnum.MA_TEMPLATE_CODE
+                        && MessageEditForm.messageEditForm.getPreviewUserField().getText().split(";")[0].length() < 2) {
+                    JOptionPane.showMessageDialog(messagePanel, "小程序模板消息预览时，“预览用户openid”输入框里填写openid|formId，\n" +
+                                    "示例格式：\n" +
+                                    "opd-aswadfasdfasdfasdf|fi291834543", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+                if (PushManage.preview()) {
+                    JOptionPane.showMessageDialog(messagePanel, "发送预览消息成功！", "成功",
+                            JOptionPane.INFORMATION_MESSAGE);
                 }
             } catch (Exception e1) {
                 JOptionPane.showMessageDialog(messagePanel, "发送预览消息失败！\n\n" + e1.getMessage(), "失败",
