@@ -68,13 +68,13 @@ public class PushManage {
      */
     public static final String TEMPLATE_VAR_PREFIX = "var";
 
-    private volatile static WxMpService wxMpService;
+    public volatile static WxMpService wxMpService;
 
-    private volatile static WxMpInMemoryConfigStorage wxMpConfigStorage;
+    public volatile static WxMpInMemoryConfigStorage wxMpConfigStorage;
 
-    private volatile static WxMaService wxMaService;
+    public volatile static WxMaService wxMaService;
 
-    private volatile static WxMaInMemoryConfig wxMaConfigStorage;
+    public volatile static WxMaInMemoryConfig wxMaConfigStorage;
 
     /**
      * 预览消息
@@ -284,8 +284,7 @@ public class PushManage {
      */
     private static WxMaInMemoryConfig wxMaConfigStorage() {
         WxMaInMemoryConfig configStorage = new WxMaInMemoryConfig();
-        if (StringUtils.isEmpty(App.config.getMiniAppAppId()) || StringUtils.isEmpty(App.config.getMiniAppAppSecret())
-                || StringUtils.isEmpty(App.config.getMiniAppToken()) || StringUtils.isEmpty(App.config.getMiniAppAesKey())) {
+        if (StringUtils.isEmpty(App.config.getMiniAppAppId()) || StringUtils.isEmpty(App.config.getMiniAppAppSecret())) {
             JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "请先在设置中填写并保存小程序相关配置！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
             PushForm.pushForm.getScheduleRunButton().setEnabled(true);

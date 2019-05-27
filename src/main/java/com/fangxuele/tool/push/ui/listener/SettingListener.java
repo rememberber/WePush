@@ -5,6 +5,7 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TWxAccountMapper;
 import com.fangxuele.tool.push.domain.TWxAccount;
+import com.fangxuele.tool.push.logic.PushManage;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.dialog.SwitchWxAccountDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
@@ -84,6 +85,8 @@ public class SettingListener {
                 }
 
                 SettingForm.initSwitchMultiAccount();
+                PushManage.wxMpConfigStorage = null;
+                PushManage.wxMpService = null;
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {
@@ -156,6 +159,8 @@ public class SettingListener {
                 }
 
                 SettingForm.initSwitchMultiAccount();
+                PushManage.wxMaConfigStorage = null;
+                PushManage.wxMaService = null;
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {
