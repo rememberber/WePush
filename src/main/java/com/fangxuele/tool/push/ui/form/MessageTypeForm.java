@@ -48,6 +48,7 @@ public class MessageTypeForm {
      */
     public static void init() {
         int msgType = App.config.getMsgType();
+        clearAllSelected();
 
         switch (msgType) {
             case MessageTypeEnum.MP_TEMPLATE_CODE:

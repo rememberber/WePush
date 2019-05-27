@@ -18,67 +18,56 @@ public class MessageTypeListener {
 
     public static void addListeners() {
         messageTypeForm.getMpTemplateRadioButton().addActionListener(e -> {
-            MessageTypeForm.clearAllSelected();
             App.config.setMsgType(MessageTypeEnum.MP_TEMPLATE_CODE);
             App.config.save();
             MessageTypeForm.init();
         });
         messageTypeForm.getMaTemplateRadioButton().addActionListener(e -> {
-            MessageTypeForm.clearAllSelected();
             App.config.setMsgType(MessageTypeEnum.MA_TEMPLATE_CODE);
             App.config.save();
             MessageTypeForm.init();
         });
         messageTypeForm.getKefuRadioButton().addActionListener(e -> {
-            MessageTypeForm.clearAllSelected();
             App.config.setMsgType(MessageTypeEnum.KEFU_CODE);
             App.config.save();
             MessageTypeForm.init();
         });
         messageTypeForm.getKefuPriorityRadioButton().addActionListener(e -> {
-            MessageTypeForm.clearAllSelected();
             App.config.setMsgType(MessageTypeEnum.KEFU_PRIORITY_CODE);
             App.config.save();
             MessageTypeForm.init();
         });
         messageTypeForm.getAliYunRadioButton().addActionListener(e -> {
-            MessageTypeForm.clearAllSelected();
             App.config.setMsgType(MessageTypeEnum.ALI_YUN_CODE);
             App.config.save();
             MessageTypeForm.init();
         });
         messageTypeForm.getAliTemplateRadioButton().addActionListener(e -> {
-            MessageTypeForm.clearAllSelected();
             App.config.setMsgType(MessageTypeEnum.ALI_TEMPLATE_CODE);
             App.config.save();
             MessageTypeForm.init();
         });
         messageTypeForm.getTxYunRadioButton().addActionListener(e -> {
-            MessageTypeForm.clearAllSelected();
             App.config.setMsgType(MessageTypeEnum.TX_YUN_CODE);
             App.config.save();
             MessageTypeForm.init();
         });
         messageTypeForm.getYunPianRadioButton().addActionListener(e -> {
-            MessageTypeForm.clearAllSelected();
             App.config.setMsgType(MessageTypeEnum.YUN_PIAN_CODE);
             App.config.save();
             MessageTypeForm.init();
         });
         messageTypeForm.getUpYunRadioButton().addActionListener(e -> {
-            MessageTypeForm.clearAllSelected();
             App.config.setMsgType(MessageTypeEnum.UP_YUN_CODE);
             App.config.save();
             MessageTypeForm.init();
         });
         messageTypeForm.getHwYunRadioButton().addActionListener(e -> {
-            MessageTypeForm.clearAllSelected();
             App.config.setMsgType(MessageTypeEnum.HW_YUN_CODE);
             App.config.save();
             MessageTypeForm.init();
         });
         messageTypeForm.getEMailRadioButton().addActionListener(e -> {
-            MessageTypeForm.clearAllSelected();
             App.config.setMsgType(MessageTypeEnum.EMAIL_CODE);
             App.config.save();
             MessageTypeForm.init();

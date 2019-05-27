@@ -67,7 +67,6 @@ public class MemberForm {
         memberForm.getMemberTabImportProgressBar().setVisible(false);
         memberForm.getImportFromSqlTextArea().setText(App.config.getMemberSql());
         memberForm.getMemberFilePathField().setText(App.config.getMemberFilePath());
-
     }
 
     /**
