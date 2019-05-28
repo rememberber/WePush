@@ -162,7 +162,7 @@
           <component id="791df" class="javax.swing.JTable" binding="accountsTable">
             <constraints/>
             <properties>
-              <rowHeight value="30"/>
+              <rowHeight value="36"/>
             </properties>
           </component>
         </children>
