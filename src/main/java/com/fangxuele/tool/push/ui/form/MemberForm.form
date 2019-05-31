@@ -276,24 +276,18 @@
                               <text value="导入"/>
                             </properties>
                           </component>
-                          <scrollpane id="35cdd">
+                          <component id="a6de8" class="javax.swing.JTextArea" binding="importFromSqlTextArea">
                             <constraints>
                               <grid row="0" column="0" row-span="2" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                             </constraints>
-                            <properties/>
-                            <border type="none"/>
-                            <children>
-                              <component id="a6de8" class="javax.swing.JTextArea" binding="importFromSqlTextArea">
-                                <constraints/>
-                                <properties>
-                                  <minimumSize width="1" height="100"/>
-                                  <preferredSize width="1" height="100"/>
-                                  <text value=""/>
-                                  <toolTipText value="只要查询出的结果集只有一列openid（短信时对应的是手机号）就可以，列名不重要；例如：SELECT openid FROM t_user"/>
-                                </properties>
-                              </component>
-                            </children>
-                          </scrollpane>
+                            <properties>
+                              <minimumSize width="1" height="100"/>
+                              <preferredSize width="1" height="100"/>
+                              <text value=""/>
+                              <toolTipText value="只要查询出的结果集只有一列openid（短信时对应的是手机号）就可以，列名不重要；例如：SELECT openid FROM t_user"/>
+                              <wrapStyleWord value="true"/>
+                            </properties>
+                          </component>
                         </children>
                       </grid>
                       <grid id="b86d2" binding="importFromWeixinPanel" layout-manager="GridLayoutManager" row-count="4" column-count="6" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
