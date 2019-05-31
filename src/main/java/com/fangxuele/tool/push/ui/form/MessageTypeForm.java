@@ -40,6 +40,7 @@ public class MessageTypeForm {
     private JRadioButton 极光推送RadioButton;
     private JRadioButton 企业号企业微信RadioButton;
     private JRadioButton 钉钉RadioButton;
+    private JScrollPane messageTypeScrollPane;
 
     public static MessageTypeForm messageTypeForm = new MessageTypeForm();
 
@@ -137,13 +138,13 @@ public class MessageTypeForm {
         messageTypePanel = new JPanel();
         messageTypePanel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
         messageTypePanel.setAutoscrolls(false);
-        final JScrollPane scrollPane1 = new JScrollPane();
-        scrollPane1.setAutoscrolls(true);
-        messageTypePanel.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        messageTypeScrollPane = new JScrollPane();
+        messageTypeScrollPane.setAutoscrolls(true);
+        messageTypePanel.add(messageTypeScrollPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(18, 2, new Insets(20, 20, 0, 0), -1, -1));
         panel2.setAutoscrolls(true);
-        scrollPane1.setViewportView(panel2);
+        messageTypeScrollPane.setViewportView(panel2);
         mpTemplateRadioButton = new JRadioButton();
         mpTemplateRadioButton.setEnabled(true);
         mpTemplateRadioButton.setText("公众号-模板消息");

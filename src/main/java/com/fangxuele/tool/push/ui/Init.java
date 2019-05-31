@@ -85,6 +85,12 @@ public class Init {
         UserCaseForm.userCaseForm.getUserCaseScrollPane().getVerticalScrollBar().setUnitIncrement(15);
         UserCaseForm.userCaseForm.getUserCaseScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
 
+        MemberForm.memberForm.getMemberImportScrollPane().getVerticalScrollBar().setUnitIncrement(15);
+        MemberForm.memberForm.getMemberImportScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
+
+        MessageTypeForm.messageTypeForm.getMessageTypeScrollPane().getVerticalScrollBar().setUnitIncrement(15);
+        MessageTypeForm.messageTypeForm.getMessageTypeScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
+
         // 设置版本
         AboutForm.aboutForm.getVersionLabel().setText(UiConsts.APP_VERSION);
     }
