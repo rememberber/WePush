@@ -101,7 +101,7 @@ public class MemberForm {
     private void $$$setupUI$$$() {
         memberPanel = new JPanel();
         memberPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        memberPanel.setMinimumSize(new Dimension(1280, 738));
+        memberPanel.setMinimumSize(new Dimension(-1, -1));
         memberPanel.setOpaque(true);
         memberPanel.setPreferredSize(new Dimension(1280, 738));
         final JSplitPane splitPane1 = new JSplitPane();
