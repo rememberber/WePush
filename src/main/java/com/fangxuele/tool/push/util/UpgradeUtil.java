@@ -37,7 +37,7 @@ public class UpgradeUtil {
         // 取得升级前版本
         String beforeVersion = App.config.getBeforeVersion();
 
-        if (currentVersion.equals(beforeVersion)) {
+        if (currentVersion.compareTo(beforeVersion) <= 0) {
             // 如果两者一致则不执行任何升级操作
             return;
         } else {
