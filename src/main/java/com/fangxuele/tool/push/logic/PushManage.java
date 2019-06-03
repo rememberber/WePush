@@ -80,6 +80,11 @@ public class PushManage {
      */
     public volatile static SmsSingleSender smsSingleSender;
 
+    /**
+     * 阿里大于短信client
+     */
+    public volatile static TaobaoClient taobaoClient;
+
     public volatile static WxMpInMemoryConfigStorage wxMpConfigStorage;
 
     public volatile static WxMaService wxMaService;
@@ -221,7 +226,7 @@ public class PushManage {
                     return false;
                 }
 
-                TaobaoClient client = new DefaultTaobaoClient(aliServerUrl, aliAppKey, aliAppSecret);
+                TaobaoClient client = getTaobaoClient();
                 for (String[] msgData : msgDataList) {
                     AlibabaAliqinFcSmsNumSendRequest request = MessageMaker.makeAliTemplateMessage(msgData);
                     request.setRecNum(msgData[0]);
@@ -403,6 +408,26 @@ public class PushManage {
             }
         }
         return smsSingleSender;
+    }
+
+    /**
+     * 获取阿里大于短信发送客户端
+     *
+     * @return TaobaoClient
+     */
+    public static TaobaoClient getTaobaoClient() {
+        if (taobaoClient == null) {
+            synchronized (PushManage.class) {
+                if (taobaoClient == null) {
+                    String aliServerUrl = App.config.getAliServerUrl();
+                    String aliAppKey = App.config.getAliAppKey();
+                    String aliAppSecret = App.config.getAliAppSecret();
+
+                    taobaoClient = new DefaultTaobaoClient(aliServerUrl, aliAppKey, aliAppSecret);
+                }
+            }
+        }
+        return taobaoClient;
     }
 
     /**

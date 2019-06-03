@@ -219,6 +219,7 @@ public class SettingListener {
                 App.config.setAliAppSecret(new String(SettingForm.settingForm.getAliAppSecretPasswordField().getPassword()));
                 App.config.setAliSign(SettingForm.settingForm.getAliSignTextField().getText());
                 App.config.save();
+                PushManage.taobaoClient = null;
 
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
