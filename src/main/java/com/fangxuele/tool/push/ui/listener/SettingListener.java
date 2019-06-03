@@ -254,6 +254,7 @@ public class SettingListener {
             try {
                 App.config.setYunpianApiKey(new String(SettingForm.settingForm.getYunpianApiKeyTextField().getPassword()));
                 App.config.save();
+                PushManage.yunpianClient = null;
 
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);

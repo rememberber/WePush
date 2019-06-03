@@ -85,6 +85,11 @@ public class PushManage {
      */
     public volatile static TaobaoClient taobaoClient;
 
+    /**
+     * 云片网短信client
+     */
+    public volatile static YunpianClient yunpianClient;
+
     public volatile static WxMpInMemoryConfigStorage wxMpConfigStorage;
 
     public volatile static WxMaService wxMaService;
@@ -247,17 +252,17 @@ public class PushManage {
                     return false;
                 }
 
-                YunpianClient clnt = new YunpianClient(yunpianApiKey).init();
+                YunpianClient yunpianClient = getYunpianClient();
 
                 for (String[] msgData : msgDataList) {
                     Map<String, String> params = MessageMaker.makeYunpianMessage(msgData);
                     params.put(YunpianClient.MOBILE, msgData[0]);
-                    Result<SmsSingleSend> result = clnt.sms().single_send(params);
+                    Result<SmsSingleSend> result = yunpianClient.sms().single_send(params);
                     if (result.getCode() != 0) {
                         throw new Exception(result.toString());
                     }
                 }
-                clnt.close();
+                yunpianClient.close();
                 break;
             default:
                 break;
@@ -428,6 +433,24 @@ public class PushManage {
             }
         }
         return taobaoClient;
+    }
+
+    /**
+     * 获取云片网短信发送客户端
+     *
+     * @return YunpianClient
+     */
+    public static YunpianClient getYunpianClient() {
+        if (yunpianClient == null) {
+            synchronized (PushManage.class) {
+                if (yunpianClient == null) {
+                    String yunpianApiKey = App.config.getYunpianApiKey();
+
+                    yunpianClient = new YunpianClient(yunpianApiKey).init();
+                }
+            }
+        }
+        return yunpianClient;
     }
 
     /**

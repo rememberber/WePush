@@ -1,6 +1,5 @@
 package com.fangxuele.tool.push.logic;
 
-import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.yunpian.sdk.YunpianClient;
 import com.yunpian.sdk.model.Result;
@@ -34,9 +33,7 @@ public class YunpianSmsMsgServiceThread extends BaseMsgServiceThread {
         // 初始化当前线程
         initCurrentThread();
 
-        String yunpianApiKey = App.config.getYunpianApiKey();
-
-        YunpianClient clnt = new YunpianClient(yunpianApiKey).init();
+        YunpianClient yunpianClient = PushManage.getYunpianClient();
 
         for (int i = 0; i < list.size(); i++) {
             if (!PushData.running) {
@@ -54,7 +51,7 @@ public class YunpianSmsMsgServiceThread extends BaseMsgServiceThread {
 
                 // 空跑控制
                 if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
-                    Result<SmsSingleSend> result = clnt.sms().single_send(params);
+                    Result<SmsSingleSend> result = yunpianClient.sms().single_send(params);
 
                     if (result.getCode() == 0) {
                         // 总发送成功+1
@@ -119,7 +116,6 @@ public class YunpianSmsMsgServiceThread extends BaseMsgServiceThread {
         }
 
         // 当前线程结束
-        clnt.close();
         currentThreadFinish();
     }
 
