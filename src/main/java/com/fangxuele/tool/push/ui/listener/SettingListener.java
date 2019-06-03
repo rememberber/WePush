@@ -200,6 +200,7 @@ public class SettingListener {
                 App.config.setAliyunAccessKeySecret(new String(SettingForm.settingForm.getAliyunAccessKeySecretTextField().getPassword()));
                 App.config.setAliyunSign(SettingForm.settingForm.getAliyunSignTextField().getText());
                 App.config.save();
+                PushManage.iAcsClient = null;
 
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);

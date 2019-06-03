@@ -11,8 +11,8 @@ import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.IAcsClient;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
+import com.aliyuncs.http.HttpClientConfig;
 import com.aliyuncs.profile.DefaultProfile;
-import com.aliyuncs.profile.IClientProfile;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPushHistoryMapper;
 import com.fangxuele.tool.push.domain.TPushHistory;
@@ -69,6 +69,8 @@ public class PushManage {
     public static final String TEMPLATE_VAR_PREFIX = "var";
 
     public volatile static WxMpService wxMpService;
+
+    public volatile static IAcsClient iAcsClient;
 
     public volatile static WxMpInMemoryConfigStorage wxMpConfigStorage;
 
@@ -163,11 +165,7 @@ public class PushManage {
                     return false;
                 }
 
-                //初始化acsClient,暂不支持region化
-                IClientProfile profile = DefaultProfile.getProfile("dysmsapi.aliyuncs.com", aliyunAccessKeyId, aliyunAccessKeySecret);
-                DefaultProfile.addEndpoint("dysmsapi.aliyuncs.com", "Dysmsapi", "dysmsapi.aliyuncs.com");
-
-                IAcsClient acsClient = new DefaultAcsClient(profile);
+                IAcsClient acsClient = getAliyunIAcsClient();
                 for (String[] msgData : msgDataList) {
                     SendSmsRequest request = MessageMaker.makeAliyunMessage(msgData);
                     request.setPhoneNumbers(msgData[0]);
@@ -352,6 +350,35 @@ public class PushManage {
     }
 
     /**
+     * 获取阿里云短信发送客户端
+     *
+     * @return IAcsClient
+     */
+    public static IAcsClient getAliyunIAcsClient() {
+        if (iAcsClient == null) {
+            synchronized (PushManage.class) {
+                if (iAcsClient == null) {
+                    String aliyunAccessKeyId = App.config.getAliyunAccessKeyId();
+                    String aliyunAccessKeySecret = App.config.getAliyunAccessKeySecret();
+
+                    // 创建DefaultAcsClient实例并初始化
+                    DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", aliyunAccessKeyId, aliyunAccessKeySecret);
+
+                    // 多个SDK client共享一个连接池，此处设置该连接池的参数，
+                    // 比如每个host的最大连接数，超时时间等
+                    HttpClientConfig clientConfig = HttpClientConfig.getDefault();
+                    clientConfig.setMaxRequestsPerHost(App.config.getMaxThreadPool());
+                    clientConfig.setConnectionTimeoutMillis(10000L);
+
+                    profile.setHttpClientConfig(clientConfig);
+                    iAcsClient = new DefaultAcsClient(profile);
+                }
+            }
+        }
+        return iAcsClient;
+    }
+
+    /**
      * 推送停止或结束后保存数据
      */
     static void savePushData() throws IOException {
@@ -463,5 +490,4 @@ public class PushManage {
         PushForm.pushForm.getPushConsoleTextArea().setCaretPosition(PushForm.pushForm.getPushConsoleTextArea().getText().length());
         logger.warn(log);
     }
-
 }
