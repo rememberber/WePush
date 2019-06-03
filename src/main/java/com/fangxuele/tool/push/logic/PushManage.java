@@ -164,8 +164,8 @@ public class PushManage {
                 }
 
                 //初始化acsClient,暂不支持region化
-                IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", aliyunAccessKeyId, aliyunAccessKeySecret);
-                DefaultProfile.addEndpoint("cn-hangzhou", "Dysmsapi", "cn-hangzhou");
+                IClientProfile profile = DefaultProfile.getProfile("dysmsapi.aliyuncs.com", aliyunAccessKeyId, aliyunAccessKeySecret);
+                DefaultProfile.addEndpoint("dysmsapi.aliyuncs.com", "Dysmsapi", "dysmsapi.aliyuncs.com");
 
                 IAcsClient acsClient = new DefaultAcsClient(profile);
                 for (String[] msgData : msgDataList) {

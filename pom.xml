@@ -29,7 +29,7 @@
         <forms_rt.version>7.0.3</forms_rt.version>
         <fastjson.version>1.2.54</fastjson.version>
         <sun-mail.version>1.6.2</sun-mail.version>
-        <aliyun-java-sdk-core.version>4.2.3</aliyun-java-sdk-core.version>
+        <aliyun-java-sdk-core.version>4.4.2</aliyun-java-sdk-core.version>
         <poi.version>4.0.1</poi.version>
         <AppleJavaExtensions.version>1.4</AppleJavaExtensions.version>
         <qcloudsms.version>1.0.6</qcloudsms.version>
