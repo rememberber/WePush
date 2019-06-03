@@ -1,8 +1,6 @@
 package com.fangxuele.tool.push.logic;
 
-import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.form.PushForm;
-import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.request.AlibabaAliqinFcSmsNumSendRequest;
 import com.taobao.api.response.AlibabaAliqinFcSmsNumSendResponse;
@@ -33,11 +31,7 @@ public class AliDayuTemplateSmsMsgServiceThread extends BaseMsgServiceThread {
         // 初始化当前线程
         initCurrentThread();
 
-        String aliServerUrl = App.config.getAliServerUrl();
-        String aliAppKey = App.config.getAliAppKey();
-        String aliAppSecret = App.config.getAliAppSecret();
-
-        TaobaoClient client = new DefaultTaobaoClient(aliServerUrl, aliAppKey, aliAppSecret);
+        TaobaoClient client = PushManage.getTaobaoClient();
 
         // 组织模板消息
         AlibabaAliqinFcSmsNumSendRequest alibabaAliqinFcSmsNumSendRequest;

@@ -11,8 +11,8 @@ import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.IAcsClient;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
+import com.aliyuncs.http.HttpClientConfig;
 import com.aliyuncs.profile.DefaultProfile;
-import com.aliyuncs.profile.IClientProfile;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPushHistoryMapper;
 import com.fangxuele.tool.push.domain.TPushHistory;
@@ -69,6 +69,26 @@ public class PushManage {
     public static final String TEMPLATE_VAR_PREFIX = "var";
 
     public volatile static WxMpService wxMpService;
+
+    /**
+     * 阿里云短信client
+     */
+    public volatile static IAcsClient iAcsClient;
+
+    /**
+     * 腾讯云短信sender
+     */
+    public volatile static SmsSingleSender smsSingleSender;
+
+    /**
+     * 阿里大于短信client
+     */
+    public volatile static TaobaoClient taobaoClient;
+
+    /**
+     * 云片网短信client
+     */
+    public volatile static YunpianClient yunpianClient;
 
     public volatile static WxMpInMemoryConfigStorage wxMpConfigStorage;
 
@@ -163,11 +183,7 @@ public class PushManage {
                     return false;
                 }
 
-                //初始化acsClient,暂不支持region化
-                IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", aliyunAccessKeyId, aliyunAccessKeySecret);
-                DefaultProfile.addEndpoint("cn-hangzhou", "Dysmsapi", "cn-hangzhou");
-
-                IAcsClient acsClient = new DefaultAcsClient(profile);
+                IAcsClient acsClient = getAliyunIAcsClient();
                 for (String[] msgData : msgDataList) {
                     SendSmsRequest request = MessageMaker.makeAliyunMessage(msgData);
                     request.setPhoneNumbers(msgData[0]);
@@ -190,11 +206,11 @@ public class PushManage {
                     return false;
                 }
 
-                SmsSingleSender ssender = new SmsSingleSender(Integer.valueOf(txyunAppId), txyunAppKey);
+                SmsSingleSender smsSingleSender = getTxYunSender();
 
                 for (String[] msgData : msgDataList) {
                     String[] params = MessageMaker.makeTxyunMessage(msgData);
-                    SmsSingleSenderResult result = ssender.sendWithParam("86", msgData[0],
+                    SmsSingleSenderResult result = smsSingleSender.sendWithParam("86", msgData[0],
                             Integer.valueOf(MessageEditForm.messageEditForm.getMsgTemplateIdTextField().getText()),
                             params, App.config.getAliyunSign(), "", "");
                     if (result.result != 0) {
@@ -215,7 +231,7 @@ public class PushManage {
                     return false;
                 }
 
-                TaobaoClient client = new DefaultTaobaoClient(aliServerUrl, aliAppKey, aliAppSecret);
+                TaobaoClient client = getTaobaoClient();
                 for (String[] msgData : msgDataList) {
                     AlibabaAliqinFcSmsNumSendRequest request = MessageMaker.makeAliTemplateMessage(msgData);
                     request.setRecNum(msgData[0]);
@@ -236,17 +252,17 @@ public class PushManage {
                     return false;
                 }
 
-                YunpianClient clnt = new YunpianClient(yunpianApiKey).init();
+                YunpianClient yunpianClient = getYunpianClient();
 
                 for (String[] msgData : msgDataList) {
                     Map<String, String> params = MessageMaker.makeYunpianMessage(msgData);
                     params.put(YunpianClient.MOBILE, msgData[0]);
-                    Result<SmsSingleSend> result = clnt.sms().single_send(params);
+                    Result<SmsSingleSend> result = yunpianClient.sms().single_send(params);
                     if (result.getCode() != 0) {
                         throw new Exception(result.toString());
                     }
                 }
-                clnt.close();
+                yunpianClient.close();
                 break;
             default:
                 break;
@@ -349,6 +365,92 @@ public class PushManage {
             }
         }
         return wxMaService;
+    }
+
+    /**
+     * 获取阿里云短信发送客户端
+     *
+     * @return IAcsClient
+     */
+    public static IAcsClient getAliyunIAcsClient() {
+        if (iAcsClient == null) {
+            synchronized (PushManage.class) {
+                if (iAcsClient == null) {
+                    String aliyunAccessKeyId = App.config.getAliyunAccessKeyId();
+                    String aliyunAccessKeySecret = App.config.getAliyunAccessKeySecret();
+
+                    // 创建DefaultAcsClient实例并初始化
+                    DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", aliyunAccessKeyId, aliyunAccessKeySecret);
+
+                    // 多个SDK client共享一个连接池，此处设置该连接池的参数，
+                    // 比如每个host的最大连接数，超时时间等
+                    HttpClientConfig clientConfig = HttpClientConfig.getDefault();
+                    clientConfig.setMaxRequestsPerHost(App.config.getMaxThreadPool());
+                    clientConfig.setConnectionTimeoutMillis(10000L);
+
+                    profile.setHttpClientConfig(clientConfig);
+                    iAcsClient = new DefaultAcsClient(profile);
+                }
+            }
+        }
+        return iAcsClient;
+    }
+
+    /**
+     * 获取腾讯云短信发送客户端
+     *
+     * @return SmsSingleSender
+     */
+    public static SmsSingleSender getTxYunSender() {
+        if (smsSingleSender == null) {
+            synchronized (PushManage.class) {
+                if (smsSingleSender == null) {
+                    String txyunAppId = App.config.getTxyunAppId();
+                    String txyunAppKey = App.config.getTxyunAppKey();
+
+                    smsSingleSender = new SmsSingleSender(Integer.valueOf(txyunAppId), txyunAppKey);
+                }
+            }
+        }
+        return smsSingleSender;
+    }
+
+    /**
+     * 获取阿里大于短信发送客户端
+     *
+     * @return TaobaoClient
+     */
+    public static TaobaoClient getTaobaoClient() {
+        if (taobaoClient == null) {
+            synchronized (PushManage.class) {
+                if (taobaoClient == null) {
+                    String aliServerUrl = App.config.getAliServerUrl();
+                    String aliAppKey = App.config.getAliAppKey();
+                    String aliAppSecret = App.config.getAliAppSecret();
+
+                    taobaoClient = new DefaultTaobaoClient(aliServerUrl, aliAppKey, aliAppSecret);
+                }
+            }
+        }
+        return taobaoClient;
+    }
+
+    /**
+     * 获取云片网短信发送客户端
+     *
+     * @return YunpianClient
+     */
+    public static YunpianClient getYunpianClient() {
+        if (yunpianClient == null) {
+            synchronized (PushManage.class) {
+                if (yunpianClient == null) {
+                    String yunpianApiKey = App.config.getYunpianApiKey();
+
+                    yunpianClient = new YunpianClient(yunpianApiKey).init();
+                }
+            }
+        }
+        return yunpianClient;
     }
 
     /**
@@ -463,5 +565,4 @@ public class PushManage {
         PushForm.pushForm.getPushConsoleTextArea().setCaretPosition(PushForm.pushForm.getPushConsoleTextArea().getText().length());
         logger.warn(log);
     }
-
 }

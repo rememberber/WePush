@@ -161,7 +161,7 @@ public class MessageMaker {
     synchronized static SendSmsRequest makeAliyunMessage(String[] msgData) {
         SendSmsRequest request = new SendSmsRequest();
         //使用post提交
-        request.setMethod(MethodType.POST);
+        request.setSysMethod(MethodType.POST);
         //必填:短信签名-可在短信控制台中找到
         request.setSignName(App.config.getAliyunSign());
 

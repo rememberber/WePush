@@ -200,6 +200,7 @@ public class SettingListener {
                 App.config.setAliyunAccessKeySecret(new String(SettingForm.settingForm.getAliyunAccessKeySecretTextField().getPassword()));
                 App.config.setAliyunSign(SettingForm.settingForm.getAliyunSignTextField().getText());
                 App.config.save();
+                PushManage.iAcsClient = null;
 
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
@@ -218,6 +219,7 @@ public class SettingListener {
                 App.config.setAliAppSecret(new String(SettingForm.settingForm.getAliAppSecretPasswordField().getPassword()));
                 App.config.setAliSign(SettingForm.settingForm.getAliSignTextField().getText());
                 App.config.save();
+                PushManage.taobaoClient = null;
 
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
@@ -236,6 +238,8 @@ public class SettingListener {
                 App.config.setTxyunSign(SettingForm.settingForm.getTxyunSignTextField().getText());
                 App.config.save();
 
+                PushManage.smsSingleSender = null;
+
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {
@@ -250,6 +254,7 @@ public class SettingListener {
             try {
                 App.config.setYunpianApiKey(new String(SettingForm.settingForm.getYunpianApiKeyTextField().getPassword()));
                 App.config.save();
+                PushManage.yunpianClient = null;
 
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);

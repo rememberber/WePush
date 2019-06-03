@@ -1,12 +1,8 @@
 package com.fangxuele.tool.push.logic;
 
-import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.IAcsClient;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
-import com.aliyuncs.profile.DefaultProfile;
-import com.aliyuncs.profile.IClientProfile;
-import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.form.PushForm;
 
 /**
@@ -31,17 +27,11 @@ public class AliYunSmsMsgServiceThread extends BaseMsgServiceThread {
 
     @Override
     public void run() {
-
         // 初始化当前线程
         initCurrentThread();
 
-        String aliyunAccessKeyId = App.config.getAliyunAccessKeyId();
-        String aliyunAccessKeySecret = App.config.getAliyunAccessKeySecret();
-
         //初始化acsClient,暂不支持region化
-        IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", aliyunAccessKeyId, aliyunAccessKeySecret);
-        DefaultProfile.addEndpoint("cn-hangzhou", "Dysmsapi", "cn-hangzhou");
-        IAcsClient acsClient = new DefaultAcsClient(profile);
+        IAcsClient acsClient = PushManage.getAliyunIAcsClient();
 
         // 组织模板消息
         SendSmsRequest sendSmsRequest;
