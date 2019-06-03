@@ -32,10 +32,7 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
         // 初始化当前线程
         initCurrentThread();
 
-        String txyunAppId = App.config.getTxyunAppId();
-        String txyunAppKey = App.config.getTxyunAppKey();
-
-        SmsSingleSender ssender = new SmsSingleSender(Integer.valueOf(txyunAppId), txyunAppKey);
+        SmsSingleSender ssender = PushManage.getTxYunSender();
         int templateId = Integer.parseInt(MessageEditForm.messageEditForm.getMsgTemplateIdTextField().getText());
         String smsSign = App.config.getAliyunSign();
 

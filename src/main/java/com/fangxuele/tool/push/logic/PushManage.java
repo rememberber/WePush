@@ -70,7 +70,15 @@ public class PushManage {
 
     public volatile static WxMpService wxMpService;
 
+    /**
+     * 阿里云短信client
+     */
     public volatile static IAcsClient iAcsClient;
+
+    /**
+     * 腾讯云短信sender
+     */
+    public volatile static SmsSingleSender smsSingleSender;
 
     public volatile static WxMpInMemoryConfigStorage wxMpConfigStorage;
 
@@ -188,11 +196,11 @@ public class PushManage {
                     return false;
                 }
 
-                SmsSingleSender ssender = new SmsSingleSender(Integer.valueOf(txyunAppId), txyunAppKey);
+                SmsSingleSender smsSingleSender = getTxYunSender();
 
                 for (String[] msgData : msgDataList) {
                     String[] params = MessageMaker.makeTxyunMessage(msgData);
-                    SmsSingleSenderResult result = ssender.sendWithParam("86", msgData[0],
+                    SmsSingleSenderResult result = smsSingleSender.sendWithParam("86", msgData[0],
                             Integer.valueOf(MessageEditForm.messageEditForm.getMsgTemplateIdTextField().getText()),
                             params, App.config.getAliyunSign(), "", "");
                     if (result.result != 0) {
@@ -376,6 +384,25 @@ public class PushManage {
             }
         }
         return iAcsClient;
+    }
+
+    /**
+     * 获取腾讯云短信发送客户端
+     *
+     * @return SmsSingleSender
+     */
+    public static SmsSingleSender getTxYunSender() {
+        if (smsSingleSender == null) {
+            synchronized (PushManage.class) {
+                if (smsSingleSender == null) {
+                    String txyunAppId = App.config.getTxyunAppId();
+                    String txyunAppKey = App.config.getTxyunAppKey();
+
+                    smsSingleSender = new SmsSingleSender(Integer.valueOf(txyunAppId), txyunAppKey);
+                }
+            }
+        }
+        return smsSingleSender;
     }
 
     /**

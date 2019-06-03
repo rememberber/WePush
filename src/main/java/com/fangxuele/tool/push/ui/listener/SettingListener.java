@@ -237,6 +237,8 @@ public class SettingListener {
                 App.config.setTxyunSign(SettingForm.settingForm.getTxyunSignTextField().getText());
                 App.config.save();
 
+                PushManage.smsSingleSender = null;
+
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {
