@@ -32,7 +32,7 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
         // 初始化当前线程
         initCurrentThread();
 
-        SmsSingleSender ssender = PushManage.getTxYunSender();
+        SmsSingleSender smsSingleSender = PushManage.getTxYunSender();
         int templateId = Integer.parseInt(MessageEditForm.messageEditForm.getMsgTemplateIdTextField().getText());
         String smsSign = App.config.getAliyunSign();
 
@@ -51,7 +51,7 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
 
                 // 空跑控制
                 if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
-                    SmsSingleSenderResult result = ssender.sendWithParam("86", telNum,
+                    SmsSingleSenderResult result = smsSingleSender.sendWithParam("86", telNum,
                             templateId, params, smsSign, "", "");
 
                     if (result.result == 0) {
