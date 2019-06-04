@@ -161,7 +161,7 @@ public class MessageEditForm {
                 break;
             case MessageTypeEnum.KEFU_PRIORITY_CODE:
                 KefuMsgForm.init(null);
-                MpTemplateMsgForm.clearAllField();
+                MpTemplateMsgForm.init(null);
                 messageEditForm.getMsgEditorPanel().setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
                 messageEditForm.getMsgEditorPanel().add(KefuMsgForm.kefuMsgForm.getKefuMsgPanel(), gridConstraintsRow0);
                 messageEditForm.getMsgEditorPanel().add(MpTemplateMsgForm.mpTemplateMsgForm.getTemplateMsgPanel(), gridConstraintsRow1);
