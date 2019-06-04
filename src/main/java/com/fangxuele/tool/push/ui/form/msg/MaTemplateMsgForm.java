@@ -161,22 +161,12 @@ public class MaTemplateMsgForm {
      * 清空所有界面字段
      */
     public static void clearAllField() {
-        // TODO
-//        messageEditForm.getMsgNameField().setText("");
-//        messageEditForm.getMsgTemplateIdTextField().setText("");
-//        messageEditForm.getMsgTemplateUrlTextField().setText("");
-//        messageEditForm.getMsgKefuMsgTitleTextField().setText("");
-//        messageEditForm.getMsgKefuPicUrlTextField().setText("");
-//        messageEditForm.getMsgKefuDescTextField().setText("");
-//        messageEditForm.getMsgKefuUrlTextField().setText("");
-//        messageEditForm.getMsgTemplateMiniAppidTextField().setText("");
-//        messageEditForm.getMsgTemplateMiniPagePathTextField().setText("");
-//        messageEditForm.getMsgTemplateKeyWordTextField().setText("");
-//        messageEditForm.getMsgYunpianMsgContentTextField().setText("");
-//        messageEditForm.getTemplateDataNameTextField().setText("");
-//        messageEditForm.getTemplateDataValueTextField().setText("");
-//        messageEditForm.getTemplateDataColorTextField().setText("");
-//        messageEditForm.getPreviewUserField().setText("");
+        maTemplateMsgForm.getMsgTemplateIdTextField().setText("");
+        maTemplateMsgForm.getMsgTemplateUrlTextField().setText("");
+        maTemplateMsgForm.getMsgTemplateKeyWordTextField().setText("");
+        maTemplateMsgForm.getTemplateDataNameTextField().setText("");
+        maTemplateMsgForm.getTemplateDataValueTextField().setText("");
+        maTemplateMsgForm.getTemplateDataColorTextField().setText("");
         initTemplateDataTable();
     }
 

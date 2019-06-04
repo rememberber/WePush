@@ -146,21 +146,9 @@ public class AliYunMsgForm {
      */
     public static void clearAllField() {
         // TODO
-//        messageEditForm.getMsgNameField().setText("");
-//        messageEditForm.getMsgTemplateIdTextField().setText("");
-//        messageEditForm.getMsgTemplateUrlTextField().setText("");
-//        messageEditForm.getMsgKefuMsgTitleTextField().setText("");
-//        messageEditForm.getMsgKefuPicUrlTextField().setText("");
-//        messageEditForm.getMsgKefuDescTextField().setText("");
-//        messageEditForm.getMsgKefuUrlTextField().setText("");
-//        messageEditForm.getMsgTemplateMiniAppidTextField().setText("");
-//        messageEditForm.getMsgTemplateMiniPagePathTextField().setText("");
-//        messageEditForm.getMsgTemplateKeyWordTextField().setText("");
-//        messageEditForm.getMsgYunpianMsgContentTextField().setText("");
-//        messageEditForm.getTemplateDataNameTextField().setText("");
-//        messageEditForm.getTemplateDataValueTextField().setText("");
-//        messageEditForm.getTemplateDataColorTextField().setText("");
-//        messageEditForm.getPreviewUserField().setText("");
+        aliYunMsgForm.getMsgTemplateIdTextField().setText("");
+        aliYunMsgForm.getTemplateDataNameTextField().setText("");
+        aliYunMsgForm.getTemplateDataValueTextField().setText("");
         initTemplateDataTable();
     }
 

@@ -45,22 +45,7 @@ public class YunpianMsgForm {
      * 清空所有界面字段
      */
     public static void clearAllField() {
-        // TODO
-//        messageEditForm.getMsgNameField().setText("");
-//        messageEditForm.getMsgTemplateIdTextField().setText("");
-//        messageEditForm.getMsgTemplateUrlTextField().setText("");
-//        messageEditForm.getMsgKefuMsgTitleTextField().setText("");
-//        messageEditForm.getMsgKefuPicUrlTextField().setText("");
-//        messageEditForm.getMsgKefuDescTextField().setText("");
-//        messageEditForm.getMsgKefuUrlTextField().setText("");
-//        messageEditForm.getMsgTemplateMiniAppidTextField().setText("");
-//        messageEditForm.getMsgTemplateMiniPagePathTextField().setText("");
-//        messageEditForm.getMsgTemplateKeyWordTextField().setText("");
-//        messageEditForm.getMsgYunpianMsgContentTextField().setText("");
-//        messageEditForm.getTemplateDataNameTextField().setText("");
-//        messageEditForm.getTemplateDataValueTextField().setText("");
-//        messageEditForm.getTemplateDataColorTextField().setText("");
-//        messageEditForm.getPreviewUserField().setText("");
+        yunpianMsgForm.getMsgYunpianMsgContentTextField().setText("");
     }
 
     public static void save(String msgName) {
