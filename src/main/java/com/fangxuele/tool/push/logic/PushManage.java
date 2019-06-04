@@ -20,7 +20,7 @@ import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
-import com.fangxuele.tool.push.ui.form.TxYunMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.TxYunMsgForm;
 import com.fangxuele.tool.push.ui.listener.MemberListener;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;

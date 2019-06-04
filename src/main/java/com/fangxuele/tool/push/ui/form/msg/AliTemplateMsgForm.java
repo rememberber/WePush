@@ -1,4 +1,4 @@
-package com.fangxuele.tool.push.ui.form;
+package com.fangxuele.tool.push.ui.form.msg;
 
 import com.fangxuele.tool.push.dao.TMsgSmsMapper;
 import com.fangxuele.tool.push.dao.TTemplateDataMapper;
@@ -6,6 +6,7 @@ import com.fangxuele.tool.push.domain.TMsgSms;
 import com.fangxuele.tool.push.domain.TTemplateData;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -32,7 +33,7 @@ import java.util.Set;
  * @since 2019/6/3.
  */
 @Getter
-public class AliYunMsgForm {
+public class AliTemplateMsgForm {
     private JPanel templateMsgPanel;
     private JLabel templateIdLabel;
     private JTextField msgTemplateIdTextField;
@@ -54,24 +55,25 @@ public class AliYunMsgForm {
     private JButton templateMsgDataAddButton;
     private JTable templateMsgDataTable;
 
-    public static AliYunMsgForm aliYunMsgForm = new AliYunMsgForm();
+    public static AliTemplateMsgForm aliTemplateMsgForm = new AliTemplateMsgForm();
 
     private static TMsgSmsMapper msgSmsMapper = MybatisUtil.getSqlSession().getMapper(TMsgSmsMapper.class);
     private static TTemplateDataMapper templateDataMapper = MybatisUtil.getSqlSession().getMapper(TTemplateDataMapper.class);
 
-    public AliYunMsgForm() {
+    public AliTemplateMsgForm() {
         // 模板数据-添加 按钮事件
         templateMsgDataAddButton.addActionListener(e -> {
             String[] data = new String[3];
-            data[0] = aliYunMsgForm.getTemplateDataNameTextField().getText();
-            data[1] = aliYunMsgForm.getTemplateDataValueTextField().getText();
-            data[2] = aliYunMsgForm.getTemplateDataColorTextField().getText();
+            data[0] = aliTemplateMsgForm.getTemplateDataNameTextField().getText();
+            data[1] = aliTemplateMsgForm.getTemplateDataValueTextField().getText();
+            data[2] = aliTemplateMsgForm.getTemplateDataColorTextField().getText();
 
-            if (aliYunMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+            if (aliTemplateMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
                 initTemplateDataTable();
             }
 
-            DefaultTableModel tableModel = (DefaultTableModel) aliYunMsgForm.getTemplateMsgDataTable().getModel();
+            DefaultTableModel tableModel = (DefaultTableModel) aliTemplateMsgForm.getTemplateMsgDataTable()
+                    .getModel();
             int rowCount = tableModel.getRowCount();
 
             Set<String> keySet = new HashSet<>();
@@ -100,17 +102,17 @@ public class AliYunMsgForm {
 
     public static void init(String msgName) {
         clearAllField();
-        List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.ALI_YUN_CODE, msgName);
         Integer msgId = 0;
+        List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.ALI_TEMPLATE_CODE, msgName);
         if (tMsgSmsList.size() > 0) {
             TMsgSms tMsgSms = tMsgSmsList.get(0);
             msgId = tMsgSms.getId();
-            aliYunMsgForm.getMsgTemplateIdTextField().setText(tMsgSms.getTemplateId());
+            aliTemplateMsgForm.getMsgTemplateIdTextField().setText(tMsgSms.getTemplateId());
         }
 
         initTemplateDataTable();
         // 模板消息Data表
-        List<TTemplateData> templateDataList = templateDataMapper.selectByMsgTypeAndMsgId(MessageTypeEnum.ALI_YUN_CODE, msgId);
+        List<TTemplateData> templateDataList = templateDataMapper.selectByMsgTypeAndMsgId(MessageTypeEnum.ALI_TEMPLATE_CODE, msgId);
         String[] headerNames = {"Name", "Value", "Color", "操作"};
         Object[][] cellData = new String[templateDataList.size()][headerNames.length];
         for (int i = 0; i < templateDataList.size(); i++) {
@@ -120,12 +122,12 @@ public class AliYunMsgForm {
             cellData[i][2] = tTemplateData.getColor();
         }
         DefaultTableModel model = new DefaultTableModel(cellData, headerNames);
-        aliYunMsgForm.getTemplateMsgDataTable().setModel(model);
-        TableColumnModel tableColumnModel = aliYunMsgForm.getTemplateMsgDataTable().getColumnModel();
+        aliTemplateMsgForm.getTemplateMsgDataTable().setModel(model);
+        TableColumnModel tableColumnModel = aliTemplateMsgForm.getTemplateMsgDataTable().getColumnModel();
         tableColumnModel.getColumn(headerNames.length - 1).
-                setCellRenderer(new TableInCellButtonColumn(aliYunMsgForm.getTemplateMsgDataTable(), headerNames.length - 1));
+                setCellRenderer(new TableInCellButtonColumn(aliTemplateMsgForm.getTemplateMsgDataTable(), headerNames.length - 1));
         tableColumnModel.getColumn(headerNames.length - 1).
-                setCellEditor(new TableInCellButtonColumn(aliYunMsgForm.getTemplateMsgDataTable(), headerNames.length - 1));
+                setCellEditor(new TableInCellButtonColumn(aliTemplateMsgForm.getTemplateMsgDataTable(), headerNames.length - 1));
 
         // 设置列宽
         tableColumnModel.getColumn(3).setPreferredWidth(130);
@@ -136,7 +138,7 @@ public class AliYunMsgForm {
      * 初始化模板消息数据table
      */
     public static void initTemplateDataTable() {
-        JTable msgDataTable = aliYunMsgForm.getTemplateMsgDataTable();
+        JTable msgDataTable = aliTemplateMsgForm.getTemplateMsgDataTable();
         String[] headerNames = {"Name", "Value", "Color", "操作"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
         msgDataTable.setModel(model);
@@ -181,9 +183,9 @@ public class AliYunMsgForm {
 
     public static void save(String msgName) {
         int msgId = 0;
-        boolean existSameMsg = false;
 
-        List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.ALI_YUN_CODE, msgName);
+        boolean existSameMsg = false;
+        List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.ALI_TEMPLATE_CODE, msgName);
         if (tMsgSmsList.size() > 0) {
             existSameMsg = true;
             msgId = tMsgSmsList.get(0).getId();
@@ -197,12 +199,12 @@ public class AliYunMsgForm {
         }
 
         if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
-            String templateId = aliYunMsgForm.getMsgTemplateIdTextField().getText();
+            String templateId = aliTemplateMsgForm.getMsgTemplateIdTextField().getText();
 
             String now = SqliteUtil.nowDateForSqlite();
 
             TMsgSms tMsgSms = new TMsgSms();
-            tMsgSms.setMsgType(MessageTypeEnum.ALI_YUN_CODE);
+            tMsgSms.setMsgType(MessageTypeEnum.ALI_TEMPLATE_CODE);
             tMsgSms.setMsgName(msgName);
             tMsgSms.setTemplateId(templateId);
             tMsgSms.setCreateTime(now);
@@ -216,18 +218,19 @@ public class AliYunMsgForm {
             }
 
             // 保存模板数据
+
             // 如果是覆盖保存，则先清空之前的模板数据
             if (existSameMsg) {
-                templateDataMapper.deleteByMsgTypeAndMsgId(MessageTypeEnum.ALI_YUN_CODE, msgId);
+                templateDataMapper.deleteByMsgTypeAndMsgId(MessageTypeEnum.ALI_TEMPLATE_CODE, msgId);
             }
 
             // 如果table为空，则初始化
-            if (aliYunMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+            if (aliTemplateMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
                 initTemplateDataTable();
             }
 
             // 逐行读取
-            DefaultTableModel tableModel = (DefaultTableModel) aliYunMsgForm.getTemplateMsgDataTable()
+            DefaultTableModel tableModel = (DefaultTableModel) aliTemplateMsgForm.getTemplateMsgDataTable()
                     .getModel();
             int rowCount = tableModel.getRowCount();
             for (int i = 0; i < rowCount; i++) {
@@ -236,7 +239,7 @@ public class AliYunMsgForm {
                 String color = ((String) tableModel.getValueAt(i, 2)).trim();
 
                 TTemplateData tTemplateData = new TTemplateData();
-                tTemplateData.setMsgType(MessageTypeEnum.ALI_YUN_CODE);
+                tTemplateData.setMsgType(MessageTypeEnum.ALI_TEMPLATE_CODE);
                 tTemplateData.setMsgId(msgId);
                 tTemplateData.setName(name);
                 tTemplateData.setValue(value);

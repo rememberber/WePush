@@ -2,7 +2,7 @@ package com.fangxuele.tool.push.logic;
 
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.form.PushForm;
-import com.fangxuele.tool.push.ui.form.TxYunMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.TxYunMsgForm;
 import com.github.qcloudsms.SmsSingleSender;
 import com.github.qcloudsms.SmsSingleSenderResult;
 

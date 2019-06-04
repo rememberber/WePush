@@ -1,4 +1,4 @@
-package com.fangxuele.tool.push.ui.form;
+package com.fangxuele.tool.push.ui.form.msg;
 
 import com.fangxuele.tool.push.dao.TMsgSmsMapper;
 import com.fangxuele.tool.push.dao.TTemplateDataMapper;
@@ -6,6 +6,7 @@ import com.fangxuele.tool.push.domain.TMsgSms;
 import com.fangxuele.tool.push.domain.TTemplateData;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.intellij.uiDesigner.core.GridConstraints;

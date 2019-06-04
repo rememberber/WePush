@@ -1,8 +1,9 @@
-package com.fangxuele.tool.push.ui.form;
+package com.fangxuele.tool.push.ui.form.msg;
 
 import com.fangxuele.tool.push.dao.TMsgKefuMapper;
 import com.fangxuele.tool.push.domain.TMsgKefu;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
