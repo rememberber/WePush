@@ -61,18 +61,17 @@ public class AliYunMsgForm {
 
     public AliYunMsgForm() {
         // 模板数据-添加 按钮事件
-        aliYunMsgForm.getTemplateMsgDataAddButton().addActionListener(e -> {
+        templateMsgDataAddButton.addActionListener(e -> {
             String[] data = new String[3];
-            data[0] = MessageEditForm.messageEditForm.getTemplateDataNameTextField().getText();
-            data[1] = MessageEditForm.messageEditForm.getTemplateDataValueTextField().getText();
-            data[2] = MessageEditForm.messageEditForm.getTemplateDataColorTextField().getText();
+            data[0] = aliYunMsgForm.getTemplateDataNameTextField().getText();
+            data[1] = aliYunMsgForm.getTemplateDataValueTextField().getText();
+            data[2] = aliYunMsgForm.getTemplateDataColorTextField().getText();
 
-            if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+            if (aliYunMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
                 initTemplateDataTable();
             }
 
-            DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable()
-                    .getModel();
+            DefaultTableModel tableModel = (DefaultTableModel) aliYunMsgForm.getTemplateMsgDataTable().getModel();
             int rowCount = tableModel.getRowCount();
 
             Set<String> keySet = new HashSet<>();
@@ -102,7 +101,7 @@ public class AliYunMsgForm {
     public static void init(String msgName) {
         clearAllField();
         List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.ALI_YUN_CODE, msgName);
-        Integer msgId = null;
+        Integer msgId = 0;
         if (tMsgSmsList.size() > 0) {
             TMsgSms tMsgSms = tMsgSmsList.get(0);
             msgId = tMsgSms.getId();
@@ -131,8 +130,6 @@ public class AliYunMsgForm {
         // 设置列宽
         tableColumnModel.getColumn(3).setPreferredWidth(130);
         tableColumnModel.getColumn(3).setMaxWidth(130);
-
-        aliYunMsgForm.getTemplateMsgDataTable().updateUI();
     }
 
     /**

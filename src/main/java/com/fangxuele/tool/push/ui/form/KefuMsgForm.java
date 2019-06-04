@@ -44,7 +44,7 @@ public class KefuMsgForm {
 
     public KefuMsgForm() {
         // 客服消息类型切换事件
-        kefuMsgForm.getMsgKefuMsgTypeComboBox().addItemListener(e -> KefuMsgForm.switchKefuMsgType(e.getItem().toString()));
+        msgKefuMsgTypeComboBox.addItemListener(e -> KefuMsgForm.switchKefuMsgType(e.getItem().toString()));
     }
 
     public static void init(String msgName) {
@@ -122,13 +122,11 @@ public class KefuMsgForm {
     }
 
     public static void save(String msgName) {
-        int msgId = 0;
         boolean existSameMsg = false;
 
         List<TMsgKefu> tMsgKefuList = msgKefuMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.KEFU_CODE, msgName);
         if (tMsgKefuList.size() > 0) {
             existSameMsg = true;
-            msgId = tMsgKefuList.get(0).getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -163,7 +161,6 @@ public class KefuMsgForm {
                 msgKefuMapper.updateByMsgTypeAndMsgName(tMsgKefu);
             } else {
                 msgKefuMapper.insertSelective(tMsgKefu);
-                msgId = tMsgKefu.getId();
             }
         }
     }

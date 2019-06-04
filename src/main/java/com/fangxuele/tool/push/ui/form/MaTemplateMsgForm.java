@@ -61,17 +61,17 @@ public class MaTemplateMsgForm {
 
     public MaTemplateMsgForm() {
         // 模板数据-添加 按钮事件
-        maTemplateMsgForm.getTemplateMsgDataAddButton().addActionListener(e -> {
+        templateMsgDataAddButton.addActionListener(e -> {
             String[] data = new String[3];
-            data[0] = MessageEditForm.messageEditForm.getTemplateDataNameTextField().getText();
-            data[1] = MessageEditForm.messageEditForm.getTemplateDataValueTextField().getText();
-            data[2] = MessageEditForm.messageEditForm.getTemplateDataColorTextField().getText();
+            data[0] = maTemplateMsgForm.getTemplateDataNameTextField().getText();
+            data[1] = maTemplateMsgForm.getTemplateDataValueTextField().getText();
+            data[2] = maTemplateMsgForm.getTemplateDataColorTextField().getText();
 
-            if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+            if (maTemplateMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
                 initTemplateDataTable();
             }
 
-            DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable()
+            DefaultTableModel tableModel = (DefaultTableModel) maTemplateMsgForm.getTemplateMsgDataTable()
                     .getModel();
             int rowCount = tableModel.getRowCount();
 
@@ -102,7 +102,7 @@ public class MaTemplateMsgForm {
     public static void init(String msgName) {
         clearAllField();
         List<TMsgMaTemplate> tMsgMaTemplateList = msgMaTemplateMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.MA_TEMPLATE_CODE, msgName);
-        Integer msgId = null;
+        Integer msgId = 0;
         if (tMsgMaTemplateList.size() > 0) {
             TMsgMaTemplate tMsgMaTemplate = tMsgMaTemplateList.get(0);
             msgId = tMsgMaTemplate.getId();
@@ -133,8 +133,6 @@ public class MaTemplateMsgForm {
         // 设置列宽
         tableColumnModel.getColumn(3).setPreferredWidth(130);
         tableColumnModel.getColumn(3).setMaxWidth(130);
-
-        maTemplateMsgForm.getTemplateMsgDataTable().updateUI();
     }
 
     /**

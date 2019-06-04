@@ -61,17 +61,17 @@ public class TxYunMsgForm {
 
     public TxYunMsgForm() {
         // 模板数据-添加 按钮事件
-        txYunMsgForm.getTemplateMsgDataAddButton().addActionListener(e -> {
+        templateMsgDataAddButton.addActionListener(e -> {
             String[] data = new String[3];
-            data[0] = MessageEditForm.messageEditForm.getTemplateDataNameTextField().getText();
-            data[1] = MessageEditForm.messageEditForm.getTemplateDataValueTextField().getText();
-            data[2] = MessageEditForm.messageEditForm.getTemplateDataColorTextField().getText();
+            data[0] = txYunMsgForm.getTemplateDataNameTextField().getText();
+            data[1] = txYunMsgForm.getTemplateDataValueTextField().getText();
+            data[2] = txYunMsgForm.getTemplateDataColorTextField().getText();
 
-            if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+            if (txYunMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
                 initTemplateDataTable();
             }
 
-            DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable()
+            DefaultTableModel tableModel = (DefaultTableModel) txYunMsgForm.getTemplateMsgDataTable()
                     .getModel();
             int rowCount = tableModel.getRowCount();
 
@@ -102,7 +102,7 @@ public class TxYunMsgForm {
     public static void init(String msgName) {
         clearAllField();
         List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.TX_YUN_CODE, msgName);
-        Integer msgId = null;
+        Integer msgId = 0;
         if (tMsgSmsList.size() > 0) {
             TMsgSms tMsgSms = tMsgSmsList.get(0);
             msgId = tMsgSms.getId();
@@ -131,8 +131,6 @@ public class TxYunMsgForm {
         // 设置列宽
         tableColumnModel.getColumn(3).setPreferredWidth(130);
         tableColumnModel.getColumn(3).setMaxWidth(130);
-
-        txYunMsgForm.getTemplateMsgDataTable().updateUI();
     }
 
     /**

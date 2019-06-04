@@ -34,10 +34,8 @@ public class YunpianMsgForm {
     public static void init(String msgName) {
         clearAllField();
         List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.YUN_PIAN_CODE, msgName);
-        Integer msgId;
         if (tMsgSmsList.size() > 0) {
             TMsgSms tMsgSms = tMsgSmsList.get(0);
-            msgId = tMsgSms.getId();
             yunpianMsgForm.getMsgYunpianMsgContentTextField().setText(tMsgSms.getContent());
         }
     }
@@ -65,13 +63,11 @@ public class YunpianMsgForm {
     }
 
     public static void save(String msgName) {
-        int msgId = 0;
         boolean existSameMsg = false;
 
         List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.YUN_PIAN_CODE, msgName);
         if (tMsgSmsList.size() > 0) {
             existSameMsg = true;
-            msgId = tMsgSmsList.get(0).getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -96,7 +92,6 @@ public class YunpianMsgForm {
                 msgSmsMapper.updateByMsgTypeAndMsgName(tMsgSms);
             } else {
                 msgSmsMapper.insertSelective(tMsgSms);
-                msgId = tMsgSms.getId();
             }
         }
     }

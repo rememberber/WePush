@@ -20,6 +20,7 @@ import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
+import com.fangxuele.tool.push.ui.form.TxYunMsgForm;
 import com.fangxuele.tool.push.ui.listener.MemberListener;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
@@ -211,7 +212,7 @@ public class PushManage {
                 for (String[] msgData : msgDataList) {
                     String[] params = MessageMaker.makeTxyunMessage(msgData);
                     SmsSingleSenderResult result = smsSingleSender.sendWithParam("86", msgData[0],
-                            Integer.valueOf(MessageEditForm.messageEditForm.getMsgTemplateIdTextField().getText()),
+                            Integer.valueOf(TxYunMsgForm.txYunMsgForm.getMsgTemplateIdTextField().getText()),
                             params, App.config.getAliyunSign(), "", "");
                     if (result.result != 0) {
                         throw new Exception(result.toString());

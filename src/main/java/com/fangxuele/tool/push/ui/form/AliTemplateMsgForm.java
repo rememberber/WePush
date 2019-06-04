@@ -61,17 +61,17 @@ public class AliTemplateMsgForm {
 
     public AliTemplateMsgForm() {
         // 模板数据-添加 按钮事件
-        aliTemplateMsgForm.getTemplateMsgDataAddButton().addActionListener(e -> {
+        templateMsgDataAddButton.addActionListener(e -> {
             String[] data = new String[3];
-            data[0] = MessageEditForm.messageEditForm.getTemplateDataNameTextField().getText();
-            data[1] = MessageEditForm.messageEditForm.getTemplateDataValueTextField().getText();
-            data[2] = MessageEditForm.messageEditForm.getTemplateDataColorTextField().getText();
+            data[0] = aliTemplateMsgForm.getTemplateDataNameTextField().getText();
+            data[1] = aliTemplateMsgForm.getTemplateDataValueTextField().getText();
+            data[2] = aliTemplateMsgForm.getTemplateDataColorTextField().getText();
 
-            if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+            if (aliTemplateMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
                 initTemplateDataTable();
             }
 
-            DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable()
+            DefaultTableModel tableModel = (DefaultTableModel) aliTemplateMsgForm.getTemplateMsgDataTable()
                     .getModel();
             int rowCount = tableModel.getRowCount();
 
@@ -101,7 +101,7 @@ public class AliTemplateMsgForm {
 
     public static void init(String msgName) {
         clearAllField();
-        Integer msgId = null;
+        Integer msgId = 0;
         List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.ALI_TEMPLATE_CODE, msgName);
         if (tMsgSmsList.size() > 0) {
             TMsgSms tMsgSms = tMsgSmsList.get(0);
@@ -131,8 +131,6 @@ public class AliTemplateMsgForm {
         // 设置列宽
         tableColumnModel.getColumn(3).setPreferredWidth(130);
         tableColumnModel.getColumn(3).setMaxWidth(130);
-
-        aliTemplateMsgForm.getTemplateMsgDataTable().updateUI();
     }
 
     /**

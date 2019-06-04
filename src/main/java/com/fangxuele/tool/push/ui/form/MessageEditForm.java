@@ -10,12 +10,10 @@ import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
@@ -38,39 +36,6 @@ public class MessageEditForm {
     private JTextField previewUserField;
     private JButton previewMsgButton;
     private JButton msgSaveButton;
-    private JPanel templateMsgPanel;
-    private JLabel templateIdLabel;
-    private JTextField msgTemplateIdTextField;
-    private JLabel templateUrlLabel;
-    private JTextField msgTemplateUrlTextField;
-    private JPanel templateMsgDataPanel;
-    private JLabel templateMsgNameLabel;
-    private JTextField templateDataNameTextField;
-    private JLabel templateMsgValueLabel;
-    private JTextField templateDataValueTextField;
-    private JLabel templateMsgColorLabel;
-    private JTextField templateDataColorTextField;
-    private JButton templateMsgDataAddButton;
-    private JTable templateMsgDataTable;
-    private JLabel templateMiniProgramAppidLabel;
-    private JTextField msgTemplateMiniAppidTextField;
-    private JLabel templateMiniProgramPagePathLabel;
-    private JTextField msgTemplateMiniPagePathTextField;
-    private JLabel templateKeyWordLabel;
-    private JTextField msgTemplateKeyWordTextField;
-    private JPanel kefuMsgPanel;
-    private JLabel kefuMsgTypeLabel;
-    private JComboBox msgKefuMsgTypeComboBox;
-    private JLabel kefuMsgTitleLabel;
-    private JTextField msgKefuMsgTitleTextField;
-    private JLabel kefuMsgPicUrlLabel;
-    private JLabel kefuMsgDescLabel;
-    private JTextField msgKefuPicUrlTextField;
-    private JTextField msgKefuDescTextField;
-    private JLabel kefuMsgUrlLabel;
-    private JTextField msgKefuUrlTextField;
-    private JPanel yunpianMsgPanel;
-    private JTextArea msgYunpianMsgContentTextField;
     private JPanel msgEditorPanel;
 
     public static MessageEditForm messageEditForm = new MessageEditForm();
@@ -104,21 +69,21 @@ public class MessageEditForm {
             if (tMsgKefuPriorityList.size() > 0) {
                 TMsgKefuPriority tMsgKefuPriority = tMsgKefuPriorityList.get(0);
                 Integer msgId = tMsgKefuPriority.getId();
-                messageEditForm.getMsgTemplateIdTextField().setText(tMsgKefuPriority.getTemplateId());
-                messageEditForm.getMsgTemplateUrlTextField().setText(tMsgKefuPriority.getUrl());
-                messageEditForm.getMsgTemplateMiniAppidTextField().setText(tMsgKefuPriority.getMaAppid());
-                messageEditForm.getMsgTemplateMiniPagePathTextField().setText(tMsgKefuPriority.getMaPagePath());
+                MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateIdTextField().setText(tMsgKefuPriority.getTemplateId());
+                MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateUrlTextField().setText(tMsgKefuPriority.getUrl());
+                MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateMiniAppidTextField().setText(tMsgKefuPriority.getMaAppid());
+                MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateMiniPagePathTextField().setText(tMsgKefuPriority.getMaPagePath());
 
                 String kefuMsgType = tMsgKefuPriority.getKefuMsgType();
-                messageEditForm.getMsgKefuMsgTypeComboBox().setSelectedItem(kefuMsgType);
+                KefuMsgForm.kefuMsgForm.getMsgKefuMsgTypeComboBox().setSelectedItem(kefuMsgType);
                 if ("文本消息".equals(kefuMsgType)) {
-                    messageEditForm.getMsgKefuMsgTitleTextField().setText(tMsgKefuPriority.getContent());
+                    KefuMsgForm.kefuMsgForm.getMsgKefuMsgTitleTextField().setText(tMsgKefuPriority.getContent());
                 } else if ("图文消息".equals(kefuMsgType)) {
-                    messageEditForm.getMsgKefuMsgTitleTextField().setText(tMsgKefuPriority.getTitle());
+                    KefuMsgForm.kefuMsgForm.getMsgKefuMsgTitleTextField().setText(tMsgKefuPriority.getTitle());
                 }
-                messageEditForm.getMsgKefuPicUrlTextField().setText(tMsgKefuPriority.getImgUrl());
-                messageEditForm.getMsgKefuDescTextField().setText(tMsgKefuPriority.getDescribe());
-                messageEditForm.getMsgKefuUrlTextField().setText(tMsgKefuPriority.getKefuUrl());
+                KefuMsgForm.kefuMsgForm.getMsgKefuPicUrlTextField().setText(tMsgKefuPriority.getImgUrl());
+                KefuMsgForm.kefuMsgForm.getMsgKefuDescTextField().setText(tMsgKefuPriority.getDescribe());
+                KefuMsgForm.kefuMsgForm.getMsgKefuUrlTextField().setText(tMsgKefuPriority.getKefuUrl());
 
                 KefuMsgForm.switchKefuMsgType(kefuMsgType);
 
@@ -134,18 +99,18 @@ public class MessageEditForm {
                     cellData[i][2] = tTemplateData.getColor();
                 }
                 DefaultTableModel model = new DefaultTableModel(cellData, headerNames);
-                messageEditForm.getTemplateMsgDataTable().setModel(model);
-                TableColumnModel tableColumnModel = messageEditForm.getTemplateMsgDataTable().getColumnModel();
+                MpTemplateMsgForm.mpTemplateMsgForm.getTemplateMsgDataTable().setModel(model);
+                TableColumnModel tableColumnModel = MpTemplateMsgForm.mpTemplateMsgForm.getTemplateMsgDataTable().getColumnModel();
                 tableColumnModel.getColumn(headerNames.length - 1).
-                        setCellRenderer(new TableInCellButtonColumn(messageEditForm.getTemplateMsgDataTable(), headerNames.length - 1));
+                        setCellRenderer(new TableInCellButtonColumn(MpTemplateMsgForm.mpTemplateMsgForm.getTemplateMsgDataTable(), headerNames.length - 1));
                 tableColumnModel.getColumn(headerNames.length - 1).
-                        setCellEditor(new TableInCellButtonColumn(messageEditForm.getTemplateMsgDataTable(), headerNames.length - 1));
+                        setCellEditor(new TableInCellButtonColumn(MpTemplateMsgForm.mpTemplateMsgForm.getTemplateMsgDataTable(), headerNames.length - 1));
 
                 // 设置列宽
                 tableColumnModel.getColumn(3).setPreferredWidth(130);
                 tableColumnModel.getColumn(3).setMaxWidth(130);
 
-                messageEditForm.getTemplateMsgDataTable().updateUI();
+                MpTemplateMsgForm.mpTemplateMsgForm.getTemplateMsgDataTable().updateUI();
             }
         } else if (msgType == MessageTypeEnum.MA_TEMPLATE_CODE) {
             MaTemplateMsgForm.init(msgName);
@@ -173,44 +138,44 @@ public class MessageEditForm {
         GridConstraints gridConstraintsRow1 = new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false);
         switch (msgType) {
             case MessageTypeEnum.MP_TEMPLATE_CODE:
-                MpTemplateMsgForm.clearAllField();
+                MpTemplateMsgForm.init(null);
                 messageEditForm.getMsgEditorPanel().add(MpTemplateMsgForm.mpTemplateMsgForm.getTemplateMsgPanel(), gridConstraintsRow0);
                 messageEditForm.getPreviewMemberLabel().setText("预览用户openid");
                 break;
             case MessageTypeEnum.MA_TEMPLATE_CODE:
-                MaTemplateMsgForm.clearAllField();
+                MaTemplateMsgForm.init(null);
                 messageEditForm.getMsgEditorPanel().add(MaTemplateMsgForm.maTemplateMsgForm.getTemplateMsgPanel(), gridConstraintsRow0);
                 messageEditForm.getPreviewMemberLabel().setText("预览用户openid");
                 break;
             case MessageTypeEnum.KEFU_CODE:
-                KefuMsgForm.clearAllField();
+                KefuMsgForm.init(null);
                 messageEditForm.getMsgEditorPanel().add(KefuMsgForm.kefuMsgForm.getKefuMsgPanel(), gridConstraintsRow0);
                 messageEditForm.getPreviewMemberLabel().setText("预览用户openid");
                 break;
             case MessageTypeEnum.KEFU_PRIORITY_CODE:
-                KefuMsgForm.clearAllField();
+                KefuMsgForm.init(null);
                 MpTemplateMsgForm.clearAllField();
                 messageEditForm.getMsgEditorPanel().add(KefuMsgForm.kefuMsgForm.getKefuMsgPanel(), gridConstraintsRow0);
                 messageEditForm.getMsgEditorPanel().add(MpTemplateMsgForm.mpTemplateMsgForm.getTemplateMsgPanel(), gridConstraintsRow1);
                 messageEditForm.getPreviewMemberLabel().setText("预览用户openid");
                 break;
             case MessageTypeEnum.ALI_YUN_CODE:
-                AliYunMsgForm.clearAllField();
+                AliYunMsgForm.init(null);
                 messageEditForm.getMsgEditorPanel().add(AliYunMsgForm.aliYunMsgForm.getTemplateMsgPanel(), gridConstraintsRow0);
                 messageEditForm.getPreviewMemberLabel().setText("预览用户手机号");
                 break;
             case MessageTypeEnum.TX_YUN_CODE:
-                TxYunMsgForm.clearAllField();
+                TxYunMsgForm.init(null);
                 messageEditForm.getMsgEditorPanel().add(TxYunMsgForm.txYunMsgForm.getTemplateMsgPanel(), gridConstraintsRow0);
                 messageEditForm.getPreviewMemberLabel().setText("预览用户手机号");
                 break;
             case MessageTypeEnum.ALI_TEMPLATE_CODE:
-                AliTemplateMsgForm.clearAllField();
+                AliTemplateMsgForm.init(null);
                 messageEditForm.getMsgEditorPanel().add(AliTemplateMsgForm.aliTemplateMsgForm.getTemplateMsgPanel(), gridConstraintsRow0);
                 messageEditForm.getPreviewMemberLabel().setText("预览用户手机号");
                 break;
             case MessageTypeEnum.YUN_PIAN_CODE:
-                YunpianMsgForm.clearAllField();
+                YunpianMsgForm.init(null);
                 messageEditForm.getMsgEditorPanel().add(YunpianMsgForm.yunpianMsgForm.getYunpianMsgPanel(), gridConstraintsRow0);
                 messageEditForm.getPreviewMemberLabel().setText("预览用户手机号");
                 break;
@@ -273,137 +238,10 @@ public class MessageEditForm {
         msgSaveButton.setText("保存");
         panel3.add(msgSaveButton, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         msgEditorPanel = new JPanel();
-        msgEditorPanel.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
+        msgEditorPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         messageEditPanel.add(msgEditorPanel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        kefuMsgPanel = new JPanel();
-        kefuMsgPanel.setLayout(new GridLayoutManager(6, 2, new Insets(10, 15, 0, 0), -1, -1));
-        msgEditorPanel.add(kefuMsgPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        kefuMsgPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "客服消息编辑", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, kefuMsgPanel.getFont())));
-        kefuMsgTypeLabel = new JLabel();
-        kefuMsgTypeLabel.setText("消息类型");
-        kefuMsgPanel.add(kefuMsgTypeLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final Spacer spacer1 = new Spacer();
-        kefuMsgPanel.add(spacer1, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        msgKefuMsgTypeComboBox = new JComboBox();
-        final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
-        defaultComboBoxModel1.addElement("图文消息");
-        defaultComboBoxModel1.addElement("文本消息");
-        msgKefuMsgTypeComboBox.setModel(defaultComboBoxModel1);
-        kefuMsgPanel.add(msgKefuMsgTypeComboBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        kefuMsgTitleLabel = new JLabel();
-        kefuMsgTitleLabel.setText("内容/标题");
-        kefuMsgPanel.add(kefuMsgTitleLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        msgKefuMsgTitleTextField = new JTextField();
-        kefuMsgPanel.add(msgKefuMsgTitleTextField, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, new Dimension(380, -1), new Dimension(380, -1), null, 0, false));
-        kefuMsgPicUrlLabel = new JLabel();
-        kefuMsgPicUrlLabel.setText("图片URL");
-        kefuMsgPanel.add(kefuMsgPicUrlLabel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        msgKefuPicUrlTextField = new JTextField();
-        kefuMsgPanel.add(msgKefuPicUrlTextField, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        kefuMsgDescLabel = new JLabel();
-        kefuMsgDescLabel.setText("描述");
-        kefuMsgPanel.add(kefuMsgDescLabel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        msgKefuDescTextField = new JTextField();
-        kefuMsgPanel.add(msgKefuDescTextField, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        kefuMsgUrlLabel = new JLabel();
-        kefuMsgUrlLabel.setText("跳转URL");
-        kefuMsgPanel.add(kefuMsgUrlLabel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        msgKefuUrlTextField = new JTextField();
-        kefuMsgPanel.add(msgKefuUrlTextField, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        templateMsgPanel = new JPanel();
-        templateMsgPanel.setLayout(new GridLayoutManager(6, 3, new Insets(10, 15, 0, 0), -1, -1));
-        msgEditorPanel.add(templateMsgPanel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        templateMsgPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "模板消息编辑", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, templateMsgPanel.getFont())));
-        templateIdLabel = new JLabel();
-        templateIdLabel.setText("模板ID *");
-        templateMsgPanel.add(templateIdLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        msgTemplateIdTextField = new JTextField();
-        templateMsgPanel.add(msgTemplateIdTextField, new GridConstraints(0, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        templateUrlLabel = new JLabel();
-        templateUrlLabel.setText("跳转URL");
-        templateMsgPanel.add(templateUrlLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        msgTemplateUrlTextField = new JTextField();
-        templateMsgPanel.add(msgTemplateUrlTextField, new GridConstraints(1, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        templateMsgDataPanel = new JPanel();
-        templateMsgDataPanel.setLayout(new GridLayoutManager(2, 7, new Insets(10, 0, 0, 0), -1, -1));
-        templateMsgPanel.add(templateMsgDataPanel, new GridConstraints(5, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        templateMsgDataPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "模板变量（可使用\"$ENTER$\"作为换行符）", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, templateMsgDataPanel.getFont())));
-        templateMsgNameLabel = new JLabel();
-        templateMsgNameLabel.setText("name");
-        templateMsgNameLabel.setToolTipText("当消息类型是模板消息时的示例：first或者keyword1或者remark之类的");
-        templateMsgDataPanel.add(templateMsgNameLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        templateDataNameTextField = new JTextField();
-        templateDataNameTextField.setToolTipText("当消息类型是模板消息时的示例：first或者keyword1或者remark之类的");
-        templateMsgDataPanel.add(templateDataNameTextField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        templateMsgValueLabel = new JLabel();
-        templateMsgValueLabel.setText("value");
-        templateMsgDataPanel.add(templateMsgValueLabel, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        templateDataValueTextField = new JTextField();
-        templateMsgDataPanel.add(templateDataValueTextField, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        templateMsgColorLabel = new JLabel();
-        templateMsgColorLabel.setText("color");
-        templateMsgColorLabel.setToolTipText("示例值：FF0000");
-        templateMsgDataPanel.add(templateMsgColorLabel, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        templateDataColorTextField = new JTextField();
-        templateDataColorTextField.setToolTipText("示例值：FF0000");
-        templateMsgDataPanel.add(templateDataColorTextField, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        templateMsgDataAddButton = new JButton();
-        templateMsgDataAddButton.setIcon(new ImageIcon(getClass().getResource("/icon/add.png")));
-        templateMsgDataAddButton.setText("添加");
-        templateMsgDataPanel.add(templateMsgDataAddButton, new GridConstraints(0, 6, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JScrollPane scrollPane1 = new JScrollPane();
-        templateMsgDataPanel.add(scrollPane1, new GridConstraints(1, 0, 1, 7, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        templateMsgDataTable = new JTable();
-        templateMsgDataTable.setAutoCreateColumnsFromModel(true);
-        templateMsgDataTable.setAutoCreateRowSorter(true);
-        templateMsgDataTable.setGridColor(new Color(-12236470));
-        templateMsgDataTable.setRowHeight(36);
-        scrollPane1.setViewportView(templateMsgDataTable);
-        templateMiniProgramAppidLabel = new JLabel();
-        templateMiniProgramAppidLabel.setText("小程序appid");
-        templateMiniProgramAppidLabel.setToolTipText("非必填");
-        templateMsgPanel.add(templateMiniProgramAppidLabel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        msgTemplateMiniAppidTextField = new JTextField();
-        msgTemplateMiniAppidTextField.setText("");
-        msgTemplateMiniAppidTextField.setToolTipText("非必填");
-        templateMsgPanel.add(msgTemplateMiniAppidTextField, new GridConstraints(3, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        templateMiniProgramPagePathLabel = new JLabel();
-        templateMiniProgramPagePathLabel.setText("小程序页面路径");
-        templateMiniProgramPagePathLabel.setToolTipText("非必填");
-        templateMsgPanel.add(templateMiniProgramPagePathLabel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        msgTemplateMiniPagePathTextField = new JTextField();
-        msgTemplateMiniPagePathTextField.setText("");
-        msgTemplateMiniPagePathTextField.setToolTipText("非必填");
-        templateMsgPanel.add(msgTemplateMiniPagePathTextField, new GridConstraints(4, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        templateKeyWordLabel = new JLabel();
-        templateKeyWordLabel.setText("放大关键词");
-        templateMsgPanel.add(templateKeyWordLabel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        msgTemplateKeyWordTextField = new JTextField();
-        templateMsgPanel.add(msgTemplateKeyWordTextField, new GridConstraints(2, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        yunpianMsgPanel = new JPanel();
-        yunpianMsgPanel.setLayout(new GridLayoutManager(1, 1, new Insets(10, 0, 0, 0), -1, -1));
-        msgEditorPanel.add(yunpianMsgPanel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        yunpianMsgPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "云片网短信编辑", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, yunpianMsgPanel.getFont())));
-        final JScrollPane scrollPane2 = new JScrollPane();
-        yunpianMsgPanel.add(scrollPane2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(72, 19), null, 0, false));
-        msgYunpianMsgContentTextField = new JTextArea();
-        msgYunpianMsgContentTextField.setPreferredSize(new Dimension(0, 200));
-        scrollPane2.setViewportView(msgYunpianMsgContentTextField);
         msgNameLabel.setLabelFor(msgNameField);
         previewMemberLabel.setLabelFor(previewUserField);
-        kefuMsgTypeLabel.setLabelFor(msgKefuMsgTypeComboBox);
-        kefuMsgTitleLabel.setLabelFor(msgKefuMsgTitleTextField);
-        kefuMsgPicUrlLabel.setLabelFor(msgKefuPicUrlTextField);
-        kefuMsgDescLabel.setLabelFor(msgKefuDescTextField);
-        kefuMsgUrlLabel.setLabelFor(msgKefuUrlTextField);
-        templateIdLabel.setLabelFor(msgTemplateIdTextField);
-        templateUrlLabel.setLabelFor(msgTemplateUrlTextField);
-        templateMsgNameLabel.setLabelFor(templateDataNameTextField);
-        templateMsgValueLabel.setLabelFor(templateDataValueTextField);
-        templateMsgColorLabel.setLabelFor(templateDataColorTextField);
-        templateMiniProgramAppidLabel.setLabelFor(msgTemplateMiniAppidTextField);
-        templateMiniProgramPagePathLabel.setLabelFor(msgTemplateMiniPagePathTextField);
-        templateKeyWordLabel.setLabelFor(msgTemplateUrlTextField);
     }
 
     /**

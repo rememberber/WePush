@@ -194,12 +194,12 @@ public class MsgListener {
                         }
 
                         // 如果table为空，则初始化
-                        if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+                        if (MpTemplateMsgForm.mpTemplateMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
                             MpTemplateMsgForm.initTemplateDataTable();
                         }
 
                         // 逐行读取
-                        DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable()
+                        DefaultTableModel tableModel = (DefaultTableModel) MpTemplateMsgForm.mpTemplateMsgForm.getTemplateMsgDataTable()
                                 .getModel();
                         int rowCount = tableModel.getRowCount();
                         for (int i = 0; i < rowCount; i++) {

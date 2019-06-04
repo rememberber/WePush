@@ -62,17 +62,17 @@ public class MpTemplateMsgForm {
 
     public MpTemplateMsgForm() {
         // 模板数据-添加 按钮事件
-        mpTemplateMsgForm.getTemplateMsgDataAddButton().addActionListener(e -> {
+        templateMsgDataAddButton.addActionListener(e -> {
             String[] data = new String[3];
-            data[0] = MessageEditForm.messageEditForm.getTemplateDataNameTextField().getText();
-            data[1] = MessageEditForm.messageEditForm.getTemplateDataValueTextField().getText();
-            data[2] = MessageEditForm.messageEditForm.getTemplateDataColorTextField().getText();
+            data[0] = mpTemplateMsgForm.getTemplateDataNameTextField().getText();
+            data[1] = mpTemplateMsgForm.getTemplateDataValueTextField().getText();
+            data[2] = mpTemplateMsgForm.getTemplateDataColorTextField().getText();
 
-            if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+            if (mpTemplateMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
                 initTemplateDataTable();
             }
 
-            DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable()
+            DefaultTableModel tableModel = (DefaultTableModel) mpTemplateMsgForm.getTemplateMsgDataTable()
                     .getModel();
             int rowCount = tableModel.getRowCount();
 
@@ -102,7 +102,7 @@ public class MpTemplateMsgForm {
 
     public static void init(String msgName) {
         clearAllField();
-        Integer msgId = null;
+        Integer msgId = 0;
         List<TMsgMpTemplate> tMsgMpTemplateList = msgMpTemplateMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.MP_TEMPLATE_CODE, msgName);
         if (tMsgMpTemplateList.size() > 0) {
             TMsgMpTemplate tMsgMpTemplate = tMsgMpTemplateList.get(0);
@@ -135,8 +135,6 @@ public class MpTemplateMsgForm {
         // 设置列宽
         tableColumnModel.getColumn(3).setPreferredWidth(130);
         tableColumnModel.getColumn(3).setMaxWidth(130);
-
-        mpTemplateMsgForm.getTemplateMsgDataTable().updateUI();
     }
 
     /**
