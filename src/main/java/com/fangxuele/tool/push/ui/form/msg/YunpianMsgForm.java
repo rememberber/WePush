@@ -3,7 +3,7 @@ package com.fangxuele.tool.push.ui.form.msg;
 import com.fangxuele.tool.push.dao.TMsgSmsMapper;
 import com.fangxuele.tool.push.domain.TMsgSms;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
-import com.fangxuele.tool.push.ui.form.MessageEditForm;
+import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -74,7 +74,7 @@ public class YunpianMsgForm {
         int isCover = JOptionPane.NO_OPTION;
         if (existSameMsg) {
             // 如果存在，是否覆盖
-            isCover = JOptionPane.showConfirmDialog(MessageEditForm.messageEditForm.getMsgEditorPanel(), "已经存在同名的历史消息，\n是否覆盖？", "确认",
+            isCover = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getMessagePanel(), "已经存在同名的历史消息，\n是否覆盖？", "确认",
                     JOptionPane.YES_NO_OPTION);
         }
         if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
@@ -94,6 +94,9 @@ public class YunpianMsgForm {
             } else {
                 msgSmsMapper.insertSelective(tMsgSms);
             }
+
+            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "保存成功！", "成功",
+                    JOptionPane.INFORMATION_MESSAGE);
         }
     }
 

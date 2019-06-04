@@ -9,13 +9,13 @@ import com.fangxuele.tool.push.domain.TMsgKefuPriority;
 import com.fangxuele.tool.push.domain.TTemplateData;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.PushManage;
+import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
+import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.ui.form.msg.AliTemplateMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.AliYunMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.KefuMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.MaTemplateMsgForm;
-import com.fangxuele.tool.push.ui.form.MainWindow;
-import com.fangxuele.tool.push.ui.form.MessageEditForm;
-import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.ui.form.msg.MpTemplateMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.TxYunMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.YunpianMsgForm;
@@ -72,7 +72,7 @@ public class MsgEditListener {
                     int isCover = JOptionPane.NO_OPTION;
                     if (existSameMsg) {
                         // 如果存在，是否覆盖
-                        isCover = JOptionPane.showConfirmDialog(messagePanel, "已经存在同名的历史消息，\n是否覆盖？", "确认",
+                        isCover = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getMessagePanel(), "已经存在同名的历史消息，\n是否覆盖？", "确认",
                                 JOptionPane.YES_NO_OPTION);
                     }
 
@@ -143,6 +143,9 @@ public class MsgEditListener {
 
                             templateDataMapper.insert(tTemplateData);
                         }
+
+                        JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "保存成功！", "成功",
+                                JOptionPane.INFORMATION_MESSAGE);
                     }
 
                 } else if (msgType == MessageTypeEnum.MA_TEMPLATE_CODE) {
@@ -159,13 +162,8 @@ public class MsgEditListener {
                     YunpianMsgForm.save(msgName);
                 }
 
-
                 App.config.setPreviewUser(MessageEditForm.messageEditForm.getPreviewUserField().getText());
                 App.config.save();
-
-                JOptionPane.showMessageDialog(messagePanel, "保存成功！", "成功",
-                        JOptionPane.INFORMATION_MESSAGE);
-
                 MessageManageForm.init();
             } catch (Exception e1) {
                 JOptionPane.showMessageDialog(messagePanel, "保存失败！\n\n" + e1.getMessage(), "失败",

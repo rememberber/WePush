@@ -6,6 +6,7 @@ import com.fangxuele.tool.push.domain.TMsgMpTemplate;
 import com.fangxuele.tool.push.domain.TTemplateData;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
+import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
@@ -198,7 +199,7 @@ public class MpTemplateMsgForm {
         int isCover = JOptionPane.NO_OPTION;
         if (existSameMsg) {
             // 如果存在，是否覆盖
-            isCover = JOptionPane.showConfirmDialog(MessageEditForm.messageEditForm.getMsgEditorPanel(), "已经存在同名的历史消息，\n是否覆盖？", "确认",
+            isCover = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getMessagePanel(), "已经存在同名的历史消息，\n是否覆盖？", "确认",
                     JOptionPane.YES_NO_OPTION);
         }
 
@@ -259,6 +260,9 @@ public class MpTemplateMsgForm {
 
                 templateDataMapper.insert(tTemplateData);
             }
+
+            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "保存成功！", "成功",
+                    JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
