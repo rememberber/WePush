@@ -3,7 +3,7 @@ package com.fangxuele.tool.push.ui.frame;
 import com.apple.eawt.Application;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.listener.AboutListener;
-import com.fangxuele.tool.push.ui.listener.FramListener;
+import com.fangxuele.tool.push.ui.listener.FrameListener;
 import com.fangxuele.tool.push.ui.listener.HelpListener;
 import com.fangxuele.tool.push.ui.listener.MemberListener;
 import com.fangxuele.tool.push.ui.listener.MessageTypeListener;
@@ -70,6 +70,6 @@ public class MainFrame extends JFrame {
         PushListener.addListeners();
         ScheduleListener.addListeners();
         TabListener.addListeners();
-        FramListener.addListeners();
+        FrameListener.addListeners();
     }
 }

@@ -467,7 +467,6 @@ public class PushManage {
         String nowTime = DateUtil.now().replace(":", "_").replace(" ", "_");
         CSVWriter writer;
         int msgType = App.config.getMsgType();
-        String now = SqliteUtil.nowDateForSqlite();
 
         // 保存已发送
         if (PushData.sendSuccessList.size() > 0) {
@@ -484,16 +483,7 @@ public class PushManage {
             }
             writer.close();
 
-            TPushHistory tPushHistory = new TPushHistory();
-//          TODO  tPushHistory.setMsgId(0);
-            tPushHistory.setMsgType(msgType);
-            tPushHistory.setMsgName(msgName);
-            tPushHistory.setResult("发送成功");
-            tPushHistory.setCsvFile(sendSuccessFile.getAbsolutePath());
-            tPushHistory.setCreateTime(now);
-            tPushHistory.setModifiedTime(now);
-
-            pushHistoryMapper.insertSelective(tPushHistory);
+            savePushResult(msgName, "发送成功", sendSuccessFile);
         }
 
         // 保存未发送
@@ -516,16 +506,7 @@ public class PushManage {
             }
             writer.close();
 
-            TPushHistory tPushHistory = new TPushHistory();
-//          TODO  tPushHistory.setMsgId(0);
-            tPushHistory.setMsgType(msgType);
-            tPushHistory.setMsgName(msgName);
-            tPushHistory.setResult("未发送");
-            tPushHistory.setCsvFile(unSendFile.getAbsolutePath());
-            tPushHistory.setCreateTime(now);
-            tPushHistory.setModifiedTime(now);
-
-            pushHistoryMapper.insertSelective(tPushHistory);
+            savePushResult(msgName, "未发送", unSendFile);
         }
 
         // 保存发送失败
@@ -541,19 +522,30 @@ public class PushManage {
             }
             writer.close();
 
-            TPushHistory tPushHistory = new TPushHistory();
-//          TODO  tPushHistory.setMsgId(0);
-            tPushHistory.setMsgType(msgType);
-            tPushHistory.setMsgName(msgName);
-            tPushHistory.setResult("发送失败");
-            tPushHistory.setCsvFile(failSendFile.getAbsolutePath());
-            tPushHistory.setCreateTime(now);
-            tPushHistory.setModifiedTime(now);
-
-            pushHistoryMapper.insertSelective(tPushHistory);
+            savePushResult(msgName, "发送失败", failSendFile);
         }
 
         PushHisForm.init();
+    }
+
+    /**
+     * 保存结果到DB
+     *
+     * @param msgName
+     * @param resultInfo
+     * @param file
+     */
+    private static void savePushResult(String msgName, String resultInfo, File file) {
+        TPushHistory tPushHistory = new TPushHistory();
+        String now = SqliteUtil.nowDateForSqlite();
+        tPushHistory.setMsgType(App.config.getMsgType());
+        tPushHistory.setMsgName(msgName);
+        tPushHistory.setResult(resultInfo);
+        tPushHistory.setCsvFile(file.getAbsolutePath());
+        tPushHistory.setCreateTime(now);
+        tPushHistory.setModifiedTime(now);
+
+        pushHistoryMapper.insertSelective(tPushHistory);
     }
 
     /**

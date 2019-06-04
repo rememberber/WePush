@@ -145,7 +145,6 @@ public class AliYunMsgForm {
      * 清空所有界面字段
      */
     public static void clearAllField() {
-        // TODO
         aliYunMsgForm.getMsgTemplateIdTextField().setText("");
         aliYunMsgForm.getTemplateDataNameTextField().setText("");
         aliYunMsgForm.getTemplateDataValueTextField().setText("");
