@@ -41,10 +41,6 @@ public class MaTemplateMsgForm {
     private JLabel templateUrlLabel;
     private JTextField msgTemplateUrlTextField;
     private JPanel templateMsgDataPanel;
-    private JLabel templateMiniProgramAppidLabel;
-    private JTextField msgTemplateMiniAppidTextField;
-    private JLabel templateMiniProgramPagePathLabel;
-    private JTextField msgTemplateMiniPagePathTextField;
     private JLabel templateKeyWordLabel;
     private JTextField msgTemplateKeyWordTextField;
     private JLabel templateMsgNameLabel;
@@ -280,7 +276,7 @@ public class MaTemplateMsgForm {
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         templateMsgPanel = new JPanel();
-        templateMsgPanel.setLayout(new GridLayoutManager(6, 3, new Insets(10, 15, 0, 0), -1, -1));
+        templateMsgPanel.setLayout(new GridLayoutManager(4, 3, new Insets(10, 15, 0, 0), -1, -1));
         panel1.add(templateMsgPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         templateMsgPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "模板消息编辑", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, templateMsgPanel.getFont())));
         templateIdLabel = new JLabel();
@@ -295,7 +291,7 @@ public class MaTemplateMsgForm {
         templateMsgPanel.add(msgTemplateUrlTextField, new GridConstraints(1, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         templateMsgDataPanel = new JPanel();
         templateMsgDataPanel.setLayout(new GridLayoutManager(2, 7, new Insets(10, 0, 0, 0), -1, -1));
-        templateMsgPanel.add(templateMsgDataPanel, new GridConstraints(5, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        templateMsgPanel.add(templateMsgDataPanel, new GridConstraints(3, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         templateMsgDataPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "模板变量（可使用\"$ENTER$\"作为换行符）", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, templateMsgDataPanel.getFont())));
         templateMsgNameLabel = new JLabel();
         templateMsgNameLabel.setText("name");
@@ -328,22 +324,6 @@ public class MaTemplateMsgForm {
         templateMsgDataTable.setGridColor(new Color(-12236470));
         templateMsgDataTable.setRowHeight(36);
         scrollPane1.setViewportView(templateMsgDataTable);
-        templateMiniProgramAppidLabel = new JLabel();
-        templateMiniProgramAppidLabel.setText("小程序appid");
-        templateMiniProgramAppidLabel.setToolTipText("非必填");
-        templateMsgPanel.add(templateMiniProgramAppidLabel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        msgTemplateMiniAppidTextField = new JTextField();
-        msgTemplateMiniAppidTextField.setText("");
-        msgTemplateMiniAppidTextField.setToolTipText("非必填");
-        templateMsgPanel.add(msgTemplateMiniAppidTextField, new GridConstraints(3, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        templateMiniProgramPagePathLabel = new JLabel();
-        templateMiniProgramPagePathLabel.setText("小程序页面路径");
-        templateMiniProgramPagePathLabel.setToolTipText("非必填");
-        templateMsgPanel.add(templateMiniProgramPagePathLabel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        msgTemplateMiniPagePathTextField = new JTextField();
-        msgTemplateMiniPagePathTextField.setText("");
-        msgTemplateMiniPagePathTextField.setToolTipText("非必填");
-        templateMsgPanel.add(msgTemplateMiniPagePathTextField, new GridConstraints(4, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         templateKeyWordLabel = new JLabel();
         templateKeyWordLabel.setText("放大关键词");
         templateMsgPanel.add(templateKeyWordLabel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -354,8 +334,6 @@ public class MaTemplateMsgForm {
         templateMsgNameLabel.setLabelFor(templateDataNameTextField);
         templateMsgValueLabel.setLabelFor(templateDataValueTextField);
         templateMsgColorLabel.setLabelFor(templateDataColorTextField);
-        templateMiniProgramAppidLabel.setLabelFor(msgTemplateMiniAppidTextField);
-        templateMiniProgramPagePathLabel.setLabelFor(msgTemplateMiniPagePathTextField);
         templateKeyWordLabel.setLabelFor(msgTemplateUrlTextField);
     }
 
@@ -377,4 +355,5 @@ public class MaTemplateMsgForm {
         }
         return new Font(resultName, style >= 0 ? style : currentFont.getStyle(), size >= 0 ? size : currentFont.getSize());
     }
+
 }
