@@ -1,12 +1,27 @@
 package com.fangxuele.tool.push.ui.form;
 
+import com.fangxuele.tool.push.dao.TMsgSmsMapper;
+import com.fangxuele.tool.push.dao.TTemplateDataMapper;
+import com.fangxuele.tool.push.domain.TMsgSms;
+import com.fangxuele.tool.push.domain.TTemplateData;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
+import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.SqliteUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * <pre>
@@ -40,6 +55,203 @@ public class AliTemplateMsgForm {
     private JTable templateMsgDataTable;
 
     public static AliTemplateMsgForm aliTemplateMsgForm = new AliTemplateMsgForm();
+
+    private static TMsgSmsMapper msgSmsMapper = MybatisUtil.getSqlSession().getMapper(TMsgSmsMapper.class);
+    private static TTemplateDataMapper templateDataMapper = MybatisUtil.getSqlSession().getMapper(TTemplateDataMapper.class);
+
+    public AliTemplateMsgForm() {
+        // 模板数据-添加 按钮事件
+        aliTemplateMsgForm.getTemplateMsgDataAddButton().addActionListener(e -> {
+            String[] data = new String[3];
+            data[0] = MessageEditForm.messageEditForm.getTemplateDataNameTextField().getText();
+            data[1] = MessageEditForm.messageEditForm.getTemplateDataValueTextField().getText();
+            data[2] = MessageEditForm.messageEditForm.getTemplateDataColorTextField().getText();
+
+            if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+                initTemplateDataTable();
+            }
+
+            DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable()
+                    .getModel();
+            int rowCount = tableModel.getRowCount();
+
+            Set<String> keySet = new HashSet<>();
+            String keyData;
+            for (int i = 0; i < rowCount; i++) {
+                keyData = (String) tableModel.getValueAt(i, 0);
+                keySet.add(keyData);
+            }
+
+            if (StringUtils.isEmpty(data[0]) || StringUtils.isEmpty(data[1])) {
+                JOptionPane.showMessageDialog(MessageEditForm.messageEditForm.getMsgEditorPanel(), "Name或value不能为空！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } else if (keySet.contains(data[0])) {
+                JOptionPane.showMessageDialog(MessageEditForm.messageEditForm.getMsgEditorPanel(), "Name不能重复！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                if (StringUtils.isEmpty(data[2])) {
+                    data[2] = "#000000";
+                } else if (!data[2].startsWith("#")) {
+                    data[2] = "#" + data[2];
+                }
+                tableModel.addRow(data);
+            }
+        });
+    }
+
+    public static void init(String msgName) {
+        clearAllField();
+        Integer msgId = null;
+        List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.ALI_TEMPLATE_CODE, msgName);
+        if (tMsgSmsList.size() > 0) {
+            TMsgSms tMsgSms = tMsgSmsList.get(0);
+            msgId = tMsgSms.getId();
+            aliTemplateMsgForm.getMsgTemplateIdTextField().setText(tMsgSms.getTemplateId());
+        }
+
+        initTemplateDataTable();
+        // 模板消息Data表
+        List<TTemplateData> templateDataList = templateDataMapper.selectByMsgTypeAndMsgId(MessageTypeEnum.ALI_TEMPLATE_CODE, msgId);
+        String[] headerNames = {"Name", "Value", "Color", "操作"};
+        Object[][] cellData = new String[templateDataList.size()][headerNames.length];
+        for (int i = 0; i < templateDataList.size(); i++) {
+            TTemplateData tTemplateData = templateDataList.get(i);
+            cellData[i][0] = tTemplateData.getName();
+            cellData[i][1] = tTemplateData.getValue();
+            cellData[i][2] = tTemplateData.getColor();
+        }
+        DefaultTableModel model = new DefaultTableModel(cellData, headerNames);
+        aliTemplateMsgForm.getTemplateMsgDataTable().setModel(model);
+        TableColumnModel tableColumnModel = aliTemplateMsgForm.getTemplateMsgDataTable().getColumnModel();
+        tableColumnModel.getColumn(headerNames.length - 1).
+                setCellRenderer(new TableInCellButtonColumn(aliTemplateMsgForm.getTemplateMsgDataTable(), headerNames.length - 1));
+        tableColumnModel.getColumn(headerNames.length - 1).
+                setCellEditor(new TableInCellButtonColumn(aliTemplateMsgForm.getTemplateMsgDataTable(), headerNames.length - 1));
+
+        // 设置列宽
+        tableColumnModel.getColumn(3).setPreferredWidth(130);
+        tableColumnModel.getColumn(3).setMaxWidth(130);
+
+        aliTemplateMsgForm.getTemplateMsgDataTable().updateUI();
+    }
+
+    /**
+     * 初始化模板消息数据table
+     */
+    public static void initTemplateDataTable() {
+        JTable msgDataTable = aliTemplateMsgForm.getTemplateMsgDataTable();
+        String[] headerNames = {"Name", "Value", "Color", "操作"};
+        DefaultTableModel model = new DefaultTableModel(null, headerNames);
+        msgDataTable.setModel(model);
+        msgDataTable.updateUI();
+        DefaultTableCellRenderer hr = (DefaultTableCellRenderer) msgDataTable.getTableHeader().getDefaultRenderer();
+        // 表头列名居左
+        hr.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
+
+        TableColumnModel tableColumnModel = msgDataTable.getColumnModel();
+        tableColumnModel.getColumn(headerNames.length - 1).
+                setCellRenderer(new TableInCellButtonColumn(msgDataTable, headerNames.length - 1));
+        tableColumnModel.getColumn(headerNames.length - 1).
+                setCellEditor(new TableInCellButtonColumn(msgDataTable, headerNames.length - 1));
+
+        // 设置列宽
+        tableColumnModel.getColumn(3).setPreferredWidth(130);
+        tableColumnModel.getColumn(3).setMaxWidth(130);
+    }
+
+    /**
+     * 清空所有界面字段
+     */
+    public static void clearAllField() {
+        // TODO
+//        messageEditForm.getMsgNameField().setText("");
+//        messageEditForm.getMsgTemplateIdTextField().setText("");
+//        messageEditForm.getMsgTemplateUrlTextField().setText("");
+//        messageEditForm.getMsgKefuMsgTitleTextField().setText("");
+//        messageEditForm.getMsgKefuPicUrlTextField().setText("");
+//        messageEditForm.getMsgKefuDescTextField().setText("");
+//        messageEditForm.getMsgKefuUrlTextField().setText("");
+//        messageEditForm.getMsgTemplateMiniAppidTextField().setText("");
+//        messageEditForm.getMsgTemplateMiniPagePathTextField().setText("");
+//        messageEditForm.getMsgTemplateKeyWordTextField().setText("");
+//        messageEditForm.getMsgYunpianMsgContentTextField().setText("");
+//        messageEditForm.getTemplateDataNameTextField().setText("");
+//        messageEditForm.getTemplateDataValueTextField().setText("");
+//        messageEditForm.getTemplateDataColorTextField().setText("");
+//        messageEditForm.getPreviewUserField().setText("");
+        initTemplateDataTable();
+    }
+
+    public static void save(String msgName) {
+        int msgId = 0;
+
+        boolean existSameMsg = false;
+        List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.ALI_TEMPLATE_CODE, msgName);
+        if (tMsgSmsList.size() > 0) {
+            existSameMsg = true;
+            msgId = tMsgSmsList.get(0).getId();
+        }
+
+        int isCover = JOptionPane.NO_OPTION;
+        if (existSameMsg) {
+            // 如果存在，是否覆盖
+            isCover = JOptionPane.showConfirmDialog(MessageEditForm.messageEditForm.getMsgEditorPanel(), "已经存在同名的历史消息，\n是否覆盖？", "确认",
+                    JOptionPane.YES_NO_OPTION);
+        }
+
+        if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
+            String templateId = aliTemplateMsgForm.getMsgTemplateIdTextField().getText();
+
+            String now = SqliteUtil.nowDateForSqlite();
+
+            TMsgSms tMsgSms = new TMsgSms();
+            tMsgSms.setMsgType(MessageTypeEnum.ALI_TEMPLATE_CODE);
+            tMsgSms.setMsgName(msgName);
+            tMsgSms.setTemplateId(templateId);
+            tMsgSms.setCreateTime(now);
+            tMsgSms.setModifiedTime(now);
+
+            if (existSameMsg) {
+                msgSmsMapper.updateByMsgTypeAndMsgName(tMsgSms);
+            } else {
+                msgSmsMapper.insertSelective(tMsgSms);
+                msgId = tMsgSms.getId();
+            }
+
+            // 保存模板数据
+
+            // 如果是覆盖保存，则先清空之前的模板数据
+            if (existSameMsg) {
+                templateDataMapper.deleteByMsgTypeAndMsgId(MessageTypeEnum.ALI_TEMPLATE_CODE, msgId);
+            }
+
+            // 如果table为空，则初始化
+            if (aliTemplateMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+                initTemplateDataTable();
+            }
+
+            // 逐行读取
+            DefaultTableModel tableModel = (DefaultTableModel) aliTemplateMsgForm.getTemplateMsgDataTable()
+                    .getModel();
+            int rowCount = tableModel.getRowCount();
+            for (int i = 0; i < rowCount; i++) {
+                String name = (String) tableModel.getValueAt(i, 0);
+                String value = (String) tableModel.getValueAt(i, 1);
+                String color = ((String) tableModel.getValueAt(i, 2)).trim();
+
+                TTemplateData tTemplateData = new TTemplateData();
+                tTemplateData.setMsgType(MessageTypeEnum.ALI_TEMPLATE_CODE);
+                tTemplateData.setMsgId(msgId);
+                tTemplateData.setName(name);
+                tTemplateData.setValue(value);
+                tTemplateData.setColor(color);
+                tTemplateData.setCreateTime(now);
+                tTemplateData.setModifiedTime(now);
+
+                templateDataMapper.insert(tTemplateData);
+            }
+        }
+    }
 
     {
 // GUI initializer generated by IntelliJ IDEA GUI Designer

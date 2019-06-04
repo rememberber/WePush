@@ -6,7 +6,12 @@ import cn.hutool.json.JSONUtil;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
 import com.aliyuncs.http.MethodType;
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.ui.form.AliTemplateMsgForm;
+import com.fangxuele.tool.push.ui.form.AliYunMsgForm;
+import com.fangxuele.tool.push.ui.form.MaTemplateMsgForm;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
+import com.fangxuele.tool.push.ui.form.MpTemplateMsgForm;
+import com.fangxuele.tool.push.ui.form.TxYunMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import com.taobao.api.request.AlibabaAliqinFcSmsNumSendRequest;
 import com.yunpian.sdk.YunpianClient;
@@ -53,7 +58,7 @@ public class MessageMaker {
         wxMessageTemplate.setMiniProgram(miniProgram);
 
         if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-            MessageEditForm.initTemplateDataTable();
+            MpTemplateMsgForm.initTemplateDataTable();
         }
 
         DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel();
@@ -86,7 +91,7 @@ public class MessageMaker {
         wxMessageTemplate.setEmphasisKeyword(MessageEditForm.messageEditForm.getMsgTemplateKeyWordTextField().getText().trim() + ".DATA");
 
         if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-            MessageEditForm.initTemplateDataTable();
+            MaTemplateMsgForm.initTemplateDataTable();
         }
 
         DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel();
@@ -169,7 +174,7 @@ public class MessageMaker {
         Map<String, String> paramMap = new HashMap<String, String>();
 
         if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-            MessageEditForm.initTemplateDataTable();
+            AliYunMsgForm.initTemplateDataTable();
         }
 
         DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel();
@@ -212,7 +217,7 @@ public class MessageMaker {
         Map<String, String> paramMap = new HashMap<String, String>();
 
         if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-            MessageEditForm.initTemplateDataTable();
+            AliTemplateMsgForm.initTemplateDataTable();
         }
 
         DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel();
@@ -248,7 +253,7 @@ public class MessageMaker {
      */
     synchronized static String[] makeTxyunMessage(String[] msgData) {
         if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-            MessageEditForm.initTemplateDataTable();
+            TxYunMsgForm.initTemplateDataTable();
         }
 
         DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel();

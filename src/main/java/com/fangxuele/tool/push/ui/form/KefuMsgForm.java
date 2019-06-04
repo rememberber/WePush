@@ -1,5 +1,10 @@
 package com.fangxuele.tool.push.ui.form;
 
+import com.fangxuele.tool.push.dao.TMsgKefuMapper;
+import com.fangxuele.tool.push.domain.TMsgKefu;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.SqliteUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -8,6 +13,8 @@ import lombok.Getter;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * <pre>
@@ -32,6 +39,134 @@ public class KefuMsgForm {
     private JTextField msgKefuUrlTextField;
 
     public static KefuMsgForm kefuMsgForm = new KefuMsgForm();
+
+    private static TMsgKefuMapper msgKefuMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuMapper.class);
+
+    public KefuMsgForm() {
+        // 客服消息类型切换事件
+        kefuMsgForm.getMsgKefuMsgTypeComboBox().addItemListener(e -> KefuMsgForm.switchKefuMsgType(e.getItem().toString()));
+    }
+
+    public static void init(String msgName) {
+        clearAllField();
+        List<TMsgKefu> tMsgKefuList = msgKefuMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.KEFU_CODE, msgName);
+        if (tMsgKefuList.size() > 0) {
+            TMsgKefu tMsgKefu = tMsgKefuList.get(0);
+            String kefuMsgType = tMsgKefu.getKefuMsgType();
+            kefuMsgForm.getMsgKefuMsgTypeComboBox().setSelectedItem(kefuMsgType);
+            if ("文本消息".equals(kefuMsgType)) {
+                kefuMsgForm.getMsgKefuMsgTitleTextField().setText(tMsgKefu.getContent());
+            } else if ("图文消息".equals(kefuMsgType)) {
+                kefuMsgForm.getMsgKefuMsgTitleTextField().setText(tMsgKefu.getTitle());
+            }
+            kefuMsgForm.getMsgKefuPicUrlTextField().setText(tMsgKefu.getImgUrl());
+            kefuMsgForm.getMsgKefuDescTextField().setText(tMsgKefu.getDescribe());
+            kefuMsgForm.getMsgKefuUrlTextField().setText(tMsgKefu.getUrl());
+
+            switchKefuMsgType(kefuMsgType);
+        }
+    }
+
+    /**
+     * 根据客服消息类型转换界面显示
+     *
+     * @param msgType 消息类型
+     */
+    public static void switchKefuMsgType(String msgType) {
+        switch (msgType) {
+            case "文本消息":
+                kefuMsgForm.getKefuMsgTitleLabel().setText("内容");
+                kefuMsgForm.getKefuMsgDescLabel().setVisible(false);
+                kefuMsgForm.getMsgKefuDescTextField().setVisible(false);
+                kefuMsgForm.getKefuMsgPicUrlLabel().setVisible(false);
+                kefuMsgForm.getMsgKefuPicUrlTextField().setVisible(false);
+                kefuMsgForm.getMsgKefuDescTextField().setVisible(false);
+                kefuMsgForm.getKefuMsgUrlLabel().setVisible(false);
+                kefuMsgForm.getMsgKefuUrlTextField().setVisible(false);
+                break;
+            case "图文消息":
+                kefuMsgForm.getKefuMsgTitleLabel().setText("标题");
+                kefuMsgForm.getKefuMsgDescLabel().setVisible(true);
+                kefuMsgForm.getMsgKefuDescTextField().setVisible(true);
+                kefuMsgForm.getKefuMsgPicUrlLabel().setVisible(true);
+                kefuMsgForm.getMsgKefuPicUrlTextField().setVisible(true);
+                kefuMsgForm.getMsgKefuDescTextField().setVisible(true);
+                kefuMsgForm.getKefuMsgUrlLabel().setVisible(true);
+                kefuMsgForm.getMsgKefuUrlTextField().setVisible(true);
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * 清空所有界面字段
+     */
+    public static void clearAllField() {
+        // TODO
+//        messageEditForm.getMsgNameField().setText("");
+//        messageEditForm.getMsgTemplateIdTextField().setText("");
+//        messageEditForm.getMsgTemplateUrlTextField().setText("");
+//        messageEditForm.getMsgKefuMsgTitleTextField().setText("");
+//        messageEditForm.getMsgKefuPicUrlTextField().setText("");
+//        messageEditForm.getMsgKefuDescTextField().setText("");
+//        messageEditForm.getMsgKefuUrlTextField().setText("");
+//        messageEditForm.getMsgTemplateMiniAppidTextField().setText("");
+//        messageEditForm.getMsgTemplateMiniPagePathTextField().setText("");
+//        messageEditForm.getMsgTemplateKeyWordTextField().setText("");
+//        messageEditForm.getMsgYunpianMsgContentTextField().setText("");
+//        messageEditForm.getTemplateDataNameTextField().setText("");
+//        messageEditForm.getTemplateDataValueTextField().setText("");
+//        messageEditForm.getTemplateDataColorTextField().setText("");
+//        messageEditForm.getPreviewUserField().setText("");
+    }
+
+    public static void save(String msgName) {
+        int msgId = 0;
+        boolean existSameMsg = false;
+
+        List<TMsgKefu> tMsgKefuList = msgKefuMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.KEFU_CODE, msgName);
+        if (tMsgKefuList.size() > 0) {
+            existSameMsg = true;
+            msgId = tMsgKefuList.get(0).getId();
+        }
+
+        int isCover = JOptionPane.NO_OPTION;
+        if (existSameMsg) {
+            // 如果存在，是否覆盖
+            isCover = JOptionPane.showConfirmDialog(MessageEditForm.messageEditForm.getMsgEditorPanel(), "已经存在同名的历史消息，\n是否覆盖？", "确认",
+                    JOptionPane.YES_NO_OPTION);
+        }
+
+        if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
+            String kefuMsgType = Objects.requireNonNull(kefuMsgForm.getMsgKefuMsgTypeComboBox().getSelectedItem()).toString();
+            String kefuMsgTitle = kefuMsgForm.getMsgKefuMsgTitleTextField().getText();
+            String kefuPicUrl = kefuMsgForm.getMsgKefuPicUrlTextField().getText();
+            String kefuDesc = kefuMsgForm.getMsgKefuDescTextField().getText();
+            String kefuUrl = kefuMsgForm.getMsgKefuUrlTextField().getText();
+
+            String now = SqliteUtil.nowDateForSqlite();
+
+            TMsgKefu tMsgKefu = new TMsgKefu();
+            tMsgKefu.setMsgType(MessageTypeEnum.KEFU_CODE);
+            tMsgKefu.setMsgName(msgName);
+            tMsgKefu.setKefuMsgType(kefuMsgType);
+            tMsgKefu.setContent(kefuMsgTitle);
+            tMsgKefu.setTitle(kefuMsgTitle);
+            tMsgKefu.setImgUrl(kefuPicUrl);
+            tMsgKefu.setDescribe(kefuDesc);
+            tMsgKefu.setUrl(kefuUrl);
+            tMsgKefu.setCreateTime(now);
+            tMsgKefu.setModifiedTime(now);
+
+            if (existSameMsg) {
+                msgKefuMapper.updateByMsgTypeAndMsgName(tMsgKefu);
+            } else {
+                msgKefuMapper.insertSelective(tMsgKefu);
+                msgId = tMsgKefu.getId();
+            }
+        }
+    }
 
     {
 // GUI initializer generated by IntelliJ IDEA GUI Designer

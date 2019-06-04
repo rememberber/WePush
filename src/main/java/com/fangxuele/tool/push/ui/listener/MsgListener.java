@@ -10,18 +10,22 @@ import com.fangxuele.tool.push.dao.TMsgMaTemplateMapper;
 import com.fangxuele.tool.push.dao.TMsgMpTemplateMapper;
 import com.fangxuele.tool.push.dao.TMsgSmsMapper;
 import com.fangxuele.tool.push.dao.TTemplateDataMapper;
-import com.fangxuele.tool.push.domain.TMsgKefu;
 import com.fangxuele.tool.push.domain.TMsgKefuPriority;
-import com.fangxuele.tool.push.domain.TMsgMaTemplate;
-import com.fangxuele.tool.push.domain.TMsgMpTemplate;
-import com.fangxuele.tool.push.domain.TMsgSms;
 import com.fangxuele.tool.push.domain.TTemplateData;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.PushManage;
+import com.fangxuele.tool.push.ui.form.AliTemplateMsgForm;
+import com.fangxuele.tool.push.ui.form.AliYunMsgForm;
+import com.fangxuele.tool.push.ui.form.KefuMsgForm;
+import com.fangxuele.tool.push.ui.form.MaTemplateMsgForm;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.MessageManageForm;
+import com.fangxuele.tool.push.ui.form.MessageTypeForm;
+import com.fangxuele.tool.push.ui.form.MpTemplateMsgForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
+import com.fangxuele.tool.push.ui.form.TxYunMsgForm;
+import com.fangxuele.tool.push.ui.form.YunpianMsgForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -30,10 +34,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * <pre>
@@ -118,47 +120,6 @@ public class MsgListener {
             }
         }));
 
-        // 客服消息类型切换事件
-        MessageEditForm.messageEditForm.getMsgKefuMsgTypeComboBox().addItemListener(e -> MessageEditForm.switchKefuMsgType(e.getItem().toString()));
-
-        // 模板数据-添加 按钮事件
-        MessageEditForm.messageEditForm.getTemplateMsgDataAddButton().addActionListener(e -> {
-            String[] data = new String[3];
-            data[0] = MessageEditForm.messageEditForm.getTemplateDataNameTextField().getText();
-            data[1] = MessageEditForm.messageEditForm.getTemplateDataValueTextField().getText();
-            data[2] = MessageEditForm.messageEditForm.getTemplateDataColorTextField().getText();
-
-            if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-                MessageEditForm.initTemplateDataTable();
-            }
-
-            DefaultTableModel tableModel = (DefaultTableModel) MessageEditForm.messageEditForm.getTemplateMsgDataTable()
-                    .getModel();
-            int rowCount = tableModel.getRowCount();
-
-            Set<String> keySet = new HashSet<>();
-            String keyData;
-            for (int i = 0; i < rowCount; i++) {
-                keyData = (String) tableModel.getValueAt(i, 0);
-                keySet.add(keyData);
-            }
-
-            if (StringUtils.isEmpty(data[0]) || StringUtils.isEmpty(data[1])) {
-                JOptionPane.showMessageDialog(messagePanel, "Name或value不能为空！", "提示",
-                        JOptionPane.INFORMATION_MESSAGE);
-            } else if (keySet.contains(data[0])) {
-                JOptionPane.showMessageDialog(messagePanel, "Name不能重复！", "提示",
-                        JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                if (StringUtils.isEmpty(data[2])) {
-                    data[2] = "#000000";
-                } else if (!data[2].startsWith("#")) {
-                    data[2] = "#" + data[2];
-                }
-                tableModel.addRow(data);
-            }
-        });
-
         // 保存按钮事件
         MessageEditForm.messageEditForm.getMsgSaveButton().addActionListener(e -> {
             String msgName = MessageEditForm.messageEditForm.getMsgNameField().getText();
@@ -169,84 +130,40 @@ public class MsgListener {
             }
 
             int msgType = App.config.getMsgType();
-            int msgId = 0;
-
-            boolean existSameMsg = false;
-            if (msgType == MessageTypeEnum.KEFU_CODE) {
-                List<TMsgKefu> tMsgKefuList = msgKefuMapper.selectByMsgTypeAndMsgName(msgType, msgName);
-                if (tMsgKefuList.size() > 0) {
-                    existSameMsg = true;
-                    msgId = tMsgKefuList.get(0).getId();
-                }
-            } else if (msgType == MessageTypeEnum.KEFU_PRIORITY_CODE) {
-                List<TMsgKefuPriority> tMsgKefuPriorityList = msgKefuPriorityMapper.selectByMsgTypeAndMsgName(msgType, msgName);
-                if (tMsgKefuPriorityList.size() > 0) {
-                    existSameMsg = true;
-                    msgId = tMsgKefuPriorityList.get(0).getId();
-                }
-            } else if (msgType == MessageTypeEnum.MA_TEMPLATE_CODE) {
-                List<TMsgMaTemplate> tMsgMaTemplateList = msgMaTemplateMapper.selectByMsgTypeAndMsgName(msgType, msgName);
-                if (tMsgMaTemplateList.size() > 0) {
-                    existSameMsg = true;
-                    msgId = tMsgMaTemplateList.get(0).getId();
-                }
-            } else if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE) {
-                List<TMsgMpTemplate> tMsgMpTemplateList = msgMpTemplateMapper.selectByMsgTypeAndMsgName(msgType, msgName);
-                if (tMsgMpTemplateList.size() > 0) {
-                    existSameMsg = true;
-                    msgId = tMsgMpTemplateList.get(0).getId();
-                }
-            } else {
-                List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgTypeAndMsgName(msgType, msgName);
-                if (tMsgSmsList.size() > 0) {
-                    existSameMsg = true;
-                    msgId = tMsgSmsList.get(0).getId();
-                }
-            }
-
-            int isCover = JOptionPane.NO_OPTION;
-            if (existSameMsg) {
-                // 如果存在，是否覆盖
-                isCover = JOptionPane.showConfirmDialog(messagePanel, "已经存在同名的历史消息，\n是否覆盖？", "确认",
-                        JOptionPane.YES_NO_OPTION);
-            }
 
             try {
-                if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
-                    String templateId = MessageEditForm.messageEditForm.getMsgTemplateIdTextField().getText();
-                    String templateUrl = MessageEditForm.messageEditForm.getMsgTemplateUrlTextField().getText();
-                    String kefuMsgType = Objects.requireNonNull(MessageEditForm.messageEditForm.getMsgKefuMsgTypeComboBox().getSelectedItem()).toString();
-                    String kefuMsgTitle = MessageEditForm.messageEditForm.getMsgKefuMsgTitleTextField().getText();
-                    String kefuPicUrl = MessageEditForm.messageEditForm.getMsgKefuPicUrlTextField().getText();
-                    String kefuDesc = MessageEditForm.messageEditForm.getMsgKefuDescTextField().getText();
-                    String kefuUrl = MessageEditForm.messageEditForm.getMsgKefuUrlTextField().getText();
-                    String templateMiniAppid = MessageEditForm.messageEditForm.getMsgTemplateMiniAppidTextField().getText();
-                    String templateMiniPagePath = MessageEditForm.messageEditForm.getMsgTemplateMiniPagePathTextField().getText();
-                    String templateKeyWord = MessageEditForm.messageEditForm.getMsgTemplateKeyWordTextField().getText();
-                    String yunpianMsgContent = MessageEditForm.messageEditForm.getMsgYunpianMsgContentTextField().getText();
+                if (msgType == MessageTypeEnum.KEFU_CODE) {
+                    KefuMsgForm.save(msgName);
+                } else if (msgType == MessageTypeEnum.KEFU_PRIORITY_CODE) {
+                    int msgId = 0;
+                    boolean existSameMsg = false;
 
-                    String now = SqliteUtil.nowDateForSqlite();
+                    List<TMsgKefuPriority> tMsgKefuPriorityList = msgKefuPriorityMapper.selectByMsgTypeAndMsgName(msgType, msgName);
+                    if (tMsgKefuPriorityList.size() > 0) {
+                        existSameMsg = true;
+                        msgId = tMsgKefuPriorityList.get(0).getId();
+                    }
 
-                    if (msgType == MessageTypeEnum.KEFU_CODE) {
-                        TMsgKefu tMsgKefu = new TMsgKefu();
-                        tMsgKefu.setMsgType(msgType);
-                        tMsgKefu.setMsgName(msgName);
-                        tMsgKefu.setKefuMsgType(kefuMsgType);
-                        tMsgKefu.setContent(kefuMsgTitle);
-                        tMsgKefu.setTitle(kefuMsgTitle);
-                        tMsgKefu.setImgUrl(kefuPicUrl);
-                        tMsgKefu.setDescribe(kefuDesc);
-                        tMsgKefu.setUrl(kefuUrl);
-                        tMsgKefu.setCreateTime(now);
-                        tMsgKefu.setModifiedTime(now);
+                    int isCover = JOptionPane.NO_OPTION;
+                    if (existSameMsg) {
+                        // 如果存在，是否覆盖
+                        isCover = JOptionPane.showConfirmDialog(messagePanel, "已经存在同名的历史消息，\n是否覆盖？", "确认",
+                                JOptionPane.YES_NO_OPTION);
+                    }
 
-                        if (existSameMsg) {
-                            msgKefuMapper.updateByMsgTypeAndMsgName(tMsgKefu);
-                        } else {
-                            msgKefuMapper.insertSelective(tMsgKefu);
-                            msgId = tMsgKefu.getId();
-                        }
-                    } else if (msgType == MessageTypeEnum.KEFU_PRIORITY_CODE) {
+                    if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
+                        String templateId = MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateIdTextField().getText();
+                        String templateUrl = MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateUrlTextField().getText();
+                        String kefuMsgType = Objects.requireNonNull(KefuMsgForm.kefuMsgForm.getMsgKefuMsgTypeComboBox().getSelectedItem()).toString();
+                        String kefuMsgTitle = KefuMsgForm.kefuMsgForm.getMsgKefuMsgTitleTextField().getText();
+                        String kefuPicUrl = KefuMsgForm.kefuMsgForm.getMsgKefuPicUrlTextField().getText();
+                        String kefuDesc = KefuMsgForm.kefuMsgForm.getMsgKefuDescTextField().getText();
+                        String kefuUrl = KefuMsgForm.kefuMsgForm.getMsgKefuUrlTextField().getText();
+                        String templateMiniAppid = MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateMiniAppidTextField().getText();
+                        String templateMiniPagePath = MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateMiniPagePathTextField().getText();
+
+                        String now = SqliteUtil.nowDateForSqlite();
+
                         TMsgKefuPriority tMsgKefuPriority = new TMsgKefuPriority();
                         tMsgKefuPriority.setMsgType(msgType);
                         tMsgKefuPriority.setMsgName(msgName);
@@ -269,59 +186,8 @@ public class MsgListener {
                             msgKefuPriorityMapper.insertSelective(tMsgKefuPriority);
                             msgId = tMsgKefuPriority.getId();
                         }
-                    } else if (msgType == MessageTypeEnum.MA_TEMPLATE_CODE) {
-                        TMsgMaTemplate tMsgMaTemplate = new TMsgMaTemplate();
-                        tMsgMaTemplate.setMsgType(msgType);
-                        tMsgMaTemplate.setMsgName(msgName);
-                        tMsgMaTemplate.setTemplateId(templateId);
-                        tMsgMaTemplate.setPage(templateUrl);
-                        tMsgMaTemplate.setEmphasisKeyword(templateKeyWord);
-                        tMsgMaTemplate.setCreateTime(now);
-                        tMsgMaTemplate.setModifiedTime(now);
 
-                        if (existSameMsg) {
-                            msgMaTemplateMapper.updateByMsgTypeAndMsgName(tMsgMaTemplate);
-                        } else {
-                            msgMaTemplateMapper.insertSelective(tMsgMaTemplate);
-                            msgId = tMsgMaTemplate.getId();
-                        }
-                    } else if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE) {
-                        TMsgMpTemplate tMsgMpTemplate = new TMsgMpTemplate();
-                        tMsgMpTemplate.setMsgType(msgType);
-                        tMsgMpTemplate.setMsgName(msgName);
-                        tMsgMpTemplate.setTemplateId(templateId);
-                        tMsgMpTemplate.setUrl(templateUrl);
-                        tMsgMpTemplate.setMaAppid(templateMiniAppid);
-                        tMsgMpTemplate.setMaPagePath(templateMiniPagePath);
-                        tMsgMpTemplate.setCreateTime(now);
-                        tMsgMpTemplate.setModifiedTime(now);
-
-                        if (existSameMsg) {
-                            msgMpTemplateMapper.updateByMsgTypeAndMsgName(tMsgMpTemplate);
-                        } else {
-                            msgMpTemplateMapper.insertSelective(tMsgMpTemplate);
-                            msgId = tMsgMpTemplate.getId();
-                        }
-                    } else {
-                        TMsgSms tMsgSms = new TMsgSms();
-                        tMsgSms.setMsgType(msgType);
-                        tMsgSms.setMsgName(msgName);
-                        tMsgSms.setTemplateId(templateId);
-                        tMsgSms.setContent(yunpianMsgContent);
-                        tMsgSms.setCreateTime(now);
-                        tMsgSms.setModifiedTime(now);
-
-                        if (existSameMsg) {
-                            msgSmsMapper.updateByMsgTypeAndMsgName(tMsgSms);
-                        } else {
-                            msgSmsMapper.insertSelective(tMsgSms);
-                            msgId = tMsgSms.getId();
-                        }
-                    }
-
-                    // 保存模板数据
-                    if (msgType != MessageTypeEnum.KEFU_CODE && msgType != MessageTypeEnum.YUN_PIAN_CODE) {
-
+                        // 保存模板数据
                         // 如果是覆盖保存，则先清空之前的模板数据
                         if (existSameMsg) {
                             templateDataMapper.deleteByMsgTypeAndMsgId(msgType, msgId);
@@ -329,7 +195,7 @@ public class MsgListener {
 
                         // 如果table为空，则初始化
                         if (MessageEditForm.messageEditForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-                            MessageEditForm.initTemplateDataTable();
+                            MpTemplateMsgForm.initTemplateDataTable();
                         }
 
                         // 逐行读取
@@ -352,18 +218,30 @@ public class MsgListener {
 
                             templateDataMapper.insert(tTemplateData);
                         }
-
                     }
 
-                    App.config.setPreviewUser(MessageEditForm.messageEditForm.getPreviewUserField().getText());
-                    App.config.save();
-
-                    JOptionPane.showMessageDialog(messagePanel, "保存成功！", "成功",
-                            JOptionPane.INFORMATION_MESSAGE);
-
-                    MessageEditForm.init(null);
-                    MessageManageForm.init();
+                } else if (msgType == MessageTypeEnum.MA_TEMPLATE_CODE) {
+                    MaTemplateMsgForm.save(msgName);
+                } else if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE) {
+                    MpTemplateMsgForm.save(msgName);
+                } else if (msgType == MessageTypeEnum.ALI_TEMPLATE_CODE) {
+                    AliTemplateMsgForm.save(msgName);
+                } else if (msgType == MessageTypeEnum.ALI_YUN_CODE) {
+                    AliYunMsgForm.save(msgName);
+                } else if (msgType == MessageTypeEnum.TX_YUN_CODE) {
+                    TxYunMsgForm.save(msgName);
+                } else if (msgType == MessageTypeEnum.YUN_PIAN_CODE) {
+                    YunpianMsgForm.save(msgName);
                 }
+
+
+                App.config.setPreviewUser(MessageEditForm.messageEditForm.getPreviewUserField().getText());
+                App.config.save();
+
+                JOptionPane.showMessageDialog(messagePanel, "保存成功！", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+                MessageManageForm.init();
             } catch (Exception e1) {
                 JOptionPane.showMessageDialog(messagePanel, "保存失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
@@ -401,8 +279,7 @@ public class MsgListener {
 
         // 编辑消息-新建
         MessageManageForm.messageManageForm.getCreateMsgButton().addActionListener(e -> {
-            MessageEditForm.clearAllField();
-            MessageEditForm.initTemplateDataTable();
+            MessageTypeForm.init();
             MessageEditForm.messageEditForm.getMsgNameField().grabFocus();
         });
     }
