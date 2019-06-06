@@ -59,6 +59,12 @@ public class SettingListener {
                 App.config.setWechatAppSecret(new String(SettingForm.settingForm.getWechatAppSecretPasswordField().getPassword()));
                 App.config.setWechatToken(new String(SettingForm.settingForm.getWechatTokenPasswordField().getPassword()));
                 App.config.setWechatAesKey(new String(SettingForm.settingForm.getWechatAesKeyPasswordField().getPassword()));
+
+                App.config.setMpUseProxy(SettingForm.settingForm.getMpUseProxyCheckBox().isSelected());
+                App.config.setMpProxyHost(SettingForm.settingForm.getMpProxyHostTextField().getText());
+                App.config.setMpProxyPort(SettingForm.settingForm.getMpProxyPortTextField().getText());
+                App.config.setMpProxyUserName(SettingForm.settingForm.getMpProxyUserNameTextField().getText());
+                App.config.setMpProxyPassword(SettingForm.settingForm.getMpProxyPasswordTextField().getText());
                 App.config.save();
 
                 boolean update = false;
@@ -133,6 +139,12 @@ public class SettingListener {
                 App.config.setMiniAppAppSecret(new String(SettingForm.settingForm.getMiniAppAppSecretPasswordField().getPassword()));
                 App.config.setMiniAppToken(new String(SettingForm.settingForm.getMiniAppTokenPasswordField().getPassword()));
                 App.config.setMiniAppAesKey(new String(SettingForm.settingForm.getMiniAppAesKeyPasswordField().getPassword()));
+
+                App.config.setMaUseProxy(SettingForm.settingForm.getMaUseProxyCheckBox().isSelected());
+                App.config.setMaProxyHost(SettingForm.settingForm.getMaProxyHostTextField().getText());
+                App.config.setMaProxyPort(SettingForm.settingForm.getMaProxyPortTextField().getText());
+                App.config.setMaProxyUserName(SettingForm.settingForm.getMaProxyUserNameTextField().getText());
+                App.config.setMaProxyPassword(SettingForm.settingForm.getMaProxyPasswordTextField().getText());
                 App.config.save();
 
                 boolean update = false;

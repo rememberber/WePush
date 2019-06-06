@@ -66,7 +66,7 @@ public class SettingForm {
     private JButton maAccountManageButton;
     private JComboBox mpAccountSwitchComboBox;
     private JComboBox maAccountSwitchComboBox;
-    private JCheckBox mpUserProxyCheckBox;
+    private JCheckBox mpUseProxyCheckBox;
     private JTextField mpProxyHostTextField;
     private JTextField mpProxyPortTextField;
     private JTextField mpProxyUserNameTextField;
@@ -105,12 +105,24 @@ public class SettingForm {
         settingForm.getWechatTokenPasswordField().setText(App.config.getWechatToken());
         settingForm.getWechatAesKeyPasswordField().setText(App.config.getWechatAesKey());
 
+        settingForm.getMpUseProxyCheckBox().setSelected(App.config.isMpUseProxy());
+        settingForm.getMpProxyHostTextField().setText(App.config.getMpProxyHost());
+        settingForm.getMpProxyPortTextField().setText(App.config.getMpProxyPort());
+        settingForm.getMpProxyUserNameTextField().setText(App.config.getMpProxyUserName());
+        settingForm.getMpProxyPasswordTextField().setText(App.config.getMpProxyPassword());
+
         // 微信小程序
         settingForm.getMaAccountSwitchComboBox().setSelectedItem(App.config.getMiniAppName());
         settingForm.getMiniAppAppIdTextField().setText(App.config.getMiniAppAppId());
         settingForm.getMiniAppAppSecretPasswordField().setText(App.config.getMiniAppAppSecret());
         settingForm.getMiniAppTokenPasswordField().setText(App.config.getMiniAppToken());
         settingForm.getMiniAppAesKeyPasswordField().setText(App.config.getMiniAppAesKey());
+
+        settingForm.getMaUseProxyCheckBox().setSelected(App.config.isMaUseProxy());
+        settingForm.getMaProxyHostTextField().setText(App.config.getMaProxyHost());
+        settingForm.getMaProxyPortTextField().setText(App.config.getMaProxyPort());
+        settingForm.getMaProxyUserNameTextField().setText(App.config.getMaProxyUserName());
+        settingForm.getMaProxyPasswordTextField().setText(App.config.getMaProxyPassword());
 
         initSwitchMultiAccount();
 
@@ -248,9 +260,9 @@ public class SettingForm {
         panel5.add(label5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         mpAccountSwitchComboBox = new JComboBox();
         panel5.add(mpAccountSwitchComboBox, new GridConstraints(0, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, new Dimension(300, -1), new Dimension(300, -1), null, 0, false));
-        mpUserProxyCheckBox = new JCheckBox();
-        mpUserProxyCheckBox.setText("使用HTTP代理");
-        panel5.add(mpUserProxyCheckBox, new GridConstraints(5, 0, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        mpUseProxyCheckBox = new JCheckBox();
+        mpUseProxyCheckBox.setText("使用HTTP代理");
+        panel5.add(mpUseProxyCheckBox, new GridConstraints(5, 0, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         mpProxyPanel = new JPanel();
         mpProxyPanel.setLayout(new GridLayoutManager(4, 2, new Insets(0, 26, 0, 0), -1, -1));
         panel5.add(mpProxyPanel, new GridConstraints(6, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));

@@ -190,7 +190,7 @@
                             </constraints>
                             <properties/>
                           </component>
-                          <component id="15591" class="javax.swing.JCheckBox" binding="mpUserProxyCheckBox">
+                          <component id="15591" class="javax.swing.JCheckBox" binding="mpUseProxyCheckBox">
                             <constraints>
                               <grid row="5" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                             </constraints>

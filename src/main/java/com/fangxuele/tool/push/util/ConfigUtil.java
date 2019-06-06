@@ -64,6 +64,16 @@ public class ConfigUtil {
 
     private String wechatAesKey;
 
+    private boolean mpUseProxy;
+
+    private String mpProxyHost;
+
+    private String mpProxyPort;
+
+    private String mpProxyUserName;
+
+    private String mpProxyPassword;
+
     private String miniAppName;
 
     private String miniAppAppId;
@@ -73,6 +83,16 @@ public class ConfigUtil {
     private String miniAppToken;
 
     private String miniAppAesKey;
+
+    private boolean maUseProxy;
+
+    private String maProxyHost;
+
+    private String maProxyPort;
+
+    private String maProxyUserName;
+
+    private String maProxyPassword;
 
     private String aliyunAccessKeyId;
 
@@ -310,6 +330,46 @@ public class ConfigUtil {
         setting.put("setting.wechat", "aesKey", wechatAesKey);
     }
 
+    public boolean isMpUseProxy() {
+        return setting.getBool("mpUseProxy", "setting.wechat", false);
+    }
+
+    public void setMpUseProxy(boolean mpUseProxy) {
+        setting.put("setting.wechat", "mpUseProxy", String.valueOf(mpUseProxy));
+    }
+
+    public String getMpProxyHost() {
+        return setting.getStr("mpProxyHost", "setting.wechat", "");
+    }
+
+    public void setMpProxyHost(String mpProxyHost) {
+        setting.put("setting.wechat", "mpProxyHost", mpProxyHost);
+    }
+
+    public String getMpProxyPort() {
+        return setting.getStr("mpProxyPort", "setting.wechat", "");
+    }
+
+    public void setMpProxyPort(String mpProxyPort) {
+        setting.put("setting.wechat", "mpProxyPort", mpProxyPort);
+    }
+
+    public String getMpProxyUserName() {
+        return setting.getStr("mpProxyUserName", "setting.wechat", "");
+    }
+
+    public void setMpProxyUserName(String mpProxyUserName) {
+        setting.put("setting.wechat", "mpProxyUserName", mpProxyUserName);
+    }
+
+    public String getMpProxyPassword() {
+        return setting.getStr("mpProxyPassword", "setting.wechat", "");
+    }
+
+    public void setMpProxyPassword(String mpProxyPassword) {
+        setting.put("setting.wechat", "mpProxyPassword", mpProxyPassword);
+    }
+
     public String getAliServerUrl() {
         return setting.getStr("serverUrl", "setting.ali", "");
     }
@@ -460,6 +520,46 @@ public class ConfigUtil {
 
     public void setMiniAppAesKey(String miniAppAesKey) {
         setting.put("setting.miniApp", "aesKey", miniAppAesKey);
+    }
+
+    public boolean isMaUseProxy() {
+        return setting.getBool("maUseProxy", "setting.wechat", false);
+    }
+
+    public void setMaUseProxy(boolean maUseProxy) {
+        setting.put("setting.wechat", "maUseProxy", String.valueOf(maUseProxy));
+    }
+
+    public String getMaProxyHost() {
+        return setting.getStr("maProxyHost", "setting.wechat", "");
+    }
+
+    public void setMaProxyHost(String maProxyHost) {
+        setting.put("setting.wechat", "maProxyHost", maProxyHost);
+    }
+
+    public String getMaProxyPort() {
+        return setting.getStr("maProxyPort", "setting.wechat", "");
+    }
+
+    public void setMaProxyPort(String maProxyPort) {
+        setting.put("setting.wechat", "maProxyPort", maProxyPort);
+    }
+
+    public String getMaProxyUserName() {
+        return setting.getStr("maProxyUserName", "setting.wechat", "");
+    }
+
+    public void setMaProxyUserName(String maProxyUserName) {
+        setting.put("setting.wechat", "maProxyUserName", maProxyUserName);
+    }
+
+    public String getMaProxyPassword() {
+        return setting.getStr("maProxyPassword", "setting.wechat", "");
+    }
+
+    public void setMaProxyPassword(String maProxyPassword) {
+        setting.put("setting.wechat", "maProxyPassword", maProxyPassword);
     }
 
     public String getTxyunAppId() {
