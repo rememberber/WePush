@@ -14,6 +14,7 @@ import com.fangxuele.tool.push.ui.listener.PushListener;
 import com.fangxuele.tool.push.ui.listener.ScheduleListener;
 import com.fangxuele.tool.push.ui.listener.SettingListener;
 import com.fangxuele.tool.push.ui.listener.TabListener;
+import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
 import org.apache.commons.compress.utils.Lists;
 
@@ -45,14 +46,7 @@ public class MainFrame extends JFrame {
             application.setDockIconImage(UiConsts.IMAGE_ICON_LG);
         }
 
-        //得到屏幕的尺寸
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setBounds((int) (screenSize.width * 0.1), (int) (screenSize.height * 0.06), (int) (screenSize.width * 0.8),
-                (int) (screenSize.height * 0.83));
-
-        Dimension preferSize = new Dimension((int) (screenSize.width * 0.8),
-                (int) (screenSize.height * 0.83));
-        this.setPreferredSize(preferSize);
+        ComponentUtil.setPrefersizeAndLocateToCenter(this, 0.8, 0.83);
     }
 
     /**

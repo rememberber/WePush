@@ -282,12 +282,7 @@ public class RunPushThread extends Thread {
 
             PushForm.pushForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
 
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                logger.error(e);
-            }
+            ThreadUtil.safeSleep(100);
         }
     }
 

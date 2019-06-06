@@ -45,6 +45,7 @@ public class App {
             mainFrame.setContentPane(MainWindow.mainWindow.getMainPanel());
             mainFrame.addListeners();
             mainFrame.remove(loadingPanel);
+            Init.initFontSize();
         });
     }
 }

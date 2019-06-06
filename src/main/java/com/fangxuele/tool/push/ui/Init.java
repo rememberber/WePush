@@ -4,6 +4,7 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.ui.dialog.FontSizeAdjustDialog;
 import com.fangxuele.tool.push.ui.form.AboutForm;
 import com.fangxuele.tool.push.ui.form.HelpForm;
 import com.fangxuele.tool.push.ui.form.MemberForm;
@@ -37,31 +38,28 @@ public class Init {
 
     private static final Log logger = LogFactory.get();
 
+    // 字号初始化KEY
+    private static final String FONT_SIZE_INIT_PROP = "fontSizeInit";
+
     /**
      * 设置全局字体
      */
     public static void initGlobalFont() {
+        if (StringUtils.isEmpty(App.config.getProps(FONT_SIZE_INIT_PROP))) {
+            // 得到屏幕的尺寸
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            // 低分辨率屏幕字号初始化
+            if (screenSize.width <= 1366) {
+                App.config.setFontSize(12);
+            }
 
-        // 低分辨率屏幕字号初始化
-        String lowDpiKey = "lowDpiInit";
-        // 得到屏幕的尺寸
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        if (screenSize.width <= 1366 && StringUtils.isEmpty(App.config.getProps(lowDpiKey))) {
-            App.config.setFontSize(12);
-            App.config.setProps(lowDpiKey, "true");
+            // Mac等高分辨率屏幕字号初始化
+            if (SystemUtil.isMacOs()) {
+                App.config.setFontSize(15);
+            } else if (screenSize.width > 1920) {
+                App.config.setFontSize(14);
+            }
         }
-
-        // Mac等高分辨率屏幕字号初始化
-        String highDpiKey = "highDpiInit";
-        if (SystemUtil.isMacOs() && StringUtils.isEmpty(App.config.getProps(highDpiKey))) {
-            App.config.setFontSize(15);
-            App.config.setProps(highDpiKey, "true");
-        } else if (screenSize.width > 1920 && StringUtils.isEmpty(App.config.getProps(highDpiKey))) {
-            App.config.setFontSize(14);
-            App.config.setProps(highDpiKey, "true");
-        }
-
-        App.config.save();
 
         Font font = new Font(App.config.getFont(), Font.PLAIN, App.config.getFontSize());
         FontUIResource fontRes = new FontUIResource(font);
@@ -72,6 +70,7 @@ public class Init {
                 UIManager.put(key, fontRes);
             }
         }
+
     }
 
     /**
@@ -117,7 +116,6 @@ public class Init {
         } catch (Exception e) {
             logger.error(e);
         }
-
     }
 
     /**
@@ -143,4 +141,17 @@ public class Init {
         ThreadUtil.execute(AboutListener::initQrCode);
     }
 
+    /**
+     * 引导用户调整字号
+     */
+    public static void initFontSize() {
+        if (StringUtils.isEmpty(App.config.getProps(FONT_SIZE_INIT_PROP))) {
+            FontSizeAdjustDialog fontSizeAdjustDialog = new FontSizeAdjustDialog();
+            fontSizeAdjustDialog.pack();
+            fontSizeAdjustDialog.setVisible(true);
+        }
+
+        App.config.setProps(FONT_SIZE_INIT_PROP, "true");
+        App.config.save();
+    }
 }
