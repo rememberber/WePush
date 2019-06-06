@@ -1,7 +1,5 @@
 package com.fangxuele.tool.push.ui.listener;
 
-import cn.hutool.log.Log;
-import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 
 import javax.swing.*;
@@ -20,34 +18,28 @@ import static com.fangxuele.tool.push.ui.form.PushForm.pushForm;
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
  * @since 2017/6/21.
  */
-public class FramListener {
-
-    private static final Log logger = LogFactory.get();
+public class FrameListener {
 
     public static void addListeners() {
         mainFrame.addWindowListener(new WindowListener() {
 
             @Override
             public void windowOpened(WindowEvent e) {
-                // TODO Auto-generated method stub
 
             }
 
             @Override
             public void windowIconified(WindowEvent e) {
-                // TODO Auto-generated method stub
 
             }
 
             @Override
             public void windowDeiconified(WindowEvent e) {
-                // TODO Auto-generated method stub
 
             }
 
             @Override
             public void windowDeactivated(WindowEvent e) {
-                // TODO Auto-generated method stub
 
             }
 
@@ -61,7 +53,6 @@ public class FramListener {
                     App.sqlSession.close();
                     mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 }
-
             }
 
             @Override

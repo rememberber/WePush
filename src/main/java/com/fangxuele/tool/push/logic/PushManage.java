@@ -20,6 +20,7 @@ import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
+import com.fangxuele.tool.push.ui.form.msg.TxYunMsgForm;
 import com.fangxuele.tool.push.ui.listener.MemberListener;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
@@ -112,9 +113,6 @@ public class PushManage {
             case MessageTypeEnum.MP_TEMPLATE_CODE:
                 WxMpTemplateMessage wxMessageTemplate;
                 WxMpService wxMpService = getWxMpService();
-                if (wxMpService.getWxMpConfigStorage() == null) {
-                    return false;
-                }
 
                 for (String[] msgData : msgDataList) {
                     wxMessageTemplate = MessageMaker.makeMpTemplateMessage(msgData);
@@ -126,9 +124,6 @@ public class PushManage {
             case MessageTypeEnum.MA_TEMPLATE_CODE:
                 WxMaTemplateMessage wxMaMessageTemplate;
                 WxMaService wxMaService = getWxMaService();
-                if (wxMaService.getWxMaConfig() == null) {
-                    return false;
-                }
 
                 for (String[] msgData : msgDataList) {
                     wxMaMessageTemplate = MessageMaker.makeMaTemplateMessage(msgData);
@@ -141,9 +136,6 @@ public class PushManage {
             case MessageTypeEnum.KEFU_CODE:
                 wxMpService = getWxMpService();
                 WxMpKefuMessage wxMpKefuMessage;
-                if (wxMpService.getWxMpConfigStorage() == null) {
-                    return false;
-                }
 
                 for (String[] msgData : msgDataList) {
                     wxMpKefuMessage = MessageMaker.makeKefuMessage(msgData);
@@ -154,9 +146,6 @@ public class PushManage {
                 break;
             case MessageTypeEnum.KEFU_PRIORITY_CODE:
                 wxMpService = getWxMpService();
-                if (wxMpService.getWxMpConfigStorage() == null) {
-                    return false;
-                }
 
                 for (String[] msgData : msgDataList) {
                     try {
@@ -211,7 +200,7 @@ public class PushManage {
                 for (String[] msgData : msgDataList) {
                     String[] params = MessageMaker.makeTxyunMessage(msgData);
                     SmsSingleSenderResult result = smsSingleSender.sendWithParam("86", msgData[0],
-                            Integer.valueOf(MessageEditForm.messageEditForm.getMsgTemplateIdTextField().getText()),
+                            Integer.valueOf(TxYunMsgForm.txYunMsgForm.getMsgTemplateIdTextField().getText()),
                             params, App.config.getAliyunSign(), "", "");
                     if (result.result != 0) {
                         throw new Exception(result.toString());
@@ -290,6 +279,12 @@ public class PushManage {
         configStorage.setSecret(App.config.getWechatAppSecret());
         configStorage.setToken(App.config.getWechatToken());
         configStorage.setAesKey(App.config.getWechatAesKey());
+        if (App.config.isMpUseProxy()) {
+            configStorage.setHttpProxyHost(App.config.getMpProxyHost());
+            configStorage.setHttpProxyPort(Integer.parseInt(App.config.getMpProxyPort()));
+            configStorage.setHttpProxyUsername(App.config.getMpProxyUserName());
+            configStorage.setHttpProxyPassword(App.config.getMpProxyPassword());
+        }
         return configStorage;
     }
 
@@ -314,6 +309,12 @@ public class PushManage {
         configStorage.setToken(App.config.getMiniAppToken());
         configStorage.setAesKey(App.config.getMiniAppAesKey());
         configStorage.setMsgDataFormat("JSON");
+        if (App.config.isMaUseProxy()) {
+            configStorage.setHttpProxyHost(App.config.getMaProxyHost());
+            configStorage.setHttpProxyPort(Integer.parseInt(App.config.getMaProxyPort()));
+            configStorage.setHttpProxyUsername(App.config.getMaProxyUserName());
+            configStorage.setHttpProxyPassword(App.config.getMaProxyPassword());
+        }
         return configStorage;
     }
 
@@ -466,7 +467,6 @@ public class PushManage {
         String nowTime = DateUtil.now().replace(":", "_").replace(" ", "_");
         CSVWriter writer;
         int msgType = App.config.getMsgType();
-        String now = SqliteUtil.nowDateForSqlite();
 
         // 保存已发送
         if (PushData.sendSuccessList.size() > 0) {
@@ -483,16 +483,7 @@ public class PushManage {
             }
             writer.close();
 
-            TPushHistory tPushHistory = new TPushHistory();
-//          TODO  tPushHistory.setMsgId(0);
-            tPushHistory.setMsgType(msgType);
-            tPushHistory.setMsgName(msgName);
-            tPushHistory.setResult("发送成功");
-            tPushHistory.setCsvFile(sendSuccessFile.getAbsolutePath());
-            tPushHistory.setCreateTime(now);
-            tPushHistory.setModifiedTime(now);
-
-            pushHistoryMapper.insertSelective(tPushHistory);
+            savePushResult(msgName, "发送成功", sendSuccessFile);
         }
 
         // 保存未发送
@@ -515,16 +506,7 @@ public class PushManage {
             }
             writer.close();
 
-            TPushHistory tPushHistory = new TPushHistory();
-//          TODO  tPushHistory.setMsgId(0);
-            tPushHistory.setMsgType(msgType);
-            tPushHistory.setMsgName(msgName);
-            tPushHistory.setResult("未发送");
-            tPushHistory.setCsvFile(unSendFile.getAbsolutePath());
-            tPushHistory.setCreateTime(now);
-            tPushHistory.setModifiedTime(now);
-
-            pushHistoryMapper.insertSelective(tPushHistory);
+            savePushResult(msgName, "未发送", unSendFile);
         }
 
         // 保存发送失败
@@ -540,19 +522,30 @@ public class PushManage {
             }
             writer.close();
 
-            TPushHistory tPushHistory = new TPushHistory();
-//          TODO  tPushHistory.setMsgId(0);
-            tPushHistory.setMsgType(msgType);
-            tPushHistory.setMsgName(msgName);
-            tPushHistory.setResult("发送失败");
-            tPushHistory.setCsvFile(failSendFile.getAbsolutePath());
-            tPushHistory.setCreateTime(now);
-            tPushHistory.setModifiedTime(now);
-
-            pushHistoryMapper.insertSelective(tPushHistory);
+            savePushResult(msgName, "发送失败", failSendFile);
         }
 
         PushHisForm.init();
+    }
+
+    /**
+     * 保存结果到DB
+     *
+     * @param msgName
+     * @param resultInfo
+     * @param file
+     */
+    private static void savePushResult(String msgName, String resultInfo, File file) {
+        TPushHistory tPushHistory = new TPushHistory();
+        String now = SqliteUtil.nowDateForSqlite();
+        tPushHistory.setMsgType(App.config.getMsgType());
+        tPushHistory.setMsgName(msgName);
+        tPushHistory.setResult(resultInfo);
+        tPushHistory.setCsvFile(file.getAbsolutePath());
+        tPushHistory.setCreateTime(now);
+        tPushHistory.setModifiedTime(now);
+
+        pushHistoryMapper.insertSelective(tPushHistory);
     }
 
     /**

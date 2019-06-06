@@ -16,6 +16,8 @@ import com.fangxuele.tool.push.util.SqliteUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Objects;
@@ -59,6 +61,12 @@ public class SettingListener {
                 App.config.setWechatAppSecret(new String(SettingForm.settingForm.getWechatAppSecretPasswordField().getPassword()));
                 App.config.setWechatToken(new String(SettingForm.settingForm.getWechatTokenPasswordField().getPassword()));
                 App.config.setWechatAesKey(new String(SettingForm.settingForm.getWechatAesKeyPasswordField().getPassword()));
+
+                App.config.setMpUseProxy(SettingForm.settingForm.getMpUseProxyCheckBox().isSelected());
+                App.config.setMpProxyHost(SettingForm.settingForm.getMpProxyHostTextField().getText());
+                App.config.setMpProxyPort(SettingForm.settingForm.getMpProxyPortTextField().getText());
+                App.config.setMpProxyUserName(SettingForm.settingForm.getMpProxyUserNameTextField().getText());
+                App.config.setMpProxyPassword(SettingForm.settingForm.getMpProxyPasswordTextField().getText());
                 App.config.save();
 
                 boolean update = false;
@@ -133,6 +141,12 @@ public class SettingListener {
                 App.config.setMiniAppAppSecret(new String(SettingForm.settingForm.getMiniAppAppSecretPasswordField().getPassword()));
                 App.config.setMiniAppToken(new String(SettingForm.settingForm.getMiniAppTokenPasswordField().getPassword()));
                 App.config.setMiniAppAesKey(new String(SettingForm.settingForm.getMiniAppAesKeyPasswordField().getPassword()));
+
+                App.config.setMaUseProxy(SettingForm.settingForm.getMaUseProxyCheckBox().isSelected());
+                App.config.setMaProxyHost(SettingForm.settingForm.getMaProxyHostTextField().getText());
+                App.config.setMaProxyPort(SettingForm.settingForm.getMaProxyPortTextField().getText());
+                App.config.setMaProxyUserName(SettingForm.settingForm.getMaProxyUserNameTextField().getText());
+                App.config.setMaProxyPassword(SettingForm.settingForm.getMaProxyPasswordTextField().getText());
                 App.config.save();
 
                 boolean update = false;
@@ -332,6 +346,30 @@ public class SettingListener {
                 JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
+            }
+        });
+
+        SettingForm.settingForm.getMpUseProxyCheckBox().addChangeListener(new ChangeListener() {
+            /**
+             * Invoked when the target of the listener has changed its state.
+             *
+             * @param e a ChangeEvent object
+             */
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                SettingForm.toggleMpProxyPanel();
+            }
+        });
+
+        SettingForm.settingForm.getMaUseProxyCheckBox().addChangeListener(new ChangeListener() {
+            /**
+             * Invoked when the target of the listener has changed its state.
+             *
+             * @param e a ChangeEvent object
+             */
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                SettingForm.toggleMaProxyPanel();
             }
         });
     }
