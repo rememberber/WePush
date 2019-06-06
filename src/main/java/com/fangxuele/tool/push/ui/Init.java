@@ -38,7 +38,9 @@ public class Init {
 
     private static final Log logger = LogFactory.get();
 
-    // 字号初始化KEY
+    /**
+     * 字号初始化KEY
+     */
     private static final String FONT_SIZE_INIT_PROP = "fontSizeInit";
 
     /**
@@ -46,7 +48,11 @@ public class Init {
      */
     public static void initGlobalFont() {
         if (StringUtils.isEmpty(App.config.getProps(FONT_SIZE_INIT_PROP))) {
-            // 得到屏幕的尺寸
+            // TODO 根据DPI调整字号
+            // 得到屏幕的分辨率
+            // dell 1920*1080/24寸=96
+            int dpi = Toolkit.getDefaultToolkit().getScreenResolution();
+
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
             // 低分辨率屏幕字号初始化
             if (screenSize.width <= 1366) {
@@ -59,6 +65,7 @@ public class Init {
             } else if (screenSize.width > 1920) {
                 App.config.setFontSize(14);
             }
+
         }
 
         Font font = new Font(App.config.getFont(), Font.PLAIN, App.config.getFontSize());
