@@ -3,16 +3,18 @@ package com.fangxuele.tool.push.ui.frame;
 import com.apple.eawt.Application;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.listener.AboutListener;
-import com.fangxuele.tool.push.ui.listener.FramListener;
+import com.fangxuele.tool.push.ui.listener.FrameListener;
 import com.fangxuele.tool.push.ui.listener.HelpListener;
 import com.fangxuele.tool.push.ui.listener.MemberListener;
 import com.fangxuele.tool.push.ui.listener.MessageTypeListener;
-import com.fangxuele.tool.push.ui.listener.MsgListener;
+import com.fangxuele.tool.push.ui.listener.MsgEditListener;
+import com.fangxuele.tool.push.ui.listener.MsgManageListener;
 import com.fangxuele.tool.push.ui.listener.PushHisListener;
 import com.fangxuele.tool.push.ui.listener.PushListener;
 import com.fangxuele.tool.push.ui.listener.ScheduleListener;
 import com.fangxuele.tool.push.ui.listener.SettingListener;
 import com.fangxuele.tool.push.ui.listener.TabListener;
+import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
 import org.apache.commons.compress.utils.Lists;
 
@@ -44,14 +46,7 @@ public class MainFrame extends JFrame {
             application.setDockIconImage(UiConsts.IMAGE_ICON_LG);
         }
 
-        //得到屏幕的尺寸
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setBounds((int) (screenSize.width * 0.1), (int) (screenSize.height * 0.06), (int) (screenSize.width * 0.8),
-                (int) (screenSize.height * 0.83));
-
-        Dimension preferSize = new Dimension((int) (screenSize.width * 0.8),
-                (int) (screenSize.height * 0.83));
-        this.setPreferredSize(preferSize);
+        ComponentUtil.setPrefersizeAndLocateToCenter(this, 0.8, 0.83);
     }
 
     /**
@@ -63,11 +58,12 @@ public class MainFrame extends JFrame {
         HelpListener.addListeners();
         PushHisListener.addListeners();
         SettingListener.addListeners();
-        MsgListener.addListeners();
+        MsgEditListener.addListeners();
+        MsgManageListener.addListeners();
         MemberListener.addListeners();
         PushListener.addListeners();
         ScheduleListener.addListeners();
         TabListener.addListeners();
-        FramListener.addListeners();
+        FrameListener.addListeners();
     }
 }

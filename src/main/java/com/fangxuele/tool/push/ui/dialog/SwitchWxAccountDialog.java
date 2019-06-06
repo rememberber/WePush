@@ -8,6 +8,7 @@ import com.fangxuele.tool.push.dao.TWxAccountMapper;
 import com.fangxuele.tool.push.domain.TWxAccount;
 import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.ui.listener.SettingListener;
+import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
@@ -62,14 +63,7 @@ public class SwitchWxAccountDialog extends JDialog {
         setContentPane(contentPane);
         setModal(true);
 
-        //得到屏幕的尺寸
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds((int) (screenSize.width * 0.2), (int) (screenSize.height * 0.12), (int) (screenSize.width * 0.6),
-                (int) (screenSize.height * 0.63));
-
-        Dimension preferSize = new Dimension((int) (screenSize.width * 0.6),
-                (int) (screenSize.height * 0.63));
-        setPreferredSize(preferSize);
+        ComponentUtil.setPrefersizeAndLocateToCenter(this, 0.6, 0.63);
 
         buttonOk.addActionListener(e -> onCancel());
 

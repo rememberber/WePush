@@ -2,6 +2,7 @@ package com.fangxuele.tool.push.ui.listener;
 
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.MessageTypeForm;
 
 import static com.fangxuele.tool.push.ui.form.MessageTypeForm.messageTypeForm;
@@ -19,58 +20,59 @@ public class MessageTypeListener {
     public static void addListeners() {
         messageTypeForm.getMpTemplateRadioButton().addActionListener(e -> {
             App.config.setMsgType(MessageTypeEnum.MP_TEMPLATE_CODE);
-            App.config.save();
-            MessageTypeForm.init();
+            saveType();
         });
         messageTypeForm.getMaTemplateRadioButton().addActionListener(e -> {
             App.config.setMsgType(MessageTypeEnum.MA_TEMPLATE_CODE);
-            App.config.save();
-            MessageTypeForm.init();
+            saveType();
         });
         messageTypeForm.getKefuRadioButton().addActionListener(e -> {
             App.config.setMsgType(MessageTypeEnum.KEFU_CODE);
-            App.config.save();
-            MessageTypeForm.init();
+            saveType();
         });
         messageTypeForm.getKefuPriorityRadioButton().addActionListener(e -> {
             App.config.setMsgType(MessageTypeEnum.KEFU_PRIORITY_CODE);
-            App.config.save();
-            MessageTypeForm.init();
+            saveType();
         });
         messageTypeForm.getAliYunRadioButton().addActionListener(e -> {
             App.config.setMsgType(MessageTypeEnum.ALI_YUN_CODE);
-            App.config.save();
-            MessageTypeForm.init();
+            saveType();
         });
         messageTypeForm.getAliTemplateRadioButton().addActionListener(e -> {
             App.config.setMsgType(MessageTypeEnum.ALI_TEMPLATE_CODE);
-            App.config.save();
-            MessageTypeForm.init();
+            saveType();
         });
         messageTypeForm.getTxYunRadioButton().addActionListener(e -> {
             App.config.setMsgType(MessageTypeEnum.TX_YUN_CODE);
-            App.config.save();
-            MessageTypeForm.init();
+            saveType();
         });
         messageTypeForm.getYunPianRadioButton().addActionListener(e -> {
             App.config.setMsgType(MessageTypeEnum.YUN_PIAN_CODE);
-            App.config.save();
-            MessageTypeForm.init();
+            saveType();
         });
         messageTypeForm.getUpYunRadioButton().addActionListener(e -> {
             App.config.setMsgType(MessageTypeEnum.UP_YUN_CODE);
-            App.config.save();
-            MessageTypeForm.init();
+            saveType();
         });
         messageTypeForm.getHwYunRadioButton().addActionListener(e -> {
             App.config.setMsgType(MessageTypeEnum.HW_YUN_CODE);
-            App.config.save();
-            MessageTypeForm.init();
+            saveType();
         });
         messageTypeForm.getEMailRadioButton().addActionListener(e -> {
             App.config.setMsgType(MessageTypeEnum.EMAIL_CODE);
-            App.config.save();
-            MessageTypeForm.init();
+            saveType();
         });
+    }
+
+    /**
+     * 保存消息类型
+     */
+    private static void saveType() {
+        String msgName = App.config.getMsgName();
+
+        MessageEditForm.messageEditForm.getMsgNameField().setText(msgName);
+        MessageEditForm.messageEditForm.getPreviewUserField().setText(App.config.getPreviewUser());
+        App.config.save();
+        MessageTypeForm.init();
     }
 }
