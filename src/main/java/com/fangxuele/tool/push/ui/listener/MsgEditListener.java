@@ -3,10 +3,6 @@ package com.fangxuele.tool.push.ui.listener;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.dao.TMsgKefuPriorityMapper;
-import com.fangxuele.tool.push.dao.TTemplateDataMapper;
-import com.fangxuele.tool.push.domain.TMsgKefuPriority;
-import com.fangxuele.tool.push.domain.TTemplateData;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.PushManage;
 import com.fangxuele.tool.push.ui.form.MainWindow;
@@ -15,18 +11,14 @@ import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.ui.form.msg.AliTemplateMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.AliYunMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.KefuMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.KefuPriorityMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.MaTemplateMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.MpTemplateMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.TxYunMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.YunpianMsgForm;
-import com.fangxuele.tool.push.util.MybatisUtil;
-import com.fangxuele.tool.push.util.SqliteUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * <pre>
@@ -38,9 +30,6 @@ import java.util.Objects;
  */
 public class MsgEditListener {
     private static final Log logger = LogFactory.get();
-
-    private static TMsgKefuPriorityMapper msgKefuPriorityMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuPriorityMapper.class);
-    private static TTemplateDataMapper templateDataMapper = MybatisUtil.getSqlSession().getMapper(TTemplateDataMapper.class);
 
     private static JSplitPane messagePanel = MainWindow.mainWindow.getMessagePanel();
 
@@ -57,109 +46,32 @@ public class MsgEditListener {
             int msgType = App.config.getMsgType();
 
             try {
-                if (msgType == MessageTypeEnum.KEFU_CODE) {
-                    KefuMsgForm.save(msgName);
-                } else if (msgType == MessageTypeEnum.KEFU_PRIORITY_CODE) {
-                    int msgId = 0;
-                    boolean existSameMsg = false;
-
-                    List<TMsgKefuPriority> tMsgKefuPriorityList = msgKefuPriorityMapper.selectByMsgTypeAndMsgName(msgType, msgName);
-                    if (tMsgKefuPriorityList.size() > 0) {
-                        existSameMsg = true;
-                        msgId = tMsgKefuPriorityList.get(0).getId();
-                    }
-
-                    int isCover = JOptionPane.NO_OPTION;
-                    if (existSameMsg) {
-                        // 如果存在，是否覆盖
-                        isCover = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getMessagePanel(), "已经存在同名的历史消息，\n是否覆盖？", "确认",
-                                JOptionPane.YES_NO_OPTION);
-                    }
-
-                    if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
-                        String templateId = MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateIdTextField().getText();
-                        String templateUrl = MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateUrlTextField().getText();
-                        String kefuMsgType = Objects.requireNonNull(KefuMsgForm.kefuMsgForm.getMsgKefuMsgTypeComboBox().getSelectedItem()).toString();
-                        String kefuMsgTitle = KefuMsgForm.kefuMsgForm.getMsgKefuMsgTitleTextField().getText();
-                        String kefuPicUrl = KefuMsgForm.kefuMsgForm.getMsgKefuPicUrlTextField().getText();
-                        String kefuDesc = KefuMsgForm.kefuMsgForm.getMsgKefuDescTextField().getText();
-                        String kefuUrl = KefuMsgForm.kefuMsgForm.getMsgKefuUrlTextField().getText();
-                        String templateMiniAppid = MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateMiniAppidTextField().getText();
-                        String templateMiniPagePath = MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateMiniPagePathTextField().getText();
-
-                        String now = SqliteUtil.nowDateForSqlite();
-
-                        TMsgKefuPriority tMsgKefuPriority = new TMsgKefuPriority();
-                        tMsgKefuPriority.setMsgType(msgType);
-                        tMsgKefuPriority.setMsgName(msgName);
-                        tMsgKefuPriority.setTemplateId(templateId);
-                        tMsgKefuPriority.setUrl(templateUrl);
-                        tMsgKefuPriority.setMaAppid(templateMiniAppid);
-                        tMsgKefuPriority.setMaPagePath(templateMiniPagePath);
-                        tMsgKefuPriority.setKefuMsgType(kefuMsgType);
-                        tMsgKefuPriority.setContent(kefuMsgTitle);
-                        tMsgKefuPriority.setTitle(kefuMsgTitle);
-                        tMsgKefuPriority.setImgUrl(kefuPicUrl);
-                        tMsgKefuPriority.setDescribe(kefuDesc);
-                        tMsgKefuPriority.setKefuUrl(kefuUrl);
-                        tMsgKefuPriority.setCreateTime(now);
-                        tMsgKefuPriority.setModifiedTime(now);
-
-                        if (existSameMsg) {
-                            msgKefuPriorityMapper.updateByMsgTypeAndMsgName(tMsgKefuPriority);
-                        } else {
-                            msgKefuPriorityMapper.insertSelective(tMsgKefuPriority);
-                            msgId = tMsgKefuPriority.getId();
-                        }
-
-                        // 保存模板数据
-                        // 如果是覆盖保存，则先清空之前的模板数据
-                        if (existSameMsg) {
-                            templateDataMapper.deleteByMsgTypeAndMsgId(msgType, msgId);
-                        }
-
-                        // 如果table为空，则初始化
-                        if (MpTemplateMsgForm.mpTemplateMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-                            MpTemplateMsgForm.initTemplateDataTable();
-                        }
-
-                        // 逐行读取
-                        DefaultTableModel tableModel = (DefaultTableModel) MpTemplateMsgForm.mpTemplateMsgForm.getTemplateMsgDataTable()
-                                .getModel();
-                        int rowCount = tableModel.getRowCount();
-                        for (int i = 0; i < rowCount; i++) {
-                            String name = (String) tableModel.getValueAt(i, 0);
-                            String value = (String) tableModel.getValueAt(i, 1);
-                            String color = ((String) tableModel.getValueAt(i, 2)).trim();
-
-                            TTemplateData tTemplateData = new TTemplateData();
-                            tTemplateData.setMsgType(msgType);
-                            tTemplateData.setMsgId(msgId);
-                            tTemplateData.setName(name);
-                            tTemplateData.setValue(value);
-                            tTemplateData.setColor(color);
-                            tTemplateData.setCreateTime(now);
-                            tTemplateData.setModifiedTime(now);
-
-                            templateDataMapper.insert(tTemplateData);
-                        }
-
-                        JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "保存成功！", "成功",
-                                JOptionPane.INFORMATION_MESSAGE);
-                    }
-
-                } else if (msgType == MessageTypeEnum.MA_TEMPLATE_CODE) {
-                    MaTemplateMsgForm.save(msgName);
-                } else if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE) {
-                    MpTemplateMsgForm.save(msgName);
-                } else if (msgType == MessageTypeEnum.ALI_TEMPLATE_CODE) {
-                    AliTemplateMsgForm.save(msgName);
-                } else if (msgType == MessageTypeEnum.ALI_YUN_CODE) {
-                    AliYunMsgForm.save(msgName);
-                } else if (msgType == MessageTypeEnum.TX_YUN_CODE) {
-                    TxYunMsgForm.save(msgName);
-                } else if (msgType == MessageTypeEnum.YUN_PIAN_CODE) {
-                    YunpianMsgForm.save(msgName);
+                switch (msgType) {
+                    case MessageTypeEnum.KEFU_CODE:
+                        KefuMsgForm.save(msgName);
+                        break;
+                    case MessageTypeEnum.KEFU_PRIORITY_CODE:
+                        KefuPriorityMsgForm.save(msgName);
+                        break;
+                    case MessageTypeEnum.MA_TEMPLATE_CODE:
+                        MaTemplateMsgForm.save(msgName);
+                        break;
+                    case MessageTypeEnum.MP_TEMPLATE_CODE:
+                        MpTemplateMsgForm.save(msgName);
+                        break;
+                    case MessageTypeEnum.ALI_TEMPLATE_CODE:
+                        AliTemplateMsgForm.save(msgName);
+                        break;
+                    case MessageTypeEnum.ALI_YUN_CODE:
+                        AliYunMsgForm.save(msgName);
+                        break;
+                    case MessageTypeEnum.TX_YUN_CODE:
+                        TxYunMsgForm.save(msgName);
+                        break;
+                    case MessageTypeEnum.YUN_PIAN_CODE:
+                        YunpianMsgForm.save(msgName);
+                        break;
+                    default:
                 }
 
                 App.config.setPreviewUser(MessageEditForm.messageEditForm.getPreviewUserField().getText());
