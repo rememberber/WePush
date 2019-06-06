@@ -416,7 +416,7 @@
                               <text value="使用HTTP代理"/>
                             </properties>
                           </component>
-                          <grid id="67f82" layout-manager="GridLayoutManager" row-count="4" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                          <grid id="67f82" binding="maProxyPanel" layout-manager="GridLayoutManager" row-count="4" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                             <margin top="0" left="26" bottom="0" right="0"/>
                             <constraints>
                               <grid row="6" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>

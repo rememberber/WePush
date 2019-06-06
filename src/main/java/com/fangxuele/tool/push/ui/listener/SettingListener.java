@@ -16,6 +16,8 @@ import com.fangxuele.tool.push.util.SqliteUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Objects;
@@ -344,6 +346,30 @@ public class SettingListener {
                 JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
+            }
+        });
+
+        SettingForm.settingForm.getMpUseProxyCheckBox().addChangeListener(new ChangeListener() {
+            /**
+             * Invoked when the target of the listener has changed its state.
+             *
+             * @param e a ChangeEvent object
+             */
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                SettingForm.toggleMpProxyPanel();
+            }
+        });
+
+        SettingForm.settingForm.getMaUseProxyCheckBox().addChangeListener(new ChangeListener() {
+            /**
+             * Invoked when the target of the listener has changed its state.
+             *
+             * @param e a ChangeEvent object
+             */
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                SettingForm.toggleMaProxyPanel();
             }
         });
     }

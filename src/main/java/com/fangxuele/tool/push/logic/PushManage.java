@@ -113,9 +113,6 @@ public class PushManage {
             case MessageTypeEnum.MP_TEMPLATE_CODE:
                 WxMpTemplateMessage wxMessageTemplate;
                 WxMpService wxMpService = getWxMpService();
-                if (wxMpService.getWxMpConfigStorage() == null) {
-                    return false;
-                }
 
                 for (String[] msgData : msgDataList) {
                     wxMessageTemplate = MessageMaker.makeMpTemplateMessage(msgData);
@@ -127,9 +124,6 @@ public class PushManage {
             case MessageTypeEnum.MA_TEMPLATE_CODE:
                 WxMaTemplateMessage wxMaMessageTemplate;
                 WxMaService wxMaService = getWxMaService();
-                if (wxMaService.getWxMaConfig() == null) {
-                    return false;
-                }
 
                 for (String[] msgData : msgDataList) {
                     wxMaMessageTemplate = MessageMaker.makeMaTemplateMessage(msgData);
@@ -142,9 +136,6 @@ public class PushManage {
             case MessageTypeEnum.KEFU_CODE:
                 wxMpService = getWxMpService();
                 WxMpKefuMessage wxMpKefuMessage;
-                if (wxMpService.getWxMpConfigStorage() == null) {
-                    return false;
-                }
 
                 for (String[] msgData : msgDataList) {
                     wxMpKefuMessage = MessageMaker.makeKefuMessage(msgData);
@@ -155,9 +146,6 @@ public class PushManage {
                 break;
             case MessageTypeEnum.KEFU_PRIORITY_CODE:
                 wxMpService = getWxMpService();
-                if (wxMpService.getWxMpConfigStorage() == null) {
-                    return false;
-                }
 
                 for (String[] msgData : msgDataList) {
                     try {
@@ -291,6 +279,12 @@ public class PushManage {
         configStorage.setSecret(App.config.getWechatAppSecret());
         configStorage.setToken(App.config.getWechatToken());
         configStorage.setAesKey(App.config.getWechatAesKey());
+        if (App.config.isMpUseProxy()) {
+            configStorage.setHttpProxyHost(App.config.getMpProxyHost());
+            configStorage.setHttpProxyPort(Integer.parseInt(App.config.getMpProxyPort()));
+            configStorage.setHttpProxyUsername(App.config.getMpProxyUserName());
+            configStorage.setHttpProxyPassword(App.config.getMpProxyPassword());
+        }
         return configStorage;
     }
 
@@ -315,6 +309,12 @@ public class PushManage {
         configStorage.setToken(App.config.getMiniAppToken());
         configStorage.setAesKey(App.config.getMiniAppAesKey());
         configStorage.setMsgDataFormat("JSON");
+        if (App.config.isMaUseProxy()) {
+            configStorage.setHttpProxyHost(App.config.getMaProxyHost());
+            configStorage.setHttpProxyPort(Integer.parseInt(App.config.getMaProxyPort()));
+            configStorage.setHttpProxyUsername(App.config.getMaProxyUserName());
+            configStorage.setHttpProxyPassword(App.config.getMaProxyPassword());
+        }
         return configStorage;
     }
 
