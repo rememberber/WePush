@@ -160,7 +160,7 @@ public class MessageEditForm {
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         messageEditPanel = new JPanel();
-        messageEditPanel.setLayout(new GridLayoutManager(3, 5, new Insets(6, 2, 0, 0), -1, -1));
+        messageEditPanel.setLayout(new GridLayoutManager(3, 5, new Insets(6, 2, 0, 5), -1, -1));
         messageEditPanel.setMaximumSize(new Dimension(-1, -1));
         messageEditPanel.setMinimumSize(new Dimension(-1, -1));
         messageEditPanel.setPreferredSize(new Dimension(-1, -1));
@@ -187,7 +187,7 @@ public class MessageEditForm {
         msgNameField.setToolTipText("给本次推送任务起个名字");
         panel2.add(msgNameField, new GridConstraints(1, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         final JPanel panel4 = new JPanel();
-        panel4.setLayout(new GridLayoutManager(1, 5, new Insets(0, 5, 0, 5), -1, -1));
+        panel4.setLayout(new GridLayoutManager(1, 5, new Insets(0, 5, 5, 5), -1, -1));
         messageEditPanel.add(panel4, new GridConstraints(2, 0, 1, 5, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         previewMemberLabel = new JLabel();
         previewMemberLabel.setText("预览用户openid/手机号");
