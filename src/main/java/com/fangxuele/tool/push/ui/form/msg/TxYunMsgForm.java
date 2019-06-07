@@ -245,11 +245,6 @@ public class TxYunMsgForm {
         templateMsgPanel.setLayout(new GridLayoutManager(2, 3, new Insets(10, 5, 0, 0), -1, -1));
         panel1.add(templateMsgPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         templateMsgPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, templateMsgPanel.getFont())));
-        templateIdLabel = new JLabel();
-        templateIdLabel.setText("短信模板ID *");
-        templateMsgPanel.add(templateIdLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        msgTemplateIdTextField = new JTextField();
-        templateMsgPanel.add(msgTemplateIdTextField, new GridConstraints(0, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         templateMsgDataPanel = new JPanel();
         templateMsgDataPanel.setLayout(new GridLayoutManager(2, 7, new Insets(10, 0, 0, 0), -1, -1));
         templateMsgPanel.add(templateMsgDataPanel, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -278,9 +273,17 @@ public class TxYunMsgForm {
         templateMsgDataTable.setGridColor(new Color(-12236470));
         templateMsgDataTable.setRowHeight(36);
         scrollPane1.setViewportView(templateMsgDataTable);
-        templateIdLabel.setLabelFor(msgTemplateIdTextField);
+        final JPanel panel2 = new JPanel();
+        panel2.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 10, 0), -1, -1));
+        templateMsgPanel.add(panel2, new GridConstraints(0, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        templateIdLabel = new JLabel();
+        templateIdLabel.setText("短信模板ID *");
+        panel2.add(templateIdLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        msgTemplateIdTextField = new JTextField();
+        panel2.add(msgTemplateIdTextField, new GridConstraints(0, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         templateMsgNameLabel.setLabelFor(templateDataNameTextField);
         templateMsgValueLabel.setLabelFor(templateDataValueTextField);
+        templateIdLabel.setLabelFor(msgTemplateIdTextField);
     }
 
     /**
