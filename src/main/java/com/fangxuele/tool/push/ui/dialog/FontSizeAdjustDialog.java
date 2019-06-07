@@ -26,7 +26,7 @@ public class FontSizeAdjustDialog extends JDialog {
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
 
-        ComponentUtil.setPrefersizeAndLocateToCenter(this, 420, 160);
+        ComponentUtil.setPrefersizeAndLocateToCenter(this, 420, 200);
 
         buttonOK.addActionListener(e -> onOK());
 
