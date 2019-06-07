@@ -73,10 +73,10 @@ public class AliYunMsgForm {
             }
 
             if (StringUtils.isEmpty(data[0]) || StringUtils.isEmpty(data[1])) {
-                JOptionPane.showMessageDialog(MessageEditForm.messageEditForm.getMsgEditorPanel(), "Name或value不能为空！", "提示",
+                JOptionPane.showMessageDialog(MessageEditForm.messageEditForm.getMsgEditorPanel(), "模板参数和参数对应的值不能为空！", "提示",
                         JOptionPane.INFORMATION_MESSAGE);
             } else if (keySet.contains(data[0])) {
-                JOptionPane.showMessageDialog(MessageEditForm.messageEditForm.getMsgEditorPanel(), "Name不能重复！", "提示",
+                JOptionPane.showMessageDialog(MessageEditForm.messageEditForm.getMsgEditorPanel(), "模板参数不能重复！", "提示",
                         JOptionPane.INFORMATION_MESSAGE);
             } else {
                 tableModel.addRow(data);

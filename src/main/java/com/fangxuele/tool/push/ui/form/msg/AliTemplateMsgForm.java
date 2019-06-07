@@ -74,10 +74,10 @@ public class AliTemplateMsgForm {
             }
 
             if (StringUtils.isEmpty(data[0]) || StringUtils.isEmpty(data[1])) {
-                JOptionPane.showMessageDialog(MessageEditForm.messageEditForm.getMsgEditorPanel(), "Name或value不能为空！", "提示",
+                JOptionPane.showMessageDialog(MessageEditForm.messageEditForm.getMsgEditorPanel(), "模板参数和参数对应的值不能为空！", "提示",
                         JOptionPane.INFORMATION_MESSAGE);
             } else if (keySet.contains(data[0])) {
-                JOptionPane.showMessageDialog(MessageEditForm.messageEditForm.getMsgEditorPanel(), "Name不能重复！", "提示",
+                JOptionPane.showMessageDialog(MessageEditForm.messageEditForm.getMsgEditorPanel(), "模板参数不能重复！", "提示",
                         JOptionPane.INFORMATION_MESSAGE);
             } else {
                 tableModel.addRow(data);
@@ -249,7 +249,7 @@ public class AliTemplateMsgForm {
         templateIdLabel.setText("短信模板ID *");
         templateMsgPanel.add(templateIdLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         msgTemplateIdTextField = new JTextField();
-        msgTemplateIdTextField.setMargin(new Insets(2, 6, 10, 6));
+        msgTemplateIdTextField.setMargin(new Insets(2, 6, 2, 6));
         templateMsgPanel.add(msgTemplateIdTextField, new GridConstraints(0, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         templateMsgDataPanel = new JPanel();
         templateMsgDataPanel.setLayout(new GridLayoutManager(2, 7, new Insets(10, 0, 0, 0), -1, -1));
