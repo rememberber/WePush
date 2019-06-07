@@ -8,10 +8,9 @@ import cn.hutool.log.LogFactory;
 import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.bean.VersionSummary;
 import com.fangxuele.tool.push.ui.UiConsts;
-import com.fangxuele.tool.push.ui.dialog.UpdateDialog;
+import com.fangxuele.tool.push.ui.dialog.UpdateInfoDialog;
 import com.fangxuele.tool.push.ui.form.AboutForm;
 import com.fangxuele.tool.push.ui.form.MainWindow;
-import com.fangxuele.tool.push.util.SystemUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.imageio.ImageIO;
@@ -132,25 +131,11 @@ public class AboutListener {
             }
             String versionLog = versionLogBuilder.toString();
 
-            int downLoadNow = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getPushPanel(),
-                    versionLog, "惊现新版本！立即下载？",
-                    JOptionPane.YES_NO_OPTION);
-
-            if (downLoadNow == JOptionPane.YES_OPTION) {
-                if (SystemUtil.isMacOs()) {
-                    Desktop desktop = Desktop.getDesktop();
-                    try {
-                        desktop.browse(new URI("https://github.com/rememberber/WePush/releases"));
-                    } catch (IOException | URISyntaxException ex) {
-                        ex.printStackTrace();
-                    }
-                } else {
-                    UpdateDialog dialog = new UpdateDialog();
-                    dialog.pack();
-                    dialog.downLoad(newVersion);
-                    dialog.setVisible(true);
-                }
-            }
+            UpdateInfoDialog updateInfoDialog = new UpdateInfoDialog();
+            updateInfoDialog.getTextPane1().setText(versionLog);
+            updateInfoDialog.setNewVersion(newVersion);
+            updateInfoDialog.pack();
+            updateInfoDialog.setVisible(true);
         } else {
             if (!initCheck) {
                 JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
