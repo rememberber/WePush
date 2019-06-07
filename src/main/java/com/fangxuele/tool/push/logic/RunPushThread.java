@@ -232,10 +232,7 @@ public class RunPushThread extends Thread {
                     PushForm.pushForm.getPushStopButton().updateUI();
                 }
 
-                String finishTip = "发送完毕！\n\n";
-                if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
-                    finishTip = "发送完毕！\n\n接下来将保存结果数据，请等待……\n\n";
-                }
+                String finishTip = "发送完毕！\n";
                 if (!PushData.fixRateScheduling) {
                     JOptionPane.showMessageDialog(PushForm.pushForm.getPushPanel(), finishTip, "提示",
                             JOptionPane.INFORMATION_MESSAGE);

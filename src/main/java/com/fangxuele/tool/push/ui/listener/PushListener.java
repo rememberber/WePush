@@ -51,7 +51,7 @@ public class PushListener {
                                 MessageEditForm.messageEditForm.getMsgNameField().getText() +
                                 "\n推送人数：" + PushData.allUser.size() +
                                 "\n\n空跑模式：" +
-                                PushForm.pushForm.getDryRunCheckBox().isSelected(), "确认推送？",
+                                PushForm.pushForm.getDryRunCheckBox().isSelected() + "\n", "确认推送？",
                         JOptionPane.YES_NO_OPTION);
                 if (isPush == JOptionPane.YES_OPTION) {
                     // 按钮状态
