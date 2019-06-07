@@ -1,5 +1,7 @@
 package com.fangxuele.tool.push.util;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.awt.*;
 
 /**
@@ -10,6 +12,7 @@ import java.awt.*;
  * @author <a href="https://github.com/rememberber">Zhou Bo</a>
  * @since 2019/6/6.
  */
+@Slf4j
 public class UIUtil {
 
     /**
@@ -39,6 +42,9 @@ public class UIUtil {
         } else {
             scale = 2.0F;
         }
+
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        log.info("screen scale:{},width:{},height:{}", scale, screenSize.getWidth(), screenSize.getHeight());
 
         return scale;
     }
