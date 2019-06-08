@@ -44,7 +44,7 @@ public class UIUtil {
         }
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        log.info("screen scale:{},width:{},height:{}", scale, screenSize.getWidth(), screenSize.getHeight());
+        log.info("screen dpi:{},width:{},height:{}", dpi, screenSize.getWidth(), screenSize.getHeight());
 
         return scale;
     }
