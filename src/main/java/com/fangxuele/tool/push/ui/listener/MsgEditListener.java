@@ -121,7 +121,7 @@ public class MsgEditListener {
             @Override
             public void mouseClicked(MouseEvent e) {
                 CommonTipsDialog dialog = new CommonTipsDialog();
-                dialog.setPlaneText("多个以半角分号分隔");
+                dialog.setHtmlText("<p>多个以半角分号分隔</p>");
                 dialog.pack();
                 dialog.setVisible(true);
 
