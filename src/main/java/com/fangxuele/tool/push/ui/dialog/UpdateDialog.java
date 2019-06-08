@@ -22,6 +22,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+/**
+ * <pre>
+ * 更新下载dialog
+ * </pre>
+ *
+ * @author <a href="https://github.com/rememberber">Zhou Bo</a>
+ * @since 2019/6/7.
+ */
 public class UpdateDialog extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;

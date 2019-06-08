@@ -18,6 +18,7 @@ import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.ui.form.UserCaseForm;
 import com.fangxuele.tool.push.ui.listener.AboutListener;
 import com.fangxuele.tool.push.util.SystemUtil;
+import com.fangxuele.tool.push.util.UIUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 
@@ -48,24 +49,20 @@ public class Init {
      */
     public static void initGlobalFont() {
         if (StringUtils.isEmpty(App.config.getProps(FONT_SIZE_INIT_PROP))) {
-            // TODO 根据DPI调整字号
-            // 得到屏幕的分辨率
+            // 根据DPI调整字号
+            // 得到屏幕的分辨率dpi
             // dell 1920*1080/24寸=96
-            int dpi = Toolkit.getDefaultToolkit().getScreenResolution();
-
-            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            // 低分辨率屏幕字号初始化
-            if (screenSize.width <= 1366) {
-                App.config.setFontSize(12);
-            }
+            // 小米air 1920*1080/13.3寸=144
+            // 小米air 1366*768/13.3寸=96
+            int fontSize = 12;
 
             // Mac等高分辨率屏幕字号初始化
             if (SystemUtil.isMacOs()) {
-                App.config.setFontSize(15);
-            } else if (screenSize.width > 1920) {
-                App.config.setFontSize(14);
+                fontSize = 15;
+            } else {
+                fontSize = (int) (UIUtil.getScreenScale() * fontSize);
             }
-
+            App.config.setFontSize(fontSize);
         }
 
         Font font = new Font(App.config.getFont(), Font.PLAIN, App.config.getFontSize());

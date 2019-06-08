@@ -5,6 +5,8 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.PushManage;
+import com.fangxuele.tool.push.ui.UiConsts;
+import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.MessageManageForm;
@@ -19,6 +21,9 @@ import com.fangxuele.tool.push.ui.form.msg.YunpianMsgForm;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * <pre>
@@ -109,6 +114,36 @@ public class MsgEditListener {
                 JOptionPane.showMessageDialog(messagePanel, "发送预览消息失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
+            }
+        });
+
+        MessageEditForm.messageEditForm.getPreviewUserHelpLabel().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                CommonTipsDialog dialog = new CommonTipsDialog();
+                dialog.setPlaneText("多个以半角分号分隔");
+                dialog.pack();
+                dialog.setVisible(true);
+
+                super.mouseClicked(e);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                super.mousePressed(e);
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                MessageEditForm.messageEditForm.getPreviewUserHelpLabel().setCursor(new Cursor(Cursor.HAND_CURSOR));
+                MessageEditForm.messageEditForm.getPreviewUserHelpLabel().setIcon(new ImageIcon(UiConsts.HELP_FOCUSED_ICON));
+                super.mouseEntered(e);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                MessageEditForm.messageEditForm.getPreviewUserHelpLabel().setIcon(new ImageIcon(UiConsts.HELP_ICON));
+                super.mouseExited(e);
             }
         });
     }

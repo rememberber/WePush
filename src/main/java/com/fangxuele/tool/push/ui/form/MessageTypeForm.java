@@ -97,6 +97,7 @@ public class MessageTypeForm {
             MemberForm.memberForm.getImportOptionPanel().setVisible(false);
         }
         MessageEditForm.switchMsgType(msgType);
+        MessageEditForm.messageEditForm.getMsgTypeName().setText(MessageTypeEnum.getName(msgType));
         MessageManageForm.init();
         MemberForm.init();
         PushHisForm.init();

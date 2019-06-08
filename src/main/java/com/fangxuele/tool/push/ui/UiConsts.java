@@ -43,6 +43,18 @@ public class UiConsts {
             .getImage(UiConsts.class.getResource("/icon/logo-xs.png"));
 
     /**
+     * 帮助图标
+     */
+    public final static Image HELP_ICON = Toolkit.getDefaultToolkit()
+            .getImage(UiConsts.class.getResource("/icon/helpButton.png"));
+
+    /**
+     * 帮助图标-focused
+     */
+    public final static Image HELP_FOCUSED_ICON = Toolkit.getDefaultToolkit()
+            .getImage(UiConsts.class.getResource("/icon/helpButtonFocused.png"));
+
+    /**
      * 软件版本检查url
      */
     public final static String CHECK_VERSION_URL = "https://raw.githubusercontent.com/rememberber/WePush/master/src/main/resources/version_summary.json";
@@ -53,7 +65,7 @@ public class UiConsts {
     public final static String USER_CASE_URL = "http://download.zhoubochina.com/file/user_case.json";
 
     /**
-     * 用户案例url
+     * 二维码url
      */
     public final static String QR_CODE_URL = "http://download.zhoubochina.com/file/wepush_qrcode.json";
 

@@ -14,44 +14,10 @@
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
-        <border type="empty" title="模板消息编辑">
+        <border type="empty" title="公众号-模板消息编辑">
           <font style="1"/>
         </border>
         <children>
-          <component id="bacc8" class="javax.swing.JLabel" binding="templateIdLabel">
-            <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <labelFor value="fa9e4"/>
-              <text value="模板ID *"/>
-            </properties>
-          </component>
-          <component id="fa9e4" class="javax.swing.JTextField" binding="msgTemplateIdTextField">
-            <constraints>
-              <grid row="0" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                <preferred-size width="150" height="-1"/>
-              </grid>
-            </constraints>
-            <properties/>
-          </component>
-          <component id="19629" class="javax.swing.JLabel" binding="templateUrlLabel">
-            <constraints>
-              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <labelFor value="11d29"/>
-              <text value="跳转URL"/>
-            </properties>
-          </component>
-          <component id="11d29" class="javax.swing.JTextField" binding="msgTemplateUrlTextField">
-            <constraints>
-              <grid row="1" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                <preferred-size width="150" height="-1"/>
-              </grid>
-            </constraints>
-            <properties/>
-          </component>
           <grid id="4d00f" binding="templateMsgDataPanel" layout-manager="GridLayoutManager" row-count="2" column-count="7" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="10" left="0" bottom="0" right="0"/>
             <constraints>
@@ -148,48 +114,92 @@
               </scrollpane>
             </children>
           </grid>
-          <component id="1a727" class="javax.swing.JLabel" binding="templateMiniProgramAppidLabel">
+          <grid id="efb84" layout-manager="GridLayoutManager" row-count="4" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="5" right="0"/>
             <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="0" row-span="4" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
             </constraints>
-            <properties>
-              <labelFor value="5d5e9"/>
-              <text value="小程序appid"/>
-              <toolTipText value="非必填"/>
-            </properties>
-          </component>
-          <component id="5d5e9" class="javax.swing.JTextField" binding="msgTemplateMiniAppidTextField">
-            <constraints>
-              <grid row="2" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                <preferred-size width="150" height="-1"/>
-              </grid>
-            </constraints>
-            <properties>
-              <text value=""/>
-              <toolTipText value="非必填"/>
-            </properties>
-          </component>
-          <component id="9a69a" class="javax.swing.JLabel" binding="templateMiniProgramPagePathLabel">
-            <constraints>
-              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <labelFor value="559c5"/>
-              <text value="小程序页面路径"/>
-              <toolTipText value="非必填"/>
-            </properties>
-          </component>
-          <component id="559c5" class="javax.swing.JTextField" binding="msgTemplateMiniPagePathTextField">
-            <constraints>
-              <grid row="3" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                <preferred-size width="150" height="-1"/>
-              </grid>
-            </constraints>
-            <properties>
-              <text value=""/>
-              <toolTipText value="非必填"/>
-            </properties>
-          </component>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <component id="bacc8" class="javax.swing.JLabel" binding="templateIdLabel">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <labelFor value="fa9e4"/>
+                  <text value="模板ID *"/>
+                </properties>
+              </component>
+              <component id="fa9e4" class="javax.swing.JTextField" binding="msgTemplateIdTextField">
+                <constraints>
+                  <grid row="0" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                    <preferred-size width="150" height="-1"/>
+                  </grid>
+                </constraints>
+                <properties/>
+              </component>
+              <component id="19629" class="javax.swing.JLabel" binding="templateUrlLabel">
+                <constraints>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <labelFor value="11d29"/>
+                  <text value="跳转URL"/>
+                </properties>
+              </component>
+              <component id="11d29" class="javax.swing.JTextField" binding="msgTemplateUrlTextField">
+                <constraints>
+                  <grid row="1" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                    <preferred-size width="150" height="-1"/>
+                  </grid>
+                </constraints>
+                <properties/>
+              </component>
+              <component id="1a727" class="javax.swing.JLabel" binding="templateMiniProgramAppidLabel">
+                <constraints>
+                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <labelFor value="5d5e9"/>
+                  <text value="小程序appid"/>
+                  <toolTipText value="非必填"/>
+                </properties>
+              </component>
+              <component id="5d5e9" class="javax.swing.JTextField" binding="msgTemplateMiniAppidTextField">
+                <constraints>
+                  <grid row="2" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                    <preferred-size width="150" height="-1"/>
+                  </grid>
+                </constraints>
+                <properties>
+                  <text value=""/>
+                  <toolTipText value="非必填"/>
+                </properties>
+              </component>
+              <component id="9a69a" class="javax.swing.JLabel" binding="templateMiniProgramPagePathLabel">
+                <constraints>
+                  <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <labelFor value="559c5"/>
+                  <text value="小程序页面路径"/>
+                  <toolTipText value="非必填"/>
+                </properties>
+              </component>
+              <component id="559c5" class="javax.swing.JTextField" binding="msgTemplateMiniPagePathTextField">
+                <constraints>
+                  <grid row="3" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                    <preferred-size width="150" height="-1"/>
+                  </grid>
+                </constraints>
+                <properties>
+                  <text value=""/>
+                  <toolTipText value="非必填"/>
+                </properties>
+              </component>
+            </children>
+          </grid>
         </children>
       </grid>
     </children>

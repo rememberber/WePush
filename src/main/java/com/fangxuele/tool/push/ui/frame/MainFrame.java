@@ -46,7 +46,7 @@ public class MainFrame extends JFrame {
             application.setDockIconImage(UiConsts.IMAGE_ICON_LG);
         }
 
-        ComponentUtil.setPrefersizeAndLocateToCenter(this, 0.8, 0.83);
+        ComponentUtil.setPrefersizeAndLocateToCenter(this, 0.8, 0.88);
     }
 
     /**

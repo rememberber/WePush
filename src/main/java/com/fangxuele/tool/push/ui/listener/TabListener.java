@@ -34,7 +34,7 @@ public class TabListener {
                     case 3:
                         if (warnFlag) {
                             JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "\n请确认您了解所要发送消息类型的使用频率、使用规范和限制规则，\n" +
-                                            "以免账号相关功能被封禁等给您带来麻烦", "提示",
+                                            "以免账号相关功能被封禁等给您带来麻烦\n", "提示",
                                     JOptionPane.INFORMATION_MESSAGE);
                             warnFlag = false;
                         }
