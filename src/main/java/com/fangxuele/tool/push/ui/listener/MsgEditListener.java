@@ -119,7 +119,7 @@ public class MsgEditListener {
 
         MessageEditForm.messageEditForm.getPreviewUserHelpLabel().addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mousePressed(MouseEvent e) {
                 CommonTipsDialog dialog = new CommonTipsDialog();
 
                 int msgType = App.config.getMsgType();
@@ -147,11 +147,6 @@ public class MsgEditListener {
                 dialog.pack();
                 dialog.setVisible(true);
 
-                super.mouseClicked(e);
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
             }
 

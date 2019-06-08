@@ -9,16 +9,21 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.RunPushThread;
+import com.fangxuele.tool.push.ui.UiConsts;
+import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -264,6 +269,38 @@ public class PushListener {
             refreshPushInfo();
         });
 
+        PushForm.pushForm.getThreadTipsLabel().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                CommonTipsDialog dialog = new CommonTipsDialog();
+
+                StringBuilder tipsBuilder = new StringBuilder();
+                tipsBuilder.append("<h1>线程数调整为多少比较合适？</h1>");
+                tipsBuilder.append("<h2>建议不要超过100</h2>");
+                tipsBuilder.append("<p>WePush的连接池管理尚未开发完毕</p>");
+                tipsBuilder.append("<p>目前使用的是各自消息类型官方SDK(微信相关消息除外)内置的连接池</p>");
+                tipsBuilder.append("<p>如果优先考虑推送的成功率而非速度建议30-50左右</p>");
+
+                dialog.setHtmlText(tipsBuilder.toString());
+                dialog.pack();
+                dialog.setVisible(true);
+
+                super.mousePressed(e);
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                PushForm.pushForm.getThreadTipsLabel().setCursor(new Cursor(Cursor.HAND_CURSOR));
+                PushForm.pushForm.getThreadTipsLabel().setIcon(new ImageIcon(UiConsts.HELP_FOCUSED_ICON));
+                super.mouseEntered(e);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                PushForm.pushForm.getThreadTipsLabel().setIcon(new ImageIcon(UiConsts.HELP_ICON));
+                super.mouseExited(e);
+            }
+        });
     }
 
     private static void tEvent() {
