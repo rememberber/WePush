@@ -121,18 +121,18 @@ public class AboutListener {
             // 当前版本索引
             int currentVersionIndex = Integer.parseInt(versionIndexMap.get(currentVersion));
             // 版本更新日志：
-            StringBuilder versionLogBuilder = new StringBuilder("惊现新版本！立即下载？\n\n");
+            StringBuilder versionLogBuilder = new StringBuilder("<h1>惊现新版本！立即下载？</h1>");
             VersionSummary.Version version;
             for (int i = currentVersionIndex + 1; i < versionDetailList.size(); i++) {
                 version = versionDetailList.get(i);
-                versionLogBuilder.append(version.getVersion()).append("\n");
-                versionLogBuilder.append(version.getTitle()).append("\n");
-                versionLogBuilder.append(version.getLog()).append("\n");
+                versionLogBuilder.append("<h2>").append(version.getVersion()).append("</h2>");
+                versionLogBuilder.append("<b>").append(version.getTitle()).append("</b><br/>");
+                versionLogBuilder.append(version.getLog().replaceAll("\\n", "<br/>")).append("<br/>");
             }
             String versionLog = versionLogBuilder.toString();
 
             UpdateInfoDialog updateInfoDialog = new UpdateInfoDialog();
-            updateInfoDialog.getTextPane1().setText(versionLog);
+            updateInfoDialog.setHtmlText(versionLog);
             updateInfoDialog.setNewVersion(newVersion);
             updateInfoDialog.pack();
             updateInfoDialog.setVisible(true);

@@ -9,6 +9,8 @@ import com.intellij.uiDesigner.core.Spacer;
 import lombok.Getter;
 
 import javax.swing.*;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.StyleSheet;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -82,6 +84,23 @@ public class UpdateInfoDialog extends JDialog {
 
     private void onCancel() {
         dispose();
+    }
+
+    public void setPlaneText(String planeText) {
+        textPane1.setContentType("text/plain; charset=utf-8");
+//        DefaultEditorKit kit = new DefaultEditorKit();
+//        textPane1.setEditorKit(kit);
+        textPane1.setText(planeText);
+    }
+
+    public void setHtmlText(String htmlText) {
+        textPane1.setContentType("text/html; charset=utf-8");
+        HTMLEditorKit kit = new HTMLEditorKit();
+        textPane1.setEditorKit(kit);
+        StyleSheet styleSheet = kit.getStyleSheet();
+        styleSheet.addRule("h2{color:#FBC87A;}");
+        styleSheet.addRule("body{font-family:" + buttonOK.getFont().getName() + ";font-size:" + buttonOK.getFont().getSize() + ";}");
+        textPane1.setText(htmlText);
     }
 
     {
