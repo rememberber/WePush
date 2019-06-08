@@ -41,6 +41,7 @@ public class MessageTypeForm {
     private JRadioButton 企业号企业微信RadioButton;
     private JRadioButton 钉钉RadioButton;
     private JScrollPane messageTypeScrollPane;
+    private JLabel kefuPriorityTipsLabel;
 
     public static MessageTypeForm messageTypeForm = new MessageTypeForm();
 
@@ -137,7 +138,7 @@ public class MessageTypeForm {
         messageTypeScrollPane.setAutoscrolls(true);
         messageTypePanel.add(messageTypeScrollPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         msgTypeListPanel = new JPanel();
-        msgTypeListPanel.setLayout(new GridLayoutManager(18, 2, new Insets(20, 20, 0, 0), -1, -1));
+        msgTypeListPanel.setLayout(new GridLayoutManager(18, 3, new Insets(20, 20, 0, 0), -1, -1));
         msgTypeListPanel.setAutoscrolls(true);
         messageTypeScrollPane.setViewportView(msgTypeListPanel);
         mpTemplateRadioButton = new JRadioButton();
@@ -145,7 +146,7 @@ public class MessageTypeForm {
         mpTemplateRadioButton.setText("公众号-模板消息");
         msgTypeListPanel.add(mpTemplateRadioButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
-        msgTypeListPanel.add(spacer1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        msgTypeListPanel.add(spacer1, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         maTemplateRadioButton = new JRadioButton();
         maTemplateRadioButton.setText("小程序-模板消息");
         msgTypeListPanel.add(maTemplateRadioButton, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -208,6 +209,10 @@ public class MessageTypeForm {
         钉钉RadioButton.setEnabled(false);
         钉钉RadioButton.setText("钉钉");
         msgTypeListPanel.add(钉钉RadioButton, new GridConstraints(17, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        kefuPriorityTipsLabel = new JLabel();
+        kefuPriorityTipsLabel.setIcon(new ImageIcon(getClass().getResource("/icon/helpButton.png")));
+        kefuPriorityTipsLabel.setText("");
+        msgTypeListPanel.add(kefuPriorityTipsLabel, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(2, 1, new Insets(8, 8, 8, 0), -1, -1));
         messageTypePanel.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));

@@ -152,14 +152,16 @@ public class MsgEditListener {
 
             @Override
             public void mouseEntered(MouseEvent e) {
-                MessageEditForm.messageEditForm.getPreviewUserHelpLabel().setCursor(new Cursor(Cursor.HAND_CURSOR));
-                MessageEditForm.messageEditForm.getPreviewUserHelpLabel().setIcon(new ImageIcon(UiConsts.HELP_FOCUSED_ICON));
+                JLabel label = (JLabel) e.getComponent();
+                label.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                label.setIcon(new ImageIcon(UiConsts.HELP_FOCUSED_ICON));
                 super.mouseEntered(e);
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                MessageEditForm.messageEditForm.getPreviewUserHelpLabel().setIcon(new ImageIcon(UiConsts.HELP_ICON));
+                JLabel label = (JLabel) e.getComponent();
+                label.setIcon(new ImageIcon(UiConsts.HELP_ICON));
                 super.mouseExited(e);
             }
         });

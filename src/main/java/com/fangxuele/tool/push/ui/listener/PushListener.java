@@ -290,14 +290,16 @@ public class PushListener {
 
             @Override
             public void mouseEntered(MouseEvent e) {
-                PushForm.pushForm.getThreadTipsLabel().setCursor(new Cursor(Cursor.HAND_CURSOR));
-                PushForm.pushForm.getThreadTipsLabel().setIcon(new ImageIcon(UiConsts.HELP_FOCUSED_ICON));
+                JLabel label = (JLabel) e.getComponent();
+                label.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                label.setIcon(new ImageIcon(UiConsts.HELP_FOCUSED_ICON));
                 super.mouseEntered(e);
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                PushForm.pushForm.getThreadTipsLabel().setIcon(new ImageIcon(UiConsts.HELP_ICON));
+                JLabel label = (JLabel) e.getComponent();
+                label.setIcon(new ImageIcon(UiConsts.HELP_ICON));
                 super.mouseExited(e);
             }
         });

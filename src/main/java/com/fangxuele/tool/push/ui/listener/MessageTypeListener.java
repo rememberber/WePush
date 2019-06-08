@@ -2,8 +2,15 @@ package com.fangxuele.tool.push.ui.listener;
 
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.ui.UiConsts;
+import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.MessageTypeForm;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import static com.fangxuele.tool.push.ui.form.MessageTypeForm.messageTypeForm;
 
@@ -61,6 +68,40 @@ public class MessageTypeListener {
         messageTypeForm.getEMailRadioButton().addActionListener(e -> {
             App.config.setMsgType(MessageTypeEnum.EMAIL_CODE);
             saveType();
+        });
+
+        messageTypeForm.getKefuPriorityTipsLabel().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                CommonTipsDialog dialog = new CommonTipsDialog();
+
+                StringBuilder tipsBuilder = new StringBuilder();
+                tipsBuilder.append("<h1>这是什么？</h1>");
+                tipsBuilder.append("<h2>优先发送客服消息，如果发送失败则再发送模板消息</h2>");
+                tipsBuilder.append("<p>选择该消息类型需要同时编辑客服消息和模板消息</p>");
+                tipsBuilder.append("<p>首先尝试发送客服消息，如果失败则继续给该用户发送模板消息</p>");
+
+                dialog.setHtmlText(tipsBuilder.toString());
+                dialog.pack();
+                dialog.setVisible(true);
+
+                super.mousePressed(e);
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                JLabel label = (JLabel) e.getComponent();
+                label.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                label.setIcon(new ImageIcon(UiConsts.HELP_FOCUSED_ICON));
+                super.mouseEntered(e);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                JLabel label = (JLabel) e.getComponent();
+                label.setIcon(new ImageIcon(UiConsts.HELP_ICON));
+                super.mouseExited(e);
+            }
         });
     }
 
