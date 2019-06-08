@@ -124,7 +124,7 @@ public class UpdateInfoDialog extends JDialog {
         panel3.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         textPane1 = new JTextPane();
         textPane1.setEditable(false);
-        textPane1.setMargin(new Insets(10, 15, 3, 3));
+        textPane1.setMargin(new Insets(80, 28, 3, 28));
         textPane1.setText("");
         scrollPane1.setViewportView(textPane1);
     }
