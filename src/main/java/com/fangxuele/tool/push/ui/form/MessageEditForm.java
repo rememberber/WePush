@@ -99,44 +99,36 @@ public class MessageEditForm {
             case MessageTypeEnum.MP_TEMPLATE_CODE:
                 MpTemplateMsgForm.init(null);
                 messageEditForm.getMsgEditorPanel().add(MpTemplateMsgForm.mpTemplateMsgForm.getTemplateMsgPanel(), gridConstraintsRow0);
-                messageEditForm.getPreviewMemberLabel().setText("预览用户openid");
                 break;
             case MessageTypeEnum.MA_TEMPLATE_CODE:
                 MaTemplateMsgForm.init(null);
                 messageEditForm.getMsgEditorPanel().add(MaTemplateMsgForm.maTemplateMsgForm.getTemplateMsgPanel(), gridConstraintsRow0);
-                messageEditForm.getPreviewMemberLabel().setText("预览用户openid");
                 break;
             case MessageTypeEnum.KEFU_CODE:
                 KefuMsgForm.init(null);
                 messageEditForm.getMsgEditorPanel().add(KefuMsgForm.kefuMsgForm.getKefuMsgPanel(), gridConstraintsRow0);
-                messageEditForm.getPreviewMemberLabel().setText("预览用户openid");
                 break;
             case MessageTypeEnum.KEFU_PRIORITY_CODE:
                 KefuPriorityMsgForm.init(null);
                 messageEditForm.getMsgEditorPanel().setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
                 messageEditForm.getMsgEditorPanel().add(KefuMsgForm.kefuMsgForm.getKefuMsgPanel(), gridConstraintsRow0);
                 messageEditForm.getMsgEditorPanel().add(MpTemplateMsgForm.mpTemplateMsgForm.getTemplateMsgPanel(), gridConstraintsRow1);
-                messageEditForm.getPreviewMemberLabel().setText("预览用户openid");
                 break;
             case MessageTypeEnum.ALI_YUN_CODE:
                 AliYunMsgForm.init(null);
                 messageEditForm.getMsgEditorPanel().add(AliYunMsgForm.aliYunMsgForm.getTemplateMsgPanel(), gridConstraintsRow0);
-                messageEditForm.getPreviewMemberLabel().setText("预览用户手机号");
                 break;
             case MessageTypeEnum.TX_YUN_CODE:
                 TxYunMsgForm.init(null);
                 messageEditForm.getMsgEditorPanel().add(TxYunMsgForm.txYunMsgForm.getTemplateMsgPanel(), gridConstraintsRow0);
-                messageEditForm.getPreviewMemberLabel().setText("预览用户手机号");
                 break;
             case MessageTypeEnum.ALI_TEMPLATE_CODE:
                 AliTemplateMsgForm.init(null);
                 messageEditForm.getMsgEditorPanel().add(AliTemplateMsgForm.aliTemplateMsgForm.getTemplateMsgPanel(), gridConstraintsRow0);
-                messageEditForm.getPreviewMemberLabel().setText("预览用户手机号");
                 break;
             case MessageTypeEnum.YUN_PIAN_CODE:
                 YunpianMsgForm.init(null);
                 messageEditForm.getMsgEditorPanel().add(YunpianMsgForm.yunpianMsgForm.getYunpianMsgPanel(), gridConstraintsRow0);
-                messageEditForm.getPreviewMemberLabel().setText("预览用户手机号");
                 break;
             default:
                 break;
@@ -191,7 +183,7 @@ public class MessageEditForm {
         panel4.setLayout(new GridLayoutManager(1, 6, new Insets(0, 5, 5, 5), -1, -1));
         messageEditPanel.add(panel4, new GridConstraints(2, 0, 1, 5, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         previewMemberLabel = new JLabel();
-        previewMemberLabel.setText("预览用户openid/手机号");
+        previewMemberLabel.setText("预览用户");
         previewMemberLabel.setToolTipText("多个以半角分号分隔");
         panel4.add(previewMemberLabel, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         previewUserField = new JTextField();

@@ -85,7 +85,7 @@
                 </constraints>
                 <properties>
                   <labelFor value="b213b"/>
-                  <text value="预览用户openid/手机号"/>
+                  <text value="预览用户"/>
                   <toolTipText value="多个以半角分号分隔"/>
                 </properties>
               </component>

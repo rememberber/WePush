@@ -71,6 +71,7 @@ public class CommonTipsDialog extends JDialog {
         textPane1.setEditorKit(kit);
         StyleSheet styleSheet = kit.getStyleSheet();
         styleSheet.addRule("h2{color:#FBC87A;}");
+        styleSheet.addRule("body{font-family:" + buttonOK.getFont().getName() + ";font-size:" + buttonOK.getFont().getSize() + ";}");
         textPane1.setText(htmlText);
     }
 

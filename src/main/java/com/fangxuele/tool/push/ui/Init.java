@@ -19,6 +19,7 @@ import com.fangxuele.tool.push.ui.form.UserCaseForm;
 import com.fangxuele.tool.push.ui.listener.AboutListener;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.fangxuele.tool.push.util.UIUtil;
+import com.fangxuele.tool.push.util.UpgradeUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 
@@ -139,7 +140,7 @@ public class Init {
 
         // 检查新版版
         if (App.config.isAutoCheckUpdate()) {
-            ThreadUtil.execute(() -> AboutListener.checkUpdate(true));
+            ThreadUtil.execute(() -> UpgradeUtil.checkUpdate(true));
         }
         // 更新二维码
         ThreadUtil.execute(AboutListener::initQrCode);
