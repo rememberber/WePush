@@ -121,7 +121,29 @@ public class MsgEditListener {
             @Override
             public void mouseClicked(MouseEvent e) {
                 CommonTipsDialog dialog = new CommonTipsDialog();
-                dialog.setHtmlText("<p>多个以半角分号分隔</p>");
+
+                int msgType = App.config.getMsgType();
+                String fillParaName;
+                String paraDemo;
+                if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE || msgType == MessageTypeEnum.KEFU_PRIORITY_CODE
+                        || msgType == MessageTypeEnum.KEFU_CODE) {
+                    fillParaName = "openId";
+                    paraDemo = "ox_kxwS_gGt63adS-zemlETtuvw1;ox_kxwS_gGt63adS-zemlETtuvw2";
+                } else if (msgType == MessageTypeEnum.MA_TEMPLATE_CODE) {
+                    fillParaName = "openId|formId";
+                    paraDemo = "opd-aswadfasdfasdfasdf|fi291834543;opd-aswadfasdfasdfasdf2|fi2918345432";
+                } else {
+                    fillParaName = "手机号";
+                    paraDemo = "13910733521;13910733522";
+                }
+                StringBuilder tipsBuilder = new StringBuilder();
+                tipsBuilder.append("<h1>如何填写？</h1>");
+                tipsBuilder.append("<h2>此处填写预览消息用户的").append(fillParaName).append("</h2>");
+                tipsBuilder.append("<p>如有多个，请以半角分号分隔</p>");
+                tipsBuilder.append("<p>示例：</p>");
+                tipsBuilder.append("<p>").append(paraDemo).append("</p>");
+
+                dialog.setHtmlText(tipsBuilder.toString());
                 dialog.pack();
                 dialog.setVisible(true);
 
