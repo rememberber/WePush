@@ -65,7 +65,7 @@ public class UpgradeUtil {
                 version = versionDetailList.get(i);
                 versionLogBuilder.append("<h2>").append(version.getVersion()).append("</h2>");
                 versionLogBuilder.append("<b>").append(version.getTitle()).append("</b><br/>");
-                versionLogBuilder.append(version.getLog().replaceAll("\\n", "<br/>")).append("<br/>");
+                versionLogBuilder.append("<p>").append(version.getLog().replaceAll("\\n", "</p><p>")).append("</p>");
             }
             String versionLog = versionLogBuilder.toString();
 
