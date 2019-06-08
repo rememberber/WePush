@@ -5,12 +5,10 @@ import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
-import com.alibaba.fastjson.JSON;
-import com.fangxuele.tool.push.bean.VersionSummary;
 import com.fangxuele.tool.push.ui.UiConsts;
-import com.fangxuele.tool.push.ui.dialog.UpdateInfoDialog;
 import com.fangxuele.tool.push.ui.form.AboutForm;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.util.UpgradeUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.imageio.ImageIO;
@@ -23,7 +21,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -63,7 +60,7 @@ public class AboutListener {
             @Override
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
-                ThreadUtil.execute(() -> checkUpdate(false));
+                ThreadUtil.execute(() -> UpgradeUtil.checkUpdate(false));
             }
 
             @Override
@@ -92,57 +89,6 @@ public class AboutListener {
                 AboutForm.aboutForm.getHelpDocLabel().setCursor(new Cursor(Cursor.HAND_CURSOR));
             }
         });
-    }
-
-    public static void checkUpdate(boolean initCheck) {
-        // 当前版本
-        String currentVersion = UiConsts.APP_VERSION;
-
-        // 从github获取最新版本相关信息
-        String versionSummaryJsonContent = HttpUtil.get(UiConsts.CHECK_VERSION_URL);
-        if (StringUtils.isEmpty(versionSummaryJsonContent) && !initCheck) {
-            JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
-                    "检查超时，请关注GitHub Release！", "网络错误",
-                    JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
-        versionSummaryJsonContent = versionSummaryJsonContent.replace("\n", "");
-
-        VersionSummary versionSummary = JSON.parseObject(versionSummaryJsonContent, VersionSummary.class);
-        // 最新版本
-        String newVersion = versionSummary.getCurrentVersion();
-        String versionIndexJsonContent = versionSummary.getVersionIndex();
-        // 版本索引
-        Map<String, String> versionIndexMap = JSON.parseObject(versionIndexJsonContent, Map.class);
-        // 版本明细列表
-        List<VersionSummary.Version> versionDetailList = versionSummary.getVersionDetailList();
-
-        if (newVersion.compareTo(currentVersion) > 0) {
-            // 当前版本索引
-            int currentVersionIndex = Integer.parseInt(versionIndexMap.get(currentVersion));
-            // 版本更新日志：
-            StringBuilder versionLogBuilder = new StringBuilder("<h1>惊现新版本！立即下载？</h1>");
-            VersionSummary.Version version;
-            for (int i = currentVersionIndex + 1; i < versionDetailList.size(); i++) {
-                version = versionDetailList.get(i);
-                versionLogBuilder.append("<h2>").append(version.getVersion()).append("</h2>");
-                versionLogBuilder.append("<b>").append(version.getTitle()).append("</b><br/>");
-                versionLogBuilder.append(version.getLog().replaceAll("\\n", "<br/>")).append("<br/>");
-            }
-            String versionLog = versionLogBuilder.toString();
-
-            UpdateInfoDialog updateInfoDialog = new UpdateInfoDialog();
-            updateInfoDialog.setHtmlText(versionLog);
-            updateInfoDialog.setNewVersion(newVersion);
-            updateInfoDialog.pack();
-            updateInfoDialog.setVisible(true);
-        } else {
-            if (!initCheck) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
-                        "当前已经是最新版本！", "恭喜",
-                        JOptionPane.INFORMATION_MESSAGE);
-            }
-        }
     }
 
     /**

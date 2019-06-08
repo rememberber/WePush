@@ -2,16 +2,20 @@ package com.fangxuele.tool.push.util;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.CharsetUtil;
+import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.VersionSummary;
 import com.fangxuele.tool.push.dao.TWxAccountMapper;
 import com.fangxuele.tool.push.domain.TWxAccount;
 import com.fangxuele.tool.push.ui.UiConsts;
+import com.fangxuele.tool.push.ui.dialog.UpdateInfoDialog;
+import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.SettingForm;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.swing.*;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
@@ -27,6 +31,58 @@ import java.util.Map;
  */
 @Slf4j
 public class UpgradeUtil {
+
+    public static void checkUpdate(boolean initCheck) {
+        // 当前版本
+        String currentVersion = UiConsts.APP_VERSION;
+
+        // 从github获取最新版本相关信息
+        String versionSummaryJsonContent = HttpUtil.get(UiConsts.CHECK_VERSION_URL);
+        if (StringUtils.isEmpty(versionSummaryJsonContent) && !initCheck) {
+            JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
+                    "检查超时，请关注GitHub Release！", "网络错误",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        versionSummaryJsonContent = versionSummaryJsonContent.replace("\n", "");
+
+        VersionSummary versionSummary = JSON.parseObject(versionSummaryJsonContent, VersionSummary.class);
+        // 最新版本
+        String newVersion = versionSummary.getCurrentVersion();
+        String versionIndexJsonContent = versionSummary.getVersionIndex();
+        // 版本索引
+        Map<String, String> versionIndexMap = JSON.parseObject(versionIndexJsonContent, Map.class);
+        // 版本明细列表
+        List<VersionSummary.Version> versionDetailList = versionSummary.getVersionDetailList();
+
+        if (newVersion.compareTo(currentVersion) > 0) {
+            // 当前版本索引
+            int currentVersionIndex = Integer.parseInt(versionIndexMap.get(currentVersion));
+            // 版本更新日志：
+            StringBuilder versionLogBuilder = new StringBuilder("<h1>惊现新版本！立即下载？</h1>");
+            VersionSummary.Version version;
+            for (int i = currentVersionIndex + 1; i < versionDetailList.size(); i++) {
+                version = versionDetailList.get(i);
+                versionLogBuilder.append("<h2>").append(version.getVersion()).append("</h2>");
+                versionLogBuilder.append("<b>").append(version.getTitle()).append("</b><br/>");
+                versionLogBuilder.append(version.getLog().replaceAll("\\n", "<br/>")).append("<br/>");
+            }
+            String versionLog = versionLogBuilder.toString();
+
+            UpdateInfoDialog updateInfoDialog = new UpdateInfoDialog();
+            updateInfoDialog.setHtmlText(versionLog);
+            updateInfoDialog.setNewVersion(newVersion);
+            updateInfoDialog.pack();
+            updateInfoDialog.setVisible(true);
+        } else {
+            if (!initCheck) {
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
+                        "当前已经是最新版本！", "恭喜",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+    }
+
     /**
      * 平滑升级
      * 涉及的版本更新脚本和sql方法尽量幂等，以免升级过程中由于断电死机等异常中断造成重复执行升级操作
