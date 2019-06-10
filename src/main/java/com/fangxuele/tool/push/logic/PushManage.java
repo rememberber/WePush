@@ -35,6 +35,7 @@ import com.taobao.api.response.AlibabaAliqinFcSmsNumSendResponse;
 import com.yunpian.sdk.YunpianClient;
 import com.yunpian.sdk.model.Result;
 import com.yunpian.sdk.model.SmsSingleSend;
+import me.chanjar.weixin.common.util.http.apache.DefaultApacheHttpClientBuilder;
 import me.chanjar.weixin.mp.api.WxMpInMemoryConfigStorage;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.api.impl.WxMpServiceImpl;
@@ -285,6 +286,24 @@ public class PushManage {
             configStorage.setHttpProxyUsername(App.config.getMpProxyUserName());
             configStorage.setHttpProxyPassword(App.config.getMpProxyPassword());
         }
+        DefaultApacheHttpClientBuilder clientBuilder = DefaultApacheHttpClientBuilder.get();
+        //从连接池获取链接的超时时间(单位ms)
+        clientBuilder.setConnectionRequestTimeout(10000);
+        //建立链接的超时时间(单位ms)
+        clientBuilder.setConnectionTimeout(5000);
+        //连接池socket超时时间(单位ms)
+        clientBuilder.setSoTimeout(5000);
+        //空闲链接的超时时间(单位ms)
+        clientBuilder.setIdleConnTimeout(60000);
+        //空闲链接的检测周期(单位ms)
+        clientBuilder.setCheckWaitTime(60000);
+        //每路最大连接数
+        clientBuilder.setMaxConnPerHost(App.config.getMaxThreadPool());
+        //连接池最大连接数
+        clientBuilder.setMaxTotalConn(App.config.getMaxThreadPool() * 2);
+        //HttpClient请求时使用的User Agent
+//        clientBuilder.setUserAgent(..)
+        configStorage.setApacheHttpClientBuilder(clientBuilder);
         return configStorage;
     }
 
@@ -315,6 +334,24 @@ public class PushManage {
             configStorage.setHttpProxyUsername(App.config.getMaProxyUserName());
             configStorage.setHttpProxyPassword(App.config.getMaProxyPassword());
         }
+        DefaultApacheHttpClientBuilder clientBuilder = DefaultApacheHttpClientBuilder.get();
+        //从连接池获取链接的超时时间(单位ms)
+        clientBuilder.setConnectionRequestTimeout(10000);
+        //建立链接的超时时间(单位ms)
+        clientBuilder.setConnectionTimeout(5000);
+        //连接池socket超时时间(单位ms)
+        clientBuilder.setSoTimeout(5000);
+        //空闲链接的超时时间(单位ms)
+        clientBuilder.setIdleConnTimeout(60000);
+        //空闲链接的检测周期(单位ms)
+        clientBuilder.setCheckWaitTime(60000);
+        //每路最大连接数
+        clientBuilder.setMaxConnPerHost(App.config.getMaxThreadPool());
+        //连接池最大连接数
+        clientBuilder.setMaxTotalConn(App.config.getMaxThreadPool() * 2);
+        //HttpClient请求时使用的User Agent
+//        clientBuilder.setUserAgent(..)
+        configStorage.setApacheHttpClientBuilder(clientBuilder);
         return configStorage;
     }
 
