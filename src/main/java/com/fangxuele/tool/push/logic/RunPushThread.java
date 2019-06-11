@@ -78,6 +78,12 @@ public class RunPushThread extends Thread {
         App.config.save();
         PushManage.console("线程池大小：" + PushForm.pushForm.getMaxThreadPoolTextField().getText());
 
+        // 初始化微信配置
+        PushManage.wxMpConfigStorage = null;
+        PushManage.wxMpService = null;
+        PushManage.wxMaConfigStorage = null;
+        PushManage.wxMaService = null;
+
         // JVM内存占用
         PushForm.pushForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
         // 线程数
@@ -99,7 +105,7 @@ public class RunPushThread extends Thread {
         Object[] data;
         int msgType = App.config.getMsgType();
 
-        int maxThreadPoolSize = Integer.parseInt(PushForm.pushForm.getMaxThreadPoolTextField().getText());
+        int maxThreadPoolSize = App.config.getMaxThreadPool();
         ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(maxThreadPoolSize, maxThreadPoolSize);
         BaseMsgServiceThread thread = null;
         // 每个线程分配
@@ -223,6 +229,15 @@ public class RunPushThread extends Thread {
         PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
         PushManage.console("所有线程宝宝启动完毕……");
 
+        timeKeeper(threadCount);
+    }
+
+    /**
+     * 时间监控
+     *
+     * @param threadCount
+     */
+    private void timeKeeper(int threadCount) {
         long startTimeMillis = System.currentTimeMillis();
         // 计时
         while (true) {
