@@ -3,6 +3,7 @@ package com.fangxuele.tool.push.logic;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.ui.form.msg.TxYunMsgForm;
+import com.fangxuele.tool.push.util.ConsoleUtil;
 import com.github.qcloudsms.SmsSingleSender;
 import com.github.qcloudsms.SmsSingleSenderResult;
 
@@ -74,7 +75,7 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
                         PushData.sendFailList.add(msgData);
 
                         // 失败异常信息输出控制台
-                        PushManage.console("发送失败:" + result.toString() +
+                        ConsoleUtil.consoleWithLog("发送失败:" + result.toString() +
                                 ";telNum:" + telNum);
 
                         // 当前线程发送失败+1
@@ -103,7 +104,7 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
                 PushData.sendFailList.add(msgData);
 
                 // 失败异常信息输出控制台
-                PushManage.console("发送失败:" + e.getMessage() + ";telNum:" + telNum);
+                ConsoleUtil.consoleWithLog("发送失败:" + e.getMessage() + ";telNum:" + telNum);
 
                 // 当前线程发送失败+1
                 currentThreadFailCount++;

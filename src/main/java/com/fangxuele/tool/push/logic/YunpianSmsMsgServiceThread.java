@@ -1,6 +1,7 @@
 package com.fangxuele.tool.push.logic;
 
 import com.fangxuele.tool.push.ui.form.PushForm;
+import com.fangxuele.tool.push.util.ConsoleUtil;
 import com.yunpian.sdk.YunpianClient;
 import com.yunpian.sdk.model.Result;
 import com.yunpian.sdk.model.SmsSingleSend;
@@ -73,7 +74,7 @@ public class YunpianSmsMsgServiceThread extends BaseMsgServiceThread {
                         PushData.sendFailList.add(msgData);
 
                         // 失败异常信息输出控制台
-                        PushManage.console(new StringBuffer().append("发送失败:").append(result.toString())
+                        ConsoleUtil.consoleWithLog(new StringBuffer().append("发送失败:").append(result.toString())
                                 .append(";telNum:").append(telNum).toString());
 
                         // 当前线程发送失败+1
@@ -102,7 +103,7 @@ public class YunpianSmsMsgServiceThread extends BaseMsgServiceThread {
                 PushData.sendFailList.add(msgData);
 
                 // 失败异常信息输出控制台
-                PushManage.console("发送失败:" + e.getMessage() + ";telNum:" + telNum);
+                ConsoleUtil.consoleWithLog("发送失败:" + e.getMessage() + ";telNum:" + telNum);
 
                 // 当前线程发送失败+1
                 currentThreadFailCount++;

@@ -11,6 +11,7 @@ import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.component.TableInCellProgressBarRenderer;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
+import com.fangxuele.tool.push.util.ConsoleUtil;
 import me.chanjar.weixin.mp.api.WxMpService;
 import org.apache.commons.lang3.StringUtils;
 
@@ -53,7 +54,7 @@ public class RunPushThread extends Thread {
         PushData.sendSuccessList = Collections.synchronizedList(new LinkedList<>());
         PushData.sendFailList = Collections.synchronizedList(new LinkedList<>());
 
-        PushManage.console("推送开始……");
+        ConsoleUtil.consoleWithLog("推送开始……");
 
         // 拷贝准备的目标用户
         PushData.toSendList.addAll(PushData.allUser);
@@ -63,20 +64,20 @@ public class RunPushThread extends Thread {
 
         PushForm.pushForm.getPushTotalCountLabel().setText("消息总数：" + totalCount);
         PushForm.pushForm.getPushTotalProgressBar().setMaximum((int) totalCount);
-        PushManage.console("消息总数：" + totalCount);
+        ConsoleUtil.consoleWithLog("消息总数：" + totalCount);
         // 可用处理器核心数量
         PushForm.pushForm.getAvailableProcessorLabel().setText("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
-        PushManage.console("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
+        ConsoleUtil.consoleWithLog("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
 
         // 线程数
         App.config.setThreadCount(Integer.parseInt(PushForm.pushForm.getThreadCountTextField().getText()));
         App.config.save();
-        PushManage.console("线程数：" + PushForm.pushForm.getThreadCountTextField().getText());
+        ConsoleUtil.consoleWithLog("线程数：" + PushForm.pushForm.getThreadCountTextField().getText());
 
         // 线程池大小
         App.config.setMaxThreadPool(Integer.parseInt(PushForm.pushForm.getMaxThreadPoolTextField().getText()));
         App.config.save();
-        PushManage.console("线程池大小：" + PushForm.pushForm.getMaxThreadPoolTextField().getText());
+        ConsoleUtil.consoleWithLog("线程池大小：" + PushForm.pushForm.getMaxThreadPoolTextField().getText());
 
         // 初始化微信配置
         PushManage.wxMpConfigStorage = null;
@@ -227,7 +228,7 @@ public class RunPushThread extends Thread {
             threadPoolExecutor.execute(thread);
         }
         PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
-        PushManage.console("所有线程宝宝启动完毕……");
+        ConsoleUtil.consoleWithLog("所有线程宝宝启动完毕……");
 
         timeKeeper(threadCount);
     }
@@ -255,13 +256,13 @@ public class RunPushThread extends Thread {
 
                 // 保存停止前的数据
                 try {
-                    PushManage.console("正在保存结果数据……");
+                    ConsoleUtil.consoleWithLog("正在保存结果数据……");
                     PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(true);
                     // 空跑控制
                     if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
                         PushManage.savePushData();
                     }
-                    PushManage.console("结果数据保存完毕！");
+                    ConsoleUtil.consoleWithLog("结果数据保存完毕！");
                 } catch (IOException e) {
                     logger.error(e);
                 } finally {

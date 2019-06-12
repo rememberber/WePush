@@ -1,6 +1,7 @@
 package com.fangxuele.tool.push.logic;
 
 import com.fangxuele.tool.push.ui.form.PushForm;
+import com.fangxuele.tool.push.util.ConsoleUtil;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.request.AlibabaAliqinFcSmsNumSendRequest;
 import com.taobao.api.response.AlibabaAliqinFcSmsNumSendResponse;
@@ -75,7 +76,7 @@ public class AliDayuTemplateSmsMsgServiceThread extends BaseMsgServiceThread {
                         PushData.sendFailList.add(msgData);
 
                         // 失败异常信息输出控制台
-                        PushManage.console("发送失败:" + response.getBody() + ";ErrorCode:" +
+                        ConsoleUtil.consoleWithLog("发送失败:" + response.getBody() + ";ErrorCode:" +
                                 response.getErrorCode() + ";telNum:" + telNum);
 
                         // 当前线程发送失败+1
@@ -104,7 +105,7 @@ public class AliDayuTemplateSmsMsgServiceThread extends BaseMsgServiceThread {
                 PushData.sendFailList.add(msgData);
 
                 // 失败异常信息输出控制台
-                PushManage.console("发送失败:" + e.getMessage() + ";telNum:" + telNum);
+                ConsoleUtil.consoleWithLog("发送失败:" + e.getMessage() + ";telNum:" + telNum);
 
                 // 当前线程发送失败+1
                 currentThreadFailCount++;

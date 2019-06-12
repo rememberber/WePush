@@ -4,6 +4,7 @@ import com.aliyuncs.IAcsClient;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.fangxuele.tool.push.ui.form.PushForm;
+import com.fangxuele.tool.push.util.ConsoleUtil;
 
 /**
  * <pre>
@@ -75,7 +76,7 @@ public class AliYunSmsMsgServiceThread extends BaseMsgServiceThread {
                         PushData.sendFailList.add(msgData);
 
                         // 失败异常信息输出控制台
-                        PushManage.console("发送失败:" + response.getMessage() + ";ErrorCode:" +
+                        ConsoleUtil.consoleWithLog("发送失败:" + response.getMessage() + ";ErrorCode:" +
                                 response.getCode() + ";telNum:" + telNum);
 
                         // 当前线程发送失败+1
@@ -104,7 +105,7 @@ public class AliYunSmsMsgServiceThread extends BaseMsgServiceThread {
                 PushData.sendFailList.add(msgData);
 
                 // 失败异常信息输出控制台
-                PushManage.console("发送失败:" + e.getMessage() + ";telNum:" + telNum);
+                ConsoleUtil.consoleWithLog("发送失败:" + e.getMessage() + ";telNum:" + telNum);
 
                 // 当前线程发送失败+1
                 currentThreadFailCount++;

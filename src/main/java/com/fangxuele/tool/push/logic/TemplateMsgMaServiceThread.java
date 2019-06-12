@@ -3,6 +3,7 @@ package com.fangxuele.tool.push.logic;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
 import com.fangxuele.tool.push.ui.form.PushForm;
+import com.fangxuele.tool.push.util.ConsoleUtil;
 
 /**
  * <pre>
@@ -77,7 +78,7 @@ public class TemplateMsgMaServiceThread extends BaseMsgServiceThread {
                 PushData.sendFailList.add(msgData);
 
                 // 失败异常信息输出控制台
-                PushManage.console("发送失败:" + e.getMessage() + ";openid:" + openId);
+                ConsoleUtil.consoleWithLog("发送失败:" + e.getMessage() + ";openid:" + openId);
 
                 // 当前线程发送失败+1
                 currentThreadFailCount++;

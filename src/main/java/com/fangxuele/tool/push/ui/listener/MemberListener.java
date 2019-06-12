@@ -18,6 +18,7 @@ import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.PushManage;
 import com.fangxuele.tool.push.ui.component.TableInCellImageLabelRenderer;
 import com.fangxuele.tool.push.ui.form.MemberForm;
+import com.fangxuele.tool.push.util.ConsoleUtil;
 import com.fangxuele.tool.push.util.DbUtilMySQL;
 import com.fangxuele.tool.push.util.FileCharSetUtil;
 import com.fangxuele.tool.push.util.JTableUtil;
@@ -564,8 +565,8 @@ public class MemberListener {
 
         WxMpUserList wxMpUserList = wxMpService.getUserService().userList(null);
 
-        PushManage.console("关注该公众账号的总用户数：" + wxMpUserList.getTotal());
-        PushManage.console("拉取的OPENID个数：" + wxMpUserList.getCount());
+        ConsoleUtil.consoleWithLog("关注该公众账号的总用户数：" + wxMpUserList.getTotal());
+        ConsoleUtil.consoleWithLog("拉取的OPENID个数：" + wxMpUserList.getCount());
 
         progressBar.setIndeterminate(false);
         progressBar.setMaximum((int) wxMpUserList.getTotal());
@@ -590,7 +591,7 @@ public class MemberListener {
         while (StringUtils.isNotEmpty(wxMpUserList.getNextOpenid())) {
             wxMpUserList = wxMpService.getUserService().userList(wxMpUserList.getNextOpenid());
 
-            PushManage.console("拉取的OPENID个数：" + wxMpUserList.getCount());
+            ConsoleUtil.consoleWithLog("拉取的OPENID个数：" + wxMpUserList.getCount());
 
             if (wxMpUserList.getCount() == 0) {
                 break;
@@ -625,7 +626,7 @@ public class MemberListener {
 
         WxTagListUser wxTagListUser = wxMpService.getUserTagService().tagListUser(tagId, "");
 
-        PushManage.console("拉取的OPENID个数：" + wxTagListUser.getCount());
+        ConsoleUtil.consoleWithLog("拉取的OPENID个数：" + wxTagListUser.getCount());
 
         if (wxTagListUser.getCount() == 0) {
             return;
@@ -651,7 +652,7 @@ public class MemberListener {
         while (StringUtils.isNotEmpty(wxTagListUser.getNextOpenid())) {
             wxTagListUser = wxMpService.getUserTagService().tagListUser(tagId, wxTagListUser.getNextOpenid());
 
-            PushManage.console("拉取的OPENID个数：" + wxTagListUser.getCount());
+            ConsoleUtil.consoleWithLog("拉取的OPENID个数：" + wxTagListUser.getCount());
 
             if (wxTagListUser.getCount() == 0) {
                 break;

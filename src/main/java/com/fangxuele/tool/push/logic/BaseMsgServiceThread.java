@@ -3,6 +3,7 @@ package com.fangxuele.tool.push.logic;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.ui.form.PushForm;
+import com.fangxuele.tool.push.util.ConsoleUtil;
 import me.chanjar.weixin.mp.api.WxMpService;
 
 import javax.swing.table.DefaultTableModel;
@@ -85,7 +86,7 @@ public class BaseMsgServiceThread extends Thread {
      * 初始化当前线程
      */
     void initCurrentThread() {
-        PushManage.console("线程" + this.getName() + "负责处理第:" + startIndex + "-" +
+        ConsoleUtil.consoleWithLog("线程" + this.getName() + "负责处理第:" + startIndex + "-" +
                 endIndex + "条的数据");
 
         list = PushData.toSendList.subList(startIndex, endIndex);
@@ -104,7 +105,7 @@ public class BaseMsgServiceThread extends Thread {
      * 当前线程结束
      */
     void currentThreadFinish() {
-        PushManage.console(this.getName() + "已处理完第" + startIndex + "-" +
+        ConsoleUtil.consoleWithLog(this.getName() + "已处理完第" + startIndex + "-" +
                 endIndex + "条的数据");
 
         PushData.increaseStopedThread();

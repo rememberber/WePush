@@ -5,8 +5,6 @@ import cn.binarywang.wx.miniapp.api.impl.WxMaServiceImpl;
 import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
 import cn.binarywang.wx.miniapp.config.WxMaInMemoryConfig;
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.log.Log;
-import cn.hutool.log.LogFactory;
 import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.IAcsClient;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
@@ -60,8 +58,6 @@ import java.util.Map;
  * @since 2017/6/19.
  */
 public class PushManage {
-
-    private static final Log logger = LogFactory.get();
 
     private static TPushHistoryMapper pushHistoryMapper = MybatisUtil.getSqlSession().getMapper(TPushHistoryMapper.class);
 
@@ -585,14 +581,4 @@ public class PushManage {
         pushHistoryMapper.insertSelective(tPushHistory);
     }
 
-    /**
-     * 输出到控制台和log
-     *
-     * @param log
-     */
-    public static void console(String log) {
-        PushForm.pushForm.getPushConsoleTextArea().append(log + "\n");
-        PushForm.pushForm.getPushConsoleTextArea().setCaretPosition(PushForm.pushForm.getPushConsoleTextArea().getText().length());
-        logger.warn(log);
-    }
 }
