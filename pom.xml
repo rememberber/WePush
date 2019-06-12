@@ -23,19 +23,19 @@
         <weixin-java-mp.version>3.4.0</weixin-java-mp.version>
         <weixin-java-miniapp.version>3.4.0</weixin-java-miniapp.version>
         <emoji-java.version>4.0.0</emoji-java.version>
-        <hutool-all.version>4.5.2</hutool-all.version>
-        <opencsv.version>4.4</opencsv.version>
-        <mysql-connector-java.version>8.0.13</mysql-connector-java.version>
+        <hutool-all.version>4.5.11</hutool-all.version>
+        <opencsv.version>4.6</opencsv.version>
+        <mysql-connector-java.version>8.0.16</mysql-connector-java.version>
         <forms_rt.version>7.0.3</forms_rt.version>
-        <fastjson.version>1.2.54</fastjson.version>
+        <fastjson.version>1.2.58</fastjson.version>
         <sun-mail.version>1.6.2</sun-mail.version>
         <aliyun-java-sdk-core.version>4.4.2</aliyun-java-sdk-core.version>
-        <poi.version>4.0.1</poi.version>
+        <poi.version>4.1.0</poi.version>
         <AppleJavaExtensions.version>1.4</AppleJavaExtensions.version>
         <qcloudsms.version>1.0.6</qcloudsms.version>
         <yunpian-java-sdk.version>1.2.7</yunpian-java-sdk.version>
         <velocity-engine-core.version>2.1</velocity-engine-core.version>
-        <lombok.version>1.18.6</lombok.version>
+        <lombok.version>1.18.8</lombok.version>
         <mybatis.version>3.5.1</mybatis.version>
         <sqlite-jdbc.version>3.27.2.1</sqlite-jdbc.version>
     </properties>

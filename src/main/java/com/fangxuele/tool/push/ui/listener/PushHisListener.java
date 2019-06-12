@@ -1,7 +1,7 @@
 package com.fangxuele.tool.push.ui.listener;
 
 import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.swing.ClipboardUtil;
+import cn.hutool.core.swing.clipboard.ClipboardUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
