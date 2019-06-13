@@ -44,7 +44,6 @@ public class PushRunThread extends Thread {
 
     @Override
     public void run() {
-        ConsoleUtil.consoleWithLog("推送开始……");
         PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(true);
 
         PushForm.pushForm.getPushStopButton().setText("停止");
@@ -96,6 +95,7 @@ public class PushRunThread extends Thread {
         PushForm.pushForm.getPushThreadTable().updateUI();
 
         if (pushRunCheck()) {
+            ConsoleUtil.consoleWithLog("推送开始……");
             // 消息数据分片以及线程纷发
             shardingAndMsgThread();
             // 时间监控
