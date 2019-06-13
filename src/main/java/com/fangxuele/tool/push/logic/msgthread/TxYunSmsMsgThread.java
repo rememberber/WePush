@@ -1,31 +1,32 @@
 package com.fangxuele.tool.push.logic.msgthread;
 
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.MessageMaker;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.PushManage;
 import com.fangxuele.tool.push.ui.form.PushForm;
+import com.fangxuele.tool.push.ui.form.msg.TxYunMsgForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
-import com.taobao.api.TaobaoClient;
-import com.taobao.api.request.AlibabaAliqinFcSmsNumSendRequest;
-import com.taobao.api.response.AlibabaAliqinFcSmsNumSendResponse;
+import com.github.qcloudsms.SmsSingleSender;
+import com.github.qcloudsms.SmsSingleSenderResult;
 
 /**
  * <pre>
- * 阿里模板短信发送服务线程
+ * 腾讯云短信发送服务线程
  * </pre>
  *
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
- * @since 2017/3/29.
+ * @since 2018/3/16.
  */
-public class AliDayuTemplateSmsMsgServiceThread extends BaseMsgServiceThread {
+public class TxYunSmsMsgThread extends BaseMsgThread {
 
     /**
      * 构造函数
      *
-     * @param startIndex 起始索引
-     * @param endIndex   截止索引
+     * @param startIndex 起始页
+     * @param endIndex   截止页
      */
-    public AliDayuTemplateSmsMsgServiceThread(int startIndex, int endIndex) {
+    public TxYunSmsMsgThread(int startIndex, int endIndex) {
         super(startIndex, endIndex);
     }
 
@@ -35,12 +36,9 @@ public class AliDayuTemplateSmsMsgServiceThread extends BaseMsgServiceThread {
         // 初始化当前线程
         initCurrentThread();
 
-        TaobaoClient client = PushManage.getTaobaoClient();
-
-        // 组织模板消息
-        AlibabaAliqinFcSmsNumSendRequest alibabaAliqinFcSmsNumSendRequest;
-
-        AlibabaAliqinFcSmsNumSendResponse response;
+        SmsSingleSender smsSingleSender = PushManage.getTxYunSender();
+        int templateId = Integer.parseInt(TxYunMsgForm.txYunMsgForm.getMsgTemplateIdTextField().getText());
+        String smsSign = App.config.getAliyunSign();
 
         for (int i = 0; i < list.size(); i++) {
             if (!PushData.running) {
@@ -53,13 +51,14 @@ public class AliDayuTemplateSmsMsgServiceThread extends BaseMsgServiceThread {
             String[] msgData = list.get(i);
             String telNum = msgData[0];
             try {
-                alibabaAliqinFcSmsNumSendRequest = MessageMaker.makeAliTemplateMessage(msgData);
-                alibabaAliqinFcSmsNumSendRequest.setRecNum(telNum);
+                String[] params = MessageMaker.makeTxyunMessage(msgData);
 
                 // 空跑控制
                 if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
-                    response = client.execute(alibabaAliqinFcSmsNumSendRequest);
-                    if (response.getResult() != null && response.getResult().getSuccess()) {
+                    SmsSingleSenderResult result = smsSingleSender.sendWithParam("86", telNum,
+                            templateId, params, smsSign, "", "");
+
+                    if (result.result == 0) {
                         // 总发送成功+1
                         PushData.increaseSuccess();
                         PushForm.pushForm.getPushSuccessCount().setText(String.valueOf(PushData.successRecords));
@@ -79,8 +78,8 @@ public class AliDayuTemplateSmsMsgServiceThread extends BaseMsgServiceThread {
                         PushData.sendFailList.add(msgData);
 
                         // 失败异常信息输出控制台
-                        ConsoleUtil.consoleWithLog("发送失败:" + response.getBody() + ";ErrorCode:" +
-                                response.getErrorCode() + ";telNum:" + telNum);
+                        ConsoleUtil.consoleWithLog("发送失败:" + result.toString() +
+                                ";telNum:" + telNum);
 
                         // 当前线程发送失败+1
                         currentThreadFailCount++;

@@ -17,7 +17,7 @@ import com.fangxuele.tool.push.util.ConsoleUtil;
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
  * @since 2018/3/16.
  */
-public class AliYunSmsMsgServiceThread extends BaseMsgServiceThread {
+public class AliYunSmsMsgThread extends BaseMsgThread {
 
     /**
      * 构造函数
@@ -25,7 +25,7 @@ public class AliYunSmsMsgServiceThread extends BaseMsgServiceThread {
      * @param startIndex 起始索引
      * @param endIndex   截止索引
      */
-    public AliYunSmsMsgServiceThread(int startIndex, int endIndex) {
+    public AliYunSmsMsgThread(int startIndex, int endIndex) {
         super(startIndex, endIndex);
     }
 

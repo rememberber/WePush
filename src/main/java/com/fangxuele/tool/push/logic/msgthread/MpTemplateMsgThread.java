@@ -1,35 +1,28 @@
 package com.fangxuele.tool.push.logic.msgthread;
 
-import cn.binarywang.wx.miniapp.api.WxMaService;
-import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
 import com.fangxuele.tool.push.logic.MessageMaker;
 import com.fangxuele.tool.push.logic.PushData;
-import com.fangxuele.tool.push.logic.msgthread.BaseMsgServiceThread;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
+import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
 
 /**
  * <pre>
- * 模板消息-小程序发送服务线程
+ * 模板消息发送服务线程
  * </pre>
  *
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
  * @since 2017/3/29.
  */
-public class TemplateMsgMaServiceThread extends BaseMsgServiceThread {
-
-    /**
-     * 微信小程序工具服务
-     */
-    private WxMaService wxMaService;
+public class MpTemplateMsgThread extends BaseMsgThread {
 
     /**
      * 构造函数
      *
-     * @param startIndex 开始索引
-     * @param endIndex   截止索引
+     * @param startIndex 起始页
+     * @param endIndex   截止页
      */
-    public TemplateMsgMaServiceThread(int startIndex, int endIndex) {
+    public MpTemplateMsgThread(int startIndex, int endIndex) {
         super(startIndex, endIndex);
     }
 
@@ -40,7 +33,7 @@ public class TemplateMsgMaServiceThread extends BaseMsgServiceThread {
         initCurrentThread();
 
         // 组织模板消息
-        WxMaTemplateMessage wxMaTemplateMessage;
+        WxMpTemplateMessage wxMessageTemplate;
 
         for (int i = 0; i < list.size(); i++) {
             if (!PushData.running) {
@@ -54,12 +47,11 @@ public class TemplateMsgMaServiceThread extends BaseMsgServiceThread {
             String openId = "";
             try {
                 openId = msgData[0];
-                wxMaTemplateMessage = MessageMaker.makeMaTemplateMessage(msgData);
-                wxMaTemplateMessage.setToUser(openId);
-                wxMaTemplateMessage.setFormId(msgData[1]);
+                wxMessageTemplate = MessageMaker.makeMpTemplateMessage(msgData);
+                wxMessageTemplate.setToUser(openId);
                 // 空跑控制
                 if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
-                    wxMaService.getMsgService().sendTemplateMsg(wxMaTemplateMessage);
+                    wxMpService.getTemplateMsgService().sendTemplateMsg(wxMessageTemplate);
                 }
 
                 // 总发送成功+1
@@ -98,11 +90,4 @@ public class TemplateMsgMaServiceThread extends BaseMsgServiceThread {
         currentThreadFinish();
     }
 
-    public WxMaService getWxMaService() {
-        return wxMaService;
-    }
-
-    public void setWxMaService(WxMaService wxMaService) {
-        this.wxMaService = wxMaService;
-    }
 }

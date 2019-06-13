@@ -18,7 +18,7 @@ import java.util.List;
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
  * @since 2017/3/29.
  */
-public class BaseMsgServiceThread extends Thread {
+public class BaseMsgThread extends Thread {
 
     public static final Log logger = LogFactory.get();
 
@@ -73,7 +73,7 @@ public class BaseMsgServiceThread extends Thread {
      * @param start 起始页
      * @param end   截止页
      */
-    public BaseMsgServiceThread(int start, int end) {
+    public BaseMsgThread(int start, int end) {
         this.startIndex = start;
         this.endIndex = end;
     }

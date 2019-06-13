@@ -19,7 +19,7 @@ import java.util.Map;
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
  * @since 2018/7/13.
  */
-public class YunpianSmsMsgServiceThread extends BaseMsgServiceThread {
+public class YunpianSmsMsgThread extends BaseMsgThread {
 
     /**
      * 构造函数
@@ -27,7 +27,7 @@ public class YunpianSmsMsgServiceThread extends BaseMsgServiceThread {
      * @param startIndex 起始索引
      * @param endIndex   截止索引
      */
-    public YunpianSmsMsgServiceThread(int startIndex, int endIndex) {
+    public YunpianSmsMsgThread(int startIndex, int endIndex) {
         super(startIndex, endIndex);
     }
 

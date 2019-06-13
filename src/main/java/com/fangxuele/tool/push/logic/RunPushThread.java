@@ -8,15 +8,15 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.logic.msgthread.AliDayuTemplateSmsMsgServiceThread;
-import com.fangxuele.tool.push.logic.msgthread.AliYunSmsMsgServiceThread;
-import com.fangxuele.tool.push.logic.msgthread.BaseMsgServiceThread;
-import com.fangxuele.tool.push.logic.msgthread.KeFuMsgServiceThread;
-import com.fangxuele.tool.push.logic.msgthread.KeFuPriorMsgServiceThread;
-import com.fangxuele.tool.push.logic.msgthread.TemplateMsgMaServiceThread;
-import com.fangxuele.tool.push.logic.msgthread.TemplateMsgMpServiceThread;
-import com.fangxuele.tool.push.logic.msgthread.TxYunSmsMsgServiceThread;
-import com.fangxuele.tool.push.logic.msgthread.YunpianSmsMsgServiceThread;
+import com.fangxuele.tool.push.logic.msgthread.AliDayuTemplateSmsMsgThread;
+import com.fangxuele.tool.push.logic.msgthread.AliYunSmsMsgThread;
+import com.fangxuele.tool.push.logic.msgthread.BaseMsgThread;
+import com.fangxuele.tool.push.logic.msgthread.KeFuMsgThread;
+import com.fangxuele.tool.push.logic.msgthread.KeFuPriorMsgThread;
+import com.fangxuele.tool.push.logic.msgthread.MaTemplateMsgThread;
+import com.fangxuele.tool.push.logic.msgthread.MpTemplateMsgThread;
+import com.fangxuele.tool.push.logic.msgthread.TxYunSmsMsgThread;
+import com.fangxuele.tool.push.logic.msgthread.YunpianSmsMsgThread;
 import com.fangxuele.tool.push.ui.component.TableInCellProgressBarRenderer;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
@@ -117,7 +117,7 @@ public class RunPushThread extends Thread {
 
         int maxThreadPoolSize = App.config.getMaxThreadPool();
         ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(maxThreadPoolSize, maxThreadPoolSize);
-        BaseMsgServiceThread thread = null;
+        BaseMsgThread thread = null;
         // 每个线程分配
         int perThread = (int) (totalCount / threadCount) + 1;
         for (int i = 0; i < threadCount; i++) {
@@ -131,7 +131,7 @@ public class RunPushThread extends Thread {
                 endIndex = (int) (totalCount);
             }
             if (MessageTypeEnum.MP_TEMPLATE_CODE == msgType) {
-                thread = new TemplateMsgMpServiceThread(startIndex, endIndex);
+                thread = new MpTemplateMsgThread(startIndex, endIndex);
 
                 WxMpService wxMpService = PushManage.getWxMpService();
                 if (wxMpService == null || wxMpService.getWxMpConfigStorage() == null) {
@@ -139,15 +139,15 @@ public class RunPushThread extends Thread {
                 }
                 thread.setWxMpService(wxMpService);
             } else if (MessageTypeEnum.MA_TEMPLATE_CODE == msgType) {
-                thread = new TemplateMsgMaServiceThread(startIndex, endIndex);
+                thread = new MaTemplateMsgThread(startIndex, endIndex);
 
                 WxMaService wxMaService = PushManage.getWxMaService();
                 if (wxMaService == null || wxMaService.getWxMaConfig() == null) {
                     return;
                 }
-                ((TemplateMsgMaServiceThread) thread).setWxMaService(wxMaService);
+                ((MaTemplateMsgThread) thread).setWxMaService(wxMaService);
             } else if (MessageTypeEnum.KEFU_CODE == msgType) {
-                thread = new KeFuMsgServiceThread(startIndex, endIndex);
+                thread = new KeFuMsgThread(startIndex, endIndex);
 
                 WxMpService wxMpService = PushManage.getWxMpService();
                 if (wxMpService.getWxMpConfigStorage() == null) {
@@ -155,7 +155,7 @@ public class RunPushThread extends Thread {
                 }
                 thread.setWxMpService(wxMpService);
             } else if (MessageTypeEnum.KEFU_PRIORITY_CODE == msgType) {
-                thread = new KeFuPriorMsgServiceThread(startIndex, endIndex);
+                thread = new KeFuPriorMsgThread(startIndex, endIndex);
 
                 WxMpService wxMpService = PushManage.getWxMpService();
                 if (wxMpService.getWxMpConfigStorage() == null) {
@@ -178,7 +178,7 @@ public class RunPushThread extends Thread {
                     PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
                     return;
                 }
-                thread = new AliDayuTemplateSmsMsgServiceThread(startIndex, endIndex);
+                thread = new AliDayuTemplateSmsMsgThread(startIndex, endIndex);
             } else if (MessageTypeEnum.ALI_YUN_CODE == msgType) {
                 String aliyunAccessKeyId = App.config.getAliyunAccessKeyId();
                 String aliyunAccessKeySecret = App.config.getAliyunAccessKeySecret();
@@ -193,7 +193,7 @@ public class RunPushThread extends Thread {
                     PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
                     return;
                 }
-                thread = new AliYunSmsMsgServiceThread(startIndex, endIndex);
+                thread = new AliYunSmsMsgThread(startIndex, endIndex);
             } else if (MessageTypeEnum.TX_YUN_CODE == msgType) {
                 String txyunAppId = App.config.getTxyunAppId();
                 String txyunAppKey = App.config.getTxyunAppKey();
@@ -208,7 +208,7 @@ public class RunPushThread extends Thread {
                     PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
                     return;
                 }
-                thread = new TxYunSmsMsgServiceThread(startIndex, endIndex);
+                thread = new TxYunSmsMsgThread(startIndex, endIndex);
             } else if (MessageTypeEnum.YUN_PIAN_CODE == msgType) {
                 String yunpianApiKey = App.config.getYunpianApiKey();
                 if (StringUtils.isEmpty(yunpianApiKey)) {
@@ -222,7 +222,7 @@ public class RunPushThread extends Thread {
                     return;
                 }
 
-                thread = new YunpianSmsMsgServiceThread(startIndex, endIndex);
+                thread = new YunpianSmsMsgThread(startIndex, endIndex);
             }
 
             thread.setTableRow(i);

@@ -5,24 +5,25 @@ import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
+import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
 
 /**
  * <pre>
- * 客服消息发送服务线程
+ * 客服消息优先发送服务线程
  * </pre>
  *
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
  * @since 2017/3/29.
  */
-public class KeFuMsgServiceThread extends BaseMsgServiceThread {
+public class KeFuPriorMsgThread extends BaseMsgThread {
 
     /**
      * 构造函数
      *
-     * @param pageFrom 开始索引
+     * @param pageFrom 起始索引
      * @param pageTo   截止索引
      */
-    public KeFuMsgServiceThread(int pageFrom, int pageTo) {
+    public KeFuPriorMsgThread(int pageFrom, int pageTo) {
         super(pageFrom, pageTo);
     }
 
@@ -33,6 +34,7 @@ public class KeFuMsgServiceThread extends BaseMsgServiceThread {
         initCurrentThread();
 
         WxMpKefuMessage wxMpKefuMessage;
+        WxMpTemplateMessage wxMpTemplateMessage;
 
         for (int i = 0; i < list.size(); i++) {
             if (!PushData.running) {
@@ -47,10 +49,18 @@ public class KeFuMsgServiceThread extends BaseMsgServiceThread {
             try {
                 openId = msgData[0];
                 wxMpKefuMessage = MessageMaker.makeKefuMessage(msgData);
+                wxMpTemplateMessage = MessageMaker.makeMpTemplateMessage(msgData);
+
                 wxMpKefuMessage.setToUser(openId);
-                // 空跑控制
-                if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
-                    wxMpService.getKefuService().sendKefuMessage(wxMpKefuMessage);
+                wxMpTemplateMessage.setToUser(openId);
+                try {// 空跑控制
+                    if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
+                        wxMpService.getKefuService().sendKefuMessage(wxMpKefuMessage);
+                    }
+                } catch (Exception e) {
+                    if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
+                        wxMpService.getTemplateMsgService().sendTemplateMsg(wxMpTemplateMessage);
+                    }
                 }
 
                 // 总发送成功+1
