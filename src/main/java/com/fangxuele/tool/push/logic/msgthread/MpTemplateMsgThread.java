@@ -1,7 +1,7 @@
 package com.fangxuele.tool.push.logic.msgthread;
 
-import com.fangxuele.tool.push.logic.MessageMaker;
 import com.fangxuele.tool.push.logic.PushData;
+import com.fangxuele.tool.push.logic.msgmaker.MpTemplateMsgMaker;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
@@ -35,6 +35,8 @@ public class MpTemplateMsgThread extends BaseMsgThread {
         // 组织模板消息
         WxMpTemplateMessage wxMessageTemplate;
 
+        MpTemplateMsgMaker mpTemplateMsgMaker = new MpTemplateMsgMaker();
+
         for (int i = 0; i < list.size(); i++) {
             if (!PushData.running) {
                 // 停止
@@ -47,7 +49,7 @@ public class MpTemplateMsgThread extends BaseMsgThread {
             String openId = "";
             try {
                 openId = msgData[0];
-                wxMessageTemplate = MessageMaker.makeMpTemplateMessage(msgData);
+                wxMessageTemplate = mpTemplateMsgMaker.makeMsg(msgData);
                 wxMessageTemplate.setToUser(openId);
                 // 空跑控制
                 if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {

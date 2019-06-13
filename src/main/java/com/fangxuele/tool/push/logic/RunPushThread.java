@@ -8,6 +8,7 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.logic.msgmaker.MpTemplateMsgMaker;
 import com.fangxuele.tool.push.logic.msgthread.AliDayuTemplateSmsMsgThread;
 import com.fangxuele.tool.push.logic.msgthread.AliYunSmsMsgThread;
 import com.fangxuele.tool.push.logic.msgthread.BaseMsgThread;
@@ -88,11 +89,8 @@ public class RunPushThread extends Thread {
         App.config.save();
         ConsoleUtil.consoleWithLog("线程池大小：" + PushForm.pushForm.getMaxThreadPoolTextField().getText());
 
-        // 初始化微信配置
-        PushManage.wxMpConfigStorage = null;
-        PushManage.wxMpService = null;
-        PushManage.wxMaConfigStorage = null;
-        PushManage.wxMaService = null;
+        // 准备消息构造器
+        prepareMsgMaker();
 
         // JVM内存占用
         PushForm.pushForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
@@ -240,6 +238,25 @@ public class RunPushThread extends Thread {
         ConsoleUtil.consoleWithLog("所有线程宝宝启动完毕……");
 
         timeKeeper(threadCount);
+    }
+
+    /**
+     * 准备消息构造器
+     */
+    private void prepareMsgMaker() {
+        int msgType = App.config.getMsgType();
+        switch (msgType) {
+            case MessageTypeEnum.MP_TEMPLATE_CODE:
+                PushManage.wxMpConfigStorage = null;
+                PushManage.wxMpService = null;
+                MpTemplateMsgMaker.prepare();
+                break;
+            case MessageTypeEnum.MA_TEMPLATE_CODE:
+                PushManage.wxMaConfigStorage = null;
+                PushManage.wxMaService = null;
+                break;
+            default:
+        }
     }
 
     /**

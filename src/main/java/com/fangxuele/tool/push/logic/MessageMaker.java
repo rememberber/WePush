@@ -10,15 +10,12 @@ import com.fangxuele.tool.push.ui.form.msg.AliTemplateMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.AliYunMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.KefuMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.MaTemplateMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.MpTemplateMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.TxYunMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.YunpianMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import com.taobao.api.request.AlibabaAliqinFcSmsNumSendRequest;
 import com.yunpian.sdk.YunpianClient;
 import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
-import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
-import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
 import org.apache.velocity.VelocityContext;
 
 import javax.swing.table.DefaultTableModel;
@@ -35,48 +32,6 @@ import java.util.Objects;
  * @since 2019/3/26.
  */
 public class MessageMaker {
-    /**
-     * 组织模板消息-公众号
-     *
-     * @param msgData 消息数据
-     * @return WxMpTemplateMessage
-     */
-    public synchronized static WxMpTemplateMessage makeMpTemplateMessage(String[] msgData) {
-        // 拼模板
-        WxMpTemplateMessage wxMessageTemplate = WxMpTemplateMessage.builder().build();
-        wxMessageTemplate.setTemplateId(MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateIdTextField().getText().trim());
-        wxMessageTemplate.setUrl(MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateUrlTextField().getText().trim());
-
-        String appid = MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateMiniAppidTextField().getText().trim();
-        String pagePath = MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateMiniPagePathTextField().getText().trim();
-
-        VelocityContext velocityContext = new VelocityContext();
-        for (int i = 0; i < msgData.length; i++) {
-            velocityContext.put(PushManage.TEMPLATE_VAR_PREFIX + i, msgData[i]);
-        }
-        pagePath = TemplateUtil.evaluate(pagePath, velocityContext);
-        WxMpTemplateMessage.MiniProgram miniProgram = new WxMpTemplateMessage.MiniProgram(appid, pagePath, true);
-        wxMessageTemplate.setMiniProgram(miniProgram);
-
-        if (MpTemplateMsgForm.mpTemplateMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-            MpTemplateMsgForm.initTemplateDataTable();
-        }
-
-        DefaultTableModel tableModel = (DefaultTableModel) MpTemplateMsgForm.mpTemplateMsgForm.getTemplateMsgDataTable().getModel();
-        int rowCount = tableModel.getRowCount();
-        for (int i = 0; i < rowCount; i++) {
-            String name = ((String) tableModel.getValueAt(i, 0)).trim();
-
-            String value = ((String) tableModel.getValueAt(i, 1));
-            value = TemplateUtil.evaluate(value, velocityContext);
-
-            String color = ((String) tableModel.getValueAt(i, 2)).trim();
-            WxMpTemplateData templateData = new WxMpTemplateData(name, value, color);
-            wxMessageTemplate.addData(templateData);
-        }
-
-        return wxMessageTemplate;
-    }
 
     /**
      * 组织模板消息-小程序

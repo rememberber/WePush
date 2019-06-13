@@ -14,6 +14,7 @@ import com.aliyuncs.profile.DefaultProfile;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPushHistoryMapper;
 import com.fangxuele.tool.push.domain.TPushHistory;
+import com.fangxuele.tool.push.logic.msgmaker.MpTemplateMsgMaker;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
@@ -110,9 +111,11 @@ public class PushManage {
             case MessageTypeEnum.MP_TEMPLATE_CODE:
                 WxMpTemplateMessage wxMessageTemplate;
                 WxMpService wxMpService = getWxMpService();
+                MpTemplateMsgMaker.prepare();
+                MpTemplateMsgMaker mpTemplateMsgMaker = new MpTemplateMsgMaker();
 
                 for (String[] msgData : msgDataList) {
-                    wxMessageTemplate = MessageMaker.makeMpTemplateMessage(msgData);
+                    wxMessageTemplate = mpTemplateMsgMaker.makeMsg(msgData);
                     wxMessageTemplate.setToUser(msgData[0].trim());
                     // ！！！发送模板消息！！！
                     wxMpService.getTemplateMsgService().sendTemplateMsg(wxMessageTemplate);
@@ -143,6 +146,8 @@ public class PushManage {
                 break;
             case MessageTypeEnum.KEFU_PRIORITY_CODE:
                 wxMpService = getWxMpService();
+                MpTemplateMsgMaker.prepare();
+                mpTemplateMsgMaker = new MpTemplateMsgMaker();
 
                 for (String[] msgData : msgDataList) {
                     try {
@@ -151,7 +156,7 @@ public class PushManage {
                         // ！！！发送客服消息！！！
                         wxMpService.getKefuService().sendKefuMessage(wxMpKefuMessage);
                     } catch (Exception e) {
-                        wxMessageTemplate = MessageMaker.makeMpTemplateMessage(msgData);
+                        wxMessageTemplate = mpTemplateMsgMaker.makeMsg(msgData);
                         wxMessageTemplate.setToUser(msgData[0].trim());
                         // ！！！发送模板消息！！！
                         wxMpService.getTemplateMsgService().sendTemplateMsg(wxMessageTemplate);

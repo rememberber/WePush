@@ -2,6 +2,7 @@ package com.fangxuele.tool.push.logic.msgthread;
 
 import com.fangxuele.tool.push.logic.MessageMaker;
 import com.fangxuele.tool.push.logic.PushData;
+import com.fangxuele.tool.push.logic.msgmaker.MpTemplateMsgMaker;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
@@ -36,6 +37,8 @@ public class KeFuPriorMsgThread extends BaseMsgThread {
         WxMpKefuMessage wxMpKefuMessage;
         WxMpTemplateMessage wxMpTemplateMessage;
 
+        MpTemplateMsgMaker mpTemplateMsgMaker = new MpTemplateMsgMaker();
+
         for (int i = 0; i < list.size(); i++) {
             if (!PushData.running) {
                 // 停止
@@ -49,7 +52,7 @@ public class KeFuPriorMsgThread extends BaseMsgThread {
             try {
                 openId = msgData[0];
                 wxMpKefuMessage = MessageMaker.makeKefuMessage(msgData);
-                wxMpTemplateMessage = MessageMaker.makeMpTemplateMessage(msgData);
+                wxMpTemplateMessage = mpTemplateMsgMaker.makeMsg(msgData);
 
                 wxMpKefuMessage.setToUser(openId);
                 wxMpTemplateMessage.setToUser(openId);
