@@ -1,5 +1,8 @@
-package com.fangxuele.tool.push.logic;
+package com.fangxuele.tool.push.logic.msgthread;
 
+import com.fangxuele.tool.push.logic.MessageMaker;
+import com.fangxuele.tool.push.logic.PushData;
+import com.fangxuele.tool.push.logic.PushManage;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import com.yunpian.sdk.YunpianClient;
@@ -24,7 +27,7 @@ public class YunpianSmsMsgServiceThread extends BaseMsgServiceThread {
      * @param startIndex 起始索引
      * @param endIndex   截止索引
      */
-    YunpianSmsMsgServiceThread(int startIndex, int endIndex) {
+    public YunpianSmsMsgServiceThread(int startIndex, int endIndex) {
         super(startIndex, endIndex);
     }
 

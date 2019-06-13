@@ -1,27 +1,30 @@
-package com.fangxuele.tool.push.logic;
+package com.fangxuele.tool.push.logic.msgthread;
 
+import com.fangxuele.tool.push.logic.MessageMaker;
+import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
+import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
 
 /**
  * <pre>
- * 模板消息发送服务线程
+ * 客服消息优先发送服务线程
  * </pre>
  *
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
  * @since 2017/3/29.
  */
-public class TemplateMsgMpServiceThread extends BaseMsgServiceThread {
+public class KeFuPriorMsgServiceThread extends BaseMsgServiceThread {
 
     /**
      * 构造函数
      *
-     * @param startIndex 起始页
-     * @param endIndex   截止页
+     * @param pageFrom 起始索引
+     * @param pageTo   截止索引
      */
-    TemplateMsgMpServiceThread(int startIndex, int endIndex) {
-        super(startIndex, endIndex);
+    public KeFuPriorMsgServiceThread(int pageFrom, int pageTo) {
+        super(pageFrom, pageTo);
     }
 
     @Override
@@ -30,8 +33,8 @@ public class TemplateMsgMpServiceThread extends BaseMsgServiceThread {
         // 初始化当前线程
         initCurrentThread();
 
-        // 组织模板消息
-        WxMpTemplateMessage wxMessageTemplate;
+        WxMpKefuMessage wxMpKefuMessage;
+        WxMpTemplateMessage wxMpTemplateMessage;
 
         for (int i = 0; i < list.size(); i++) {
             if (!PushData.running) {
@@ -45,11 +48,19 @@ public class TemplateMsgMpServiceThread extends BaseMsgServiceThread {
             String openId = "";
             try {
                 openId = msgData[0];
-                wxMessageTemplate = MessageMaker.makeMpTemplateMessage(msgData);
-                wxMessageTemplate.setToUser(openId);
-                // 空跑控制
-                if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
-                    wxMpService.getTemplateMsgService().sendTemplateMsg(wxMessageTemplate);
+                wxMpKefuMessage = MessageMaker.makeKefuMessage(msgData);
+                wxMpTemplateMessage = MessageMaker.makeMpTemplateMessage(msgData);
+
+                wxMpKefuMessage.setToUser(openId);
+                wxMpTemplateMessage.setToUser(openId);
+                try {// 空跑控制
+                    if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
+                        wxMpService.getKefuService().sendKefuMessage(wxMpKefuMessage);
+                    }
+                } catch (Exception e) {
+                    if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
+                        wxMpService.getTemplateMsgService().sendTemplateMsg(wxMpTemplateMessage);
+                    }
                 }
 
                 // 总发送成功+1

@@ -1,7 +1,8 @@
-package com.fangxuele.tool.push.logic;
+package com.fangxuele.tool.push.logic.msgthread;
 
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
+import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import me.chanjar.weixin.mp.api.WxMpService;
@@ -44,17 +45,17 @@ public class BaseMsgServiceThread extends Thread {
     /**
      * 微信工具服务
      */
-    WxMpService wxMpService;
+    public WxMpService wxMpService;
 
     /**
      * 当前线程成功数
      */
-    int currentThreadSuccessCount;
+    public int currentThreadSuccessCount;
 
     /**
      * 当前线程失败数
      */
-    int currentThreadFailCount;
+    public int currentThreadFailCount;
 
     /**
      * 线程列表tableModel
@@ -64,7 +65,7 @@ public class BaseMsgServiceThread extends Thread {
     /**
      * 当前线程所在的线程列表行
      */
-    int tableRow;
+    public int tableRow;
 
     /**
      * 构造函数
@@ -85,7 +86,7 @@ public class BaseMsgServiceThread extends Thread {
     /**
      * 初始化当前线程
      */
-    void initCurrentThread() {
+    public void initCurrentThread() {
         ConsoleUtil.consoleWithLog("线程" + this.getName() + "负责处理第:" + startIndex + "-" +
                 endIndex + "条的数据");
 
@@ -104,7 +105,7 @@ public class BaseMsgServiceThread extends Thread {
     /**
      * 当前线程结束
      */
-    void currentThreadFinish() {
+    public void currentThreadFinish() {
         ConsoleUtil.consoleWithLog(this.getName() + "已处理完第" + startIndex + "-" +
                 endIndex + "条的数据");
 
@@ -115,7 +116,7 @@ public class BaseMsgServiceThread extends Thread {
         return wxMpService;
     }
 
-    void setWxMpService(WxMpService wxMpService) {
+    public void setWxMpService(WxMpService wxMpService) {
         this.wxMpService = wxMpService;
     }
 
@@ -147,7 +148,7 @@ public class BaseMsgServiceThread extends Thread {
         return tableRow;
     }
 
-    void setTableRow(int tableRow) {
+    public void setTableRow(int tableRow) {
         this.tableRow = tableRow;
     }
 }

@@ -1,41 +1,46 @@
-package com.fangxuele.tool.push.logic;
+package com.fangxuele.tool.push.logic.msgthread;
 
-import com.fangxuele.tool.push.App;
+import com.aliyuncs.IAcsClient;
+import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
+import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
+import com.fangxuele.tool.push.logic.MessageMaker;
+import com.fangxuele.tool.push.logic.PushData;
+import com.fangxuele.tool.push.logic.PushManage;
 import com.fangxuele.tool.push.ui.form.PushForm;
-import com.fangxuele.tool.push.ui.form.msg.TxYunMsgForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
-import com.github.qcloudsms.SmsSingleSender;
-import com.github.qcloudsms.SmsSingleSenderResult;
 
 /**
  * <pre>
- * 腾讯云短信发送服务线程
+ * 阿里云短信发送服务线程
  * </pre>
  *
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
  * @since 2018/3/16.
  */
-public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
+public class AliYunSmsMsgServiceThread extends BaseMsgServiceThread {
 
     /**
      * 构造函数
      *
-     * @param startIndex 起始页
-     * @param endIndex   截止页
+     * @param startIndex 起始索引
+     * @param endIndex   截止索引
      */
-    TxYunSmsMsgServiceThread(int startIndex, int endIndex) {
+    public AliYunSmsMsgServiceThread(int startIndex, int endIndex) {
         super(startIndex, endIndex);
     }
 
     @Override
     public void run() {
-
         // 初始化当前线程
         initCurrentThread();
 
-        SmsSingleSender smsSingleSender = PushManage.getTxYunSender();
-        int templateId = Integer.parseInt(TxYunMsgForm.txYunMsgForm.getMsgTemplateIdTextField().getText());
-        String smsSign = App.config.getAliyunSign();
+        //初始化acsClient,暂不支持region化
+        IAcsClient acsClient = PushManage.getAliyunIAcsClient();
+
+        // 组织模板消息
+        SendSmsRequest sendSmsRequest;
+
+        SendSmsResponse response;
 
         for (int i = 0; i < list.size(); i++) {
             if (!PushData.running) {
@@ -48,14 +53,13 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
             String[] msgData = list.get(i);
             String telNum = msgData[0];
             try {
-                String[] params = MessageMaker.makeTxyunMessage(msgData);
+                sendSmsRequest = MessageMaker.makeAliyunMessage(msgData);
+                sendSmsRequest.setPhoneNumbers(telNum);
 
                 // 空跑控制
                 if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
-                    SmsSingleSenderResult result = smsSingleSender.sendWithParam("86", telNum,
-                            templateId, params, smsSign, "", "");
-
-                    if (result.result == 0) {
+                    response = acsClient.getAcsResponse(sendSmsRequest);
+                    if (response.getCode() != null && "OK".equals(response.getCode())) {
                         // 总发送成功+1
                         PushData.increaseSuccess();
                         PushForm.pushForm.getPushSuccessCount().setText(String.valueOf(PushData.successRecords));
@@ -75,8 +79,8 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
                         PushData.sendFailList.add(msgData);
 
                         // 失败异常信息输出控制台
-                        ConsoleUtil.consoleWithLog("发送失败:" + result.toString() +
-                                ";telNum:" + telNum);
+                        ConsoleUtil.consoleWithLog("发送失败:" + response.getMessage() + ";ErrorCode:" +
+                                response.getCode() + ";telNum:" + telNum);
 
                         // 当前线程发送失败+1
                         currentThreadFailCount++;

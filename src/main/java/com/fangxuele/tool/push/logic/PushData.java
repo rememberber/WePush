@@ -23,7 +23,7 @@ public class PushData {
     /**
      * 总记录数
      */
-    static long totalRecords;
+    public static long totalRecords;
 
     /**
      * 发送成功数
@@ -38,7 +38,7 @@ public class PushData {
     /**
      * 准备发送的列表
      */
-    static List<String[]> toSendList;
+    public static List<String[]> toSendList;
 
     /**
      * 发送成功的列表
@@ -68,25 +68,24 @@ public class PushData {
     /**
      * 线程总数
      */
-    static int threadCount;
+    public static int threadCount;
 
     /**
      * 已经停止了的线程总数
      */
-    static LongAdder stopedThreadCount = new LongAdder();
-    ;
+    public static LongAdder stopedThreadCount = new LongAdder();
 
     /**
      * 成功数+1
      */
-    static void increaseSuccess() {
+    public static void increaseSuccess() {
         successRecords.add(1);
     }
 
     /**
      * 失败数+1
      */
-    static void increaseFail() {
+    public static void increaseFail() {
         failRecords.add(1);
     }
 

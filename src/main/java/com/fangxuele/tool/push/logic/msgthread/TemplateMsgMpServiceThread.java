@@ -1,27 +1,29 @@
-package com.fangxuele.tool.push.logic;
+package com.fangxuele.tool.push.logic.msgthread;
 
+import com.fangxuele.tool.push.logic.MessageMaker;
+import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
-import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
+import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
 
 /**
  * <pre>
- * 客服消息发送服务线程
+ * 模板消息发送服务线程
  * </pre>
  *
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
  * @since 2017/3/29.
  */
-public class KeFuMsgServiceThread extends BaseMsgServiceThread {
+public class TemplateMsgMpServiceThread extends BaseMsgServiceThread {
 
     /**
      * 构造函数
      *
-     * @param pageFrom 开始索引
-     * @param pageTo   截止索引
+     * @param startIndex 起始页
+     * @param endIndex   截止页
      */
-    KeFuMsgServiceThread(int pageFrom, int pageTo) {
-        super(pageFrom, pageTo);
+    public TemplateMsgMpServiceThread(int startIndex, int endIndex) {
+        super(startIndex, endIndex);
     }
 
     @Override
@@ -30,7 +32,8 @@ public class KeFuMsgServiceThread extends BaseMsgServiceThread {
         // 初始化当前线程
         initCurrentThread();
 
-        WxMpKefuMessage wxMpKefuMessage;
+        // 组织模板消息
+        WxMpTemplateMessage wxMessageTemplate;
 
         for (int i = 0; i < list.size(); i++) {
             if (!PushData.running) {
@@ -44,11 +47,11 @@ public class KeFuMsgServiceThread extends BaseMsgServiceThread {
             String openId = "";
             try {
                 openId = msgData[0];
-                wxMpKefuMessage = MessageMaker.makeKefuMessage(msgData);
-                wxMpKefuMessage.setToUser(openId);
+                wxMessageTemplate = MessageMaker.makeMpTemplateMessage(msgData);
+                wxMessageTemplate.setToUser(openId);
                 // 空跑控制
                 if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
-                    wxMpService.getKefuService().sendKefuMessage(wxMpKefuMessage);
+                    wxMpService.getTemplateMsgService().sendTemplateMsg(wxMessageTemplate);
                 }
 
                 // 总发送成功+1

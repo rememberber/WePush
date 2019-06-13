@@ -41,7 +41,7 @@ public class MessageMaker {
      * @param msgData 消息数据
      * @return WxMpTemplateMessage
      */
-    synchronized static WxMpTemplateMessage makeMpTemplateMessage(String[] msgData) {
+    public synchronized static WxMpTemplateMessage makeMpTemplateMessage(String[] msgData) {
         // 拼模板
         WxMpTemplateMessage wxMessageTemplate = WxMpTemplateMessage.builder().build();
         wxMessageTemplate.setTemplateId(MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateIdTextField().getText().trim());
@@ -84,7 +84,7 @@ public class MessageMaker {
      * @param msgData 消息信息
      * @return WxMaTemplateMessage
      */
-    synchronized static WxMaTemplateMessage makeMaTemplateMessage(String[] msgData) {
+    public synchronized static WxMaTemplateMessage makeMaTemplateMessage(String[] msgData) {
         // 拼模板
         WxMaTemplateMessage wxMessageTemplate = WxMaTemplateMessage.builder().build();
         wxMessageTemplate.setTemplateId(MaTemplateMsgForm.maTemplateMsgForm.getMsgTemplateIdTextField().getText().trim());
@@ -122,7 +122,7 @@ public class MessageMaker {
      * @param msgData 消息信息
      * @return WxMpKefuMessage
      */
-    synchronized static WxMpKefuMessage makeKefuMessage(String[] msgData) {
+    public synchronized static WxMpKefuMessage makeKefuMessage(String[] msgData) {
 
         WxMpKefuMessage kefuMessage = null;
         VelocityContext velocityContext = new VelocityContext();
@@ -164,7 +164,7 @@ public class MessageMaker {
      * @param msgData 消息信息
      * @return SendSmsRequest
      */
-    synchronized static SendSmsRequest makeAliyunMessage(String[] msgData) {
+    public synchronized static SendSmsRequest makeAliyunMessage(String[] msgData) {
         SendSmsRequest request = new SendSmsRequest();
         //使用post提交
         request.setSysMethod(MethodType.POST);
@@ -207,7 +207,7 @@ public class MessageMaker {
      * @param msgData 消息信息
      * @return AlibabaAliqinFcSmsNumSendRequest
      */
-    synchronized static AlibabaAliqinFcSmsNumSendRequest makeAliTemplateMessage(String[] msgData) {
+    public synchronized static AlibabaAliqinFcSmsNumSendRequest makeAliTemplateMessage(String[] msgData) {
         AlibabaAliqinFcSmsNumSendRequest request = new AlibabaAliqinFcSmsNumSendRequest();
         // 用户可以根据该会员ID识别是哪位会员使用了你的应用
         request.setExtend("WePush");
@@ -252,7 +252,7 @@ public class MessageMaker {
      * @param msgData 消息信息
      * @return String[]
      */
-    synchronized static String[] makeTxyunMessage(String[] msgData) {
+    public synchronized static String[] makeTxyunMessage(String[] msgData) {
         if (TxYunMsgForm.txYunMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
             TxYunMsgForm.initTemplateDataTable();
         }
@@ -281,7 +281,7 @@ public class MessageMaker {
      * @param msgData 消息信息
      * @return Map
      */
-    synchronized static Map<String, String> makeYunpianMessage(String[] msgData) {
+    public synchronized static Map<String, String> makeYunpianMessage(String[] msgData) {
         Map<String, String> params = new HashMap<String, String>(2);
 
         VelocityContext velocityContext = new VelocityContext();
