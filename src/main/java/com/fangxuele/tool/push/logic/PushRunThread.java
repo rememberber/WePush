@@ -8,7 +8,6 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.logic.msgmaker.MpTemplateMsgMaker;
 import com.fangxuele.tool.push.logic.msgthread.AliDayuTemplateSmsMsgThread;
 import com.fangxuele.tool.push.logic.msgthread.AliYunSmsMsgThread;
 import com.fangxuele.tool.push.logic.msgthread.BaseMsgThread;
@@ -41,7 +40,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
  * @since 2017/6/28.
  */
-public class RunPushThread extends Thread {
+public class PushRunThread extends Thread {
 
     private static final Log logger = LogFactory.get();
 
@@ -90,7 +89,7 @@ public class RunPushThread extends Thread {
         ConsoleUtil.consoleWithLog("线程池大小：" + PushForm.pushForm.getMaxThreadPoolTextField().getText());
 
         // 准备消息构造器
-        prepareMsgMaker();
+        PushControl.prepareMsgMaker();
 
         // JVM内存占用
         PushForm.pushForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
@@ -131,7 +130,7 @@ public class RunPushThread extends Thread {
             if (MessageTypeEnum.MP_TEMPLATE_CODE == msgType) {
                 thread = new MpTemplateMsgThread(startIndex, endIndex);
 
-                WxMpService wxMpService = PushManage.getWxMpService();
+                WxMpService wxMpService = PushControl.getWxMpService();
                 if (wxMpService == null || wxMpService.getWxMpConfigStorage() == null) {
                     return;
                 }
@@ -139,7 +138,7 @@ public class RunPushThread extends Thread {
             } else if (MessageTypeEnum.MA_TEMPLATE_CODE == msgType) {
                 thread = new MaTemplateMsgThread(startIndex, endIndex);
 
-                WxMaService wxMaService = PushManage.getWxMaService();
+                WxMaService wxMaService = PushControl.getWxMaService();
                 if (wxMaService == null || wxMaService.getWxMaConfig() == null) {
                     return;
                 }
@@ -147,7 +146,7 @@ public class RunPushThread extends Thread {
             } else if (MessageTypeEnum.KEFU_CODE == msgType) {
                 thread = new KeFuMsgThread(startIndex, endIndex);
 
-                WxMpService wxMpService = PushManage.getWxMpService();
+                WxMpService wxMpService = PushControl.getWxMpService();
                 if (wxMpService.getWxMpConfigStorage() == null) {
                     return;
                 }
@@ -155,7 +154,7 @@ public class RunPushThread extends Thread {
             } else if (MessageTypeEnum.KEFU_PRIORITY_CODE == msgType) {
                 thread = new KeFuPriorMsgThread(startIndex, endIndex);
 
-                WxMpService wxMpService = PushManage.getWxMpService();
+                WxMpService wxMpService = PushControl.getWxMpService();
                 if (wxMpService.getWxMpConfigStorage() == null) {
                     return;
                 }
@@ -241,25 +240,6 @@ public class RunPushThread extends Thread {
     }
 
     /**
-     * 准备消息构造器
-     */
-    private void prepareMsgMaker() {
-        int msgType = App.config.getMsgType();
-        switch (msgType) {
-            case MessageTypeEnum.MP_TEMPLATE_CODE:
-                PushManage.wxMpConfigStorage = null;
-                PushManage.wxMpService = null;
-                MpTemplateMsgMaker.prepare();
-                break;
-            case MessageTypeEnum.MA_TEMPLATE_CODE:
-                PushManage.wxMaConfigStorage = null;
-                PushManage.wxMaService = null;
-                break;
-            default:
-        }
-    }
-
-    /**
      * 时间监控
      *
      * @param threadCount
@@ -286,7 +266,7 @@ public class RunPushThread extends Thread {
                     PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(true);
                     // 空跑控制
                     if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
-                        PushManage.savePushData();
+                        PushControl.savePushData();
                     }
                     ConsoleUtil.consoleWithLog("结果数据保存完毕！");
                 } catch (IOException e) {

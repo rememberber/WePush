@@ -2,7 +2,7 @@ package com.fangxuele.tool.push.logic.msgthread;
 
 import com.fangxuele.tool.push.logic.MessageMaker;
 import com.fangxuele.tool.push.logic.PushData;
-import com.fangxuele.tool.push.logic.PushManage;
+import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import com.taobao.api.TaobaoClient;
@@ -35,7 +35,7 @@ public class AliDayuTemplateSmsMsgThread extends BaseMsgThread {
         // 初始化当前线程
         initCurrentThread();
 
-        TaobaoClient client = PushManage.getTaobaoClient();
+        TaobaoClient client = PushControl.getTaobaoClient();
 
         // 组织模板消息
         AlibabaAliqinFcSmsNumSendRequest alibabaAliqinFcSmsNumSendRequest;

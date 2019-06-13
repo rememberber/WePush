@@ -5,7 +5,7 @@ import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.fangxuele.tool.push.logic.MessageMaker;
 import com.fangxuele.tool.push.logic.PushData;
-import com.fangxuele.tool.push.logic.PushManage;
+import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 
@@ -35,7 +35,7 @@ public class AliYunSmsMsgThread extends BaseMsgThread {
         initCurrentThread();
 
         //初始化acsClient,暂不支持region化
-        IAcsClient acsClient = PushManage.getAliyunIAcsClient();
+        IAcsClient acsClient = PushControl.getAliyunIAcsClient();
 
         // 组织模板消息
         SendSmsRequest sendSmsRequest;

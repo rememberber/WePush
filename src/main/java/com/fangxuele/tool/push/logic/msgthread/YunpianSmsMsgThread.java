@@ -2,7 +2,7 @@ package com.fangxuele.tool.push.logic.msgthread;
 
 import com.fangxuele.tool.push.logic.MessageMaker;
 import com.fangxuele.tool.push.logic.PushData;
-import com.fangxuele.tool.push.logic.PushManage;
+import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import com.yunpian.sdk.YunpianClient;
@@ -37,7 +37,7 @@ public class YunpianSmsMsgThread extends BaseMsgThread {
         // 初始化当前线程
         initCurrentThread();
 
-        YunpianClient yunpianClient = PushManage.getYunpianClient();
+        YunpianClient yunpianClient = PushControl.getYunpianClient();
 
         for (int i = 0; i < list.size(); i++) {
             if (!PushData.running) {

@@ -4,7 +4,7 @@ import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
-import com.fangxuele.tool.push.logic.PushManage;
+import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
@@ -106,7 +106,7 @@ public class MsgEditListener {
                             JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }
-                if (PushManage.preview()) {
+                if (PushControl.preview()) {
                     JOptionPane.showMessageDialog(messagePanel, "发送预览消息成功！", "成功",
                             JOptionPane.INFORMATION_MESSAGE);
                 }

@@ -8,7 +8,7 @@ import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.PushData;
-import com.fangxuele.tool.push.logic.RunPushThread;
+import com.fangxuele.tool.push.logic.PushRunThread;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
@@ -63,7 +63,7 @@ public class PushListener {
                     PushForm.pushForm.getScheduleRunButton().setEnabled(false);
                     PushForm.pushForm.getPushStartButton().setEnabled(false);
                     PushForm.pushForm.getPushStopButton().setEnabled(true);
-                    ThreadUtil.execute(new RunPushThread());
+                    ThreadUtil.execute(new PushRunThread());
                 }
             }
         }));
@@ -151,7 +151,7 @@ public class PushListener {
                                 "开始推送");
 
                         serviceStartAt = Executors.newSingleThreadScheduledExecutor();
-                        serviceStartAt.schedule(new RunPushThread(), startAtMills - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+                        serviceStartAt.schedule(new PushRunThread(), startAtMills - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
                     }
                     existScheduleTask = true;
                 }
@@ -184,7 +184,7 @@ public class PushListener {
                         serviceStartPerDay = Executors.newSingleThreadScheduledExecutor();
                         long millisBetween = startPerDayMills - System.currentTimeMillis();
                         long delay = millisBetween < 0 ? millisBetween + 24 * 60 * 60 * 1000 : millisBetween;
-                        serviceStartPerDay.scheduleAtFixedRate(new RunPushThread(), delay, 24 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
+                        serviceStartPerDay.scheduleAtFixedRate(new PushRunThread(), delay, 24 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
                     }
                     existScheduleTask = true;
                 }
@@ -221,7 +221,7 @@ public class PushListener {
                         serviceStartPerWeek = Executors.newSingleThreadScheduledExecutor();
                         long millisBetween = startPerWeekMills + todaySetMills - System.currentTimeMillis();
                         long delay = millisBetween < 0 ? millisBetween + 7 * 24 * 60 * 60 * 1000 : millisBetween;
-                        serviceStartPerWeek.scheduleAtFixedRate(new RunPushThread(), delay, 7 * 24 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
+                        serviceStartPerWeek.scheduleAtFixedRate(new PushRunThread(), delay, 7 * 24 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
                     }
                     existScheduleTask = true;
                 }

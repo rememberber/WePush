@@ -55,7 +55,7 @@ public class MessageMaker {
 
         VelocityContext velocityContext = new VelocityContext();
         for (int i = 0; i < msgData.length; i++) {
-            velocityContext.put(PushManage.TEMPLATE_VAR_PREFIX + i, msgData[i]);
+            velocityContext.put(PushControl.TEMPLATE_VAR_PREFIX + i, msgData[i]);
         }
         for (int i = 0; i < rowCount; i++) {
             String name = ((String) tableModel.getValueAt(i, 0)).trim();
@@ -82,7 +82,7 @@ public class MessageMaker {
         WxMpKefuMessage kefuMessage = null;
         VelocityContext velocityContext = new VelocityContext();
         for (int i = 0; i < msgData.length; i++) {
-            velocityContext.put(PushManage.TEMPLATE_VAR_PREFIX + i, msgData[i]);
+            velocityContext.put(PushControl.TEMPLATE_VAR_PREFIX + i, msgData[i]);
         }
         if ("图文消息".equals(Objects.requireNonNull(KefuMsgForm.kefuMsgForm.getMsgKefuMsgTypeComboBox().getSelectedItem()).toString())) {
             WxMpKefuMessage.WxArticle article = new WxMpKefuMessage.WxArticle();
@@ -138,7 +138,7 @@ public class MessageMaker {
 
         VelocityContext velocityContext = new VelocityContext();
         for (int i = 0; i < msgData.length; i++) {
-            velocityContext.put(PushManage.TEMPLATE_VAR_PREFIX + i, msgData[i]);
+            velocityContext.put(PushControl.TEMPLATE_VAR_PREFIX + i, msgData[i]);
         }
         for (int i = 0; i < rowCount; i++) {
             String key = (String) tableModel.getValueAt(i, 0);
@@ -180,7 +180,7 @@ public class MessageMaker {
         int rowCount = tableModel.getRowCount();
         VelocityContext velocityContext = new VelocityContext();
         for (int i = 0; i < msgData.length; i++) {
-            velocityContext.put(PushManage.TEMPLATE_VAR_PREFIX + i, msgData[i]);
+            velocityContext.put(PushControl.TEMPLATE_VAR_PREFIX + i, msgData[i]);
         }
         for (int i = 0; i < rowCount; i++) {
             String key = (String) tableModel.getValueAt(i, 0);
@@ -218,7 +218,7 @@ public class MessageMaker {
 
         VelocityContext velocityContext = new VelocityContext();
         for (int i = 0; i < msgData.length; i++) {
-            velocityContext.put(PushManage.TEMPLATE_VAR_PREFIX + i, msgData[i]);
+            velocityContext.put(PushControl.TEMPLATE_VAR_PREFIX + i, msgData[i]);
         }
         for (int i = 0; i < rowCount; i++) {
             String value = ((String) tableModel.getValueAt(i, 1));
@@ -241,7 +241,7 @@ public class MessageMaker {
 
         VelocityContext velocityContext = new VelocityContext();
         for (int i = 0; i < msgData.length; i++) {
-            velocityContext.put(PushManage.TEMPLATE_VAR_PREFIX + i, msgData[i]);
+            velocityContext.put(PushControl.TEMPLATE_VAR_PREFIX + i, msgData[i]);
         }
 
         String text = YunpianMsgForm.yunpianMsgForm.getMsgYunpianMsgContentTextField().getText();

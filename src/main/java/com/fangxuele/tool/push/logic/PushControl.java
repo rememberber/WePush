@@ -52,13 +52,13 @@ import java.util.Map;
 
 /**
  * <pre>
- * 推送管理
+ * 推送控制
  * </pre>
  *
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
  * @since 2017/6/19.
  */
-public class PushManage {
+public class PushControl {
 
     private static TPushHistoryMapper pushHistoryMapper = MybatisUtil.getSqlSession().getMapper(TPushHistoryMapper.class);
 
@@ -107,11 +107,12 @@ public class PushManage {
             msgDataList.add(data.split(MemberListener.TXT_FILE_DATA_SEPERATOR_REGEX));
         }
 
+        // 准备消息构造器
+        prepareMsgMaker();
         switch (App.config.getMsgType()) {
             case MessageTypeEnum.MP_TEMPLATE_CODE:
                 WxMpTemplateMessage wxMessageTemplate;
                 WxMpService wxMpService = getWxMpService();
-                MpTemplateMsgMaker.prepare();
                 MpTemplateMsgMaker mpTemplateMsgMaker = new MpTemplateMsgMaker();
 
                 for (String[] msgData : msgDataList) {
@@ -146,7 +147,6 @@ public class PushManage {
                 break;
             case MessageTypeEnum.KEFU_PRIORITY_CODE:
                 wxMpService = getWxMpService();
-                MpTemplateMsgMaker.prepare();
                 mpTemplateMsgMaker = new MpTemplateMsgMaker();
 
                 for (String[] msgData : msgDataList) {
@@ -363,14 +363,14 @@ public class PushManage {
      */
     public static WxMpService getWxMpService() {
         if (wxMpConfigStorage == null) {
-            synchronized (PushManage.class) {
+            synchronized (PushControl.class) {
                 if (wxMpConfigStorage == null) {
                     wxMpConfigStorage = wxMpConfigStorage();
                 }
             }
         }
         if (wxMpService == null && wxMpConfigStorage != null) {
-            synchronized (PushManage.class) {
+            synchronized (PushControl.class) {
                 if (wxMpService == null && wxMpConfigStorage != null) {
                     wxMpService = new WxMpServiceImpl();
                     wxMpService.setWxMpConfigStorage(wxMpConfigStorage);
@@ -387,14 +387,14 @@ public class PushManage {
      */
     static WxMaService getWxMaService() {
         if (wxMaService == null) {
-            synchronized (PushManage.class) {
+            synchronized (PushControl.class) {
                 if (wxMaService == null) {
                     wxMaService = new WxMaServiceImpl();
                 }
             }
         }
         if (wxMaConfigStorage == null) {
-            synchronized (PushManage.class) {
+            synchronized (PushControl.class) {
                 if (wxMaConfigStorage == null) {
                     wxMaConfigStorage = wxMaConfigStorage();
                     if (wxMaConfigStorage != null) {
@@ -413,7 +413,7 @@ public class PushManage {
      */
     public static IAcsClient getAliyunIAcsClient() {
         if (iAcsClient == null) {
-            synchronized (PushManage.class) {
+            synchronized (PushControl.class) {
                 if (iAcsClient == null) {
                     String aliyunAccessKeyId = App.config.getAliyunAccessKeyId();
                     String aliyunAccessKeySecret = App.config.getAliyunAccessKeySecret();
@@ -442,7 +442,7 @@ public class PushManage {
      */
     public static SmsSingleSender getTxYunSender() {
         if (smsSingleSender == null) {
-            synchronized (PushManage.class) {
+            synchronized (PushControl.class) {
                 if (smsSingleSender == null) {
                     String txyunAppId = App.config.getTxyunAppId();
                     String txyunAppKey = App.config.getTxyunAppKey();
@@ -461,7 +461,7 @@ public class PushManage {
      */
     public static TaobaoClient getTaobaoClient() {
         if (taobaoClient == null) {
-            synchronized (PushManage.class) {
+            synchronized (PushControl.class) {
                 if (taobaoClient == null) {
                     String aliServerUrl = App.config.getAliServerUrl();
                     String aliAppKey = App.config.getAliAppKey();
@@ -481,7 +481,7 @@ public class PushManage {
      */
     public static YunpianClient getYunpianClient() {
         if (yunpianClient == null) {
-            synchronized (PushManage.class) {
+            synchronized (PushControl.class) {
                 if (yunpianClient == null) {
                     String yunpianApiKey = App.config.getYunpianApiKey();
 
@@ -584,6 +584,25 @@ public class PushManage {
         tPushHistory.setModifiedTime(now);
 
         pushHistoryMapper.insertSelective(tPushHistory);
+    }
+
+    /**
+     * 准备消息构造器
+     */
+    public static void prepareMsgMaker() {
+        int msgType = App.config.getMsgType();
+        switch (msgType) {
+            case MessageTypeEnum.MP_TEMPLATE_CODE:
+                PushControl.wxMpConfigStorage = null;
+                PushControl.wxMpService = null;
+                MpTemplateMsgMaker.prepare();
+                break;
+            case MessageTypeEnum.MA_TEMPLATE_CODE:
+                PushControl.wxMaConfigStorage = null;
+                PushControl.wxMaService = null;
+                break;
+            default:
+        }
     }
 
 }

@@ -3,7 +3,7 @@ package com.fangxuele.tool.push.logic.msgthread;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.MessageMaker;
 import com.fangxuele.tool.push.logic.PushData;
-import com.fangxuele.tool.push.logic.PushManage;
+import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.ui.form.msg.TxYunMsgForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
@@ -36,7 +36,7 @@ public class TxYunSmsMsgThread extends BaseMsgThread {
         // 初始化当前线程
         initCurrentThread();
 
-        SmsSingleSender smsSingleSender = PushManage.getTxYunSender();
+        SmsSingleSender smsSingleSender = PushControl.getTxYunSender();
         int templateId = Integer.parseInt(TxYunMsgForm.txYunMsgForm.getMsgTemplateIdTextField().getText());
         String smsSign = App.config.getAliyunSign();
 
