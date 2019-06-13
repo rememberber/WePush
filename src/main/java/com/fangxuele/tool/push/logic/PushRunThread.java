@@ -28,8 +28,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -46,34 +44,25 @@ public class PushRunThread extends Thread {
 
     @Override
     public void run() {
-        PushForm.pushForm.getPushStopButton().setText("停止");
-
-        // 初始化
+        ConsoleUtil.consoleWithLog("推送开始……");
         PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(true);
-        PushData.running = true;
-        PushData.successRecords.reset();
-        PushData.failRecords.reset();
-        PushData.stopedThreadCount.reset();
-        PushData.threadCount = 0;
 
+        PushForm.pushForm.getPushStopButton().setText("停止");
+        // 初始化
         PushForm.pushForm.getPushSuccessCount().setText("0");
         PushForm.pushForm.getPushFailCount().setText("0");
 
-        PushData.toSendList = Collections.synchronizedList(new LinkedList<>());
-        PushData.sendSuccessList = Collections.synchronizedList(new LinkedList<>());
-        PushData.sendFailList = Collections.synchronizedList(new LinkedList<>());
-
-        ConsoleUtil.consoleWithLog("推送开始……");
+        // 重置推送数据
+        PushData.reset();
 
         // 拷贝准备的目标用户
         PushData.toSendList.addAll(PushData.allUser);
         // 总记录数
-        long totalCount = PushData.toSendList.size();
-        PushData.totalRecords = totalCount;
+        PushData.totalRecords = PushData.toSendList.size();
 
-        PushForm.pushForm.getPushTotalCountLabel().setText("消息总数：" + totalCount);
-        PushForm.pushForm.getPushTotalProgressBar().setMaximum((int) totalCount);
-        ConsoleUtil.consoleWithLog("消息总数：" + totalCount);
+        PushForm.pushForm.getPushTotalCountLabel().setText("消息总数：" + PushData.totalRecords);
+        PushForm.pushForm.getPushTotalProgressBar().setMaximum((int) PushData.totalRecords);
+        ConsoleUtil.consoleWithLog("消息总数：" + PushData.totalRecords);
         // 可用处理器核心数量
         PushForm.pushForm.getAvailableProcessorLabel().setText("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
         ConsoleUtil.consoleWithLog("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
@@ -91,11 +80,8 @@ public class PushRunThread extends Thread {
         // 准备消息构造器
         PushControl.prepareMsgMaker();
 
-        // JVM内存占用
-        PushForm.pushForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
         // 线程数
-        int threadCount = Integer.parseInt(PushForm.pushForm.getThreadCountTextField().getText());
-        PushData.threadCount = threadCount;
+        PushData.threadCount = Integer.parseInt(PushForm.pushForm.getThreadCountTextField().getText());
 
         // 初始化线程table
         String[] headerNames = {"线程", "分片区间", "成功", "失败", "总数", "当前进度"};
@@ -109,6 +95,20 @@ public class PushRunThread extends Thread {
         hr.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
         PushForm.pushForm.getPushThreadTable().updateUI();
 
+        // 消息数据分片以及线程纷发
+        shardingAndMsgThread();
+
+        PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
+        ConsoleUtil.consoleWithLog("所有线程宝宝启动完毕……");
+
+        // 时间监控
+        timeKeeper();
+    }
+
+    /**
+     * 消息数据分片以及线程纷发
+     */
+    private static void shardingAndMsgThread() {
         Object[] data;
         int msgType = App.config.getMsgType();
 
@@ -116,110 +116,124 @@ public class PushRunThread extends Thread {
         ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(maxThreadPoolSize, maxThreadPoolSize);
         BaseMsgThread thread = null;
         // 每个线程分配
-        int perThread = (int) (totalCount / threadCount) + 1;
-        for (int i = 0; i < threadCount; i++) {
+        int perThread = (int) (PushData.totalRecords / PushData.threadCount) + 1;
+        DefaultTableModel tableModel = (DefaultTableModel) PushForm.pushForm.getPushThreadTable().getModel();
+        for (int i = 0; i < PushData.threadCount; i++) {
             int startIndex = i * perThread;
-            if (startIndex > totalCount - 1) {
-                threadCount = i;
+            if (startIndex > PushData.totalRecords - 1) {
+                PushData.threadCount = i;
                 break;
             }
             int endIndex = i * perThread + perThread;
-            if (endIndex > totalCount - 1) {
-                endIndex = (int) (totalCount);
+            if (endIndex > PushData.totalRecords - 1) {
+                endIndex = (int) (PushData.totalRecords);
             }
-            if (MessageTypeEnum.MP_TEMPLATE_CODE == msgType) {
-                thread = new MpTemplateMsgThread(startIndex, endIndex);
+            switch (msgType) {
+                case MessageTypeEnum.MP_TEMPLATE_CODE: {
+                    thread = new MpTemplateMsgThread(startIndex, endIndex);
 
-                WxMpService wxMpService = PushControl.getWxMpService();
-                if (wxMpService == null || wxMpService.getWxMpConfigStorage() == null) {
-                    return;
+                    WxMpService wxMpService = PushControl.getWxMpService();
+                    if (wxMpService == null || wxMpService.getWxMpConfigStorage() == null) {
+                        return;
+                    }
+                    thread.setWxMpService(wxMpService);
+                    break;
                 }
-                thread.setWxMpService(wxMpService);
-            } else if (MessageTypeEnum.MA_TEMPLATE_CODE == msgType) {
-                thread = new MaTemplateMsgThread(startIndex, endIndex);
+                case MessageTypeEnum.MA_TEMPLATE_CODE:
+                    thread = new MaTemplateMsgThread(startIndex, endIndex);
 
-                WxMaService wxMaService = PushControl.getWxMaService();
-                if (wxMaService == null || wxMaService.getWxMaConfig() == null) {
-                    return;
-                }
-                ((MaTemplateMsgThread) thread).setWxMaService(wxMaService);
-            } else if (MessageTypeEnum.KEFU_CODE == msgType) {
-                thread = new KeFuMsgThread(startIndex, endIndex);
+                    WxMaService wxMaService = PushControl.getWxMaService();
+                    if (wxMaService == null || wxMaService.getWxMaConfig() == null) {
+                        return;
+                    }
+                    ((MaTemplateMsgThread) thread).setWxMaService(wxMaService);
+                    break;
+                case MessageTypeEnum.KEFU_CODE: {
+                    thread = new KeFuMsgThread(startIndex, endIndex);
 
-                WxMpService wxMpService = PushControl.getWxMpService();
-                if (wxMpService.getWxMpConfigStorage() == null) {
-                    return;
+                    WxMpService wxMpService = PushControl.getWxMpService();
+                    if (wxMpService.getWxMpConfigStorage() == null) {
+                        return;
+                    }
+                    thread.setWxMpService(wxMpService);
+                    break;
                 }
-                thread.setWxMpService(wxMpService);
-            } else if (MessageTypeEnum.KEFU_PRIORITY_CODE == msgType) {
-                thread = new KeFuPriorMsgThread(startIndex, endIndex);
+                case MessageTypeEnum.KEFU_PRIORITY_CODE: {
+                    thread = new KeFuPriorMsgThread(startIndex, endIndex);
 
-                WxMpService wxMpService = PushControl.getWxMpService();
-                if (wxMpService.getWxMpConfigStorage() == null) {
-                    return;
+                    WxMpService wxMpService = PushControl.getWxMpService();
+                    if (wxMpService.getWxMpConfigStorage() == null) {
+                        return;
+                    }
+                    thread.setWxMpService(wxMpService);
+                    break;
                 }
-                thread.setWxMpService(wxMpService);
-            } else if (MessageTypeEnum.ALI_TEMPLATE_CODE == msgType) {
-                String aliServerUrl = App.config.getAliServerUrl();
-                String aliAppKey = App.config.getAliAppKey();
-                String aliAppSecret = App.config.getAliAppSecret();
+                case MessageTypeEnum.ALI_TEMPLATE_CODE:
+                    String aliServerUrl = App.config.getAliServerUrl();
+                    String aliAppKey = App.config.getAliAppKey();
+                    String aliAppSecret = App.config.getAliAppSecret();
 
-                if (StringUtils.isEmpty(aliServerUrl) || StringUtils.isEmpty(aliAppKey)
-                        || StringUtils.isEmpty(aliAppSecret)) {
-                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
-                            "请先在设置中填写并保存阿里大于相关配置！", "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    PushForm.pushForm.getScheduleRunButton().setEnabled(true);
-                    PushForm.pushForm.getPushStartButton().setEnabled(true);
-                    PushForm.pushForm.getPushStopButton().setEnabled(false);
-                    PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
-                    return;
-                }
-                thread = new AliDayuTemplateSmsMsgThread(startIndex, endIndex);
-            } else if (MessageTypeEnum.ALI_YUN_CODE == msgType) {
-                String aliyunAccessKeyId = App.config.getAliyunAccessKeyId();
-                String aliyunAccessKeySecret = App.config.getAliyunAccessKeySecret();
+                    if (StringUtils.isEmpty(aliServerUrl) || StringUtils.isEmpty(aliAppKey)
+                            || StringUtils.isEmpty(aliAppSecret)) {
+                        JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
+                                "请先在设置中填写并保存阿里大于相关配置！", "提示",
+                                JOptionPane.INFORMATION_MESSAGE);
+                        PushForm.pushForm.getScheduleRunButton().setEnabled(true);
+                        PushForm.pushForm.getPushStartButton().setEnabled(true);
+                        PushForm.pushForm.getPushStopButton().setEnabled(false);
+                        PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
+                        return;
+                    }
+                    thread = new AliDayuTemplateSmsMsgThread(startIndex, endIndex);
+                    break;
+                case MessageTypeEnum.ALI_YUN_CODE:
+                    String aliyunAccessKeyId = App.config.getAliyunAccessKeyId();
+                    String aliyunAccessKeySecret = App.config.getAliyunAccessKeySecret();
 
-                if (StringUtils.isEmpty(aliyunAccessKeyId) || StringUtils.isEmpty(aliyunAccessKeySecret)) {
-                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
-                            "请先在设置中填写并保存阿里云短信相关配置！", "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    PushForm.pushForm.getScheduleRunButton().setEnabled(true);
-                    PushForm.pushForm.getPushStartButton().setEnabled(true);
-                    PushForm.pushForm.getPushStopButton().setEnabled(false);
-                    PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
-                    return;
-                }
-                thread = new AliYunSmsMsgThread(startIndex, endIndex);
-            } else if (MessageTypeEnum.TX_YUN_CODE == msgType) {
-                String txyunAppId = App.config.getTxyunAppId();
-                String txyunAppKey = App.config.getTxyunAppKey();
+                    if (StringUtils.isEmpty(aliyunAccessKeyId) || StringUtils.isEmpty(aliyunAccessKeySecret)) {
+                        JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
+                                "请先在设置中填写并保存阿里云短信相关配置！", "提示",
+                                JOptionPane.INFORMATION_MESSAGE);
+                        PushForm.pushForm.getScheduleRunButton().setEnabled(true);
+                        PushForm.pushForm.getPushStartButton().setEnabled(true);
+                        PushForm.pushForm.getPushStopButton().setEnabled(false);
+                        PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
+                        return;
+                    }
+                    thread = new AliYunSmsMsgThread(startIndex, endIndex);
+                    break;
+                case MessageTypeEnum.TX_YUN_CODE:
+                    String txyunAppId = App.config.getTxyunAppId();
+                    String txyunAppKey = App.config.getTxyunAppKey();
 
-                if (StringUtils.isEmpty(txyunAppId) || StringUtils.isEmpty(txyunAppKey)) {
-                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
-                            "请先在设置中填写并保存腾讯云短信相关配置！", "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    PushForm.pushForm.getScheduleRunButton().setEnabled(true);
-                    PushForm.pushForm.getPushStartButton().setEnabled(true);
-                    PushForm.pushForm.getPushStopButton().setEnabled(false);
-                    PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
-                    return;
-                }
-                thread = new TxYunSmsMsgThread(startIndex, endIndex);
-            } else if (MessageTypeEnum.YUN_PIAN_CODE == msgType) {
-                String yunpianApiKey = App.config.getYunpianApiKey();
-                if (StringUtils.isEmpty(yunpianApiKey)) {
-                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
-                            "请先在设置中填写并保存云片网短信相关配置！", "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    PushForm.pushForm.getScheduleRunButton().setEnabled(true);
-                    PushForm.pushForm.getPushStartButton().setEnabled(true);
-                    PushForm.pushForm.getPushStopButton().setEnabled(false);
-                    PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
-                    return;
-                }
+                    if (StringUtils.isEmpty(txyunAppId) || StringUtils.isEmpty(txyunAppKey)) {
+                        JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
+                                "请先在设置中填写并保存腾讯云短信相关配置！", "提示",
+                                JOptionPane.INFORMATION_MESSAGE);
+                        PushForm.pushForm.getScheduleRunButton().setEnabled(true);
+                        PushForm.pushForm.getPushStartButton().setEnabled(true);
+                        PushForm.pushForm.getPushStopButton().setEnabled(false);
+                        PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
+                        return;
+                    }
+                    thread = new TxYunSmsMsgThread(startIndex, endIndex);
+                    break;
+                case MessageTypeEnum.YUN_PIAN_CODE:
+                    String yunpianApiKey = App.config.getYunpianApiKey();
+                    if (StringUtils.isEmpty(yunpianApiKey)) {
+                        JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
+                                "请先在设置中填写并保存云片网短信相关配置！", "提示",
+                                JOptionPane.INFORMATION_MESSAGE);
+                        PushForm.pushForm.getScheduleRunButton().setEnabled(true);
+                        PushForm.pushForm.getPushStartButton().setEnabled(true);
+                        PushForm.pushForm.getPushStopButton().setEnabled(false);
+                        PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
+                        return;
+                    }
 
-                thread = new YunpianSmsMsgThread(startIndex, endIndex);
+                    thread = new YunpianSmsMsgThread(startIndex, endIndex);
+                    break;
+                default:
             }
 
             thread.setTableRow(i);
@@ -233,22 +247,16 @@ public class PushRunThread extends Thread {
 
             threadPoolExecutor.execute(thread);
         }
-        PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
-        ConsoleUtil.consoleWithLog("所有线程宝宝启动完毕……");
-
-        timeKeeper(threadCount);
     }
 
     /**
      * 时间监控
-     *
-     * @param threadCount
      */
-    private void timeKeeper(int threadCount) {
+    private void timeKeeper() {
         long startTimeMillis = System.currentTimeMillis();
         // 计时
         while (true) {
-            if (PushData.stopedThreadCount.intValue() == threadCount) {
+            if (PushData.stopedThreadCount.intValue() == PushData.threadCount) {
                 if (!PushData.fixRateScheduling) {
                     PushForm.pushForm.getPushStopButton().setEnabled(false);
                     PushForm.pushForm.getPushStopButton().updateUI();

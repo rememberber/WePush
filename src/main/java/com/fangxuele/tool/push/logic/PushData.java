@@ -2,6 +2,7 @@ package com.fangxuele.tool.push.logic;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.LongAdder;
 
@@ -94,6 +95,20 @@ public class PushData {
      */
     public static void increaseStopedThread() {
         stopedThreadCount.add(1);
+    }
+
+    /**
+     * 重置推送数据
+     */
+    public static void reset() {
+        PushData.running = true;
+        PushData.successRecords.reset();
+        PushData.failRecords.reset();
+        PushData.stopedThreadCount.reset();
+        PushData.threadCount = 0;
+        PushData.toSendList = Collections.synchronizedList(new LinkedList<>());
+        PushData.sendSuccessList = Collections.synchronizedList(new LinkedList<>());
+        PushData.sendFailList = Collections.synchronizedList(new LinkedList<>());
     }
 
 }
