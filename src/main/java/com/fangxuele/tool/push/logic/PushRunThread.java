@@ -95,14 +95,114 @@ public class PushRunThread extends Thread {
         hr.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
         PushForm.pushForm.getPushThreadTable().updateUI();
 
-        // 消息数据分片以及线程纷发
-        shardingAndMsgThread();
+        if (pushRunCheck()) {
+            // 消息数据分片以及线程纷发
+            shardingAndMsgThread();
+            // 时间监控
+            timeKeeper();
+        }
 
         PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
         ConsoleUtil.consoleWithLog("所有线程宝宝启动完毕……");
+    }
 
-        // 时间监控
-        timeKeeper();
+    private static boolean pushRunCheck() {
+        int msgType = App.config.getMsgType();
+        switch (msgType) {
+            case MessageTypeEnum.MP_TEMPLATE_CODE: {
+                WxMpService wxMpService = PushControl.getWxMpService();
+                if (wxMpService == null || wxMpService.getWxMpConfigStorage() == null) {
+                    return false;
+                }
+                break;
+            }
+            case MessageTypeEnum.MA_TEMPLATE_CODE:
+
+                WxMaService wxMaService = PushControl.getWxMaService();
+                if (wxMaService == null || wxMaService.getWxMaConfig() == null) {
+                    return false;
+                }
+                break;
+            case MessageTypeEnum.KEFU_CODE: {
+
+                WxMpService wxMpService = PushControl.getWxMpService();
+                if (wxMpService.getWxMpConfigStorage() == null) {
+                    return false;
+                }
+                break;
+            }
+            case MessageTypeEnum.KEFU_PRIORITY_CODE: {
+
+                WxMpService wxMpService = PushControl.getWxMpService();
+                if (wxMpService.getWxMpConfigStorage() == null) {
+                    return false;
+                }
+                break;
+            }
+            case MessageTypeEnum.ALI_TEMPLATE_CODE:
+                String aliServerUrl = App.config.getAliServerUrl();
+                String aliAppKey = App.config.getAliAppKey();
+                String aliAppSecret = App.config.getAliAppSecret();
+
+                if (StringUtils.isEmpty(aliServerUrl) || StringUtils.isEmpty(aliAppKey)
+                        || StringUtils.isEmpty(aliAppSecret)) {
+                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
+                            "请先在设置中填写并保存阿里大于相关配置！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    PushForm.pushForm.getScheduleRunButton().setEnabled(true);
+                    PushForm.pushForm.getPushStartButton().setEnabled(true);
+                    PushForm.pushForm.getPushStopButton().setEnabled(false);
+                    PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
+                    return false;
+                }
+                break;
+            case MessageTypeEnum.ALI_YUN_CODE:
+                String aliyunAccessKeyId = App.config.getAliyunAccessKeyId();
+                String aliyunAccessKeySecret = App.config.getAliyunAccessKeySecret();
+
+                if (StringUtils.isEmpty(aliyunAccessKeyId) || StringUtils.isEmpty(aliyunAccessKeySecret)) {
+                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
+                            "请先在设置中填写并保存阿里云短信相关配置！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    PushForm.pushForm.getScheduleRunButton().setEnabled(true);
+                    PushForm.pushForm.getPushStartButton().setEnabled(true);
+                    PushForm.pushForm.getPushStopButton().setEnabled(false);
+                    PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
+                    return false;
+                }
+                break;
+            case MessageTypeEnum.TX_YUN_CODE:
+                String txyunAppId = App.config.getTxyunAppId();
+                String txyunAppKey = App.config.getTxyunAppKey();
+
+                if (StringUtils.isEmpty(txyunAppId) || StringUtils.isEmpty(txyunAppKey)) {
+                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
+                            "请先在设置中填写并保存腾讯云短信相关配置！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    PushForm.pushForm.getScheduleRunButton().setEnabled(true);
+                    PushForm.pushForm.getPushStartButton().setEnabled(true);
+                    PushForm.pushForm.getPushStopButton().setEnabled(false);
+                    PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
+                    return false;
+                }
+                break;
+            case MessageTypeEnum.YUN_PIAN_CODE:
+                String yunpianApiKey = App.config.getYunpianApiKey();
+                if (StringUtils.isEmpty(yunpianApiKey)) {
+                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
+                            "请先在设置中填写并保存云片网短信相关配置！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    PushForm.pushForm.getScheduleRunButton().setEnabled(true);
+                    PushForm.pushForm.getPushStartButton().setEnabled(true);
+                    PushForm.pushForm.getPushStopButton().setEnabled(false);
+                    PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
+                    return false;
+                }
+
+                break;
+            default:
+        }
+        return true;
     }
 
     /**
@@ -131,106 +231,37 @@ public class PushRunThread extends Thread {
             switch (msgType) {
                 case MessageTypeEnum.MP_TEMPLATE_CODE: {
                     thread = new MpTemplateMsgThread(startIndex, endIndex);
-
                     WxMpService wxMpService = PushControl.getWxMpService();
-                    if (wxMpService == null || wxMpService.getWxMpConfigStorage() == null) {
-                        return;
-                    }
                     thread.setWxMpService(wxMpService);
                     break;
                 }
                 case MessageTypeEnum.MA_TEMPLATE_CODE:
                     thread = new MaTemplateMsgThread(startIndex, endIndex);
-
                     WxMaService wxMaService = PushControl.getWxMaService();
-                    if (wxMaService == null || wxMaService.getWxMaConfig() == null) {
-                        return;
-                    }
                     ((MaTemplateMsgThread) thread).setWxMaService(wxMaService);
                     break;
                 case MessageTypeEnum.KEFU_CODE: {
                     thread = new KeFuMsgThread(startIndex, endIndex);
-
                     WxMpService wxMpService = PushControl.getWxMpService();
-                    if (wxMpService.getWxMpConfigStorage() == null) {
-                        return;
-                    }
                     thread.setWxMpService(wxMpService);
                     break;
                 }
                 case MessageTypeEnum.KEFU_PRIORITY_CODE: {
                     thread = new KeFuPriorMsgThread(startIndex, endIndex);
-
                     WxMpService wxMpService = PushControl.getWxMpService();
-                    if (wxMpService.getWxMpConfigStorage() == null) {
-                        return;
-                    }
                     thread.setWxMpService(wxMpService);
                     break;
                 }
                 case MessageTypeEnum.ALI_TEMPLATE_CODE:
-                    String aliServerUrl = App.config.getAliServerUrl();
-                    String aliAppKey = App.config.getAliAppKey();
-                    String aliAppSecret = App.config.getAliAppSecret();
-
-                    if (StringUtils.isEmpty(aliServerUrl) || StringUtils.isEmpty(aliAppKey)
-                            || StringUtils.isEmpty(aliAppSecret)) {
-                        JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
-                                "请先在设置中填写并保存阿里大于相关配置！", "提示",
-                                JOptionPane.INFORMATION_MESSAGE);
-                        PushForm.pushForm.getScheduleRunButton().setEnabled(true);
-                        PushForm.pushForm.getPushStartButton().setEnabled(true);
-                        PushForm.pushForm.getPushStopButton().setEnabled(false);
-                        PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
-                        return;
-                    }
                     thread = new AliDayuTemplateSmsMsgThread(startIndex, endIndex);
                     break;
                 case MessageTypeEnum.ALI_YUN_CODE:
-                    String aliyunAccessKeyId = App.config.getAliyunAccessKeyId();
-                    String aliyunAccessKeySecret = App.config.getAliyunAccessKeySecret();
-
-                    if (StringUtils.isEmpty(aliyunAccessKeyId) || StringUtils.isEmpty(aliyunAccessKeySecret)) {
-                        JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
-                                "请先在设置中填写并保存阿里云短信相关配置！", "提示",
-                                JOptionPane.INFORMATION_MESSAGE);
-                        PushForm.pushForm.getScheduleRunButton().setEnabled(true);
-                        PushForm.pushForm.getPushStartButton().setEnabled(true);
-                        PushForm.pushForm.getPushStopButton().setEnabled(false);
-                        PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
-                        return;
-                    }
                     thread = new AliYunSmsMsgThread(startIndex, endIndex);
                     break;
                 case MessageTypeEnum.TX_YUN_CODE:
-                    String txyunAppId = App.config.getTxyunAppId();
-                    String txyunAppKey = App.config.getTxyunAppKey();
-
-                    if (StringUtils.isEmpty(txyunAppId) || StringUtils.isEmpty(txyunAppKey)) {
-                        JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
-                                "请先在设置中填写并保存腾讯云短信相关配置！", "提示",
-                                JOptionPane.INFORMATION_MESSAGE);
-                        PushForm.pushForm.getScheduleRunButton().setEnabled(true);
-                        PushForm.pushForm.getPushStartButton().setEnabled(true);
-                        PushForm.pushForm.getPushStopButton().setEnabled(false);
-                        PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
-                        return;
-                    }
                     thread = new TxYunSmsMsgThread(startIndex, endIndex);
                     break;
                 case MessageTypeEnum.YUN_PIAN_CODE:
-                    String yunpianApiKey = App.config.getYunpianApiKey();
-                    if (StringUtils.isEmpty(yunpianApiKey)) {
-                        JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
-                                "请先在设置中填写并保存云片网短信相关配置！", "提示",
-                                JOptionPane.INFORMATION_MESSAGE);
-                        PushForm.pushForm.getScheduleRunButton().setEnabled(true);
-                        PushForm.pushForm.getPushStartButton().setEnabled(true);
-                        PushForm.pushForm.getPushStopButton().setEnabled(false);
-                        PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
-                        return;
-                    }
-
                     thread = new YunpianSmsMsgThread(startIndex, endIndex);
                     break;
                 default:
