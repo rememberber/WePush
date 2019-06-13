@@ -44,68 +44,26 @@ public class PushRunThread extends Thread {
 
     @Override
     public void run() {
-        PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(true);
-
-        PushForm.pushForm.getPushStopButton().setText("停止");
-        // 初始化
-        PushForm.pushForm.getPushSuccessCount().setText("0");
-        PushForm.pushForm.getPushFailCount().setText("0");
-
-        // 重置推送数据
-        PushData.reset();
-
-        // 拷贝准备的目标用户
-        PushData.toSendList.addAll(PushData.allUser);
-        // 总记录数
-        PushData.totalRecords = PushData.toSendList.size();
-
-        PushForm.pushForm.getPushTotalCountLabel().setText("消息总数：" + PushData.totalRecords);
-        PushForm.pushForm.getPushTotalProgressBar().setMaximum((int) PushData.totalRecords);
-        ConsoleUtil.consoleWithLog("消息总数：" + PushData.totalRecords);
-        // 可用处理器核心数量
-        PushForm.pushForm.getAvailableProcessorLabel().setText("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
-        ConsoleUtil.consoleWithLog("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
-
-        // 线程数
-        App.config.setThreadCount(Integer.parseInt(PushForm.pushForm.getThreadCountTextField().getText()));
-        App.config.save();
-        ConsoleUtil.consoleWithLog("线程数：" + PushForm.pushForm.getThreadCountTextField().getText());
-
-        // 线程池大小
-        App.config.setMaxThreadPool(Integer.parseInt(PushForm.pushForm.getMaxThreadPoolTextField().getText()));
-        App.config.save();
-        ConsoleUtil.consoleWithLog("线程池大小：" + PushForm.pushForm.getMaxThreadPoolTextField().getText());
-
-        // 准备消息构造器
-        PushControl.prepareMsgMaker();
-
-        // 线程数
-        PushData.threadCount = Integer.parseInt(PushForm.pushForm.getThreadCountTextField().getText());
-
-        // 初始化线程table
-        String[] headerNames = {"线程", "分片区间", "成功", "失败", "总数", "当前进度"};
-        DefaultTableModel tableModel = new DefaultTableModel(null, headerNames);
-        PushForm.pushForm.getPushThreadTable().setModel(tableModel);
-        PushForm.pushForm.getPushThreadTable().getColumn("当前进度").setCellRenderer(new TableInCellProgressBarRenderer());
-
-        DefaultTableCellRenderer hr = (DefaultTableCellRenderer) PushForm.pushForm.getPushThreadTable().getTableHeader()
-                .getDefaultRenderer();
-        // 表头列名居左
-        hr.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
-        PushForm.pushForm.getPushThreadTable().updateUI();
-
         if (pushRunCheck()) {
+            PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(true);
+
+            // 准备推送
+            preparePushRun();
             ConsoleUtil.consoleWithLog("推送开始……");
             // 消息数据分片以及线程纷发
             shardingAndMsgThread();
             // 时间监控
-            timeKeeper();
+            timeMonitor();
+
+            PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
         }
 
-        PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
-        ConsoleUtil.consoleWithLog("所有线程宝宝启动完毕……");
     }
 
+    /**
+     * 推送前检查
+     * @return
+     */
     private static boolean pushRunCheck() {
         int msgType = App.config.getMsgType();
         switch (msgType) {
@@ -117,14 +75,12 @@ public class PushRunThread extends Thread {
                 break;
             }
             case MessageTypeEnum.MA_TEMPLATE_CODE:
-
                 WxMaService wxMaService = PushControl.getWxMaService();
                 if (wxMaService == null || wxMaService.getWxMaConfig() == null) {
                     return false;
                 }
                 break;
             case MessageTypeEnum.KEFU_CODE: {
-
                 WxMpService wxMpService = PushControl.getWxMpService();
                 if (wxMpService.getWxMpConfigStorage() == null) {
                     return false;
@@ -132,7 +88,6 @@ public class PushRunThread extends Thread {
                 break;
             }
             case MessageTypeEnum.KEFU_PRIORITY_CODE: {
-
                 WxMpService wxMpService = PushControl.getWxMpService();
                 if (wxMpService.getWxMpConfigStorage() == null) {
                     return false;
@@ -203,6 +158,59 @@ public class PushRunThread extends Thread {
             default:
         }
         return true;
+    }
+
+    /**
+     * 准备推送
+     */
+    private void preparePushRun() {
+        PushForm.pushForm.getPushStopButton().setText("停止");
+        // 初始化
+        PushForm.pushForm.getPushSuccessCount().setText("0");
+        PushForm.pushForm.getPushFailCount().setText("0");
+
+        // 重置推送数据
+        PushData.reset();
+
+        // 拷贝准备的目标用户
+        PushData.toSendList.addAll(PushData.allUser);
+        // 总记录数
+        PushData.totalRecords = PushData.toSendList.size();
+
+        PushForm.pushForm.getPushTotalCountLabel().setText("消息总数：" + PushData.totalRecords);
+        PushForm.pushForm.getPushTotalProgressBar().setMaximum((int) PushData.totalRecords);
+        ConsoleUtil.consoleWithLog("消息总数：" + PushData.totalRecords);
+        // 可用处理器核心数量
+        PushForm.pushForm.getAvailableProcessorLabel().setText("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
+        ConsoleUtil.consoleWithLog("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
+
+        // 线程数
+        App.config.setThreadCount(Integer.parseInt(PushForm.pushForm.getThreadCountTextField().getText()));
+        App.config.save();
+        ConsoleUtil.consoleWithLog("线程数：" + PushForm.pushForm.getThreadCountTextField().getText());
+
+        // 线程池大小
+        App.config.setMaxThreadPool(Integer.parseInt(PushForm.pushForm.getMaxThreadPoolTextField().getText()));
+        App.config.save();
+        ConsoleUtil.consoleWithLog("线程池大小：" + PushForm.pushForm.getMaxThreadPoolTextField().getText());
+
+        // 准备消息构造器
+        PushControl.prepareMsgMaker();
+
+        // 线程数
+        PushData.threadCount = Integer.parseInt(PushForm.pushForm.getThreadCountTextField().getText());
+
+        // 初始化线程table
+        String[] headerNames = {"线程", "分片区间", "成功", "失败", "总数", "当前进度"};
+        DefaultTableModel tableModel = new DefaultTableModel(null, headerNames);
+        PushForm.pushForm.getPushThreadTable().setModel(tableModel);
+        PushForm.pushForm.getPushThreadTable().getColumn("当前进度").setCellRenderer(new TableInCellProgressBarRenderer());
+
+        DefaultTableCellRenderer hr = (DefaultTableCellRenderer) PushForm.pushForm.getPushThreadTable().getTableHeader()
+                .getDefaultRenderer();
+        // 表头列名居左
+        hr.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
+        PushForm.pushForm.getPushThreadTable().updateUI();
     }
 
     /**
@@ -278,12 +286,13 @@ public class PushRunThread extends Thread {
 
             threadPoolExecutor.execute(thread);
         }
+        ConsoleUtil.consoleWithLog("所有线程宝宝启动完毕……");
     }
 
     /**
      * 时间监控
      */
-    private void timeKeeper() {
+    private void timeMonitor() {
         long startTimeMillis = System.currentTimeMillis();
         // 计时
         while (true) {
@@ -291,12 +300,16 @@ public class PushRunThread extends Thread {
                 if (!PushData.fixRateScheduling) {
                     PushForm.pushForm.getPushStopButton().setEnabled(false);
                     PushForm.pushForm.getPushStopButton().updateUI();
-                }
-
-                String finishTip = "发送完毕！\n";
-                if (!PushData.fixRateScheduling) {
+                    PushForm.pushForm.getPushStartButton().setEnabled(true);
+                    PushForm.pushForm.getPushStartButton().updateUI();
+                    PushForm.pushForm.getScheduleRunButton().setEnabled(true);
+                    PushForm.pushForm.getScheduleRunButton().updateUI();
+                    PushForm.pushForm.getScheduleDetailLabel().setText("");
+                    String finishTip = "发送完毕！\n";
                     JOptionPane.showMessageDialog(PushForm.pushForm.getPushPanel(), finishTip, "提示",
                             JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    PushForm.pushForm.getPushStopButton().setText("停止计划任务");
                 }
 
                 // 保存停止前的数据
@@ -313,18 +326,6 @@ public class PushRunThread extends Thread {
                 } finally {
                     PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
                 }
-
-                if (!PushData.fixRateScheduling) {
-                    PushForm.pushForm.getPushStartButton().setEnabled(true);
-                    PushForm.pushForm.getScheduleRunButton().setEnabled(true);
-                    PushForm.pushForm.getPushStartButton().updateUI();
-                    PushForm.pushForm.getScheduleRunButton().updateUI();
-
-                    PushForm.pushForm.getScheduleDetailLabel().setText("");
-                } else {
-                    PushForm.pushForm.getPushStopButton().setText("停止计划任务");
-                }
-
                 break;
             }
 
@@ -332,9 +333,11 @@ public class PushRunThread extends Thread {
             long lastTimeMillis = currentTimeMillis - startTimeMillis;
             long leftTimeMillis = (long) ((double) lastTimeMillis / (PushData.sendSuccessList.size() + PushData.sendFailList.size()) * (PushData.allUser.size() - PushData.sendSuccessList.size() - PushData.sendFailList.size()));
 
+            // 耗时
             String formatBetweenLast = DateUtil.formatBetween(lastTimeMillis, BetweenFormater.Level.SECOND);
             PushForm.pushForm.getPushLastTimeLabel().setText("".equals(formatBetweenLast) ? "0s" : formatBetweenLast);
 
+            // 预计剩余
             String formatBetweenLeft = DateUtil.formatBetween(leftTimeMillis, BetweenFormater.Level.SECOND);
             PushForm.pushForm.getPushLeftTimeLabel().setText("".equals(formatBetweenLeft) ? "0s" : formatBetweenLeft);
 
