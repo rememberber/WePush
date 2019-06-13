@@ -335,6 +335,13 @@ public class PushListener {
      * @return boolean
      */
     private static boolean checkBeforePush() {
+        if (StringUtils.isEmpty(MessageEditForm.messageEditForm.getMsgNameField().getText())) {
+            JOptionPane.showMessageDialog(pushPanel, "请先选择一条消息！", "提示",
+                    JOptionPane.INFORMATION_MESSAGE);
+            MainWindow.mainWindow.getTabbedPane().setSelectedIndex(2);
+
+            return false;
+        }
         if (PushData.allUser == null || PushData.allUser.size() == 0) {
             JOptionPane.showMessageDialog(pushPanel, "请先准备目标用户！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
@@ -353,14 +360,6 @@ public class PushListener {
 
             return false;
         }
-        if (StringUtils.isEmpty(MessageEditForm.messageEditForm.getMsgNameField().getText())) {
-            JOptionPane.showMessageDialog(pushPanel, "请先选择一条消息！", "提示",
-                    JOptionPane.INFORMATION_MESSAGE);
-            MainWindow.mainWindow.getTabbedPane().setSelectedIndex(2);
-
-            return false;
-        }
-
         return true;
     }
 
