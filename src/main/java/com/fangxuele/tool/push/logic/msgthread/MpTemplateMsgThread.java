@@ -61,7 +61,7 @@ public class MpTemplateMsgThread extends BaseMsgThread {
 
                 // 当前线程发送成功+1
                 currentThreadSuccessCount++;
-                tableModel.setValueAt(currentThreadSuccessCount, tableRow, 2);
+                pushThreadTable.setValueAt(currentThreadSuccessCount, tableRow, 2);
 
                 // 保存发送成功
                 PushData.sendSuccessList.add(msgData);
@@ -78,10 +78,10 @@ public class MpTemplateMsgThread extends BaseMsgThread {
 
                 // 当前线程发送失败+1
                 currentThreadFailCount++;
-                tableModel.setValueAt(currentThreadFailCount, tableRow, 3);
+                pushThreadTable.setValueAt(currentThreadFailCount, tableRow, 3);
             }
             // 当前线程进度条
-            tableModel.setValueAt((int) ((double) (i + 1) / list.size() * 100), tableRow, 5);
+            pushThreadTable.setValueAt((int) ((double) (i + 1) / list.size() * 100), tableRow, 5);
 
             // 总进度条
             PushForm.pushForm.getPushTotalProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
