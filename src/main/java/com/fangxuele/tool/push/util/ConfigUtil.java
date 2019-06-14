@@ -52,6 +52,8 @@ public class ConfigUtil {
 
     private boolean autoCheckUpdate;
 
+    private long pushTotal;
+
     private String beforeVersion;
 
     private String wechatMpName;
@@ -280,6 +282,14 @@ public class ConfigUtil {
 
     public void setAutoCheckUpdate(boolean autoCheckUpdate) {
         setting.put("setting.normal", "autoCheckUpdate", String.valueOf(autoCheckUpdate));
+    }
+
+    public long getPushTotal() {
+        return setting.getLong("pushTotal", "setting.normal", 0L);
+    }
+
+    public void setPushTotal(long pushTotal) {
+        setting.put("setting.normal", "pushTotal", String.valueOf(pushTotal));
     }
 
     public String getBeforeVersion() {

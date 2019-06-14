@@ -1,19 +1,25 @@
-package com.fangxuele.tool.push.logic;
+package com.fangxuele.tool.push.logic.msgthread;
 
-import com.aliyuncs.IAcsClient;
-import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
-import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
+import com.fangxuele.tool.push.logic.PushControl;
+import com.fangxuele.tool.push.logic.PushData;
+import com.fangxuele.tool.push.logic.msgmaker.YunPianMsgMaker;
 import com.fangxuele.tool.push.ui.form.PushForm;
+import com.fangxuele.tool.push.util.ConsoleUtil;
+import com.yunpian.sdk.YunpianClient;
+import com.yunpian.sdk.model.Result;
+import com.yunpian.sdk.model.SmsSingleSend;
+
+import java.util.Map;
 
 /**
  * <pre>
- * 阿里云短信发送服务线程
+ * 云片网短信发送服务线程
  * </pre>
  *
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
- * @since 2018/3/16.
+ * @since 2018/7/13.
  */
-public class AliYunSmsMsgServiceThread extends BaseMsgServiceThread {
+public class YunpianSmsMsgThread extends BaseMsgThread {
 
     /**
      * 构造函数
@@ -21,22 +27,18 @@ public class AliYunSmsMsgServiceThread extends BaseMsgServiceThread {
      * @param startIndex 起始索引
      * @param endIndex   截止索引
      */
-    public AliYunSmsMsgServiceThread(int startIndex, int endIndex) {
+    public YunpianSmsMsgThread(int startIndex, int endIndex) {
         super(startIndex, endIndex);
     }
 
     @Override
     public void run() {
+
         // 初始化当前线程
         initCurrentThread();
 
-        //初始化acsClient,暂不支持region化
-        IAcsClient acsClient = PushManage.getAliyunIAcsClient();
-
-        // 组织模板消息
-        SendSmsRequest sendSmsRequest;
-
-        SendSmsResponse response;
+        YunpianClient yunpianClient = PushControl.getYunpianClient();
+        YunPianMsgMaker yunPianMsgMaker = new YunPianMsgMaker();
 
         for (int i = 0; i < list.size(); i++) {
             if (!PushData.running) {
@@ -49,13 +51,14 @@ public class AliYunSmsMsgServiceThread extends BaseMsgServiceThread {
             String[] msgData = list.get(i);
             String telNum = msgData[0];
             try {
-                sendSmsRequest = MessageMaker.makeAliyunMessage(msgData);
-                sendSmsRequest.setPhoneNumbers(telNum);
+                Map<String, String> params = yunPianMsgMaker.makeMsg(msgData);
+                params.put(YunpianClient.MOBILE, telNum);
 
                 // 空跑控制
                 if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
-                    response = acsClient.getAcsResponse(sendSmsRequest);
-                    if (response.getCode() != null && "OK".equals(response.getCode())) {
+                    Result<SmsSingleSend> result = yunpianClient.sms().single_send(params);
+
+                    if (result.getCode() == 0) {
                         // 总发送成功+1
                         PushData.increaseSuccess();
                         PushForm.pushForm.getPushSuccessCount().setText(String.valueOf(PushData.successRecords));
@@ -75,8 +78,8 @@ public class AliYunSmsMsgServiceThread extends BaseMsgServiceThread {
                         PushData.sendFailList.add(msgData);
 
                         // 失败异常信息输出控制台
-                        PushManage.console("发送失败:" + response.getMessage() + ";ErrorCode:" +
-                                response.getCode() + ";telNum:" + telNum);
+                        ConsoleUtil.consoleWithLog(new StringBuffer().append("发送失败:").append(result.toString())
+                                .append(";telNum:").append(telNum).toString());
 
                         // 当前线程发送失败+1
                         currentThreadFailCount++;
@@ -104,7 +107,7 @@ public class AliYunSmsMsgServiceThread extends BaseMsgServiceThread {
                 PushData.sendFailList.add(msgData);
 
                 // 失败异常信息输出控制台
-                PushManage.console("发送失败:" + e.getMessage() + ";telNum:" + telNum);
+                ConsoleUtil.consoleWithLog("发送失败:" + e.getMessage() + ";telNum:" + telNum);
 
                 // 当前线程发送失败+1
                 currentThreadFailCount++;

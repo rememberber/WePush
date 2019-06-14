@@ -1,8 +1,10 @@
-package com.fangxuele.tool.push.logic;
+package com.fangxuele.tool.push.logic.msgthread;
 
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
+import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.ui.form.PushForm;
+import com.fangxuele.tool.push.util.ConsoleUtil;
 import me.chanjar.weixin.mp.api.WxMpService;
 
 import javax.swing.table.DefaultTableModel;
@@ -16,7 +18,7 @@ import java.util.List;
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
  * @since 2017/3/29.
  */
-public class BaseMsgServiceThread extends Thread {
+public class BaseMsgThread extends Thread {
 
     public static final Log logger = LogFactory.get();
 
@@ -43,17 +45,17 @@ public class BaseMsgServiceThread extends Thread {
     /**
      * 微信工具服务
      */
-    WxMpService wxMpService;
+    public WxMpService wxMpService;
 
     /**
      * 当前线程成功数
      */
-    int currentThreadSuccessCount;
+    public int currentThreadSuccessCount;
 
     /**
      * 当前线程失败数
      */
-    int currentThreadFailCount;
+    public int currentThreadFailCount;
 
     /**
      * 线程列表tableModel
@@ -63,7 +65,7 @@ public class BaseMsgServiceThread extends Thread {
     /**
      * 当前线程所在的线程列表行
      */
-    int tableRow;
+    public int tableRow;
 
     /**
      * 构造函数
@@ -71,7 +73,7 @@ public class BaseMsgServiceThread extends Thread {
      * @param start 起始页
      * @param end   截止页
      */
-    public BaseMsgServiceThread(int start, int end) {
+    public BaseMsgThread(int start, int end) {
         this.startIndex = start;
         this.endIndex = end;
     }
@@ -84,8 +86,8 @@ public class BaseMsgServiceThread extends Thread {
     /**
      * 初始化当前线程
      */
-    void initCurrentThread() {
-        PushManage.console("线程" + this.getName() + "负责处理第:" + startIndex + "-" +
+    public void initCurrentThread() {
+        ConsoleUtil.consoleWithLog("线程" + this.getName() + "负责处理第:" + startIndex + "-" +
                 endIndex + "条的数据");
 
         list = PushData.toSendList.subList(startIndex, endIndex);
@@ -103,8 +105,8 @@ public class BaseMsgServiceThread extends Thread {
     /**
      * 当前线程结束
      */
-    void currentThreadFinish() {
-        PushManage.console(this.getName() + "已处理完第" + startIndex + "-" +
+    public void currentThreadFinish() {
+        ConsoleUtil.consoleWithLog(this.getName() + "已处理完第" + startIndex + "-" +
                 endIndex + "条的数据");
 
         PushData.increaseStopedThread();
@@ -114,7 +116,7 @@ public class BaseMsgServiceThread extends Thread {
         return wxMpService;
     }
 
-    void setWxMpService(WxMpService wxMpService) {
+    public void setWxMpService(WxMpService wxMpService) {
         this.wxMpService = wxMpService;
     }
 
@@ -146,7 +148,7 @@ public class BaseMsgServiceThread extends Thread {
         return tableRow;
     }
 
-    void setTableRow(int tableRow) {
+    public void setTableRow(int tableRow) {
         this.tableRow = tableRow;
     }
 }

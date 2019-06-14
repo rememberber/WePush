@@ -5,8 +5,6 @@ import cn.binarywang.wx.miniapp.api.impl.WxMaServiceImpl;
 import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
 import cn.binarywang.wx.miniapp.config.WxMaInMemoryConfig;
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.log.Log;
-import cn.hutool.log.LogFactory;
 import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.IAcsClient;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
@@ -16,6 +14,13 @@ import com.aliyuncs.profile.DefaultProfile;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPushHistoryMapper;
 import com.fangxuele.tool.push.domain.TPushHistory;
+import com.fangxuele.tool.push.logic.msgmaker.AliTemplateMsgMaker;
+import com.fangxuele.tool.push.logic.msgmaker.AliyunMsgMaker;
+import com.fangxuele.tool.push.logic.msgmaker.TxYunMsgMaker;
+import com.fangxuele.tool.push.logic.msgmaker.WxKefuMsgMaker;
+import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
+import com.fangxuele.tool.push.logic.msgmaker.WxMaTemplateMsgMaker;
+import com.fangxuele.tool.push.logic.msgmaker.YunPianMsgMaker;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
@@ -53,15 +58,13 @@ import java.util.Map;
 
 /**
  * <pre>
- * 推送管理
+ * 推送控制
  * </pre>
  *
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
  * @since 2017/6/19.
  */
-public class PushManage {
-
-    private static final Log logger = LogFactory.get();
+public class PushControl {
 
     private static TPushHistoryMapper pushHistoryMapper = MybatisUtil.getSqlSession().getMapper(TPushHistoryMapper.class);
 
@@ -110,13 +113,16 @@ public class PushManage {
             msgDataList.add(data.split(MemberListener.TXT_FILE_DATA_SEPERATOR_REGEX));
         }
 
+        // 准备消息构造器
+        prepareMsgMaker();
         switch (App.config.getMsgType()) {
             case MessageTypeEnum.MP_TEMPLATE_CODE:
                 WxMpTemplateMessage wxMessageTemplate;
                 WxMpService wxMpService = getWxMpService();
+                WxMpTemplateMsgMaker wxMpTemplateMsgMaker = new WxMpTemplateMsgMaker();
 
                 for (String[] msgData : msgDataList) {
-                    wxMessageTemplate = MessageMaker.makeMpTemplateMessage(msgData);
+                    wxMessageTemplate = wxMpTemplateMsgMaker.makeMsg(msgData);
                     wxMessageTemplate.setToUser(msgData[0].trim());
                     // ！！！发送模板消息！！！
                     wxMpService.getTemplateMsgService().sendTemplateMsg(wxMessageTemplate);
@@ -125,9 +131,10 @@ public class PushManage {
             case MessageTypeEnum.MA_TEMPLATE_CODE:
                 WxMaTemplateMessage wxMaMessageTemplate;
                 WxMaService wxMaService = getWxMaService();
+                WxMaTemplateMsgMaker wxMaTemplateMsgMaker = new WxMaTemplateMsgMaker();
 
                 for (String[] msgData : msgDataList) {
-                    wxMaMessageTemplate = MessageMaker.makeMaTemplateMessage(msgData);
+                    wxMaMessageTemplate = wxMaTemplateMsgMaker.makeMsg(msgData);
                     wxMaMessageTemplate.setToUser(msgData[0].trim());
                     wxMaMessageTemplate.setFormId(msgData[1].trim());
                     // ！！！发送小程序模板消息！！！
@@ -137,9 +144,10 @@ public class PushManage {
             case MessageTypeEnum.KEFU_CODE:
                 wxMpService = getWxMpService();
                 WxMpKefuMessage wxMpKefuMessage;
+                WxKefuMsgMaker wxKefuMsgMaker = new WxKefuMsgMaker();
 
                 for (String[] msgData : msgDataList) {
-                    wxMpKefuMessage = MessageMaker.makeKefuMessage(msgData);
+                    wxMpKefuMessage = wxKefuMsgMaker.makeMsg(msgData);
                     wxMpKefuMessage.setToUser(msgData[0]);
                     // ！！！发送客服消息！！！
                     wxMpService.getKefuService().sendKefuMessage(wxMpKefuMessage);
@@ -147,15 +155,17 @@ public class PushManage {
                 break;
             case MessageTypeEnum.KEFU_PRIORITY_CODE:
                 wxMpService = getWxMpService();
+                wxKefuMsgMaker = new WxKefuMsgMaker();
+                wxMpTemplateMsgMaker = new WxMpTemplateMsgMaker();
 
                 for (String[] msgData : msgDataList) {
                     try {
-                        wxMpKefuMessage = MessageMaker.makeKefuMessage(msgData);
+                        wxMpKefuMessage = wxKefuMsgMaker.makeMsg(msgData);
                         wxMpKefuMessage.setToUser(msgData[0]);
                         // ！！！发送客服消息！！！
                         wxMpService.getKefuService().sendKefuMessage(wxMpKefuMessage);
                     } catch (Exception e) {
-                        wxMessageTemplate = MessageMaker.makeMpTemplateMessage(msgData);
+                        wxMessageTemplate = wxMpTemplateMsgMaker.makeMsg(msgData);
                         wxMessageTemplate.setToUser(msgData[0].trim());
                         // ！！！发送模板消息！！！
                         wxMpService.getTemplateMsgService().sendTemplateMsg(wxMessageTemplate);
@@ -174,8 +184,9 @@ public class PushManage {
                 }
 
                 IAcsClient acsClient = getAliyunIAcsClient();
+                AliyunMsgMaker aliyunMsgMaker = new AliyunMsgMaker();
                 for (String[] msgData : msgDataList) {
-                    SendSmsRequest request = MessageMaker.makeAliyunMessage(msgData);
+                    SendSmsRequest request = aliyunMsgMaker.makeMsg(msgData);
                     request.setPhoneNumbers(msgData[0]);
                     SendSmsResponse response = acsClient.getAcsResponse(request);
 
@@ -197,9 +208,10 @@ public class PushManage {
                 }
 
                 SmsSingleSender smsSingleSender = getTxYunSender();
+                TxYunMsgMaker txYunMsgMaker = new TxYunMsgMaker();
 
                 for (String[] msgData : msgDataList) {
-                    String[] params = MessageMaker.makeTxyunMessage(msgData);
+                    String[] params = txYunMsgMaker.makeMsg(msgData);
                     SmsSingleSenderResult result = smsSingleSender.sendWithParam("86", msgData[0],
                             Integer.valueOf(TxYunMsgForm.txYunMsgForm.getMsgTemplateIdTextField().getText()),
                             params, App.config.getAliyunSign(), "", "");
@@ -222,8 +234,9 @@ public class PushManage {
                 }
 
                 TaobaoClient client = getTaobaoClient();
+                AliTemplateMsgMaker aliTemplateMsgMaker = new AliTemplateMsgMaker();
                 for (String[] msgData : msgDataList) {
-                    AlibabaAliqinFcSmsNumSendRequest request = MessageMaker.makeAliTemplateMessage(msgData);
+                    AlibabaAliqinFcSmsNumSendRequest request = aliTemplateMsgMaker.makeMsg(msgData);
                     request.setRecNum(msgData[0]);
                     AlibabaAliqinFcSmsNumSendResponse response = client.execute(request);
                     if (response.getResult() == null || !response.getResult().getSuccess()) {
@@ -243,9 +256,9 @@ public class PushManage {
                 }
 
                 YunpianClient yunpianClient = getYunpianClient();
-
+                YunPianMsgMaker yunPianMsgMaker = new YunPianMsgMaker();
                 for (String[] msgData : msgDataList) {
-                    Map<String, String> params = MessageMaker.makeYunpianMessage(msgData);
+                    Map<String, String> params = yunPianMsgMaker.makeMsg(msgData);
                     params.put(YunpianClient.MOBILE, msgData[0]);
                     Result<SmsSingleSend> result = yunpianClient.sms().single_send(params);
                     if (result.getCode() != 0) {
@@ -362,14 +375,14 @@ public class PushManage {
      */
     public static WxMpService getWxMpService() {
         if (wxMpConfigStorage == null) {
-            synchronized (PushManage.class) {
+            synchronized (PushControl.class) {
                 if (wxMpConfigStorage == null) {
                     wxMpConfigStorage = wxMpConfigStorage();
                 }
             }
         }
         if (wxMpService == null && wxMpConfigStorage != null) {
-            synchronized (PushManage.class) {
+            synchronized (PushControl.class) {
                 if (wxMpService == null && wxMpConfigStorage != null) {
                     wxMpService = new WxMpServiceImpl();
                     wxMpService.setWxMpConfigStorage(wxMpConfigStorage);
@@ -386,14 +399,14 @@ public class PushManage {
      */
     static WxMaService getWxMaService() {
         if (wxMaService == null) {
-            synchronized (PushManage.class) {
+            synchronized (PushControl.class) {
                 if (wxMaService == null) {
                     wxMaService = new WxMaServiceImpl();
                 }
             }
         }
         if (wxMaConfigStorage == null) {
-            synchronized (PushManage.class) {
+            synchronized (PushControl.class) {
                 if (wxMaConfigStorage == null) {
                     wxMaConfigStorage = wxMaConfigStorage();
                     if (wxMaConfigStorage != null) {
@@ -412,7 +425,7 @@ public class PushManage {
      */
     public static IAcsClient getAliyunIAcsClient() {
         if (iAcsClient == null) {
-            synchronized (PushManage.class) {
+            synchronized (PushControl.class) {
                 if (iAcsClient == null) {
                     String aliyunAccessKeyId = App.config.getAliyunAccessKeyId();
                     String aliyunAccessKeySecret = App.config.getAliyunAccessKeySecret();
@@ -441,7 +454,7 @@ public class PushManage {
      */
     public static SmsSingleSender getTxYunSender() {
         if (smsSingleSender == null) {
-            synchronized (PushManage.class) {
+            synchronized (PushControl.class) {
                 if (smsSingleSender == null) {
                     String txyunAppId = App.config.getTxyunAppId();
                     String txyunAppKey = App.config.getTxyunAppKey();
@@ -460,7 +473,7 @@ public class PushManage {
      */
     public static TaobaoClient getTaobaoClient() {
         if (taobaoClient == null) {
-            synchronized (PushManage.class) {
+            synchronized (PushControl.class) {
                 if (taobaoClient == null) {
                     String aliServerUrl = App.config.getAliServerUrl();
                     String aliAppKey = App.config.getAliAppKey();
@@ -480,7 +493,7 @@ public class PushManage {
      */
     public static YunpianClient getYunpianClient() {
         if (yunpianClient == null) {
-            synchronized (PushManage.class) {
+            synchronized (PushControl.class) {
                 if (yunpianClient == null) {
                     String yunpianApiKey = App.config.getYunpianApiKey();
 
@@ -521,6 +534,9 @@ public class PushManage {
             writer.close();
 
             savePushResult(msgName, "发送成功", sendSuccessFile);
+            // 保存累计推送总数
+            App.config.setPushTotal(App.config.getPushTotal() + PushData.sendSuccessList.size());
+            App.config.save();
         }
 
         // 保存未发送
@@ -586,13 +602,46 @@ public class PushManage {
     }
 
     /**
-     * 输出到控制台和log
-     *
-     * @param log
+     * 准备消息构造器
      */
-    public static void console(String log) {
-        PushForm.pushForm.getPushConsoleTextArea().append(log + "\n");
-        PushForm.pushForm.getPushConsoleTextArea().setCaretPosition(PushForm.pushForm.getPushConsoleTextArea().getText().length());
-        logger.warn(log);
+    public static void prepareMsgMaker() {
+        int msgType = App.config.getMsgType();
+        switch (msgType) {
+            case MessageTypeEnum.MP_TEMPLATE_CODE:
+                PushControl.wxMpConfigStorage = null;
+                PushControl.wxMpService = null;
+                WxMpTemplateMsgMaker.prepare();
+                break;
+            case MessageTypeEnum.MA_TEMPLATE_CODE:
+                PushControl.wxMaConfigStorage = null;
+                PushControl.wxMaService = null;
+                WxMaTemplateMsgMaker.prepare();
+                break;
+            case MessageTypeEnum.KEFU_CODE:
+                PushControl.wxMpConfigStorage = null;
+                PushControl.wxMpService = null;
+                WxKefuMsgMaker.prepare();
+                break;
+            case MessageTypeEnum.KEFU_PRIORITY_CODE:
+                PushControl.wxMpConfigStorage = null;
+                PushControl.wxMpService = null;
+                WxKefuMsgMaker.prepare();
+                WxMpTemplateMsgMaker.prepare();
+                break;
+            case MessageTypeEnum.ALI_YUN_CODE:
+                AliyunMsgMaker.prepare();
+                break;
+            case MessageTypeEnum.ALI_TEMPLATE_CODE:
+                AliTemplateMsgMaker.prepare();
+                break;
+            case MessageTypeEnum.TX_YUN_CODE:
+                TxYunMsgMaker.prepare();
+                break;
+            case MessageTypeEnum.YUN_PIAN_CODE:
+                YunPianMsgMaker.prepare();
+                break;
+            default:
+        }
     }
+
 }

@@ -1,27 +1,35 @@
-package com.fangxuele.tool.push.logic;
+package com.fangxuele.tool.push.logic.msgthread;
 
+import cn.binarywang.wx.miniapp.api.WxMaService;
+import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
+import com.fangxuele.tool.push.logic.PushData;
+import com.fangxuele.tool.push.logic.msgmaker.WxMaTemplateMsgMaker;
 import com.fangxuele.tool.push.ui.form.PushForm;
-import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
-import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
+import com.fangxuele.tool.push.util.ConsoleUtil;
 
 /**
  * <pre>
- * 客服消息优先发送服务线程
+ * 模板消息-小程序发送服务线程
  * </pre>
  *
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
  * @since 2017/3/29.
  */
-public class KeFuPriorMsgServiceThread extends BaseMsgServiceThread {
+public class MaTemplateMsgThread extends BaseMsgThread {
+
+    /**
+     * 微信小程序工具服务
+     */
+    private WxMaService wxMaService;
 
     /**
      * 构造函数
      *
-     * @param pageFrom 起始索引
-     * @param pageTo   截止索引
+     * @param startIndex 开始索引
+     * @param endIndex   截止索引
      */
-    public KeFuPriorMsgServiceThread(int pageFrom, int pageTo) {
-        super(pageFrom, pageTo);
+    public MaTemplateMsgThread(int startIndex, int endIndex) {
+        super(startIndex, endIndex);
     }
 
     @Override
@@ -30,8 +38,9 @@ public class KeFuPriorMsgServiceThread extends BaseMsgServiceThread {
         // 初始化当前线程
         initCurrentThread();
 
-        WxMpKefuMessage wxMpKefuMessage;
-        WxMpTemplateMessage wxMpTemplateMessage;
+        // 组织模板消息
+        WxMaTemplateMessage wxMaTemplateMessage;
+        WxMaTemplateMsgMaker wxMaTemplateMsgMaker = new WxMaTemplateMsgMaker();
 
         for (int i = 0; i < list.size(); i++) {
             if (!PushData.running) {
@@ -45,19 +54,12 @@ public class KeFuPriorMsgServiceThread extends BaseMsgServiceThread {
             String openId = "";
             try {
                 openId = msgData[0];
-                wxMpKefuMessage = MessageMaker.makeKefuMessage(msgData);
-                wxMpTemplateMessage = MessageMaker.makeMpTemplateMessage(msgData);
-
-                wxMpKefuMessage.setToUser(openId);
-                wxMpTemplateMessage.setToUser(openId);
-                try {// 空跑控制
-                    if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
-                        wxMpService.getKefuService().sendKefuMessage(wxMpKefuMessage);
-                    }
-                } catch (Exception e) {
-                    if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
-                        wxMpService.getTemplateMsgService().sendTemplateMsg(wxMpTemplateMessage);
-                    }
+                wxMaTemplateMessage = wxMaTemplateMsgMaker.makeMsg(msgData);
+                wxMaTemplateMessage.setToUser(openId);
+                wxMaTemplateMessage.setFormId(msgData[1]);
+                // 空跑控制
+                if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
+                    wxMaService.getMsgService().sendTemplateMsg(wxMaTemplateMessage);
                 }
 
                 // 总发送成功+1
@@ -79,7 +81,7 @@ public class KeFuPriorMsgServiceThread extends BaseMsgServiceThread {
                 PushData.sendFailList.add(msgData);
 
                 // 失败异常信息输出控制台
-                PushManage.console("发送失败:" + e.getMessage() + ";openid:" + openId);
+                ConsoleUtil.consoleWithLog("发送失败:" + e.getMessage() + ";openid:" + openId);
 
                 // 当前线程发送失败+1
                 currentThreadFailCount++;
@@ -96,4 +98,11 @@ public class KeFuPriorMsgServiceThread extends BaseMsgServiceThread {
         currentThreadFinish();
     }
 
+    public WxMaService getWxMaService() {
+        return wxMaService;
+    }
+
+    public void setWxMaService(WxMaService wxMaService) {
+        this.wxMaService = wxMaService;
+    }
 }

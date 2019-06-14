@@ -1,19 +1,23 @@
-package com.fangxuele.tool.push.logic;
+package com.fangxuele.tool.push.logic.msgthread;
 
+import com.aliyuncs.IAcsClient;
+import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
+import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
+import com.fangxuele.tool.push.logic.PushControl;
+import com.fangxuele.tool.push.logic.PushData;
+import com.fangxuele.tool.push.logic.msgmaker.AliyunMsgMaker;
 import com.fangxuele.tool.push.ui.form.PushForm;
-import com.taobao.api.TaobaoClient;
-import com.taobao.api.request.AlibabaAliqinFcSmsNumSendRequest;
-import com.taobao.api.response.AlibabaAliqinFcSmsNumSendResponse;
+import com.fangxuele.tool.push.util.ConsoleUtil;
 
 /**
  * <pre>
- * 阿里模板短信发送服务线程
+ * 阿里云短信发送服务线程
  * </pre>
  *
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
- * @since 2017/3/29.
+ * @since 2018/3/16.
  */
-public class AliDayuTemplateSmsMsgServiceThread extends BaseMsgServiceThread {
+public class AliYunSmsMsgThread extends BaseMsgThread {
 
     /**
      * 构造函数
@@ -21,22 +25,22 @@ public class AliDayuTemplateSmsMsgServiceThread extends BaseMsgServiceThread {
      * @param startIndex 起始索引
      * @param endIndex   截止索引
      */
-    public AliDayuTemplateSmsMsgServiceThread(int startIndex, int endIndex) {
+    public AliYunSmsMsgThread(int startIndex, int endIndex) {
         super(startIndex, endIndex);
     }
 
     @Override
     public void run() {
-
         // 初始化当前线程
         initCurrentThread();
 
-        TaobaoClient client = PushManage.getTaobaoClient();
+        //初始化acsClient,暂不支持region化
+        IAcsClient acsClient = PushControl.getAliyunIAcsClient();
 
         // 组织模板消息
-        AlibabaAliqinFcSmsNumSendRequest alibabaAliqinFcSmsNumSendRequest;
-
-        AlibabaAliqinFcSmsNumSendResponse response;
+        SendSmsRequest sendSmsRequest;
+        SendSmsResponse response;
+        AliyunMsgMaker aliyunMsgMaker = new AliyunMsgMaker();
 
         for (int i = 0; i < list.size(); i++) {
             if (!PushData.running) {
@@ -49,13 +53,13 @@ public class AliDayuTemplateSmsMsgServiceThread extends BaseMsgServiceThread {
             String[] msgData = list.get(i);
             String telNum = msgData[0];
             try {
-                alibabaAliqinFcSmsNumSendRequest = MessageMaker.makeAliTemplateMessage(msgData);
-                alibabaAliqinFcSmsNumSendRequest.setRecNum(telNum);
+                sendSmsRequest = aliyunMsgMaker.makeMsg(msgData);
+                sendSmsRequest.setPhoneNumbers(telNum);
 
                 // 空跑控制
                 if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
-                    response = client.execute(alibabaAliqinFcSmsNumSendRequest);
-                    if (response.getResult() != null && response.getResult().getSuccess()) {
+                    response = acsClient.getAcsResponse(sendSmsRequest);
+                    if (response.getCode() != null && "OK".equals(response.getCode())) {
                         // 总发送成功+1
                         PushData.increaseSuccess();
                         PushForm.pushForm.getPushSuccessCount().setText(String.valueOf(PushData.successRecords));
@@ -75,8 +79,8 @@ public class AliDayuTemplateSmsMsgServiceThread extends BaseMsgServiceThread {
                         PushData.sendFailList.add(msgData);
 
                         // 失败异常信息输出控制台
-                        PushManage.console("发送失败:" + response.getBody() + ";ErrorCode:" +
-                                response.getErrorCode() + ";telNum:" + telNum);
+                        ConsoleUtil.consoleWithLog("发送失败:" + response.getMessage() + ";ErrorCode:" +
+                                response.getCode() + ";telNum:" + telNum);
 
                         // 当前线程发送失败+1
                         currentThreadFailCount++;
@@ -104,7 +108,7 @@ public class AliDayuTemplateSmsMsgServiceThread extends BaseMsgServiceThread {
                 PushData.sendFailList.add(msgData);
 
                 // 失败异常信息输出控制台
-                PushManage.console("发送失败:" + e.getMessage() + ";telNum:" + telNum);
+                ConsoleUtil.consoleWithLog("发送失败:" + e.getMessage() + ";telNum:" + telNum);
 
                 // 当前线程发送失败+1
                 currentThreadFailCount++;

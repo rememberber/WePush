@@ -127,6 +127,7 @@ public class Init {
      * 初始化所有tab
      */
     public static void initAllTab() {
+        AboutForm.init();
         MessageTypeForm.init();
         HelpForm.init();
         ThreadUtil.execute(UserCaseForm::init);

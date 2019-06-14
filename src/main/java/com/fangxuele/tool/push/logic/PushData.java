@@ -2,6 +2,7 @@ package com.fangxuele.tool.push.logic;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.LongAdder;
 
@@ -23,7 +24,7 @@ public class PushData {
     /**
      * 总记录数
      */
-    static long totalRecords;
+    public static long totalRecords;
 
     /**
      * 发送成功数
@@ -38,7 +39,7 @@ public class PushData {
     /**
      * 准备发送的列表
      */
-    static List<String[]> toSendList;
+    public static List<String[]> toSendList;
 
     /**
      * 发送成功的列表
@@ -68,25 +69,24 @@ public class PushData {
     /**
      * 线程总数
      */
-    static int threadCount;
+    public static int threadCount;
 
     /**
      * 已经停止了的线程总数
      */
-    static LongAdder stopedThreadCount = new LongAdder();
-    ;
+    public static LongAdder stopedThreadCount = new LongAdder();
 
     /**
      * 成功数+1
      */
-    static void increaseSuccess() {
+    public static void increaseSuccess() {
         successRecords.add(1);
     }
 
     /**
      * 失败数+1
      */
-    static void increaseFail() {
+    public static void increaseFail() {
         failRecords.add(1);
     }
 
@@ -95,6 +95,20 @@ public class PushData {
      */
     public static void increaseStopedThread() {
         stopedThreadCount.add(1);
+    }
+
+    /**
+     * 重置推送数据
+     */
+    public static void reset() {
+        PushData.running = true;
+        PushData.successRecords.reset();
+        PushData.failRecords.reset();
+        PushData.stopedThreadCount.reset();
+        PushData.threadCount = 0;
+        PushData.toSendList = Collections.synchronizedList(new LinkedList<>());
+        PushData.sendSuccessList = Collections.synchronizedList(new LinkedList<>());
+        PushData.sendFailList = Collections.synchronizedList(new LinkedList<>());
     }
 
 }

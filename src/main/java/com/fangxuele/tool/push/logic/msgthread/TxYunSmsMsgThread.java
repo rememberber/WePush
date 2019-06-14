@@ -1,8 +1,11 @@
-package com.fangxuele.tool.push.logic;
+package com.fangxuele.tool.push.logic.msgthread;
 
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.logic.PushControl;
+import com.fangxuele.tool.push.logic.PushData;
+import com.fangxuele.tool.push.logic.msgmaker.TxYunMsgMaker;
 import com.fangxuele.tool.push.ui.form.PushForm;
-import com.fangxuele.tool.push.ui.form.msg.TxYunMsgForm;
+import com.fangxuele.tool.push.util.ConsoleUtil;
 import com.github.qcloudsms.SmsSingleSender;
 import com.github.qcloudsms.SmsSingleSenderResult;
 
@@ -14,7 +17,7 @@ import com.github.qcloudsms.SmsSingleSenderResult;
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
  * @since 2018/3/16.
  */
-public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
+public class TxYunSmsMsgThread extends BaseMsgThread {
 
     /**
      * 构造函数
@@ -22,7 +25,7 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
      * @param startIndex 起始页
      * @param endIndex   截止页
      */
-    TxYunSmsMsgServiceThread(int startIndex, int endIndex) {
+    public TxYunSmsMsgThread(int startIndex, int endIndex) {
         super(startIndex, endIndex);
     }
 
@@ -32,9 +35,10 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
         // 初始化当前线程
         initCurrentThread();
 
-        SmsSingleSender smsSingleSender = PushManage.getTxYunSender();
-        int templateId = Integer.parseInt(TxYunMsgForm.txYunMsgForm.getMsgTemplateIdTextField().getText());
+        SmsSingleSender smsSingleSender = PushControl.getTxYunSender();
+        int templateId = TxYunMsgMaker.templateId;
         String smsSign = App.config.getAliyunSign();
+        TxYunMsgMaker txYunMsgMaker = new TxYunMsgMaker();
 
         for (int i = 0; i < list.size(); i++) {
             if (!PushData.running) {
@@ -47,7 +51,7 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
             String[] msgData = list.get(i);
             String telNum = msgData[0];
             try {
-                String[] params = MessageMaker.makeTxyunMessage(msgData);
+                String[] params = txYunMsgMaker.makeMsg(msgData);
 
                 // 空跑控制
                 if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
@@ -74,7 +78,7 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
                         PushData.sendFailList.add(msgData);
 
                         // 失败异常信息输出控制台
-                        PushManage.console("发送失败:" + result.toString() +
+                        ConsoleUtil.consoleWithLog("发送失败:" + result.toString() +
                                 ";telNum:" + telNum);
 
                         // 当前线程发送失败+1
@@ -103,7 +107,7 @@ public class TxYunSmsMsgServiceThread extends BaseMsgServiceThread {
                 PushData.sendFailList.add(msgData);
 
                 // 失败异常信息输出控制台
-                PushManage.console("发送失败:" + e.getMessage() + ";telNum:" + telNum);
+                ConsoleUtil.consoleWithLog("发送失败:" + e.getMessage() + ";telNum:" + telNum);
 
                 // 当前线程发送失败+1
                 currentThreadFailCount++;
