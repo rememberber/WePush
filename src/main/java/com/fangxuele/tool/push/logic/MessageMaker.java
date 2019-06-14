@@ -1,11 +1,8 @@
 package com.fangxuele.tool.push.logic;
 
 import cn.hutool.json.JSONUtil;
-import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
-import com.aliyuncs.http.MethodType;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.form.msg.AliTemplateMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.AliYunMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.TxYunMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.YunpianMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
@@ -27,50 +24,6 @@ import java.util.Map;
  */
 public class MessageMaker {
 
-
-
-    /**
-     * 组织阿里云短信消息
-     *
-     * @param msgData 消息信息
-     * @return SendSmsRequest
-     */
-    public synchronized static SendSmsRequest makeAliyunMessage(String[] msgData) {
-        SendSmsRequest request = new SendSmsRequest();
-        //使用post提交
-        request.setSysMethod(MethodType.POST);
-        //必填:短信签名-可在短信控制台中找到
-        request.setSignName(App.config.getAliyunSign());
-
-        // 模板参数
-        Map<String, String> paramMap = new HashMap<String, String>();
-
-        if (AliYunMsgForm.aliYunMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-            AliYunMsgForm.initTemplateDataTable();
-        }
-
-        DefaultTableModel tableModel = (DefaultTableModel) AliYunMsgForm.aliYunMsgForm.getTemplateMsgDataTable().getModel();
-        int rowCount = tableModel.getRowCount();
-
-        VelocityContext velocityContext = new VelocityContext();
-        for (int i = 0; i < msgData.length; i++) {
-            velocityContext.put(PushControl.TEMPLATE_VAR_PREFIX + i, msgData[i]);
-        }
-        for (int i = 0; i < rowCount; i++) {
-            String key = (String) tableModel.getValueAt(i, 0);
-            String value = ((String) tableModel.getValueAt(i, 1));
-            value = TemplateUtil.evaluate(value, velocityContext);
-
-            paramMap.put(key, value);
-        }
-
-        request.setTemplateParam(JSONUtil.parseFromMap(paramMap).toJSONString(0));
-
-        // 短信模板ID，传入的模板必须是在阿里阿里云短信中的可用模板。示例：SMS_585014
-        request.setTemplateCode(AliYunMsgForm.aliYunMsgForm.getMsgTemplateIdTextField().getText());
-
-        return request;
-    }
 
     /**
      * 组织阿里大于模板短信消息

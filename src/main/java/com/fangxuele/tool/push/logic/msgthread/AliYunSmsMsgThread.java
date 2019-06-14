@@ -3,9 +3,9 @@ package com.fangxuele.tool.push.logic.msgthread;
 import com.aliyuncs.IAcsClient;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
-import com.fangxuele.tool.push.logic.MessageMaker;
-import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.PushControl;
+import com.fangxuele.tool.push.logic.PushData;
+import com.fangxuele.tool.push.logic.msgmaker.AliyunMsgMaker;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 
@@ -39,8 +39,8 @@ public class AliYunSmsMsgThread extends BaseMsgThread {
 
         // 组织模板消息
         SendSmsRequest sendSmsRequest;
-
         SendSmsResponse response;
+        AliyunMsgMaker aliyunMsgMaker = new AliyunMsgMaker();
 
         for (int i = 0; i < list.size(); i++) {
             if (!PushData.running) {
@@ -53,7 +53,7 @@ public class AliYunSmsMsgThread extends BaseMsgThread {
             String[] msgData = list.get(i);
             String telNum = msgData[0];
             try {
-                sendSmsRequest = MessageMaker.makeAliyunMessage(msgData);
+                sendSmsRequest = aliyunMsgMaker.makeMsg(msgData);
                 sendSmsRequest.setPhoneNumbers(telNum);
 
                 // 空跑控制

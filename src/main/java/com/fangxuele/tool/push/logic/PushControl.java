@@ -14,6 +14,7 @@ import com.aliyuncs.profile.DefaultProfile;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPushHistoryMapper;
 import com.fangxuele.tool.push.domain.TPushHistory;
+import com.fangxuele.tool.push.logic.msgmaker.AliyunMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxKefuMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxMaTemplateMsgMaker;
@@ -180,8 +181,9 @@ public class PushControl {
                 }
 
                 IAcsClient acsClient = getAliyunIAcsClient();
+                AliyunMsgMaker aliyunMsgMaker = new AliyunMsgMaker();
                 for (String[] msgData : msgDataList) {
-                    SendSmsRequest request = MessageMaker.makeAliyunMessage(msgData);
+                    SendSmsRequest request = aliyunMsgMaker.makeMsg(msgData);
                     request.setPhoneNumbers(msgData[0]);
                     SendSmsResponse response = acsClient.getAcsResponse(request);
 
@@ -620,6 +622,9 @@ public class PushControl {
                 PushControl.wxMpService = null;
                 WxKefuMsgMaker.prepare();
                 WxMpTemplateMsgMaker.prepare();
+                break;
+            case MessageTypeEnum.ALI_YUN_CODE:
+                AliyunMsgMaker.prepare();
                 break;
             default:
         }
