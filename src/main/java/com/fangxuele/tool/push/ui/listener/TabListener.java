@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.listener;
 
+import com.fangxuele.tool.push.ui.form.AboutForm;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
@@ -31,6 +32,9 @@ public class TabListener {
             public void stateChanged(ChangeEvent e) {
                 int index = MainWindow.mainWindow.getTabbedPane().getSelectedIndex();
                 switch (index) {
+                    case 0:
+                        AboutForm.init();
+                        break;
                     case 3:
                         if (warnFlag) {
                             JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "\n请确认您了解所要发送消息类型的使用频率、使用规范和限制规则，\n" +

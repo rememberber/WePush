@@ -522,6 +522,8 @@ public class PushControl {
             writer.close();
 
             savePushResult(msgName, "发送成功", sendSuccessFile);
+            // 保存累计推送总数
+            App.config.setPushTotal(App.config.getPushTotal() + PushData.sendSuccessList.size());
         }
 
         // 保存未发送
