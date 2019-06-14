@@ -6,19 +6,16 @@ import com.aliyuncs.http.MethodType;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.form.msg.AliTemplateMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.AliYunMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.KefuMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.TxYunMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.YunpianMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import com.taobao.api.request.AlibabaAliqinFcSmsNumSendRequest;
 import com.yunpian.sdk.YunpianClient;
-import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
 import org.apache.velocity.VelocityContext;
 
 import javax.swing.table.DefaultTableModel;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * <pre>
@@ -30,47 +27,7 @@ import java.util.Objects;
  */
 public class MessageMaker {
 
-    /**
-     * 组织客服消息
-     *
-     * @param msgData 消息信息
-     * @return WxMpKefuMessage
-     */
-    public synchronized static WxMpKefuMessage makeKefuMessage(String[] msgData) {
 
-        WxMpKefuMessage kefuMessage = null;
-        VelocityContext velocityContext = new VelocityContext();
-        for (int i = 0; i < msgData.length; i++) {
-            velocityContext.put(PushControl.TEMPLATE_VAR_PREFIX + i, msgData[i]);
-        }
-        if ("图文消息".equals(Objects.requireNonNull(KefuMsgForm.kefuMsgForm.getMsgKefuMsgTypeComboBox().getSelectedItem()).toString())) {
-            WxMpKefuMessage.WxArticle article = new WxMpKefuMessage.WxArticle();
-
-            // 标题
-            String title = KefuMsgForm.kefuMsgForm.getMsgKefuMsgTitleTextField().getText();
-            title = TemplateUtil.evaluate(title, velocityContext);
-            article.setTitle(title);
-
-            // 图片url
-            article.setPicUrl(KefuMsgForm.kefuMsgForm.getMsgKefuPicUrlTextField().getText());
-
-            // 描述
-            String description = KefuMsgForm.kefuMsgForm.getMsgKefuDescTextField().getText();
-            description = TemplateUtil.evaluate(description, velocityContext);
-            article.setDescription(description);
-
-            // 跳转url
-            article.setUrl(KefuMsgForm.kefuMsgForm.getMsgKefuUrlTextField().getText());
-
-            kefuMessage = WxMpKefuMessage.NEWS().addArticle(article).build();
-        } else if ("文本消息".equals(KefuMsgForm.kefuMsgForm.getMsgKefuMsgTypeComboBox().getSelectedItem().toString())) {
-            String content = KefuMsgForm.kefuMsgForm.getMsgKefuMsgTitleTextField().getText();
-            content = TemplateUtil.evaluate(content, velocityContext);
-            kefuMessage = WxMpKefuMessage.TEXT().content(content).build();
-        }
-
-        return kefuMessage;
-    }
 
     /**
      * 组织阿里云短信消息

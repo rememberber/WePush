@@ -1,7 +1,7 @@
 package com.fangxuele.tool.push.logic.msgthread;
 
-import com.fangxuele.tool.push.logic.MessageMaker;
 import com.fangxuele.tool.push.logic.PushData;
+import com.fangxuele.tool.push.logic.msgmaker.WxKefuMsgMaker;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
@@ -33,6 +33,7 @@ public class KeFuMsgThread extends BaseMsgThread {
         initCurrentThread();
 
         WxMpKefuMessage wxMpKefuMessage;
+        WxKefuMsgMaker wxKefuMsgMaker = new WxKefuMsgMaker();
 
         for (int i = 0; i < list.size(); i++) {
             if (!PushData.running) {
@@ -46,7 +47,7 @@ public class KeFuMsgThread extends BaseMsgThread {
             String openId = "";
             try {
                 openId = msgData[0];
-                wxMpKefuMessage = MessageMaker.makeKefuMessage(msgData);
+                wxMpKefuMessage = wxKefuMsgMaker.makeMsg(msgData);
                 wxMpKefuMessage.setToUser(openId);
                 // 空跑控制
                 if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {

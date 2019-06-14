@@ -14,6 +14,7 @@ import com.aliyuncs.profile.DefaultProfile;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPushHistoryMapper;
 import com.fangxuele.tool.push.domain.TPushHistory;
+import com.fangxuele.tool.push.logic.msgmaker.WxKefuMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxMaTemplateMsgMaker;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
@@ -139,9 +140,10 @@ public class PushControl {
             case MessageTypeEnum.KEFU_CODE:
                 wxMpService = getWxMpService();
                 WxMpKefuMessage wxMpKefuMessage;
+                WxKefuMsgMaker wxKefuMsgMaker = new WxKefuMsgMaker();
 
                 for (String[] msgData : msgDataList) {
-                    wxMpKefuMessage = MessageMaker.makeKefuMessage(msgData);
+                    wxMpKefuMessage = wxKefuMsgMaker.makeMsg(msgData);
                     wxMpKefuMessage.setToUser(msgData[0]);
                     // ！！！发送客服消息！！！
                     wxMpService.getKefuService().sendKefuMessage(wxMpKefuMessage);
@@ -149,11 +151,12 @@ public class PushControl {
                 break;
             case MessageTypeEnum.KEFU_PRIORITY_CODE:
                 wxMpService = getWxMpService();
+                wxKefuMsgMaker = new WxKefuMsgMaker();
                 wxMpTemplateMsgMaker = new WxMpTemplateMsgMaker();
 
                 for (String[] msgData : msgDataList) {
                     try {
-                        wxMpKefuMessage = MessageMaker.makeKefuMessage(msgData);
+                        wxMpKefuMessage = wxKefuMsgMaker.makeMsg(msgData);
                         wxMpKefuMessage.setToUser(msgData[0]);
                         // ！！！发送客服消息！！！
                         wxMpService.getKefuService().sendKefuMessage(wxMpKefuMessage);
@@ -606,6 +609,17 @@ public class PushControl {
                 PushControl.wxMaConfigStorage = null;
                 PushControl.wxMaService = null;
                 WxMaTemplateMsgMaker.prepare();
+                break;
+            case MessageTypeEnum.KEFU_CODE:
+                PushControl.wxMpConfigStorage = null;
+                PushControl.wxMpService = null;
+                WxKefuMsgMaker.prepare();
+                break;
+            case MessageTypeEnum.KEFU_PRIORITY_CODE:
+                PushControl.wxMpConfigStorage = null;
+                PushControl.wxMpService = null;
+                WxKefuMsgMaker.prepare();
+                WxMpTemplateMsgMaker.prepare();
                 break;
             default:
         }

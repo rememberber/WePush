@@ -22,9 +22,13 @@ import java.util.List;
 public class WxMpTemplateMsgMaker extends BaseMsgMaker {
 
     public static String templateId;
+
     public static String templateUrl;
+
     public static String miniAppId;
+
     public static String miniAppPagePath;
+
     public static List<TemplateData> templateDataList;
 
     /**
@@ -84,5 +88,4 @@ public class WxMpTemplateMsgMaker extends BaseMsgMaker {
 
         return wxMessageTemplate;
     }
-
 }

@@ -1,7 +1,7 @@
 package com.fangxuele.tool.push.logic.msgthread;
 
-import com.fangxuele.tool.push.logic.MessageMaker;
 import com.fangxuele.tool.push.logic.PushData;
+import com.fangxuele.tool.push.logic.msgmaker.WxKefuMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
@@ -36,7 +36,7 @@ public class KeFuPriorMsgThread extends BaseMsgThread {
 
         WxMpKefuMessage wxMpKefuMessage;
         WxMpTemplateMessage wxMpTemplateMessage;
-
+        WxKefuMsgMaker wxKefuMsgMaker = new WxKefuMsgMaker();
         WxMpTemplateMsgMaker wxMpTemplateMsgMaker = new WxMpTemplateMsgMaker();
 
         for (int i = 0; i < list.size(); i++) {
@@ -51,7 +51,7 @@ public class KeFuPriorMsgThread extends BaseMsgThread {
             String openId = "";
             try {
                 openId = msgData[0];
-                wxMpKefuMessage = MessageMaker.makeKefuMessage(msgData);
+                wxMpKefuMessage = wxKefuMsgMaker.makeMsg(msgData);
                 wxMpTemplateMessage = wxMpTemplateMsgMaker.makeMsg(msgData);
 
                 wxMpKefuMessage.setToUser(openId);

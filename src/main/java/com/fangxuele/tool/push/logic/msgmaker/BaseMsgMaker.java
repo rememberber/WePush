@@ -5,7 +5,7 @@ import org.apache.velocity.VelocityContext;
 
 /**
  * <pre>
- * 消息构造器基类
+ * 消息加工器基类
  * </pre>
  *
  * @author <a href="https://github.com/rememberber">Zhou Bo</a>
