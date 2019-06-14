@@ -16,6 +16,7 @@ import com.fangxuele.tool.push.dao.TPushHistoryMapper;
 import com.fangxuele.tool.push.domain.TPushHistory;
 import com.fangxuele.tool.push.logic.msgmaker.AliTemplateMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.AliyunMsgMaker;
+import com.fangxuele.tool.push.logic.msgmaker.TxYunMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxKefuMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxMaTemplateMsgMaker;
@@ -206,9 +207,10 @@ public class PushControl {
                 }
 
                 SmsSingleSender smsSingleSender = getTxYunSender();
+                TxYunMsgMaker txYunMsgMaker = new TxYunMsgMaker();
 
                 for (String[] msgData : msgDataList) {
-                    String[] params = MessageMaker.makeTxyunMessage(msgData);
+                    String[] params = txYunMsgMaker.makeMsg(msgData);
                     SmsSingleSenderResult result = smsSingleSender.sendWithParam("86", msgData[0],
                             Integer.valueOf(TxYunMsgForm.txYunMsgForm.getMsgTemplateIdTextField().getText()),
                             params, App.config.getAliyunSign(), "", "");
@@ -630,6 +632,9 @@ public class PushControl {
                 break;
             case MessageTypeEnum.ALI_TEMPLATE_CODE:
                 AliTemplateMsgMaker.prepare();
+                break;
+            case MessageTypeEnum.TX_YUN_CODE:
+                TxYunMsgMaker.prepare();
                 break;
             default:
         }

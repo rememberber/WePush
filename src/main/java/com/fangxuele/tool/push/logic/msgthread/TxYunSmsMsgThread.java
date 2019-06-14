@@ -1,11 +1,10 @@
 package com.fangxuele.tool.push.logic.msgthread;
 
 import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.logic.MessageMaker;
-import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.PushControl;
+import com.fangxuele.tool.push.logic.PushData;
+import com.fangxuele.tool.push.logic.msgmaker.TxYunMsgMaker;
 import com.fangxuele.tool.push.ui.form.PushForm;
-import com.fangxuele.tool.push.ui.form.msg.TxYunMsgForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import com.github.qcloudsms.SmsSingleSender;
 import com.github.qcloudsms.SmsSingleSenderResult;
@@ -37,8 +36,9 @@ public class TxYunSmsMsgThread extends BaseMsgThread {
         initCurrentThread();
 
         SmsSingleSender smsSingleSender = PushControl.getTxYunSender();
-        int templateId = Integer.parseInt(TxYunMsgForm.txYunMsgForm.getMsgTemplateIdTextField().getText());
+        int templateId = TxYunMsgMaker.templateId;
         String smsSign = App.config.getAliyunSign();
+        TxYunMsgMaker txYunMsgMaker = new TxYunMsgMaker();
 
         for (int i = 0; i < list.size(); i++) {
             if (!PushData.running) {
@@ -51,7 +51,7 @@ public class TxYunSmsMsgThread extends BaseMsgThread {
             String[] msgData = list.get(i);
             String telNum = msgData[0];
             try {
-                String[] params = MessageMaker.makeTxyunMessage(msgData);
+                String[] params = txYunMsgMaker.makeMsg(msgData);
 
                 // 空跑控制
                 if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
