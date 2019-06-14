@@ -7,7 +7,7 @@ import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import me.chanjar.weixin.mp.api.WxMpService;
 
-import javax.swing.table.DefaultTableModel;
+import javax.swing.*;
 import java.util.List;
 
 /**
@@ -58,9 +58,9 @@ public class BaseMsgThread extends Thread {
     public int currentThreadFailCount;
 
     /**
-     * 线程列表tableModel
+     * 线程列表table
      */
-    public DefaultTableModel tableModel;
+    public JTable pushThreadTable;
 
     /**
      * 当前线程所在的线程列表行
@@ -93,13 +93,13 @@ public class BaseMsgThread extends Thread {
         list = PushData.toSendList.subList(startIndex, endIndex);
 
         // 初始化线程列表行
-        tableModel = (DefaultTableModel) PushForm.pushForm.getPushThreadTable().getModel();
+        pushThreadTable = PushForm.pushForm.getPushThreadTable();
         currentThreadSuccessCount = 0;
         currentThreadFailCount = 0;
-        tableModel.setValueAt(currentThreadSuccessCount, tableRow, 2);
-        tableModel.setValueAt(currentThreadFailCount, tableRow, 3);
-        tableModel.setValueAt(list.size(), tableRow, 4);
-        tableModel.setValueAt(0, tableRow, 5);
+        pushThreadTable.setValueAt(currentThreadSuccessCount, tableRow, 2);
+        pushThreadTable.setValueAt(currentThreadFailCount, tableRow, 3);
+        pushThreadTable.setValueAt(list.size(), tableRow, 4);
+        pushThreadTable.setValueAt(0, tableRow, 5);
     }
 
     /**
