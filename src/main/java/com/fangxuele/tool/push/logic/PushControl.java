@@ -20,6 +20,7 @@ import com.fangxuele.tool.push.logic.msgmaker.TxYunMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxKefuMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxMaTemplateMsgMaker;
+import com.fangxuele.tool.push.logic.msgmaker.YunPianMsgMaker;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
@@ -255,9 +256,9 @@ public class PushControl {
                 }
 
                 YunpianClient yunpianClient = getYunpianClient();
-
+                YunPianMsgMaker yunPianMsgMaker = new YunPianMsgMaker();
                 for (String[] msgData : msgDataList) {
-                    Map<String, String> params = MessageMaker.makeYunpianMessage(msgData);
+                    Map<String, String> params = yunPianMsgMaker.makeMsg(msgData);
                     params.put(YunpianClient.MOBILE, msgData[0]);
                     Result<SmsSingleSend> result = yunpianClient.sms().single_send(params);
                     if (result.getCode() != 0) {
@@ -635,6 +636,9 @@ public class PushControl {
                 break;
             case MessageTypeEnum.TX_YUN_CODE:
                 TxYunMsgMaker.prepare();
+                break;
+            case MessageTypeEnum.YUN_PIAN_CODE:
+                YunPianMsgMaker.prepare();
                 break;
             default:
         }

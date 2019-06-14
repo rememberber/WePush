@@ -1,8 +1,8 @@
 package com.fangxuele.tool.push.logic.msgthread;
 
-import com.fangxuele.tool.push.logic.MessageMaker;
-import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.PushControl;
+import com.fangxuele.tool.push.logic.PushData;
+import com.fangxuele.tool.push.logic.msgmaker.YunPianMsgMaker;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import com.yunpian.sdk.YunpianClient;
@@ -38,6 +38,7 @@ public class YunpianSmsMsgThread extends BaseMsgThread {
         initCurrentThread();
 
         YunpianClient yunpianClient = PushControl.getYunpianClient();
+        YunPianMsgMaker yunPianMsgMaker = new YunPianMsgMaker();
 
         for (int i = 0; i < list.size(); i++) {
             if (!PushData.running) {
@@ -50,7 +51,7 @@ public class YunpianSmsMsgThread extends BaseMsgThread {
             String[] msgData = list.get(i);
             String telNum = msgData[0];
             try {
-                Map<String, String> params = MessageMaker.makeYunpianMessage(msgData);
+                Map<String, String> params = yunPianMsgMaker.makeMsg(msgData);
                 params.put(YunpianClient.MOBILE, telNum);
 
                 // 空跑控制
