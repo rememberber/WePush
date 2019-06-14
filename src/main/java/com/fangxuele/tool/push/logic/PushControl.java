@@ -14,7 +14,8 @@ import com.aliyuncs.profile.DefaultProfile;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPushHistoryMapper;
 import com.fangxuele.tool.push.domain.TPushHistory;
-import com.fangxuele.tool.push.logic.msgmaker.MpTemplateMsgMaker;
+import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
+import com.fangxuele.tool.push.logic.msgmaker.WxMaTemplateMsgMaker;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
@@ -113,10 +114,10 @@ public class PushControl {
             case MessageTypeEnum.MP_TEMPLATE_CODE:
                 WxMpTemplateMessage wxMessageTemplate;
                 WxMpService wxMpService = getWxMpService();
-                MpTemplateMsgMaker mpTemplateMsgMaker = new MpTemplateMsgMaker();
+                WxMpTemplateMsgMaker wxMpTemplateMsgMaker = new WxMpTemplateMsgMaker();
 
                 for (String[] msgData : msgDataList) {
-                    wxMessageTemplate = mpTemplateMsgMaker.makeMsg(msgData);
+                    wxMessageTemplate = wxMpTemplateMsgMaker.makeMsg(msgData);
                     wxMessageTemplate.setToUser(msgData[0].trim());
                     // ！！！发送模板消息！！！
                     wxMpService.getTemplateMsgService().sendTemplateMsg(wxMessageTemplate);
@@ -125,9 +126,10 @@ public class PushControl {
             case MessageTypeEnum.MA_TEMPLATE_CODE:
                 WxMaTemplateMessage wxMaMessageTemplate;
                 WxMaService wxMaService = getWxMaService();
+                WxMaTemplateMsgMaker wxMaTemplateMsgMaker = new WxMaTemplateMsgMaker();
 
                 for (String[] msgData : msgDataList) {
-                    wxMaMessageTemplate = MessageMaker.makeMaTemplateMessage(msgData);
+                    wxMaMessageTemplate = wxMaTemplateMsgMaker.makeMsg(msgData);
                     wxMaMessageTemplate.setToUser(msgData[0].trim());
                     wxMaMessageTemplate.setFormId(msgData[1].trim());
                     // ！！！发送小程序模板消息！！！
@@ -147,7 +149,7 @@ public class PushControl {
                 break;
             case MessageTypeEnum.KEFU_PRIORITY_CODE:
                 wxMpService = getWxMpService();
-                mpTemplateMsgMaker = new MpTemplateMsgMaker();
+                wxMpTemplateMsgMaker = new WxMpTemplateMsgMaker();
 
                 for (String[] msgData : msgDataList) {
                     try {
@@ -156,7 +158,7 @@ public class PushControl {
                         // ！！！发送客服消息！！！
                         wxMpService.getKefuService().sendKefuMessage(wxMpKefuMessage);
                     } catch (Exception e) {
-                        wxMessageTemplate = mpTemplateMsgMaker.makeMsg(msgData);
+                        wxMessageTemplate = wxMpTemplateMsgMaker.makeMsg(msgData);
                         wxMessageTemplate.setToUser(msgData[0].trim());
                         // ！！！发送模板消息！！！
                         wxMpService.getTemplateMsgService().sendTemplateMsg(wxMessageTemplate);
@@ -524,6 +526,7 @@ public class PushControl {
             savePushResult(msgName, "发送成功", sendSuccessFile);
             // 保存累计推送总数
             App.config.setPushTotal(App.config.getPushTotal() + PushData.sendSuccessList.size());
+            App.config.save();
         }
 
         // 保存未发送
@@ -597,11 +600,12 @@ public class PushControl {
             case MessageTypeEnum.MP_TEMPLATE_CODE:
                 PushControl.wxMpConfigStorage = null;
                 PushControl.wxMpService = null;
-                MpTemplateMsgMaker.prepare();
+                WxMpTemplateMsgMaker.prepare();
                 break;
             case MessageTypeEnum.MA_TEMPLATE_CODE:
                 PushControl.wxMaConfigStorage = null;
                 PushControl.wxMaService = null;
+                WxMaTemplateMsgMaker.prepare();
                 break;
             default:
         }

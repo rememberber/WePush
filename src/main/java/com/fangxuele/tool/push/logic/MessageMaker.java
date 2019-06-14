@@ -1,7 +1,5 @@
 package com.fangxuele.tool.push.logic;
 
-import cn.binarywang.wx.miniapp.bean.WxMaTemplateData;
-import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
 import cn.hutool.json.JSONUtil;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
 import com.aliyuncs.http.MethodType;
@@ -9,7 +7,6 @@ import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.form.msg.AliTemplateMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.AliYunMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.KefuMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.MaTemplateMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.TxYunMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.YunpianMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
@@ -32,44 +29,6 @@ import java.util.Objects;
  * @since 2019/3/26.
  */
 public class MessageMaker {
-
-    /**
-     * 组织模板消息-小程序
-     *
-     * @param msgData 消息信息
-     * @return WxMaTemplateMessage
-     */
-    public synchronized static WxMaTemplateMessage makeMaTemplateMessage(String[] msgData) {
-        // 拼模板
-        WxMaTemplateMessage wxMessageTemplate = WxMaTemplateMessage.builder().build();
-        wxMessageTemplate.setTemplateId(MaTemplateMsgForm.maTemplateMsgForm.getMsgTemplateIdTextField().getText().trim());
-        wxMessageTemplate.setPage(MaTemplateMsgForm.maTemplateMsgForm.getMsgTemplateUrlTextField().getText().trim());
-        wxMessageTemplate.setEmphasisKeyword(MaTemplateMsgForm.maTemplateMsgForm.getMsgTemplateKeyWordTextField().getText().trim() + ".DATA");
-
-        if (MaTemplateMsgForm.maTemplateMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-            MaTemplateMsgForm.initTemplateDataTable();
-        }
-
-        DefaultTableModel tableModel = (DefaultTableModel) MaTemplateMsgForm.maTemplateMsgForm.getTemplateMsgDataTable().getModel();
-        int rowCount = tableModel.getRowCount();
-
-        VelocityContext velocityContext = new VelocityContext();
-        for (int i = 0; i < msgData.length; i++) {
-            velocityContext.put(PushControl.TEMPLATE_VAR_PREFIX + i, msgData[i]);
-        }
-        for (int i = 0; i < rowCount; i++) {
-            String name = ((String) tableModel.getValueAt(i, 0)).trim();
-
-            String value = ((String) tableModel.getValueAt(i, 1));
-            value = TemplateUtil.evaluate(value, velocityContext);
-
-            String color = ((String) tableModel.getValueAt(i, 2)).trim();
-            WxMaTemplateData templateData = new WxMaTemplateData(name, value, color);
-            wxMessageTemplate.addData(templateData);
-        }
-
-        return wxMessageTemplate;
-    }
 
     /**
      * 组织客服消息

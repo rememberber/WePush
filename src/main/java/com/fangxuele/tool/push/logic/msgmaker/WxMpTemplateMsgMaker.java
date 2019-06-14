@@ -1,7 +1,6 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
 import com.fangxuele.tool.push.bean.TemplateData;
-import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.ui.form.msg.MpTemplateMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
@@ -20,7 +19,7 @@ import java.util.List;
  * @author <a href="https://github.com/rememberber">Zhou Bo</a>
  * @since 2019/6/13.
  */
-public class MpTemplateMsgMaker {
+public class WxMpTemplateMsgMaker extends BaseMsgMaker {
 
     public static String templateId;
     public static String templateUrl;
@@ -86,17 +85,4 @@ public class MpTemplateMsgMaker {
         return wxMessageTemplate;
     }
 
-    /**
-     * 获取模板引擎上下文
-     *
-     * @param msgData 消息数据
-     * @return VelocityContext 模板引擎上下文
-     */
-    private VelocityContext getVelocityContext(String[] msgData) {
-        VelocityContext velocityContext = new VelocityContext();
-        for (int i = 1; i < msgData.length; i++) {
-            velocityContext.put(PushControl.TEMPLATE_VAR_PREFIX + i, msgData[i]);
-        }
-        return velocityContext;
-    }
 }

@@ -2,8 +2,8 @@ package com.fangxuele.tool.push.logic.msgthread;
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
-import com.fangxuele.tool.push.logic.MessageMaker;
 import com.fangxuele.tool.push.logic.PushData;
+import com.fangxuele.tool.push.logic.msgmaker.WxMaTemplateMsgMaker;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 
@@ -40,6 +40,7 @@ public class MaTemplateMsgThread extends BaseMsgThread {
 
         // 组织模板消息
         WxMaTemplateMessage wxMaTemplateMessage;
+        WxMaTemplateMsgMaker wxMaTemplateMsgMaker = new WxMaTemplateMsgMaker();
 
         for (int i = 0; i < list.size(); i++) {
             if (!PushData.running) {
@@ -53,7 +54,7 @@ public class MaTemplateMsgThread extends BaseMsgThread {
             String openId = "";
             try {
                 openId = msgData[0];
-                wxMaTemplateMessage = MessageMaker.makeMaTemplateMessage(msgData);
+                wxMaTemplateMessage = wxMaTemplateMsgMaker.makeMsg(msgData);
                 wxMaTemplateMessage.setToUser(openId);
                 wxMaTemplateMessage.setFormId(msgData[1]);
                 // 空跑控制
