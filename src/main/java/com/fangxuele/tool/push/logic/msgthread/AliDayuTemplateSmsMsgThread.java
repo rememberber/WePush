@@ -1,8 +1,8 @@
 package com.fangxuele.tool.push.logic.msgthread;
 
-import com.fangxuele.tool.push.logic.MessageMaker;
-import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.PushControl;
+import com.fangxuele.tool.push.logic.PushData;
+import com.fangxuele.tool.push.logic.msgmaker.AliTemplateMsgMaker;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import com.taobao.api.TaobaoClient;
@@ -39,8 +39,8 @@ public class AliDayuTemplateSmsMsgThread extends BaseMsgThread {
 
         // 组织模板消息
         AlibabaAliqinFcSmsNumSendRequest alibabaAliqinFcSmsNumSendRequest;
-
         AlibabaAliqinFcSmsNumSendResponse response;
+        AliTemplateMsgMaker aliTemplateMsgMaker = new AliTemplateMsgMaker();
 
         for (int i = 0; i < list.size(); i++) {
             if (!PushData.running) {
@@ -53,7 +53,7 @@ public class AliDayuTemplateSmsMsgThread extends BaseMsgThread {
             String[] msgData = list.get(i);
             String telNum = msgData[0];
             try {
-                alibabaAliqinFcSmsNumSendRequest = MessageMaker.makeAliTemplateMessage(msgData);
+                alibabaAliqinFcSmsNumSendRequest = aliTemplateMsgMaker.makeMsg(msgData);
                 alibabaAliqinFcSmsNumSendRequest.setRecNum(telNum);
 
                 // 空跑控制

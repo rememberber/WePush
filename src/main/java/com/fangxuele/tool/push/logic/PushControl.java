@@ -14,6 +14,7 @@ import com.aliyuncs.profile.DefaultProfile;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPushHistoryMapper;
 import com.fangxuele.tool.push.domain.TPushHistory;
+import com.fangxuele.tool.push.logic.msgmaker.AliTemplateMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.AliyunMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxKefuMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
@@ -230,8 +231,9 @@ public class PushControl {
                 }
 
                 TaobaoClient client = getTaobaoClient();
+                AliTemplateMsgMaker aliTemplateMsgMaker = new AliTemplateMsgMaker();
                 for (String[] msgData : msgDataList) {
-                    AlibabaAliqinFcSmsNumSendRequest request = MessageMaker.makeAliTemplateMessage(msgData);
+                    AlibabaAliqinFcSmsNumSendRequest request = aliTemplateMsgMaker.makeMsg(msgData);
                     request.setRecNum(msgData[0]);
                     AlibabaAliqinFcSmsNumSendResponse response = client.execute(request);
                     if (response.getResult() == null || !response.getResult().getSuccess()) {
@@ -625,6 +627,9 @@ public class PushControl {
                 break;
             case MessageTypeEnum.ALI_YUN_CODE:
                 AliyunMsgMaker.prepare();
+                break;
+            case MessageTypeEnum.ALI_TEMPLATE_CODE:
+                AliTemplateMsgMaker.prepare();
                 break;
             default:
         }
