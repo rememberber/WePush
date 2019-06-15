@@ -450,7 +450,7 @@ public class PushControl {
      *
      * @return
      */
-    public static boolean pushCheck() {
+    static boolean pushCheck() {
         int msgType = App.config.getMsgType();
         switch (msgType) {
             case MessageTypeEnum.MP_TEMPLATE_CODE:

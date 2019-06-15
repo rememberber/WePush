@@ -93,6 +93,11 @@ public class MsgEditListener {
         // 预览按钮事件
         MessageEditForm.messageEditForm.getPreviewMsgButton().addActionListener(e -> {
             try {
+                if (StringUtils.isEmpty(MessageEditForm.messageEditForm.getMsgNameField().getText())) {
+                    JOptionPane.showMessageDialog(messagePanel, "请先选择一条消息！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
                 if ("".equals(MessageEditForm.messageEditForm.getPreviewUserField().getText().trim())) {
                     JOptionPane.showMessageDialog(messagePanel, "预览用户不能为空！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
