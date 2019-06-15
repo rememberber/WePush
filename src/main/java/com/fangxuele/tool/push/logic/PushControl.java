@@ -11,16 +11,11 @@ import com.fangxuele.tool.push.logic.msgmaker.WxKefuMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxMaTemplateMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.YunPianMsgMaker;
-import com.fangxuele.tool.push.logic.msgsender.AliDayuTemplateMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.AliYunMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.logic.msgsender.SendResult;
-import com.fangxuele.tool.push.logic.msgsender.TxYunMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.WxKefuMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.WxKefuPriorMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.WxMaTemplateMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.YunPianMsgSender;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
@@ -71,35 +66,7 @@ public class PushControl {
 
         // 准备消息构造器
         prepareMsgMaker();
-        IMsgSender iMsgSender = null;
-        switch (App.config.getMsgType()) {
-            case MessageTypeEnum.MP_TEMPLATE_CODE:
-                iMsgSender = new WxMpTemplateMsgSender();
-                break;
-            case MessageTypeEnum.MA_TEMPLATE_CODE:
-                iMsgSender = new WxMaTemplateMsgSender();
-                break;
-            case MessageTypeEnum.KEFU_CODE:
-                iMsgSender = new WxKefuMsgSender();
-                break;
-            case MessageTypeEnum.KEFU_PRIORITY_CODE:
-                iMsgSender = new WxKefuPriorMsgSender();
-                break;
-            case MessageTypeEnum.ALI_YUN_CODE:
-                iMsgSender = new AliYunMsgSender();
-                break;
-            case MessageTypeEnum.TX_YUN_CODE:
-                iMsgSender = new TxYunMsgSender();
-                break;
-            case MessageTypeEnum.ALI_TEMPLATE_CODE:
-                iMsgSender = new AliDayuTemplateMsgSender();
-                break;
-            case MessageTypeEnum.YUN_PIAN_CODE:
-                iMsgSender = new YunPianMsgSender();
-                break;
-            default:
-                break;
-        }
+        IMsgSender iMsgSender = MsgSenderFactory.getMsgSender();
 
         if (iMsgSender != null) {
             for (String[] msgData : msgDataList) {
