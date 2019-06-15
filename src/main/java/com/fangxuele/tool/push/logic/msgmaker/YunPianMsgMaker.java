@@ -16,7 +16,7 @@ import java.util.Map;
  * @author <a href="https://github.com/rememberber">Zhou Bo</a>
  * @since 2019/6/14.
  */
-public class YunPianMsgMaker extends BaseMsgMaker {
+public class YunPianMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
     public static String msgYunpianMsgContent;
 
@@ -33,6 +33,7 @@ public class YunPianMsgMaker extends BaseMsgMaker {
      * @param msgData 消息信息
      * @return Map
      */
+    @Override
     public Map<String, String> makeMsg(String[] msgData) {
         Map<String, String> params = new HashMap<>(2);
         VelocityContext velocityContext = getVelocityContext(msgData);

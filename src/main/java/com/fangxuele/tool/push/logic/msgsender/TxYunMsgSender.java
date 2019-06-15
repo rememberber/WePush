@@ -5,6 +5,7 @@ import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.msgmaker.TxYunMsgMaker;
 import com.github.qcloudsms.SmsSingleSender;
 import com.github.qcloudsms.SmsSingleSenderResult;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * <pre>
@@ -14,6 +15,7 @@ import com.github.qcloudsms.SmsSingleSenderResult;
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
  * @since 2019/6/15.
  */
+@Slf4j
 public class TxYunMsgSender implements IMsgSender {
     /**
      * 腾讯云短信sender
@@ -35,18 +37,24 @@ public class TxYunMsgSender implements IMsgSender {
             String smsSign = App.config.getAliyunSign();
             String[] params = txYunMsgMaker.makeMsg(msgData);
             String telNum = msgData[0];
-            SmsSingleSenderResult result = smsSingleSender.sendWithParam("86", telNum,
-                    templateId, params, smsSign, "", "");
-
-            if (result.result == 0) {
+            if (PushControl.dryRun) {
                 sendResult.setSuccess(true);
+                return sendResult;
             } else {
-                sendResult.setSuccess(false);
-                sendResult.setInfo(result.toString());
+                SmsSingleSenderResult result = smsSingleSender.sendWithParam("86", telNum,
+                        templateId, params, smsSign, "", "");
+
+                if (result.result == 0) {
+                    sendResult.setSuccess(true);
+                } else {
+                    sendResult.setSuccess(false);
+                    sendResult.setInfo(result.toString());
+                }
             }
         } catch (Exception e) {
             sendResult.setSuccess(false);
-            sendResult.setInfo(e.toString());
+            sendResult.setInfo(e.getMessage());
+            log.error(e.toString());
         }
 
         return sendResult;

@@ -13,7 +13,7 @@ import org.apache.velocity.VelocityContext;
  * @author <a href="https://github.com/rememberber">Zhou Bo</a>
  * @since 2019/6/14.
  */
-public class WxKefuMsgMaker extends BaseMsgMaker {
+public class WxKefuMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
     public static String msgKefuMsgType;
 
@@ -42,6 +42,7 @@ public class WxKefuMsgMaker extends BaseMsgMaker {
      * @param msgData 消息信息
      * @return WxMpKefuMessage
      */
+    @Override
     public WxMpKefuMessage makeMsg(String[] msgData) {
 
         WxMpKefuMessage kefuMessage = null;

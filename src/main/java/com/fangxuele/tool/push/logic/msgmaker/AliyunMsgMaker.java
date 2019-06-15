@@ -23,7 +23,7 @@ import java.util.Map;
  * @author <a href="https://github.com/rememberber">Zhou Bo</a>
  * @since 2019/6/14.
  */
-public class AliyunMsgMaker extends BaseMsgMaker {
+public class AliyunMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
     public static String templateId;
 
@@ -60,6 +60,7 @@ public class AliyunMsgMaker extends BaseMsgMaker {
      * @param msgData 消息信息
      * @return SendSmsRequest
      */
+    @Override
     public SendSmsRequest makeMsg(String[] msgData) {
         SendSmsRequest request = new SendSmsRequest();
         //使用post提交

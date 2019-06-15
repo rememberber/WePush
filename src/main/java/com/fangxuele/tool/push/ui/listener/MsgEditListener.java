@@ -134,6 +134,9 @@ public class MsgEditListener {
                     dialog.setHtmlText(tipsBuilder.toString());
                     dialog.pack();
                     dialog.setVisible(true);
+                    // 保存累计推送总数
+                    App.config.setPushTotal(App.config.getPushTotal() + successCount);
+                    App.config.save();
                 }
             } catch (Exception e1) {
                 JOptionPane.showMessageDialog(messagePanel, "发送预览消息失败！\n\n" + e1.getMessage(), "失败",

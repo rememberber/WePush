@@ -6,6 +6,7 @@ import com.fangxuele.tool.push.logic.msgmaker.YunPianMsgMaker;
 import com.yunpian.sdk.YunpianClient;
 import com.yunpian.sdk.model.Result;
 import com.yunpian.sdk.model.SmsSingleSend;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 
@@ -17,6 +18,7 @@ import java.util.Map;
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
  * @since 2019/6/15.
  */
+@Slf4j
 public class YunPianMsgSender implements IMsgSender {
     /**
      * 云片网短信client
@@ -38,16 +40,22 @@ public class YunPianMsgSender implements IMsgSender {
             Map<String, String> params = yunPianMsgMaker.makeMsg(msgData);
             String telNum = msgData[0];
             params.put(YunpianClient.MOBILE, telNum);
-            Result<SmsSingleSend> result = yunpianClient.sms().single_send(params);
-            if (result.getCode() == 0) {
+            if (PushControl.dryRun) {
                 sendResult.setSuccess(true);
+                return sendResult;
             } else {
-                sendResult.setSuccess(false);
-                sendResult.setInfo(result.toString());
+                Result<SmsSingleSend> result = yunpianClient.sms().single_send(params);
+                if (result.getCode() == 0) {
+                    sendResult.setSuccess(true);
+                } else {
+                    sendResult.setSuccess(false);
+                    sendResult.setInfo(result.toString());
+                }
             }
         } catch (Exception e) {
             sendResult.setSuccess(false);
-            sendResult.setInfo(e.toString());
+            sendResult.setInfo(e.getMessage());
+            log.error(e.toString());
         }
 
         return sendResult;

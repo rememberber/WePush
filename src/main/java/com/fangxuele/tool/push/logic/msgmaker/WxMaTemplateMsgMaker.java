@@ -19,7 +19,7 @@ import java.util.List;
  * @author <a href="https://github.com/rememberber">Zhou Bo</a>
  * @since 2019/6/14.
  */
-public class WxMaTemplateMsgMaker extends BaseMsgMaker {
+public class WxMaTemplateMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
     public static String templateId;
     public static String templateUrl;
@@ -60,6 +60,7 @@ public class WxMaTemplateMsgMaker extends BaseMsgMaker {
      * @param msgData 消息信息
      * @return WxMaTemplateMessage
      */
+    @Override
     public WxMaTemplateMessage makeMsg(String[] msgData) {
         // 拼模板
         WxMaTemplateMessage wxMessageTemplate = new WxMaTemplateMessage();

@@ -42,6 +42,12 @@ import java.util.List;
  * @since 2017/6/19.
  */
 public class PushControl {
+
+    /**
+     * 是否空跑
+     */
+    public static boolean dryRun;
+
     private static TPushHistoryMapper pushHistoryMapper = MybatisUtil.getSqlSession().getMapper(TPushHistoryMapper.class);
 
     /**
@@ -66,6 +72,7 @@ public class PushControl {
         prepareMsgMaker();
         IMsgSender msgSender = MsgSenderFactory.getMsgSender();
 
+        dryRun = false;
         if (msgSender != null) {
             for (String[] msgData : msgDataList) {
                 sendResultList.add(msgSender.send(msgData));

@@ -45,35 +45,32 @@ public class MsgSendThread extends BaseMsgThread {
 
             // 本条消息所需的数据
             String[] msgData = list.get(i);
-            // 空跑控制
-            if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
-                SendResult sendResult = iMsgSender.send(msgData);
-                if (sendResult.isSuccess()) {
-                    // 总发送成功+1
-                    PushData.increaseSuccess();
-                    PushForm.pushForm.getPushSuccessCount().setText(String.valueOf(PushData.successRecords));
+            SendResult sendResult = iMsgSender.send(msgData);
+            if (sendResult.isSuccess()) {
+                // 总发送成功+1
+                PushData.increaseSuccess();
+                PushForm.pushForm.getPushSuccessCount().setText(String.valueOf(PushData.successRecords));
 
-                    // 当前线程发送成功+1
-                    currentThreadSuccessCount++;
-                    pushThreadTable.setValueAt(currentThreadSuccessCount, tableRow, 2);
+                // 当前线程发送成功+1
+                currentThreadSuccessCount++;
+                pushThreadTable.setValueAt(currentThreadSuccessCount, tableRow, 2);
 
-                    // 保存发送成功
-                    PushData.sendSuccessList.add(msgData);
-                } else {
-                    // 总发送失败+1
-                    PushData.increaseFail();
-                    PushForm.pushForm.getPushFailCount().setText(String.valueOf(PushData.failRecords));
+                // 保存发送成功
+                PushData.sendSuccessList.add(msgData);
+            } else {
+                // 总发送失败+1
+                PushData.increaseFail();
+                PushForm.pushForm.getPushFailCount().setText(String.valueOf(PushData.failRecords));
 
-                    // 保存发送失败
-                    PushData.sendFailList.add(msgData);
+                // 保存发送失败
+                PushData.sendFailList.add(msgData);
 
-                    // 失败异常信息输出控制台
-                    ConsoleUtil.consoleWithLog("发送失败:" + sendResult.getInfo() + ";msgData:" + JSONUtil.toJsonPrettyStr(msgData));
+                // 失败异常信息输出控制台
+                ConsoleUtil.consoleOnly("发送失败:" + sendResult.getInfo() + ";msgData:" + JSONUtil.toJsonPrettyStr(msgData));
 
-                    // 当前线程发送失败+1
-                    currentThreadFailCount++;
-                    pushThreadTable.setValueAt(currentThreadFailCount, tableRow, 3);
-                }
+                // 当前线程发送失败+1
+                currentThreadFailCount++;
+                pushThreadTable.setValueAt(currentThreadFailCount, tableRow, 3);
             }
 
             // 当前线程进度条

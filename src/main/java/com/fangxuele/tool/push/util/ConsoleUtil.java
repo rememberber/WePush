@@ -28,4 +28,14 @@ public class ConsoleUtil {
         PushForm.pushForm.getPushConsoleTextArea().setCaretPosition(PushForm.pushForm.getPushConsoleTextArea().getText().length());
         logger.warn(log);
     }
+
+    /**
+     * 仅输出到控制台
+     *
+     * @param log
+     */
+    public static void consoleOnly(String log) {
+        PushForm.pushForm.getPushConsoleTextArea().append(log + "\n");
+        PushForm.pushForm.getPushConsoleTextArea().setCaretPosition(PushForm.pushForm.getPushConsoleTextArea().getText().length());
+    }
 }
