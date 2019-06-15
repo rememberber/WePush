@@ -30,6 +30,7 @@ public class MainWindow {
     private JPanel messageEditPanel;
     private JPanel messageManagePanel;
     private JPanel messageTypePanel;
+    private JPanel boostPanel;
 
     public static MainWindow mainWindow = new MainWindow();
 
@@ -46,6 +47,7 @@ public class MainWindow {
         mainWindow.getMemberPanel().add(MemberForm.memberForm.getMemberPanel(), gridConstraints);
         mainWindow.getPushPanel().add(PushForm.pushForm.getPushPanel(), gridConstraints);
         mainWindow.getMessageTypePanel().add(MessageTypeForm.messageTypeForm.getMessageTypePanel(), gridConstraints);
+        mainWindow.getBoostPanel().add(BoostForm.boostForm.getBoostPanel(), gridConstraints);
     }
 
     {
@@ -106,6 +108,9 @@ public class MainWindow {
         pushPanel.setLayout(new GridLayoutManager(1, 1, new Insets(10, 10, 10, 10), -1, -1));
         pushPanel.setMinimumSize(new Dimension(-1, -1));
         tabbedPane.addTab("④开始推送", pushPanel);
+        boostPanel = new JPanel();
+        boostPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        tabbedPane.addTab("性能模式", boostPanel);
         pushHisPanel = new JPanel();
         pushHisPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         pushHisPanel.setMinimumSize(new Dimension(-1, -1));

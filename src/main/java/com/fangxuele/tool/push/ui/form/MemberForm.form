@@ -290,7 +290,7 @@
                           </component>
                         </children>
                       </grid>
-                      <grid id="b86d2" binding="importFromWeixinPanel" layout-manager="GridLayoutManager" row-count="4" column-count="6" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                      <grid id="b86d2" binding="importFromWeixinPanel" layout-manager="GridLayoutManager" row-count="4" column-count="7" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                         <margin top="0" left="15" bottom="5" right="5"/>
                         <constraints>
                           <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -302,7 +302,7 @@
                         <children>
                           <component id="a1b4b" class="javax.swing.JComboBox" binding="memberImportTagComboBox">
                             <constraints>
-                              <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                              <grid row="0" column="1" row-span="1" col-span="3" vsize-policy="3" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
                               <model/>
@@ -310,7 +310,7 @@
                           </component>
                           <component id="2341f" class="javax.swing.JButton" binding="memberImportAllButton">
                             <constraints>
-                              <grid row="3" column="0" row-span="1" col-span="6" vsize-policy="3" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                              <grid row="3" column="0" row-span="1" col-span="7" vsize-policy="3" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
                               <font style="0"/>
@@ -320,17 +320,17 @@
                           </component>
                           <component id="dd99c" class="javax.swing.JButton" binding="memberImportTagFreshButton">
                             <constraints>
-                              <grid row="0" column="3" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                              <grid row="0" column="4" row-span="1" col-span="3" vsize-policy="0" hsize-policy="1" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
                               <font style="0"/>
                               <icon value="icon/refresh.png"/>
-                              <text value="刷新可选的标签分组"/>
+                              <text value="刷新"/>
                             </properties>
                           </component>
                           <component id="26432" class="javax.swing.JButton" binding="memberImportTagButton">
                             <constraints>
-                              <grid row="1" column="0" row-span="1" col-span="6" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                              <grid row="1" column="0" row-span="1" col-span="7" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
                               <font style="0"/>
@@ -340,12 +340,20 @@
                           </component>
                           <component id="62c5c" class="javax.swing.JButton" binding="memberImportTagRetainButton">
                             <constraints>
-                              <grid row="2" column="0" row-span="1" col-span="6" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                              <grid row="2" column="0" row-span="1" col-span="7" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
                               <font style="0"/>
                               <icon value="icon/import_dark.png"/>
                               <text value="导入选择的标签分组-取交集"/>
+                            </properties>
+                          </component>
+                          <component id="bf25b" class="javax.swing.JLabel">
+                            <constraints>
+                              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <text value="标签分组"/>
                             </properties>
                           </component>
                         </children>
