@@ -17,7 +17,7 @@ import com.taobao.api.response.AlibabaAliqinFcSmsNumSendResponse;
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
  * @since 2017/3/29.
  */
-public class AliDayuTemplateSmsMsgThread extends BaseMsgThread {
+public class AliDayuTemplateMsgThread extends BaseMsgThread {
 
     /**
      * 构造函数
@@ -25,7 +25,7 @@ public class AliDayuTemplateSmsMsgThread extends BaseMsgThread {
      * @param startIndex 起始索引
      * @param endIndex   截止索引
      */
-    public AliDayuTemplateSmsMsgThread(int startIndex, int endIndex) {
+    public AliDayuTemplateMsgThread(int startIndex, int endIndex) {
         super(startIndex, endIndex);
     }
 

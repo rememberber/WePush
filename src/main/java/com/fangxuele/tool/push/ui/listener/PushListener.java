@@ -59,10 +59,6 @@ public class PushListener {
                                 PushForm.pushForm.getDryRunCheckBox().isSelected() + "\n", "确认推送？",
                         JOptionPane.YES_NO_OPTION);
                 if (isPush == JOptionPane.YES_OPTION) {
-                    // 按钮状态
-                    PushForm.pushForm.getScheduleRunButton().setEnabled(false);
-                    PushForm.pushForm.getPushStartButton().setEnabled(false);
-                    PushForm.pushForm.getPushStopButton().setEnabled(true);
                     ThreadUtil.execute(new PushRunThread());
                 }
             }
@@ -70,47 +66,49 @@ public class PushListener {
 
         // 停止按钮事件
         PushForm.pushForm.getPushStopButton().addActionListener((e) -> {
-            if (!PushData.running && PushData.scheduling) {
-                PushForm.pushForm.getScheduleDetailLabel().setText("");
-                if (serviceStartAt != null) {
-                    serviceStartAt.shutdownNow();
+            ThreadUtil.execute(() -> {
+                if (!PushData.running && PushData.scheduling) {
+                    PushForm.pushForm.getScheduleDetailLabel().setText("");
+                    if (serviceStartAt != null) {
+                        serviceStartAt.shutdownNow();
+                    }
+                    PushForm.pushForm.getPushStartButton().setEnabled(true);
+                    PushForm.pushForm.getScheduleRunButton().setEnabled(true);
+                    PushForm.pushForm.getPushStopButton().setText("停止");
+                    PushForm.pushForm.getPushStopButton().setEnabled(false);
+                    PushForm.pushForm.getPushStartButton().updateUI();
+                    PushForm.pushForm.getScheduleRunButton().updateUI();
+                    PushForm.pushForm.getPushStopButton().updateUI();
+                    PushData.scheduling = false;
                 }
-                PushForm.pushForm.getPushStartButton().setEnabled(true);
-                PushForm.pushForm.getScheduleRunButton().setEnabled(true);
-                PushForm.pushForm.getPushStopButton().setText("停止");
-                PushForm.pushForm.getPushStopButton().setEnabled(false);
-                PushForm.pushForm.getPushStartButton().updateUI();
-                PushForm.pushForm.getScheduleRunButton().updateUI();
-                PushForm.pushForm.getPushStopButton().updateUI();
-                PushData.scheduling = false;
-            }
 
-            if (!PushData.running && PushData.fixRateScheduling) {
-                PushForm.pushForm.getScheduleDetailLabel().setText("");
-                if (serviceStartPerDay != null) {
-                    serviceStartPerDay.shutdownNow();
+                if (!PushData.running && PushData.fixRateScheduling) {
+                    PushForm.pushForm.getScheduleDetailLabel().setText("");
+                    if (serviceStartPerDay != null) {
+                        serviceStartPerDay.shutdownNow();
+                    }
+                    if (serviceStartPerWeek != null) {
+                        serviceStartPerWeek.shutdownNow();
+                    }
+                    PushForm.pushForm.getPushStartButton().setEnabled(true);
+                    PushForm.pushForm.getScheduleRunButton().setEnabled(true);
+                    PushForm.pushForm.getPushStopButton().setText("停止");
+                    PushForm.pushForm.getPushStopButton().setEnabled(false);
+                    PushForm.pushForm.getPushStartButton().updateUI();
+                    PushForm.pushForm.getScheduleRunButton().updateUI();
+                    PushForm.pushForm.getPushStopButton().updateUI();
+                    PushData.fixRateScheduling = false;
                 }
-                if (serviceStartPerWeek != null) {
-                    serviceStartPerWeek.shutdownNow();
-                }
-                PushForm.pushForm.getPushStartButton().setEnabled(true);
-                PushForm.pushForm.getScheduleRunButton().setEnabled(true);
-                PushForm.pushForm.getPushStopButton().setText("停止");
-                PushForm.pushForm.getPushStopButton().setEnabled(false);
-                PushForm.pushForm.getPushStartButton().updateUI();
-                PushForm.pushForm.getScheduleRunButton().updateUI();
-                PushForm.pushForm.getPushStopButton().updateUI();
-                PushData.fixRateScheduling = false;
-            }
 
-            if (PushData.running) {
-                int isStop = JOptionPane.showConfirmDialog(pushPanel,
-                        "确定停止当前的推送吗？", "确认停止？",
-                        JOptionPane.YES_NO_OPTION);
-                if (isStop == JOptionPane.YES_OPTION) {
-                    PushData.running = false;
+                if (PushData.running) {
+                    int isStop = JOptionPane.showConfirmDialog(pushPanel,
+                            "确定停止当前的推送吗？", "确认停止？",
+                            JOptionPane.YES_NO_OPTION);
+                    if (isStop == JOptionPane.YES_OPTION) {
+                        PushData.running = false;
+                    }
                 }
-            }
+            });
         });
 
         // 按计划执行按钮事件

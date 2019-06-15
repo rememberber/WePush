@@ -18,11 +18,10 @@ import com.fangxuele.tool.push.logic.msgmaker.AliTemplateMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.AliyunMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.TxYunMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxKefuMsgMaker;
-import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxMaTemplateMsgMaker;
+import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.YunPianMsgMaker;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
-import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.ui.form.msg.TxYunMsgForm;
@@ -65,7 +64,6 @@ import java.util.Map;
  * @since 2017/6/19.
  */
 public class PushControl {
-
     private static TPushHistoryMapper pushHistoryMapper = MybatisUtil.getSqlSession().getMapper(TPushHistoryMapper.class);
 
     /**
@@ -107,8 +105,10 @@ public class PushControl {
      * @throws Exception 异常
      */
     public static boolean preview() throws Exception {
+        if (!pushCheck()) {
+            return false;
+        }
         List<String[]> msgDataList = new ArrayList<>();
-
         for (String data : MessageEditForm.messageEditForm.getPreviewUserField().getText().split(";")) {
             msgDataList.add(data.split(MemberListener.TXT_FILE_DATA_SEPERATOR_REGEX));
         }
@@ -173,16 +173,6 @@ public class PushControl {
                 }
                 break;
             case MessageTypeEnum.ALI_YUN_CODE:
-                String aliyunAccessKeyId = App.config.getAliyunAccessKeyId();
-                String aliyunAccessKeySecret = App.config.getAliyunAccessKeySecret();
-
-                if (StringUtils.isEmpty(aliyunAccessKeyId) || StringUtils.isEmpty(aliyunAccessKeySecret)) {
-                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
-                            "请先在设置中填写并保存阿里云短信相关配置！", "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    return false;
-                }
-
                 IAcsClient acsClient = getAliyunIAcsClient();
                 AliyunMsgMaker aliyunMsgMaker = new AliyunMsgMaker();
                 for (String[] msgData : msgDataList) {
@@ -197,16 +187,6 @@ public class PushControl {
                 }
                 break;
             case MessageTypeEnum.TX_YUN_CODE:
-                String txyunAppId = App.config.getTxyunAppId();
-                String txyunAppKey = App.config.getTxyunAppKey();
-
-                if (StringUtils.isEmpty(txyunAppId) || StringUtils.isEmpty(txyunAppKey)) {
-                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
-                            "请先在设置中填写并保存腾讯云短信相关配置！", "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    return false;
-                }
-
                 SmsSingleSender smsSingleSender = getTxYunSender();
                 TxYunMsgMaker txYunMsgMaker = new TxYunMsgMaker();
 
@@ -221,18 +201,6 @@ public class PushControl {
                 }
                 break;
             case MessageTypeEnum.ALI_TEMPLATE_CODE:
-                String aliServerUrl = App.config.getAliServerUrl();
-                String aliAppKey = App.config.getAliAppKey();
-                String aliAppSecret = App.config.getAliAppSecret();
-
-                if (StringUtils.isEmpty(aliServerUrl) || StringUtils.isEmpty(aliAppKey)
-                        || StringUtils.isEmpty(aliAppSecret)) {
-                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
-                            "请先在设置中填写并保存阿里大于相关配置！", "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    return false;
-                }
-
                 TaobaoClient client = getTaobaoClient();
                 AliTemplateMsgMaker aliTemplateMsgMaker = new AliTemplateMsgMaker();
                 for (String[] msgData : msgDataList) {
@@ -246,15 +214,6 @@ public class PushControl {
                 }
                 break;
             case MessageTypeEnum.YUN_PIAN_CODE:
-                String yunpianApiKey = App.config.getYunpianApiKey();
-
-                if (StringUtils.isEmpty(yunpianApiKey)) {
-                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
-                            "请先在设置中填写并保存云片网短信相关配置！", "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    return false;
-                }
-
                 YunpianClient yunpianClient = getYunpianClient();
                 YunPianMsgMaker yunPianMsgMaker = new YunPianMsgMaker();
                 for (String[] msgData : msgDataList) {
@@ -279,15 +238,6 @@ public class PushControl {
      * @return WxMpConfigStorage
      */
     private static WxMpInMemoryConfigStorage wxMpConfigStorage() {
-        if (StringUtils.isEmpty(App.config.getWechatAppId()) || StringUtils.isEmpty(App.config.getWechatAppSecret())) {
-            JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "请先在设置中填写并保存公众号相关配置！", "提示",
-                    JOptionPane.INFORMATION_MESSAGE);
-            PushForm.pushForm.getScheduleRunButton().setEnabled(true);
-            PushForm.pushForm.getPushStartButton().setEnabled(true);
-            PushForm.pushForm.getPushStopButton().setEnabled(false);
-            PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
-            return null;
-        }
         WxMpInMemoryConfigStorage configStorage = new WxMpInMemoryConfigStorage();
         configStorage.setAppId(App.config.getWechatAppId());
         configStorage.setSecret(App.config.getWechatAppSecret());
@@ -327,15 +277,6 @@ public class PushControl {
      */
     private static WxMaInMemoryConfig wxMaConfigStorage() {
         WxMaInMemoryConfig configStorage = new WxMaInMemoryConfig();
-        if (StringUtils.isEmpty(App.config.getMiniAppAppId()) || StringUtils.isEmpty(App.config.getMiniAppAppSecret())) {
-            JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "请先在设置中填写并保存小程序相关配置！", "提示",
-                    JOptionPane.INFORMATION_MESSAGE);
-            PushForm.pushForm.getScheduleRunButton().setEnabled(true);
-            PushForm.pushForm.getPushStartButton().setEnabled(true);
-            PushForm.pushForm.getPushStopButton().setEnabled(false);
-            PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
-            return null;
-        }
         configStorage.setAppid(App.config.getMiniAppAppId());
         configStorage.setSecret(App.config.getMiniAppAppSecret());
         configStorage.setToken(App.config.getMiniAppToken());
@@ -502,6 +443,80 @@ public class PushControl {
             }
         }
         return yunpianClient;
+    }
+
+    /**
+     * 推送前检查
+     *
+     * @return
+     */
+    public static boolean pushCheck() {
+        int msgType = App.config.getMsgType();
+        switch (msgType) {
+            case MessageTypeEnum.MP_TEMPLATE_CODE:
+            case MessageTypeEnum.KEFU_CODE:
+            case MessageTypeEnum.KEFU_PRIORITY_CODE: {
+                if (StringUtils.isEmpty(App.config.getWechatAppId()) || StringUtils.isEmpty(App.config.getWechatAppSecret())) {
+                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "请先在设置中填写并保存公众号相关配置！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return false;
+                }
+                break;
+            }
+            case MessageTypeEnum.MA_TEMPLATE_CODE:
+                if (StringUtils.isEmpty(App.config.getMiniAppAppId()) || StringUtils.isEmpty(App.config.getMiniAppAppSecret())) {
+                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "请先在设置中填写并保存小程序相关配置！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return false;
+                }
+                break;
+            case MessageTypeEnum.ALI_TEMPLATE_CODE:
+                String aliServerUrl = App.config.getAliServerUrl();
+                String aliAppKey = App.config.getAliAppKey();
+                String aliAppSecret = App.config.getAliAppSecret();
+
+                if (StringUtils.isEmpty(aliServerUrl) || StringUtils.isEmpty(aliAppKey)
+                        || StringUtils.isEmpty(aliAppSecret)) {
+                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
+                            "请先在设置中填写并保存阿里大于相关配置！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return false;
+                }
+                break;
+            case MessageTypeEnum.ALI_YUN_CODE:
+                String aliyunAccessKeyId = App.config.getAliyunAccessKeyId();
+                String aliyunAccessKeySecret = App.config.getAliyunAccessKeySecret();
+
+                if (StringUtils.isEmpty(aliyunAccessKeyId) || StringUtils.isEmpty(aliyunAccessKeySecret)) {
+                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
+                            "请先在设置中填写并保存阿里云短信相关配置！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return false;
+                }
+                break;
+            case MessageTypeEnum.TX_YUN_CODE:
+                String txyunAppId = App.config.getTxyunAppId();
+                String txyunAppKey = App.config.getTxyunAppKey();
+
+                if (StringUtils.isEmpty(txyunAppId) || StringUtils.isEmpty(txyunAppKey)) {
+                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
+                            "请先在设置中填写并保存腾讯云短信相关配置！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return false;
+                }
+                break;
+            case MessageTypeEnum.YUN_PIAN_CODE:
+                String yunpianApiKey = App.config.getYunpianApiKey();
+                if (StringUtils.isEmpty(yunpianApiKey)) {
+                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
+                            "请先在设置中填写并保存云片网短信相关配置！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return false;
+                }
+                break;
+            default:
+        }
+        return true;
     }
 
     /**
