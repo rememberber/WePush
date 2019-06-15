@@ -28,7 +28,7 @@ public class CommonTipsDialog extends JDialog {
     private JTextPane textPane1;
 
     public CommonTipsDialog() {
-        super(App.mainFrame, "帮助");
+        super(App.mainFrame, "提示");
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);

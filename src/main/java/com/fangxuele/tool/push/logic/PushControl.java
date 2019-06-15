@@ -14,6 +14,7 @@ import com.fangxuele.tool.push.logic.msgmaker.YunPianMsgMaker;
 import com.fangxuele.tool.push.logic.msgsender.AliDayuTemplateMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.AliYunMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.SendResult;
 import com.fangxuele.tool.push.logic.msgsender.TxYunMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.WxKefuMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.WxKefuPriorMsgSender;
@@ -58,9 +59,10 @@ public class PushControl {
      *
      * @throws Exception 异常
      */
-    public static boolean preview() throws Exception {
+    public static List<SendResult> preview() {
+        List<SendResult> sendResultList = new ArrayList<>();
         if (!pushCheck()) {
-            return false;
+            return null;
         }
         List<String[]> msgDataList = new ArrayList<>();
         for (String data : MessageEditForm.messageEditForm.getPreviewUserField().getText().split(";")) {
@@ -98,10 +100,16 @@ public class PushControl {
             default:
                 break;
         }
-        for (String[] msgData : msgDataList) {
-            iMsgSender.send(msgData);
+
+        if (iMsgSender != null) {
+            for (String[] msgData : msgDataList) {
+                sendResultList.add(iMsgSender.send(msgData));
+            }
+        } else {
+            return null;
         }
-        return true;
+
+        return sendResultList;
     }
 
     /**
