@@ -53,6 +53,7 @@ public class MpTemplateMsgForm {
     private JTextField templateDataColorTextField;
     private JButton templateMsgDataAddButton;
     private JTable templateMsgDataTable;
+    private JComboBox comboBox1;
 
     public static MpTemplateMsgForm mpTemplateMsgForm = new MpTemplateMsgForm();
 
@@ -303,27 +304,25 @@ public class MpTemplateMsgForm {
         templateMsgDataAddButton.setIcon(new ImageIcon(getClass().getResource("/icon/add.png")));
         templateMsgDataAddButton.setText("添加");
         templateMsgDataPanel.add(templateMsgDataAddButton, new GridConstraints(0, 6, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JScrollPane scrollPane1 = new JScrollPane();
-        templateMsgDataPanel.add(scrollPane1, new GridConstraints(1, 0, 1, 7, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         templateMsgDataTable = new JTable();
         templateMsgDataTable.setAutoCreateColumnsFromModel(true);
         templateMsgDataTable.setAutoCreateRowSorter(true);
         templateMsgDataTable.setGridColor(new Color(-12236470));
         templateMsgDataTable.setRowHeight(36);
-        scrollPane1.setViewportView(templateMsgDataTable);
+        templateMsgDataPanel.add(templateMsgDataTable, new GridConstraints(1, 0, 1, 7, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, new Dimension(-1, 100), null, null, 0, false));
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(4, 3, new Insets(0, 0, 5, 0), -1, -1));
+        panel2.setLayout(new GridLayoutManager(4, 4, new Insets(0, 0, 5, 0), -1, -1));
         templateMsgPanel.add(panel2, new GridConstraints(0, 0, 4, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         templateIdLabel = new JLabel();
         templateIdLabel.setText("模板ID *");
         panel2.add(templateIdLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         msgTemplateIdTextField = new JTextField();
-        panel2.add(msgTemplateIdTextField, new GridConstraints(0, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel2.add(msgTemplateIdTextField, new GridConstraints(0, 2, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         templateUrlLabel = new JLabel();
         templateUrlLabel.setText("跳转URL");
         panel2.add(templateUrlLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         msgTemplateUrlTextField = new JTextField();
-        panel2.add(msgTemplateUrlTextField, new GridConstraints(1, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel2.add(msgTemplateUrlTextField, new GridConstraints(1, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         templateMiniProgramAppidLabel = new JLabel();
         templateMiniProgramAppidLabel.setText("小程序appid");
         templateMiniProgramAppidLabel.setToolTipText("非必填");
@@ -331,7 +330,7 @@ public class MpTemplateMsgForm {
         msgTemplateMiniAppidTextField = new JTextField();
         msgTemplateMiniAppidTextField.setText("");
         msgTemplateMiniAppidTextField.setToolTipText("非必填");
-        panel2.add(msgTemplateMiniAppidTextField, new GridConstraints(2, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel2.add(msgTemplateMiniAppidTextField, new GridConstraints(2, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         templateMiniProgramPagePathLabel = new JLabel();
         templateMiniProgramPagePathLabel.setText("小程序页面路径");
         templateMiniProgramPagePathLabel.setToolTipText("非必填");
@@ -339,7 +338,9 @@ public class MpTemplateMsgForm {
         msgTemplateMiniPagePathTextField = new JTextField();
         msgTemplateMiniPagePathTextField.setText("");
         msgTemplateMiniPagePathTextField.setToolTipText("非必填");
-        panel2.add(msgTemplateMiniPagePathTextField, new GridConstraints(3, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel2.add(msgTemplateMiniPagePathTextField, new GridConstraints(3, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        comboBox1 = new JComboBox();
+        panel2.add(comboBox1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         templateMsgNameLabel.setLabelFor(templateDataNameTextField);
         templateMsgValueLabel.setLabelFor(templateDataValueTextField);
         templateMsgColorLabel.setLabelFor(templateDataColorTextField);
