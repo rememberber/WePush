@@ -22,7 +22,7 @@ import java.util.Map;
  * @author <a href="https://github.com/rememberber">Zhou Bo</a>
  * @since 2019/6/14.
  */
-public class AliTemplateMsgMaker extends BaseMsgMaker {
+public class AliTemplateMsgMaker extends BaseMsgMaker implements IMsgMaker{
 
     public static String templateId;
 
@@ -58,6 +58,7 @@ public class AliTemplateMsgMaker extends BaseMsgMaker {
      * @param msgData 消息信息
      * @return AlibabaAliqinFcSmsNumSendRequest
      */
+    @Override
     public AlibabaAliqinFcSmsNumSendRequest makeMsg(String[] msgData) {
         AlibabaAliqinFcSmsNumSendRequest request = new AlibabaAliqinFcSmsNumSendRequest();
         // 用户可以根据该会员ID识别是哪位会员使用了你的应用

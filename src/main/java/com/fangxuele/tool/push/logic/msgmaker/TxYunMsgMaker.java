@@ -16,7 +16,7 @@ import java.util.List;
  * @author <a href="https://github.com/rememberber">Zhou Bo</a>
  * @since 2019/6/14.
  */
-public class TxYunMsgMaker extends BaseMsgMaker {
+public class TxYunMsgMaker extends BaseMsgMaker implements IMsgMaker{
 
     public static int templateId;
 
@@ -47,6 +47,7 @@ public class TxYunMsgMaker extends BaseMsgMaker {
      * @param msgData 消息信息
      * @return String[]
      */
+    @Override
     public String[] makeMsg(String[] msgData) {
 
         VelocityContext velocityContext = getVelocityContext(msgData);
