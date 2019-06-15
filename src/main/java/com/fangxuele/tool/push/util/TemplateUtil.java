@@ -1,6 +1,7 @@
 package com.fangxuele.tool.push.util;
 
 import com.fangxuele.tool.push.logic.PushControl;
+import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
 import org.apache.velocity.VelocityContext;
@@ -28,7 +29,7 @@ public class TemplateUtil {
     public static String evaluate(String content, VelocityContext velocityContext) {
 
         if (content.contains("NICK_NAME")) {
-            WxMpService wxMpService = PushControl.getWxMpService();
+            WxMpService wxMpService = WxMpTemplateMsgSender.getWxMpService();
             String nickName = "";
             try {
                 nickName = wxMpService.getUserService().userInfo(velocityContext.get(PushControl.TEMPLATE_VAR_PREFIX + "0").toString()).getNickname();

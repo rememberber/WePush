@@ -1,6 +1,5 @@
 package com.fangxuele.tool.push.logic;
 
-import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.hutool.core.date.BetweenFormater;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
@@ -8,19 +7,19 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.logic.msgthread.AliDayuTemplateMsgThread;
-import com.fangxuele.tool.push.logic.msgthread.AliYunSmsMsgThread;
+import com.fangxuele.tool.push.logic.msgsender.AliDayuTemplateMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.AliYunMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.TxYunMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.WxKefuMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.WxKefuPriorMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.WxMaTemplateMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.YunPianMsgSender;
 import com.fangxuele.tool.push.logic.msgthread.BaseMsgThread;
-import com.fangxuele.tool.push.logic.msgthread.KeFuMsgThread;
-import com.fangxuele.tool.push.logic.msgthread.KeFuPriorMsgThread;
-import com.fangxuele.tool.push.logic.msgthread.MaTemplateMsgThread;
-import com.fangxuele.tool.push.logic.msgthread.MpTemplateMsgThread;
-import com.fangxuele.tool.push.logic.msgthread.TxYunSmsMsgThread;
-import com.fangxuele.tool.push.logic.msgthread.YunpianSmsMsgThread;
+import com.fangxuele.tool.push.logic.msgthread.MsgSendThread;
 import com.fangxuele.tool.push.ui.component.TableInCellProgressBarRenderer;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
-import me.chanjar.weixin.mp.api.WxMpService;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -140,39 +139,31 @@ public class PushRunThread extends Thread {
             }
             switch (msgType) {
                 case MessageTypeEnum.MP_TEMPLATE_CODE: {
-                    thread = new MpTemplateMsgThread(startIndex, endIndex);
-                    WxMpService wxMpService = PushControl.getWxMpService();
-                    thread.setWxMpService(wxMpService);
+                    thread = new MsgSendThread(startIndex, endIndex, new WxMpTemplateMsgSender());
                     break;
                 }
                 case MessageTypeEnum.MA_TEMPLATE_CODE:
-                    thread = new MaTemplateMsgThread(startIndex, endIndex);
-                    WxMaService wxMaService = PushControl.getWxMaService();
-                    ((MaTemplateMsgThread) thread).setWxMaService(wxMaService);
+                    thread = new MsgSendThread(startIndex, endIndex, new WxMaTemplateMsgSender());
                     break;
                 case MessageTypeEnum.KEFU_CODE: {
-                    thread = new KeFuMsgThread(startIndex, endIndex);
-                    WxMpService wxMpService = PushControl.getWxMpService();
-                    thread.setWxMpService(wxMpService);
+                    thread = new MsgSendThread(startIndex, endIndex, new WxKefuMsgSender());
                     break;
                 }
                 case MessageTypeEnum.KEFU_PRIORITY_CODE: {
-                    thread = new KeFuPriorMsgThread(startIndex, endIndex);
-                    WxMpService wxMpService = PushControl.getWxMpService();
-                    thread.setWxMpService(wxMpService);
+                    thread = new MsgSendThread(startIndex, endIndex, new WxKefuPriorMsgSender());
                     break;
                 }
                 case MessageTypeEnum.ALI_TEMPLATE_CODE:
-                    thread = new AliDayuTemplateMsgThread(startIndex, endIndex);
+                    thread = new MsgSendThread(startIndex, endIndex, new AliDayuTemplateMsgSender());
                     break;
                 case MessageTypeEnum.ALI_YUN_CODE:
-                    thread = new AliYunSmsMsgThread(startIndex, endIndex);
+                    thread = new MsgSendThread(startIndex, endIndex, new AliYunMsgSender());
                     break;
                 case MessageTypeEnum.TX_YUN_CODE:
-                    thread = new TxYunSmsMsgThread(startIndex, endIndex);
+                    thread = new MsgSendThread(startIndex, endIndex, new TxYunMsgSender());
                     break;
                 case MessageTypeEnum.YUN_PIAN_CODE:
-                    thread = new YunpianSmsMsgThread(startIndex, endIndex);
+                    thread = new MsgSendThread(startIndex, endIndex, new YunPianMsgSender());
                     break;
                 default:
             }

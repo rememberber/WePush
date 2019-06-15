@@ -15,7 +15,7 @@ import com.fangxuele.tool.push.dao.TWxMpUserMapper;
 import com.fangxuele.tool.push.domain.TWxMpUser;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.PushData;
-import com.fangxuele.tool.push.logic.PushControl;
+import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
 import com.fangxuele.tool.push.ui.component.TableInCellImageLabelRenderer;
 import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
@@ -202,7 +202,7 @@ public class MemberListener {
 
         // 刷新可选的标签按钮事件
         MemberForm.memberForm.getMemberImportTagFreshButton().addActionListener(e -> {
-            WxMpService wxMpService = PushControl.getWxMpService();
+            WxMpService wxMpService = WxMpTemplateMsgSender.getWxMpService();
             if (wxMpService.getWxMpConfigStorage() == null) {
                 return;
             }
@@ -558,7 +558,7 @@ public class MemberListener {
         progressBar.setVisible(true);
         progressBar.setIndeterminate(true);
 
-        WxMpService wxMpService = PushControl.getWxMpService();
+        WxMpService wxMpService = WxMpTemplateMsgSender.getWxMpService();
         if (wxMpService.getWxMpConfigStorage() == null) {
             return;
         }
@@ -619,7 +619,7 @@ public class MemberListener {
         progressBar.setVisible(true);
         progressBar.setIndeterminate(true);
 
-        WxMpService wxMpService = PushControl.getWxMpService();
+        WxMpService wxMpService = WxMpTemplateMsgSender.getWxMpService();
         if (wxMpService.getWxMpConfigStorage() == null) {
             return;
         }
@@ -747,7 +747,7 @@ public class MemberListener {
             needToGetInfoFromWeiXin = true;
         }
         if (needToGetInfoFromWeiXin) {
-            wxMpService = PushControl.getWxMpService();
+            wxMpService = WxMpTemplateMsgSender.getWxMpService();
         }
         for (int i = 0; i < PushData.allUser.size(); i++) {
             String[] importedData = PushData.allUser.get(i);

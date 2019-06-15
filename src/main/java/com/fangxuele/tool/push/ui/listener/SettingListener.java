@@ -5,7 +5,12 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TWxAccountMapper;
 import com.fangxuele.tool.push.domain.TWxAccount;
-import com.fangxuele.tool.push.logic.PushControl;
+import com.fangxuele.tool.push.logic.msgsender.AliDayuTemplateMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.AliYunMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.TxYunMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.WxMaTemplateMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.YunPianMsgSender;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.dialog.SwitchWxAccountDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
@@ -93,8 +98,8 @@ public class SettingListener {
                 }
 
                 SettingForm.initSwitchMultiAccount();
-                PushControl.wxMpConfigStorage = null;
-                PushControl.wxMpService = null;
+                WxMpTemplateMsgSender.wxMpConfigStorage = null;
+                WxMpTemplateMsgSender.wxMpService = null;
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {
@@ -173,8 +178,8 @@ public class SettingListener {
                 }
 
                 SettingForm.initSwitchMultiAccount();
-                PushControl.wxMaConfigStorage = null;
-                PushControl.wxMaService = null;
+                WxMaTemplateMsgSender.wxMaConfigStorage = null;
+                WxMaTemplateMsgSender.wxMaService = null;
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {
@@ -214,7 +219,7 @@ public class SettingListener {
                 App.config.setAliyunAccessKeySecret(new String(SettingForm.settingForm.getAliyunAccessKeySecretTextField().getPassword()));
                 App.config.setAliyunSign(SettingForm.settingForm.getAliyunSignTextField().getText());
                 App.config.save();
-                PushControl.iAcsClient = null;
+                AliYunMsgSender.iAcsClient = null;
 
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
@@ -233,7 +238,7 @@ public class SettingListener {
                 App.config.setAliAppSecret(new String(SettingForm.settingForm.getAliAppSecretPasswordField().getPassword()));
                 App.config.setAliSign(SettingForm.settingForm.getAliSignTextField().getText());
                 App.config.save();
-                PushControl.taobaoClient = null;
+                AliDayuTemplateMsgSender.taobaoClient = null;
 
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
@@ -252,7 +257,7 @@ public class SettingListener {
                 App.config.setTxyunSign(SettingForm.settingForm.getTxyunSignTextField().getText());
                 App.config.save();
 
-                PushControl.smsSingleSender = null;
+                TxYunMsgSender.smsSingleSender = null;
 
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
@@ -268,7 +273,7 @@ public class SettingListener {
             try {
                 App.config.setYunpianApiKey(new String(SettingForm.settingForm.getYunpianApiKeyTextField().getPassword()));
                 App.config.save();
-                PushControl.yunpianClient = null;
+                YunPianMsgSender.yunpianClient = null;
 
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
