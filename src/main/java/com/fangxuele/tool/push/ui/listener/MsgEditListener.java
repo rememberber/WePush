@@ -5,6 +5,7 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.PushControl;
+import com.fangxuele.tool.push.logic.msgsender.SendResult;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
@@ -24,6 +25,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 /**
  * <pre>
@@ -93,6 +95,11 @@ public class MsgEditListener {
         // 预览按钮事件
         MessageEditForm.messageEditForm.getPreviewMsgButton().addActionListener(e -> {
             try {
+                if (StringUtils.isEmpty(MessageEditForm.messageEditForm.getMsgNameField().getText())) {
+                    JOptionPane.showMessageDialog(messagePanel, "请先选择一条消息！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
                 if ("".equals(MessageEditForm.messageEditForm.getPreviewUserField().getText().trim())) {
                     JOptionPane.showMessageDialog(messagePanel, "预览用户不能为空！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
@@ -106,9 +113,27 @@ public class MsgEditListener {
                             JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }
-                if (PushControl.preview()) {
-                    JOptionPane.showMessageDialog(messagePanel, "发送预览消息成功！", "成功",
-                            JOptionPane.INFORMATION_MESSAGE);
+
+                List<SendResult> sendResultList = PushControl.preview();
+                if (sendResultList != null) {
+                    CommonTipsDialog dialog = new CommonTipsDialog();
+
+                    StringBuilder tipsBuilder = new StringBuilder();
+                    int totalCount = MessageEditForm.messageEditForm.getPreviewUserField().getText().split(";").length;
+                    long successCount = sendResultList.stream().filter(SendResult::isSuccess).count();
+                    if (totalCount == successCount) {
+                        tipsBuilder.append("<h1>发送预览消息成功！</h1>");
+                    } else if (successCount == 0) {
+                        tipsBuilder.append("<h2>发送预览消息失败！</h2>");
+                    } else {
+                        tipsBuilder.append("<h2>有部分预览消息发送失败！</h2>");
+                    }
+                    sendResultList.stream().filter(sendResult -> !sendResult.isSuccess())
+                            .forEach(sendResult -> tipsBuilder.append("<p>").append(sendResult.getInfo()).append("</p>"));
+
+                    dialog.setHtmlText(tipsBuilder.toString());
+                    dialog.pack();
+                    dialog.setVisible(true);
                 }
             } catch (Exception e1) {
                 JOptionPane.showMessageDialog(messagePanel, "发送预览消息失败！\n\n" + e1.getMessage(), "失败",

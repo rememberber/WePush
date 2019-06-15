@@ -24,7 +24,7 @@ public class PushData {
     /**
      * 总记录数
      */
-    public static long totalRecords;
+    static long totalRecords;
 
     /**
      * 发送成功数
@@ -69,12 +69,12 @@ public class PushData {
     /**
      * 线程总数
      */
-    public static int threadCount;
+    static int threadCount;
 
     /**
      * 已经停止了的线程总数
      */
-    public static LongAdder stopedThreadCount = new LongAdder();
+    static LongAdder stopedThreadCount = new LongAdder();
 
     /**
      * 成功数+1
@@ -100,7 +100,7 @@ public class PushData {
     /**
      * 重置推送数据
      */
-    public static void reset() {
+    static void reset() {
         PushData.running = true;
         PushData.successRecords.reset();
         PushData.failRecords.reset();
