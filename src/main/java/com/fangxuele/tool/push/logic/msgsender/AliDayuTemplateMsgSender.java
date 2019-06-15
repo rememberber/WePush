@@ -7,6 +7,7 @@ import com.taobao.api.DefaultTaobaoClient;
 import com.taobao.api.TaobaoClient;
 import com.taobao.api.request.AlibabaAliqinFcSmsNumSendRequest;
 import com.taobao.api.response.AlibabaAliqinFcSmsNumSendResponse;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * <pre>
@@ -16,6 +17,7 @@ import com.taobao.api.response.AlibabaAliqinFcSmsNumSendResponse;
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
  * @since 2019/6/15.
  */
+@Slf4j
 public class AliDayuTemplateMsgSender implements IMsgSender {
     /**
      * 阿里大于短信client
@@ -49,7 +51,8 @@ public class AliDayuTemplateMsgSender implements IMsgSender {
             }
         } catch (Exception e) {
             result.setSuccess(false);
-            result.setInfo(e.toString());
+            result.setInfo(e.getMessage());
+            log.error(e.toString());
         }
 
         return result;

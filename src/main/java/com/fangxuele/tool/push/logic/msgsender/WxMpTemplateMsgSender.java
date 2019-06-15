@@ -3,6 +3,7 @@ package com.fangxuele.tool.push.logic.msgsender;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
+import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.util.http.apache.DefaultApacheHttpClientBuilder;
 import me.chanjar.weixin.mp.api.WxMpInMemoryConfigStorage;
 import me.chanjar.weixin.mp.api.WxMpService;
@@ -17,6 +18,7 @@ import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
  * @since 2019/6/15.
  */
+@Slf4j
 public class WxMpTemplateMsgSender implements IMsgSender {
     public volatile static WxMpInMemoryConfigStorage wxMpConfigStorage;
     public volatile static WxMpService wxMpService;
@@ -43,7 +45,8 @@ public class WxMpTemplateMsgSender implements IMsgSender {
             }
         } catch (Exception e) {
             sendResult.setSuccess(false);
-            sendResult.setInfo(e.toString());
+            sendResult.setInfo(e.getMessage());
+            log.error(e.toString());
             return sendResult;
         }
 

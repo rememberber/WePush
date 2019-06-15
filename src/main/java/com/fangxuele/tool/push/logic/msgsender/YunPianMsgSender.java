@@ -6,6 +6,7 @@ import com.fangxuele.tool.push.logic.msgmaker.YunPianMsgMaker;
 import com.yunpian.sdk.YunpianClient;
 import com.yunpian.sdk.model.Result;
 import com.yunpian.sdk.model.SmsSingleSend;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 
@@ -17,6 +18,7 @@ import java.util.Map;
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
  * @since 2019/6/15.
  */
+@Slf4j
 public class YunPianMsgSender implements IMsgSender {
     /**
      * 云片网短信client
@@ -52,7 +54,8 @@ public class YunPianMsgSender implements IMsgSender {
             }
         } catch (Exception e) {
             sendResult.setSuccess(false);
-            sendResult.setInfo(e.toString());
+            sendResult.setInfo(e.getMessage());
+            log.error(e.toString());
         }
 
         return sendResult;

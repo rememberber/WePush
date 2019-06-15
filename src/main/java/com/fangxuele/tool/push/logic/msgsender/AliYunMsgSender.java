@@ -9,6 +9,7 @@ import com.aliyuncs.profile.DefaultProfile;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.msgmaker.AliyunMsgMaker;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * <pre>
@@ -18,6 +19,7 @@ import com.fangxuele.tool.push.logic.msgmaker.AliyunMsgMaker;
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
  * @since 2019/6/15.
  */
+@Slf4j
 public class AliYunMsgSender implements IMsgSender {
     /**
      * 阿里云短信client
@@ -52,7 +54,8 @@ public class AliYunMsgSender implements IMsgSender {
             }
         } catch (Exception e) {
             sendResult.setSuccess(false);
-            sendResult.setInfo(e.toString());
+            sendResult.setInfo(e.getMessage());
+            log.error(e.toString());
         }
 
         return sendResult;

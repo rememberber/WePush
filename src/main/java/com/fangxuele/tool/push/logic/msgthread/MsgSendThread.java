@@ -66,7 +66,7 @@ public class MsgSendThread extends BaseMsgThread {
                 PushData.sendFailList.add(msgData);
 
                 // 失败异常信息输出控制台
-                ConsoleUtil.consoleWithLog("发送失败:" + sendResult.getInfo() + ";msgData:" + JSONUtil.toJsonPrettyStr(msgData));
+                ConsoleUtil.consoleOnly("发送失败:" + sendResult.getInfo() + ";msgData:" + JSONUtil.toJsonPrettyStr(msgData));
 
                 // 当前线程发送失败+1
                 currentThreadFailCount++;
