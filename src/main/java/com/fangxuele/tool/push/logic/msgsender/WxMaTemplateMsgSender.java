@@ -38,7 +38,12 @@ public class WxMaTemplateMsgSender implements IMsgSender {
             WxMaTemplateMessage wxMaTemplateMessage = wxMaTemplateMsgMaker.makeMsg(msgData);
             wxMaTemplateMessage.setToUser(openId);
             wxMaTemplateMessage.setFormId(msgData[1]);
-            wxMaService.getMsgService().sendTemplateMsg(wxMaTemplateMessage);
+            if (PushControl.dryRun) {
+                sendResult.setSuccess(true);
+                return sendResult;
+            } else {
+                wxMaService.getMsgService().sendTemplateMsg(wxMaTemplateMessage);
+            }
         } catch (Exception e) {
             sendResult.setSuccess(false);
             sendResult.setInfo(e.toString());

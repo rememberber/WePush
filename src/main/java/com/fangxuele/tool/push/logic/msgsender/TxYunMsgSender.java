@@ -35,14 +35,19 @@ public class TxYunMsgSender implements IMsgSender {
             String smsSign = App.config.getAliyunSign();
             String[] params = txYunMsgMaker.makeMsg(msgData);
             String telNum = msgData[0];
-            SmsSingleSenderResult result = smsSingleSender.sendWithParam("86", telNum,
-                    templateId, params, smsSign, "", "");
-
-            if (result.result == 0) {
+            if (PushControl.dryRun) {
                 sendResult.setSuccess(true);
+                return sendResult;
             } else {
-                sendResult.setSuccess(false);
-                sendResult.setInfo(result.toString());
+                SmsSingleSenderResult result = smsSingleSender.sendWithParam("86", telNum,
+                        templateId, params, smsSign, "", "");
+
+                if (result.result == 0) {
+                    sendResult.setSuccess(true);
+                } else {
+                    sendResult.setSuccess(false);
+                    sendResult.setInfo(result.toString());
+                }
             }
         } catch (Exception e) {
             sendResult.setSuccess(false);

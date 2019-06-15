@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.logic.msgsender;
 
+import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.msgmaker.WxKefuMsgMaker;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
@@ -25,11 +26,16 @@ public class WxKefuMsgSender implements IMsgSender {
     public SendResult send(String[] msgData) {
         SendResult sendResult = new SendResult();
 
-        String openId = msgData[0];
-        WxMpKefuMessage wxMpKefuMessage = wxKefuMsgMaker.makeMsg(msgData);
-        wxMpKefuMessage.setToUser(openId);
         try {
-            wxMpService.getKefuService().sendKefuMessage(wxMpKefuMessage);
+            String openId = msgData[0];
+            WxMpKefuMessage wxMpKefuMessage = wxKefuMsgMaker.makeMsg(msgData);
+            wxMpKefuMessage.setToUser(openId);
+            if (PushControl.dryRun) {
+                sendResult.setSuccess(true);
+                return sendResult;
+            } else {
+                wxMpService.getKefuService().sendKefuMessage(wxMpKefuMessage);
+            }
         } catch (Exception e) {
             sendResult.setSuccess(false);
             sendResult.setInfo(e.toString());

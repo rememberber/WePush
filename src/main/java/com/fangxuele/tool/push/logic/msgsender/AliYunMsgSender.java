@@ -38,12 +38,17 @@ public class AliYunMsgSender implements IMsgSender {
         try {
             //初始化acsClient,暂不支持region化
             SendSmsRequest sendSmsRequest = aliyunMsgMaker.makeMsg(msgData);
-            SendSmsResponse response = iAcsClient.getAcsResponse(sendSmsRequest);
-            if (response.getCode() != null && "OK".equals(response.getCode())) {
+            if (PushControl.dryRun) {
                 sendResult.setSuccess(true);
+                return sendResult;
             } else {
-                sendResult.setSuccess(false);
-                sendResult.setInfo(response.getMessage() + ";ErrorCode:" + response.getCode());
+                SendSmsResponse response = iAcsClient.getAcsResponse(sendSmsRequest);
+                if (response.getCode() != null && "OK".equals(response.getCode())) {
+                    sendResult.setSuccess(true);
+                } else {
+                    sendResult.setSuccess(false);
+                    sendResult.setInfo(response.getMessage() + ";ErrorCode:" + response.getCode());
+                }
             }
         } catch (Exception e) {
             sendResult.setSuccess(false);

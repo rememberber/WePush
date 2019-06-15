@@ -38,12 +38,17 @@ public class YunPianMsgSender implements IMsgSender {
             Map<String, String> params = yunPianMsgMaker.makeMsg(msgData);
             String telNum = msgData[0];
             params.put(YunpianClient.MOBILE, telNum);
-            Result<SmsSingleSend> result = yunpianClient.sms().single_send(params);
-            if (result.getCode() == 0) {
+            if (PushControl.dryRun) {
                 sendResult.setSuccess(true);
+                return sendResult;
             } else {
-                sendResult.setSuccess(false);
-                sendResult.setInfo(result.toString());
+                Result<SmsSingleSend> result = yunpianClient.sms().single_send(params);
+                if (result.getCode() == 0) {
+                    sendResult.setSuccess(true);
+                } else {
+                    sendResult.setSuccess(false);
+                    sendResult.setInfo(result.toString());
+                }
             }
         } catch (Exception e) {
             sendResult.setSuccess(false);

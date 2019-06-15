@@ -35,7 +35,12 @@ public class WxMpTemplateMsgSender implements IMsgSender {
             String openId = msgData[0];
             WxMpTemplateMessage wxMessageTemplate = wxMpTemplateMsgMaker.makeMsg(msgData);
             wxMessageTemplate.setToUser(openId);
-            wxMpService.getTemplateMsgService().sendTemplateMsg(wxMessageTemplate);
+            if (PushControl.dryRun) {
+                sendResult.setSuccess(true);
+                return sendResult;
+            } else {
+                wxMpService.getTemplateMsgService().sendTemplateMsg(wxMessageTemplate);
+            }
         } catch (Exception e) {
             sendResult.setSuccess(false);
             sendResult.setInfo(e.toString());

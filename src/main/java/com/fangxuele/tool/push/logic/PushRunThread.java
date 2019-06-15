@@ -63,6 +63,9 @@ public class PushRunThread extends Thread {
         PushForm.pushForm.getPushSuccessCount().setText("0");
         PushForm.pushForm.getPushFailCount().setText("0");
 
+        // 设置是否空跑
+        PushControl.dryRun = PushForm.pushForm.getDryRunCheckBox().isSelected();
+
         // 重置推送数据
         PushData.reset();
 
