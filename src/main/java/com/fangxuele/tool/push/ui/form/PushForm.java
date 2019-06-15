@@ -46,6 +46,7 @@ public class PushForm {
     private JLabel countPerThread;
     private JSlider threadCountSlider;
     private JLabel threadTipsLabel;
+    private JLabel dryRunHelpLabel;
 
     public static PushForm pushForm = new PushForm();
 
@@ -144,7 +145,7 @@ public class PushForm {
         pushMsgName = new JLabel();
         Font pushMsgNameFont = this.$$$getFont$$$(null, -1, 24, pushMsgName.getFont());
         if (pushMsgNameFont != null) pushMsgName.setFont(pushMsgNameFont);
-        pushMsgName.setForeground(new Color(-13587376));
+        pushMsgName.setForeground(new Color(-16155667));
         pushMsgName.setText("消息标题");
         pushUpPanel.add(pushMsgName, new GridConstraints(0, 8, 1, 5, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label4 = new JLabel();
@@ -161,7 +162,7 @@ public class PushForm {
         pushDownPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         pushPanel.add(pushDownPanel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         pushControlPanel = new JPanel();
-        pushControlPanel.setLayout(new GridLayoutManager(1, 11, new Insets(0, 0, 0, 0), -1, -1));
+        pushControlPanel.setLayout(new GridLayoutManager(1, 12, new Insets(0, 0, 0, 0), -1, -1));
         pushDownPanel.add(pushControlPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label5 = new JLabel();
         label5.setText("最大线程池");
@@ -185,16 +186,16 @@ public class PushForm {
         ScheduleRunButton = new JButton();
         ScheduleRunButton.setIcon(new ImageIcon(getClass().getResource("/icon/clock.png")));
         ScheduleRunButton.setText("按计划执行");
-        pushControlPanel.add(ScheduleRunButton, new GridConstraints(0, 8, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushControlPanel.add(ScheduleRunButton, new GridConstraints(0, 9, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         pushStopButton = new JButton();
         pushStopButton.setEnabled(false);
         pushStopButton.setIcon(new ImageIcon(getClass().getResource("/icon/suspend.png")));
         pushStopButton.setText("停止");
-        pushControlPanel.add(pushStopButton, new GridConstraints(0, 9, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushControlPanel.add(pushStopButton, new GridConstraints(0, 10, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         pushStartButton = new JButton();
         pushStartButton.setIcon(new ImageIcon(getClass().getResource("/icon/run@2x.png")));
         pushStartButton.setText("开始");
-        pushControlPanel.add(pushStartButton, new GridConstraints(0, 10, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushControlPanel.add(pushStartButton, new GridConstraints(0, 11, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         dryRunCheckBox = new JCheckBox();
         dryRunCheckBox.setText("空跑");
         dryRunCheckBox.setToolTipText("空跑勾选时不会真实发送消息");
@@ -224,6 +225,10 @@ public class PushForm {
         threadTipsLabel.setIcon(new ImageIcon(getClass().getResource("/icon/helpButton.png")));
         threadTipsLabel.setText("");
         pushControlPanel.add(threadTipsLabel, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        dryRunHelpLabel = new JLabel();
+        dryRunHelpLabel.setIcon(new ImageIcon(getClass().getResource("/icon/helpButton.png")));
+        dryRunHelpLabel.setText("");
+        pushControlPanel.add(dryRunHelpLabel, new GridConstraints(0, 8, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         pushCenterPanel = new JPanel();
         pushCenterPanel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
         pushPanel.add(pushCenterPanel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
