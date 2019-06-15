@@ -51,8 +51,6 @@ public class PushControl {
 
     /**
      * 预览消息
-     *
-     * @throws Exception 异常
      */
     public static List<SendResult> preview() {
         List<SendResult> sendResultList = new ArrayList<>();
@@ -66,11 +64,11 @@ public class PushControl {
 
         // 准备消息构造器
         prepareMsgMaker();
-        IMsgSender iMsgSender = MsgSenderFactory.getMsgSender();
+        IMsgSender msgSender = MsgSenderFactory.getMsgSender();
 
-        if (iMsgSender != null) {
+        if (msgSender != null) {
             for (String[] msgData : msgDataList) {
-                sendResultList.add(iMsgSender.send(msgData));
+                sendResultList.add(msgSender.send(msgData));
             }
         } else {
             return null;
@@ -82,7 +80,7 @@ public class PushControl {
     /**
      * 推送前检查
      *
-     * @return
+     * @return boolean
      */
     static boolean pushCheck() {
         int msgType = App.config.getMsgType();
@@ -253,7 +251,7 @@ public class PushControl {
     /**
      * 准备消息构造器
      */
-    public static void prepareMsgMaker() {
+    static void prepareMsgMaker() {
         int msgType = App.config.getMsgType();
         switch (msgType) {
             case MessageTypeEnum.MP_TEMPLATE_CODE:

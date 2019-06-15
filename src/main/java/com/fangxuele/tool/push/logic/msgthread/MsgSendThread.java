@@ -4,7 +4,6 @@ import cn.hutool.json.JSONUtil;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.SendResult;
-import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 
@@ -36,8 +35,6 @@ public class MsgSendThread extends BaseMsgThread {
 
         // 初始化当前线程
         initCurrentThread();
-
-        WxMpTemplateMsgSender wxMpTemplateMsgSender = new WxMpTemplateMsgSender();
 
         for (int i = 0; i < list.size(); i++) {
             if (!PushData.running) {

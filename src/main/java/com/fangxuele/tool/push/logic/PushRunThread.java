@@ -7,15 +7,8 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.logic.msgsender.AliDayuTemplateMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.AliYunMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.TxYunMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.WxKefuMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.WxKefuPriorMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.WxMaTemplateMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.YunPianMsgSender;
-import com.fangxuele.tool.push.logic.msgthread.BaseMsgThread;
+import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.logic.msgthread.MsgSendThread;
 import com.fangxuele.tool.push.ui.component.TableInCellProgressBarRenderer;
 import com.fangxuele.tool.push.ui.form.PushForm;
@@ -119,11 +112,10 @@ public class PushRunThread extends Thread {
      */
     private static void shardingAndMsgThread() {
         Object[] data;
-        int msgType = App.config.getMsgType();
 
         int maxThreadPoolSize = App.config.getMaxThreadPool();
         ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(maxThreadPoolSize, maxThreadPoolSize);
-        BaseMsgThread thread = null;
+        MsgSendThread msgSendThread;
         // 每个线程分配
         int perThread = (int) (PushData.totalRecords / PushData.threadCount) + 1;
         DefaultTableModel tableModel = (DefaultTableModel) PushForm.pushForm.getPushThreadTable().getModel();
@@ -137,47 +129,20 @@ public class PushRunThread extends Thread {
             if (endIndex > PushData.totalRecords - 1) {
                 endIndex = (int) (PushData.totalRecords);
             }
-            switch (msgType) {
-                case MessageTypeEnum.MP_TEMPLATE_CODE: {
-                    thread = new MsgSendThread(startIndex, endIndex, new WxMpTemplateMsgSender());
-                    break;
-                }
-                case MessageTypeEnum.MA_TEMPLATE_CODE:
-                    thread = new MsgSendThread(startIndex, endIndex, new WxMaTemplateMsgSender());
-                    break;
-                case MessageTypeEnum.KEFU_CODE: {
-                    thread = new MsgSendThread(startIndex, endIndex, new WxKefuMsgSender());
-                    break;
-                }
-                case MessageTypeEnum.KEFU_PRIORITY_CODE: {
-                    thread = new MsgSendThread(startIndex, endIndex, new WxKefuPriorMsgSender());
-                    break;
-                }
-                case MessageTypeEnum.ALI_TEMPLATE_CODE:
-                    thread = new MsgSendThread(startIndex, endIndex, new AliDayuTemplateMsgSender());
-                    break;
-                case MessageTypeEnum.ALI_YUN_CODE:
-                    thread = new MsgSendThread(startIndex, endIndex, new AliYunMsgSender());
-                    break;
-                case MessageTypeEnum.TX_YUN_CODE:
-                    thread = new MsgSendThread(startIndex, endIndex, new TxYunMsgSender());
-                    break;
-                case MessageTypeEnum.YUN_PIAN_CODE:
-                    thread = new MsgSendThread(startIndex, endIndex, new YunPianMsgSender());
-                    break;
-                default:
-            }
 
-            thread.setTableRow(i);
-            thread.setName("T-" + i);
+            IMsgSender msgSender = MsgSenderFactory.getMsgSender();
+            msgSendThread = new MsgSendThread(startIndex, endIndex, msgSender);
+
+            msgSendThread.setTableRow(i);
+            msgSendThread.setName("T-" + i);
 
             data = new Object[6];
-            data[0] = thread.getName();
+            data[0] = msgSendThread.getName();
             data[1] = startIndex + "-" + endIndex;
             data[5] = 0;
             tableModel.addRow(data);
 
-            threadPoolExecutor.execute(thread);
+            threadPoolExecutor.execute(msgSendThread);
         }
         ConsoleUtil.consoleWithLog("所有线程宝宝启动完毕……");
     }
