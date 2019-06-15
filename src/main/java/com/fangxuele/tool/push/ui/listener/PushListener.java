@@ -301,6 +301,40 @@ public class PushListener {
                 super.mouseExited(e);
             }
         });
+
+        PushForm.pushForm.getDryRunHelpLabel().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                CommonTipsDialog dialog = new CommonTipsDialog();
+
+                StringBuilder tipsBuilder = new StringBuilder();
+                tipsBuilder.append("<h1>什么是空跑？</h1>");
+                tipsBuilder.append("<h2>除了不会真实发送消息，其他与正常推送流程相同</h2>");
+                tipsBuilder.append("<p>空跑模式可以验证消息数据以及流程的准确性</p>");
+                tipsBuilder.append("<p>建议在执行真正推送之前先进行一遍空跑</p>");
+
+                dialog.setHtmlText(tipsBuilder.toString());
+                dialog.pack();
+                dialog.setVisible(true);
+
+                super.mousePressed(e);
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                JLabel label = (JLabel) e.getComponent();
+                label.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                label.setIcon(new ImageIcon(UiConsts.HELP_FOCUSED_ICON));
+                super.mouseEntered(e);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                JLabel label = (JLabel) e.getComponent();
+                label.setIcon(new ImageIcon(UiConsts.HELP_ICON));
+                super.mouseExited(e);
+            }
+        });
     }
 
     private static void tEvent() {

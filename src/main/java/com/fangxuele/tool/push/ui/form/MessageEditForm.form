@@ -42,7 +42,7 @@
                     </constraints>
                     <properties>
                       <font size="28"/>
-                      <foreground color="-13587376"/>
+                      <foreground color="-692421"/>
                       <text value="消息类型"/>
                     </properties>
                   </component>

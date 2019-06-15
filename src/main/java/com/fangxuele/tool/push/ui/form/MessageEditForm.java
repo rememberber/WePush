@@ -167,7 +167,7 @@ public class MessageEditForm {
         msgTypeName = new JLabel();
         Font msgTypeNameFont = this.$$$getFont$$$(null, -1, 28, msgTypeName.getFont());
         if (msgTypeNameFont != null) msgTypeName.setFont(msgTypeNameFont);
-        msgTypeName.setForeground(new Color(-13587376));
+        msgTypeName.setForeground(new Color(-692421));
         msgTypeName.setText("消息类型");
         panel3.add(msgTypeName, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         msgNameLabel = new JLabel();
