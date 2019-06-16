@@ -8,5 +8,10 @@
     "qrCodeUrl": "http://download.zhoubochina.com/qrcode/qrcode_for_rb.jpg",
     "title": "云宝共享书",
     "desc": "<html>云宝共享书，国内首家专注于儿童阅读的共享图书馆，<br/>精选书单，分级阅读，让孩子多读好书；<br/>199元阅读礼包，可借40本纸质绘本，24小时免费送到家。</html>"
+  },
+  {
+    "qrCodeUrl": "http://download.zhoubochina.com/qrcode/foodTrustQrCode.jpeg",
+    "title": "FOODTRUST®丰巢有机",
+    "desc": "<html>追求健康环保的家庭都在这里，做出每一天更安心的选择。</html>"
   }
 ]
