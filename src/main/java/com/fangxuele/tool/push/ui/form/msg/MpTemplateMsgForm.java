@@ -5,6 +5,7 @@ import com.fangxuele.tool.push.dao.TTemplateDataMapper;
 import com.fangxuele.tool.push.domain.TMsgMpTemplate;
 import com.fangxuele.tool.push.domain.TTemplateData;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
 import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
@@ -14,6 +15,8 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import lombok.Getter;
+import me.chanjar.weixin.mp.bean.template.WxMpTemplate;
+import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
@@ -22,9 +25,12 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
+import java.awt.event.ItemEvent;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * <pre>
@@ -54,12 +60,31 @@ public class MpTemplateMsgForm {
     private JTextField templateDataColorTextField;
     private JButton templateMsgDataAddButton;
     private JTable templateMsgDataTable;
+    private JComboBox templateListComboBox;
+    private JTextArea templateContentTextArea;
 
     public static MpTemplateMsgForm mpTemplateMsgForm = new MpTemplateMsgForm();
 
     private static TMsgMpTemplateMapper msgMpTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMpTemplateMapper.class);
 
     private static TTemplateDataMapper templateDataMapper = MybatisUtil.getSqlSession().getMapper(TTemplateDataMapper.class);
+
+    /**
+     * 账号模板列表
+     */
+    public static List<WxMpTemplate> templateList;
+
+    /**
+     * （左侧列表中）所选消息对应的模板ID
+     */
+    public static String selectedMsgTemplateId = "";
+
+    /**
+     * 是否需要监听模板列表ComboBox
+     */
+    public static boolean needListenTemplateListComboBox = false;
+
+    private static final Pattern BRACE_PATTERN = Pattern.compile("\\{([^{}]+)\\}");
 
     public MpTemplateMsgForm() {
         // 模板数据-添加 按钮事件
@@ -99,6 +124,32 @@ public class MpTemplateMsgForm {
                 tableModel.addRow(data);
             }
         });
+        templateListComboBox.addItemListener(e -> {
+            if (needListenTemplateListComboBox && e.getStateChange() == ItemEvent.SELECTED) {
+                int index = mpTemplateMsgForm.getTemplateListComboBox().getSelectedIndex();
+                WxMpTemplate wxMpTemplate = templateList.get(index);
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append("模板ID：").append(wxMpTemplate.getTemplateId()).append("\n");
+                stringBuilder.append("所属行业：").append(wxMpTemplate.getPrimaryIndustry()).append("/").append(wxMpTemplate.getDeputyIndustry()).append("\n");
+                stringBuilder.append("模板内容：").append(wxMpTemplate.getContent()).append("\n");
+                stringBuilder.append("模板示例：").append(wxMpTemplate.getExample()).append("\n");
+                mpTemplateMsgForm.getTemplateContentTextArea().setText(stringBuilder.toString());
+
+                mpTemplateMsgForm.getMsgTemplateIdTextField().setText(wxMpTemplate.getTemplateId());
+//                if (!selectedMsgTemplateId.equals(wxMpTemplate.getTemplateId())) {
+                    initTemplateDataTable();
+                    DefaultTableModel tableModel = (DefaultTableModel) mpTemplateMsgForm.getTemplateMsgDataTable()
+                            .getModel();
+                    List<String> params = getTemplateParams(wxMpTemplate.getContent());
+                    for (String param : params) {
+                        String[] data = new String[3];
+                        data[0] = param;
+                        data[2] = "#000000";
+                        tableModel.addRow(data);
+                    }
+//                }
+            }
+        });
     }
 
     public static void init(String msgName) {
@@ -112,7 +163,10 @@ public class MpTemplateMsgForm {
             mpTemplateMsgForm.getMsgTemplateUrlTextField().setText(tMsgMpTemplate.getUrl());
             mpTemplateMsgForm.getMsgTemplateMiniAppidTextField().setText(tMsgMpTemplate.getMaAppid());
             mpTemplateMsgForm.getMsgTemplateMiniPagePathTextField().setText(tMsgMpTemplate.getMaPagePath());
+
+            selectedMsgTemplateId = tMsgMpTemplate.getTemplateId();
         }
+        initTemplateList();
 
         initTemplateDataTable();
         // 模板消息Data表
@@ -136,6 +190,38 @@ public class MpTemplateMsgForm {
         // 设置列宽
         tableColumnModel.getColumn(3).setPreferredWidth(130);
         tableColumnModel.getColumn(3).setMaxWidth(130);
+    }
+
+    /**
+     * 初始化模板列表ComboBox
+     */
+    public static void initTemplateList() {
+        needListenTemplateListComboBox = false;
+        try {
+            templateList = WxMpTemplateMsgSender.getWxMpService().getTemplateMsgService().getAllPrivateTemplate();
+            mpTemplateMsgForm.getTemplateListComboBox().removeAllItems();
+            for (WxMpTemplate wxMpTemplate : templateList) {
+                mpTemplateMsgForm.getTemplateListComboBox().addItem(wxMpTemplate.getTitle());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        needListenTemplateListComboBox = true;
+    }
+
+    /**
+     * 根据模板内容获取模板中的参数list
+     *
+     * @param templateContent 模板内容
+     * @return params 模板中的参数
+     */
+    public static List<String> getTemplateParams(String templateContent) {
+        List<String> params = Lists.newArrayList();
+        Matcher matcher = BRACE_PATTERN.matcher(templateContent);
+        while (matcher.find()) {
+            params.add(matcher.group(1).replace(".DATA", ""));
+        }
+        return params;
     }
 
     /**
@@ -311,34 +397,45 @@ public class MpTemplateMsgForm {
         templateMsgDataTable.setRowHeight(36);
         templateMsgDataPanel.add(templateMsgDataTable, new GridConstraints(1, 0, 1, 7, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(4, 4, new Insets(0, 0, 5, 0), -1, -1));
+        panel2.setLayout(new GridLayoutManager(6, 4, new Insets(0, 0, 5, 0), -1, -1));
         templateMsgPanel.add(panel2, new GridConstraints(0, 0, 4, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         templateIdLabel = new JLabel();
         templateIdLabel.setText("模板ID *");
-        panel2.add(templateIdLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel2.add(templateIdLabel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         msgTemplateIdTextField = new JTextField();
-        panel2.add(msgTemplateIdTextField, new GridConstraints(0, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel2.add(msgTemplateIdTextField, new GridConstraints(2, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         templateUrlLabel = new JLabel();
         templateUrlLabel.setText("跳转URL");
-        panel2.add(templateUrlLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel2.add(templateUrlLabel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         msgTemplateUrlTextField = new JTextField();
-        panel2.add(msgTemplateUrlTextField, new GridConstraints(1, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel2.add(msgTemplateUrlTextField, new GridConstraints(3, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         templateMiniProgramAppidLabel = new JLabel();
         templateMiniProgramAppidLabel.setText("小程序appid");
         templateMiniProgramAppidLabel.setToolTipText("非必填");
-        panel2.add(templateMiniProgramAppidLabel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel2.add(templateMiniProgramAppidLabel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         msgTemplateMiniAppidTextField = new JTextField();
         msgTemplateMiniAppidTextField.setText("");
         msgTemplateMiniAppidTextField.setToolTipText("非必填");
-        panel2.add(msgTemplateMiniAppidTextField, new GridConstraints(2, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel2.add(msgTemplateMiniAppidTextField, new GridConstraints(4, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         templateMiniProgramPagePathLabel = new JLabel();
         templateMiniProgramPagePathLabel.setText("小程序页面路径");
         templateMiniProgramPagePathLabel.setToolTipText("非必填");
-        panel2.add(templateMiniProgramPagePathLabel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel2.add(templateMiniProgramPagePathLabel, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         msgTemplateMiniPagePathTextField = new JTextField();
         msgTemplateMiniPagePathTextField.setText("");
         msgTemplateMiniPagePathTextField.setToolTipText("非必填");
-        panel2.add(msgTemplateMiniPagePathTextField, new GridConstraints(3, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel2.add(msgTemplateMiniPagePathTextField, new GridConstraints(5, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        final JLabel label1 = new JLabel();
+        label1.setText("选择模板");
+        panel2.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        templateListComboBox = new JComboBox();
+        panel2.add(templateListComboBox, new GridConstraints(0, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        templateContentTextArea = new JTextArea();
+        templateContentTextArea.setEditable(false);
+        templateContentTextArea.setEnabled(true);
+        templateContentTextArea.setLineWrap(true);
+        templateContentTextArea.setWrapStyleWord(false);
+        panel2.add(templateContentTextArea, new GridConstraints(1, 0, 1, 4, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
         final Spacer spacer1 = new Spacer();
         templateMsgPanel.add(spacer1, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         templateMsgNameLabel.setLabelFor(templateDataNameTextField);

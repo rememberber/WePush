@@ -14,6 +14,7 @@ import lombok.Getter;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.ItemEvent;
 import java.util.List;
 import java.util.Objects;
 
@@ -45,7 +46,11 @@ public class KefuMsgForm {
 
     public KefuMsgForm() {
         // 客服消息类型切换事件
-        msgKefuMsgTypeComboBox.addItemListener(e -> KefuMsgForm.switchKefuMsgType(e.getItem().toString()));
+        msgKefuMsgTypeComboBox.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                KefuMsgForm.switchKefuMsgType(e.getItem().toString());
+            }
+        });
     }
 
     public static void init(String msgName) {

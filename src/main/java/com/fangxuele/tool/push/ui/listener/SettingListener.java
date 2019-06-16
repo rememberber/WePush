@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.awt.event.ItemEvent;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Objects;
@@ -120,15 +121,17 @@ public class SettingListener {
 
         // 公众号切换账号事件
         SettingForm.settingForm.getMpAccountSwitchComboBox().addItemListener(e -> {
-            String accountName = e.getItem().toString();
-            List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(SettingForm.WX_ACCOUNT_TYPE_MP, accountName);
-            if (wxAccountList.size() > 0) {
-                TWxAccount tWxAccount = wxAccountList.get(0);
-                SettingForm.settingForm.getMpAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
-                SettingForm.settingForm.getWechatAppIdTextField().setText(tWxAccount.getAppId());
-                SettingForm.settingForm.getWechatAppSecretPasswordField().setText(tWxAccount.getAppSecret());
-                SettingForm.settingForm.getWechatTokenPasswordField().setText(tWxAccount.getToken());
-                SettingForm.settingForm.getWechatAesKeyPasswordField().setText(tWxAccount.getAesKey());
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                String accountName = e.getItem().toString();
+                List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(SettingForm.WX_ACCOUNT_TYPE_MP, accountName);
+                if (wxAccountList.size() > 0) {
+                    TWxAccount tWxAccount = wxAccountList.get(0);
+                    SettingForm.settingForm.getMpAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
+                    SettingForm.settingForm.getWechatAppIdTextField().setText(tWxAccount.getAppId());
+                    SettingForm.settingForm.getWechatAppSecretPasswordField().setText(tWxAccount.getAppSecret());
+                    SettingForm.settingForm.getWechatTokenPasswordField().setText(tWxAccount.getToken());
+                    SettingForm.settingForm.getWechatAesKeyPasswordField().setText(tWxAccount.getAesKey());
+                }
             }
         });
 
@@ -200,15 +203,17 @@ public class SettingListener {
 
         // 小程序切换账号事件
         SettingForm.settingForm.getMaAccountSwitchComboBox().addItemListener(e -> {
-            String accountName = e.getItem().toString();
-            List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(SettingForm.WX_ACCOUNT_TYPE_MA, accountName);
-            if (wxAccountList.size() > 0) {
-                TWxAccount tWxAccount = wxAccountList.get(0);
-                SettingForm.settingForm.getMaAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
-                SettingForm.settingForm.getMiniAppAppIdTextField().setText(tWxAccount.getAppId());
-                SettingForm.settingForm.getMiniAppAppSecretPasswordField().setText(tWxAccount.getAppSecret());
-                SettingForm.settingForm.getMiniAppTokenPasswordField().setText(tWxAccount.getToken());
-                SettingForm.settingForm.getMiniAppAesKeyPasswordField().setText(tWxAccount.getAesKey());
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                String accountName = e.getItem().toString();
+                List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(SettingForm.WX_ACCOUNT_TYPE_MA, accountName);
+                if (wxAccountList.size() > 0) {
+                    TWxAccount tWxAccount = wxAccountList.get(0);
+                    SettingForm.settingForm.getMaAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
+                    SettingForm.settingForm.getMiniAppAppIdTextField().setText(tWxAccount.getAppId());
+                    SettingForm.settingForm.getMiniAppAppSecretPasswordField().setText(tWxAccount.getAppSecret());
+                    SettingForm.settingForm.getMiniAppTokenPasswordField().setText(tWxAccount.getToken());
+                    SettingForm.settingForm.getMiniAppAesKeyPasswordField().setText(tWxAccount.getAesKey());
+                }
             }
         });
 
