@@ -39,6 +39,8 @@ public class KefuMsgForm {
     private JTextField msgKefuDescTextField;
     private JLabel kefuMsgUrlLabel;
     private JTextField msgKefuUrlTextField;
+    private JTextArea contentTextArea;
+    private JLabel contentLabel;
 
     public static KefuMsgForm kefuMsgForm = new KefuMsgForm();
 
@@ -61,7 +63,7 @@ public class KefuMsgForm {
             String kefuMsgType = tMsgKefu.getKefuMsgType();
             kefuMsgForm.getMsgKefuMsgTypeComboBox().setSelectedItem(kefuMsgType);
             if ("文本消息".equals(kefuMsgType)) {
-                kefuMsgForm.getMsgKefuMsgTitleTextField().setText(tMsgKefu.getContent());
+                kefuMsgForm.getContentTextArea().setText(tMsgKefu.getContent());
             } else if ("图文消息".equals(kefuMsgType)) {
                 kefuMsgForm.getMsgKefuMsgTitleTextField().setText(tMsgKefu.getTitle());
             }
@@ -70,6 +72,8 @@ public class KefuMsgForm {
             kefuMsgForm.getMsgKefuUrlTextField().setText(tMsgKefu.getUrl());
 
             switchKefuMsgType(kefuMsgType);
+        } else {
+            switchKefuMsgType("图文消息");
         }
     }
 
@@ -81,7 +85,7 @@ public class KefuMsgForm {
     public static void switchKefuMsgType(String msgType) {
         switch (msgType) {
             case "文本消息":
-                kefuMsgForm.getKefuMsgTitleLabel().setText("内容");
+                kefuMsgForm.getContentTextArea().setVisible(true);
                 kefuMsgForm.getKefuMsgDescLabel().setVisible(false);
                 kefuMsgForm.getMsgKefuDescTextField().setVisible(false);
                 kefuMsgForm.getKefuMsgPicUrlLabel().setVisible(false);
@@ -89,9 +93,12 @@ public class KefuMsgForm {
                 kefuMsgForm.getMsgKefuDescTextField().setVisible(false);
                 kefuMsgForm.getKefuMsgUrlLabel().setVisible(false);
                 kefuMsgForm.getMsgKefuUrlTextField().setVisible(false);
+                kefuMsgForm.getKefuMsgTitleLabel().setVisible(false);
+                kefuMsgForm.getMsgKefuMsgTitleTextField().setVisible(false);
                 break;
             case "图文消息":
-                kefuMsgForm.getKefuMsgTitleLabel().setText("标题");
+                kefuMsgForm.getContentLabel().setVisible(false);
+                kefuMsgForm.getContentTextArea().setVisible(false);
                 kefuMsgForm.getKefuMsgDescLabel().setVisible(true);
                 kefuMsgForm.getMsgKefuDescTextField().setVisible(true);
                 kefuMsgForm.getKefuMsgPicUrlLabel().setVisible(true);
@@ -99,6 +106,8 @@ public class KefuMsgForm {
                 kefuMsgForm.getMsgKefuDescTextField().setVisible(true);
                 kefuMsgForm.getKefuMsgUrlLabel().setVisible(true);
                 kefuMsgForm.getMsgKefuUrlTextField().setVisible(true);
+                kefuMsgForm.getKefuMsgTitleLabel().setVisible(true);
+                kefuMsgForm.getMsgKefuMsgTitleTextField().setVisible(true);
                 break;
             default:
                 break;
@@ -109,6 +118,7 @@ public class KefuMsgForm {
      * 清空所有界面字段
      */
     public static void clearAllField() {
+        kefuMsgForm.getContentTextArea().setText("");
         kefuMsgForm.getMsgKefuMsgTitleTextField().setText("");
         kefuMsgForm.getMsgKefuPicUrlTextField().setText("");
         kefuMsgForm.getMsgKefuDescTextField().setText("");
@@ -132,6 +142,7 @@ public class KefuMsgForm {
 
         if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
             String kefuMsgType = Objects.requireNonNull(kefuMsgForm.getMsgKefuMsgTypeComboBox().getSelectedItem()).toString();
+            String kefuMsgContent = kefuMsgForm.getContentTextArea().getText();
             String kefuMsgTitle = kefuMsgForm.getMsgKefuMsgTitleTextField().getText();
             String kefuPicUrl = kefuMsgForm.getMsgKefuPicUrlTextField().getText();
             String kefuDesc = kefuMsgForm.getMsgKefuDescTextField().getText();
@@ -143,7 +154,7 @@ public class KefuMsgForm {
             tMsgKefu.setMsgType(MessageTypeEnum.KEFU_CODE);
             tMsgKefu.setMsgName(msgName);
             tMsgKefu.setKefuMsgType(kefuMsgType);
-            tMsgKefu.setContent(kefuMsgTitle);
+            tMsgKefu.setContent(kefuMsgContent);
             tMsgKefu.setTitle(kefuMsgTitle);
             tMsgKefu.setImgUrl(kefuPicUrl);
             tMsgKefu.setDescribe(kefuDesc);
@@ -180,14 +191,14 @@ public class KefuMsgForm {
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         kefuMsgPanel = new JPanel();
-        kefuMsgPanel.setLayout(new GridLayoutManager(6, 2, new Insets(10, 15, 0, 0), -1, -1));
+        kefuMsgPanel.setLayout(new GridLayoutManager(7, 2, new Insets(10, 15, 0, 0), -1, -1));
         panel1.add(kefuMsgPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         kefuMsgPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "客服消息编辑", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, kefuMsgPanel.getFont())));
         kefuMsgTypeLabel = new JLabel();
         kefuMsgTypeLabel.setText("消息类型");
         kefuMsgPanel.add(kefuMsgTypeLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
-        kefuMsgPanel.add(spacer1, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        kefuMsgPanel.add(spacer1, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         msgKefuMsgTypeComboBox = new JComboBox();
         final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
         defaultComboBoxModel1.addElement("图文消息");
@@ -195,25 +206,30 @@ public class KefuMsgForm {
         msgKefuMsgTypeComboBox.setModel(defaultComboBoxModel1);
         kefuMsgPanel.add(msgKefuMsgTypeComboBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         kefuMsgTitleLabel = new JLabel();
-        kefuMsgTitleLabel.setText("内容/标题");
-        kefuMsgPanel.add(kefuMsgTitleLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        kefuMsgTitleLabel.setText("标题");
+        kefuMsgPanel.add(kefuMsgTitleLabel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         msgKefuMsgTitleTextField = new JTextField();
-        kefuMsgPanel.add(msgKefuMsgTitleTextField, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, new Dimension(380, -1), new Dimension(380, -1), null, 0, false));
+        kefuMsgPanel.add(msgKefuMsgTitleTextField, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, new Dimension(380, -1), new Dimension(380, -1), null, 0, false));
         kefuMsgPicUrlLabel = new JLabel();
         kefuMsgPicUrlLabel.setText("图片URL");
-        kefuMsgPanel.add(kefuMsgPicUrlLabel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        kefuMsgPanel.add(kefuMsgPicUrlLabel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         msgKefuPicUrlTextField = new JTextField();
-        kefuMsgPanel.add(msgKefuPicUrlTextField, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        kefuMsgPanel.add(msgKefuPicUrlTextField, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         kefuMsgDescLabel = new JLabel();
         kefuMsgDescLabel.setText("描述");
-        kefuMsgPanel.add(kefuMsgDescLabel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        kefuMsgPanel.add(kefuMsgDescLabel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         msgKefuDescTextField = new JTextField();
-        kefuMsgPanel.add(msgKefuDescTextField, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        kefuMsgPanel.add(msgKefuDescTextField, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         kefuMsgUrlLabel = new JLabel();
         kefuMsgUrlLabel.setText("跳转URL");
-        kefuMsgPanel.add(kefuMsgUrlLabel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        kefuMsgPanel.add(kefuMsgUrlLabel, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         msgKefuUrlTextField = new JTextField();
-        kefuMsgPanel.add(msgKefuUrlTextField, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        kefuMsgPanel.add(msgKefuUrlTextField, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        contentTextArea = new JTextArea();
+        kefuMsgPanel.add(contentTextArea, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+        contentLabel = new JLabel();
+        contentLabel.setText("内容");
+        kefuMsgPanel.add(contentLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         kefuMsgTypeLabel.setLabelFor(msgKefuMsgTypeComboBox);
         kefuMsgTitleLabel.setLabelFor(msgKefuMsgTitleTextField);
         kefuMsgPicUrlLabel.setLabelFor(msgKefuPicUrlTextField);
