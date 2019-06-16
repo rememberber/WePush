@@ -129,24 +129,24 @@ public class MpTemplateMsgForm {
                 int index = mpTemplateMsgForm.getTemplateListComboBox().getSelectedIndex();
                 WxMpTemplate wxMpTemplate = templateList.get(index);
                 StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append("模板ID：").append(wxMpTemplate.getTemplateId()).append("\n");
-                stringBuilder.append("所属行业：").append(wxMpTemplate.getPrimaryIndustry()).append("/").append(wxMpTemplate.getDeputyIndustry()).append("\n");
-                stringBuilder.append("模板内容：").append(wxMpTemplate.getContent()).append("\n");
-                stringBuilder.append("模板示例：").append(wxMpTemplate.getExample()).append("\n");
+                stringBuilder.append("模板ID----------\n").append(wxMpTemplate.getTemplateId()).append("\n");
+                stringBuilder.append("所属行业----------\n").append(wxMpTemplate.getPrimaryIndustry()).append("/").append(wxMpTemplate.getDeputyIndustry()).append("\n");
+                stringBuilder.append("模板内容----------\n").append(wxMpTemplate.getContent()).append("\n");
+                stringBuilder.append("模板示例----------\n").append(wxMpTemplate.getExample()).append("\n");
                 mpTemplateMsgForm.getTemplateContentTextArea().setText(stringBuilder.toString());
 
                 mpTemplateMsgForm.getMsgTemplateIdTextField().setText(wxMpTemplate.getTemplateId());
 //                if (!selectedMsgTemplateId.equals(wxMpTemplate.getTemplateId())) {
-                    initTemplateDataTable();
-                    DefaultTableModel tableModel = (DefaultTableModel) mpTemplateMsgForm.getTemplateMsgDataTable()
-                            .getModel();
-                    List<String> params = getTemplateParams(wxMpTemplate.getContent());
-                    for (String param : params) {
-                        String[] data = new String[3];
-                        data[0] = param;
-                        data[2] = "#000000";
-                        tableModel.addRow(data);
-                    }
+                initTemplateDataTable();
+                DefaultTableModel tableModel = (DefaultTableModel) mpTemplateMsgForm.getTemplateMsgDataTable()
+                        .getModel();
+                List<String> params = getTemplateParams(wxMpTemplate.getContent());
+                for (String param : params) {
+                    String[] data = new String[3];
+                    data[0] = param;
+                    data[2] = "#000000";
+                    tableModel.addRow(data);
+                }
 //                }
             }
         });
