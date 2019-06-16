@@ -50,10 +50,10 @@
             </constraints>
             <properties>
               <continuousLayout value="true"/>
-              <dividerLocation value="400"/>
+              <dividerLocation value="280"/>
               <dividerSize value="4"/>
               <doubleBuffered value="true"/>
-              <lastDividerLocation value="400"/>
+              <lastDividerLocation value="300"/>
               <minimumSize width="-1" height="-1"/>
             </properties>
             <border type="none"/>
