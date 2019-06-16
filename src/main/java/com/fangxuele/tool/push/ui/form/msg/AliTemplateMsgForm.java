@@ -12,6 +12,7 @@ import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.intellij.uiDesigner.core.Spacer;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
@@ -242,7 +243,7 @@ public class AliTemplateMsgForm {
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         templateMsgPanel = new JPanel();
-        templateMsgPanel.setLayout(new GridLayoutManager(2, 3, new Insets(10, 5, 0, 0), -1, -1));
+        templateMsgPanel.setLayout(new GridLayoutManager(3, 3, new Insets(10, 5, 0, 0), -1, -1));
         panel1.add(templateMsgPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         templateMsgPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, templateMsgPanel.getFont())));
         templateMsgDataPanel = new JPanel();
@@ -265,14 +266,12 @@ public class AliTemplateMsgForm {
         templateMsgDataAddButton.setIcon(new ImageIcon(getClass().getResource("/icon/add.png")));
         templateMsgDataAddButton.setText("添加");
         templateMsgDataPanel.add(templateMsgDataAddButton, new GridConstraints(0, 6, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JScrollPane scrollPane1 = new JScrollPane();
-        templateMsgDataPanel.add(scrollPane1, new GridConstraints(1, 0, 1, 7, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         templateMsgDataTable = new JTable();
         templateMsgDataTable.setAutoCreateColumnsFromModel(true);
         templateMsgDataTable.setAutoCreateRowSorter(true);
         templateMsgDataTable.setGridColor(new Color(-12236470));
         templateMsgDataTable.setRowHeight(36);
-        scrollPane1.setViewportView(templateMsgDataTable);
+        templateMsgDataPanel.add(templateMsgDataTable, new GridConstraints(1, 0, 1, 7, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, new Dimension(-1, 100), null, null, 0, false));
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 10, 0), -1, -1));
         templateMsgPanel.add(panel2, new GridConstraints(0, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -282,6 +281,8 @@ public class AliTemplateMsgForm {
         msgTemplateIdTextField = new JTextField();
         msgTemplateIdTextField.setMargin(new Insets(2, 6, 2, 6));
         panel2.add(msgTemplateIdTextField, new GridConstraints(0, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        final Spacer spacer1 = new Spacer();
+        templateMsgPanel.add(spacer1, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         templateMsgNameLabel.setLabelFor(templateDataNameTextField);
         templateMsgValueLabel.setLabelFor(templateDataValueTextField);
         templateIdLabel.setLabelFor(msgTemplateIdTextField);

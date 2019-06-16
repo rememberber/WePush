@@ -12,6 +12,7 @@ import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.intellij.uiDesigner.core.Spacer;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
@@ -53,7 +54,6 @@ public class MpTemplateMsgForm {
     private JTextField templateDataColorTextField;
     private JButton templateMsgDataAddButton;
     private JTable templateMsgDataTable;
-    private JComboBox comboBox1;
 
     public static MpTemplateMsgForm mpTemplateMsgForm = new MpTemplateMsgForm();
 
@@ -274,7 +274,7 @@ public class MpTemplateMsgForm {
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         templateMsgPanel = new JPanel();
-        templateMsgPanel.setLayout(new GridLayoutManager(5, 3, new Insets(10, 15, 0, 0), -1, -1));
+        templateMsgPanel.setLayout(new GridLayoutManager(6, 3, new Insets(10, 15, 0, 0), -1, -1));
         panel1.add(templateMsgPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         templateMsgPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "公众号-模板消息编辑", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, templateMsgPanel.getFont())));
         templateMsgDataPanel = new JPanel();
@@ -317,7 +317,7 @@ public class MpTemplateMsgForm {
         templateIdLabel.setText("模板ID *");
         panel2.add(templateIdLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         msgTemplateIdTextField = new JTextField();
-        panel2.add(msgTemplateIdTextField, new GridConstraints(0, 2, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel2.add(msgTemplateIdTextField, new GridConstraints(0, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         templateUrlLabel = new JLabel();
         templateUrlLabel.setText("跳转URL");
         panel2.add(templateUrlLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -339,8 +339,8 @@ public class MpTemplateMsgForm {
         msgTemplateMiniPagePathTextField.setText("");
         msgTemplateMiniPagePathTextField.setToolTipText("非必填");
         panel2.add(msgTemplateMiniPagePathTextField, new GridConstraints(3, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        comboBox1 = new JComboBox();
-        panel2.add(comboBox1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final Spacer spacer1 = new Spacer();
+        templateMsgPanel.add(spacer1, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         templateMsgNameLabel.setLabelFor(templateDataNameTextField);
         templateMsgValueLabel.setLabelFor(templateDataValueTextField);
         templateMsgColorLabel.setLabelFor(templateDataColorTextField);
