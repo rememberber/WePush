@@ -76,9 +76,7 @@
               </component>
               <component id="585df" class="javax.swing.JTable" binding="templateMsgDataTable">
                 <constraints>
-                  <grid row="1" column="0" row-span="1" col-span="7" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                    <minimum-size width="-1" height="100"/>
-                  </grid>
+                  <grid row="1" column="0" row-span="1" col-span="7" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <autoCreateColumnsFromModel value="true"/>
