@@ -11,10 +11,12 @@ import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
+import com.google.common.collect.Maps;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplate;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
@@ -25,9 +27,12 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,6 +46,7 @@ import java.util.regex.Pattern;
  * @since 2019/6/3.
  */
 @Getter
+@Slf4j
 public class MpTemplateMsgForm {
     private JPanel templateMsgPanel;
     private JLabel templateIdLabel;
@@ -63,6 +69,7 @@ public class MpTemplateMsgForm {
     private JComboBox templateListComboBox;
     private JTextArea templateContentTextArea;
     private JButton refreshTemplateListButton;
+    private JButton autoFillButton;
 
     public static MpTemplateMsgForm mpTemplateMsgForm = new MpTemplateMsgForm();
 
@@ -76,9 +83,19 @@ public class MpTemplateMsgForm {
     public static List<WxMpTemplate> templateList;
 
     /**
+     * 模板账号map，key:templateId
+     */
+    public static Map<String, WxMpTemplate> templateMap;
+
+    /**
      * （左侧列表中）所选消息对应的模板ID
      */
     public static String selectedMsgTemplateId = "";
+
+    /**
+     * （选择模板ComboBox）所选模板对应的模板ID
+     */
+    public static String selectedComboBoxTemplateId = "";
 
     /**
      * 是否需要监听模板列表ComboBox
@@ -128,27 +145,19 @@ public class MpTemplateMsgForm {
         templateListComboBox.addItemListener(e -> {
             if (needListenTemplateListComboBox && e.getStateChange() == ItemEvent.SELECTED) {
                 int index = mpTemplateMsgForm.getTemplateListComboBox().getSelectedIndex();
-                WxMpTemplate wxMpTemplate = templateList.get(index);
-                StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append("模板ID----------\n").append(wxMpTemplate.getTemplateId()).append("\n");
-                stringBuilder.append("所属行业----------\n").append(wxMpTemplate.getPrimaryIndustry()).append("/").append(wxMpTemplate.getDeputyIndustry()).append("\n");
-                stringBuilder.append("模板内容----------\n").append(wxMpTemplate.getContent()).append("\n");
-                stringBuilder.append("模板示例----------\n").append(wxMpTemplate.getExample()).append("\n");
-                mpTemplateMsgForm.getTemplateContentTextArea().setText(stringBuilder.toString());
-
-                mpTemplateMsgForm.getMsgTemplateIdTextField().setText(wxMpTemplate.getTemplateId());
-//                if (!selectedMsgTemplateId.equals(wxMpTemplate.getTemplateId())) {
-                initTemplateDataTable();
-                DefaultTableModel tableModel = (DefaultTableModel) mpTemplateMsgForm.getTemplateMsgDataTable()
-                        .getModel();
-                List<String> params = getTemplateParams(wxMpTemplate.getContent());
-                for (String param : params) {
-                    String[] data = new String[3];
-                    data[0] = param;
-                    data[2] = "#000000";
-                    tableModel.addRow(data);
+                String templateId = "";
+                if (templateList != null && templateList.size() > 0) {
+                    templateId = templateList.get(index).getTemplateId();
                 }
-//                }
+                fillWxTemplateContentToField(templateId);
+                selectedComboBoxTemplateId = templateId;
+            }
+        });
+        autoFillButton.addActionListener(e -> autoFillTemplateDataTable(templateMap.get(selectedComboBoxTemplateId)));
+        refreshTemplateListButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                initTemplateList();
             }
         });
     }
@@ -167,9 +176,18 @@ public class MpTemplateMsgForm {
 
             selectedMsgTemplateId = tMsgMpTemplate.getTemplateId();
         }
-        initTemplateList();
 
+        initTemplateList();
         initTemplateDataTable();
+        fillTemplateDataTable(msgId);
+    }
+
+    /**
+     * 填充模板参数表Table(从数据库读取)
+     *
+     * @param msgId
+     */
+    public static void fillTemplateDataTable(Integer msgId) {
         // 模板消息Data表
         List<TTemplateData> templateDataList = templateDataMapper.selectByMsgTypeAndMsgId(MessageTypeEnum.MP_TEMPLATE_CODE, msgId);
         String[] headerNames = {"Name", "Value", "Color", "操作"};
@@ -199,13 +217,24 @@ public class MpTemplateMsgForm {
     public static void initTemplateList() {
         needListenTemplateListComboBox = false;
         try {
+            templateMap = Maps.newHashMap();
             templateList = WxMpTemplateMsgSender.getWxMpService().getTemplateMsgService().getAllPrivateTemplate();
             mpTemplateMsgForm.getTemplateListComboBox().removeAllItems();
-            for (WxMpTemplate wxMpTemplate : templateList) {
+            Integer selectedIndex = null;
+            for (int i = 0; i < templateList.size(); i++) {
+                WxMpTemplate wxMpTemplate = templateList.get(i);
                 mpTemplateMsgForm.getTemplateListComboBox().addItem(wxMpTemplate.getTitle());
+                templateMap.put(wxMpTemplate.getTemplateId(), wxMpTemplate);
+                if (selectedMsgTemplateId.equals(wxMpTemplate.getTemplateId())) {
+                    selectedIndex = i;
+                }
             }
+            if (selectedIndex != null) {
+                mpTemplateMsgForm.getTemplateListComboBox().setSelectedIndex(selectedIndex);
+            }
+            fillWxTemplateContentToField(selectedMsgTemplateId);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.toString());
         }
         needListenTemplateListComboBox = true;
     }
@@ -223,6 +252,44 @@ public class MpTemplateMsgForm {
             params.add(matcher.group(1).replace(".DATA", ""));
         }
         return params;
+    }
+
+    /**
+     * 根据模板id填充模板列表中对应的WxTemplate内容到表单
+     *
+     * @param templateId
+     */
+    public static void fillWxTemplateContentToField(String templateId) {
+        WxMpTemplate wxMpTemplate = templateMap.get(templateId);
+        if (wxMpTemplate != null) {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("模板ID----------\n").append(wxMpTemplate.getTemplateId()).append("\n");
+            stringBuilder.append("所属行业----------\n").append(wxMpTemplate.getPrimaryIndustry()).append("/").append(wxMpTemplate.getDeputyIndustry()).append("\n");
+            stringBuilder.append("模板内容----------\n").append(wxMpTemplate.getContent()).append("\n");
+            stringBuilder.append("模板示例----------\n").append(wxMpTemplate.getExample()).append("\n");
+            mpTemplateMsgForm.getTemplateContentTextArea().setText(stringBuilder.toString());
+            mpTemplateMsgForm.getMsgTemplateIdTextField().setText(wxMpTemplate.getTemplateId());
+        }
+    }
+
+    /**
+     * 自动填充模板数据Table
+     *
+     * @param wxMpTemplate
+     */
+    private static void autoFillTemplateDataTable(WxMpTemplate wxMpTemplate) {
+        if (wxMpTemplate != null) {
+            initTemplateDataTable();
+            DefaultTableModel tableModel = (DefaultTableModel) mpTemplateMsgForm.getTemplateMsgDataTable()
+                    .getModel();
+            List<String> params = getTemplateParams(wxMpTemplate.getContent());
+            for (String param : params) {
+                String[] data = new String[3];
+                data[0] = param;
+                data[2] = "#000000";
+                tableModel.addRow(data);
+            }
+        }
     }
 
     /**
@@ -365,7 +432,7 @@ public class MpTemplateMsgForm {
         panel1.add(templateMsgPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         templateMsgPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "公众号-模板消息编辑", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, templateMsgPanel.getFont())));
         templateMsgDataPanel = new JPanel();
-        templateMsgDataPanel.setLayout(new GridLayoutManager(2, 7, new Insets(10, 0, 0, 0), -1, -1));
+        templateMsgDataPanel.setLayout(new GridLayoutManager(2, 8, new Insets(10, 0, 0, 0), -1, -1));
         templateMsgPanel.add(templateMsgDataPanel, new GridConstraints(4, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         templateMsgDataPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "模板变量（可使用\"$ENTER$\"作为换行符）", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, templateMsgDataPanel.getFont())));
         templateMsgNameLabel = new JLabel();
@@ -390,13 +457,16 @@ public class MpTemplateMsgForm {
         templateMsgDataAddButton = new JButton();
         templateMsgDataAddButton.setIcon(new ImageIcon(getClass().getResource("/icon/add.png")));
         templateMsgDataAddButton.setText("添加");
-        templateMsgDataPanel.add(templateMsgDataAddButton, new GridConstraints(0, 6, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        templateMsgDataPanel.add(templateMsgDataAddButton, new GridConstraints(0, 7, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         templateMsgDataTable = new JTable();
         templateMsgDataTable.setAutoCreateColumnsFromModel(true);
         templateMsgDataTable.setAutoCreateRowSorter(true);
         templateMsgDataTable.setGridColor(new Color(-12236470));
         templateMsgDataTable.setRowHeight(36);
-        templateMsgDataPanel.add(templateMsgDataTable, new GridConstraints(1, 0, 1, 7, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        templateMsgDataPanel.add(templateMsgDataTable, new GridConstraints(1, 0, 1, 8, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        autoFillButton = new JButton();
+        autoFillButton.setText("自动填充");
+        templateMsgDataPanel.add(autoFillButton, new GridConstraints(0, 6, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(6, 5, new Insets(0, 0, 5, 0), -1, -1));
         templateMsgPanel.add(panel2, new GridConstraints(0, 0, 4, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));

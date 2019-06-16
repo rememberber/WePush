@@ -2,7 +2,7 @@
 <configuration>
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} :%line - %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -11,7 +11,7 @@
             <fileNamePattern>./logs/wechat-push.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
-            <pattern>%date{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%date{HH:mm:ss.SSS} [%thread] %-5level %logger{36} :%line - %msg%n</pattern>
         </encoder>
     </appender>
 

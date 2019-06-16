@@ -3,7 +3,7 @@
   <grid id="27dc6" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="588" height="446"/>
+      <xy x="20" y="20" width="608" height="446"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -18,7 +18,7 @@
           <font style="1"/>
         </border>
         <children>
-          <grid id="4d00f" binding="templateMsgDataPanel" layout-manager="GridLayoutManager" row-count="2" column-count="7" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="4d00f" binding="templateMsgDataPanel" layout-manager="GridLayoutManager" row-count="2" column-count="8" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="10" left="0" bottom="0" right="0"/>
             <constraints>
               <grid row="4" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -87,7 +87,7 @@
               </component>
               <component id="26b48" class="javax.swing.JButton" binding="templateMsgDataAddButton">
                 <constraints>
-                  <grid row="0" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="7" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <icon value="icon/add.png"/>
@@ -96,13 +96,21 @@
               </component>
               <component id="585df" class="javax.swing.JTable" binding="templateMsgDataTable">
                 <constraints>
-                  <grid row="1" column="0" row-span="1" col-span="7" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <grid row="1" column="0" row-span="1" col-span="8" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <autoCreateColumnsFromModel value="true"/>
                   <autoCreateRowSorter value="true"/>
                   <gridColor color="-12236470"/>
                   <rowHeight value="36"/>
+                </properties>
+              </component>
+              <component id="21245" class="javax.swing.JButton" binding="autoFillButton">
+                <constraints>
+                  <grid row="0" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="自动填充"/>
                 </properties>
               </component>
             </children>
