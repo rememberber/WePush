@@ -261,9 +261,9 @@ public class MpTemplateMsgForm {
         if (wxMpTemplate != null) {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("-----------模板ID-----------\n").append(wxMpTemplate.getTemplateId()).append("\n");
-            stringBuilder.append("----------所属行业----------\n").append(wxMpTemplate.getPrimaryIndustry()).append("/").append(wxMpTemplate.getDeputyIndustry()).append("\n");
-            stringBuilder.append("----------模板内容----------\n").append(wxMpTemplate.getContent()).append("\n");
-            stringBuilder.append("----------模板示例----------\n").append(wxMpTemplate.getExample()).append("\n");
+            stringBuilder.append("\n----------所属行业----------\n").append(wxMpTemplate.getPrimaryIndustry()).append("-").append(wxMpTemplate.getDeputyIndustry()).append("\n");
+            stringBuilder.append("\n----------模板内容----------\n").append(wxMpTemplate.getContent()).append("\n");
+            stringBuilder.append("\n----------模板示例----------\n").append(wxMpTemplate.getExample());
             mpTemplateMsgForm.getTemplateContentTextArea().setText(stringBuilder.toString());
             mpTemplateMsgForm.getMsgTemplateIdTextField().setText(wxMpTemplate.getTemplateId());
         }
