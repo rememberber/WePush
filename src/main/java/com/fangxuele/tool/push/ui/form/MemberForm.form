@@ -20,10 +20,10 @@
         </constraints>
         <properties>
           <continuousLayout value="true"/>
-          <dividerLocation value="660"/>
+          <dividerLocation value="800"/>
           <dividerSize value="4"/>
           <doubleBuffered value="true"/>
-          <lastDividerLocation value="640"/>
+          <lastDividerLocation value="800"/>
         </properties>
         <border type="none"/>
         <children>
