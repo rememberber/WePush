@@ -19,6 +19,7 @@
         <properties>
           <doubleBuffered value="true"/>
           <font/>
+          <tabLayoutPolicy value="1"/>
         </properties>
         <border type="none"/>
         <children>
