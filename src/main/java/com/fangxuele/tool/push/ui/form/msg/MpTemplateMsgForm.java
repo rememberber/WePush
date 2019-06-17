@@ -27,8 +27,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.util.HashSet;
 import java.util.List;
@@ -144,6 +142,7 @@ public class MpTemplateMsgForm {
         });
         templateListComboBox.addItemListener(e -> {
             if (needListenTemplateListComboBox && e.getStateChange() == ItemEvent.SELECTED) {
+                clearAllField();
                 int index = mpTemplateMsgForm.getTemplateListComboBox().getSelectedIndex();
                 String templateId = "";
                 if (templateList != null && templateList.size() > 0) {
@@ -154,12 +153,7 @@ public class MpTemplateMsgForm {
             }
         });
         autoFillButton.addActionListener(e -> autoFillTemplateDataTable(templateMap.get(selectedComboBoxTemplateId)));
-        refreshTemplateListButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                initTemplateList();
-            }
-        });
+        refreshTemplateListButton.addActionListener(e -> initTemplateList());
     }
 
     public static void init(String msgName) {
@@ -231,6 +225,9 @@ public class MpTemplateMsgForm {
             }
             if (selectedIndex != null) {
                 mpTemplateMsgForm.getTemplateListComboBox().setSelectedIndex(selectedIndex);
+            }
+            if ("".equals(selectedMsgTemplateId) && templateList.size() > 0) {
+                selectedMsgTemplateId = templateList.get(0).getTemplateId();
             }
             fillWxTemplateContentToField(selectedMsgTemplateId);
         } catch (Exception e) {
@@ -327,6 +324,7 @@ public class MpTemplateMsgForm {
         mpTemplateMsgForm.getTemplateDataNameTextField().setText("");
         mpTemplateMsgForm.getTemplateDataValueTextField().setText("");
         mpTemplateMsgForm.getTemplateDataColorTextField().setText("");
+        selectedMsgTemplateId = "";
         initTemplateDataTable();
     }
 

@@ -49,7 +49,5 @@ public class App {
             mainFrame.remove(loadingPanel);
             Init.initFontSize();
         });
-        System.err.println("jkl");
-        log.error("ghjk");
     }
 }
