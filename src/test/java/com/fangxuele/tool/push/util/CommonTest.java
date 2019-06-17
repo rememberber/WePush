@@ -1,5 +1,7 @@
 package com.fangxuele.tool.push.util;
 
+import cn.hutool.extra.mail.MailAccount;
+import cn.hutool.extra.mail.MailUtil;
 import org.junit.Test;
 
 /**
@@ -13,6 +15,14 @@ import org.junit.Test;
 public class CommonTest {
     @Test
     public void test() {
+        MailAccount account = new MailAccount();
+        account.setHost("smtp.yeah.net");
+        account.setPort(25);
+        account.setAuth(true);
+        account.setFrom("hutool@yeah.net");
+        account.setUser("hutool");
+        account.setPass("q1w2e3");
 
+        MailUtil.send(account, "rememberber@163.com", "测试", "邮件来自Hutool测试", false);
     }
 }
