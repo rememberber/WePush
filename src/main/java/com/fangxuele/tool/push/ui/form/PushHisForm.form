@@ -24,8 +24,11 @@
             </constraints>
             <properties>
               <continuousLayout value="true"/>
+              <dividerLocation value="620"/>
               <dividerSize value="4"/>
               <doubleBuffered value="true"/>
+              <inheritsPopupMenu value="false"/>
+              <lastDividerLocation value="620"/>
               <resizeWeight value="0.0"/>
             </properties>
             <border type="none"/>

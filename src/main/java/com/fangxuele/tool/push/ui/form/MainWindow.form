@@ -19,6 +19,7 @@
         <properties>
           <doubleBuffered value="true"/>
           <font/>
+          <tabLayoutPolicy value="1"/>
         </properties>
         <border type="none"/>
         <children>
@@ -50,9 +51,10 @@
             </constraints>
             <properties>
               <continuousLayout value="true"/>
-              <dividerLocation value="500"/>
+              <dividerLocation value="250"/>
               <dividerSize value="4"/>
               <doubleBuffered value="true"/>
+              <lastDividerLocation value="250"/>
               <minimumSize width="-1" height="-1"/>
             </properties>
             <border type="none"/>

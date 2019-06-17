@@ -72,6 +72,7 @@ public class MainWindow {
         tabbedPane.setDoubleBuffered(true);
         Font tabbedPaneFont = this.$$$getFont$$$(null, -1, -1, tabbedPane.getFont());
         if (tabbedPaneFont != null) tabbedPane.setFont(tabbedPaneFont);
+        tabbedPane.setTabLayoutPolicy(1);
         mainPanel.add(tabbedPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));
         aboutPanel = new JPanel();
         aboutPanel.setLayout(new GridLayoutManager(1, 1, new Insets(10, 10, 10, 10), -1, -1));
@@ -83,9 +84,10 @@ public class MainWindow {
         tabbedPane.addTab("①选择消息类型", messageTypePanel);
         messagePanel = new JSplitPane();
         messagePanel.setContinuousLayout(true);
-        messagePanel.setDividerLocation(500);
+        messagePanel.setDividerLocation(250);
         messagePanel.setDividerSize(4);
         messagePanel.setDoubleBuffered(true);
+        messagePanel.setLastDividerLocation(250);
         messagePanel.setMinimumSize(new Dimension(-1, -1));
         tabbedPane.addTab("②编辑消息", messagePanel);
         messageEditPanel = new JPanel();

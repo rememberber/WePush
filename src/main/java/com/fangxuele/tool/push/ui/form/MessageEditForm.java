@@ -38,6 +38,7 @@ public class MessageEditForm {
     private JPanel msgEditorPanel;
     private JLabel msgTypeName;
     private JLabel previewUserHelpLabel;
+    private JScrollPane msgEditScrollPane;
 
     public static MessageEditForm messageEditForm = new MessageEditForm();
 
@@ -201,9 +202,11 @@ public class MessageEditForm {
         previewUserHelpLabel.setIcon(new ImageIcon(getClass().getResource("/icon/helpButton.png")));
         previewUserHelpLabel.setText("");
         panel4.add(previewUserHelpLabel, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        msgEditScrollPane = new JScrollPane();
+        messageEditPanel.add(msgEditScrollPane, new GridConstraints(1, 0, 1, 5, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         msgEditorPanel = new JPanel();
-        msgEditorPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        messageEditPanel.add(msgEditorPanel, new GridConstraints(1, 0, 1, 5, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        msgEditorPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1, true, false));
+        msgEditScrollPane.setViewportView(msgEditorPanel);
         msgNameLabel.setLabelFor(msgNameField);
         previewMemberLabel.setLabelFor(previewUserField);
     }

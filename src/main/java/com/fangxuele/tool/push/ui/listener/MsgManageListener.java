@@ -107,6 +107,7 @@ public class MsgManageListener {
         // 编辑消息-新建
         MessageManageForm.messageManageForm.getCreateMsgButton().addActionListener(e -> {
             MessageTypeForm.init();
+            MessageEditForm.messageEditForm.getMsgNameField().setText("");
             MessageEditForm.messageEditForm.getMsgNameField().grabFocus();
         });
     }

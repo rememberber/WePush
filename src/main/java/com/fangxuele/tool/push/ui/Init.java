@@ -83,6 +83,10 @@ public class Init {
      */
     public static void initOthers() {
         // 设置滚动条速度
+
+        MessageEditForm.messageEditForm.getMsgEditScrollPane().getVerticalScrollBar().setUnitIncrement(15);
+        MessageEditForm.messageEditForm.getMsgEditScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
+
         SettingForm.settingForm.getSettingScrollPane().getVerticalScrollBar().setUnitIncrement(15);
         SettingForm.settingForm.getSettingScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
 

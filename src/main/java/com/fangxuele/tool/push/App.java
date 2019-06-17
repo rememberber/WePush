@@ -7,6 +7,7 @@ import com.fangxuele.tool.push.ui.frame.MainFrame;
 import com.fangxuele.tool.push.util.ConfigUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.UpgradeUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSession;
 
 import javax.swing.*;
@@ -19,6 +20,7 @@ import javax.swing.*;
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
  * @since 2019/4/20.
  */
+@Slf4j
 public class App {
     public static MainFrame mainFrame;
 

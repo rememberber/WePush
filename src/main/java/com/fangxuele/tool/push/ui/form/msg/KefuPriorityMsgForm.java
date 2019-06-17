@@ -77,6 +77,8 @@ public class KefuPriorityMsgForm {
             tableColumnModel.getColumn(3).setMaxWidth(130);
 
             MpTemplateMsgForm.mpTemplateMsgForm.getTemplateMsgDataTable().updateUI();
+        } else {
+            KefuMsgForm.switchKefuMsgType("图文消息");
         }
     }
 
