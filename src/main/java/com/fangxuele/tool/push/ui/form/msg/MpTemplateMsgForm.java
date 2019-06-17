@@ -88,12 +88,12 @@ public class MpTemplateMsgForm {
     /**
      * （左侧列表中）所选消息对应的模板ID
      */
-    public static String selectedMsgTemplateId = "";
+    public static String selectedMsgTemplateId;
 
     /**
      * （选择模板ComboBox）所选模板对应的模板ID
      */
-    public static String selectedComboBoxTemplateId = "";
+    public static String selectedComboBoxTemplateId;
 
     /**
      * 是否需要监听模板列表ComboBox
@@ -148,12 +148,15 @@ public class MpTemplateMsgForm {
                 if (templateList != null && templateList.size() > 0) {
                     templateId = templateList.get(index).getTemplateId();
                 }
-                fillWxTemplateContentToField(templateId);
                 selectedComboBoxTemplateId = templateId;
+                fillWxTemplateContentToField(templateId);
             }
         });
-        autoFillButton.addActionListener(e -> autoFillTemplateDataTable(templateMap.get(selectedComboBoxTemplateId)));
-        refreshTemplateListButton.addActionListener(e -> initTemplateList());
+        autoFillButton.addActionListener(e -> autoFillTemplateDataTable(selectedComboBoxTemplateId));
+        refreshTemplateListButton.addActionListener(e -> {
+            initTemplateList();
+            initTemplateDataTable();
+        });
     }
 
     public static void init(String msgName) {
@@ -214,22 +217,26 @@ public class MpTemplateMsgForm {
             templateMap = Maps.newHashMap();
             templateList = WxMpTemplateMsgSender.getWxMpService().getTemplateMsgService().getAllPrivateTemplate();
             mpTemplateMsgForm.getTemplateListComboBox().removeAllItems();
-            Integer selectedIndex = null;
+            int selectedIndex = 0;
             for (int i = 0; i < templateList.size(); i++) {
                 WxMpTemplate wxMpTemplate = templateList.get(i);
                 mpTemplateMsgForm.getTemplateListComboBox().addItem(wxMpTemplate.getTitle());
                 templateMap.put(wxMpTemplate.getTemplateId(), wxMpTemplate);
-                if (selectedMsgTemplateId.equals(wxMpTemplate.getTemplateId())) {
+                if (wxMpTemplate.getTemplateId().equals(selectedMsgTemplateId)) {
                     selectedIndex = i;
                 }
             }
-            if (selectedIndex != null) {
-                mpTemplateMsgForm.getTemplateListComboBox().setSelectedIndex(selectedIndex);
+
+            mpTemplateMsgForm.getTemplateListComboBox().setSelectedIndex(selectedIndex);
+
+            if (templateList != null && templateList.size() > 0) {
+                selectedComboBoxTemplateId = templateList.get(0).getTemplateId();
             }
-            if ("".equals(selectedMsgTemplateId) && templateList.size() > 0) {
-                selectedMsgTemplateId = templateList.get(0).getTemplateId();
+            if (selectedMsgTemplateId != null) {
+                selectedComboBoxTemplateId = selectedMsgTemplateId;
             }
-            fillWxTemplateContentToField(selectedMsgTemplateId);
+
+            fillWxTemplateContentToField(selectedComboBoxTemplateId);
         } catch (Exception e) {
             log.error(e.toString());
         }
@@ -272,19 +279,24 @@ public class MpTemplateMsgForm {
     /**
      * 自动填充模板数据Table
      *
-     * @param wxMpTemplate
+     * @param templateId templateId
      */
-    private static void autoFillTemplateDataTable(WxMpTemplate wxMpTemplate) {
-        if (wxMpTemplate != null) {
-            initTemplateDataTable();
-            DefaultTableModel tableModel = (DefaultTableModel) mpTemplateMsgForm.getTemplateMsgDataTable()
-                    .getModel();
-            List<String> params = getTemplateParams(wxMpTemplate.getContent());
-            for (String param : params) {
-                String[] data = new String[3];
-                data[0] = param;
-                data[2] = "#000000";
-                tableModel.addRow(data);
+    private static void autoFillTemplateDataTable(String templateId) {
+        if (templateId != null && templateMap != null) {
+            WxMpTemplate wxMpTemplate = templateMap.get(templateId);
+            if (wxMpTemplate != null) {
+                initTemplateDataTable();
+                DefaultTableModel tableModel = (DefaultTableModel) mpTemplateMsgForm.getTemplateMsgDataTable()
+                        .getModel();
+                List<String> params = getTemplateParams(wxMpTemplate.getContent());
+                for (int i = 0; i < params.size(); i++) {
+                    String param = params.get(i);
+                    String[] data = new String[3];
+                    data[0] = param;
+                    data[1] = "示例值" + (i + 1);
+                    data[2] = "#000000";
+                    tableModel.addRow(data);
+                }
             }
         }
     }
@@ -324,7 +336,7 @@ public class MpTemplateMsgForm {
         mpTemplateMsgForm.getTemplateDataNameTextField().setText("");
         mpTemplateMsgForm.getTemplateDataValueTextField().setText("");
         mpTemplateMsgForm.getTemplateDataColorTextField().setText("");
-        selectedMsgTemplateId = "";
+        selectedMsgTemplateId = null;
         initTemplateDataTable();
     }
 

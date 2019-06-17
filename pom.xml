@@ -38,9 +38,17 @@
         <lombok.version>1.18.8</lombok.version>
         <mybatis.version>3.5.1</mybatis.version>
         <sqlite-jdbc.version>3.27.2.1</sqlite-jdbc.version>
+        <junit.version>4.12</junit.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
