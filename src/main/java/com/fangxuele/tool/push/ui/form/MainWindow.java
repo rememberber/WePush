@@ -83,10 +83,10 @@ public class MainWindow {
         tabbedPane.addTab("①选择消息类型", messageTypePanel);
         messagePanel = new JSplitPane();
         messagePanel.setContinuousLayout(true);
-        messagePanel.setDividerLocation(280);
+        messagePanel.setDividerLocation(250);
         messagePanel.setDividerSize(4);
         messagePanel.setDoubleBuffered(true);
-        messagePanel.setLastDividerLocation(300);
+        messagePanel.setLastDividerLocation(250);
         messagePanel.setMinimumSize(new Dimension(-1, -1));
         tabbedPane.addTab("②编辑消息", messagePanel);
         messageEditPanel = new JPanel();

@@ -65,9 +65,9 @@ public class MpTemplateMsgForm {
     private JButton templateMsgDataAddButton;
     private JTable templateMsgDataTable;
     private JComboBox templateListComboBox;
-    private JTextArea templateContentTextArea;
     private JButton refreshTemplateListButton;
     private JButton autoFillButton;
+    private JTextArea templateContentTextArea;
 
     public static MpTemplateMsgForm mpTemplateMsgForm = new MpTemplateMsgForm();
 
@@ -260,10 +260,10 @@ public class MpTemplateMsgForm {
         WxMpTemplate wxMpTemplate = templateMap.get(templateId);
         if (wxMpTemplate != null) {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("模板ID----------\n").append(wxMpTemplate.getTemplateId()).append("\n");
-            stringBuilder.append("所属行业----------\n").append(wxMpTemplate.getPrimaryIndustry()).append("/").append(wxMpTemplate.getDeputyIndustry()).append("\n");
-            stringBuilder.append("模板内容----------\n").append(wxMpTemplate.getContent()).append("\n");
-            stringBuilder.append("模板示例----------\n").append(wxMpTemplate.getExample()).append("\n");
+            stringBuilder.append("-----------模板ID-----------\n").append(wxMpTemplate.getTemplateId()).append("\n");
+            stringBuilder.append("----------所属行业----------\n").append(wxMpTemplate.getPrimaryIndustry()).append("/").append(wxMpTemplate.getDeputyIndustry()).append("\n");
+            stringBuilder.append("----------模板内容----------\n").append(wxMpTemplate.getContent()).append("\n");
+            stringBuilder.append("----------模板示例----------\n").append(wxMpTemplate.getExample()).append("\n");
             mpTemplateMsgForm.getTemplateContentTextArea().setText(stringBuilder.toString());
             mpTemplateMsgForm.getMsgTemplateIdTextField().setText(wxMpTemplate.getTemplateId());
         }
@@ -499,16 +499,13 @@ public class MpTemplateMsgForm {
         panel2.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         templateListComboBox = new JComboBox();
         panel2.add(templateListComboBox, new GridConstraints(0, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        templateContentTextArea = new JTextArea();
-        templateContentTextArea.setEditable(false);
-        templateContentTextArea.setEnabled(true);
-        templateContentTextArea.setLineWrap(true);
-        templateContentTextArea.setWrapStyleWord(false);
-        panel2.add(templateContentTextArea, new GridConstraints(1, 0, 1, 5, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
         refreshTemplateListButton = new JButton();
         refreshTemplateListButton.setIcon(new ImageIcon(getClass().getResource("/icon/refresh.png")));
         refreshTemplateListButton.setText("刷新");
         panel2.add(refreshTemplateListButton, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, 1, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        templateContentTextArea = new JTextArea();
+        templateContentTextArea.setEditable(false);
+        panel2.add(templateContentTextArea, new GridConstraints(1, 0, 1, 5, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
         final Spacer spacer1 = new Spacer();
         templateMsgPanel.add(spacer1, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         templateMsgNameLabel.setLabelFor(templateDataNameTextField);
