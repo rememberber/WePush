@@ -39,6 +39,7 @@
         <mybatis.version>3.5.1</mybatis.version>
         <sqlite-jdbc.version>3.27.2.1</sqlite-jdbc.version>
         <junit.version>4.12</junit.version>
+        <httpasyncclient.version>4.1.4</httpasyncclient.version>
     </properties>
 
     <dependencies>
@@ -199,6 +200,10 @@
                     <artifactId>gson</artifactId>
                     <groupId>com.google.code.gson</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>httpasyncclient</artifactId>
+                    <groupId>org.apache.httpcomponents</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
 
@@ -268,6 +273,12 @@
             <artifactId>sqlite-jdbc</artifactId>
             <version>${sqlite-jdbc.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpasyncclient</artifactId>
+            <version>${httpasyncclient.version}</version>
+        </dependency>
+
 
     </dependencies>
 
@@ -325,14 +336,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-install-plugin</artifactId>
-                <version>3.0.0-M1</version>
+                <version>2.5.2</version>
                 <executions>
                     <execution>
                         <id>install-beautyeye</id>
                         <phase>clean</phase>
                         <configuration>
                             <file>./src/main/lib/beautyeye_lnf.jar</file>
-                            <repositoryLayout>default</repositoryLayout>
                             <groupId>com.beautyeye</groupId>
                             <artifactId>beautyeye-lnf</artifactId>
                             <version>1.0</version>
@@ -348,7 +358,6 @@
                         <phase>clean</phase>
                         <configuration>
                             <file>./src/main/lib/darcula.jar</file>
-                            <repositoryLayout>default</repositoryLayout>
                             <groupId>com.darcula</groupId>
                             <artifactId>darcula-lnf</artifactId>
                             <version>1.0</version>
@@ -364,7 +373,6 @@
                         <phase>clean</phase>
                         <configuration>
                             <file>./src/main/lib/taobao-sdk-java.jar</file>
-                            <repositoryLayout>default</repositoryLayout>
                             <groupId>com.taobao</groupId>
                             <artifactId>top-auto-sdk</artifactId>
                             <version>1.0</version>
@@ -380,7 +388,6 @@
                         <phase>clean</phase>
                         <configuration>
                             <file>./src/main/lib/aliyun-java-sdk-dysmsapi-1.0.0.jar</file>
-                            <repositoryLayout>default</repositoryLayout>
                             <groupId>com.aliyun</groupId>
                             <artifactId>aliyun-java-sdk-dysmsapi</artifactId>
                             <version>1.0.0</version>
@@ -396,7 +403,6 @@
                         <phase>clean</phase>
                         <configuration>
                             <file>./src/main/lib/cpdetector_1.0.10.jar</file>
-                            <repositoryLayout>default</repositoryLayout>
                             <groupId>net.sourceforge.cpdetector</groupId>
                             <artifactId>cpdetector</artifactId>
                             <version>1.0.10</version>
@@ -412,7 +418,6 @@
                         <phase>clean</phase>
                         <configuration>
                             <file>./src/main/lib/antlr-2.7.4.jar</file>
-                            <repositoryLayout>default</repositoryLayout>
                             <groupId>net.sourceforge.cpdetector</groupId>
                             <artifactId>antlr</artifactId>
                             <version>2.7.4</version>
@@ -428,7 +433,6 @@
                         <phase>clean</phase>
                         <configuration>
                             <file>./src/main/lib/chardet-1.0.jar</file>
-                            <repositoryLayout>default</repositoryLayout>
                             <groupId>net.sourceforge.cpdetector</groupId>
                             <artifactId>chardet</artifactId>
                             <version>1.0.0</version>
@@ -444,7 +448,6 @@
                         <phase>clean</phase>
                         <configuration>
                             <file>./src/main/lib/jargs-1.0.jar</file>
-                            <repositoryLayout>default</repositoryLayout>
                             <groupId>net.sourceforge.cpdetector</groupId>
                             <artifactId>jargs</artifactId>
                             <version>1.0.0</version>
