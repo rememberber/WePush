@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.util;
 
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.extra.mail.MailAccount;
 import cn.hutool.extra.mail.MailUtil;
 import org.apache.http.Consts;
@@ -38,14 +39,24 @@ public class CommonTest {
     @Test
     public void test() {
         MailAccount account = new MailAccount();
-        account.setHost("smtp.yeah.net");
+        account.setHost("smtp.163.com");
         account.setPort(25);
         account.setAuth(true);
-        account.setFrom("hutool@yeah.net");
-        account.setUser("hutool");
-        account.setPass("q1w2e3");
+        account.setFrom("rememberber@163.com");
+        account.setUser("rememberber");
+        account.setPass("885995zyf163");
 
-        MailUtil.send(account, "rememberber@163.com", "测试", "邮件来自Hutool测试", false);
+
+        for (int i = 0; i < 20; i++) {
+            ThreadUtil.execute(new Runnable() {
+                @Override
+                public void run() {
+                    MailUtil.send(account, "rememberber@163.com", "测试", "邮件来自Hutool测试", false);
+                }
+            });
+        }
+
+        ThreadUtil.safeSleep(10000);
     }
 
     /**
