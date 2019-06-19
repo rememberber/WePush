@@ -87,7 +87,7 @@ public class WxMaTemplateMsgSender implements IMsgSender {
         //空闲链接的检测周期(单位ms)
         clientBuilder.setCheckWaitTime(60000);
         //每路最大连接数
-        clientBuilder.setMaxConnPerHost(App.config.getMaxThreadPool());
+        clientBuilder.setMaxConnPerHost(App.config.getMaxThreadPool() * 2);
         //连接池最大连接数
         clientBuilder.setMaxTotalConn(App.config.getMaxThreadPool() * 2);
         //HttpClient请求时使用的User Agent
