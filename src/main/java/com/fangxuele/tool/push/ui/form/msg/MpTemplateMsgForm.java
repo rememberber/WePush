@@ -91,11 +91,6 @@ public class MpTemplateMsgForm {
     public static String selectedMsgTemplateId;
 
     /**
-     * （选择模板ComboBox）所选模板对应的模板ID
-     */
-    public static String selectedComboBoxTemplateId;
-
-    /**
      * 是否需要监听模板列表ComboBox
      */
     public static boolean needListenTemplateListComboBox = false;
@@ -143,16 +138,10 @@ public class MpTemplateMsgForm {
         templateListComboBox.addItemListener(e -> {
             if (needListenTemplateListComboBox && e.getStateChange() == ItemEvent.SELECTED) {
                 clearAllField();
-                int index = mpTemplateMsgForm.getTemplateListComboBox().getSelectedIndex();
-                String templateId = "";
-                if (templateList != null && templateList.size() > 0) {
-                    templateId = templateList.get(index).getTemplateId();
-                }
-                selectedComboBoxTemplateId = templateId;
-                fillWxTemplateContentToField(templateId);
+                fillWxTemplateContentToField();
             }
         });
-        autoFillButton.addActionListener(e -> autoFillTemplateDataTable(selectedComboBoxTemplateId));
+        autoFillButton.addActionListener(e -> autoFillTemplateDataTable());
         refreshTemplateListButton.addActionListener(e -> {
             initTemplateList();
             initTemplateDataTable();
@@ -229,14 +218,7 @@ public class MpTemplateMsgForm {
 
             mpTemplateMsgForm.getTemplateListComboBox().setSelectedIndex(selectedIndex);
 
-            if (templateList != null && templateList.size() > 0) {
-                selectedComboBoxTemplateId = templateList.get(0).getTemplateId();
-            }
-            if (selectedMsgTemplateId != null) {
-                selectedComboBoxTemplateId = selectedMsgTemplateId;
-            }
-
-            fillWxTemplateContentToField(selectedComboBoxTemplateId);
+            fillWxTemplateContentToField();
         } catch (Exception e) {
             log.error(e.toString());
         }
@@ -260,11 +242,9 @@ public class MpTemplateMsgForm {
 
     /**
      * 根据模板id填充模板列表中对应的WxTemplate内容到表单
-     *
-     * @param templateId
      */
-    public static void fillWxTemplateContentToField(String templateId) {
-        WxMpTemplate wxMpTemplate = templateMap.get(templateId);
+    public static void fillWxTemplateContentToField() {
+        WxMpTemplate wxMpTemplate = templateList.get(mpTemplateMsgForm.getTemplateListComboBox().getSelectedIndex());
         if (wxMpTemplate != null) {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("-----------模板ID-----------\n").append(wxMpTemplate.getTemplateId()).append("\n");
@@ -278,12 +258,10 @@ public class MpTemplateMsgForm {
 
     /**
      * 自动填充模板数据Table
-     *
-     * @param templateId templateId
      */
-    private static void autoFillTemplateDataTable(String templateId) {
-        if (templateId != null && templateMap != null) {
-            WxMpTemplate wxMpTemplate = templateMap.get(templateId);
+    private static void autoFillTemplateDataTable() {
+        if (templateList != null) {
+            WxMpTemplate wxMpTemplate = templateList.get(mpTemplateMsgForm.getTemplateListComboBox().getSelectedIndex());
             if (wxMpTemplate != null) {
                 initTemplateDataTable();
                 DefaultTableModel tableModel = (DefaultTableModel) mpTemplateMsgForm.getTemplateMsgDataTable()

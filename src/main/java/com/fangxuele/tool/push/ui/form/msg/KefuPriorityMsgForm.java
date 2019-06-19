@@ -43,7 +43,7 @@ public class KefuPriorityMsgForm {
             String kefuMsgType = tMsgKefuPriority.getKefuMsgType();
             KefuMsgForm.kefuMsgForm.getMsgKefuMsgTypeComboBox().setSelectedItem(kefuMsgType);
             if ("文本消息".equals(kefuMsgType)) {
-                KefuMsgForm.kefuMsgForm.getMsgKefuMsgTitleTextField().setText(tMsgKefuPriority.getContent());
+                KefuMsgForm.kefuMsgForm.getContentTextArea().setText(tMsgKefuPriority.getContent());
             } else if ("图文消息".equals(kefuMsgType)) {
                 KefuMsgForm.kefuMsgForm.getMsgKefuMsgTitleTextField().setText(tMsgKefuPriority.getTitle());
             }
@@ -53,7 +53,7 @@ public class KefuPriorityMsgForm {
 
             KefuMsgForm.switchKefuMsgType(kefuMsgType);
 
-            MpTemplateMsgForm.initTemplateDataTable();
+            MpTemplateMsgForm.selectedMsgTemplateId = tMsgKefuPriority.getTemplateId();
             // 模板消息Data表
             List<TTemplateData> templateDataList = templateDataMapper.selectByMsgTypeAndMsgId(MessageTypeEnum.KEFU_PRIORITY_CODE, msgId);
             String[] headerNames = {"Name", "Value", "Color", "操作"};
@@ -80,6 +80,7 @@ public class KefuPriorityMsgForm {
         } else {
             KefuMsgForm.switchKefuMsgType("图文消息");
         }
+        MpTemplateMsgForm.initTemplateList();
     }
 
     public static void save(String msgName) {
@@ -103,6 +104,7 @@ public class KefuPriorityMsgForm {
             String templateId = MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateIdTextField().getText();
             String templateUrl = MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateUrlTextField().getText();
             String kefuMsgType = Objects.requireNonNull(KefuMsgForm.kefuMsgForm.getMsgKefuMsgTypeComboBox().getSelectedItem()).toString();
+            String kefuMsgContent = KefuMsgForm.kefuMsgForm.getContentTextArea().getText();
             String kefuMsgTitle = KefuMsgForm.kefuMsgForm.getMsgKefuMsgTitleTextField().getText();
             String kefuPicUrl = KefuMsgForm.kefuMsgForm.getMsgKefuPicUrlTextField().getText();
             String kefuDesc = KefuMsgForm.kefuMsgForm.getMsgKefuDescTextField().getText();
@@ -120,7 +122,7 @@ public class KefuPriorityMsgForm {
             tMsgKefuPriority.setMaAppid(templateMiniAppid);
             tMsgKefuPriority.setMaPagePath(templateMiniPagePath);
             tMsgKefuPriority.setKefuMsgType(kefuMsgType);
-            tMsgKefuPriority.setContent(kefuMsgTitle);
+            tMsgKefuPriority.setContent(kefuMsgContent);
             tMsgKefuPriority.setTitle(kefuMsgTitle);
             tMsgKefuPriority.setImgUrl(kefuPicUrl);
             tMsgKefuPriority.setDescribe(kefuDesc);
