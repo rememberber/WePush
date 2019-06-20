@@ -315,12 +315,17 @@ public class MemberListener {
                     DbUtilMySQL dbUtilMySQL = DbUtilMySQL.getInstance();
 
                     // 表查询
-                    ResultSet rs = dbUtilMySQL.executeQuery(querySql);
+                    ResultSet resultSet = dbUtilMySQL.executeQuery(querySql);
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());
                     int currentImported = 0;
 
-                    while (rs.next()) {
-                        PushData.allUser.add(new String[]{rs.getString(1).trim()});
+                    int columnCount = resultSet.getMetaData().getColumnCount();
+                    while (resultSet.next()) {
+                        String[] msgData = new String[columnCount];
+                        for (int i = 0; i < columnCount; i++) {
+                            msgData[i] = resultSet.getString(i).trim();
+                        }
+                        PushData.allUser.add(msgData);
                         currentImported++;
                         memberCountLabel.setText(String.valueOf(currentImported));
                     }
