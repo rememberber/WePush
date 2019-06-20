@@ -19,8 +19,8 @@ import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
 import com.fangxuele.tool.push.ui.component.TableInCellImageLabelRenderer;
 import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
-import com.fangxuele.tool.push.util.DbUtilMySQL;
 import com.fangxuele.tool.push.util.FileCharSetUtil;
+import com.fangxuele.tool.push.util.HikariUtil;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.opencsv.CSVReader;
@@ -311,11 +311,8 @@ public class MemberListener {
                     progressBar.setVisible(true);
                     progressBar.setIndeterminate(true);
 
-                    // 获取SQLServer连接实例
-                    DbUtilMySQL dbUtilMySQL = DbUtilMySQL.getInstance();
-
                     // 表查询
-                    ResultSet resultSet = dbUtilMySQL.executeQuery(querySql);
+                    ResultSet resultSet = HikariUtil.executeQuery(querySql);
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());
                     int currentImported = 0;
 
@@ -323,7 +320,12 @@ public class MemberListener {
                     while (resultSet.next()) {
                         String[] msgData = new String[columnCount];
                         for (int i = 1; i <= columnCount; i++) {
-                            msgData[i] = resultSet.getString(i).trim();
+                            try {
+                                msgData[i] = resultSet.getString(i);
+                            } catch (Exception e1) {
+                                System.err.println(e1);
+                            }
+
                         }
                         PushData.allUser.add(msgData);
                         currentImported++;
