@@ -322,7 +322,7 @@ public class MemberListener {
                     int columnCount = resultSet.getMetaData().getColumnCount();
                     while (resultSet.next()) {
                         String[] msgData = new String[columnCount];
-                        for (int i = 0; i < columnCount; i++) {
+                        for (int i = 1; i <= columnCount; i++) {
                             msgData[i] = resultSet.getString(i).trim();
                         }
                         PushData.allUser.add(msgData);
