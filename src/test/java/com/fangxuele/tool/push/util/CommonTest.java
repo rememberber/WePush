@@ -44,7 +44,7 @@ public class CommonTest {
         account.setAuth(true);
         account.setFrom("rememberber@163.com");
         account.setUser("rememberber");
-        account.setPass("885995zyf163");
+        account.setPass("******");
 
 
         for (int i = 0; i < 20; i++) {
