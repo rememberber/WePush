@@ -5,6 +5,10 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.FileReader;
 import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.db.DbUtil;
+import cn.hutool.db.Entity;
+import cn.hutool.db.handler.EntityListHandler;
+import cn.hutool.db.sql.SqlExecutor;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import cn.hutool.poi.excel.ExcelReader;
@@ -48,7 +52,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.sql.ResultSet;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -305,6 +309,7 @@ public class MemberListener {
             }
 
             if (StringUtils.isNotEmpty(querySql)) {
+                Connection conn = null;
                 try {
                     MemberForm.memberForm.getImportFromSqlButton().setEnabled(false);
                     MemberForm.memberForm.getImportFromSqlButton().updateUI();
@@ -312,25 +317,24 @@ public class MemberListener {
                     progressBar.setIndeterminate(true);
 
                     // 表查询
-                    ResultSet resultSet = HikariUtil.executeQuery(querySql);
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());
                     int currentImported = 0;
 
-                    int columnCount = resultSet.getMetaData().getColumnCount();
-                    while (resultSet.next()) {
-                        String[] msgData = new String[columnCount];
-                        for (int i = 1; i <= columnCount; i++) {
-                            try {
-                                msgData[i] = resultSet.getString(i);
-                            } catch (Exception e1) {
-                                System.err.println(e1);
-                            }
-
+                    conn = HikariUtil.getConnection();
+                    List<Entity> entityList = SqlExecutor.query(conn, querySql, new EntityListHandler());
+                    for (Entity entity : entityList) {
+                        Set<String> fieldNames = entity.getFieldNames();
+                        String[] msgData = new String[fieldNames.size()];
+                        int i = 0;
+                        for (String fieldName : fieldNames) {
+                            msgData[i] = entity.getStr(fieldName);
+                            i++;
                         }
                         PushData.allUser.add(msgData);
                         currentImported++;
                         memberCountLabel.setText(String.valueOf(currentImported));
                     }
+
                     renderMemberListTable();
                     JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成",
                             JOptionPane.INFORMATION_MESSAGE);
@@ -343,6 +347,7 @@ public class MemberListener {
                     logger.error(e1);
                     e1.printStackTrace();
                 } finally {
+                    DbUtil.close(conn);
                     MemberForm.memberForm.getImportFromSqlButton().setEnabled(true);
                     MemberForm.memberForm.getImportFromSqlButton().updateUI();
                     progressBar.setMaximum(100);
