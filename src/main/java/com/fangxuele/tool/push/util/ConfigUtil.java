@@ -50,6 +50,10 @@ public class ConfigUtil {
 
     private String textPerWeekTime;
 
+    private boolean needReimport;
+
+    private String reimportWay;
+
     private boolean autoCheckUpdate;
 
     private long pushTotal;
@@ -274,6 +278,22 @@ public class ConfigUtil {
 
     public void setTextPerWeekTime(String textPerWeekTime) {
         setting.put("schedule", "textPerWeek.time", textPerWeekTime);
+    }
+
+    public boolean isNeedReimport() {
+        return setting.getBool("reimportCheckBox", "schedule", false);
+    }
+
+    public void setNeedReimport(boolean needReimport) {
+        setting.put("schedule", "reimportCheckBox", String.valueOf(needReimport));
+    }
+
+    public String getReimportWay() {
+        return setting.getStr("reimportComboBox", "schedule", "");
+    }
+
+    public void setReimportWay(String reimportWay) {
+        setting.put("schedule", "reimportComboBox", reimportWay);
     }
 
     public boolean isAutoCheckUpdate() {

@@ -80,6 +80,9 @@ public class ScheduleListener {
                     App.config.setTextPerWeekTime(textPerWeekTime);
                 }
 
+                App.config.setNeedReimport(ScheduleForm.scheduleForm.getReimportCheckBox().isSelected());
+                App.config.setReimportWay((String) ScheduleForm.scheduleForm.getReimportComboBox().getSelectedItem());
+
                 App.config.save();
                 JOptionPane.showMessageDialog(MainWindow.mainWindow.getSchedulePanel(), "保存成功！\n\n将在下一次按计划执行时生效！\n\n", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
