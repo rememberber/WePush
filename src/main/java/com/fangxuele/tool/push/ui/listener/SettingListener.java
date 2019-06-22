@@ -16,6 +16,7 @@ import com.fangxuele.tool.push.ui.dialog.SwitchWxAccountDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.util.DbUtilMySQL;
+import com.fangxuele.tool.push.util.HikariUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -324,6 +325,10 @@ public class SettingListener {
                 App.config.setMysqlUser(SettingForm.settingForm.getMysqlUserTextField().getText());
                 App.config.setMysqlPassword(new String(SettingForm.settingForm.getMysqlPasswordField().getPassword()));
                 App.config.save();
+
+                if (HikariUtil.getHikariDataSource() != null) {
+                    HikariUtil.getHikariDataSource().close();
+                }
 
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
