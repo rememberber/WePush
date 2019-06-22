@@ -29,12 +29,11 @@ public class HikariUtil {
             synchronized (HikariUtil.class) {
                 if (hikariDataSource == null || hikariDataSource.isClosed()) {
                     String mysqlUrl = App.config.getMysqlUrl();
-                    String mysqlDatabase = App.config.getMysqlDatabase();
                     String mysqlUser = App.config.getMysqlUser();
                     String mysqlPassword = App.config.getMysqlPassword();
 
                     hikariDataSource = new HikariDataSource();
-                    hikariDataSource.setJdbcUrl("jdbc:mysql://" + mysqlUrl + "/" + mysqlDatabase + "?useUnicode=true&characterEncoding=utf8");
+                    hikariDataSource.setJdbcUrl("jdbc:mysql://" + mysqlUrl);
                     hikariDataSource.setUsername(mysqlUser);
                     hikariDataSource.setPassword(mysqlPassword);
                 }

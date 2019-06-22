@@ -293,18 +293,16 @@ public class SettingListener {
         SettingForm.settingForm.getSettingTestDbLinkButton().addActionListener(e -> {
             try {
                 String dbUrl = SettingForm.settingForm.getMysqlUrlTextField().getText();
-                String dbName = SettingForm.settingForm.getMysqlDatabaseTextField().getText();
                 String dbUser = SettingForm.settingForm.getMysqlUserTextField().getText();
                 String dbPassword = new String(SettingForm.settingForm.getMysqlPasswordField().getPassword());
-                if (StringUtils.isEmpty(dbUrl) || StringUtils.isEmpty(dbName)
-                        || StringUtils.isEmpty(dbUser) || StringUtils.isEmpty(dbPassword)) {
+                if (StringUtils.isEmpty(dbUrl) || StringUtils.isEmpty(dbUser) || StringUtils.isEmpty(dbPassword)) {
                     JOptionPane.showMessageDialog(settingPanel,
                             "请先在设置中填写并保存MySQL数据库相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }
                 DbUtilMySQL dbMySQL = DbUtilMySQL.getInstance();
-                Connection conn = dbMySQL.testConnection(dbUrl, dbName, dbUser, dbPassword);
+                Connection conn = dbMySQL.testConnection(dbUrl, dbUser, dbPassword);
                 if (conn == null) {
                     JOptionPane.showMessageDialog(settingPanel, "连接失败", "失败",
                             JOptionPane.ERROR_MESSAGE);
@@ -323,7 +321,6 @@ public class SettingListener {
         SettingForm.settingForm.getSettingDbInfoSaveButton().addActionListener(e -> {
             try {
                 App.config.setMysqlUrl(SettingForm.settingForm.getMysqlUrlTextField().getText());
-                App.config.setMysqlDatabase(SettingForm.settingForm.getMysqlDatabaseTextField().getText());
                 App.config.setMysqlUser(SettingForm.settingForm.getMysqlUserTextField().getText());
                 App.config.setMysqlPassword(new String(SettingForm.settingForm.getMysqlPasswordField().getPassword()));
                 App.config.save();

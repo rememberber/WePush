@@ -23,7 +23,6 @@ public class DbUtilMySQL {
     private Statement statement = null;
     private ResultSet resultSet = null;
     private static String DBUrl = null;
-    private static String DBName = null;
     private static String DBUser = null;
     private static String DBPassword = null;
 
@@ -58,7 +57,6 @@ public class DbUtilMySQL {
         try {
             String dbclassname = "com.mysql.cj.jdbc.Driver";
             DBUrl = App.config.getMysqlUrl();
-            DBName = App.config.getMysqlDatabase();
             DBUser = App.config.getMysqlUser();
             DBPassword = App.config.getMysqlPassword();
 
@@ -80,13 +78,12 @@ public class DbUtilMySQL {
         String user = App.config.getMysqlUser();
         String password = App.config.getMysqlPassword();
         // 当DB配置变更时重新获取
-        if (!App.config.getMysqlUrl().equals(DBUrl) || !App.config.getMysqlDatabase().equals(DBName)
-                || !App.config.getMysqlUser().equals(DBUser)
+        if (!App.config.getMysqlUrl().equals(DBUrl) || !App.config.getMysqlUser().equals(DBUser)
                 || !App.config.getMysqlPassword().equals(DBPassword)) {
             loadConfig();
             // "jdbc:mysql://localhost/pxp2p_branch"
             connection = DriverManager.getConnection(
-                    "jdbc:mysql://" + DBUrl + "/" + DBName + "?useUnicode=true&characterEncoding=utf8", user, password);
+                    "jdbc:mysql://" + DBUrl, user, password);
             // 把事务提交方式改为手工提交
             connection.setAutoCommit(false);
         }
@@ -95,7 +92,7 @@ public class DbUtilMySQL {
         if (connection == null || !connection.isValid(10)) {
             // "jdbc:mysql://localhost/pxp2p_branch"
             connection = DriverManager.getConnection(
-                    "jdbc:mysql://" + DBUrl + "/" + DBName + "?useUnicode=true&characterEncoding=utf8", user, password);
+                    "jdbc:mysql://" + DBUrl, user, password);
             // 把事务提交方式改为手工提交
             connection.setAutoCommit(false);
         }
@@ -115,7 +112,7 @@ public class DbUtilMySQL {
         loadConfig();
         String user = App.config.getMysqlUser();
         String password = App.config.getMysqlPassword();
-        connection = DriverManager.getConnection("jdbc:mysql://" + DBUrl + "/" + DBName, user, password);
+        connection = DriverManager.getConnection("jdbc:mysql://" + DBUrl, user, password);
         // 把事务提交方式改为手工提交
         connection.setAutoCommit(false);
 
@@ -131,11 +128,11 @@ public class DbUtilMySQL {
      * @return
      * @throws SQLException
      */
-    public synchronized Connection testConnection(String dburl, String dbname, String dbuser, String dbpassword)
+    public synchronized Connection testConnection(String dburl, String dbuser, String dbpassword)
             throws SQLException {
         loadConfig();
         // "jdbc:mysql://localhost/pxp2p_branch"
-        connection = DriverManager.getConnection("jdbc:mysql://" + dburl + "/" + dbname, dbuser, dbpassword);
+        connection = DriverManager.getConnection("jdbc:mysql://" + dburl, dbuser, dbpassword);
         // 把事务提交方式改为手工提交
         connection.setAutoCommit(false);
 
