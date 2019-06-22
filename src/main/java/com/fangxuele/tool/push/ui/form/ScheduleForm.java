@@ -1,6 +1,7 @@
 package com.fangxuele.tool.push.ui.form;
 
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -28,6 +29,8 @@ public class ScheduleForm {
     private JButton scheduleSaveButton;
     private JComboBox schedulePerWeekComboBox;
     private JTextField startPerWeekTextField;
+    private JCheckBox reimportCheckBox;
+    private JComboBox reimportComboBox;
 
     public static ScheduleForm scheduleForm = new ScheduleForm();
 
@@ -47,6 +50,24 @@ public class ScheduleForm {
         scheduleForm.getRunPerWeekRadioButton().setSelected(App.config.isRadioPerWeek());
         scheduleForm.getSchedulePerWeekComboBox().setSelectedItem(App.config.getTextPerWeekWeek());
         scheduleForm.getStartPerWeekTextField().setText(App.config.getTextPerWeekTime());
+
+        fillReimportComboBox();
+        scheduleForm.getReimportCheckBox().setSelected(App.config.isNeedReimport());
+        scheduleForm.getReimportComboBox().setSelectedItem(App.config.getReimportWay());
+    }
+
+    /**
+     * 重新导入下拉框填充
+     */
+    public static void fillReimportComboBox() {
+        scheduleForm.getReimportComboBox().removeAllItems();
+        scheduleForm.getReimportComboBox().addItem("通过SQL导入");
+        scheduleForm.getReimportComboBox().addItem("通过文件导入");
+        int msgType = App.config.getMsgType();
+        if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE || msgType == MessageTypeEnum.MA_TEMPLATE_CODE
+                || msgType == MessageTypeEnum.KEFU_CODE || msgType == MessageTypeEnum.KEFU_PRIORITY_CODE) {
+            scheduleForm.getReimportComboBox().addItem("导入所有关注公众号的用户");
+        }
     }
 
     {
@@ -67,7 +88,7 @@ public class ScheduleForm {
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         schedulePanel = new JPanel();
-        schedulePanel.setLayout(new GridLayoutManager(5, 7, new Insets(10, 10, 10, 10), -1, -1));
+        schedulePanel.setLayout(new GridLayoutManager(6, 7, new Insets(10, 10, 10, 10), -1, -1));
         panel1.add(schedulePanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         runAtThisTimeRadioButton = new JRadioButton();
         runAtThisTimeRadioButton.setText("在此时间开始推送：");
@@ -75,7 +96,7 @@ public class ScheduleForm {
         final Spacer spacer1 = new Spacer();
         schedulePanel.add(spacer1, new GridConstraints(0, 6, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
-        schedulePanel.add(spacer2, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        schedulePanel.add(spacer2, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         startAtThisTimeTextField = new JTextField();
         startAtThisTimeTextField.setText("");
         schedulePanel.add(startAtThisTimeTextField, new GridConstraints(0, 1, 1, 4, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
@@ -100,7 +121,7 @@ public class ScheduleForm {
         scheduleSaveButton.setHorizontalAlignment(0);
         scheduleSaveButton.setIcon(new ImageIcon(getClass().getResource("/icon/menu-saveall_dark.png")));
         scheduleSaveButton.setText("保存");
-        schedulePanel.add(scheduleSaveButton, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        schedulePanel.add(scheduleSaveButton, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label4 = new JLabel();
         label4.setText("每周");
         schedulePanel.add(label4, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -120,5 +141,10 @@ public class ScheduleForm {
         schedulePanel.add(schedulePerWeekComboBox, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         startPerWeekTextField = new JTextField();
         schedulePanel.add(startPerWeekTextField, new GridConstraints(2, 4, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        reimportCheckBox = new JCheckBox();
+        reimportCheckBox.setText("计划任务执行时重新导入目标用户");
+        schedulePanel.add(reimportCheckBox, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        reimportComboBox = new JComboBox();
+        schedulePanel.add(reimportComboBox, new GridConstraints(3, 1, 1, 4, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 }

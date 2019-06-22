@@ -207,7 +207,11 @@ public class UpgradeUtil {
                     SettingForm.initSwitchMultiAccount();
                 }
                 break;
-            case 22:
+            case 26:
+                if (StringUtils.isNotBlank(App.config.getMysqlDatabase())) {
+                    App.config.setMysqlUrl(App.config.getMysqlUrl() + '/' + App.config.getMysqlDatabase());
+                    App.config.save();
+                }
                 break;
             default:
         }

@@ -3,6 +3,7 @@ package com.fangxuele.tool.push.util;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.extra.mail.MailAccount;
 import cn.hutool.extra.mail.MailUtil;
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -23,6 +24,9 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.CharBuffer;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -223,5 +227,25 @@ public class CommonTest {
             throw new HttpResponseException(statusLine.getStatusCode(), statusLine.getReasonPhrase());
         }
         return entity == null ? null : EntityUtils.toString(entity, Consts.UTF_8);
+    }
+
+    @Test
+    public void testHikari() {
+        HikariDataSource ds = null;
+        if (ds == null || ds.isClosed()) {
+            ds = new HikariDataSource();
+            ds.setJdbcUrl("jdbc:mysql://172.24.7.186:3306/fin_item");
+            ds.setUsername("root");
+            ds.setPassword("qwert33");
+        }
+        String sql = "select * from netvalue";
+        try {
+            PreparedStatement preparedStatement = ds.getConnection().prepareStatement(sql);
+            ResultSet sr = preparedStatement.executeQuery();
+            System.err.println(sr);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        ds.close();
     }
 }

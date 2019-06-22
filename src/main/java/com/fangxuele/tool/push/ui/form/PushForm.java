@@ -145,7 +145,7 @@ public class PushForm {
         pushMsgName = new JLabel();
         Font pushMsgNameFont = this.$$$getFont$$$(null, -1, 24, pushMsgName.getFont());
         if (pushMsgNameFont != null) pushMsgName.setFont(pushMsgNameFont);
-        pushMsgName.setForeground(new Color(-16155667));
+        pushMsgName.setForeground(new Color(-276358));
         pushMsgName.setText("消息标题");
         pushUpPanel.add(pushMsgName, new GridConstraints(0, 8, 1, 5, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label4 = new JLabel();

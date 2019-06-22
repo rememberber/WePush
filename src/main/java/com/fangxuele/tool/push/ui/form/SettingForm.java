@@ -32,7 +32,6 @@ public class SettingForm {
     private JPasswordField wechatAesKeyPasswordField;
     private JButton settingMpInfoSaveButton;
     private JTextField mysqlUrlTextField;
-    private JTextField mysqlDatabaseTextField;
     private JTextField mysqlUserTextField;
     private JPasswordField mysqlPasswordField;
     private JButton settingTestDbLinkButton;
@@ -148,7 +147,6 @@ public class SettingForm {
 
         // MySQL
         settingForm.getMysqlUrlTextField().setText(App.config.getMysqlUrl());
-        settingForm.getMysqlDatabaseTextField().setText(App.config.getMysqlDatabase());
         settingForm.getMysqlUserTextField().setText(App.config.getMysqlUser());
         settingForm.getMysqlPasswordField().setText(App.config.getMysqlPassword());
 
@@ -499,7 +497,7 @@ public class SettingForm {
         final Spacer spacer7 = new Spacer();
         panel16.add(spacer7, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final JPanel panel17 = new JPanel();
-        panel17.setLayout(new GridLayoutManager(5, 4, new Insets(15, 15, 10, 0), -1, -1));
+        panel17.setLayout(new GridLayoutManager(4, 4, new Insets(15, 15, 10, 0), -1, -1));
         panel3.add(panel17, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         panel17.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "MySQL数据库", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, panel17.getFont())));
         final JLabel label30 = new JLabel();
@@ -508,23 +506,18 @@ public class SettingForm {
         mysqlUrlTextField = new JTextField();
         panel17.add(mysqlUrlTextField, new GridConstraints(0, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, new Dimension(300, -1), new Dimension(300, -1), null, 0, false));
         final JLabel label31 = new JLabel();
-        label31.setText("数据库名称");
+        label31.setText("用户名");
         panel17.add(label31, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        mysqlDatabaseTextField = new JTextField();
-        panel17.add(mysqlDatabaseTextField, new GridConstraints(1, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        final JLabel label32 = new JLabel();
-        label32.setText("用户名");
-        panel17.add(label32, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         mysqlUserTextField = new JTextField();
-        panel17.add(mysqlUserTextField, new GridConstraints(2, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        final JLabel label33 = new JLabel();
-        label33.setText("密码");
-        panel17.add(label33, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel17.add(mysqlUserTextField, new GridConstraints(1, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        final JLabel label32 = new JLabel();
+        label32.setText("密码");
+        panel17.add(label32, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         mysqlPasswordField = new JPasswordField();
-        panel17.add(mysqlPasswordField, new GridConstraints(3, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel17.add(mysqlPasswordField, new GridConstraints(2, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         final JPanel panel18 = new JPanel();
         panel18.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
-        panel17.add(panel18, new GridConstraints(4, 0, 1, 4, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel17.add(panel18, new GridConstraints(3, 0, 1, 4, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         settingTestDbLinkButton = new JButton();
         settingTestDbLinkButton.setIcon(new ImageIcon(getClass().getResource("/icon/arrow_right.png")));
         settingTestDbLinkButton.setText("测试连接");
@@ -539,9 +532,9 @@ public class SettingForm {
         panel19.setLayout(new GridLayoutManager(4, 3, new Insets(15, 15, 10, 0), -1, -1));
         panel3.add(panel19, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         panel19.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "外观", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, panel19.getFont())));
-        final JLabel label34 = new JLabel();
-        label34.setText("主题风格");
-        panel19.add(label34, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label33 = new JLabel();
+        label33.setText("主题风格");
+        panel19.add(label33, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         settingThemeComboBox = new JComboBox();
         final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
         defaultComboBoxModel1.addElement("Darcula(推荐)");
@@ -549,9 +542,9 @@ public class SettingForm {
         defaultComboBoxModel1.addElement("系统默认");
         settingThemeComboBox.setModel(defaultComboBoxModel1);
         panel19.add(settingThemeComboBox, new GridConstraints(0, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, new Dimension(300, -1), new Dimension(300, -1), null, 0, false));
-        final JLabel label35 = new JLabel();
-        label35.setText("字体");
-        panel19.add(label35, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label34 = new JLabel();
+        label34.setText("字体");
+        panel19.add(label34, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         settingFontNameComboBox = new JComboBox();
         final DefaultComboBoxModel defaultComboBoxModel2 = new DefaultComboBoxModel();
         defaultComboBoxModel2.addElement("Microsoft YaHei");
@@ -560,9 +553,9 @@ public class SettingForm {
         defaultComboBoxModel2.addElement("Microsoft YaHei UI Light");
         settingFontNameComboBox.setModel(defaultComboBoxModel2);
         panel19.add(settingFontNameComboBox, new GridConstraints(1, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label36 = new JLabel();
-        label36.setText("字号");
-        panel19.add(label36, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label35 = new JLabel();
+        label35.setText("字号");
+        panel19.add(label35, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         settingFontSizeComboBox = new JComboBox();
         final DefaultComboBoxModel defaultComboBoxModel3 = new DefaultComboBoxModel();
         defaultComboBoxModel3.addElement("5");
