@@ -160,8 +160,10 @@ public class MemberListener {
                     return;
                 }
                 renderMemberListTable();
-                JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成",
-                        JOptionPane.INFORMATION_MESSAGE);
+
+                if (!PushData.fixRateScheduling) {
+                    JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+                }
 
                 App.config.setMemberFilePath(filePathField.getText());
                 App.config.save();
@@ -191,8 +193,9 @@ public class MemberListener {
             try {
                 getMpUserList();
                 renderMemberListTable();
-                JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成",
-                        JOptionPane.INFORMATION_MESSAGE);
+                if (!PushData.fixRateScheduling) {
+                    JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+                }
             } catch (WxErrorException e1) {
                 JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
@@ -336,8 +339,9 @@ public class MemberListener {
                     }
 
                     renderMemberListTable();
-                    JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成",
-                            JOptionPane.INFORMATION_MESSAGE);
+                    if (!PushData.fixRateScheduling) {
+                        JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+                    }
 
                     App.config.setMemberSql(querySql);
                     App.config.save();
