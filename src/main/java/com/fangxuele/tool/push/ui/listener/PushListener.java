@@ -211,6 +211,7 @@ public class PushListener {
                                     PushForm.pushForm.getDryRunCheckBox().isSelected(), "确认定时推送？",
                             JOptionPane.YES_NO_OPTION);
                     if (isSchedulePush == JOptionPane.YES_OPTION) {
+                        PushData.scheduling = true;
                         PushData.fixRateScheduling = true;
                         // 按钮状态
                         PushForm.pushForm.getScheduleRunButton().setEnabled(false);

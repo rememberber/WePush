@@ -13,14 +13,17 @@ import com.fangxuele.tool.push.logic.msgmaker.WxMaTemplateMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.YunPianMsgMaker;
 import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.logic.msgsender.SendResult;
 import com.fangxuele.tool.push.logic.msgsender.WxMaTemplateMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
+import com.fangxuele.tool.push.ui.form.ScheduleForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.ui.listener.MemberListener;
+import com.fangxuele.tool.push.util.ConsoleUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
@@ -32,6 +35,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -183,6 +187,7 @@ public class PushControl {
         CSVWriter writer;
         int msgType = App.config.getMsgType();
 
+        List<File> fileList = new ArrayList<>();
         // 保存已发送
         if (PushData.sendSuccessList.size() > 0) {
             File sendSuccessFile = new File(SystemUtil.configHome + "data" +
@@ -199,6 +204,7 @@ public class PushControl {
             writer.close();
 
             savePushResult(msgName, "发送成功", sendSuccessFile);
+            fileList.add(sendSuccessFile);
             // 保存累计推送总数
             App.config.setPushTotal(App.config.getPushTotal() + PushData.sendSuccessList.size());
             App.config.save();
@@ -211,6 +217,7 @@ public class PushControl {
         for (String[] str : PushData.sendFailList) {
             PushData.toSendList.remove(str);
         }
+
         if (PushData.toSendList.size() > 0) {
             File unSendFile = new File(SystemUtil.configHome + "data" + File.separator +
                     "push_his" + File.separator + MessageTypeEnum.getName(msgType) + "-" + msgName + "-未发送-" + nowTime +
@@ -225,6 +232,7 @@ public class PushControl {
             writer.close();
 
             savePushResult(msgName, "未发送", unSendFile);
+            fileList.add(unSendFile);
         }
 
         // 保存发送失败
@@ -241,9 +249,52 @@ public class PushControl {
             writer.close();
 
             savePushResult(msgName, "发送失败", failSendFile);
+            fileList.add(failSendFile);
         }
 
         PushHisForm.init();
+
+        // 发送推送结果邮件
+        if ((PushData.scheduling || PushData.fixRateScheduling)
+                && ScheduleForm.scheduleForm.getSendPushResultCheckBox().isSelected()) {
+            ConsoleUtil.consoleWithLog("发送推送结果邮件开始");
+            String mailResultTo = ScheduleForm.scheduleForm.getMailResultToTextField().getText().replace("；", ";").replace(" ", "");
+            String[] mailTos = mailResultTo.split(";");
+            ArrayList<String> mailToList = new ArrayList<>(Arrays.asList(mailTos));
+
+            MailMsgSender mailMsgSender = new MailMsgSender();
+            String title = "WePush推送结果：" + MessageEditForm.messageEditForm.getMsgNameField().getText()
+                    + "-" + PushData.sendSuccessList.size() + "成功；" + PushData.sendFailList.size() + "失败；"
+                    + PushData.toSendList.size() + "未发送";
+            StringBuilder contentBuilder = new StringBuilder();
+            contentBuilder.append("<h2>WePush推送结果</h2>");
+            contentBuilder.append("<p>消息类型：" + MessageTypeEnum.getName(App.config.getMsgType()) + "</p>");
+            contentBuilder.append("<p>消息名称：" + MessageEditForm.messageEditForm.getMsgNameField().getText() + "</p>");
+            contentBuilder.append("<br/>");
+
+            contentBuilder.append("<p style='color:green'><strong>成功数：" + PushData.sendSuccessList.size() + "</strong></p>");
+            contentBuilder.append("<p style='color:red'><strong>失败数：" + PushData.sendFailList.size() + "</strong></p>");
+            contentBuilder.append("<p>未推送数：" + PushData.toSendList.size() + "</p>");
+            contentBuilder.append("<br/>");
+
+            // TODO
+            contentBuilder.append("<p>开始时间：</p>");
+            contentBuilder.append("<p>完毕时间：</p>");
+            contentBuilder.append("<p>总耗时：</p>");
+            contentBuilder.append("<br/>");
+
+            contentBuilder.append("<p>详情请查看附件</p>");
+
+            contentBuilder.append("<br/>");
+            contentBuilder.append("<hr/>");
+            contentBuilder.append("<p>来自WePush，一款专注于批量推送的小而美的工具</p>");
+            contentBuilder.append("<img alt=\"WePush\" src=\"http://download.zhoubochina.com/file/wx-zanshang.jpg\">");
+
+            File[] files = new File[fileList.size()];
+            fileList.toArray(files);
+            mailMsgSender.sendPushResultMail(mailToList, title, contentBuilder.toString(), files);
+            ConsoleUtil.consoleWithLog("发送推送结果邮件结束");
+        }
     }
 
     /**
@@ -264,6 +315,9 @@ public class PushControl {
         tPushHistory.setModifiedTime(now);
 
         pushHistoryMapper.insertSelective(tPushHistory);
+    }
+
+    private static void sendPushResultMail() {
     }
 
     /**

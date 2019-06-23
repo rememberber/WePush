@@ -10,6 +10,9 @@ import com.fangxuele.tool.push.logic.msgmaker.MailMsgMaker;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
+import java.util.List;
+
 /**
  * <pre>
  * E-Mail发送器
@@ -63,6 +66,27 @@ public class MailMsgSender implements IMsgSender {
         try {
             MailUtil.send(mailAccount, tos, "这是一封来自WePush的测试邮件",
                     "<h1>恭喜，配置正确，邮件发送成功！</h1><p>来自WePush，一款专注于批量推送的小而美的工具。</p>", true);
+            sendResult.setSuccess(true);
+        } catch (Exception e) {
+            sendResult.setSuccess(false);
+            sendResult.setInfo(e.getMessage());
+            log.error(e.toString());
+        }
+
+        return sendResult;
+    }
+
+    /**
+     * 发送推送结果
+     *
+     * @param tos
+     * @return
+     */
+    public SendResult sendPushResultMail(List<String> tos, String title, String content, File[] files) {
+        SendResult sendResult = new SendResult();
+
+        try {
+            MailUtil.send(mailAccount, tos, title, content, true, files);
             sendResult.setSuccess(true);
         } catch (Exception e) {
             sendResult.setSuccess(false);
