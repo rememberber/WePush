@@ -318,6 +318,27 @@ public class SettingListener {
             }
         });
 
+        // E-Mail保存
+        SettingForm.settingForm.getSaveMailButton().addActionListener(e -> {
+            try {
+                App.config.setMailHost(SettingForm.settingForm.getMailHostTextField().getText());
+                App.config.setMailPort(SettingForm.settingForm.getMailPortTextField().getText());
+                App.config.setMailFrom(SettingForm.settingForm.getMailFromTextField().getText());
+                App.config.setMailUser(SettingForm.settingForm.getMailUserTextField().getText());
+                App.config.setMailPassword(new String(SettingForm.settingForm.getMailPasswordField().getPassword()));
+                App.config.setMailUseStartTLS(SettingForm.settingForm.getMailStartTLSCheckBox().isSelected());
+                App.config.setMailUseSSL(SettingForm.settingForm.getMailSSLCheckBox().isSelected());
+                App.config.save();
+
+                JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        });
+
         // mysql数据库-保存
         SettingForm.settingForm.getSettingDbInfoSaveButton().addActionListener(e -> {
             try {
