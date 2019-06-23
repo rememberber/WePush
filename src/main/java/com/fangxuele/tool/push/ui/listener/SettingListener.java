@@ -7,11 +7,13 @@ import com.fangxuele.tool.push.dao.TWxAccountMapper;
 import com.fangxuele.tool.push.domain.TWxAccount;
 import com.fangxuele.tool.push.logic.msgsender.AliDayuTemplateMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.AliYunMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.TxYunMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.WxMaTemplateMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.YunPianMsgSender;
 import com.fangxuele.tool.push.ui.Init;
+import com.fangxuele.tool.push.ui.dialog.MailTestDialog;
 import com.fangxuele.tool.push.ui.dialog.SwitchWxAccountDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.SettingForm;
@@ -318,6 +320,13 @@ public class SettingListener {
             }
         });
 
+        // E-Mail测试
+        SettingForm.settingForm.getTestMailButton().addActionListener(e -> {
+            MailTestDialog mailTestDialog = new MailTestDialog();
+            mailTestDialog.pack();
+            mailTestDialog.setVisible(true);
+        });
+
         // E-Mail保存
         SettingForm.settingForm.getSaveMailButton().addActionListener(e -> {
             try {
@@ -329,6 +338,8 @@ public class SettingListener {
                 App.config.setMailUseStartTLS(SettingForm.settingForm.getMailStartTLSCheckBox().isSelected());
                 App.config.setMailUseSSL(SettingForm.settingForm.getMailSSLCheckBox().isSelected());
                 App.config.save();
+
+                MailMsgSender.mailAccount = null;
 
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);

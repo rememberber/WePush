@@ -57,6 +57,22 @@ public class MailMsgSender implements IMsgSender {
         return sendResult;
     }
 
+    public SendResult sendTestMail(String tos) {
+        SendResult sendResult = new SendResult();
+
+        try {
+            MailUtil.send(mailAccount, tos, "这是一封来自WePush的测试邮件",
+                    "<h1>恭喜，配置正确，邮件发送成功！</h1><p>来自WePush，一款专注于批量推送的小而美的工具。</p>", true);
+            sendResult.setSuccess(true);
+        } catch (Exception e) {
+            sendResult.setSuccess(false);
+            sendResult.setInfo(e.getMessage());
+            log.error(e.toString());
+        }
+
+        return sendResult;
+    }
+
     /**
      * 获取E-Mail发送客户端
      *
