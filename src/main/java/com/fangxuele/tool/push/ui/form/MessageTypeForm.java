@@ -179,7 +179,7 @@ public class MessageTypeForm {
         hwYunRadioButton.setText("华为云短信");
         msgTypeListPanel.add(hwYunRadioButton, new GridConstraints(10, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         eMailRadioButton = new JRadioButton();
-        eMailRadioButton.setEnabled(false);
+        eMailRadioButton.setEnabled(true);
         eMailRadioButton.setText("E-Mail");
         msgTypeListPanel.add(eMailRadioButton, new GridConstraints(16, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         网易云信短信RadioButton = new JRadioButton();
