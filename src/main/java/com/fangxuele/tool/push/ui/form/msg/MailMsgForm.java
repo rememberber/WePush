@@ -1,11 +1,16 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
+import com.fangxuele.tool.push.dao.TMsgMailMapper;
+import com.fangxuele.tool.push.domain.TMsgMail;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Getter;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 /**
  * <pre>
@@ -26,8 +31,26 @@ public class MailMsgForm {
     private JButton fileExploreButton;
     private JLabel uEditorLabel;
 
-    public static void init(String msgName) {
+    private static TMsgMailMapper msgMailMapper = MybatisUtil.getSqlSession().getMapper(TMsgMailMapper.class);
 
+    public static void init(String msgName) {
+        clearAllField();
+        List<TMsgMail> tMsgMailList = msgMailMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.EMAIL_CODE, msgName);
+        if (tMsgMailList.size() > 0) {
+            TMsgMail tMsgMail = tMsgMailList.get(0);
+            mailMsgForm.getMailTitleTextField().setText(tMsgMail.getTitle());
+            mailMsgForm.getMailFilesTextField().setText(tMsgMail.getFiles());
+            mailMsgForm.getMailContentPane().setText(tMsgMail.getContent());
+        }
+    }
+
+    /**
+     * 清空所有界面字段
+     */
+    public static void clearAllField() {
+        mailMsgForm.getMailTitleTextField().setText("");
+        mailMsgForm.getMailFilesTextField().setText("");
+        mailMsgForm.getMailContentPane().setText("");
     }
 
     {
