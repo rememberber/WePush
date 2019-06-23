@@ -5,7 +5,9 @@
     <constraints>
       <xy x="20" y="20" width="480" height="400"/>
     </constraints>
-    <properties/>
+    <properties>
+      <minimumSize width="-1" height="-1"/>
+    </properties>
     <border type="none"/>
     <children>
       <component id="e8530" class="javax.swing.JLabel">
@@ -49,7 +51,7 @@
         <properties>
           <background color="-12236470"/>
           <contentType value="text/html"/>
-          <text value="&lt;html&gt;&#13;&#10;  &lt;head&gt;&#13;&#10;&#13;&#10;  &lt;/head&gt;&#13;&#10;  &lt;body&gt;&#13;&#10;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#13;&#10;      &#13;&#10;    &lt;/p&gt;&#13;&#10;  &lt;/body&gt;&#13;&#10;&lt;/html&gt;&#13;&#10;"/>
+          <text value="&lt;html&gt;&#13;&#10;  &lt;head&gt;&#13;&#10;    &#13;&#10;  &lt;/head&gt;&#13;&#10;  &lt;body&gt;&#13;&#10;  &lt;/body&gt;&#13;&#10;&lt;/html&gt;&#13;&#10;"/>
         </properties>
       </component>
       <component id="33eb2" class="javax.swing.JLabel">

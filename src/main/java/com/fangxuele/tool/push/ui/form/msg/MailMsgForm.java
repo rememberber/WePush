@@ -46,6 +46,7 @@ public class MailMsgForm {
     private void $$$setupUI$$$() {
         mailPanel = new JPanel();
         mailPanel.setLayout(new GridLayoutManager(4, 3, new Insets(8, 8, 8, 8), -1, -1));
+        mailPanel.setMinimumSize(new Dimension(-1, -1));
         final JLabel label1 = new JLabel();
         label1.setText("邮件标题");
         mailPanel.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -59,7 +60,7 @@ public class MailMsgForm {
         editorPane1 = new JEditorPane();
         editorPane1.setBackground(new Color(-12236470));
         editorPane1.setContentType("text/html");
-        editorPane1.setText("<html>\r\n  <head>\r\n\r\n  </head>\r\n  <body>\r\n    <p style=\"margin-top: 0\">\r\n      \r\n    </p>\r\n  </body>\r\n</html>\r\n");
+        editorPane1.setText("<html>\r\n  <head>\r\n    \r\n  </head>\r\n  <body>\r\n  </body>\r\n</html>\r\n");
         mailPanel.add(editorPane1, new GridConstraints(3, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
         final JLabel label3 = new JLabel();
         label3.setText("邮件正文(HTML)");
