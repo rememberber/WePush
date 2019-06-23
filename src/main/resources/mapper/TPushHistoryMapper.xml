@@ -122,7 +122,6 @@
             msg_name      = #{msgName,jdbcType=VARCHAR},
             result        = #{result,jdbcType=VARCHAR},
             csv_file      = #{csvFile,jdbcType=VARCHAR},
-            create_time   = #{createTime,jdbcType=VARCHAR},
             modified_time = #{modifiedTime,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>

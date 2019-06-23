@@ -3,7 +3,9 @@ package com.fangxuele.tool.push.ui.form.msg;
 import com.fangxuele.tool.push.dao.TMsgMailMapper;
 import com.fangxuele.tool.push.domain.TMsgMail;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.SqliteUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Getter;
@@ -51,6 +53,47 @@ public class MailMsgForm {
         mailMsgForm.getMailTitleTextField().setText("");
         mailMsgForm.getMailFilesTextField().setText("");
         mailMsgForm.getMailContentPane().setText("");
+    }
+
+    public static void save(String msgName) {
+        boolean existSameMsg = false;
+
+        List<TMsgMail> tMsgMailList = msgMailMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.EMAIL_CODE, msgName);
+        if (tMsgMailList.size() > 0) {
+            existSameMsg = true;
+        }
+
+        int isCover = JOptionPane.NO_OPTION;
+        if (existSameMsg) {
+            // 如果存在，是否覆盖
+            isCover = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getMessagePanel(), "已经存在同名的历史消息，\n是否覆盖？", "确认",
+                    JOptionPane.YES_NO_OPTION);
+        }
+        if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
+            String mailTitle = mailMsgForm.getMailTitleTextField().getText();
+            String mailFiles = mailMsgForm.getMailFilesTextField().getText();
+            String mailContent = mailMsgForm.getMailContentPane().getText();
+
+            String now = SqliteUtil.nowDateForSqlite();
+
+            TMsgMail tMsgMail = new TMsgMail();
+            tMsgMail.setMsgType(MessageTypeEnum.EMAIL_CODE);
+            tMsgMail.setMsgName(msgName);
+            tMsgMail.setTitle(mailTitle);
+            tMsgMail.setFiles(mailFiles);
+            tMsgMail.setContent(mailContent);
+            tMsgMail.setCreateTime(now);
+            tMsgMail.setModifiedTime(now);
+
+            if (existSameMsg) {
+                msgMailMapper.updateByMsgTypeAndMsgName(tMsgMail);
+            } else {
+                msgMailMapper.insertSelective(tMsgMail);
+            }
+
+            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "保存成功！", "成功",
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     {

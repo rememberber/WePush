@@ -112,7 +112,6 @@
             msg_name      = #{msgName,jdbcType=VARCHAR},
             template_id   = #{templateId,jdbcType=VARCHAR},
             content       = #{content,jdbcType=VARCHAR},
-            create_time   = #{createTime,jdbcType=VARCHAR},
             modified_time = #{modifiedTime,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>
@@ -127,7 +126,6 @@
         update t_msg_sms
         set template_id   = #{templateId,jdbcType=VARCHAR},
             content       = #{content,jdbcType=VARCHAR},
-            create_time   = #{createTime,jdbcType=VARCHAR},
             modified_time = #{modifiedTime,jdbcType=VARCHAR}
         where msg_type = #{msgType,jdbcType=INTEGER}
           and msg_name = #{msgName,jdbcType=VARCHAR}

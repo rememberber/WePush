@@ -240,7 +240,6 @@
             subscribe_scene = #{subscribeScene,jdbcType=VARCHAR},
             qr_scene        = #{qrScene,jdbcType=VARCHAR},
             qr_scene_str    = #{qrSceneStr,jdbcType=VARCHAR},
-            create_time     = #{createTime,jdbcType=VARCHAR},
             modified_time   = #{modifiedTime,jdbcType=VARCHAR}
         where open_id = #{openId,jdbcType=VARCHAR}
     </update>
