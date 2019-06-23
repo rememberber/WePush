@@ -54,6 +54,10 @@ public class ConfigUtil {
 
     private String reimportWay;
 
+    private boolean sendPushResult;
+
+    private String mailResultTos;
+
     private boolean autoCheckUpdate;
 
     private long pushTotal;
@@ -308,6 +312,22 @@ public class ConfigUtil {
 
     public void setReimportWay(String reimportWay) {
         setting.put("schedule", "reimportComboBox", reimportWay);
+    }
+
+    public boolean isSendPushResult() {
+        return setting.getBool("sendPushResult", "schedule", false);
+    }
+
+    public void setSendPushResult(boolean sendPushResult) {
+        setting.put("schedule", "sendPushResult", String.valueOf(sendPushResult));
+    }
+
+    public String getMailResultTos() {
+        return setting.getStr("mailResultTos", "schedule", "");
+    }
+
+    public void setMailResultTos(String mailResultTos) {
+        setting.put("schedule", "mailResultTos", mailResultTos);
     }
 
     public boolean isAutoCheckUpdate() {

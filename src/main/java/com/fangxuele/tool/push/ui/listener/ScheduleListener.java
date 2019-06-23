@@ -6,6 +6,7 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.ScheduleForm;
+import com.fangxuele.tool.push.ui.form.SettingForm;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
@@ -79,6 +80,17 @@ public class ScheduleListener {
                     App.config.setTextPerWeekWeek(Objects.requireNonNull(ScheduleForm.scheduleForm.getSchedulePerWeekComboBox().getSelectedItem()).toString());
                     App.config.setTextPerWeekTime(textPerWeekTime);
                 }
+
+                if (ScheduleForm.scheduleForm.getSendPushResultCheckBox().isSelected() &&
+                        (StringUtils.isBlank(SettingForm.settingForm.getMailHostTextField().getText())
+                                || StringUtils.isBlank(SettingForm.settingForm.getMailFromTextField().getText()))) {
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSchedulePanel(),
+                            "保存失败！\n\n请先在设置中设置E-Mail服务器！", "失败",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                App.config.setSendPushResult(ScheduleForm.scheduleForm.getSendPushResultCheckBox().isSelected());
+                App.config.setMailResultTos(ScheduleForm.scheduleForm.getMailResultToTextField().getText());
 
                 App.config.setNeedReimport(ScheduleForm.scheduleForm.getReimportCheckBox().isSelected());
                 App.config.setReimportWay((String) ScheduleForm.scheduleForm.getReimportComboBox().getSelectedItem());
