@@ -134,7 +134,6 @@
             url           = #{url,jdbcType=VARCHAR},
             ma_appid      = #{maAppid,jdbcType=VARCHAR},
             ma_page_path  = #{maPagePath,jdbcType=VARCHAR},
-            create_time   = #{createTime,jdbcType=VARCHAR},
             modified_time = #{modifiedTime,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>
@@ -151,7 +150,6 @@
             url           = #{url,jdbcType=VARCHAR},
             ma_appid      = #{maAppid,jdbcType=VARCHAR},
             ma_page_path  = #{maPagePath,jdbcType=VARCHAR},
-            create_time   = #{createTime,jdbcType=VARCHAR},
             modified_time = #{modifiedTime,jdbcType=VARCHAR}
         where msg_type = #{msgType,jdbcType=INTEGER}
           and msg_name = #{msgName,jdbcType=VARCHAR}

@@ -16,6 +16,7 @@ import com.fangxuele.tool.push.ui.form.msg.AliYunMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.KefuMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.KefuPriorityMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.MaTemplateMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.MailMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.MpTemplateMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.TxYunMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.YunpianMsgForm;
@@ -77,6 +78,9 @@ public class MsgEditListener {
                         break;
                     case MessageTypeEnum.YUN_PIAN_CODE:
                         YunpianMsgForm.save(msgName);
+                        break;
+                    case MessageTypeEnum.EMAIL_CODE:
+                        MailMsgForm.save(msgName);
                         break;
                     default:
                 }

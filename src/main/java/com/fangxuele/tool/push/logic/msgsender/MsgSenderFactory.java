@@ -45,6 +45,9 @@ public class MsgSenderFactory {
             case MessageTypeEnum.YUN_PIAN_CODE:
                 iMsgSender = new YunPianMsgSender();
                 break;
+            case MessageTypeEnum.EMAIL_CODE:
+                iMsgSender = new MailMsgSender();
+                break;
             default:
                 break;
         }

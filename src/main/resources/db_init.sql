@@ -146,3 +146,21 @@ create table if not exists t_wx_account
     create_time   datetime,
     modified_time datetime
 );
+
+create table if not exists t_msg_mail
+(
+    id            integer
+        constraint t_msg_mail_pk
+            primary key autoincrement,
+    msg_type      integer,
+    msg_name      text,
+    title         text,
+    files         text,
+    content       text,
+    create_time   datetime,
+    modified_time datetime
+);
+
+create unique index if not exists t_msg_mail_msg_type_msg_name_uindex
+    on t_msg_mail (msg_type, msg_name);
+

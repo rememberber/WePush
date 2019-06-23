@@ -122,7 +122,6 @@
             name          = #{name,jdbcType=VARCHAR},
             value         = #{value,jdbcType=VARCHAR},
             color         = #{color,jdbcType=VARCHAR},
-            create_time   = #{createTime,jdbcType=VARCHAR},
             modified_time = #{modifiedTime,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>

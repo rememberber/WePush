@@ -7,6 +7,7 @@ import com.fangxuele.tool.push.ui.form.msg.AliYunMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.KefuMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.KefuPriorityMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.MaTemplateMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.MailMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.MpTemplateMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.TxYunMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.YunpianMsgForm;
@@ -83,6 +84,9 @@ public class MessageEditForm {
             case MessageTypeEnum.YUN_PIAN_CODE:
                 YunpianMsgForm.init(msgName);
                 break;
+            case MessageTypeEnum.EMAIL_CODE:
+                MailMsgForm.init(msgName);
+                break;
             default:
         }
     }
@@ -130,6 +134,10 @@ public class MessageEditForm {
             case MessageTypeEnum.YUN_PIAN_CODE:
                 YunpianMsgForm.init(null);
                 messageEditForm.getMsgEditorPanel().add(YunpianMsgForm.yunpianMsgForm.getYunpianMsgPanel(), gridConstraintsRow0);
+                break;
+            case MessageTypeEnum.EMAIL_CODE:
+                MailMsgForm.init(null);
+                messageEditForm.getMsgEditorPanel().add(MailMsgForm.mailMsgForm.getMailPanel(), gridConstraintsRow0);
                 break;
             default:
                 break;

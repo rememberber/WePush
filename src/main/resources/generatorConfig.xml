@@ -17,7 +17,7 @@
         </commentGenerator>
 
         <jdbcConnection driverClass="org.sqlite.JDBC"
-                        connectionURL="jdbc:sqlite:D:\IdeaProjects\WePush\sqlite\WePush.db">
+                        connectionURL="jdbc:sqlite:C:/Users/zhouy/.wepush/WePush.db">
         </jdbcConnection>
 
         <javaTypeResolver>
@@ -45,7 +45,7 @@
 
         <table schema="main" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false"
                enableSelectByExample="false" selectByExampleQueryId="false"
-               tableName="t_wx_mp_user" domainObjectName="TWxMpUser">
+               tableName="t_msg_mail" domainObjectName="TMsgMail">
             <property name="useActualColumnNames" value="false"/>
             <!--<generatedKey column="ID" sqlStatement="DB2" identity="true"/>-->
         </table>

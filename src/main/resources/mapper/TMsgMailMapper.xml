@@ -1,46 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.fangxuele.tool.push.dao.TPushHistoryMapper">
-    <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TPushHistory">
+<mapper namespace="com.fangxuele.tool.push.dao.TMsgMailMapper">
+    <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TMsgMail">
         <id column="id" jdbcType="INTEGER" property="id"/>
-        <result column="msg_id" jdbcType="INTEGER" property="msgId"/>
         <result column="msg_type" jdbcType="INTEGER" property="msgType"/>
         <result column="msg_name" jdbcType="VARCHAR" property="msgName"/>
-        <result column="result" jdbcType="VARCHAR" property="result"/>
-        <result column="csv_file" jdbcType="VARCHAR" property="csvFile"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="files" jdbcType="VARCHAR" property="files"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
         <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
         <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, msg_id, msg_type, msg_name, result, csv_file, create_time, modified_time
+        id, msg_type, msg_name, title, files, content, create_time, modified_time
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
-        from t_push_history
+        from t_msg_mail
         where id = #{id,jdbcType=INTEGER}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
         delete
-        from t_push_history
+        from t_msg_mail
         where id = #{id,jdbcType=INTEGER}
     </delete>
-    <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TPushHistory">
-        insert into t_push_history (id, msg_id, msg_type,
-                                    msg_name, result, csv_file,
-                                    create_time, modified_time)
-        values (#{id,jdbcType=INTEGER}, #{msgId,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER},
-                #{msgName,jdbcType=VARCHAR}, #{result,jdbcType=VARCHAR}, #{csvFile,jdbcType=VARCHAR},
+    <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TMsgMail">
+        insert into t_msg_mail (id, msg_type, msg_name,
+                                title, files, content,
+                                create_time, modified_time)
+        values (#{id,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER}, #{msgName,jdbcType=VARCHAR},
+                #{title,jdbcType=VARCHAR}, #{files,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR},
                 #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR})
     </insert>
-    <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TPushHistory">
-        insert into t_push_history
+    <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TMsgMail">
+        insert into t_msg_mail
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
                 id,
-            </if>
-            <if test="msgId != null">
-                msg_id,
             </if>
             <if test="msgType != null">
                 msg_type,
@@ -48,11 +45,14 @@
             <if test="msgName != null">
                 msg_name,
             </if>
-            <if test="result != null">
-                result,
+            <if test="title != null">
+                title,
             </if>
-            <if test="csvFile != null">
-                csv_file,
+            <if test="files != null">
+                files,
+            </if>
+            <if test="content != null">
+                content,
             </if>
             <if test="createTime != null">
                 create_time,
@@ -65,20 +65,20 @@
             <if test="id != null">
                 #{id,jdbcType=INTEGER},
             </if>
-            <if test="msgId != null">
-                #{msgId,jdbcType=INTEGER},
-            </if>
             <if test="msgType != null">
                 #{msgType,jdbcType=INTEGER},
             </if>
             <if test="msgName != null">
                 #{msgName,jdbcType=VARCHAR},
             </if>
-            <if test="result != null">
-                #{result,jdbcType=VARCHAR},
+            <if test="title != null">
+                #{title,jdbcType=VARCHAR},
             </if>
-            <if test="csvFile != null">
-                #{csvFile,jdbcType=VARCHAR},
+            <if test="files != null">
+                #{files,jdbcType=VARCHAR},
+            </if>
+            <if test="content != null">
+                #{content,jdbcType=VARCHAR},
             </if>
             <if test="createTime != null">
                 #{createTime,jdbcType=VARCHAR},
@@ -88,23 +88,23 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.fangxuele.tool.push.domain.TPushHistory">
-        update t_push_history
+    <update id="updateByPrimaryKeySelective" parameterType="com.fangxuele.tool.push.domain.TMsgMail">
+        update t_msg_mail
         <set>
-            <if test="msgId != null">
-                msg_id = #{msgId,jdbcType=INTEGER},
-            </if>
             <if test="msgType != null">
                 msg_type = #{msgType,jdbcType=INTEGER},
             </if>
             <if test="msgName != null">
                 msg_name = #{msgName,jdbcType=VARCHAR},
             </if>
-            <if test="result != null">
-                result = #{result,jdbcType=VARCHAR},
+            <if test="title != null">
+                title = #{title,jdbcType=VARCHAR},
             </if>
-            <if test="csvFile != null">
-                csv_file = #{csvFile,jdbcType=VARCHAR},
+            <if test="files != null">
+                files = #{files,jdbcType=VARCHAR},
+            </if>
+            <if test="content != null">
+                content = #{content,jdbcType=VARCHAR},
             </if>
             <if test="createTime != null">
                 create_time = #{createTime,jdbcType=VARCHAR},
@@ -115,22 +115,36 @@
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>
-    <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TPushHistory">
-        update t_push_history
-        set msg_id        = #{msgId,jdbcType=INTEGER},
-            msg_type      = #{msgType,jdbcType=INTEGER},
+    <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TMsgMail">
+        update t_msg_mail
+        set msg_type      = #{msgType,jdbcType=INTEGER},
             msg_name      = #{msgName,jdbcType=VARCHAR},
-            result        = #{result,jdbcType=VARCHAR},
-            csv_file      = #{csvFile,jdbcType=VARCHAR},
+            title         = #{title,jdbcType=VARCHAR},
+            files         = #{files,jdbcType=VARCHAR},
+            content       = #{content,jdbcType=VARCHAR},
             modified_time = #{modifiedTime,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>
-
-    <select id="selectByMsgType" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <select id="selectByMsgTypeAndMsgName" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
-        from t_push_history
+        from t_msg_mail
         where msg_type = #{msgType,jdbcType=INTEGER}
-        order by create_time desc
+        and msg_name = #{msgName,jdbcType=VARCHAR}
+    </select>
+    <update id="updateByMsgTypeAndMsgName" parameterType="com.fangxuele.tool.push.domain.TMsgMail">
+        update t_msg_mail
+        set title         = #{title,jdbcType=VARCHAR},
+            files         = #{files,jdbcType=VARCHAR},
+            content       = #{content,jdbcType=VARCHAR},
+            modified_time = #{modifiedTime,jdbcType=VARCHAR}
+        where msg_type = #{msgType,jdbcType=INTEGER}
+          and msg_name = #{msgName,jdbcType=VARCHAR}
+    </update>
+    <select id="selectByMsgType" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_msg_mail
+        where msg_type = #{msgType,jdbcType=INTEGER}
     </select>
 </mapper>

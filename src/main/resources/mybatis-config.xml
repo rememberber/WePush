@@ -23,5 +23,6 @@
         <mapper resource="mapper/TTemplateDataMapper.xml"/>
         <mapper resource="mapper/TWxMpUserMapper.xml"/>
         <mapper resource="mapper/TWxAccountMapper.xml"/>
+        <mapper resource="mapper/TMsgMailMapper.xml"/>
     </mappers>
 </configuration>

@@ -122,6 +122,20 @@ public class ConfigUtil {
 
     private String yunpianApiKey;
 
+    private String mailHost;
+
+    private String mailPort;
+
+    private String mailFrom;
+
+    private String mailUser;
+
+    private String mailPassword;
+
+    private boolean mailUseStartTLS;
+
+    private boolean mailUseSSL;
+
     private String mysqlUrl;
 
     private String mysqlDatabase;
@@ -430,6 +444,62 @@ public class ConfigUtil {
 
     public void setAliSign(String aliSign) {
         setting.put("setting.ali", "sign", aliSign);
+    }
+
+    public String getMailHost() {
+        return setting.getStr("mailHost", "setting.mail", "");
+    }
+
+    public void setMailHost(String mailHost) {
+        setting.put("setting.mail", "mailHost", mailHost);
+    }
+
+    public String getMailPort() {
+        return setting.getStr("mailPort", "setting.mail", "");
+    }
+
+    public void setMailPort(String mailPort) {
+        setting.put("setting.mail", "mailPort", mailPort);
+    }
+
+    public String getMailFrom() {
+        return setting.getStr("mailFrom", "setting.mail", "");
+    }
+
+    public void setMailFrom(String mailFrom) {
+        setting.put("setting.mail", "mailFrom", mailFrom);
+    }
+
+    public String getMailUser() {
+        return setting.getStr("mailUser", "setting.mail", "");
+    }
+
+    public void setMailUser(String mailUser) {
+        setting.put("setting.mail", "mailUser", mailUser);
+    }
+
+    public String getMailPassword() {
+        return setting.getStr("mailPassword", "setting.mail", "");
+    }
+
+    public void setMailPassword(String mailPassword) {
+        setting.put("setting.mail", "mailPassword", mailPassword);
+    }
+
+    public boolean isMailUseStartTLS() {
+        return setting.getBool("mailUseStartTLS", "setting.mail", false);
+    }
+
+    public void setMailUseStartTLS(boolean mailUseStartTLS) {
+        setting.put("setting.mail", "mailUseStartTLS", String.valueOf(mailUseStartTLS));
+    }
+
+    public boolean isMailUseSSL() {
+        return setting.getBool("mailUseSSL", "setting.mail", false);
+    }
+
+    public void setMailUseSSL(boolean mailUseSSL) {
+        setting.put("setting.mail", "mailUseSSL", String.valueOf(mailUseSSL));
     }
 
     public String getMysqlUrl() {

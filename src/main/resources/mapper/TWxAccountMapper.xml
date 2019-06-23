@@ -134,7 +134,6 @@
             app_secret    = #{appSecret,jdbcType=VARCHAR},
             token         = #{token,jdbcType=VARCHAR},
             aes_key       = #{aesKey,jdbcType=VARCHAR},
-            create_time   = #{createTime,jdbcType=VARCHAR},
             modified_time = #{modifiedTime,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>
