@@ -4,6 +4,7 @@ import com.fangxuele.tool.push.dao.TMsgMailMapper;
 import com.fangxuele.tool.push.domain.TMsgMail;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -12,6 +13,12 @@ import lombok.Getter;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 /**
@@ -34,6 +41,42 @@ public class MailMsgForm {
     private JLabel uEditorLabel;
 
     private static TMsgMailMapper msgMailMapper = MybatisUtil.getSqlSession().getMapper(TMsgMailMapper.class);
+
+    public MailMsgForm() {
+        fileExploreButton.addActionListener(e -> {
+            File beforeFile = new File(mailFilesTextField.getText());
+            JFileChooser fileChooser;
+
+            if (beforeFile.exists()) {
+                fileChooser = new JFileChooser(beforeFile);
+            } else {
+                fileChooser = new JFileChooser();
+            }
+
+            int approve = fileChooser.showOpenDialog(MessageEditForm.messageEditForm.getMsgEditorPanel());
+            if (approve == JFileChooser.APPROVE_OPTION) {
+                mailFilesTextField.setText(fileChooser.getSelectedFile().getAbsolutePath());
+            }
+        });
+        uEditorLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                Desktop desktop = Desktop.getDesktop();
+                try {
+                    desktop.browse(new URI("https://ueditor.baidu.com/website/onlinedemo.html"));
+                } catch (IOException | URISyntaxException e1) {
+                    e1.printStackTrace();
+                }
+                super.mousePressed(e);
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                e.getComponent().setCursor(new Cursor(Cursor.HAND_CURSOR));
+                super.mouseEntered(e);
+            }
+        });
+    }
 
     public static void init(String msgName) {
         clearAllField();

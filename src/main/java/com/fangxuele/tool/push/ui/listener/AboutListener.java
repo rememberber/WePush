@@ -50,7 +50,7 @@ public class AboutListener {
             @Override
             public void mouseEntered(MouseEvent e) {
                 super.mouseEntered(e);
-                AboutForm.aboutForm.getCompanyLabel().setCursor(new Cursor(Cursor.HAND_CURSOR));
+                e.getComponent().setCursor(new Cursor(Cursor.HAND_CURSOR));
             }
 
         });
@@ -66,7 +66,7 @@ public class AboutListener {
             @Override
             public void mouseEntered(MouseEvent e) {
                 super.mouseEntered(e);
-                AboutForm.aboutForm.getCheckUpdateLabel().setCursor(new Cursor(Cursor.HAND_CURSOR));
+                e.getComponent().setCursor(new Cursor(Cursor.HAND_CURSOR));
             }
         });
 
@@ -86,7 +86,7 @@ public class AboutListener {
             @Override
             public void mouseEntered(MouseEvent e) {
                 super.mouseEntered(e);
-                AboutForm.aboutForm.getHelpDocLabel().setCursor(new Cursor(Cursor.HAND_CURSOR));
+                e.getComponent().setCursor(new Cursor(Cursor.HAND_CURSOR));
             }
         });
     }
