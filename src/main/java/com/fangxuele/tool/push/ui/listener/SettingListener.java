@@ -17,17 +17,16 @@ import com.fangxuele.tool.push.ui.dialog.MailTestDialog;
 import com.fangxuele.tool.push.ui.dialog.SwitchWxAccountDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.SettingForm;
-import com.fangxuele.tool.push.util.DbUtilMySQL;
 import com.fangxuele.tool.push.util.HikariUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.event.ItemEvent;
-import java.sql.Connection;
 import java.util.List;
 import java.util.Objects;
 
@@ -294,19 +293,28 @@ public class SettingListener {
 
         // mysql数据库-测试链接
         SettingForm.settingForm.getSettingTestDbLinkButton().addActionListener(e -> {
+            HikariDataSource hikariDataSource = null;
             try {
                 String dbUrl = SettingForm.settingForm.getMysqlUrlTextField().getText();
                 String dbUser = SettingForm.settingForm.getMysqlUserTextField().getText();
                 String dbPassword = new String(SettingForm.settingForm.getMysqlPasswordField().getPassword());
-                if (StringUtils.isEmpty(dbUrl) || StringUtils.isEmpty(dbUser) || StringUtils.isEmpty(dbPassword)) {
-                    JOptionPane.showMessageDialog(settingPanel,
-                            "请先在设置中填写并保存MySQL数据库相关配置！", "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
+                if (StringUtils.isBlank(dbUrl)) {
+                    SettingForm.settingForm.getMysqlUrlTextField().grabFocus();
                     return;
                 }
-                DbUtilMySQL dbMySQL = DbUtilMySQL.getInstance();
-                Connection conn = dbMySQL.testConnection(dbUrl, dbUser, dbPassword);
-                if (conn == null) {
+                if (StringUtils.isBlank(dbUser)) {
+                    SettingForm.settingForm.getMysqlUserTextField().grabFocus();
+                    return;
+                }
+                if (StringUtils.isBlank(dbPassword)) {
+                    SettingForm.settingForm.getMysqlPasswordField().grabFocus();
+                    return;
+                }
+                hikariDataSource = new HikariDataSource();
+                hikariDataSource.setJdbcUrl("jdbc:mysql://" + dbUrl);
+                hikariDataSource.setUsername(dbUser);
+                hikariDataSource.setPassword(dbPassword);
+                if (hikariDataSource.getConnection() == null) {
                     JOptionPane.showMessageDialog(settingPanel, "连接失败", "失败",
                             JOptionPane.ERROR_MESSAGE);
                 } else {
@@ -317,6 +325,14 @@ public class SettingListener {
                 JOptionPane.showMessageDialog(settingPanel, "连接失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
+            } finally {
+                if (hikariDataSource != null) {
+                    try {
+                        hikariDataSource.close();
+                    } catch (Exception e2) {
+                        logger.error(e2);
+                    }
+                }
             }
         });
 
