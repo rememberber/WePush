@@ -141,4 +141,10 @@
         where msg_type = #{msgType,jdbcType=INTEGER}
           and msg_name = #{msgName,jdbcType=VARCHAR}
     </update>
+    <select id="selectByMsgType" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_msg_mail
+        where msg_type = #{msgType,jdbcType=INTEGER}
+    </select>
 </mapper>

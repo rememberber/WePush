@@ -84,6 +84,9 @@ public class MessageEditForm {
             case MessageTypeEnum.YUN_PIAN_CODE:
                 YunpianMsgForm.init(msgName);
                 break;
+            case MessageTypeEnum.EMAIL_CODE:
+                MailMsgForm.init(msgName);
+                break;
             default:
         }
     }

@@ -4,11 +4,13 @@ import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TMsgKefuMapper;
 import com.fangxuele.tool.push.dao.TMsgKefuPriorityMapper;
 import com.fangxuele.tool.push.dao.TMsgMaTemplateMapper;
+import com.fangxuele.tool.push.dao.TMsgMailMapper;
 import com.fangxuele.tool.push.dao.TMsgMpTemplateMapper;
 import com.fangxuele.tool.push.dao.TMsgSmsMapper;
 import com.fangxuele.tool.push.domain.TMsgKefu;
 import com.fangxuele.tool.push.domain.TMsgKefuPriority;
 import com.fangxuele.tool.push.domain.TMsgMaTemplate;
+import com.fangxuele.tool.push.domain.TMsgMail;
 import com.fangxuele.tool.push.domain.TMsgMpTemplate;
 import com.fangxuele.tool.push.domain.TMsgSms;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
@@ -47,6 +49,7 @@ public class MessageManageForm {
     private static TMsgMaTemplateMapper msgMaTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMaTemplateMapper.class);
     private static TMsgMpTemplateMapper msgMpTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMpTemplateMapper.class);
     private static TMsgSmsMapper msgSmsMapper = MybatisUtil.getSqlSession().getMapper(TMsgSmsMapper.class);
+    private static TMsgMailMapper msgMailMapper = MybatisUtil.getSqlSession().getMapper(TMsgMailMapper.class);
 
     /**
      * 初始化消息列表
@@ -89,6 +92,13 @@ public class MessageManageForm {
             for (TMsgMpTemplate tMsgMpTemplate : tMsgMpTemplateList) {
                 data = new Object[1];
                 data[0] = tMsgMpTemplate.getMsgName();
+                model.addRow(data);
+            }
+        } else if (msgType == MessageTypeEnum.EMAIL_CODE) {
+            List<TMsgMail> tMsgMailList = msgMailMapper.selectByMsgType(msgType);
+            for (TMsgMail tMsgMail : tMsgMailList) {
+                data = new Object[1];
+                data[0] = tMsgMail.getMsgName();
                 model.addRow(data);
             }
         } else {

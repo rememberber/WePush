@@ -6,6 +6,7 @@ import com.fangxuele.tool.push.dao.TPushHistoryMapper;
 import com.fangxuele.tool.push.domain.TPushHistory;
 import com.fangxuele.tool.push.logic.msgmaker.AliTemplateMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.AliyunMsgMaker;
+import com.fangxuele.tool.push.logic.msgmaker.MailMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.TxYunMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxKefuMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxMaTemplateMsgMaker;
@@ -153,6 +154,16 @@ public class PushControl {
                     return false;
                 }
                 break;
+            case MessageTypeEnum.EMAIL_CODE:
+                String mailHost = App.config.getMailHost();
+                String mailFrom = App.config.getMailFrom();
+                if (StringUtils.isBlank(mailHost) || StringUtils.isBlank(mailFrom)) {
+                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
+                            "请先在设置中填写并保存E-Mail相关配置！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return false;
+                }
+                break;
             default:
         }
         return true;
@@ -293,6 +304,9 @@ public class PushControl {
                 break;
             case MessageTypeEnum.YUN_PIAN_CODE:
                 YunPianMsgMaker.prepare();
+                break;
+            case MessageTypeEnum.EMAIL_CODE:
+                MailMsgMaker.prepare();
                 break;
             default:
         }
