@@ -106,6 +106,13 @@ public class PushListener {
                             JOptionPane.YES_NO_OPTION);
                     if (isStop == JOptionPane.YES_OPTION) {
                         PushData.running = false;
+                        PushForm.pushForm.getPushStartButton().setEnabled(true);
+                        PushForm.pushForm.getScheduleRunButton().setEnabled(true);
+                        PushForm.pushForm.getPushStopButton().setText("停止");
+                        PushForm.pushForm.getPushStopButton().setEnabled(false);
+                        PushForm.pushForm.getPushStartButton().updateUI();
+                        PushForm.pushForm.getScheduleRunButton().updateUI();
+                        PushForm.pushForm.getPushStopButton().updateUI();
                     }
                 }
             });

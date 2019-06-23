@@ -94,118 +94,13 @@ public class MemberListener {
 
     public static void addListeners() {
         // 从文件导入按钮事件
-        MemberForm.memberForm.getImportFromFileButton().addActionListener(e -> ThreadUtil.execute(() -> {
-            if (StringUtils.isBlank(filePathField.getText())) {
-                JOptionPane.showMessageDialog(memberPanel, "请填写或点击浏览按钮选择要导入的文件的路径！", "提示",
-                        JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
-            File file = new File(filePathField.getText());
-            if (!file.exists()) {
-                JOptionPane.showMessageDialog(memberPanel, filePathField.getText() + "\n该文件不存在！", "文件不存在",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            CSVReader reader = null;
-            FileReader fileReader;
+        MemberForm.memberForm.getImportFromFileButton().addActionListener(e -> ThreadUtil.execute(MemberListener::importFromFile));
 
-            int currentImported = 0;
-
-            try {
-                progressBar.setVisible(true);
-                progressBar.setIndeterminate(true);
-                String fileNameLowerCase = file.getName().toLowerCase();
-
-                if (fileNameLowerCase.endsWith(".csv")) {
-                    // 可以解决中文乱码问题
-                    DataInputStream in = new DataInputStream(new FileInputStream(file));
-                    reader = new CSVReader(new InputStreamReader(in, FileCharSetUtil.getCharSet(file)));
-                    String[] nextLine;
-                    PushData.allUser = Collections.synchronizedList(new ArrayList<>());
-
-                    while ((nextLine = reader.readNext()) != null) {
-                        PushData.allUser.add(nextLine);
-                        currentImported++;
-                        memberCountLabel.setText(String.valueOf(currentImported));
-                    }
-                } else if (fileNameLowerCase.endsWith(".xlsx") || fileNameLowerCase.endsWith(".xls")) {
-                    ExcelReader excelReader = ExcelUtil.getReader(file);
-                    List<List<Object>> readAll = excelReader.read(1, Integer.MAX_VALUE);
-                    PushData.allUser = Collections.synchronizedList(new ArrayList<>());
-
-                    for (List<Object> objects : readAll) {
-                        if (objects != null && objects.size() > 0) {
-                            String[] nextLine = new String[objects.size()];
-                            for (int i = 0; i < objects.size(); i++) {
-                                nextLine[i] = objects.get(i).toString();
-                            }
-                            PushData.allUser.add(nextLine);
-                            currentImported++;
-                            memberCountLabel.setText(String.valueOf(currentImported));
-                        }
-                    }
-                } else if (fileNameLowerCase.endsWith(".txt")) {
-                    fileReader = new FileReader(file, FileCharSetUtil.getCharSetName(file));
-                    PushData.allUser = Collections.synchronizedList(new ArrayList<>());
-                    BufferedReader br = fileReader.getReader();
-                    String line;
-                    while ((line = br.readLine()) != null) {
-                        PushData.allUser.add(line.split(TXT_FILE_DATA_SEPERATOR_REGEX));
-                        currentImported++;
-                        memberCountLabel.setText(String.valueOf(currentImported));
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(memberPanel, "不支持该格式的文件！", "文件格式不支持",
-                            JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                renderMemberListTable();
-
-                if (!PushData.fixRateScheduling) {
-                    JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
-                }
-
-                App.config.setMemberFilePath(filePathField.getText());
-                App.config.save();
-            } catch (Exception e1) {
-                JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + e1.getMessage(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
-                logger.error(e1);
-                e1.printStackTrace();
-            } finally {
-                progressBar.setMaximum(100);
-                progressBar.setValue(100);
-                progressBar.setIndeterminate(false);
-                progressBar.setVisible(false);
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException e1) {
-                        logger.error(e1);
-                        e1.printStackTrace();
-                    }
-                }
-            }
-        }));
+        // 从sql导入 按钮事件
+        MemberForm.memberForm.getImportFromSqlButton().addActionListener(e -> ThreadUtil.execute(MemberListener::importFromSql));
 
         // 导入全员按钮事件
-        MemberForm.memberForm.getMemberImportAllButton().addActionListener(e -> ThreadUtil.execute(() -> {
-            try {
-                getMpUserList();
-                renderMemberListTable();
-                if (!PushData.fixRateScheduling) {
-                    JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
-                }
-            } catch (WxErrorException e1) {
-                JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + e1.getMessage(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
-                logger.error(e1);
-                e1.printStackTrace();
-            } finally {
-                progressBar.setIndeterminate(false);
-                progressBar.setVisible(false);
-            }
-        }));
+        MemberForm.memberForm.getMemberImportAllButton().addActionListener(e -> ThreadUtil.execute(MemberListener::importWxAll));
 
         // 刷新可选的标签按钮事件
         MemberForm.memberForm.getMemberImportTagFreshButton().addActionListener(e -> {
@@ -296,71 +191,6 @@ public class MemberListener {
                 MemberForm.clearMember();
             }
         });
-
-        // 从sql导入 按钮事件
-        MemberForm.memberForm.getImportFromSqlButton().addActionListener(e -> ThreadUtil.execute(() -> {
-            if (StringUtils.isBlank(App.config.getMysqlUrl()) || StringUtils.isBlank(App.config.getMysqlUser())) {
-                JOptionPane.showMessageDialog(memberPanel, "请先在设置中填写并保存MySQL的配置信息！", "提示",
-                        JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
-            String querySql = MemberForm.memberForm.getImportFromSqlTextArea().getText();
-            if (StringUtils.isBlank(querySql)) {
-                JOptionPane.showMessageDialog(memberPanel, "请先填写要执行导入的SQL！", "提示",
-                        JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
-
-            if (StringUtils.isNotEmpty(querySql)) {
-                Connection conn = null;
-                try {
-                    MemberForm.memberForm.getImportFromSqlButton().setEnabled(false);
-                    MemberForm.memberForm.getImportFromSqlButton().updateUI();
-                    progressBar.setVisible(true);
-                    progressBar.setIndeterminate(true);
-
-                    // 表查询
-                    PushData.allUser = Collections.synchronizedList(new ArrayList<>());
-                    int currentImported = 0;
-
-                    conn = HikariUtil.getConnection();
-                    List<Entity> entityList = SqlExecutor.query(conn, querySql, new EntityListHandler());
-                    for (Entity entity : entityList) {
-                        Set<String> fieldNames = entity.getFieldNames();
-                        String[] msgData = new String[fieldNames.size()];
-                        int i = 0;
-                        for (String fieldName : fieldNames) {
-                            msgData[i] = entity.getStr(fieldName);
-                            i++;
-                        }
-                        PushData.allUser.add(msgData);
-                        currentImported++;
-                        memberCountLabel.setText(String.valueOf(currentImported));
-                    }
-
-                    renderMemberListTable();
-                    if (!PushData.fixRateScheduling) {
-                        JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
-                    }
-
-                    App.config.setMemberSql(querySql);
-                    App.config.save();
-                } catch (Exception e1) {
-                    JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + e1.getMessage(), "失败",
-                            JOptionPane.ERROR_MESSAGE);
-                    logger.error(e1);
-                    e1.printStackTrace();
-                } finally {
-                    DbUtil.close(conn);
-                    MemberForm.memberForm.getImportFromSqlButton().setEnabled(true);
-                    MemberForm.memberForm.getImportFromSqlButton().updateUI();
-                    progressBar.setMaximum(100);
-                    progressBar.setValue(100);
-                    progressBar.setIndeterminate(false);
-                    progressBar.setVisible(false);
-                }
-            }
-        }));
 
         // 浏览按钮
         MemberForm.memberForm.getMemberImportExploreButton().addActionListener(e -> {
@@ -823,6 +653,191 @@ public class MemberListener {
                 logger.error(e);
             }
             progressBar.setValue(i + 1);
+        }
+    }
+
+    /**
+     * 通过文件导入
+     */
+    public static void importFromFile() {
+        if (StringUtils.isBlank(filePathField.getText())) {
+            JOptionPane.showMessageDialog(memberPanel, "请填写或点击浏览按钮选择要导入的文件的路径！", "提示",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        File file = new File(filePathField.getText());
+        if (!file.exists()) {
+            JOptionPane.showMessageDialog(memberPanel, filePathField.getText() + "\n该文件不存在！", "文件不存在",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        CSVReader reader = null;
+        FileReader fileReader;
+
+        int currentImported = 0;
+
+        try {
+            progressBar.setVisible(true);
+            progressBar.setIndeterminate(true);
+            String fileNameLowerCase = file.getName().toLowerCase();
+
+            if (fileNameLowerCase.endsWith(".csv")) {
+                // 可以解决中文乱码问题
+                DataInputStream in = new DataInputStream(new FileInputStream(file));
+                reader = new CSVReader(new InputStreamReader(in, FileCharSetUtil.getCharSet(file)));
+                String[] nextLine;
+                PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+
+                while ((nextLine = reader.readNext()) != null) {
+                    PushData.allUser.add(nextLine);
+                    currentImported++;
+                    memberCountLabel.setText(String.valueOf(currentImported));
+                }
+            } else if (fileNameLowerCase.endsWith(".xlsx") || fileNameLowerCase.endsWith(".xls")) {
+                ExcelReader excelReader = ExcelUtil.getReader(file);
+                List<List<Object>> readAll = excelReader.read(1, Integer.MAX_VALUE);
+                PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+
+                for (List<Object> objects : readAll) {
+                    if (objects != null && objects.size() > 0) {
+                        String[] nextLine = new String[objects.size()];
+                        for (int i = 0; i < objects.size(); i++) {
+                            nextLine[i] = objects.get(i).toString();
+                        }
+                        PushData.allUser.add(nextLine);
+                        currentImported++;
+                        memberCountLabel.setText(String.valueOf(currentImported));
+                    }
+                }
+            } else if (fileNameLowerCase.endsWith(".txt")) {
+                fileReader = new FileReader(file, FileCharSetUtil.getCharSetName(file));
+                PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+                BufferedReader br = fileReader.getReader();
+                String line;
+                while ((line = br.readLine()) != null) {
+                    PushData.allUser.add(line.split(TXT_FILE_DATA_SEPERATOR_REGEX));
+                    currentImported++;
+                    memberCountLabel.setText(String.valueOf(currentImported));
+                }
+            } else {
+                JOptionPane.showMessageDialog(memberPanel, "不支持该格式的文件！", "文件格式不支持",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            renderMemberListTable();
+
+            if (!PushData.fixRateScheduling) {
+                JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+            }
+
+            App.config.setMemberFilePath(filePathField.getText());
+            App.config.save();
+        } catch (Exception e1) {
+            JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + e1.getMessage(), "失败",
+                    JOptionPane.ERROR_MESSAGE);
+            logger.error(e1);
+            e1.printStackTrace();
+        } finally {
+            progressBar.setMaximum(100);
+            progressBar.setValue(100);
+            progressBar.setIndeterminate(false);
+            progressBar.setVisible(false);
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e1) {
+                    logger.error(e1);
+                    e1.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * 通过SQL导入
+     */
+    public static void importFromSql() {
+        if (StringUtils.isBlank(App.config.getMysqlUrl()) || StringUtils.isBlank(App.config.getMysqlUser())) {
+            JOptionPane.showMessageDialog(memberPanel, "请先在设置中填写并保存MySQL的配置信息！", "提示",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        String querySql = MemberForm.memberForm.getImportFromSqlTextArea().getText();
+        if (StringUtils.isBlank(querySql)) {
+            JOptionPane.showMessageDialog(memberPanel, "请先填写要执行导入的SQL！", "提示",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        if (StringUtils.isNotEmpty(querySql)) {
+            Connection conn = null;
+            try {
+                MemberForm.memberForm.getImportFromSqlButton().setEnabled(false);
+                MemberForm.memberForm.getImportFromSqlButton().updateUI();
+                progressBar.setVisible(true);
+                progressBar.setIndeterminate(true);
+
+                // 表查询
+                PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+                int currentImported = 0;
+
+                conn = HikariUtil.getConnection();
+                List<Entity> entityList = SqlExecutor.query(conn, querySql, new EntityListHandler());
+                for (Entity entity : entityList) {
+                    Set<String> fieldNames = entity.getFieldNames();
+                    String[] msgData = new String[fieldNames.size()];
+                    int i = 0;
+                    for (String fieldName : fieldNames) {
+                        msgData[i] = entity.getStr(fieldName);
+                        i++;
+                    }
+                    PushData.allUser.add(msgData);
+                    currentImported++;
+                    memberCountLabel.setText(String.valueOf(currentImported));
+                }
+
+                renderMemberListTable();
+                if (!PushData.fixRateScheduling) {
+                    JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+                }
+
+                App.config.setMemberSql(querySql);
+                App.config.save();
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+                e1.printStackTrace();
+            } finally {
+                DbUtil.close(conn);
+                MemberForm.memberForm.getImportFromSqlButton().setEnabled(true);
+                MemberForm.memberForm.getImportFromSqlButton().updateUI();
+                progressBar.setMaximum(100);
+                progressBar.setValue(100);
+                progressBar.setIndeterminate(false);
+                progressBar.setVisible(false);
+            }
+        }
+    }
+
+    /**
+     * 导入微信全员
+     */
+    public static void importWxAll() {
+        try {
+            getMpUserList();
+            renderMemberListTable();
+            if (!PushData.fixRateScheduling) {
+                JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (WxErrorException e1) {
+            JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + e1.getMessage(), "失败",
+                    JOptionPane.ERROR_MESSAGE);
+            logger.error(e1);
+            e1.printStackTrace();
+        } finally {
+            progressBar.setIndeterminate(false);
+            progressBar.setVisible(false);
         }
     }
 }

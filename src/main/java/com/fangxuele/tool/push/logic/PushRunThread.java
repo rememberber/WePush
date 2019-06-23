@@ -11,9 +11,9 @@ import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.logic.msgthread.MsgSendThread;
 import com.fangxuele.tool.push.ui.component.TableInCellProgressBarRenderer;
-import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.ui.form.ScheduleForm;
+import com.fangxuele.tool.push.ui.listener.MemberListener;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 
 import javax.swing.*;
@@ -220,13 +220,13 @@ public class PushRunThread extends Thread {
         if (PushData.fixRateScheduling && ScheduleForm.scheduleForm.getReimportCheckBox().isSelected()) {
             switch ((String) ScheduleForm.scheduleForm.getReimportComboBox().getSelectedItem()) {
                 case "通过SQL导入":
-                    MemberForm.memberForm.getImportFromSqlButton().doClick();
+                    MemberListener.importFromSql();
                     break;
                 case "通过文件导入":
-                    MemberForm.memberForm.getImportFromFileButton().doClick();
+                    MemberListener.importFromFile();
                     break;
                 case "导入所有关注公众号的用户":
-                    MemberForm.memberForm.getMemberImportAllButton().doClick();
+                    MemberListener.importWxAll();
                     break;
                 default:
             }
