@@ -20,10 +20,11 @@ public class MailMsgForm {
 
     public static MailMsgForm mailMsgForm = new MailMsgForm();
     private JPanel mailPanel;
-    private JTextField textField1;
-    private JTextField textField2;
-    private JEditorPane editorPane1;
-    private JButton 浏览Button;
+    private JTextField mailTitleTextField;
+    private JTextField mailFilesTextField;
+    private JEditorPane mailContentPane;
+    private JButton fileExploreButton;
+    private JLabel uEditorLabel;
 
     public static void init(String msgName) {
 
@@ -53,25 +54,25 @@ public class MailMsgForm {
         final JLabel label2 = new JLabel();
         label2.setText("附件");
         mailPanel.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        textField1 = new JTextField();
-        mailPanel.add(textField1, new GridConstraints(0, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        editorPane1 = new JEditorPane();
-        editorPane1.setBackground(new Color(-12236470));
-        editorPane1.setContentType("text/html");
-        editorPane1.setText("<html>\r\n  <head>\r\n    \r\n  </head>\r\n  <body>\r\n  </body>\r\n</html>\r\n");
-        mailPanel.add(editorPane1, new GridConstraints(3, 0, 1, 4, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+        mailTitleTextField = new JTextField();
+        mailPanel.add(mailTitleTextField, new GridConstraints(0, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        mailContentPane = new JEditorPane();
+        mailContentPane.setBackground(new Color(-12236470));
+        mailContentPane.setContentType("text/html");
+        mailContentPane.setText("<html>\r\n  <head>\r\n    \r\n  </head>\r\n  <body>\r\n  </body>\r\n</html>\r\n");
+        mailPanel.add(mailContentPane, new GridConstraints(3, 0, 1, 4, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
         final JLabel label3 = new JLabel();
         label3.setText("邮件正文(HTML)");
         mailPanel.add(label3, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label4 = new JLabel();
-        label4.setText("<html><a href=\"https://ueditor.baidu.com/website/onlinedemo.html\">使用UEditor编辑HTML</a></html>");
-        mailPanel.add(label4, new GridConstraints(2, 1, 1, 3, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        浏览Button = new JButton();
-        浏览Button.setHorizontalAlignment(0);
-        浏览Button.setText("浏览");
-        mailPanel.add(浏览Button, new GridConstraints(1, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, 1, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        textField2 = new JTextField();
-        mailPanel.add(textField2, new GridConstraints(1, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        uEditorLabel = new JLabel();
+        uEditorLabel.setText("<html><a href=\"https://ueditor.baidu.com/website/onlinedemo.html\">使用UEditor编辑HTML</a></html>");
+        mailPanel.add(uEditorLabel, new GridConstraints(2, 1, 1, 3, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        fileExploreButton = new JButton();
+        fileExploreButton.setHorizontalAlignment(0);
+        fileExploreButton.setText("浏览");
+        mailPanel.add(fileExploreButton, new GridConstraints(1, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, 1, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        mailFilesTextField = new JTextField();
+        mailPanel.add(mailFilesTextField, new GridConstraints(1, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
     }
 
     /**
