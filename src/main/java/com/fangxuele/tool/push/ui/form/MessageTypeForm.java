@@ -31,7 +31,7 @@ public class MessageTypeForm {
     private JRadioButton yunPianRadioButton;
     private JRadioButton upYunRadioButton;
     private JRadioButton hwYunRadioButton;
-    private JRadioButton eMailBETARadioButton;
+    private JRadioButton eMailRadioButton;
     private JPanel msgTypeListPanel;
     private JRadioButton 网易云信短信RadioButton;
     private JRadioButton 榛子云短信RadioButton;
@@ -85,7 +85,7 @@ public class MessageTypeForm {
                 messageTypeForm.getHwYunRadioButton().setSelected(true);
                 break;
             case MessageTypeEnum.EMAIL_CODE:
-                messageTypeForm.getEMailBETARadioButton().setSelected(true);
+                messageTypeForm.getEMailRadioButton().setSelected(true);
                 break;
 
             default:
@@ -214,10 +214,10 @@ public class MessageTypeForm {
         HTTP请求RadioButton.setEnabled(false);
         HTTP请求RadioButton.setText("HTTP请求");
         msgTypeListPanel.add(HTTP请求RadioButton, new GridConstraints(9, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        eMailBETARadioButton = new JRadioButton();
-        eMailBETARadioButton.setEnabled(true);
-        eMailBETARadioButton.setText("E-Mail（BETA）");
-        msgTypeListPanel.add(eMailBETARadioButton, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        eMailRadioButton = new JRadioButton();
+        eMailRadioButton.setEnabled(true);
+        eMailRadioButton.setText("E-Mail（BETA）");
+        msgTypeListPanel.add(eMailRadioButton, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(2, 1, new Insets(8, 8, 8, 0), -1, -1));
         messageTypePanel.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));

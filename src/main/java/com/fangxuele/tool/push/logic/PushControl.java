@@ -266,8 +266,8 @@ public class PushControl {
             ArrayList<String> mailToList = new ArrayList<>(Arrays.asList(mailTos));
 
             MailMsgSender mailMsgSender = new MailMsgSender();
-            String title = "WePush推送结果：" + MessageEditForm.messageEditForm.getMsgNameField().getText()
-                    + "-" + PushData.sendSuccessList.size() + "成功；" + PushData.sendFailList.size() + "失败；"
+            String title = "WePush推送结果：【" + MessageEditForm.messageEditForm.getMsgNameField().getText()
+                    + "】" + PushData.sendSuccessList.size() + "成功；" + PushData.sendFailList.size() + "失败；"
                     + PushData.toSendList.size() + "未发送";
             StringBuilder contentBuilder = new StringBuilder();
             contentBuilder.append("<h2>WePush推送结果</h2>");
