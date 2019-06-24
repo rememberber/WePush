@@ -65,7 +65,7 @@ public class MessageTypeListener {
             App.config.setMsgType(MessageTypeEnum.HW_YUN_CODE);
             saveType();
         });
-        messageTypeForm.getEMailBETARadioButton().addActionListener(e -> {
+        messageTypeForm.getEMailRadioButton().addActionListener(e -> {
             App.config.setMsgType(MessageTypeEnum.EMAIL_CODE);
             saveType();
         });
