@@ -291,6 +291,45 @@ public class SettingListener {
             }
         });
 
+        // E-Mail测试
+        SettingForm.settingForm.getTestMailButton().addActionListener(e -> {
+            App.config.setMailHost(SettingForm.settingForm.getMailHostTextField().getText());
+            App.config.setMailPort(SettingForm.settingForm.getMailPortTextField().getText());
+            App.config.setMailFrom(SettingForm.settingForm.getMailFromTextField().getText());
+            App.config.setMailUser(SettingForm.settingForm.getMailUserTextField().getText());
+            App.config.setMailPassword(new String(SettingForm.settingForm.getMailPasswordField().getPassword()));
+            App.config.setMailUseStartTLS(SettingForm.settingForm.getMailStartTLSCheckBox().isSelected());
+            App.config.setMailUseSSL(SettingForm.settingForm.getMailSSLCheckBox().isSelected());
+            MailMsgSender.mailAccount = null;
+
+            MailTestDialog mailTestDialog = new MailTestDialog();
+            mailTestDialog.pack();
+            mailTestDialog.setVisible(true);
+        });
+
+        // E-Mail保存
+        SettingForm.settingForm.getSaveMailButton().addActionListener(e -> {
+            try {
+                App.config.setMailHost(SettingForm.settingForm.getMailHostTextField().getText());
+                App.config.setMailPort(SettingForm.settingForm.getMailPortTextField().getText());
+                App.config.setMailFrom(SettingForm.settingForm.getMailFromTextField().getText());
+                App.config.setMailUser(SettingForm.settingForm.getMailUserTextField().getText());
+                App.config.setMailPassword(new String(SettingForm.settingForm.getMailPasswordField().getPassword()));
+                App.config.setMailUseStartTLS(SettingForm.settingForm.getMailStartTLSCheckBox().isSelected());
+                App.config.setMailUseSSL(SettingForm.settingForm.getMailSSLCheckBox().isSelected());
+                App.config.save();
+
+                MailMsgSender.mailAccount = null;
+
+                JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        });
+
         // mysql数据库-测试链接
         SettingForm.settingForm.getSettingTestDbLinkButton().addActionListener(e -> {
             HikariDataSource hikariDataSource = null;
@@ -333,36 +372,6 @@ public class SettingListener {
                         logger.error(e2);
                     }
                 }
-            }
-        });
-
-        // E-Mail测试
-        SettingForm.settingForm.getTestMailButton().addActionListener(e -> {
-            MailTestDialog mailTestDialog = new MailTestDialog();
-            mailTestDialog.pack();
-            mailTestDialog.setVisible(true);
-        });
-
-        // E-Mail保存
-        SettingForm.settingForm.getSaveMailButton().addActionListener(e -> {
-            try {
-                App.config.setMailHost(SettingForm.settingForm.getMailHostTextField().getText());
-                App.config.setMailPort(SettingForm.settingForm.getMailPortTextField().getText());
-                App.config.setMailFrom(SettingForm.settingForm.getMailFromTextField().getText());
-                App.config.setMailUser(SettingForm.settingForm.getMailUserTextField().getText());
-                App.config.setMailPassword(new String(SettingForm.settingForm.getMailPasswordField().getPassword()));
-                App.config.setMailUseStartTLS(SettingForm.settingForm.getMailStartTLSCheckBox().isSelected());
-                App.config.setMailUseSSL(SettingForm.settingForm.getMailSSLCheckBox().isSelected());
-                App.config.save();
-
-                MailMsgSender.mailAccount = null;
-
-                JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
-                        JOptionPane.INFORMATION_MESSAGE);
-            } catch (Exception e1) {
-                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
-                logger.error(e1);
             }
         });
 

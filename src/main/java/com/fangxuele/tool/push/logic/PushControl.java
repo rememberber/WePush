@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.logic;
 
+import cn.hutool.core.date.BetweenFormater;
 import cn.hutool.core.date.DateUtil;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPushHistoryMapper;
@@ -29,6 +30,7 @@ import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.opencsv.CSVWriter;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 
 import javax.swing.*;
 import java.io.File;
@@ -36,6 +38,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -277,10 +280,9 @@ public class PushControl {
             contentBuilder.append("<p>未推送数：" + PushData.toSendList.size() + "</p>");
             contentBuilder.append("<br/>");
 
-            // TODO
-            contentBuilder.append("<p>开始时间：</p>");
-            contentBuilder.append("<p>完毕时间：</p>");
-            contentBuilder.append("<p>总耗时：</p>");
+            contentBuilder.append("<p>开始时间：" + DateFormatUtils.format(new Date(PushData.startTime), "yyyy-MM-dd HH:mm:ss") + "</p>");
+            contentBuilder.append("<p>完毕时间：" + DateFormatUtils.format(new Date(PushData.endTime), "yyyy-MM-dd HH:mm:ss") + "</p>");
+            contentBuilder.append("<p>总耗时：" + DateUtil.formatBetween(PushData.endTime - PushData.startTime, BetweenFormater.Level.SECOND) + "</p>");
             contentBuilder.append("<br/>");
 
             contentBuilder.append("<p>详情请查看附件</p>");
