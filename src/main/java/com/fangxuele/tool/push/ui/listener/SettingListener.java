@@ -293,10 +293,6 @@ public class SettingListener {
 
         // E-Mail测试
         SettingForm.settingForm.getTestMailButton().addActionListener(e -> {
-            MailTestDialog mailTestDialog = new MailTestDialog();
-            mailTestDialog.pack();
-            mailTestDialog.setVisible(true);
-
             App.config.setMailHost(SettingForm.settingForm.getMailHostTextField().getText());
             App.config.setMailPort(SettingForm.settingForm.getMailPortTextField().getText());
             App.config.setMailFrom(SettingForm.settingForm.getMailFromTextField().getText());
@@ -305,6 +301,10 @@ public class SettingListener {
             App.config.setMailUseStartTLS(SettingForm.settingForm.getMailStartTLSCheckBox().isSelected());
             App.config.setMailUseSSL(SettingForm.settingForm.getMailSSLCheckBox().isSelected());
             MailMsgSender.mailAccount = null;
+
+            MailTestDialog mailTestDialog = new MailTestDialog();
+            mailTestDialog.pack();
+            mailTestDialog.setVisible(true);
         });
 
         // E-Mail保存

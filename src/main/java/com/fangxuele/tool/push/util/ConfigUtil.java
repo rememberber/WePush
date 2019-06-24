@@ -467,7 +467,7 @@ public class ConfigUtil {
     }
 
     public String getMailHost() {
-        return setting.getStr("mailHost", "setting.mail", "");
+        return setting.getStr("mailHost", "setting.mail", "smtp.163.com");
     }
 
     public void setMailHost(String mailHost) {
@@ -475,7 +475,7 @@ public class ConfigUtil {
     }
 
     public String getMailPort() {
-        return setting.getStr("mailPort", "setting.mail", "");
+        return setting.getStr("mailPort", "setting.mail", "25");
     }
 
     public void setMailPort(String mailPort) {

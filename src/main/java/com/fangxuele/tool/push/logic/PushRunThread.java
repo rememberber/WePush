@@ -73,6 +73,7 @@ public class PushRunThread extends Thread {
 
         // 重置推送数据
         PushData.reset();
+        PushData.startTime = System.currentTimeMillis();
 
         // 拷贝准备的目标用户
         PushData.toSendList.addAll(PushData.allUser);
@@ -177,6 +178,8 @@ public class PushRunThread extends Thread {
                 } else {
                     PushForm.pushForm.getPushStopButton().setText("停止计划任务");
                 }
+
+                PushData.endTime = System.currentTimeMillis();
 
                 // 保存停止前的数据
                 try {

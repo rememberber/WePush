@@ -98,17 +98,29 @@ public class PushData {
     }
 
     /**
+     * 开始时间
+     */
+    public static long startTime = 0;
+
+    /**
+     * 结束时间
+     */
+    public static long endTime = 0;
+
+    /**
      * 重置推送数据
      */
     static void reset() {
-        PushData.running = true;
-        PushData.successRecords.reset();
-        PushData.failRecords.reset();
-        PushData.stopedThreadCount.reset();
-        PushData.threadCount = 0;
-        PushData.toSendList = Collections.synchronizedList(new LinkedList<>());
-        PushData.sendSuccessList = Collections.synchronizedList(new LinkedList<>());
-        PushData.sendFailList = Collections.synchronizedList(new LinkedList<>());
+        running = true;
+        successRecords.reset();
+        failRecords.reset();
+        stopedThreadCount.reset();
+        threadCount = 0;
+        toSendList = Collections.synchronizedList(new LinkedList<>());
+        sendSuccessList = Collections.synchronizedList(new LinkedList<>());
+        sendFailList = Collections.synchronizedList(new LinkedList<>());
+        startTime = 0;
+        endTime = 0;
     }
 
 }
