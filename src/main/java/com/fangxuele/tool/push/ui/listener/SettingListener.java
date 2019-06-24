@@ -341,6 +341,15 @@ public class SettingListener {
             MailTestDialog mailTestDialog = new MailTestDialog();
             mailTestDialog.pack();
             mailTestDialog.setVisible(true);
+
+            App.config.setMailHost(SettingForm.settingForm.getMailHostTextField().getText());
+            App.config.setMailPort(SettingForm.settingForm.getMailPortTextField().getText());
+            App.config.setMailFrom(SettingForm.settingForm.getMailFromTextField().getText());
+            App.config.setMailUser(SettingForm.settingForm.getMailUserTextField().getText());
+            App.config.setMailPassword(new String(SettingForm.settingForm.getMailPasswordField().getPassword()));
+            App.config.setMailUseStartTLS(SettingForm.settingForm.getMailStartTLSCheckBox().isSelected());
+            App.config.setMailUseSSL(SettingForm.settingForm.getMailSSLCheckBox().isSelected());
+            MailMsgSender.mailAccount = null;
         });
 
         // E-Mail保存
