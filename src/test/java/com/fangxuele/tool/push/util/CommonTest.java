@@ -2,22 +2,27 @@ package com.fangxuele.tool.push.util;
 
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.extra.mail.MailAccount;
-import cn.hutool.extra.mail.MailUtil;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClients;
+import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
+import org.apache.http.impl.nio.reactor.DefaultConnectingIOReactor;
+import org.apache.http.impl.nio.reactor.IOReactorConfig;
 import org.apache.http.nio.IOControl;
 import org.apache.http.nio.client.methods.AsyncCharConsumer;
 import org.apache.http.nio.client.methods.HttpAsyncMethods;
 import org.apache.http.nio.protocol.HttpAsyncRequestProducer;
+import org.apache.http.nio.reactor.ConnectingIOReactor;
+import org.apache.http.nio.reactor.IOReactorException;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.junit.Test;
@@ -51,16 +56,16 @@ public class CommonTest {
         account.setPass("******");
 
 
-        for (int i = 0; i < 20; i++) {
-            ThreadUtil.execute(new Runnable() {
-                @Override
-                public void run() {
-                    MailUtil.send(account, "rememberber@163.com", "测试", "邮件来自Hutool测试", false);
-                }
-            });
-        }
-
-        ThreadUtil.safeSleep(10000);
+//        for (int i = 0; i < 20; i++) {
+//            ThreadUtil.execute(new Runnable() {
+//                @Override
+//                public void run() {
+//                    MailUtil.send(account, "rememberber@163.com", "测试", "邮件来自Hutool测试", false);
+//                }
+//            });
+//        }
+//
+//        ThreadUtil.safeSleep(10000);
     }
 
     /**
@@ -234,11 +239,11 @@ public class CommonTest {
         HikariDataSource ds = null;
         if (ds == null || ds.isClosed()) {
             ds = new HikariDataSource();
-            ds.setJdbcUrl("jdbc:mysql://172.24.7.186:3306/fin_item");
+            ds.setJdbcUrl("jdbc:mysql://localhost:3306/ocs-test");
             ds.setUsername("root");
-            ds.setPassword("qwert33");
+            ds.setPassword("123456");
         }
-        String sql = "select * from netvalue";
+        String sql = "select * from t_push_history";
         try {
             PreparedStatement preparedStatement = ds.getConnection().prepareStatement(sql);
             ResultSet sr = preparedStatement.executeQuery();
@@ -247,5 +252,78 @@ public class CommonTest {
             e.printStackTrace();
         }
         ds.close();
+    }
+
+    @Test
+    public void myAsyncHttpClientPoolTest() {
+
+        // https://blog.csdn.net/weixin_34342207/article/details/87152443
+        // 该文章有介绍如何绕过https
+
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setConnectTimeout(500000)
+                .setSocketTimeout(500000)
+                .setConnectionRequestTimeout(100000)
+                .setConnectionRequestTimeout(-1)
+                .build();
+
+        //配置io线程
+        IOReactorConfig ioReactorConfig = IOReactorConfig.custom().
+                setIoThreadCount(Runtime.getRuntime().availableProcessors())
+                .setSoKeepAlive(true).setConnectTimeout(-1).setSoTimeout(-1)
+                .build();
+        //设置连接池大小
+        ConnectingIOReactor ioReactor = null;
+        try {
+            ioReactor = new DefaultConnectingIOReactor(ioReactorConfig);
+        } catch (IOReactorException e) {
+            e.printStackTrace();
+        }
+        PoolingNHttpClientConnectionManager connManager = new PoolingNHttpClientConnectionManager(ioReactor);
+        connManager.setMaxTotal(5000);//最大连接数设置100
+        connManager.setDefaultMaxPerRoute(5000);//per route最大连接数设置100
+
+
+        final CloseableHttpAsyncClient client = HttpAsyncClients.custom().
+                setConnectionManager(connManager)
+                .setDefaultRequestConfig(requestConfig)
+                .build();
+
+        client.start();
+
+        System.err.println("开始");
+        for (int i = 0; i < 200000; i++) {
+            client.execute(new HttpPost("http://localhost:9000/qian/api/test/lucky?msg=asdf" + i), new Back());
+
+            System.err.println(i);
+        }
+        System.err.println("结束");
+        ThreadUtil.safeSleep(100000000);
+
+    }
+
+    static class Back implements FutureCallback<HttpResponse> {
+
+        private long start = System.currentTimeMillis();
+
+        Back() {
+        }
+
+        public void completed(HttpResponse httpResponse) {
+            try {
+                System.out.println("cost is:" + (System.currentTimeMillis() - start) + ":" + EntityUtils.toString(httpResponse.getEntity()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public void failed(Exception e) {
+            e.printStackTrace();
+            System.err.println(" cost is:" + (System.currentTimeMillis() - start) + ":" + e);
+        }
+
+        public void cancelled() {
+
+        }
     }
 }
