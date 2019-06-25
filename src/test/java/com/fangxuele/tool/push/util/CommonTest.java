@@ -261,15 +261,16 @@ public class CommonTest {
         // 该文章有介绍如何绕过https
 
         RequestConfig requestConfig = RequestConfig.custom()
-                .setConnectTimeout(50000)
-                .setSocketTimeout(50000)
-                .setConnectionRequestTimeout(10000)//设置为10s
+                .setConnectTimeout(500000)
+                .setSocketTimeout(500000)
+                .setConnectionRequestTimeout(100000)
+                .setConnectionRequestTimeout(-1)
                 .build();
 
         //配置io线程
         IOReactorConfig ioReactorConfig = IOReactorConfig.custom().
                 setIoThreadCount(Runtime.getRuntime().availableProcessors())
-                .setSoKeepAlive(true)
+                .setSoKeepAlive(true).setConnectTimeout(-1).setSoTimeout(-1)
                 .build();
         //设置连接池大小
         ConnectingIOReactor ioReactor = null;
@@ -279,8 +280,8 @@ public class CommonTest {
             e.printStackTrace();
         }
         PoolingNHttpClientConnectionManager connManager = new PoolingNHttpClientConnectionManager(ioReactor);
-        connManager.setMaxTotal(100);//最大连接数设置100
-        connManager.setDefaultMaxPerRoute(100);//per route最大连接数设置100
+        connManager.setMaxTotal(5000);//最大连接数设置100
+        connManager.setDefaultMaxPerRoute(5000);//per route最大连接数设置100
 
 
         final CloseableHttpAsyncClient client = HttpAsyncClients.custom().
@@ -291,8 +292,10 @@ public class CommonTest {
         client.start();
 
         System.err.println("开始");
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 200000; i++) {
             client.execute(new HttpPost("http://localhost:9000/qian/api/test/lucky?msg=asdf" + i), new Back());
+
+            System.err.println(i);
         }
         System.err.println("结束");
         ThreadUtil.safeSleep(100000000);
