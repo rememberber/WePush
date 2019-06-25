@@ -1,8 +1,6 @@
 package com.fangxuele.tool.push.util;
 
-import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.extra.mail.MailAccount;
-import cn.hutool.extra.mail.MailUtil;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
@@ -51,16 +49,16 @@ public class CommonTest {
         account.setPass("******");
 
 
-        for (int i = 0; i < 20; i++) {
-            ThreadUtil.execute(new Runnable() {
-                @Override
-                public void run() {
-                    MailUtil.send(account, "rememberber@163.com", "测试", "邮件来自Hutool测试", false);
-                }
-            });
-        }
-
-        ThreadUtil.safeSleep(10000);
+//        for (int i = 0; i < 20; i++) {
+//            ThreadUtil.execute(new Runnable() {
+//                @Override
+//                public void run() {
+//                    MailUtil.send(account, "rememberber@163.com", "测试", "邮件来自Hutool测试", false);
+//                }
+//            });
+//        }
+//
+//        ThreadUtil.safeSleep(10000);
     }
 
     /**
@@ -234,11 +232,11 @@ public class CommonTest {
         HikariDataSource ds = null;
         if (ds == null || ds.isClosed()) {
             ds = new HikariDataSource();
-            ds.setJdbcUrl("jdbc:mysql://172.24.7.186:3306/fin_item");
+            ds.setJdbcUrl("jdbc:mysql://localhost:3306/ocs-test");
             ds.setUsername("root");
-            ds.setPassword("qwert33");
+            ds.setPassword("123456");
         }
-        String sql = "select * from netvalue";
+        String sql = "select * from test";
         try {
             PreparedStatement preparedStatement = ds.getConnection().prepareStatement(sql);
             ResultSet sr = preparedStatement.executeQuery();
