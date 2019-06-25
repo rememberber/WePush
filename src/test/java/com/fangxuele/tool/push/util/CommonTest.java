@@ -256,6 +256,10 @@ public class CommonTest {
 
     @Test
     public void myAsyncHttpClientPoolTest() {
+
+        // https://blog.csdn.net/weixin_34342207/article/details/87152443
+        // 该文章有介绍如何绕过https
+
         RequestConfig requestConfig = RequestConfig.custom()
                 .setConnectTimeout(50000)
                 .setSocketTimeout(50000)
