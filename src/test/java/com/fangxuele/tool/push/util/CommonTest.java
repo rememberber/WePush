@@ -257,6 +257,8 @@ public class CommonTest {
     @Test
     public void myAsyncHttpClientPoolTest() {
 
+        // https://blog.csdn.net/ouyang111222/article/details/78884634
+        // 本用例来自上面的链接
         // https://blog.csdn.net/weixin_34342207/article/details/87152443
         // 该文章有介绍如何绕过https
 
