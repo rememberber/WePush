@@ -20,7 +20,7 @@ public class BaseMsgMaker {
      */
     VelocityContext getVelocityContext(String[] msgData) {
         VelocityContext velocityContext = new VelocityContext();
-        for (int i = 1; i < msgData.length; i++) {
+        for (int i = 0; i < msgData.length; i++) {
             velocityContext.put(PushControl.TEMPLATE_VAR_PREFIX + i, msgData[i]);
         }
         return velocityContext;
