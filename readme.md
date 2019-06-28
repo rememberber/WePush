@@ -104,15 +104,16 @@ https://gitee.com/zhoubochina/WePush/wikis/build
 
 ### 使用帮助
 
-https://gitee.com/zhoubochina/WePush/wikis/help
-<p align="center">
+https://gitee.com/zhoubochina/WePush/wikis/help  
+微信交流群：
+<p align="left">
   <a href="https://gitee.com/zhoubochina/WePush/wikis/help">
-   <img alt="WePush" src="http://download.zhoubochina.com/file/wepush-wechat-group.jpg" height="180" >
+   <img alt="WePush" src="http://download.zhoubochina.com/file/wepush-wechat-group.jpg" height="200" >
   </a>
 </p>
 
 ### 鼓励&赞赏
-<p align="center">
+<p align="left">
   <a href="https://gitee.com/zhoubochina/WePush">
    <img alt="WePush" src="http://download.zhoubochina.com/file/wx-zanshang.jpg">
   </a>
