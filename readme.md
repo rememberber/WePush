@@ -105,6 +105,11 @@ https://gitee.com/zhoubochina/WePush/wikis/build
 ### 使用帮助
 
 https://gitee.com/zhoubochina/WePush/wikis/help
+<p align="center">
+  <a href="https://gitee.com/zhoubochina/WePush/wikis/help">
+   <img alt="WePush" src="http://download.zhoubochina.com/file/wepush-wechat-group.jpg">
+  </a>
+</p>
 
 ### 鼓励&赞赏
 <p align="center">
