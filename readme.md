@@ -107,7 +107,7 @@ https://gitee.com/zhoubochina/WePush/wikis/build
 https://gitee.com/zhoubochina/WePush/wikis/help
 <p align="center">
   <a href="https://gitee.com/zhoubochina/WePush/wikis/help">
-   <img alt="WePush" src="http://download.zhoubochina.com/file/wepush-wechat-group.jpg">
+   <img alt="WePush" src="http://download.zhoubochina.com/file/wepush-wechat-group.jpg" height="180" >
   </a>
 </p>
 
