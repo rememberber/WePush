@@ -1,11 +1,14 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
 import com.fangxuele.tool.push.dao.TMsgWxCpMapper;
+import com.fangxuele.tool.push.dao.TWxCpAppMapper;
 import com.fangxuele.tool.push.domain.TMsgWxCp;
+import com.fangxuele.tool.push.domain.TWxCpApp;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
+import com.google.common.collect.Maps;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -16,6 +19,7 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -46,6 +50,10 @@ public class WxCpMsgForm {
     public static WxCpMsgForm wxCpMsgForm = new WxCpMsgForm();
 
     private static TMsgWxCpMapper msgWxCpMapper = MybatisUtil.getSqlSession().getMapper(TMsgWxCpMapper.class);
+    private static TWxCpAppMapper wxCpAppMapper = MybatisUtil.getSqlSession().getMapper(TWxCpAppMapper.class);
+
+    public static Map<String, String> appNameToAgentIdMap = Maps.newHashMap();
+    public static Map<String, String> agentIdToAppNameMap = Maps.newHashMap();
 
     public WxCpMsgForm() {
         // 消息类型切换事件
@@ -58,10 +66,12 @@ public class WxCpMsgForm {
 
     public static void init(String msgName) {
         clearAllField();
+        initAppNameList();
         List<TMsgWxCp> tMsgWxCpList = msgWxCpMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.WX_CP_CODE, msgName);
         if (tMsgWxCpList.size() > 0) {
             TMsgWxCp tMsgWxCp = tMsgWxCpList.get(0);
             String cpMsgType = tMsgWxCp.getCpMsgType();
+            wxCpMsgForm.getAppNameComboBox().setSelectedItem(agentIdToAppNameMap.get(tMsgWxCp.getAgentId()));
             wxCpMsgForm.getMsgTypeComboBox().setSelectedItem(cpMsgType);
             if ("文本消息".equals(cpMsgType)) {
                 wxCpMsgForm.getContentTextArea().setText(tMsgWxCp.getContent());
@@ -75,6 +85,19 @@ public class WxCpMsgForm {
             switchCpMsgType(cpMsgType);
         } else {
             switchCpMsgType("图文消息");
+        }
+    }
+
+    /**
+     * 初始化应用名称列表
+     */
+    private static void initAppNameList() {
+        List<TWxCpApp> tWxCpAppList = wxCpAppMapper.selectAll();
+        wxCpMsgForm.getAppNameComboBox().removeAllItems();
+        for (TWxCpApp tWxCpApp : tWxCpAppList) {
+            appNameToAgentIdMap.put(tWxCpApp.getAppName(), tWxCpApp.getAgentId());
+            agentIdToAppNameMap.put(tWxCpApp.getAgentId(), tWxCpApp.getAppName());
+            wxCpMsgForm.getAppNameComboBox().addItem(tWxCpApp.getAppName());
         }
     }
 
@@ -152,7 +175,7 @@ public class WxCpMsgForm {
             TMsgWxCp tMsgWxCp = new TMsgWxCp();
             tMsgWxCp.setMsgType(MessageTypeEnum.WX_CP_CODE);
             tMsgWxCp.setMsgName(msgName);
-//       TODO     tMsgWxCp.setAgentId();
+            tMsgWxCp.setAgentId(appNameToAgentIdMap.get(wxCpMsgForm.getAppNameComboBox().getSelectedItem()));
             tMsgWxCp.setCpMsgType(cpMsgType);
             tMsgWxCp.setContent(content);
             tMsgWxCp.setTitle(title);
