@@ -1,0 +1,17 @@
+package com.fangxuele.tool.push.dao;
+
+import com.fangxuele.tool.push.domain.TWxCpApp;
+
+public interface TWxCpAppMapper {
+    int deleteByPrimaryKey(Integer id);
+
+    int insert(TWxCpApp record);
+
+    int insertSelective(TWxCpApp record);
+
+    TWxCpApp selectByPrimaryKey(Integer id);
+
+    int updateByPrimaryKeySelective(TWxCpApp record);
+
+    int updateByPrimaryKey(TWxCpApp record);
+}
