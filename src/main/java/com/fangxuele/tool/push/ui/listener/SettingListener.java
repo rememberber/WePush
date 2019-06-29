@@ -15,6 +15,7 @@ import com.fangxuele.tool.push.logic.msgsender.YunPianMsgSender;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.dialog.MailTestDialog;
 import com.fangxuele.tool.push.ui.dialog.SwitchWxAccountDialog;
+import com.fangxuele.tool.push.ui.dialog.WxCpAppDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.util.HikariUtil;
@@ -232,6 +233,14 @@ public class SettingListener {
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
+        });
+
+        // 设置-企业号-应用管理
+        SettingForm.settingForm.getWxCpAppManageButton().addActionListener(e -> {
+            WxCpAppDialog dialog = new WxCpAppDialog();
+            dialog.renderTable();
+            dialog.pack();
+            dialog.setVisible(true);
         });
 
         // 设置-阿里云短信-保存

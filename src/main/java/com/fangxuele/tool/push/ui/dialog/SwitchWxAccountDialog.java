@@ -37,7 +37,6 @@ import java.util.List;
  * @since 2019/5/23.
  */
 public class SwitchWxAccountDialog extends JDialog {
-    Log logger = LogFactory.get();
     private JPanel contentPane;
     private JButton buttonOk;
     private JTable accountsTable;
@@ -49,6 +48,7 @@ public class SwitchWxAccountDialog extends JDialog {
     private JButton addButton;
     private JButton deleteButton;
 
+    Log logger = LogFactory.get();
     private static TWxAccountMapper wxAccountMapper = MybatisUtil.getSqlSession().getMapper(TWxAccountMapper.class);
 
     public SwitchWxAccountDialog() {
