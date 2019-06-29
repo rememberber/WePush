@@ -170,6 +170,15 @@ public class PushControl {
                     return false;
                 }
                 break;
+            case MessageTypeEnum.WX_CP_CODE:
+                String wxCpCorpId = App.config.getWxCpCorpId();
+                if (StringUtils.isBlank(wxCpCorpId)) {
+                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
+                            "请先在设置中填写并保存微信企业号/企业微信相关配置！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return false;
+                }
+                break;
             default:
         }
         return true;

@@ -45,6 +45,9 @@ public class MsgMakerFactory {
             case MessageTypeEnum.EMAIL_CODE:
                 iMsgMaker = new MailMsgMaker();
                 break;
+            case MessageTypeEnum.WX_CP_CODE:
+                iMsgMaker = new WxCpMsgMaker();
+                break;
             default:
         }
         return iMsgMaker;

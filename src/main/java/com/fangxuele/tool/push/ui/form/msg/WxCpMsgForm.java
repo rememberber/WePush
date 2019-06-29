@@ -150,6 +150,12 @@ public class WxCpMsgForm {
     public static void save(String msgName) {
         boolean existSameMsg = false;
 
+        if (wxCpMsgForm.getAppNameComboBox().getSelectedItem() == null) {
+            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "请先在设置中设置企业号/企业微信应用！", "成功",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         List<TMsgWxCp> tMsgWxCpList = msgWxCpMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.WX_CP_CODE, msgName);
         if (tMsgWxCpList.size() > 0) {
             existSameMsg = true;
