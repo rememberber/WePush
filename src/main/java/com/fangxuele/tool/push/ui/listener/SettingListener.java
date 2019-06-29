@@ -18,6 +18,7 @@ import com.fangxuele.tool.push.ui.dialog.SwitchWxAccountDialog;
 import com.fangxuele.tool.push.ui.dialog.WxCpAppDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.SettingForm;
+import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
 import com.fangxuele.tool.push.util.HikariUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
@@ -241,6 +242,7 @@ public class SettingListener {
             dialog.renderTable();
             dialog.pack();
             dialog.setVisible(true);
+            WxCpMsgForm.initAppNameList();
         });
 
         // 设置-阿里云短信-保存
