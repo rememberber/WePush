@@ -104,6 +104,11 @@ public class ConfigUtil {
 
     private String maProxyPassword;
 
+    /**
+     * 企业号企业id
+     */
+    private String wxCpCorpId;
+
     private String aliyunAccessKeyId;
 
     private String aliyunAccessKeySecret;
@@ -184,7 +189,6 @@ public class ConfigUtil {
     public void setMsgType(int msgType) {
         setting.put("msg", "msgType", String.valueOf(msgType));
     }
-
 
     public String getMsgName() {
         return setting.getStr("msgName", "msg", "");
@@ -680,6 +684,14 @@ public class ConfigUtil {
 
     public void setMaProxyPassword(String maProxyPassword) {
         setting.put("setting.wechat", "maProxyPassword", maProxyPassword);
+    }
+
+    public String getWxCpCorpId() {
+        return setting.getStr("wxCpCorpId", "setting.wechat", "");
+    }
+
+    public void setWxCpCorpId(String wxCpCorpId) {
+        setting.put("setting.wechat", "wxCpCorpId", wxCpCorpId);
     }
 
     public String getTxyunAppId() {

@@ -219,6 +219,21 @@ public class SettingListener {
             }
         });
 
+        // 企业号-保存
+        SettingForm.settingForm.getWxCpSaveButton().addActionListener(e -> {
+            try {
+                App.config.setWxCpCorpId(SettingForm.settingForm.getWxCpCorpIdTextField().getText());
+                App.config.save();
+
+                JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        });
+
         // 设置-阿里云短信-保存
         SettingForm.settingForm.getSettingAliyunSaveButton().addActionListener(e -> {
             try {

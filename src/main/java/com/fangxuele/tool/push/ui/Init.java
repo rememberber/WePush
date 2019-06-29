@@ -87,7 +87,7 @@ public class Init {
         MessageEditForm.messageEditForm.getMsgEditScrollPane().getVerticalScrollBar().setUnitIncrement(15);
         MessageEditForm.messageEditForm.getMsgEditScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
 
-        SettingForm.settingForm.getSettingScrollPane().getVerticalScrollBar().setUnitIncrement(15);
+        SettingForm.settingForm.getSettingScrollPane().getVerticalScrollBar().setUnitIncrement(16);
         SettingForm.settingForm.getSettingScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
 
         UserCaseForm.userCaseForm.getUserCaseScrollPane().getVerticalScrollBar().setUnitIncrement(15);
