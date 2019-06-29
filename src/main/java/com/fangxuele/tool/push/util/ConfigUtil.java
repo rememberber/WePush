@@ -563,7 +563,7 @@ public class ConfigUtil {
     }
 
     public String getFont() {
-        return setting.getStr("font", "setting.appearance", "Microsoft YaHei UI");
+        return setting.getStr("font", "setting.appearance", "微软雅黑");
     }
 
     public void setFont(String font) {

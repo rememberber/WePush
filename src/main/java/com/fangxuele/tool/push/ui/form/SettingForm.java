@@ -8,6 +8,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -169,12 +170,27 @@ public class SettingForm {
         settingForm.getMysqlPasswordField().setText(App.config.getMysqlPassword());
 
         // 外观
+        getSysFontList();
         settingForm.getSettingThemeComboBox().setSelectedItem(App.config.getTheme());
         settingForm.getSettingFontNameComboBox().setSelectedItem(App.config.getFont());
         settingForm.getSettingFontSizeComboBox().setSelectedItem(String.valueOf(App.config.getFontSize()));
 
         toggleMpProxyPanel();
         toggleMaProxyPanel();
+    }
+
+    /**
+     * 获取系统字体列表
+     */
+    private static void getSysFontList() {
+        settingForm.getSettingFontNameComboBox().removeAllItems();
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        String[] fonts = ge.getAvailableFontFamilyNames();
+        for (String font : fonts) {
+            if (StringUtils.isNotBlank(font)) {
+                settingForm.getSettingFontNameComboBox().addItem(font);
+            }
+        }
     }
 
     /**

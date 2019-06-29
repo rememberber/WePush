@@ -27,6 +27,7 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.junit.Test;
 
+import java.awt.*;
 import java.io.IOException;
 import java.nio.CharBuffer;
 import java.sql.PreparedStatement;
@@ -326,6 +327,15 @@ public class CommonTest {
 
         public void cancelled() {
 
+        }
+    }
+
+    @Test
+    public void testGetSysFonts() {
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        String[] fonts = ge.getAvailableFontFamilyNames();
+        for (String font : fonts) {
+            System.err.println(font);
         }
     }
 }
