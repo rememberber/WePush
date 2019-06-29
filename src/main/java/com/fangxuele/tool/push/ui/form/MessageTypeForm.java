@@ -94,19 +94,31 @@ public class MessageTypeForm {
 
             default:
         }
-        if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE || msgType == MessageTypeEnum.MA_TEMPLATE_CODE
-                || msgType == MessageTypeEnum.KEFU_CODE || msgType == MessageTypeEnum.KEFU_PRIORITY_CODE) {
-            MemberForm.memberForm.getImportFromWeixinPanel().setVisible(true);
-            MemberForm.memberForm.getImportOptionPanel().setVisible(true);
-        } else {
-            MemberForm.memberForm.getImportFromWeixinPanel().setVisible(false);
-            MemberForm.memberForm.getImportOptionPanel().setVisible(false);
-        }
+        initMemberFormLayOut(msgType);
         MessageEditForm.switchMsgType(msgType);
         MessageEditForm.messageEditForm.getMsgTypeName().setText(MessageTypeEnum.getName(msgType));
         MessageManageForm.init();
         MemberForm.init();
         PushHisForm.init();
+    }
+
+    private static void initMemberFormLayOut(int msgType) {
+        Component[] components = MemberForm.memberForm.getImportWayPanel().getComponents();
+        for (Component component : components) {
+            if (component instanceof JPanel) {
+                component.setVisible(false);
+            }
+        }
+        MemberForm.memberForm.getMemberTabDownPanel().setVisible(true);
+        MemberForm.memberForm.getMemberTabCenterPanel().setVisible(true);
+        if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE || msgType == MessageTypeEnum.MA_TEMPLATE_CODE
+                || msgType == MessageTypeEnum.KEFU_CODE || msgType == MessageTypeEnum.KEFU_PRIORITY_CODE) {
+            MemberForm.memberForm.getImportFromWeixinPanel().setVisible(true);
+            MemberForm.memberForm.getImportOptionPanel().setVisible(true);
+        }
+        if (msgType == MessageTypeEnum.WX_CP_CODE) {
+            MemberForm.memberForm.getImportFromWxCpPanel().setVisible(true);
+        }
     }
 
     /**
