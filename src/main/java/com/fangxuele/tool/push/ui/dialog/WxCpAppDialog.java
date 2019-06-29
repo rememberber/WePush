@@ -7,6 +7,7 @@ import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TWxCpAppMapper;
 import com.fangxuele.tool.push.domain.TWxCpApp;
 import com.fangxuele.tool.push.ui.form.SettingForm;
+import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
@@ -87,6 +88,7 @@ public class WxCpAppDialog extends JDialog {
             SettingForm.initSwitchMultiAccount();
             JOptionPane.showMessageDialog(this, "保存成功！", "成功",
                     JOptionPane.INFORMATION_MESSAGE);
+            WxCpMsgForm.initAppNameList();
         });
 
         // 删除按钮事件

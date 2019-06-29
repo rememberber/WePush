@@ -91,7 +91,7 @@ public class WxCpMsgForm {
     /**
      * 初始化应用名称列表
      */
-    private static void initAppNameList() {
+    public static void initAppNameList() {
         List<TWxCpApp> tWxCpAppList = wxCpAppMapper.selectAll();
         wxCpMsgForm.getAppNameComboBox().removeAllItems();
         for (TWxCpApp tWxCpApp : tWxCpAppList) {

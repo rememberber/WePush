@@ -103,14 +103,14 @@ public class WxMaTemplateMsgSender implements IMsgSender {
      */
     static WxMaService getWxMaService() {
         if (wxMaService == null) {
-            synchronized (PushControl.class) {
+            synchronized (WxMaTemplateMsgSender.class) {
                 if (wxMaService == null) {
                     wxMaService = new WxMaServiceImpl();
                 }
             }
         }
         if (wxMaConfigStorage == null) {
-            synchronized (PushControl.class) {
+            synchronized (WxMaTemplateMsgSender.class) {
                 if (wxMaConfigStorage == null) {
                     wxMaConfigStorage = wxMaConfigStorage();
                     if (wxMaConfigStorage != null) {

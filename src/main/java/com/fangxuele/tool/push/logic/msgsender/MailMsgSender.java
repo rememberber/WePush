@@ -104,7 +104,7 @@ public class MailMsgSender implements IMsgSender {
      */
     private static MailAccount getMailAccount() {
         if (mailAccount == null) {
-            synchronized (PushControl.class) {
+            synchronized (MailMsgSender.class) {
                 if (mailAccount == null) {
                     String mailHost = App.config.getMailHost();
                     String mailPort = App.config.getMailPort();

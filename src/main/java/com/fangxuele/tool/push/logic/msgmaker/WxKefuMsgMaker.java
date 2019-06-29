@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
+import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
 import com.fangxuele.tool.push.ui.form.msg.KefuMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
@@ -34,6 +35,8 @@ public class WxKefuMsgMaker extends BaseMsgMaker implements IMsgMaker {
         msgKefuPicUrl = KefuMsgForm.kefuMsgForm.getMsgKefuPicUrlTextField().getText();
         msgKefuDesc = KefuMsgForm.kefuMsgForm.getMsgKefuDescTextField().getText();
         msgKefuUrl = KefuMsgForm.kefuMsgForm.getMsgKefuUrlTextField().getText();
+        WxMpTemplateMsgSender.wxMpConfigStorage = null;
+        WxMpTemplateMsgSender.wxMpService = null;
     }
 
     /**

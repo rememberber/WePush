@@ -9,6 +9,7 @@ import com.fangxuele.tool.push.logic.msgmaker.AliTemplateMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.AliyunMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.MailMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.TxYunMsgMaker;
+import com.fangxuele.tool.push.logic.msgmaker.WxCpMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxKefuMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxMaTemplateMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
@@ -17,8 +18,6 @@ import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.logic.msgsender.SendResult;
-import com.fangxuele.tool.push.logic.msgsender.WxMaTemplateMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
 import com.fangxuele.tool.push.ui.form.ScheduleForm;
@@ -319,9 +318,6 @@ public class PushControl {
         pushHistoryMapper.insertSelective(tPushHistory);
     }
 
-    private static void sendPushResultMail() {
-    }
-
     /**
      * 准备消息构造器
      */
@@ -329,23 +325,15 @@ public class PushControl {
         int msgType = App.config.getMsgType();
         switch (msgType) {
             case MessageTypeEnum.MP_TEMPLATE_CODE:
-                WxMpTemplateMsgSender.wxMpConfigStorage = null;
-                WxMpTemplateMsgSender.wxMpService = null;
                 WxMpTemplateMsgMaker.prepare();
                 break;
             case MessageTypeEnum.MA_TEMPLATE_CODE:
-                WxMaTemplateMsgSender.wxMaConfigStorage = null;
-                WxMaTemplateMsgSender.wxMaService = null;
                 WxMaTemplateMsgMaker.prepare();
                 break;
             case MessageTypeEnum.KEFU_CODE:
-                WxMpTemplateMsgSender.wxMpConfigStorage = null;
-                WxMpTemplateMsgSender.wxMpService = null;
                 WxKefuMsgMaker.prepare();
                 break;
             case MessageTypeEnum.KEFU_PRIORITY_CODE:
-                WxMpTemplateMsgSender.wxMpConfigStorage = null;
-                WxMpTemplateMsgSender.wxMpService = null;
                 WxKefuMsgMaker.prepare();
                 WxMpTemplateMsgMaker.prepare();
                 break;
@@ -363,6 +351,9 @@ public class PushControl {
                 break;
             case MessageTypeEnum.EMAIL_CODE:
                 MailMsgMaker.prepare();
+                break;
+            case MessageTypeEnum.WX_CP_CODE:
+                WxCpMsgMaker.prepare();
                 break;
             default:
         }

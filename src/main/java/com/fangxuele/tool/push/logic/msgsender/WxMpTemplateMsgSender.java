@@ -99,14 +99,14 @@ public class WxMpTemplateMsgSender implements IMsgSender {
      */
     public static WxMpService getWxMpService() {
         if (wxMpConfigStorage == null) {
-            synchronized (PushControl.class) {
+            synchronized (WxMpTemplateMsgSender.class) {
                 if (wxMpConfigStorage == null) {
                     wxMpConfigStorage = wxMpConfigStorage();
                 }
             }
         }
         if (wxMpService == null && wxMpConfigStorage != null) {
-            synchronized (PushControl.class) {
+            synchronized (WxMpTemplateMsgSender.class) {
                 if (wxMpService == null && wxMpConfigStorage != null) {
                     wxMpService = new WxMpServiceImpl();
                     wxMpService.setWxMpConfigStorage(wxMpConfigStorage);

@@ -48,6 +48,9 @@ public class MsgSenderFactory {
             case MessageTypeEnum.EMAIL_CODE:
                 iMsgSender = new MailMsgSender();
                 break;
+            case MessageTypeEnum.WX_CP_CODE:
+                iMsgSender = new WxCpMsgSender();
+                break;
             default:
                 break;
         }

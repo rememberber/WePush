@@ -65,7 +65,7 @@ public class AliDayuTemplateMsgSender implements IMsgSender {
      */
     private static TaobaoClient getTaobaoClient() {
         if (taobaoClient == null) {
-            synchronized (PushControl.class) {
+            synchronized (AliDayuTemplateMsgSender.class) {
                 if (taobaoClient == null) {
                     String aliServerUrl = App.config.getAliServerUrl();
                     String aliAppKey = App.config.getAliAppKey();
