@@ -2,6 +2,7 @@ package com.fangxuele.tool.push.logic;
 
 import cn.hutool.core.date.BetweenFormater;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.FileUtil;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPushHistoryMapper;
 import com.fangxuele.tool.push.domain.TPushHistory;
@@ -204,9 +205,7 @@ public class PushControl {
             File sendSuccessFile = new File(SystemUtil.configHome + "data" +
                     File.separator + "push_his" + File.separator + MessageTypeEnum.getName(msgType) + "-" + msgName +
                     "-发送成功-" + nowTime + ".csv");
-            if (!sendSuccessFile.exists()) {
-                sendSuccessFile.createNewFile();
-            }
+            FileUtil.touch(sendSuccessFile);
             writer = new CSVWriter(new FileWriter(sendSuccessFile));
 
             for (String[] str : PushData.sendSuccessList) {
@@ -233,9 +232,7 @@ public class PushControl {
             File unSendFile = new File(SystemUtil.configHome + "data" + File.separator +
                     "push_his" + File.separator + MessageTypeEnum.getName(msgType) + "-" + msgName + "-未发送-" + nowTime +
                     ".csv");
-            if (!unSendFile.exists()) {
-                unSendFile.createNewFile();
-            }
+            FileUtil.touch(unSendFile);
             writer = new CSVWriter(new FileWriter(unSendFile));
             for (String[] str : PushData.toSendList) {
                 writer.writeNext(str);
@@ -250,9 +247,7 @@ public class PushControl {
         if (PushData.sendFailList.size() > 0) {
             File failSendFile = new File(SystemUtil.configHome + "data" + File.separator +
                     "push_his" + File.separator + MessageTypeEnum.getName(msgType) + "-" + msgName + "-发送失败-" + nowTime + ".csv");
-            if (!failSendFile.exists()) {
-                failSendFile.createNewFile();
-            }
+            FileUtil.touch(failSendFile);
             writer = new CSVWriter(new FileWriter(failSendFile));
             for (String[] str : PushData.sendFailList) {
                 writer.writeNext(str);
