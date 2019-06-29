@@ -173,7 +173,7 @@
             modified_time = #{modifiedTime,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>
-    <select id="selectByMsgTypeAndMsgName" resultType="com.fangxuele.tool.push.domain.TMsgWxCp">
+    <select id="selectByMsgTypeAndMsgName" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from t_msg_wx_cp

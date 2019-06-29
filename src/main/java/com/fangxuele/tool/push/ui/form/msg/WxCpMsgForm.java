@@ -20,7 +20,7 @@ import java.util.Objects;
 
 /**
  * <pre>
- * Description
+ * 微信企业号/企业微信消息form
  * </pre>
  *
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
