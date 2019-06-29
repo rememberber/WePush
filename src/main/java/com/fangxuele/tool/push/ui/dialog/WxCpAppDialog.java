@@ -63,7 +63,7 @@ public class WxCpAppDialog extends JDialog {
             }
 
             boolean update = false;
-            List<TWxCpApp> tWxCpAppList = wxCpAppMapper.selectByAgentId(agentId);
+            List<TWxCpApp> tWxCpAppList = wxCpAppMapper.selectByAppName(appName);
             if (tWxCpAppList.size() > 0) {
                 update = true;
             }

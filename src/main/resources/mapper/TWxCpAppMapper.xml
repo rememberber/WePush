@@ -150,4 +150,10 @@
         where 1=1
         order by agent_id
     </select>
+    <select id="selectByAppName" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_wx_cp_app
+        where app_name = #{appName,jdbcType=INTEGER}
+    </select>
 </mapper>

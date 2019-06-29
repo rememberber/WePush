@@ -20,4 +20,6 @@ public interface TWxCpAppMapper {
     List<TWxCpApp> selectByAgentId(String agentId);
 
     List<TWxCpApp> selectAll();
+
+    List<TWxCpApp> selectByAppName(String appName);
 }
