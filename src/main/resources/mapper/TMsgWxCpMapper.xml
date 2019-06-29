@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fangxuele.tool.push.dao.TMsgWxCpMapper">
+  <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TMsgWxCp">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="msg_type" jdbcType="INTEGER" property="msgType" />
+    <result column="msg_name" jdbcType="VARCHAR" property="msgName" />
+    <result column="cp_msg_type" jdbcType="VARCHAR" property="cpMsgType" />
+    <result column="agent_id" jdbcType="VARCHAR" property="agentId" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="img_url" jdbcType="VARCHAR" property="imgUrl" />
+    <result column="describe" jdbcType="VARCHAR" property="describe" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+    <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, msg_type, msg_name, cp_msg_type, agent_id, content, title, img_url, describe, 
+    url, create_time, modified_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_msg_wx_cp
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_msg_wx_cp
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TMsgWxCp">
+    insert into t_msg_wx_cp (id, msg_type, msg_name, 
+      cp_msg_type, agent_id, content, 
+      title, img_url, describe, 
+      url, create_time, modified_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER}, #{msgName,jdbcType=VARCHAR}, 
+      #{cpMsgType,jdbcType=VARCHAR}, #{agentId,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, 
+      #{title,jdbcType=VARCHAR}, #{imgUrl,jdbcType=VARCHAR}, #{describe,jdbcType=VARCHAR}, 
+      #{url,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TMsgWxCp">
+    insert into t_msg_wx_cp
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="msgType != null">
+        msg_type,
+      </if>
+      <if test="msgName != null">
+        msg_name,
+      </if>
+      <if test="cpMsgType != null">
+        cp_msg_type,
+      </if>
+      <if test="agentId != null">
+        agent_id,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="imgUrl != null">
+        img_url,
+      </if>
+      <if test="describe != null">
+        describe,
+      </if>
+      <if test="url != null">
+        url,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="modifiedTime != null">
+        modified_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="msgType != null">
+        #{msgType,jdbcType=INTEGER},
+      </if>
+      <if test="msgName != null">
+        #{msgName,jdbcType=VARCHAR},
+      </if>
+      <if test="cpMsgType != null">
+        #{cpMsgType,jdbcType=VARCHAR},
+      </if>
+      <if test="agentId != null">
+        #{agentId,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="imgUrl != null">
+        #{imgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="describe != null">
+        #{describe,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null">
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="modifiedTime != null">
+        #{modifiedTime,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fangxuele.tool.push.domain.TMsgWxCp">
+    update t_msg_wx_cp
+    <set>
+      <if test="msgType != null">
+        msg_type = #{msgType,jdbcType=INTEGER},
+      </if>
+      <if test="msgName != null">
+        msg_name = #{msgName,jdbcType=VARCHAR},
+      </if>
+      <if test="cpMsgType != null">
+        cp_msg_type = #{cpMsgType,jdbcType=VARCHAR},
+      </if>
+      <if test="agentId != null">
+        agent_id = #{agentId,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="imgUrl != null">
+        img_url = #{imgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="describe != null">
+        describe = #{describe,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null">
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="modifiedTime != null">
+        modified_time = #{modifiedTime,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TMsgWxCp">
+    update t_msg_wx_cp
+    set msg_type = #{msgType,jdbcType=INTEGER},
+      msg_name = #{msgName,jdbcType=VARCHAR},
+      cp_msg_type = #{cpMsgType,jdbcType=VARCHAR},
+      agent_id = #{agentId,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      title = #{title,jdbcType=VARCHAR},
+      img_url = #{imgUrl,jdbcType=VARCHAR},
+      describe = #{describe,jdbcType=VARCHAR},
+      url = #{url,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=VARCHAR},
+      modified_time = #{modifiedTime,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

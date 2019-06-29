@@ -25,5 +25,6 @@
         <mapper resource="mapper/TWxAccountMapper.xml"/>
         <mapper resource="mapper/TMsgMailMapper.xml"/>
         <mapper resource="mapper/TWxCpAppMapper.xml"/>
+        <mapper resource="mapper/TMsgWxCpMapper.xml"/>
     </mappers>
 </configuration>

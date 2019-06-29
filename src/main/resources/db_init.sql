@@ -179,3 +179,24 @@ create table if not exists t_wx_cp_app
     modified_time datetime
 );
 
+create table if not exists t_msg_wx_cp
+(
+    id            integer
+        constraint t_msg_wx_cp_pk
+            primary key autoincrement,
+    msg_type      integer,
+    msg_name      text,
+    cp_msg_type   text,
+    agent_id      text,
+    content       text,
+    title         text,
+    img_url       text,
+    describe      text,
+    url           text,
+    create_time   datetime,
+    modified_time datetime
+);
+
+create unique index if not exists t_msg_wx_cp_msg_type_msg_name_uindex
+    on t_msg_wx_cp (msg_type, msg_name);
+
