@@ -38,7 +38,7 @@ public class MessageTypeForm {
     private JRadioButton luosimao短信RadioButton;
     private JRadioButton 极光短信RadioButton;
     private JRadioButton 极光推送RadioButton;
-    private JRadioButton 企业号企业微信RadioButton;
+    private JRadioButton wxCpRadioButton;
     private JRadioButton 钉钉RadioButton;
     private JScrollPane messageTypeScrollPane;
     private JLabel kefuPriorityTipsLabel;
@@ -86,6 +86,9 @@ public class MessageTypeForm {
                 break;
             case MessageTypeEnum.EMAIL_CODE:
                 messageTypeForm.getEMailRadioButton().setSelected(true);
+                break;
+            case MessageTypeEnum.WX_CP_CODE:
+                messageTypeForm.getWxCpRadioButton().setSelected(true);
                 break;
 
             default:
@@ -198,10 +201,10 @@ public class MessageTypeForm {
         极光推送RadioButton.setEnabled(false);
         极光推送RadioButton.setText("极光推送");
         msgTypeListPanel.add(极光推送RadioButton, new GridConstraints(16, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        企业号企业微信RadioButton = new JRadioButton();
-        企业号企业微信RadioButton.setEnabled(false);
-        企业号企业微信RadioButton.setText("企业号/企业微信");
-        msgTypeListPanel.add(企业号企业微信RadioButton, new GridConstraints(17, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        wxCpRadioButton = new JRadioButton();
+        wxCpRadioButton.setEnabled(true);
+        wxCpRadioButton.setText("企业号/企业微信");
+        msgTypeListPanel.add(wxCpRadioButton, new GridConstraints(17, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         钉钉RadioButton = new JRadioButton();
         钉钉RadioButton.setEnabled(false);
         钉钉RadioButton.setText("钉钉");

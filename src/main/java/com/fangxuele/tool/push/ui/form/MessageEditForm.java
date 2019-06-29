@@ -10,6 +10,7 @@ import com.fangxuele.tool.push.ui.form.msg.MaTemplateMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.MailMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.MpTemplateMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.TxYunMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.YunpianMsgForm;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -138,6 +139,10 @@ public class MessageEditForm {
             case MessageTypeEnum.EMAIL_CODE:
                 MailMsgForm.init(null);
                 messageEditForm.getMsgEditorPanel().add(MailMsgForm.mailMsgForm.getMailPanel(), gridConstraintsRow0);
+                break;
+            case MessageTypeEnum.WX_CP_CODE:
+                WxCpMsgForm.init(null);
+                messageEditForm.getMsgEditorPanel().add(WxCpMsgForm.wxCpMsgForm.getWxCpMsgPanel(), gridConstraintsRow0);
                 break;
             default:
                 break;

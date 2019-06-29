@@ -161,12 +161,12 @@
                   <text value="极光推送"/>
                 </properties>
               </component>
-              <component id="d6038" class="javax.swing.JRadioButton" binding="企业号企业微信RadioButton" default-binding="true">
+              <component id="d6038" class="javax.swing.JRadioButton" binding="wxCpRadioButton">
                 <constraints>
                   <grid row="17" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <enabled value="false"/>
+                  <enabled value="true"/>
                   <text value="企业号/企业微信"/>
                 </properties>
               </component>
