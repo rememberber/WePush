@@ -155,8 +155,8 @@ public class MsgEditListener {
                 CommonTipsDialog dialog = new CommonTipsDialog();
 
                 int msgType = App.config.getMsgType();
-                String fillParaName;
-                String paraDemo;
+                String fillParaName = "";
+                String paraDemo = "";
                 if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE || msgType == MessageTypeEnum.KEFU_PRIORITY_CODE
                         || msgType == MessageTypeEnum.KEFU_CODE) {
                     fillParaName = "openId";
@@ -164,7 +164,11 @@ public class MsgEditListener {
                 } else if (msgType == MessageTypeEnum.MA_TEMPLATE_CODE) {
                     fillParaName = "openId|formId";
                     paraDemo = "opd-aswadfasdfasdfasdf|fi291834543;opd-aswadfasdfasdfasdf2|fi2918345432";
-                } else {
+                } else if (msgType == MessageTypeEnum.EMAIL_CODE) {
+                    fillParaName = "邮箱地址";
+                    paraDemo = "abc@163.com;def@163.com";
+                } else if (msgType == MessageTypeEnum.ALI_YUN_CODE || msgType == MessageTypeEnum.ALI_TEMPLATE_CODE
+                        || msgType == MessageTypeEnum.TX_YUN_CODE || msgType == MessageTypeEnum.YUN_PIAN_CODE) {
                     fillParaName = "手机号";
                     paraDemo = "13910733521;13910733522";
                 }
