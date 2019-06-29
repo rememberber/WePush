@@ -1,5 +1,11 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
+import com.fangxuele.tool.push.dao.TMsgWxCpMapper;
+import com.fangxuele.tool.push.domain.TMsgWxCp;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.SqliteUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -8,6 +14,9 @@ import lombok.Getter;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * <pre>
@@ -36,9 +45,132 @@ public class WxCpMsgForm {
 
     public static WxCpMsgForm wxCpMsgForm = new WxCpMsgForm();
 
+    private static TMsgWxCpMapper msgWxCpMapper = MybatisUtil.getSqlSession().getMapper(TMsgWxCpMapper.class);
+
+    public WxCpMsgForm() {
+        // 消息类型切换事件
+        msgTypeComboBox.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                switchCpMsgType(e.getItem().toString());
+            }
+        });
+    }
 
     public static void init(String msgName) {
+        clearAllField();
+        List<TMsgWxCp> tMsgWxCpList = msgWxCpMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.WX_CP_CODE, msgName);
+        if (tMsgWxCpList.size() > 0) {
+            TMsgWxCp tMsgWxCp = tMsgWxCpList.get(0);
+            String cpMsgType = tMsgWxCp.getCpMsgType();
+            wxCpMsgForm.getMsgTypeComboBox().setSelectedItem(cpMsgType);
+            if ("文本消息".equals(cpMsgType)) {
+                wxCpMsgForm.getContentTextArea().setText(tMsgWxCp.getContent());
+            } else if ("图文消息".equals(cpMsgType)) {
+                wxCpMsgForm.getTitleTextField().setText(tMsgWxCp.getTitle());
+            }
+            wxCpMsgForm.getPicUrlTextField().setText(tMsgWxCp.getImgUrl());
+            wxCpMsgForm.getDescTextField().setText(tMsgWxCp.getDescribe());
+            wxCpMsgForm.getUrlTextField().setText(tMsgWxCp.getUrl());
 
+            switchCpMsgType(cpMsgType);
+        } else {
+            switchCpMsgType("图文消息");
+        }
+    }
+
+    /**
+     * 根据消息类型转换界面显示
+     *
+     * @param msgType 消息类型
+     */
+    public static void switchCpMsgType(String msgType) {
+        switch (msgType) {
+            case "文本消息":
+                wxCpMsgForm.getContentTextArea().setVisible(true);
+                wxCpMsgForm.getDescLabel().setVisible(false);
+                wxCpMsgForm.getDescTextField().setVisible(false);
+                wxCpMsgForm.getPicUrlLabel().setVisible(false);
+                wxCpMsgForm.getPicUrlTextField().setVisible(false);
+                wxCpMsgForm.getUrlLabel().setVisible(false);
+                wxCpMsgForm.getUrlTextField().setVisible(false);
+                wxCpMsgForm.getTitleLabel().setVisible(false);
+                wxCpMsgForm.getTitleTextField().setVisible(false);
+                break;
+            case "图文消息":
+                wxCpMsgForm.getContentLabel().setVisible(false);
+                wxCpMsgForm.getContentTextArea().setVisible(false);
+                wxCpMsgForm.getDescLabel().setVisible(true);
+                wxCpMsgForm.getDescTextField().setVisible(true);
+                wxCpMsgForm.getPicUrlLabel().setVisible(true);
+                wxCpMsgForm.getPicUrlTextField().setVisible(true);
+                wxCpMsgForm.getUrlLabel().setVisible(true);
+                wxCpMsgForm.getUrlTextField().setVisible(true);
+                wxCpMsgForm.getTitleLabel().setVisible(true);
+                wxCpMsgForm.getTitleTextField().setVisible(true);
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * 清空所有界面字段
+     */
+    public static void clearAllField() {
+        wxCpMsgForm.getContentTextArea().setText("");
+        wxCpMsgForm.getTitleTextField().setText("");
+        wxCpMsgForm.getPicUrlTextField().setText("");
+        wxCpMsgForm.getDescTextField().setText("");
+        wxCpMsgForm.getUrlTextField().setText("");
+    }
+
+    public static void save(String msgName) {
+        boolean existSameMsg = false;
+
+        List<TMsgWxCp> tMsgWxCpList = msgWxCpMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.WX_CP_CODE, msgName);
+        if (tMsgWxCpList.size() > 0) {
+            existSameMsg = true;
+        }
+
+        int isCover = JOptionPane.NO_OPTION;
+        if (existSameMsg) {
+            // 如果存在，是否覆盖
+            isCover = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getMessagePanel(), "已经存在同名的历史消息，\n是否覆盖？", "确认",
+                    JOptionPane.YES_NO_OPTION);
+        }
+
+        if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
+            String cpMsgType = Objects.requireNonNull(wxCpMsgForm.getMsgTypeComboBox().getSelectedItem()).toString();
+            String content = wxCpMsgForm.getContentTextArea().getText();
+            String title = wxCpMsgForm.getTitleTextField().getText();
+            String picUrl = wxCpMsgForm.getPicUrlTextField().getText();
+            String desc = wxCpMsgForm.getDescTextField().getText();
+            String url = wxCpMsgForm.getUrlTextField().getText();
+
+            String now = SqliteUtil.nowDateForSqlite();
+
+            TMsgWxCp tMsgWxCp = new TMsgWxCp();
+            tMsgWxCp.setMsgType(MessageTypeEnum.WX_CP_CODE);
+            tMsgWxCp.setMsgName(msgName);
+//       TODO     tMsgWxCp.setAgentId();
+            tMsgWxCp.setCpMsgType(cpMsgType);
+            tMsgWxCp.setContent(content);
+            tMsgWxCp.setTitle(title);
+            tMsgWxCp.setImgUrl(picUrl);
+            tMsgWxCp.setDescribe(desc);
+            tMsgWxCp.setUrl(url);
+            tMsgWxCp.setModifiedTime(now);
+
+            if (existSameMsg) {
+                msgWxCpMapper.updateByMsgTypeAndMsgName(tMsgWxCp);
+            } else {
+                tMsgWxCp.setCreateTime(now);
+                msgWxCpMapper.insertSelective(tMsgWxCp);
+            }
+
+            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "保存成功！", "成功",
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     {

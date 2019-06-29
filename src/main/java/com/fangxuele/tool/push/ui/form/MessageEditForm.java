@@ -88,6 +88,9 @@ public class MessageEditForm {
             case MessageTypeEnum.EMAIL_CODE:
                 MailMsgForm.init(msgName);
                 break;
+            case MessageTypeEnum.WX_CP_CODE:
+                WxCpMsgForm.init(msgName);
+                break;
             default:
         }
     }

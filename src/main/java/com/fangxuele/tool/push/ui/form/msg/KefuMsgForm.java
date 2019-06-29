@@ -90,7 +90,6 @@ public class KefuMsgForm {
                 kefuMsgForm.getMsgKefuDescTextField().setVisible(false);
                 kefuMsgForm.getKefuMsgPicUrlLabel().setVisible(false);
                 kefuMsgForm.getMsgKefuPicUrlTextField().setVisible(false);
-                kefuMsgForm.getMsgKefuDescTextField().setVisible(false);
                 kefuMsgForm.getKefuMsgUrlLabel().setVisible(false);
                 kefuMsgForm.getMsgKefuUrlTextField().setVisible(false);
                 kefuMsgForm.getKefuMsgTitleLabel().setVisible(false);
@@ -103,7 +102,6 @@ public class KefuMsgForm {
                 kefuMsgForm.getMsgKefuDescTextField().setVisible(true);
                 kefuMsgForm.getKefuMsgPicUrlLabel().setVisible(true);
                 kefuMsgForm.getMsgKefuPicUrlTextField().setVisible(true);
-                kefuMsgForm.getMsgKefuDescTextField().setVisible(true);
                 kefuMsgForm.getKefuMsgUrlLabel().setVisible(true);
                 kefuMsgForm.getMsgKefuUrlTextField().setVisible(true);
                 kefuMsgForm.getKefuMsgTitleLabel().setVisible(true);
@@ -159,12 +157,12 @@ public class KefuMsgForm {
             tMsgKefu.setImgUrl(kefuPicUrl);
             tMsgKefu.setDescribe(kefuDesc);
             tMsgKefu.setUrl(kefuUrl);
-            tMsgKefu.setCreateTime(now);
             tMsgKefu.setModifiedTime(now);
 
             if (existSameMsg) {
                 msgKefuMapper.updateByMsgTypeAndMsgName(tMsgKefu);
             } else {
+                tMsgKefu.setCreateTime(now);
                 msgKefuMapper.insertSelective(tMsgKefu);
             }
 

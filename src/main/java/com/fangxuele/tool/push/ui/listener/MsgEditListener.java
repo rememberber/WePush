@@ -19,6 +19,7 @@ import com.fangxuele.tool.push.ui.form.msg.MaTemplateMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.MailMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.MpTemplateMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.TxYunMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.YunpianMsgForm;
 import org.apache.commons.lang3.StringUtils;
 
@@ -81,6 +82,9 @@ public class MsgEditListener {
                         break;
                     case MessageTypeEnum.EMAIL_CODE:
                         MailMsgForm.save(msgName);
+                        break;
+                    case MessageTypeEnum.WX_CP_CODE:
+                        WxCpMsgForm.save(msgName);
                         break;
                     default:
                 }
@@ -167,6 +171,9 @@ public class MsgEditListener {
                 } else if (msgType == MessageTypeEnum.EMAIL_CODE) {
                     fillParaName = "邮箱地址";
                     paraDemo = "abc@163.com;def@163.com";
+                } else if (msgType == MessageTypeEnum.WX_CP_CODE) {
+                    fillParaName = "UserId";
+                    paraDemo = "zhou.bo;remember.ber";
                 } else if (msgType == MessageTypeEnum.ALI_YUN_CODE || msgType == MessageTypeEnum.ALI_TEMPLATE_CODE
                         || msgType == MessageTypeEnum.TX_YUN_CODE || msgType == MessageTypeEnum.YUN_PIAN_CODE) {
                     fillParaName = "手机号";
