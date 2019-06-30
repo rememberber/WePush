@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSession;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * <pre>
@@ -35,6 +36,11 @@ public class App {
         mainFrame.init();
         JPanel loadingPanel = new LoadingForm().getLoadingPanel();
         mainFrame.add(loadingPanel);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        if (screenSize.getWidth() <= 1366) {
+            // 低分辨率下自动最大化窗口
+            mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        }
         mainFrame.pack();
         mainFrame.setVisible(true);
 
