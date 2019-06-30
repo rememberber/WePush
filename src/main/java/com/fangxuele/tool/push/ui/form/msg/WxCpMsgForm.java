@@ -44,10 +44,10 @@ public class WxCpMsgForm {
     private JTextField descTextField;
     private JLabel urlLabel;
     private JTextField urlTextField;
-    private JTextArea contentTextArea;
     private JLabel contentLabel;
     private JComboBox appNameComboBox;
     private JButton appManageButton;
+    private JTextArea contentTextArea;
 
     public static WxCpMsgForm wxCpMsgForm = new WxCpMsgForm();
 
@@ -261,9 +261,6 @@ public class WxCpMsgForm {
         wxCpMsgPanel.add(urlLabel, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         urlTextField = new JTextField();
         wxCpMsgPanel.add(urlTextField, new GridConstraints(6, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        contentTextArea = new JTextArea();
-        contentTextArea.setLineWrap(true);
-        wxCpMsgPanel.add(contentTextArea, new GridConstraints(2, 1, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
         contentLabel = new JLabel();
         contentLabel.setText("内容");
         wxCpMsgPanel.add(contentLabel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_NORTHWEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -277,6 +274,8 @@ public class WxCpMsgForm {
         wxCpMsgPanel.add(appManageButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         titleTextField = new JTextField();
         wxCpMsgPanel.add(titleTextField, new GridConstraints(3, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, new Dimension(380, -1), new Dimension(380, -1), null, 0, false));
+        contentTextArea = new JTextArea();
+        wxCpMsgPanel.add(contentTextArea, new GridConstraints(2, 1, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
         msgTypeLabel.setLabelFor(msgTypeComboBox);
         titleLabel.setLabelFor(titleTextField);
         picUrlLabel.setLabelFor(picUrlTextField);
