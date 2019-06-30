@@ -1,5 +1,5 @@
 <a href="https://gitee.com/zhoubochina/WePush">
- <img alt="WePush-Logo" src="https://gitee.com/zhoubochina/WePush/raw/master/src/main/resources/icon/logo-md.png">
+ <img alt="WePush-Logo" src="https://raw.githubusercontent.com/rememberber/WePush/master/src/main/resources/icon/logo-md.png">
 </a>
   
 # WePush 
@@ -20,65 +20,65 @@
 
 ### 截图速览
 <p align="center">
-  <a href="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20198.png">
-   <img alt="WePush" src="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20198.png">
+  <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20198.png">
+   <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20198.png">
   </a>
 </p>  
 <p align="center">
-  <a href="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20199.png">
-   <img alt="WePush" src="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20199.png">
+  <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20199.png">
+   <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20199.png">
   </a>
 </p>
 <p align="center">
-  <a href="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20200.png">
-   <img alt="WePush" src="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20200.png">
+  <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20200.png">
+   <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20200.png">
   </a>
 </p>
 <p align="center">
-  <a href="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20202.png">
-   <img alt="WePush" src="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20202.png">
+  <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20202.png">
+   <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20202.png">
   </a>
 </p>
 <p align="center">
-  <a href="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20204.png">
-   <img alt="WePush" src="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20204.png">
+  <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20204.png">
+   <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20204.png">
   </a>
 </p>
 <p align="center">
-  <a href="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20205.png">
-   <img alt="WePush" src="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20205.png">
+  <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20205.png">
+   <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20205.png">
   </a>
 </p>
 <p align="center">
-  <a href="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20206.png">
-   <img alt="WePush" src="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20206.png">
+  <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20206.png">
+   <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20206.png">
   </a>
 </p>
 <p align="center">
-  <a href="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20207.png">
-   <img alt="WePush" src="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20207.png">
+  <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20207.png">
+   <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20207.png">
   </a>
 </p>
 
 ### 更多皮肤
 <p align="center">
-  <a href="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/Image001.png">
-   <img alt="WePush" src="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/Image001.png">
+  <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/Image001.png">
+   <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/Image001.png">
   </a>
 </p> 
 <p align="center">
-  <a href="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/Image002.png">
-   <img alt="WePush" src="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/Image002.png">
+  <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/Image002.png">
+   <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/Image002.png">
   </a>
 </p> 
 <p align="center">
-  <a href="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/Image003.png">
-   <img alt="WePush" src="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/Image003.png">
+  <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/Image003.png">
+   <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/Image003.png">
   </a>
 </p> 
 <p align="center">
-  <a href="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/Image1.png">
-   <img alt="WePush" src="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/Image1.png">
+  <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/Image1.png">
+   <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/Image1.png">
   </a>
 </p> 
 
