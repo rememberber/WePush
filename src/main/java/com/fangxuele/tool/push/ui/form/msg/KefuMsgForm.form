@@ -112,16 +112,6 @@
             </constraints>
             <properties/>
           </component>
-          <component id="eac63" class="javax.swing.JTextArea" binding="contentTextArea">
-            <constraints>
-              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                <preferred-size width="150" height="50"/>
-              </grid>
-            </constraints>
-            <properties>
-              <lineWrap value="true"/>
-            </properties>
-          </component>
           <component id="1e011" class="javax.swing.JLabel" binding="contentLabel">
             <constraints>
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
@@ -129,6 +119,14 @@
             <properties>
               <text value="内容"/>
             </properties>
+          </component>
+          <component id="fa390" class="javax.swing.JTextArea" binding="contentTextArea">
+            <constraints>
+              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="50"/>
+              </grid>
+            </constraints>
+            <properties/>
           </component>
         </children>
       </grid>

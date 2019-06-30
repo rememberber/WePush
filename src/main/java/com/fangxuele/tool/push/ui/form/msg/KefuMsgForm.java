@@ -39,8 +39,8 @@ public class KefuMsgForm {
     private JTextField msgKefuDescTextField;
     private JLabel kefuMsgUrlLabel;
     private JTextField msgKefuUrlTextField;
-    private JTextArea contentTextArea;
     private JLabel contentLabel;
+    private JTextArea contentTextArea;
 
     public static KefuMsgForm kefuMsgForm = new KefuMsgForm();
 
@@ -223,12 +223,11 @@ public class KefuMsgForm {
         kefuMsgPanel.add(kefuMsgUrlLabel, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         msgKefuUrlTextField = new JTextField();
         kefuMsgPanel.add(msgKefuUrlTextField, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        contentTextArea = new JTextArea();
-        contentTextArea.setLineWrap(true);
-        kefuMsgPanel.add(contentTextArea, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
         contentLabel = new JLabel();
         contentLabel.setText("内容");
         kefuMsgPanel.add(contentLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_NORTHWEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        contentTextArea = new JTextArea();
+        kefuMsgPanel.add(contentTextArea, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
         kefuMsgTypeLabel.setLabelFor(msgKefuMsgTypeComboBox);
         kefuMsgTitleLabel.setLabelFor(msgKefuMsgTitleTextField);
         kefuMsgPicUrlLabel.setLabelFor(msgKefuPicUrlTextField);
