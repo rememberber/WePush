@@ -365,7 +365,7 @@
                               <font style="1"/>
                             </border>
                             <children>
-                              <component id="17320" class="javax.swing.JComboBox" binding="comboBox1" default-binding="true">
+                              <component id="17320" class="javax.swing.JComboBox" binding="wxCpTagsComboBox">
                                 <constraints>
                                   <grid row="0" column="1" row-span="1" col-span="3" vsize-policy="3" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                                 </constraints>
@@ -373,7 +373,7 @@
                                   <model/>
                                 </properties>
                               </component>
-                              <component id="c5a38" class="javax.swing.JComboBox" binding="comboBox2" default-binding="true">
+                              <component id="c5a38" class="javax.swing.JComboBox" binding="wxCpDeptsComboBox">
                                 <constraints>
                                   <grid row="1" column="1" row-span="1" col-span="3" vsize-policy="3" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                                 </constraints>
@@ -381,7 +381,7 @@
                                   <model/>
                                 </properties>
                               </component>
-                              <component id="b909d" class="javax.swing.JButton" binding="导入通讯录中所有用户Button" default-binding="true">
+                              <component id="b909d" class="javax.swing.JButton" binding="wxCpImportAllButton">
                                 <constraints>
                                   <grid row="2" column="0" row-span="1" col-span="8" vsize-policy="3" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                                 </constraints>
@@ -391,7 +391,7 @@
                                   <text value="导入通讯录中所有用户"/>
                                 </properties>
                               </component>
-                              <component id="d3697" class="javax.swing.JButton" binding="刷新Button" default-binding="true">
+                              <component id="d3697" class="javax.swing.JButton" binding="wxCpTagsRefreshButton">
                                 <constraints>
                                   <grid row="0" column="4" row-span="1" col-span="3" vsize-policy="0" hsize-policy="1" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                                 </constraints>
@@ -401,7 +401,7 @@
                                   <text value="刷新"/>
                                 </properties>
                               </component>
-                              <component id="f11d5" class="javax.swing.JButton" binding="刷新Button1" default-binding="true">
+                              <component id="f11d5" class="javax.swing.JButton" binding="wxCpDeptsRefreshButton">
                                 <constraints>
                                   <grid row="1" column="4" row-span="1" col-span="3" vsize-policy="0" hsize-policy="1" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                                 </constraints>
@@ -427,7 +427,7 @@
                                   <text value="按部门导入"/>
                                 </properties>
                               </component>
-                              <component id="ab826" class="javax.swing.JButton" binding="导入Button" default-binding="true">
+                              <component id="ab826" class="javax.swing.JButton" binding="wxCpTagsImportButton">
                                 <constraints>
                                   <grid row="0" column="7" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                                 </constraints>
@@ -436,7 +436,7 @@
                                   <text value="导入"/>
                                 </properties>
                               </component>
-                              <component id="20cfc" class="javax.swing.JButton" binding="导入Button1" default-binding="true">
+                              <component id="20cfc" class="javax.swing.JButton" binding="wxCpDeptsImportButton">
                                 <constraints>
                                   <grid row="1" column="7" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                                 </constraints>

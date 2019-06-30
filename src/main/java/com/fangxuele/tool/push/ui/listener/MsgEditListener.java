@@ -122,6 +122,13 @@ public class MsgEditListener {
                     return;
                 }
 
+                if (App.config.getMsgType() == MessageTypeEnum.WX_CP_CODE
+                        && WxCpMsgForm.wxCpMsgForm.getAppNameComboBox().getSelectedItem() == null) {
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "请选择应用！", "成功",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 List<SendResult> sendResultList = PushControl.preview();
                 if (sendResultList != null) {
                     CommonTipsDialog dialog = new CommonTipsDialog();
@@ -173,7 +180,7 @@ public class MsgEditListener {
                     paraDemo = "abc@163.com;def@163.com";
                 } else if (msgType == MessageTypeEnum.WX_CP_CODE) {
                     fillParaName = "UserId";
-                    paraDemo = "zhou.bo;remember.ber";
+                    paraDemo = "zhoubo;rememberber";
                 } else if (msgType == MessageTypeEnum.ALI_YUN_CODE || msgType == MessageTypeEnum.ALI_TEMPLATE_CODE
                         || msgType == MessageTypeEnum.TX_YUN_CODE || msgType == MessageTypeEnum.YUN_PIAN_CODE) {
                     fillParaName = "手机号";
