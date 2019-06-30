@@ -255,7 +255,7 @@
                               </component>
                             </children>
                           </grid>
-                          <grid id="74bf2" binding="memberTabCenterPanel" layout-manager="GridLayoutManager" row-count="3" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                          <grid id="74bf2" binding="memberTabCenterPanel" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                             <margin top="8" left="15" bottom="0" right="5"/>
                             <constraints>
                               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -267,26 +267,21 @@
                             <children>
                               <component id="dc69" class="javax.swing.JButton" binding="importFromSqlButton">
                                 <constraints>
-                                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                                 </constraints>
                                 <properties>
                                   <icon value="icon/import_dark.png"/>
                                   <text value="导入"/>
                                 </properties>
                               </component>
-                              <component id="a6de8" class="javax.swing.JTextArea" binding="importFromSqlTextArea">
+                              <component id="cb01b" class="javax.swing.JTextArea" binding="importFromSqlTextArea">
                                 <constraints>
-                                  <grid row="0" column="0" row-span="2" col-span="1" vsize-policy="6" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                                    <preferred-size width="10" height="120"/>
+                                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                                    <preferred-size width="150" height="50"/>
                                   </grid>
                                 </constraints>
                                 <properties>
                                   <lineWrap value="true"/>
-                                  <minimumSize width="1" height="100"/>
-                                  <preferredSize width="1" height="100"/>
-                                  <text value=""/>
-                                  <toolTipText value="只要查询出的结果集只有一列openid（短信时对应的是手机号）就可以，列名不重要；例如：SELECT openid FROM t_user"/>
-                                  <wrapStyleWord value="false"/>
                                 </properties>
                               </component>
                             </children>

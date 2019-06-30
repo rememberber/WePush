@@ -36,7 +36,6 @@ public class MemberForm {
     private JButton importFromFileButton;
     private JButton memberImportExploreButton;
     private JPanel memberTabCenterPanel;
-    private JTextArea importFromSqlTextArea;
     private JButton importFromSqlButton;
     private JButton memberImportTagButton;
     private JComboBox memberImportTagComboBox;
@@ -67,6 +66,7 @@ public class MemberForm {
     private JButton 导入Button1;
     private JButton 刷新Button1;
     private JPanel importWayPanel;
+    private JTextArea importFromSqlTextArea;
 
     public static MemberForm memberForm = new MemberForm();
 
@@ -212,21 +212,16 @@ public class MemberForm {
         importFromFileButton.setText("导入");
         memberTabDownPanel.add(importFromFileButton, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         memberTabCenterPanel = new JPanel();
-        memberTabCenterPanel.setLayout(new GridLayoutManager(3, 1, new Insets(8, 15, 0, 5), -1, -1));
+        memberTabCenterPanel.setLayout(new GridLayoutManager(2, 1, new Insets(8, 15, 0, 5), -1, -1));
         importWayPanel.add(memberTabCenterPanel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         memberTabCenterPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "通过SQL导入", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, memberTabCenterPanel.getFont())));
         importFromSqlButton = new JButton();
         importFromSqlButton.setIcon(new ImageIcon(getClass().getResource("/icon/import_dark.png")));
         importFromSqlButton.setText("导入");
-        memberTabCenterPanel.add(importFromSqlButton, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        memberTabCenterPanel.add(importFromSqlButton, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         importFromSqlTextArea = new JTextArea();
         importFromSqlTextArea.setLineWrap(true);
-        importFromSqlTextArea.setMinimumSize(new Dimension(1, 100));
-        importFromSqlTextArea.setPreferredSize(new Dimension(1, 100));
-        importFromSqlTextArea.setText("");
-        importFromSqlTextArea.setToolTipText("只要查询出的结果集只有一列openid（短信时对应的是手机号）就可以，列名不重要；例如：SELECT openid FROM t_user");
-        importFromSqlTextArea.setWrapStyleWord(false);
-        memberTabCenterPanel.add(importFromSqlTextArea, new GridConstraints(0, 0, 2, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(10, 120), null, 0, false));
+        memberTabCenterPanel.add(importFromSqlTextArea, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
         importFromWeixinPanel = new JPanel();
         importFromWeixinPanel.setLayout(new GridLayoutManager(4, 7, new Insets(0, 15, 0, 5), -1, -1));
         importWayPanel.add(importFromWeixinPanel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
