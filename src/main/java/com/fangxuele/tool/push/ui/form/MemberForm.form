@@ -276,10 +276,8 @@
                               </component>
                               <component id="a6de8" class="javax.swing.JTextArea" binding="importFromSqlTextArea">
                                 <constraints>
-                                  <grid row="0" column="0" row-span="2" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                                    <minimum-size width="10" height="40"/>
+                                  <grid row="0" column="0" row-span="2" col-span="1" vsize-policy="6" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
                                     <preferred-size width="10" height="120"/>
-                                    <maximum-size width="2147483647" height="2147483647"/>
                                   </grid>
                                 </constraints>
                                 <properties>
