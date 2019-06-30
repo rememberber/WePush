@@ -100,6 +100,7 @@ public class MessageTypeForm {
         MessageManageForm.init();
         MemberForm.init();
         PushHisForm.init();
+        ScheduleForm.init();
     }
 
     private static void initMemberFormLayOut(int msgType) {

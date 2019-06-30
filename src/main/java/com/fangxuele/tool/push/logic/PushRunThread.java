@@ -231,6 +231,9 @@ public class PushRunThread extends Thread {
                 case "导入所有关注公众号的用户":
                     MemberListener.importWxAll();
                     break;
+                case "导入企业通讯录中所有用户":
+                    MemberListener.importWxCpAll();
+                    break;
                 default:
             }
         }
