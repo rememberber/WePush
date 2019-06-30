@@ -3,6 +3,8 @@
 <details>
 <summary>Windows</summary>
 
+[WePush-v3.4.2_190630-x64-Setup.exe](http://download.zhoubochina.com/exe/WePush-v3.4.2_190630-x64-Setup.exe)  
+[WePush-with-jre-v3.4.2_190630-x64-Setup.exe](http://download.zhoubochina.com/exe/WePush-with-jre-v3.4.2_190630-x64-Setup.exe)  
 [WePush-v3.4.1_190624-x64-Setup.exe](http://download.zhoubochina.com/exe/WePush-v3.4.1_190624-x64-Setup.exe)  
 [WePush-with-jre-v3.4.1_190624-x64-Setup.exe](http://download.zhoubochina.com/exe/WePush-with-jre-v3.4.1_190624-x64-Setup.exe)  
 [WePush-v3.4.0_190619-x64-Setup.exe](http://download.zhoubochina.com/exe/WePush-v3.4.0_190619-x64-Setup.exe)  
@@ -58,6 +60,7 @@
 <summary>Mac OS</summary>
 
 [v_3.4.1_190624.app](http://download.zhoubochina.com/mac/3.4.1.zip)  
+[v_3.4.2_190630.app](http://download.zhoubochina.com/mac/3.4.2.zip)  
 [v_3.4.0_190619.app](http://download.zhoubochina.com/mac/3.4.0.zip)  
 [v_3.3.0_190608.app](http://download.zhoubochina.com/mac/3.3.0.zip)  
 [v_3.2.1_190603.app](http://download.zhoubochina.com/mac/3.2.1.zip)  
@@ -92,6 +95,7 @@
 <details>
 <summary>Linux</summary>
 
+[v3.4.2_190630](http://download.zhoubochina.com/linux/WePush-3.4.2.zip)  
 [v3.4.1_190624](http://download.zhoubochina.com/linux/WePush-3.4.1.zip)  
 [v3.4.0_190619](http://download.zhoubochina.com/linux/WePush-3.4.0.zip)  
 [v3.3.0_190608](http://download.zhoubochina.com/linux/WePush-3.3.0.zip)  
