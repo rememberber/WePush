@@ -67,7 +67,7 @@ public class TxYunMsgSender implements IMsgSender {
      */
     private static SmsSingleSender getTxYunSender() {
         if (smsSingleSender == null) {
-            synchronized (PushControl.class) {
+            synchronized (TxYunMsgSender.class) {
                 if (smsSingleSender == null) {
                     String txyunAppId = App.config.getTxyunAppId();
                     String txyunAppKey = App.config.getTxyunAppKey();

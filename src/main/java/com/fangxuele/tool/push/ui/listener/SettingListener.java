@@ -15,8 +15,10 @@ import com.fangxuele.tool.push.logic.msgsender.YunPianMsgSender;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.dialog.MailTestDialog;
 import com.fangxuele.tool.push.ui.dialog.SwitchWxAccountDialog;
+import com.fangxuele.tool.push.ui.dialog.WxCpAppDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.SettingForm;
+import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
 import com.fangxuele.tool.push.util.HikariUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
@@ -217,6 +219,30 @@ public class SettingListener {
                     SettingForm.settingForm.getMiniAppAesKeyPasswordField().setText(tWxAccount.getAesKey());
                 }
             }
+        });
+
+        // 企业号-保存
+        SettingForm.settingForm.getWxCpSaveButton().addActionListener(e -> {
+            try {
+                App.config.setWxCpCorpId(SettingForm.settingForm.getWxCpCorpIdTextField().getText());
+                App.config.save();
+
+                JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        });
+
+        // 设置-企业号-应用管理
+        SettingForm.settingForm.getWxCpAppManageButton().addActionListener(e -> {
+            WxCpAppDialog dialog = new WxCpAppDialog();
+            dialog.renderTable();
+            dialog.pack();
+            dialog.setVisible(true);
+            WxCpMsgForm.initAppNameList();
         });
 
         // 设置-阿里云短信-保存

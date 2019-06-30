@@ -2,6 +2,7 @@ package com.fangxuele.tool.push.logic;
 
 import cn.hutool.core.date.BetweenFormater;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.FileUtil;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPushHistoryMapper;
 import com.fangxuele.tool.push.domain.TPushHistory;
@@ -9,6 +10,7 @@ import com.fangxuele.tool.push.logic.msgmaker.AliTemplateMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.AliyunMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.MailMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.TxYunMsgMaker;
+import com.fangxuele.tool.push.logic.msgmaker.WxCpMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxKefuMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxMaTemplateMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
@@ -17,8 +19,6 @@ import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.logic.msgsender.SendResult;
-import com.fangxuele.tool.push.logic.msgsender.WxMaTemplateMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
 import com.fangxuele.tool.push.ui.form.ScheduleForm;
@@ -171,6 +171,15 @@ public class PushControl {
                     return false;
                 }
                 break;
+            case MessageTypeEnum.WX_CP_CODE:
+                String wxCpCorpId = App.config.getWxCpCorpId();
+                if (StringUtils.isBlank(wxCpCorpId)) {
+                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
+                            "请先在设置中填写并保存微信企业号/企业微信相关配置！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return false;
+                }
+                break;
             default:
         }
         return true;
@@ -196,9 +205,7 @@ public class PushControl {
             File sendSuccessFile = new File(SystemUtil.configHome + "data" +
                     File.separator + "push_his" + File.separator + MessageTypeEnum.getName(msgType) + "-" + msgName +
                     "-发送成功-" + nowTime + ".csv");
-            if (!sendSuccessFile.exists()) {
-                sendSuccessFile.createNewFile();
-            }
+            FileUtil.touch(sendSuccessFile);
             writer = new CSVWriter(new FileWriter(sendSuccessFile));
 
             for (String[] str : PushData.sendSuccessList) {
@@ -225,9 +232,7 @@ public class PushControl {
             File unSendFile = new File(SystemUtil.configHome + "data" + File.separator +
                     "push_his" + File.separator + MessageTypeEnum.getName(msgType) + "-" + msgName + "-未发送-" + nowTime +
                     ".csv");
-            if (!unSendFile.exists()) {
-                unSendFile.createNewFile();
-            }
+            FileUtil.touch(unSendFile);
             writer = new CSVWriter(new FileWriter(unSendFile));
             for (String[] str : PushData.toSendList) {
                 writer.writeNext(str);
@@ -242,9 +247,7 @@ public class PushControl {
         if (PushData.sendFailList.size() > 0) {
             File failSendFile = new File(SystemUtil.configHome + "data" + File.separator +
                     "push_his" + File.separator + MessageTypeEnum.getName(msgType) + "-" + msgName + "-发送失败-" + nowTime + ".csv");
-            if (!failSendFile.exists()) {
-                failSendFile.createNewFile();
-            }
+            FileUtil.touch(failSendFile);
             writer = new CSVWriter(new FileWriter(failSendFile));
             for (String[] str : PushData.sendFailList) {
                 writer.writeNext(str);
@@ -319,9 +322,6 @@ public class PushControl {
         pushHistoryMapper.insertSelective(tPushHistory);
     }
 
-    private static void sendPushResultMail() {
-    }
-
     /**
      * 准备消息构造器
      */
@@ -329,23 +329,15 @@ public class PushControl {
         int msgType = App.config.getMsgType();
         switch (msgType) {
             case MessageTypeEnum.MP_TEMPLATE_CODE:
-                WxMpTemplateMsgSender.wxMpConfigStorage = null;
-                WxMpTemplateMsgSender.wxMpService = null;
                 WxMpTemplateMsgMaker.prepare();
                 break;
             case MessageTypeEnum.MA_TEMPLATE_CODE:
-                WxMaTemplateMsgSender.wxMaConfigStorage = null;
-                WxMaTemplateMsgSender.wxMaService = null;
                 WxMaTemplateMsgMaker.prepare();
                 break;
             case MessageTypeEnum.KEFU_CODE:
-                WxMpTemplateMsgSender.wxMpConfigStorage = null;
-                WxMpTemplateMsgSender.wxMpService = null;
                 WxKefuMsgMaker.prepare();
                 break;
             case MessageTypeEnum.KEFU_PRIORITY_CODE:
-                WxMpTemplateMsgSender.wxMpConfigStorage = null;
-                WxMpTemplateMsgSender.wxMpService = null;
                 WxKefuMsgMaker.prepare();
                 WxMpTemplateMsgMaker.prepare();
                 break;
@@ -363,6 +355,9 @@ public class PushControl {
                 break;
             case MessageTypeEnum.EMAIL_CODE:
                 MailMsgMaker.prepare();
+                break;
+            case MessageTypeEnum.WX_CP_CODE:
+                WxCpMsgMaker.prepare();
                 break;
             default:
         }

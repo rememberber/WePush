@@ -68,7 +68,7 @@ public class YunPianMsgSender implements IMsgSender {
      */
     private static YunpianClient getYunpianClient() {
         if (yunpianClient == null) {
-            synchronized (PushControl.class) {
+            synchronized (YunPianMsgSender.class) {
                 if (yunpianClient == null) {
                     String yunpianApiKey = App.config.getYunpianApiKey();
 

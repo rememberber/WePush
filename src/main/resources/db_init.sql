@@ -164,3 +164,39 @@ create table if not exists t_msg_mail
 create unique index if not exists t_msg_mail_msg_type_msg_name_uindex
     on t_msg_mail (msg_type, msg_name);
 
+create table if not exists t_wx_cp_app
+(
+    id            INTEGER
+        constraint t_wx_cp_app_pk
+            primary key autoincrement,
+    corpId        text,
+    app_name      text,
+    agent_id      text,
+    secret        text,
+    token         text,
+    aes_key       text,
+    create_time   datetime,
+    modified_time datetime
+);
+
+create table if not exists t_msg_wx_cp
+(
+    id            integer
+        constraint t_msg_wx_cp_pk
+            primary key autoincrement,
+    msg_type      integer,
+    msg_name      text,
+    cp_msg_type   text,
+    agent_id      text,
+    content       text,
+    title         text,
+    img_url       text,
+    describe      text,
+    url           text,
+    create_time   datetime,
+    modified_time datetime
+);
+
+create unique index if not exists t_msg_wx_cp_msg_type_msg_name_uindex
+    on t_msg_wx_cp (msg_type, msg_name);
+

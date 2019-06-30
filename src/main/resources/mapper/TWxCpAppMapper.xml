@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fangxuele.tool.push.dao.TWxCpAppMapper">
+    <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TWxCpApp">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="corpId" jdbcType="VARCHAR" property="corpid"/>
+        <result column="app_name" jdbcType="VARCHAR" property="appName"/>
+        <result column="agent_id" jdbcType="VARCHAR" property="agentId"/>
+        <result column="secret" jdbcType="VARCHAR" property="secret"/>
+        <result column="token" jdbcType="VARCHAR" property="token"/>
+        <result column="aes_key" jdbcType="VARCHAR" property="aesKey"/>
+        <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
+        <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, corpId, app_name, agent_id, secret, token, aes_key, create_time, modified_time
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_wx_cp_app
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from t_wx_cp_app
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TWxCpApp">
+        insert into t_wx_cp_app (id, corpId, app_name,
+                                 agent_id, secret, token,
+                                 aes_key, create_time, modified_time)
+        values (#{id,jdbcType=INTEGER}, #{corpid,jdbcType=VARCHAR}, #{appName,jdbcType=VARCHAR},
+                #{agentId,jdbcType=VARCHAR}, #{secret,jdbcType=VARCHAR}, #{token,jdbcType=VARCHAR},
+                #{aesKey,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TWxCpApp">
+        insert into t_wx_cp_app
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="corpid != null">
+                corpId,
+            </if>
+            <if test="appName != null">
+                app_name,
+            </if>
+            <if test="agentId != null">
+                agent_id,
+            </if>
+            <if test="secret != null">
+                secret,
+            </if>
+            <if test="token != null">
+                token,
+            </if>
+            <if test="aesKey != null">
+                aes_key,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="modifiedTime != null">
+                modified_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="corpid != null">
+                #{corpid,jdbcType=VARCHAR},
+            </if>
+            <if test="appName != null">
+                #{appName,jdbcType=VARCHAR},
+            </if>
+            <if test="agentId != null">
+                #{agentId,jdbcType=VARCHAR},
+            </if>
+            <if test="secret != null">
+                #{secret,jdbcType=VARCHAR},
+            </if>
+            <if test="token != null">
+                #{token,jdbcType=VARCHAR},
+            </if>
+            <if test="aesKey != null">
+                #{aesKey,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=VARCHAR},
+            </if>
+            <if test="modifiedTime != null">
+                #{modifiedTime,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.fangxuele.tool.push.domain.TWxCpApp">
+        update t_wx_cp_app
+        <set>
+            <if test="corpid != null">
+                corpId = #{corpid,jdbcType=VARCHAR},
+            </if>
+            <if test="appName != null">
+                app_name = #{appName,jdbcType=VARCHAR},
+            </if>
+            <if test="agentId != null">
+                agent_id = #{agentId,jdbcType=VARCHAR},
+            </if>
+            <if test="secret != null">
+                secret = #{secret,jdbcType=VARCHAR},
+            </if>
+            <if test="token != null">
+                token = #{token,jdbcType=VARCHAR},
+            </if>
+            <if test="aesKey != null">
+                aes_key = #{aesKey,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=VARCHAR},
+            </if>
+            <if test="modifiedTime != null">
+                modified_time = #{modifiedTime,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TWxCpApp">
+        update t_wx_cp_app
+        set corpId        = #{corpid,jdbcType=VARCHAR},
+            app_name      = #{appName,jdbcType=VARCHAR},
+            agent_id      = #{agentId,jdbcType=VARCHAR},
+            secret        = #{secret,jdbcType=VARCHAR},
+            token         = #{token,jdbcType=VARCHAR},
+            aes_key       = #{aesKey,jdbcType=VARCHAR},
+            create_time   = #{createTime,jdbcType=VARCHAR},
+            modified_time = #{modifiedTime,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <select id="selectByAgentId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_wx_cp_app
+        where agent_id = #{agentId,jdbcType=INTEGER}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_wx_cp_app
+        where 1=1
+        order by agent_id
+    </select>
+    <select id="selectByAppName" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_wx_cp_app
+        where app_name = #{appName,jdbcType=INTEGER}
+    </select>
+</mapper>

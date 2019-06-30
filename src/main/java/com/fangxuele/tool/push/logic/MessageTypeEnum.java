@@ -22,7 +22,8 @@ public enum MessageTypeEnum {
     YUN_PIAN(8, "云片网短信"),
     UP_YUN(9, "又拍云短信"),
     HW_YUN(10, "华为云短信"),
-    EMAIL(11, "E-Mail");
+    EMAIL(11, "E-Mail"),
+    WX_CP(12, "微信企业号/企业微信");
 
     private int code;
 
@@ -39,6 +40,7 @@ public enum MessageTypeEnum {
     public static final int UP_YUN_CODE = 9;
     public static final int HW_YUN_CODE = 10;
     public static final int EMAIL_CODE = 11;
+    public static final int WX_CP_CODE = 12;
 
     MessageTypeEnum(int code, String name) {
         this.code = code;
@@ -80,6 +82,9 @@ public enum MessageTypeEnum {
                 break;
             case 11:
                 name = EMAIL.name;
+                break;
+            case 12:
+                name = WX_CP.name;
                 break;
             default:
         }

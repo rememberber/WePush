@@ -7,8 +7,10 @@ import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TMsgKefuMapper;
 import com.fangxuele.tool.push.dao.TMsgKefuPriorityMapper;
 import com.fangxuele.tool.push.dao.TMsgMaTemplateMapper;
+import com.fangxuele.tool.push.dao.TMsgMailMapper;
 import com.fangxuele.tool.push.dao.TMsgMpTemplateMapper;
 import com.fangxuele.tool.push.dao.TMsgSmsMapper;
+import com.fangxuele.tool.push.dao.TMsgWxCpMapper;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
@@ -38,6 +40,8 @@ public class MsgManageListener {
     private static TMsgMaTemplateMapper msgMaTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMaTemplateMapper.class);
     private static TMsgMpTemplateMapper msgMpTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMpTemplateMapper.class);
     private static TMsgSmsMapper msgSmsMapper = MybatisUtil.getSqlSession().getMapper(TMsgSmsMapper.class);
+    private static TMsgMailMapper msgMailMapper = MybatisUtil.getSqlSession().getMapper(TMsgMailMapper.class);
+    private static TMsgWxCpMapper msgWxCpMapper = MybatisUtil.getSqlSession().getMapper(TMsgWxCpMapper.class);
 
     private static JTable msgHistable = MessageManageForm.messageManageForm.getMsgHistable();
     private static JSplitPane messagePanel = MainWindow.mainWindow.getMessagePanel();
@@ -88,6 +92,10 @@ public class MsgManageListener {
                                 msgMaTemplateMapper.deleteByMsgTypeAndName(msgType, msgName);
                             } else if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE) {
                                 msgMpTemplateMapper.deleteByMsgTypeAndName(msgType, msgName);
+                            } else if (msgType == MessageTypeEnum.EMAIL_CODE) {
+                                msgMailMapper.deleteByMsgTypeAndName(msgType, msgName);
+                            } else if (msgType == MessageTypeEnum.WX_CP_CODE) {
+                                msgWxCpMapper.deleteByMsgTypeAndName(msgType, msgName);
                             } else {
                                 msgSmsMapper.deleteByMsgTypeAndName(msgType, msgName);
                             }

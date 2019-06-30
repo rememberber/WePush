@@ -68,7 +68,7 @@ public class AliYunMsgSender implements IMsgSender {
      */
     private static IAcsClient getAliyunIAcsClient() {
         if (iAcsClient == null) {
-            synchronized (PushControl.class) {
+            synchronized (AliYunMsgSender.class) {
                 if (iAcsClient == null) {
                     String aliyunAccessKeyId = App.config.getAliyunAccessKeyId();
                     String aliyunAccessKeySecret = App.config.getAliyunAccessKeySecret();
