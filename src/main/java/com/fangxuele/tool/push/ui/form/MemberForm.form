@@ -197,7 +197,7 @@
                       </component>
                     </children>
                   </grid>
-                  <scrollpane id="869c5" binding="memberImportScrollPane">
+                  <scrollpane id="864fe" binding="memberImportScrollPane">
                     <constraints>
                       <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -209,7 +209,7 @@
                         <constraints/>
                         <properties>
                           <minimumSize width="-1" height="-1"/>
-                          <preferredSize width="-1" height="-1"/>
+                          <preferredSize width="150" height="600"/>
                         </properties>
                         <border type="none"/>
                         <children>

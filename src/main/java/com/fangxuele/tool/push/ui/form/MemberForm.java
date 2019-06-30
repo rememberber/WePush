@@ -56,7 +56,6 @@ public class MemberForm {
     private JCheckBox importOptionAvatarCheckBox;
     private JPanel importOptionPanel;
     private JButton clearDbCacheButton;
-    private JScrollPane memberImportScrollPane;
     private JComboBox comboBox1;
     private JPanel importFromWxCpPanel;
     private JButton 导入通讯录中所有用户Button;
@@ -67,6 +66,7 @@ public class MemberForm {
     private JButton 刷新Button1;
     private JPanel importWayPanel;
     private JTextArea importFromSqlTextArea;
+    private JScrollPane memberImportScrollPane;
 
     public static MemberForm memberForm = new MemberForm();
 
@@ -195,7 +195,7 @@ public class MemberForm {
         importWayPanel = new JPanel();
         importWayPanel.setLayout(new GridLayoutManager(5, 1, new Insets(8, 0, 0, 0), -1, -1));
         importWayPanel.setMinimumSize(new Dimension(-1, -1));
-        importWayPanel.setPreferredSize(new Dimension(-1, -1));
+        importWayPanel.setPreferredSize(new Dimension(150, 600));
         memberImportScrollPane.setViewportView(importWayPanel);
         memberTabDownPanel = new JPanel();
         memberTabDownPanel.setLayout(new GridLayoutManager(2, 3, new Insets(8, 15, 0, 5), -1, -1));
