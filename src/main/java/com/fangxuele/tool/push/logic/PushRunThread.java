@@ -18,7 +18,6 @@ import com.fangxuele.tool.push.ui.form.ScheduleForm;
 import com.fangxuele.tool.push.ui.listener.MemberListener;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import org.apache.commons.lang3.time.DateFormatUtils;
-import org.apache.commons.lang3.time.DateUtils;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -182,7 +181,7 @@ public class PushRunThread extends Thread {
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     if (App.config.isRadioCron()) {
-                        Date nextDate = CronPatternUtil.nextDateAfter(new CronPattern(App.config.getTextCron()), DateUtils.addDays(new Date(), 1), true);
+                        Date nextDate = CronPatternUtil.nextDateAfter(new CronPattern(App.config.getTextCron()), new Date(), true);
                         PushForm.pushForm.getScheduleDetailLabel().setText("计划任务执行中，下一次执行时间：" + DateFormatUtils.format(nextDate, "yyyy-MM-dd HH:mm:ss"));
                     }
                     PushForm.pushForm.getPushStopButton().setText("停止计划任务");
