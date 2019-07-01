@@ -5,14 +5,17 @@ import com.fangxuele.tool.push.util.ComponentUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import lombok.Getter;
 
 import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.net.URL;
 
 /**
  * <pre>
@@ -22,6 +25,7 @@ import java.awt.event.WindowEvent;
  * @author <a href="https://github.com/rememberber">Zhou Bo</a>
  * @since 2019/6/8.
  */
+@Getter
 public class CommonTipsDialog extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
@@ -34,6 +38,26 @@ public class CommonTipsDialog extends JDialog {
         getRootPane().setDefaultButton(buttonOK);
 
         ComponentUtil.setPrefersizeAndLocateToCenter(this, 0.4, 0.64);
+
+        textPane1.addHyperlinkListener(e -> {
+            if (e.getEventType() != HyperlinkEvent.EventType.ACTIVATED) {
+                return;
+            }
+            //超链接标记中必须带有协议指定，e.getURL()才能得到，否则只能用e.getDescription()得到href的内容。
+            URL linkUrl = e.getURL();
+            if (linkUrl != null) {
+                try {
+                    Desktop.getDesktop().browse(linkUrl.toURI());
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "超链接错误", "无法打开超链接:" + linkUrl
+                            + "\n详情:" + e1, JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "超链接错误", "超链接信息不完整:" + e.getDescription()
+                        + "\n请确保链接带有协议信息，如http://,mailto:", JOptionPane.ERROR_MESSAGE);
+            }
+        });
 
         buttonOK.addActionListener(e -> onOK());
 
