@@ -33,6 +33,8 @@ public class ScheduleForm {
     private JComboBox reimportComboBox;
     private JCheckBox sendPushResultCheckBox;
     private JTextField mailResultToTextField;
+    private JRadioButton cronRadioButton;
+    private JTextField cronTextField;
 
     public static ScheduleForm scheduleForm = new ScheduleForm();
 
@@ -52,6 +54,10 @@ public class ScheduleForm {
         scheduleForm.getRunPerWeekRadioButton().setSelected(App.config.isRadioPerWeek());
         scheduleForm.getSchedulePerWeekComboBox().setSelectedItem(App.config.getTextPerWeekWeek());
         scheduleForm.getStartPerWeekTextField().setText(App.config.getTextPerWeekTime());
+
+        // Cron
+        scheduleForm.getCronRadioButton().setSelected(App.config.isRadioCron());
+        scheduleForm.getCronTextField().setText(App.config.getTextCron());
 
         fillReimportComboBox();
         scheduleForm.getReimportCheckBox().setSelected(App.config.isNeedReimport());
@@ -95,7 +101,7 @@ public class ScheduleForm {
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         schedulePanel = new JPanel();
-        schedulePanel.setLayout(new GridLayoutManager(8, 7, new Insets(10, 10, 10, 10), -1, -1));
+        schedulePanel.setLayout(new GridLayoutManager(9, 7, new Insets(10, 10, 10, 10), -1, -1));
         panel1.add(schedulePanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         runAtThisTimeRadioButton = new JRadioButton();
         runAtThisTimeRadioButton.setText("在此时间开始推送：");
@@ -103,7 +109,7 @@ public class ScheduleForm {
         final Spacer spacer1 = new Spacer();
         schedulePanel.add(spacer1, new GridConstraints(0, 6, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
-        schedulePanel.add(spacer2, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        schedulePanel.add(spacer2, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         startAtThisTimeTextField = new JTextField();
         startAtThisTimeTextField.setText("");
         schedulePanel.add(startAtThisTimeTextField, new GridConstraints(0, 1, 1, 4, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
@@ -128,7 +134,7 @@ public class ScheduleForm {
         scheduleSaveButton.setHorizontalAlignment(0);
         scheduleSaveButton.setIcon(new ImageIcon(getClass().getResource("/icon/menu-saveall_dark.png")));
         scheduleSaveButton.setText("保存");
-        schedulePanel.add(scheduleSaveButton, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        schedulePanel.add(scheduleSaveButton, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label4 = new JLabel();
         label4.setText("每周");
         schedulePanel.add(label4, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -150,13 +156,21 @@ public class ScheduleForm {
         schedulePanel.add(startPerWeekTextField, new GridConstraints(2, 4, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         reimportCheckBox = new JCheckBox();
         reimportCheckBox.setText("开始执行时重新导入目标用户");
-        schedulePanel.add(reimportCheckBox, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        schedulePanel.add(reimportCheckBox, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         reimportComboBox = new JComboBox();
-        schedulePanel.add(reimportComboBox, new GridConstraints(3, 1, 1, 4, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        schedulePanel.add(reimportComboBox, new GridConstraints(4, 1, 1, 4, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         sendPushResultCheckBox = new JCheckBox();
         sendPushResultCheckBox.setText("将推送结果发送邮件给（多个以分号分隔）：");
-        schedulePanel.add(sendPushResultCheckBox, new GridConstraints(4, 0, 1, 7, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        schedulePanel.add(sendPushResultCheckBox, new GridConstraints(5, 0, 1, 7, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         mailResultToTextField = new JTextField();
-        schedulePanel.add(mailResultToTextField, new GridConstraints(5, 0, 1, 7, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        schedulePanel.add(mailResultToTextField, new GridConstraints(6, 0, 1, 7, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        cronRadioButton = new JRadioButton();
+        cronRadioButton.setText("按Cron表达式触发推送：");
+        schedulePanel.add(cronRadioButton, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        cronTextField = new JTextField();
+        schedulePanel.add(cronTextField, new GridConstraints(3, 1, 1, 4, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        final JLabel label6 = new JLabel();
+        label6.setText("<html><a href='http://cron.qqe2.com/'>在线Cron表达式生成器</a></html>");
+        schedulePanel.add(label6, new GridConstraints(3, 5, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 }

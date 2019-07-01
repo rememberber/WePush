@@ -50,6 +50,10 @@ public class ConfigUtil {
 
     private String textPerWeekTime;
 
+    private boolean radioCron;
+
+    private String textCron;
+
     private boolean needReimport;
 
     private String reimportWay;
@@ -300,6 +304,22 @@ public class ConfigUtil {
 
     public void setTextPerWeekTime(String textPerWeekTime) {
         setting.put("schedule", "textPerWeek.time", textPerWeekTime);
+    }
+
+    public boolean isRadioCron() {
+        return setting.getBool("radioCron", "schedule", false);
+    }
+
+    public void setRadioCron(boolean radioCron) {
+        setting.put("schedule", "radioCron", String.valueOf(radioCron));
+    }
+
+    public String getTextCron() {
+        return setting.getStr("textCron", "schedule", "");
+    }
+
+    public void setTextCron(String textCron) {
+        setting.put("schedule", "textCron", textCron);
     }
 
     public boolean isNeedReimport() {

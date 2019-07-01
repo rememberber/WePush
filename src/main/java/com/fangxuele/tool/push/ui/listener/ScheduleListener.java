@@ -81,6 +81,21 @@ public class ScheduleListener {
                     App.config.setTextPerWeekTime(textPerWeekTime);
                 }
 
+                String textCron = ScheduleForm.scheduleForm.getCronTextField().getText();
+                boolean isCron = ScheduleForm.scheduleForm.getCronRadioButton().isSelected();
+                if (StringUtils.isNotEmpty(textCron)) {
+                    App.config.setRadioCron(isCron);
+                    App.config.setTextCron(textCron);
+                } else if (isCron) {
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSchedulePanel(),
+                            "保存失败！\n\nCron表达式不能为空！", "失败",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                } else {
+                    App.config.setRadioCron(isCron);
+                    App.config.setTextCron(textCron);
+                }
+
                 if (ScheduleForm.scheduleForm.getSendPushResultCheckBox().isSelected() &&
                         (StringUtils.isBlank(SettingForm.settingForm.getMailHostTextField().getText())
                                 || StringUtils.isBlank(SettingForm.settingForm.getMailFromTextField().getText()))) {
@@ -108,6 +123,7 @@ public class ScheduleListener {
             if (ScheduleForm.scheduleForm.getRunAtThisTimeRadioButton().isSelected()) {
                 ScheduleForm.scheduleForm.getRunPerDayRadioButton().setSelected(false);
                 ScheduleForm.scheduleForm.getRunPerWeekRadioButton().setSelected(false);
+                ScheduleForm.scheduleForm.getCronRadioButton().setSelected(false);
             }
         });
 
@@ -115,6 +131,7 @@ public class ScheduleListener {
             if (ScheduleForm.scheduleForm.getRunPerDayRadioButton().isSelected()) {
                 ScheduleForm.scheduleForm.getRunAtThisTimeRadioButton().setSelected(false);
                 ScheduleForm.scheduleForm.getRunPerWeekRadioButton().setSelected(false);
+                ScheduleForm.scheduleForm.getCronRadioButton().setSelected(false);
             }
         });
 
@@ -122,6 +139,15 @@ public class ScheduleListener {
             if (ScheduleForm.scheduleForm.getRunPerWeekRadioButton().isSelected()) {
                 ScheduleForm.scheduleForm.getRunAtThisTimeRadioButton().setSelected(false);
                 ScheduleForm.scheduleForm.getRunPerDayRadioButton().setSelected(false);
+                ScheduleForm.scheduleForm.getCronRadioButton().setSelected(false);
+            }
+        });
+
+        ScheduleForm.scheduleForm.getCronRadioButton().addActionListener(e -> {
+            if (ScheduleForm.scheduleForm.getCronRadioButton().isSelected()) {
+                ScheduleForm.scheduleForm.getRunAtThisTimeRadioButton().setSelected(false);
+                ScheduleForm.scheduleForm.getRunPerDayRadioButton().setSelected(false);
+                ScheduleForm.scheduleForm.getRunPerWeekRadioButton().setSelected(false);
             }
         });
     }

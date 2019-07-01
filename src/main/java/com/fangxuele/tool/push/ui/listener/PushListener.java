@@ -4,6 +4,8 @@ import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.cron.CronUtil;
+import cn.hutool.cron.task.Task;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
@@ -89,6 +91,11 @@ public class PushListener {
                     }
                     if (serviceStartPerWeek != null) {
                         serviceStartPerWeek.shutdownNow();
+                    }
+                    try {
+                        CronUtil.stop();
+                    } catch (Exception e1) {
+                        logger.warn(e1.toString());
                     }
                     PushForm.pushForm.getPushStartButton().setEnabled(true);
                     PushForm.pushForm.getScheduleRunButton().setEnabled(true);
@@ -228,6 +235,38 @@ public class PushListener {
                         long millisBetween = startPerWeekMills + todaySetMills - System.currentTimeMillis();
                         long delay = millisBetween < 0 ? millisBetween + 7 * 24 * 60 * 60 * 1000 : millisBetween;
                         serviceStartPerWeek.scheduleAtFixedRate(new PushRunThread(), delay, 7 * 24 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
+                    }
+                    existScheduleTask = true;
+                }
+
+                // 按Cron表达式触发
+                if (App.config.isRadioCron()) {
+
+                    int isSchedulePush = JOptionPane.showConfirmDialog(pushPanel,
+                            "将按" +
+                                    App.config.getTextCron() +
+                                    "表达式触发推送\n\n消息：" +
+                                    MessageEditForm.messageEditForm.getMsgNameField().getText() +
+                                    "\n\n推送人数：" + PushData.allUser.size() +
+                                    "\n\n空跑模式：" +
+                                    PushForm.pushForm.getDryRunCheckBox().isSelected(), "确认定时推送？",
+                            JOptionPane.YES_NO_OPTION);
+                    if (isSchedulePush == JOptionPane.YES_OPTION) {
+                        PushData.fixRateScheduling = true;
+                        // 按钮状态
+                        PushForm.pushForm.getScheduleRunButton().setEnabled(false);
+                        PushForm.pushForm.getPushStartButton().setEnabled(false);
+                        PushForm.pushForm.getPushStopButton().setText("停止计划任务");
+                        PushForm.pushForm.getPushStopButton().setEnabled(true);
+
+                        PushForm.pushForm.getScheduleDetailLabel().setText("计划任务执行中：将按" +
+                                App.config.getTextCron() +
+                                "表达式触发推送");
+
+                        // 支持秒级别定时任务
+                        CronUtil.setMatchSecond(true);
+                        CronUtil.schedule(App.config.getTextCron(), (Task) () -> new PushRunThread().start());
+                        CronUtil.start();
                     }
                     existScheduleTask = true;
                 }
