@@ -1,6 +1,8 @@
 package com.fangxuele.tool.push.ui.listener;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.cron.pattern.CronPattern;
+import cn.hutool.cron.pattern.CronPatternUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
@@ -9,7 +11,11 @@ import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.ScheduleForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
+import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.DateUtils;
+import org.quartz.CronExpression;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,6 +24,8 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -92,6 +100,23 @@ public class ScheduleListener {
                 String textCron = ScheduleForm.scheduleForm.getCronTextField().getText();
                 boolean isCron = ScheduleForm.scheduleForm.getCronRadioButton().isSelected();
                 if (StringUtils.isNotEmpty(textCron)) {
+                    try {
+                        CronExpression.validateExpression(textCron);
+                    } catch (Exception e1) {
+                        JOptionPane.showMessageDialog(MainWindow.mainWindow.getSchedulePanel(),
+                                "保存失败！\n\n无效的Cron表达式！\n" + e1.toString(), "失败",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    List<String> latest5RunTimeList = Lists.newArrayList();
+                    Date now = new Date();
+                    for (int i = 0; i < 5; i++) {
+                        Date date = CronPatternUtil.nextDateAfter(new CronPattern(textCron), DateUtils.addDays(now, i), true);
+                        latest5RunTimeList.add(DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss"));
+                    }
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSchedulePanel(),
+                            "最近5次运行时间:\n" + String.join("\n", latest5RunTimeList), "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
                     App.config.setRadioCron(isCron);
                     App.config.setTextCron(textCron);
                 } else if (isCron) {

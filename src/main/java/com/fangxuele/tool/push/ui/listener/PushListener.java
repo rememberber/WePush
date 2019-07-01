@@ -5,6 +5,8 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.cron.CronUtil;
+import cn.hutool.cron.pattern.CronPattern;
+import cn.hutool.cron.pattern.CronPatternUtil;
 import cn.hutool.cron.task.Task;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
@@ -16,7 +18,10 @@ import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
+import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,6 +31,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Date;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -69,7 +76,7 @@ public class PushListener {
         // 停止按钮事件
         PushForm.pushForm.getPushStopButton().addActionListener((e) -> {
             ThreadUtil.execute(() -> {
-                if (!PushData.running && PushData.scheduling) {
+                if (PushData.scheduling) {
                     PushForm.pushForm.getScheduleDetailLabel().setText("");
                     if (serviceStartAt != null) {
                         serviceStartAt.shutdownNow();
@@ -82,9 +89,10 @@ public class PushListener {
                     PushForm.pushForm.getScheduleRunButton().updateUI();
                     PushForm.pushForm.getPushStopButton().updateUI();
                     PushData.scheduling = false;
+                    PushData.running = false;
                 }
 
-                if (!PushData.running && PushData.fixRateScheduling) {
+                if (PushData.fixRateScheduling) {
                     PushForm.pushForm.getScheduleDetailLabel().setText("");
                     if (serviceStartPerDay != null) {
                         serviceStartPerDay.shutdownNow();
@@ -105,6 +113,7 @@ public class PushListener {
                     PushForm.pushForm.getScheduleRunButton().updateUI();
                     PushForm.pushForm.getPushStopButton().updateUI();
                     PushData.fixRateScheduling = false;
+                    PushData.running = false;
                 }
 
                 if (PushData.running) {
@@ -242,13 +251,23 @@ public class PushListener {
                 // 按Cron表达式触发
                 if (App.config.isRadioCron()) {
 
+                    List<String> latest5RunTimeList = Lists.newArrayList();
+                    Date now = new Date();
+                    for (int i = 0; i < 5; i++) {
+                        Date date = CronPatternUtil.nextDateAfter(new CronPattern(App.config.getTextCron()), DateUtils.addDays(now, i), true);
+                        latest5RunTimeList.add(DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss"));
+                    }
+
                     int isSchedulePush = JOptionPane.showConfirmDialog(pushPanel,
                             "将按" +
                                     App.config.getTextCron() +
-                                    "表达式触发推送\n\n消息：" +
+                                    "表达式触发推送\n\n" +
+                                    "最近5次运行时间:\n" +
+                                    String.join("\n", latest5RunTimeList) +
+                                    "\n\n消息名称：" +
                                     MessageEditForm.messageEditForm.getMsgNameField().getText() +
-                                    "\n\n推送人数：" + PushData.allUser.size() +
-                                    "\n\n空跑模式：" +
+                                    "\n推送人数：" + PushData.allUser.size() +
+                                    "\n空跑模式：" +
                                     PushForm.pushForm.getDryRunCheckBox().isSelected(), "确认定时推送？",
                             JOptionPane.YES_NO_OPTION);
                     if (isSchedulePush == JOptionPane.YES_OPTION) {
@@ -259,9 +278,7 @@ public class PushListener {
                         PushForm.pushForm.getPushStopButton().setText("停止计划任务");
                         PushForm.pushForm.getPushStopButton().setEnabled(true);
 
-                        PushForm.pushForm.getScheduleDetailLabel().setText("计划任务执行中：将按" +
-                                App.config.getTextCron() +
-                                "表达式触发推送");
+                        PushForm.pushForm.getScheduleDetailLabel().setText("计划任务执行中，下一次执行时间：" + latest5RunTimeList.get(0));
 
                         // 支持秒级别定时任务
                         CronUtil.setMatchSecond(true);
