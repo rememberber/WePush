@@ -42,16 +42,14 @@ public class PushRunThread extends Thread {
     public void run() {
         if (PushControl.pushCheck()) {
             PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(true);
-
             // 准备推送
             preparePushRun();
+            PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
             ConsoleUtil.consoleWithLog("推送开始……");
             // 消息数据分片以及线程纷发
             shardingAndMsgThread();
             // 时间监控
             timeMonitor();
-
-            PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
         }
     }
 
