@@ -59,6 +59,11 @@
   </a>
 </p>
 <p align="center">
+  <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/sshot-10.png">
+   <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/sshot-10.png">
+  </a>
+</p>
+<p align="center">
   <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20206.png">
    <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20206.png">
   </a>
@@ -70,16 +75,6 @@
 </p>
 
 ### 更多皮肤
-<p align="center">
-  <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/Image001.png">
-   <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/Image001.png">
-  </a>
-</p> 
-<p align="center">
-  <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/Image002.png">
-   <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/Image002.png">
-  </a>
-</p> 
 <p align="center">
   <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/Image003.png">
    <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/Image003.png">
