@@ -4,6 +4,8 @@ import cn.hutool.core.date.BetweenFormater;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.cron.pattern.CronPattern;
+import cn.hutool.cron.pattern.CronPatternUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
@@ -15,11 +17,13 @@ import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.ui.form.ScheduleForm;
 import com.fangxuele.tool.push.ui.listener.MemberListener;
 import com.fangxuele.tool.push.util.ConsoleUtil;
+import org.apache.commons.lang3.time.DateFormatUtils;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.io.IOException;
+import java.util.Date;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -176,6 +180,10 @@ public class PushRunThread extends Thread {
                     JOptionPane.showMessageDialog(PushForm.pushForm.getPushPanel(), finishTip, "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
+                    if (App.config.isRadioCron()) {
+                        Date nextDate = CronPatternUtil.nextDateAfter(new CronPattern(App.config.getTextCron()), new Date(), true);
+                        PushForm.pushForm.getScheduleDetailLabel().setText("计划任务执行中，下一次执行时间：" + DateFormatUtils.format(nextDate, "yyyy-MM-dd HH:mm:ss"));
+                    }
                     PushForm.pushForm.getPushStopButton().setText("停止计划任务");
                 }
 
