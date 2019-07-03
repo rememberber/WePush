@@ -98,7 +98,7 @@
   </a>
 </p>
 
-### 更多皮肤
+### 更多外观
 <p align="center">
   <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/Image003.png">
    <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/Image003.png">
@@ -125,7 +125,7 @@
 + Java  
 + Java Swing  
 + 线程池  
-+ 连接池(数据库：HikariCP、HTTP：PoolingHttpClient)  
++ 连接池（数据库：HikariCP、HTTP：PoolingHttpClient）  
 + HttpClient  
 + HttpAsyncClient  
 + 定时任务  
@@ -138,7 +138,7 @@
 [Darcula](https://github.com/bulenkov/Darcula)  
 [BeautyEye](https://gitee.com/jackjiang/beautyeye)  
 
-### 开发、构建
+### 开发&构建
 
 https://gitee.com/zhoubochina/WePush/wikis/build
 
