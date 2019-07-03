@@ -118,7 +118,19 @@
 [jre下载地址](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)  
 
 ### 环境依赖
->Java 8
++ Java 8
++ lombok
+
+### 使用到的一些小技术点
++ Java  
++ Java Swing  
++ 线程池  
++ 连接池(数据库：HikariCP、HTTP：PoolingHttpClient)  
++ HttpClient  
++ HttpAsyncClient  
++ 定时任务  
++ SqLite  
++ MyBatis  
 
 ### 特别感谢
 [WxJava](https://gitee.com/binary/weixin-java-tools)  
