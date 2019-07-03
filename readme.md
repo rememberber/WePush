@@ -3,15 +3,15 @@
 </a>
   
 # WePush 
+> 专注批量推送的小而美的工具  
+
 [![码云Gitee](https://gitee.com/zhoubochina/WePush/badge/star.svg?theme=blue)](https://gitee.com/zhoubochina/WePush)
 [![GitHub stars](https://img.shields.io/github/stars/rememberber/WePush.svg)](https://github.com/rememberber/WePush)
 [![Build Status](https://travis-ci.org/rememberber/WePush.svg?branch=master)](https://travis-ci.org/rememberber/WePush)
 [![GitHub release](https://img.shields.io/github/release/rememberber/WePush.svg)](https://github.com/rememberber/WePush/releases)
 [![GitHub license](https://img.shields.io/github/license/rememberber/WePush.svg)](https://github.com/rememberber/WePush/blob/master/LICENSE.txt)
 
-### 功能
-自定义消息并批量推送
->目前支持的消息类型：
+### 目前已经支持的消息类型
 + 模板消息-公众号  
 + 模板消息-小程序  
 + 微信客服消息  
@@ -22,10 +22,34 @@
 + 云片网短信  
 + E-Mail
 
->支持消息编辑、预览  
->支持文件导入用户  
->支持MySQL导入用户  
->支持微信公众号全员推送 
+### 计划中支持的消息类型
++ HTTP请求（单次、批量、压测）  
++ 又拍云短信  
++ 七牛云短信  
++ 华为云短信  
++ 网易云信短信  
++ 榛子云短信  
++ Luosimao短信  
++ 极光短信  
++ E-极光推送  
++ 钉钉  
+
+### 功能&亮点
+1. 支持自定义消息内容并批量推送  
+2. 支持变量消息（可实现根据发送目标用户不同每条消息内容不一样）
+3. 支持消息编辑、预览、消息管理  
+4. 支持通过文件导入用户（txt、csv、excel）  
+5. 支持通过MySQL导入用户  
+6. 支持微信公众号全员推送  
+7. 支持微信全家桶消息（公众号、小程序、企业号）
+8. 支持各种粒度的定时推送  
+9. 支持推送历史管理和失败重新推送  
+10. 支持多账号管理和切换（微信） 
+11. 支持各种搜索、导入、导出  
+12. 小而美的可视化界面，支持亮暗多种外观风格  
+13. 支持全局字体字号设置  
+14. 支持推送结果邮件通知  
+……
 
 ### 截图速览
 <p align="center">
@@ -116,7 +140,9 @@ https://gitee.com/zhoubochina/WePush/wikis/help
   </a>
 </p>
 
-### 鼓励&赞赏
+### 鼓励&赞赏  
+**如果WePush对您有所帮助，或者给您的工作生活带来一些便利，  
+欢迎对我每天下班和周末时光的努力进行肯定，您的赞赏将会给我带来更多动力**
 <p align="left">
   <a href="https://gitee.com/zhoubochina/WePush">
    <img alt="WePush" src="http://download.zhoubochina.com/file/wx-zanshang.jpg">
