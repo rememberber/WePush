@@ -98,16 +98,6 @@
               <text value="已处理"/>
             </properties>
           </component>
-          <component id="75af0" class="javax.swing.JLabel">
-            <constraints>
-              <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <font size="28"/>
-              <foreground color="-3513110"/>
-              <text value="性能模式"/>
-            </properties>
-          </component>
           <component id="5d479" class="javax.swing.JSeparator">
             <constraints>
               <grid row="0" column="11" row-span="3" col-span="1" vsize-policy="6" hsize-policy="0" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
@@ -189,6 +179,17 @@
               <grid row="1" column="8" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
           </hspacer>
+          <component id="75af0" class="javax.swing.JLabel" binding="boostModeHelpLabel">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <font size="28"/>
+              <foreground color="-3513110"/>
+              <icon value="icon/helpButton.png"/>
+              <text value="性能模式"/>
+            </properties>
+          </component>
         </children>
       </grid>
       <grid id="819ff" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
