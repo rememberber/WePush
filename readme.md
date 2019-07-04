@@ -129,7 +129,7 @@
 + HttpClient  
 + HttpAsyncClient  
 + 定时任务  
-+ SqLite  
++ SQLite  
 + MyBatis  
 
 ### 遇到的麻烦和挑战
