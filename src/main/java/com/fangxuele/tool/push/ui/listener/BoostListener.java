@@ -26,7 +26,7 @@ public class BoostListener {
             @Override
             public void mousePressed(MouseEvent e) {
                 CommonTipsDialog dialog = new CommonTipsDialog();
-                ComponentUtil.setPrefersizeAndLocateToCenter(dialog, 0.6, 0.64);
+                ComponentUtil.setPrefersizeAndLocateToCenter(dialog, 0.6, 0.7);
                 StringBuilder tipsBuilder = new StringBuilder();
                 tipsBuilder.append("<h1>什么是性能模式？</h1>");
                 tipsBuilder.append("<h2>最大限度利用系统资源，提升性能，实验性地不断优化，以期获得更快速的批量推送效果</h2>");
