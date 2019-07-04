@@ -126,6 +126,8 @@ public class BoostForm {
         boostModeHelpLabel.setText("性能模式");
         panel1.add(boostModeHelpLabel, new GridConstraints(0, 0, 2, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label13 = new JLabel();
+        Font label13Font = this.$$$getFont$$$(null, -1, 24, label13.getFont());
+        if (label13Font != null) label13.setFont(label13Font);
         label13.setForeground(new Color(-276358));
         label13.setText("消息名称：");
         panel1.add(label13, new GridConstraints(0, 12, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
