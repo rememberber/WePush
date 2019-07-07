@@ -57,6 +57,11 @@ public class WxMaTemplateMsgSender implements IMsgSender {
         return sendResult;
     }
 
+    @Override
+    public SendResult asyncSend(String[] msgData) {
+        return null;
+    }
+
     /**
      * 微信小程序配置
      *

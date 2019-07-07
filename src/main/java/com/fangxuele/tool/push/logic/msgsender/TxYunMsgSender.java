@@ -60,6 +60,11 @@ public class TxYunMsgSender implements IMsgSender {
         return sendResult;
     }
 
+    @Override
+    public SendResult asyncSend(String[] msgData) {
+        return null;
+    }
+
     /**
      * 获取腾讯云短信发送客户端
      *

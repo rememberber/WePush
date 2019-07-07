@@ -27,6 +27,11 @@ public class PushData {
     static long totalRecords;
 
     /**
+     * (异步发送)已处理数
+     */
+    public static LongAdder processedRecords = new LongAdder();
+
+    /**
      * 发送成功数
      */
     public static LongAdder successRecords = new LongAdder();
@@ -77,6 +82,13 @@ public class PushData {
     static LongAdder stopedThreadCount = new LongAdder();
 
     /**
+     * 已处理数+1
+     */
+    public static void increaseProcessed() {
+        processedRecords.add(1);
+    }
+
+    /**
      * 成功数+1
      */
     public static void increaseSuccess() {
@@ -112,6 +124,7 @@ public class PushData {
      */
     static void reset() {
         running = true;
+        processedRecords.reset();
         successRecords.reset();
         failRecords.reset();
         stopedThreadCount.reset();

@@ -48,4 +48,9 @@ public class WxKefuMsgSender implements IMsgSender {
         sendResult.setSuccess(true);
         return sendResult;
     }
+
+    @Override
+    public SendResult asyncSend(String[] msgData) {
+        return null;
+    }
 }

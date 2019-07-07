@@ -60,6 +60,11 @@ public class MailMsgSender implements IMsgSender {
         return sendResult;
     }
 
+    @Override
+    public SendResult asyncSend(String[] msgData) {
+        return null;
+    }
+
     public SendResult sendTestMail(String tos) {
         SendResult sendResult = new SendResult();
 

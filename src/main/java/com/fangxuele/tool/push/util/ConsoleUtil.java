@@ -2,6 +2,7 @@ package com.fangxuele.tool.push.util;
 
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
+import com.fangxuele.tool.push.ui.form.BoostForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,6 +31,17 @@ public class ConsoleUtil {
     }
 
     /**
+     * 输出到性能模式控制台和log
+     *
+     * @param log
+     */
+    public static void boostConsoleWithLog(String log) {
+        BoostForm.boostForm.getConsoleTextArea().append(log + "\n");
+        BoostForm.boostForm.getConsoleTextArea().setCaretPosition(BoostForm.boostForm.getConsoleTextArea().getText().length());
+        logger.warn(log);
+    }
+
+    /**
      * 仅输出到控制台
      *
      * @param log
@@ -37,5 +49,15 @@ public class ConsoleUtil {
     public static void consoleOnly(String log) {
         PushForm.pushForm.getPushConsoleTextArea().append(log + "\n");
         PushForm.pushForm.getPushConsoleTextArea().setCaretPosition(PushForm.pushForm.getPushConsoleTextArea().getText().length());
+    }
+
+    /**
+     * 仅输出到性能模式控制台
+     *
+     * @param log
+     */
+    public static void boostConsoleOnly(String log) {
+        BoostForm.boostForm.getConsoleTextArea().append(log + "\n");
+        BoostForm.boostForm.getConsoleTextArea().setCaretPosition(BoostForm.boostForm.getConsoleTextArea().getText().length());
     }
 }

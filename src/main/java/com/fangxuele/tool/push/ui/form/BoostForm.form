@@ -24,14 +24,14 @@
               <orientation value="1"/>
             </properties>
           </component>
-          <component id="2c6ab" class="javax.swing.JLabel">
+          <component id="2c6ab" class="javax.swing.JLabel" binding="successCountLabel">
             <constraints>
               <grid row="0" column="5" row-span="2" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <font size="72"/>
               <foreground color="-13587376"/>
-              <text value="1230"/>
+              <text value="0"/>
             </properties>
           </component>
           <component id="3cf22" class="javax.swing.JLabel">
@@ -42,14 +42,14 @@
               <text value="成功"/>
             </properties>
           </component>
-          <component id="2a856" class="javax.swing.JLabel">
+          <component id="2a856" class="javax.swing.JLabel" binding="failCountLabel">
             <constraints>
               <grid row="2" column="5" row-span="2" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <font size="72"/>
               <foreground color="-2200483"/>
-              <text value="43"/>
+              <text value="0"/>
             </properties>
           </component>
           <component id="ba0df" class="javax.swing.JLabel">
@@ -60,7 +60,7 @@
               <text value="失败"/>
             </properties>
           </component>
-          <component id="69136" class="javax.swing.JProgressBar" binding="progressBar2" default-binding="true">
+          <component id="69136" class="javax.swing.JProgressBar" binding="completedProgressBar">
             <constraints>
               <grid row="4" column="4" row-span="1" col-span="3" vsize-policy="0" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -75,19 +75,19 @@
               <orientation value="1"/>
             </properties>
           </component>
-          <component id="e0959" class="javax.swing.JProgressBar" binding="progressBar1" default-binding="true">
+          <component id="e0959" class="javax.swing.JProgressBar" binding="processedProgressBar">
             <constraints>
               <grid row="4" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties/>
           </component>
-          <component id="8a866" class="javax.swing.JLabel">
+          <component id="8a866" class="javax.swing.JLabel" binding="processedCountLabel">
             <constraints>
               <grid row="2" column="1" row-span="2" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <font size="72"/>
-              <text value="1273"/>
+              <text value="0"/>
             </properties>
           </component>
           <component id="a8fab" class="javax.swing.JLabel">
@@ -106,20 +106,20 @@
               <orientation value="1"/>
             </properties>
           </component>
-          <component id="a1ceb" class="javax.swing.JLabel">
+          <component id="a1ceb" class="javax.swing.JLabel" binding="memberCountLabel">
             <constraints>
               <grid row="1" column="12" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="消息总数：1273"/>
+              <text value="消息总数：0"/>
             </properties>
           </component>
-          <component id="7ab5e" class="javax.swing.JLabel">
+          <component id="7ab5e" class="javax.swing.JLabel" binding="processorCountLabel">
             <constraints>
               <grid row="2" column="12" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="可用处理器核心：4"/>
+              <text value="可用处理器核心：-"/>
             </properties>
           </component>
           <component id="50020" class="javax.swing.JLabel">
@@ -138,22 +138,22 @@
               <text value="预计剩余"/>
             </properties>
           </component>
-          <component id="39bd4" class="javax.swing.JLabel">
+          <component id="39bd4" class="javax.swing.JLabel" binding="lastTimeLabel">
             <constraints>
               <grid row="0" column="10" row-span="2" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <font size="36"/>
-              <text value="13s"/>
+              <text value="0s"/>
             </properties>
           </component>
-          <component id="3b587" class="javax.swing.JLabel">
+          <component id="3b587" class="javax.swing.JLabel" binding="leftTimeLabel">
             <constraints>
               <grid row="2" column="10" row-span="2" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <font size="36"/>
-              <text value="15s"/>
+              <text value="0s"/>
             </properties>
           </component>
           <hspacer id="dd0f4">
@@ -182,31 +182,32 @@
               <text value="性能模式"/>
             </properties>
           </component>
-          <component id="89fc" class="javax.swing.JLabel">
+          <component id="89fc" class="javax.swing.JLabel" binding="msgNameLabel">
             <constraints>
               <grid row="0" column="12" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <font size="24"/>
               <foreground color="-276358"/>
-              <text value="消息名称："/>
+              <text value="消息名称：-"/>
             </properties>
           </component>
-          <component id="916d2" class="javax.swing.JLabel">
+          <component id="916d2" class="javax.swing.JLabel" binding="jvmMemoryLabel">
             <constraints>
               <grid row="3" column="12" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="JVM内存占用："/>
+              <text value="JVM内存占用：-"/>
             </properties>
           </component>
-          <component id="ce295" class="javax.swing.JLabel">
+          <component id="ce295" class="javax.swing.JLabel" binding="scheduledTaskLabel">
             <constraints>
               <grid row="4" column="12" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <foreground color="-276358"/>
               <text value="计划任务执行中"/>
+              <visible value="true"/>
             </properties>
           </component>
         </children>
@@ -226,7 +227,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="4fe6c" class="javax.swing.JTextArea" binding="textArea1" default-binding="true">
+              <component id="4fe6c" class="javax.swing.JTextArea" binding="consoleTextArea">
                 <constraints/>
                 <properties/>
               </component>
@@ -242,7 +243,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="9021e" class="javax.swing.JButton" binding="开始Button" default-binding="true">
+          <component id="9021e" class="javax.swing.JButton" binding="startButton">
             <constraints>
               <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -255,7 +256,7 @@
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
           </hspacer>
-          <component id="24bd6" class="javax.swing.JButton" binding="停止Button" default-binding="true">
+          <component id="24bd6" class="javax.swing.JButton" binding="stopButton">
             <constraints>
               <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -263,7 +264,7 @@
               <text value="停止"/>
             </properties>
           </component>
-          <component id="6eb46" class="javax.swing.JButton" binding="按计划执行Button" default-binding="true">
+          <component id="6eb46" class="javax.swing.JButton" binding="scheduledRunButton">
             <constraints>
               <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -271,7 +272,7 @@
               <text value="按计划执行"/>
             </properties>
           </component>
-          <component id="c53af" class="javax.swing.JCheckBox" binding="空跑CheckBox" default-binding="true">
+          <component id="c53af" class="javax.swing.JCheckBox" binding="dryRunCheckBox">
             <constraints>
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>

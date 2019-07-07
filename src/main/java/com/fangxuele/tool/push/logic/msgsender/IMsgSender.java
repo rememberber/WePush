@@ -16,4 +16,11 @@ public interface IMsgSender {
      * @param msgData 消息数据
      */
     SendResult send(String[] msgData);
+
+    /**
+     * 异步发送消息
+     *
+     * @param msgData 消息数据
+     */
+    SendResult asyncSend(String[] msgData);
 }

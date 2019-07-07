@@ -61,6 +61,11 @@ public class YunPianMsgSender implements IMsgSender {
         return sendResult;
     }
 
+    @Override
+    public SendResult asyncSend(String[] msgData) {
+        return null;
+    }
+
     /**
      * 获取云片网短信发送客户端
      *

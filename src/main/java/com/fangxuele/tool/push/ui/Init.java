@@ -6,6 +6,7 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.dialog.FontSizeAdjustDialog;
 import com.fangxuele.tool.push.ui.form.AboutForm;
+import com.fangxuele.tool.push.ui.form.BoostForm;
 import com.fangxuele.tool.push.ui.form.HelpForm;
 import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
@@ -139,6 +140,7 @@ public class Init {
         MessageManageForm.init();
         MemberForm.init();
         PushForm.init();
+        BoostForm.init();
         ScheduleForm.init();
         SettingForm.init();
         PushHisForm.init();

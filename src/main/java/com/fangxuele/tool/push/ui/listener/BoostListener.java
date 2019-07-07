@@ -1,8 +1,15 @@
 package com.fangxuele.tool.push.ui.listener;
 
+import cn.hutool.core.thread.ThreadUtil;
+import com.fangxuele.tool.push.logic.BoostPushRunThread;
+import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
+import com.fangxuele.tool.push.ui.form.BoostForm;
+import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.ComponentUtil;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -58,5 +65,43 @@ public class BoostListener {
                 super.mouseExited(e);
             }
         });
+
+        // 开始按钮事件
+        BoostForm.boostForm.getStartButton().addActionListener((e) -> ThreadUtil.execute(() -> {
+            if (checkBeforePush()) {
+                int isPush = JOptionPane.showConfirmDialog(boostForm.getBoostPanel(),
+                        "确定开始推送吗？\n\n推送消息：" +
+                                MessageEditForm.messageEditForm.getMsgNameField().getText() +
+                                "\n推送人数：" + PushData.allUser.size() +
+                                "\n\n空跑模式：" +
+                                BoostForm.boostForm.getDryRunCheckBox().isSelected() + "\n", "确认推送？",
+                        JOptionPane.YES_NO_OPTION);
+                if (isPush == JOptionPane.YES_OPTION) {
+                    ThreadUtil.execute(new BoostPushRunThread());
+                }
+            }
+        }));
+    }
+
+    /**
+     * 推送前检查
+     *
+     * @return boolean
+     */
+    private static boolean checkBeforePush() {
+        if (StringUtils.isEmpty(MessageEditForm.messageEditForm.getMsgNameField().getText())) {
+            JOptionPane.showMessageDialog(boostForm.getBoostPanel(), "请先选择一条消息！", "提示",
+                    JOptionPane.INFORMATION_MESSAGE);
+            MainWindow.mainWindow.getTabbedPane().setSelectedIndex(2);
+
+            return false;
+        }
+        if (PushData.allUser == null || PushData.allUser.size() == 0) {
+            JOptionPane.showMessageDialog(boostForm.getBoostPanel(), "请先准备目标用户！", "提示",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+            return false;
+        }
+        return true;
     }
 }
