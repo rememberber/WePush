@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.form;
 
+import com.fangxuele.tool.push.App;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -41,6 +42,7 @@ public class BoostForm {
     public static BoostForm boostForm = new BoostForm();
 
     public static void init() {
+        boostForm.getDryRunCheckBox().setSelected(App.config.isDryRun());
         boostForm.getScheduledTaskLabel().setVisible(false);
     }
 

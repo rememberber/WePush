@@ -80,6 +80,11 @@ public class WxMpTemplateMsgSender implements IMsgSender {
 
         try {
             if (PushControl.dryRun) {
+                // 已成功+1
+                PushData.increaseSuccess();
+                BoostForm.boostForm.getSuccessCountLabel().setText(String.valueOf(PushData.successRecords));
+                // 总进度条
+                BoostForm.boostForm.getCompletedProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
@@ -171,9 +176,9 @@ public class WxMpTemplateMsgSender implements IMsgSender {
             synchronized (WxMpTemplateMsgSender.class) {
                 if (closeableHttpAsyncClient == null) {
                     RequestConfig requestConfig = RequestConfig.custom()
-                            .setConnectTimeout(500000)
-                            .setSocketTimeout(500000)
-                            .setConnectionRequestTimeout(500000)
+                            .setConnectTimeout(-1)
+                            .setSocketTimeout(-1)
+                            .setConnectionRequestTimeout(-1)
                             .build();
 
                     //配置io线程
@@ -212,7 +217,8 @@ public class WxMpTemplateMsgSender implements IMsgSender {
         @Override
         public void completed(HttpResponse httpResponse) {
             try {
-                EntityUtils.toString(httpResponse.getEntity());
+                String response = EntityUtils.toString(httpResponse.getEntity());
+                ConsoleUtil.boostConsoleOnly(response);
             } catch (IOException e) {
                 e.printStackTrace();
             }

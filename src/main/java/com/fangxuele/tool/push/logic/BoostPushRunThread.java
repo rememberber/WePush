@@ -114,7 +114,7 @@ public class BoostPushRunThread extends Thread {
         long startTimeMillis = System.currentTimeMillis();
         // 计时
         while (true) {
-            if (PushData.stopedThreadCount.intValue() == PushData.threadCount) {
+            if (PushData.totalRecords == PushData.successRecords.longValue() + PushData.failRecords.longValue()) {
                 if (!PushData.fixRateScheduling) {
                     BoostForm.boostForm.getStopButton().setEnabled(false);
                     BoostForm.boostForm.getStopButton().updateUI();

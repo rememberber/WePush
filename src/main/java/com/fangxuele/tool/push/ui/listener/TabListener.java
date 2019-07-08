@@ -1,6 +1,7 @@
 package com.fangxuele.tool.push.ui.listener;
 
 import com.fangxuele.tool.push.ui.form.AboutForm;
+import com.fangxuele.tool.push.ui.form.BoostForm;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
@@ -46,6 +47,10 @@ public class TabListener {
                     case 4:
                         PushForm.pushForm.getPushMsgName().setText(MessageEditForm.messageEditForm.getMsgNameField().getText());
                         PushListener.refreshPushInfo();
+                        break;
+                    case 5:
+                        BoostForm.boostForm.getMsgNameLabel().setText(MessageEditForm.messageEditForm.getMsgNameField().getText());
+                        BoostListener.refreshPushInfo();
                         break;
                     default:
                         break;

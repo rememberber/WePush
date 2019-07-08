@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.listener;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import com.fangxuele.tool.push.logic.BoostPushRunThread;
 import com.fangxuele.tool.push.logic.PushData;
@@ -103,5 +104,15 @@ public class BoostListener {
             return false;
         }
         return true;
+    }
+
+    static void refreshPushInfo() {
+        // 总记录数
+        long totalCount = PushData.allUser.size();
+        BoostForm.boostForm.getMemberCountLabel().setText("消息总数：" + totalCount);
+        // 可用处理器核心
+        BoostForm.boostForm.getProcessorCountLabel().setText("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
+        // JVM内存占用
+        BoostForm.boostForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
     }
 }
