@@ -363,4 +363,27 @@ public class PushControl {
         }
     }
 
+    /**
+     * 重新导入目标用户(定时任务)
+     */
+    public static void reimportMembers() {
+        if (PushData.fixRateScheduling && ScheduleForm.scheduleForm.getReimportCheckBox().isSelected()) {
+            switch ((String) ScheduleForm.scheduleForm.getReimportComboBox().getSelectedItem()) {
+                case "通过SQL导入":
+                    MemberListener.importFromSql();
+                    break;
+                case "通过文件导入":
+                    MemberListener.importFromFile();
+                    break;
+                case "导入所有关注公众号的用户":
+                    MemberListener.importWxAll();
+                    break;
+                case "导入企业通讯录中所有用户":
+                    MemberListener.importWxCpAll();
+                    break;
+                default:
+            }
+        }
+    }
+
 }

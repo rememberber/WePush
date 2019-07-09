@@ -83,6 +83,8 @@ public class WxMpTemplateMsgSender implements IMsgSender {
                 // 已成功+1
                 PushData.increaseSuccess();
                 BoostForm.boostForm.getSuccessCountLabel().setText(String.valueOf(PushData.successRecords));
+                // 保存发送成功
+                PushData.sendSuccessList.add(msgData);
                 // 总进度条
                 BoostForm.boostForm.getCompletedProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
                 sendResult.setSuccess(true);
@@ -92,7 +94,7 @@ public class WxMpTemplateMsgSender implements IMsgSender {
                 WxMpTemplateMessage wxMessageTemplate = wxMpTemplateMsgMaker.makeMsg(msgData);
                 wxMessageTemplate.setToUser(openId);
 
-                String url = "https://api.weixin.qq.com/cgi-bin/message/template/send";
+                String url = "http://localhost:9000/qian/api/test/lucky?msg=" + openId;
                 // TODO
                 Future<HttpResponse> httpResponseFuture = getCloseableHttpAsyncClient().execute(new HttpPost(url), new Back(msgData));
                 if (!PushData.running) {

@@ -13,8 +13,6 @@ import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.logic.msgthread.MsgAsyncSendThread;
 import com.fangxuele.tool.push.ui.form.BoostForm;
-import com.fangxuele.tool.push.ui.form.ScheduleForm;
-import com.fangxuele.tool.push.ui.listener.MemberListener;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
@@ -70,7 +68,7 @@ public class BoostPushRunThread extends Thread {
         PushControl.dryRun = BoostForm.boostForm.getDryRunCheckBox().isSelected();
 
         // 执行前重新导入目标用户
-        reimportMembers();
+        PushControl.reimportMembers();
 
         // 重置推送数据
         PushData.reset();
@@ -168,29 +166,6 @@ public class BoostPushRunThread extends Thread {
             BoostForm.boostForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
 
             ThreadUtil.safeSleep(100);
-        }
-    }
-
-    /**
-     * 重新导入目标用户(定时任务)
-     */
-    private void reimportMembers() {
-        if (PushData.fixRateScheduling && ScheduleForm.scheduleForm.getReimportCheckBox().isSelected()) {
-            switch ((String) ScheduleForm.scheduleForm.getReimportComboBox().getSelectedItem()) {
-                case "通过SQL导入":
-                    MemberListener.importFromSql();
-                    break;
-                case "通过文件导入":
-                    MemberListener.importFromFile();
-                    break;
-                case "导入所有关注公众号的用户":
-                    MemberListener.importWxAll();
-                    break;
-                case "导入企业通讯录中所有用户":
-                    MemberListener.importWxCpAll();
-                    break;
-                default:
-            }
         }
     }
 
