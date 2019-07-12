@@ -11,13 +11,14 @@ import cn.hutool.cron.task.Task;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.PushRunThread;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
-import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
+import com.fangxuele.tool.push.ui.form.ScheduleForm;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -59,7 +60,20 @@ public class PushListener {
     public static void addListeners() {
         // 开始按钮事件
         PushForm.pushForm.getPushStartButton().addActionListener((e) -> ThreadUtil.execute(() -> {
-            if (checkBeforePush()) {
+            if (PushControl.pushCheck()) {
+                if ("0".equals(PushForm.pushForm.getMaxThreadPoolTextField().getText()) || StringUtils.isEmpty(PushForm.pushForm.getMaxThreadPoolTextField().getText())) {
+                    JOptionPane.showMessageDialog(pushPanel, "请设置每页分配用户数！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+
+                    return;
+                }
+                if ("0".equals(PushForm.pushForm.getThreadCountTextField().getText()) || StringUtils.isEmpty(PushForm.pushForm.getThreadCountTextField().getText())) {
+                    JOptionPane.showMessageDialog(pushPanel, "请设置每个线程分配的页数！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+
+                    return;
+                }
+
                 int isPush = JOptionPane.showConfirmDialog(pushPanel,
                         "确定开始推送吗？\n\n推送消息：" +
                                 MessageEditForm.messageEditForm.getMsgNameField().getText() +
@@ -88,6 +102,7 @@ public class PushListener {
                     PushForm.pushForm.getPushStartButton().updateUI();
                     PushForm.pushForm.getScheduleRunButton().updateUI();
                     PushForm.pushForm.getPushStopButton().updateUI();
+                    PushForm.pushForm.getScheduleDetailLabel().setVisible(false);
                     PushData.scheduling = false;
                     PushData.running = false;
                 }
@@ -112,6 +127,7 @@ public class PushListener {
                     PushForm.pushForm.getPushStartButton().updateUI();
                     PushForm.pushForm.getScheduleRunButton().updateUI();
                     PushForm.pushForm.getPushStopButton().updateUI();
+                    PushForm.pushForm.getScheduleDetailLabel().setVisible(false);
                     PushData.fixRateScheduling = false;
                     PushData.running = false;
                 }
@@ -129,6 +145,7 @@ public class PushListener {
                         PushForm.pushForm.getPushStartButton().updateUI();
                         PushForm.pushForm.getScheduleRunButton().updateUI();
                         PushForm.pushForm.getPushStopButton().updateUI();
+                        PushForm.pushForm.getScheduleDetailLabel().setVisible(false);
                     }
                 }
             });
@@ -136,8 +153,17 @@ public class PushListener {
 
         // 按计划执行按钮事件
         PushForm.pushForm.getScheduleRunButton().addActionListener((e -> ThreadUtil.execute(() -> {
-            if (checkBeforePush()) {
-
+            if (PushControl.pushCheck()) {
+                if ("0".equals(PushForm.pushForm.getMaxThreadPoolTextField().getText()) || StringUtils.isEmpty(PushForm.pushForm.getMaxThreadPoolTextField().getText())) {
+                    JOptionPane.showMessageDialog(pushPanel, "请设置每页分配用户数！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+                if ("0".equals(PushForm.pushForm.getThreadCountTextField().getText()) || StringUtils.isEmpty(PushForm.pushForm.getThreadCountTextField().getText())) {
+                    JOptionPane.showMessageDialog(pushPanel, "请设置每个线程分配的页数！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
                 // 看是否存在设置的计划任务
                 boolean existScheduleTask = false;
 
@@ -167,6 +193,7 @@ public class PushListener {
                         PushForm.pushForm.getPushStopButton().setText("停止计划任务");
                         PushForm.pushForm.getPushStopButton().setEnabled(true);
 
+                        PushForm.pushForm.getScheduleDetailLabel().setVisible(true);
                         PushForm.pushForm.getScheduleDetailLabel().setText("计划任务执行中：将在" +
                                 App.config.getTextStartAt() +
                                 "开始推送");
@@ -198,6 +225,7 @@ public class PushListener {
                         PushForm.pushForm.getPushStopButton().setText("停止计划任务");
                         PushForm.pushForm.getPushStopButton().setEnabled(true);
 
+                        PushForm.pushForm.getScheduleDetailLabel().setVisible(true);
                         PushForm.pushForm.getScheduleDetailLabel().setText("计划任务执行中：将在每天" +
                                 App.config.getTextPerDay() +
                                 "开始推送");
@@ -214,7 +242,7 @@ public class PushListener {
                 if (App.config.isRadioPerWeek()) {
 
                     long todaySetMills = DateUtil.parse(DateUtil.today() + " " + App.config.getTextPerWeekTime(), DatePattern.NORM_DATETIME_PATTERN).getTime();
-                    int dayBetween = getDayOfWeek(App.config.getTextPerWeekWeek()) - DateUtil.thisDayOfWeek();
+                    int dayBetween = ScheduleForm.getDayOfWeek(App.config.getTextPerWeekWeek()) - DateUtil.thisDayOfWeek();
                     long startPerWeekMills = dayBetween < 0 ? (dayBetween + 7) * 24 * 60 * 60 * 1000 : dayBetween * 24 * 60 * 60 * 1000;
 
                     int isSchedulePush = JOptionPane.showConfirmDialog(pushPanel,
@@ -235,6 +263,7 @@ public class PushListener {
                         PushForm.pushForm.getPushStopButton().setText("停止计划任务");
                         PushForm.pushForm.getPushStopButton().setEnabled(true);
 
+                        PushForm.pushForm.getScheduleDetailLabel().setVisible(true);
                         PushForm.pushForm.getScheduleDetailLabel().setText("计划任务执行中：将在每周" +
                                 App.config.getTextPerWeekWeek() +
                                 App.config.getTextPerWeekTime() +
@@ -278,6 +307,7 @@ public class PushListener {
                         PushForm.pushForm.getPushStopButton().setText("停止计划任务");
                         PushForm.pushForm.getPushStopButton().setEnabled(true);
 
+                        PushForm.pushForm.getScheduleDetailLabel().setVisible(true);
                         PushForm.pushForm.getScheduleDetailLabel().setText("计划任务执行中，下一次执行时间：" + latest5RunTimeList.get(0));
 
                         // 支持秒级别定时任务
@@ -423,70 +453,6 @@ public class PushListener {
         PushForm.pushForm.getAvailableProcessorLabel().setText("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
         // JVM内存占用
         PushForm.pushForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
-    }
-
-    /**
-     * 推送前检查
-     *
-     * @return boolean
-     */
-    private static boolean checkBeforePush() {
-        if (StringUtils.isEmpty(MessageEditForm.messageEditForm.getMsgNameField().getText())) {
-            JOptionPane.showMessageDialog(pushPanel, "请先选择一条消息！", "提示",
-                    JOptionPane.INFORMATION_MESSAGE);
-            MainWindow.mainWindow.getTabbedPane().setSelectedIndex(2);
-
-            return false;
-        }
-        if (PushData.allUser == null || PushData.allUser.size() == 0) {
-            JOptionPane.showMessageDialog(pushPanel, "请先准备目标用户！", "提示",
-                    JOptionPane.INFORMATION_MESSAGE);
-
-            return false;
-        }
-        if ("0".equals(PushForm.pushForm.getMaxThreadPoolTextField().getText()) || StringUtils.isEmpty(PushForm.pushForm.getMaxThreadPoolTextField().getText())) {
-            JOptionPane.showMessageDialog(pushPanel, "请设置每页分配用户数！", "提示",
-                    JOptionPane.INFORMATION_MESSAGE);
-
-            return false;
-        }
-        if ("0".equals(PushForm.pushForm.getThreadCountTextField().getText()) || StringUtils.isEmpty(PushForm.pushForm.getThreadCountTextField().getText())) {
-            JOptionPane.showMessageDialog(pushPanel, "请设置每个线程分配的页数！", "提示",
-                    JOptionPane.INFORMATION_MESSAGE);
-
-            return false;
-        }
-        return true;
-    }
-
-    private static int getDayOfWeek(String week) {
-        int dayOfWeek;
-        switch (week) {
-            case "一":
-                dayOfWeek = 2;
-                break;
-            case "二":
-                dayOfWeek = 3;
-                break;
-            case "三":
-                dayOfWeek = 4;
-                break;
-            case "四":
-                dayOfWeek = 5;
-                break;
-            case "五":
-                dayOfWeek = 6;
-                break;
-            case "六":
-                dayOfWeek = 7;
-                break;
-            case "日":
-                dayOfWeek = 1;
-                break;
-            default:
-                dayOfWeek = 0;
-        }
-        return dayOfWeek;
     }
 
 }

@@ -19,6 +19,7 @@ import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.logic.msgsender.SendResult;
+import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
 import com.fangxuele.tool.push.ui.form.ScheduleForm;
@@ -97,7 +98,21 @@ public class PushControl {
      *
      * @return boolean
      */
-    static boolean pushCheck() {
+    public static boolean pushCheck() {
+        if (StringUtils.isEmpty(MessageEditForm.messageEditForm.getMsgNameField().getText())) {
+            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMainPanel(), "请先选择一条消息！", "提示",
+                    JOptionPane.INFORMATION_MESSAGE);
+            MainWindow.mainWindow.getTabbedPane().setSelectedIndex(2);
+
+            return false;
+        }
+        if (PushData.allUser == null || PushData.allUser.size() == 0) {
+            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMainPanel(), "请先准备目标用户！", "提示",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+            return false;
+        }
+
         int msgType = App.config.getMsgType();
         switch (msgType) {
             case MessageTypeEnum.MP_TEMPLATE_CODE:

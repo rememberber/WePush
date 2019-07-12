@@ -38,17 +38,15 @@ public class PushRunThread extends Thread {
 
     @Override
     public void run() {
-        if (PushControl.pushCheck()) {
-            PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(true);
-            // 准备推送
-            preparePushRun();
-            PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
-            ConsoleUtil.consoleWithLog("推送开始……");
-            // 消息数据分片以及线程纷发
-            shardingAndMsgThread();
-            // 时间监控
-            timeMonitor();
-        }
+        PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(true);
+        // 准备推送
+        preparePushRun();
+        PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
+        ConsoleUtil.consoleWithLog("推送开始……");
+        // 消息数据分片以及线程纷发
+        shardingAndMsgThread();
+        // 时间监控
+        timeMonitor();
     }
 
     /**
@@ -175,6 +173,7 @@ public class PushRunThread extends Thread {
                     String finishTip = "发送完毕！\n";
                     JOptionPane.showMessageDialog(PushForm.pushForm.getPushPanel(), finishTip, "提示",
                             JOptionPane.INFORMATION_MESSAGE);
+                    PushForm.pushForm.getScheduleDetailLabel().setVisible(false);
                 } else {
                     if (App.config.isRadioCron()) {
                         Date nextDate = CronPatternUtil.nextDateAfter(new CronPattern(App.config.getTextCron()), new Date(), true);

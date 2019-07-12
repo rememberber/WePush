@@ -34,19 +34,17 @@ public class BoostPushRunThread extends Thread {
 
     @Override
     public void run() {
-        if (PushControl.pushCheck()) {
-            BoostForm.boostForm.getProcessedProgressBar().setIndeterminate(true);
-            BoostForm.boostForm.getCompletedProgressBar().setIndeterminate(true);
-            // 准备推送
-            preparePushRun();
-            BoostForm.boostForm.getProcessedProgressBar().setIndeterminate(false);
-            BoostForm.boostForm.getCompletedProgressBar().setIndeterminate(false);
-            ConsoleUtil.boostConsoleWithLog("推送开始……");
-            // 消息数据分片以及线程纷发
-            shardingAndMsgThread();
-            // 时间监控
-            timeMonitor();
-        }
+        BoostForm.boostForm.getProcessedProgressBar().setIndeterminate(true);
+        BoostForm.boostForm.getCompletedProgressBar().setIndeterminate(true);
+        // 准备推送
+        preparePushRun();
+        BoostForm.boostForm.getProcessedProgressBar().setIndeterminate(false);
+        BoostForm.boostForm.getCompletedProgressBar().setIndeterminate(false);
+        ConsoleUtil.boostConsoleWithLog("推送开始……");
+        // 消息数据分片以及线程纷发
+        shardingAndMsgThread();
+        // 时间监控
+        timeMonitor();
     }
 
     /**
@@ -124,6 +122,7 @@ public class BoostPushRunThread extends Thread {
                     String finishTip = "发送完毕！\n";
                     JOptionPane.showMessageDialog(BoostForm.boostForm.getBoostPanel(), finishTip, "提示",
                             JOptionPane.INFORMATION_MESSAGE);
+                    BoostForm.boostForm.getScheduledTaskLabel().setVisible(false);
                 } else {
                     if (App.config.isRadioCron()) {
                         Date nextDate = CronPatternUtil.nextDateAfter(new CronPattern(App.config.getTextCron()), new Date(), true);
