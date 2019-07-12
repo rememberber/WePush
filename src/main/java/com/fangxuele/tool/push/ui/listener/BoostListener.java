@@ -8,6 +8,8 @@ import cn.hutool.cron.CronUtil;
 import cn.hutool.cron.pattern.CronPattern;
 import cn.hutool.cron.pattern.CronPatternUtil;
 import cn.hutool.cron.task.Task;
+import cn.hutool.log.Log;
+import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.BoostPushRunThread;
 import com.fangxuele.tool.push.logic.PushControl;
@@ -44,6 +46,8 @@ import static com.fangxuele.tool.push.ui.form.BoostForm.boostForm;
  * @since 2019/7/3.
  */
 public class BoostListener {
+
+    private static final Log logger = LogFactory.get();
 
     private static ScheduledExecutorService serviceStartAt;
 
@@ -269,6 +273,70 @@ public class BoostListener {
                 }
             }
         })));
+
+        // 停止按钮事件
+        BoostForm.boostForm.getStopButton().addActionListener((e) -> {
+            ThreadUtil.execute(() -> {
+                if (PushData.scheduling) {
+                    BoostForm.boostForm.getScheduledTaskLabel().setText("");
+                    if (serviceStartAt != null) {
+                        serviceStartAt.shutdownNow();
+                    }
+                    BoostForm.boostForm.getStartButton().setEnabled(true);
+                    BoostForm.boostForm.getScheduledRunButton().setEnabled(true);
+                    BoostForm.boostForm.getStopButton().setText("停止");
+                    BoostForm.boostForm.getStopButton().setEnabled(false);
+                    BoostForm.boostForm.getStartButton().updateUI();
+                    BoostForm.boostForm.getScheduledRunButton().updateUI();
+                    BoostForm.boostForm.getStopButton().updateUI();
+                    BoostForm.boostForm.getScheduledTaskLabel().setVisible(false);
+                    PushData.scheduling = false;
+                    PushData.running = false;
+                }
+
+                if (PushData.fixRateScheduling) {
+                    BoostForm.boostForm.getScheduledTaskLabel().setText("");
+                    if (serviceStartPerDay != null) {
+                        serviceStartPerDay.shutdownNow();
+                    }
+                    if (serviceStartPerWeek != null) {
+                        serviceStartPerWeek.shutdownNow();
+                    }
+                    try {
+                        CronUtil.stop();
+                    } catch (Exception e1) {
+                        logger.warn(e1.toString());
+                    }
+                    BoostForm.boostForm.getStartButton().setEnabled(true);
+                    BoostForm.boostForm.getScheduledRunButton().setEnabled(true);
+                    BoostForm.boostForm.getStopButton().setText("停止");
+                    BoostForm.boostForm.getStopButton().setEnabled(false);
+                    BoostForm.boostForm.getStartButton().updateUI();
+                    BoostForm.boostForm.getScheduledRunButton().updateUI();
+                    BoostForm.boostForm.getStopButton().updateUI();
+                    BoostForm.boostForm.getScheduledTaskLabel().setVisible(false);
+                    PushData.fixRateScheduling = false;
+                    PushData.running = false;
+                }
+
+                if (PushData.running) {
+                    int isStop = JOptionPane.showConfirmDialog(boostForm.getBoostPanel(),
+                            "确定停止当前的推送吗？", "确认停止？",
+                            JOptionPane.YES_NO_OPTION);
+                    if (isStop == JOptionPane.YES_OPTION) {
+                        PushData.running = false;
+                        BoostForm.boostForm.getStartButton().setEnabled(true);
+                        BoostForm.boostForm.getScheduledRunButton().setEnabled(true);
+                        BoostForm.boostForm.getStopButton().setText("停止");
+                        BoostForm.boostForm.getStopButton().setEnabled(false);
+                        BoostForm.boostForm.getStartButton().updateUI();
+                        BoostForm.boostForm.getScheduledRunButton().updateUI();
+                        BoostForm.boostForm.getStopButton().updateUI();
+                        BoostForm.boostForm.getScheduledTaskLabel().setVisible(false);
+                    }
+                }
+            });
+        });
     }
 
     static void refreshPushInfo() {
