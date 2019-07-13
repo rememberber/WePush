@@ -70,7 +70,7 @@ public class PushControl {
      */
     public static List<SendResult> preview() {
         List<SendResult> sendResultList = new ArrayList<>();
-        if (!pushCheck()) {
+        if (!configCheck()) {
             return null;
         }
         List<String[]> msgDataList = new ArrayList<>();
@@ -128,6 +128,15 @@ public class PushControl {
             }
         }
 
+        return configCheck();
+    }
+
+    /**
+     * 配置检查
+     *
+     * @return
+     */
+    public static boolean configCheck() {
         int msgType = App.config.getMsgType();
         switch (msgType) {
             case MessageTypeEnum.MP_TEMPLATE_CODE:

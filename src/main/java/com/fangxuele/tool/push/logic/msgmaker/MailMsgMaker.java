@@ -16,6 +16,7 @@ import org.apache.velocity.VelocityContext;
 public class MailMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
     public static String mailTitle;
+    public static String mailCc;
     public static String mailFiles;
     public static String mailContent;
 
@@ -24,6 +25,7 @@ public class MailMsgMaker extends BaseMsgMaker implements IMsgMaker {
      */
     public static void prepare() {
         mailTitle = MailMsgForm.mailMsgForm.getMailTitleTextField().getText();
+        mailCc = MailMsgForm.mailMsgForm.getMailCcTextField().getText();
         mailFiles = MailMsgForm.mailMsgForm.getMailFilesTextField().getText();
         mailContent = MailMsgForm.mailMsgForm.getMailContentPane().getText();
     }
@@ -39,9 +41,11 @@ public class MailMsgMaker extends BaseMsgMaker implements IMsgMaker {
         MailMsg mailMsg = new MailMsg();
         VelocityContext velocityContext = getVelocityContext(msgData);
         String title = TemplateUtil.evaluate(mailTitle, velocityContext);
+        String cc = TemplateUtil.evaluate(mailCc, velocityContext);
         String files = TemplateUtil.evaluate(mailFiles, velocityContext);
         String content = TemplateUtil.evaluate(mailContent, velocityContext);
         mailMsg.setMailTitle(title);
+        mailMsg.setMailCc(cc);
         mailMsg.setMailFiles(files);
         mailMsg.setMailContent(content);
         return mailMsg;

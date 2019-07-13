@@ -25,6 +25,11 @@ public class MailMsg implements Serializable {
     private String mailTitle;
 
     /**
+     * 抄送
+     */
+    private String mailCc;
+
+    /**
      * 附件
      */
     private String mailFiles;
