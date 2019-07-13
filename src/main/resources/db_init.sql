@@ -155,6 +155,7 @@ create table if not exists t_msg_mail
     msg_type      integer,
     msg_name      text,
     title         text,
+    Cc            text,
     files         text,
     content       text,
     create_time   datetime,

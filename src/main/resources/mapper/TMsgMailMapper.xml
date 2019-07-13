@@ -10,9 +10,10 @@
         <result column="content" jdbcType="VARCHAR" property="content"/>
         <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
         <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime"/>
+        <result column="Cc" jdbcType="VARCHAR" property="cc"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, msg_type, msg_name, title, files, content, create_time, modified_time
+        id, msg_type, msg_name, title, files, content, create_time, modified_time, Cc
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -28,10 +29,10 @@
     <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TMsgMail">
         insert into t_msg_mail (id, msg_type, msg_name,
                                 title, files, content,
-                                create_time, modified_time)
+                                create_time, modified_time, Cc)
         values (#{id,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER}, #{msgName,jdbcType=VARCHAR},
                 #{title,jdbcType=VARCHAR}, #{files,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR},
-                #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR})
+                #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR}, #{cc,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TMsgMail">
         insert into t_msg_mail
@@ -60,6 +61,9 @@
             <if test="modifiedTime != null">
                 modified_time,
             </if>
+            <if test="cc != null">
+                Cc,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -85,6 +89,9 @@
             </if>
             <if test="modifiedTime != null">
                 #{modifiedTime,jdbcType=VARCHAR},
+            </if>
+            <if test="cc != null">
+                #{cc,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -112,6 +119,9 @@
             <if test="modifiedTime != null">
                 modified_time = #{modifiedTime,jdbcType=VARCHAR},
             </if>
+            <if test="cc != null">
+                Cc = #{cc,jdbcType=VARCHAR},
+            </if>
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>
@@ -122,7 +132,9 @@
             title         = #{title,jdbcType=VARCHAR},
             files         = #{files,jdbcType=VARCHAR},
             content       = #{content,jdbcType=VARCHAR},
-            modified_time = #{modifiedTime,jdbcType=VARCHAR}
+            create_time   = #{createTime,jdbcType=VARCHAR},
+            modified_time = #{modifiedTime,jdbcType=VARCHAR},
+            Cc            = #{cc,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>
     <select id="selectByMsgTypeAndMsgName" resultMap="BaseResultMap">
@@ -135,6 +147,7 @@
     <update id="updateByMsgTypeAndMsgName" parameterType="com.fangxuele.tool.push.domain.TMsgMail">
         update t_msg_mail
         set title         = #{title,jdbcType=VARCHAR},
+            Cc            = #{cc,jdbcType=VARCHAR},
             files         = #{files,jdbcType=VARCHAR},
             content       = #{content,jdbcType=VARCHAR},
             modified_time = #{modifiedTime,jdbcType=VARCHAR}
