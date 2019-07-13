@@ -12,12 +12,13 @@ import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.BoostPushRunThread;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.PushData;
-import com.fangxuele.tool.push.logic.PushRunThread;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
 import com.fangxuele.tool.push.ui.form.BoostForm;
+import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.ScheduleForm;
 import com.fangxuele.tool.push.util.ComponentUtil;
@@ -95,6 +96,11 @@ public class BoostListener {
 
         // 开始按钮事件
         BoostForm.boostForm.getStartButton().addActionListener((e) -> ThreadUtil.execute(() -> {
+            if (App.config.getMsgType() != MessageTypeEnum.MP_TEMPLATE_CODE) {
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getMainPanel(), "性能模式目前仅支持微信模板消息，后续逐步增加对其他消息类型的支持！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
             if (PushControl.pushCheck()) {
                 int isPush = JOptionPane.showConfirmDialog(boostForm.getBoostPanel(),
                         "确定开始推送吗？\n\n推送消息：" +
@@ -111,6 +117,11 @@ public class BoostListener {
 
         // 按计划执行按钮事件
         BoostForm.boostForm.getScheduledRunButton().addActionListener((e -> ThreadUtil.execute(() -> {
+            if (App.config.getMsgType() != MessageTypeEnum.MP_TEMPLATE_CODE) {
+                JOptionPane.showMessageDialog(MainWindow.mainWindow.getMainPanel(), "性能模式目前仅支持微信模板消息，后续逐步增加对其他消息类型的支持！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
             if (PushControl.pushCheck()) {
 
                 // 看是否存在设置的计划任务
@@ -148,7 +159,7 @@ public class BoostListener {
                                 "开始推送");
 
                         serviceStartAt = Executors.newSingleThreadScheduledExecutor();
-                        serviceStartAt.schedule(new PushRunThread(), startAtMills - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+                        serviceStartAt.schedule(new BoostPushRunThread(), startAtMills - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
                     }
                     existScheduleTask = true;
                 }
@@ -182,7 +193,7 @@ public class BoostListener {
                         serviceStartPerDay = Executors.newSingleThreadScheduledExecutor();
                         long millisBetween = startPerDayMills - System.currentTimeMillis();
                         long delay = millisBetween < 0 ? millisBetween + 24 * 60 * 60 * 1000 : millisBetween;
-                        serviceStartPerDay.scheduleAtFixedRate(new PushRunThread(), delay, 24 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
+                        serviceStartPerDay.scheduleAtFixedRate(new BoostPushRunThread(), delay, 24 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
                     }
                     existScheduleTask = true;
                 }
@@ -221,7 +232,7 @@ public class BoostListener {
                         serviceStartPerWeek = Executors.newSingleThreadScheduledExecutor();
                         long millisBetween = startPerWeekMills + todaySetMills - System.currentTimeMillis();
                         long delay = millisBetween < 0 ? millisBetween + 7 * 24 * 60 * 60 * 1000 : millisBetween;
-                        serviceStartPerWeek.scheduleAtFixedRate(new PushRunThread(), delay, 7 * 24 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
+                        serviceStartPerWeek.scheduleAtFixedRate(new BoostPushRunThread(), delay, 7 * 24 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
                     }
                     existScheduleTask = true;
                 }
@@ -261,7 +272,7 @@ public class BoostListener {
 
                         // 支持秒级别定时任务
                         CronUtil.setMatchSecond(true);
-                        CronUtil.schedule(App.config.getTextCron(), (Task) () -> new PushRunThread().start());
+                        CronUtil.schedule(App.config.getTextCron(), (Task) () -> new BoostPushRunThread().start());
                         CronUtil.start();
                     }
                     existScheduleTask = true;

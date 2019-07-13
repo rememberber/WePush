@@ -108,15 +108,17 @@ public class ScheduleListener {
                                 JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-                    List<String> latest5RunTimeList = Lists.newArrayList();
-                    Date now = new Date();
-                    for (int i = 0; i < 5; i++) {
-                        Date date = CronPatternUtil.nextDateAfter(new CronPattern(textCron), DateUtils.addDays(now, i), true);
-                        latest5RunTimeList.add(DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss"));
+                    if (isCron) {
+                        List<String> latest5RunTimeList = Lists.newArrayList();
+                        Date now = new Date();
+                        for (int i = 0; i < 5; i++) {
+                            Date date = CronPatternUtil.nextDateAfter(new CronPattern(textCron), DateUtils.addDays(now, i), true);
+                            latest5RunTimeList.add(DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss"));
+                        }
+                        JOptionPane.showMessageDialog(MainWindow.mainWindow.getSchedulePanel(),
+                                "最近5次运行时间:\n" + String.join("\n", latest5RunTimeList), "提示",
+                                JOptionPane.INFORMATION_MESSAGE);
                     }
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getSchedulePanel(),
-                            "最近5次运行时间:\n" + String.join("\n", latest5RunTimeList), "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
                     App.config.setRadioCron(isCron);
                     App.config.setTextCron(textCron);
                 } else if (isCron) {
