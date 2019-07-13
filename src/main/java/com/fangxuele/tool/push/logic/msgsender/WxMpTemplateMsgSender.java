@@ -8,15 +8,19 @@ import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
 import com.fangxuele.tool.push.ui.form.BoostForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import lombok.extern.slf4j.Slf4j;
+import me.chanjar.weixin.common.error.WxError;
 import me.chanjar.weixin.common.util.http.apache.DefaultApacheHttpClientBuilder;
 import me.chanjar.weixin.mp.api.WxMpInMemoryConfigStorage;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.api.impl.WxMpServiceImpl;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
+import org.apache.http.Consts;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.concurrent.FutureCallback;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClients;
 import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
@@ -26,7 +30,6 @@ import org.apache.http.nio.reactor.ConnectingIOReactor;
 import org.apache.http.nio.reactor.IOReactorException;
 import org.apache.http.util.EntityUtils;
 
-import java.io.IOException;
 import java.util.concurrent.Future;
 
 /**
@@ -94,14 +97,33 @@ public class WxMpTemplateMsgSender implements IMsgSender {
                 WxMpTemplateMessage wxMessageTemplate = wxMpTemplateMsgMaker.makeMsg(msgData);
                 wxMessageTemplate.setToUser(openId);
 
-                String url = "http://localhost:9000/qian/api/test/lucky?msg=" + openId;
-                // TODO
-                Future<HttpResponse> httpResponseFuture = getCloseableHttpAsyncClient().execute(new HttpPost(url), new Back(msgData));
+                String url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=" + wxMpService.getAccessToken();
+                HttpPost httpPost = new HttpPost(url);
+                StringEntity entity = new StringEntity(wxMessageTemplate.toJson(), Consts.UTF_8);
+                httpPost.setEntity(entity);
+                if (wxMpService.getRequestHttp().getRequestHttpProxy() != null) {
+                    RequestConfig config = RequestConfig.custom().setProxy((HttpHost) wxMpService.getRequestHttp().getRequestHttpProxy()).build();
+                    httpPost.setConfig(config);
+                }
+                Future<HttpResponse> httpResponseFuture = getCloseableHttpAsyncClient().execute(httpPost, new CallBack(msgData));
                 if (!PushData.running) {
+                    // TODO
                     httpResponseFuture.cancel(true);
                 }
             }
         } catch (Exception e) {
+            // 总发送失败+1
+            PushData.increaseFail();
+            BoostForm.boostForm.getFailCountLabel().setText(String.valueOf(PushData.failRecords));
+
+            // 保存发送失败
+            PushData.sendFailList.add(msgData);
+
+            // 失败异常信息输出控制台
+            ConsoleUtil.boostConsoleOnly("发送失败:" + e.toString() + ";msgData:" + JSONUtil.toJsonPrettyStr(msgData));
+            // 总进度条
+            BoostForm.boostForm.getCompletedProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
+
             sendResult.setSuccess(false);
             sendResult.setInfo(e.getMessage());
             log.error(e.toString());
@@ -208,31 +230,58 @@ public class WxMpTemplateMsgSender implements IMsgSender {
         return closeableHttpAsyncClient;
     }
 
-    static class Back implements FutureCallback<HttpResponse> {
+    static class CallBack implements FutureCallback<HttpResponse> {
 
         String[] msgData;
 
-        Back(String[] msgData) {
+        CallBack(String[] msgData) {
             this.msgData = msgData;
         }
 
         @Override
         public void completed(HttpResponse httpResponse) {
             try {
-                String response = EntityUtils.toString(httpResponse.getEntity());
-                ConsoleUtil.boostConsoleOnly(response);
-            } catch (IOException e) {
+                String response = EntityUtils.toString(httpResponse.getEntity(), Consts.UTF_8);
+                if (response.isEmpty()) {
+                    // 总发送失败+1
+                    PushData.increaseFail();
+                    BoostForm.boostForm.getFailCountLabel().setText(String.valueOf(PushData.failRecords));
+
+                    // 保存发送失败
+                    PushData.sendFailList.add(msgData);
+
+                    // 失败异常信息输出控制台
+                    ConsoleUtil.boostConsoleOnly("发送失败:" + WxError.builder().errorCode(9999).errorMsg("无响应内容").build() + ";msgData:" + JSONUtil.toJsonPrettyStr(msgData));
+                    // 总进度条
+                    BoostForm.boostForm.getCompletedProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
+                } else {
+                    WxError error = WxError.fromJson(response);
+                    if (error.getErrorCode() != 0) {
+                        // 总发送失败+1
+                        PushData.increaseFail();
+                        BoostForm.boostForm.getFailCountLabel().setText(String.valueOf(PushData.failRecords));
+
+                        // 保存发送失败
+                        PushData.sendFailList.add(msgData);
+
+                        // 失败异常信息输出控制台
+                        ConsoleUtil.boostConsoleOnly("发送失败:" + error + ";msgData:" + JSONUtil.toJsonPrettyStr(msgData));
+                        // 总进度条
+                        BoostForm.boostForm.getCompletedProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
+                    } else {
+                        // 已成功+1
+                        PushData.increaseSuccess();
+                        BoostForm.boostForm.getSuccessCountLabel().setText(String.valueOf(PushData.successRecords));
+
+                        // 保存发送成功
+                        PushData.sendSuccessList.add(msgData);
+                        // 总进度条
+                        BoostForm.boostForm.getCompletedProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
+                    }
+                }
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            // 已成功+1
-            PushData.increaseSuccess();
-            BoostForm.boostForm.getSuccessCountLabel().setText(String.valueOf(PushData.successRecords));
-
-            // 保存发送成功
-            PushData.sendSuccessList.add(msgData);
-            // 总进度条
-            BoostForm.boostForm.getCompletedProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
         }
 
         @Override
