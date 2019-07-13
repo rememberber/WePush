@@ -130,7 +130,9 @@ public class UpgradeUtil {
                         MybatisUtil.executeSql(sql);
                     } catch (SQLException e) {
                         log.error("执行索引为{}的版本对应的sql时异常", i, e);
-                        return;
+                        if (!e.getMessage().contains("duplicate column")) {
+                            return;
+                        }
                     }
                 }
                 upgrade(i);
