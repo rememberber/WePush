@@ -186,13 +186,13 @@ public class PushRunThread extends Thread {
 
                 // 保存停止前的数据
                 try {
-                    ConsoleUtil.consoleWithLog("正在保存结果数据……");
-                    PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(true);
                     // 空跑控制
                     if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
+                        ConsoleUtil.consoleWithLog("正在保存结果数据……");
+                        PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(true);
                         PushControl.savePushData();
+                        ConsoleUtil.consoleWithLog("结果数据保存完毕！");
                     }
-                    ConsoleUtil.consoleWithLog("结果数据保存完毕！");
                 } catch (IOException e) {
                     logger.error(e);
                 } finally {

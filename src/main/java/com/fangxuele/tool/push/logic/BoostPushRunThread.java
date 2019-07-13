@@ -135,13 +135,13 @@ public class BoostPushRunThread extends Thread {
 
                 // 保存停止前的数据
                 try {
-                    ConsoleUtil.boostConsoleWithLog("正在保存结果数据……");
-                    BoostForm.boostForm.getCompletedProgressBar().setIndeterminate(true);
                     // 空跑控制
                     if (!BoostForm.boostForm.getDryRunCheckBox().isSelected()) {
+                        ConsoleUtil.boostConsoleWithLog("正在保存结果数据……");
+                        BoostForm.boostForm.getCompletedProgressBar().setIndeterminate(true);
                         PushControl.savePushData();
+                        ConsoleUtil.boostConsoleWithLog("结果数据保存完毕！");
                     }
-                    ConsoleUtil.boostConsoleWithLog("结果数据保存完毕！");
                 } catch (IOException e) {
                     logger.error(e);
                 } finally {
