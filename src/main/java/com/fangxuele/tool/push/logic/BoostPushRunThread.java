@@ -80,10 +80,10 @@ public class BoostPushRunThread extends Thread {
         BoostForm.boostForm.getMemberCountLabel().setText("消息总数：" + PushData.totalRecords);
         BoostForm.boostForm.getProcessedProgressBar().setMaximum((int) PushData.totalRecords);
         BoostForm.boostForm.getCompletedProgressBar().setMaximum((int) PushData.totalRecords);
-        ConsoleUtil.consoleWithLog("消息总数：" + PushData.totalRecords);
+        ConsoleUtil.boostConsoleWithLog("消息总数：" + PushData.totalRecords);
         // 可用处理器核心数量
         BoostForm.boostForm.getProcessorCountLabel().setText("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
-        ConsoleUtil.consoleWithLog("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
+        ConsoleUtil.boostConsoleWithLog("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
 
         // 准备消息构造器
         PushControl.prepareMsgMaker();
@@ -100,7 +100,7 @@ public class BoostPushRunThread extends Thread {
         msgAsyncSendThread = new MsgAsyncSendThread(msgSender);
 
         ThreadUtil.execute(msgAsyncSendThread);
-        ConsoleUtil.consoleWithLog("线程启动完毕……");
+        ConsoleUtil.boostConsoleWithLog("线程启动完毕……");
     }
 
     /**
@@ -135,13 +135,13 @@ public class BoostPushRunThread extends Thread {
 
                 // 保存停止前的数据
                 try {
-                    ConsoleUtil.consoleWithLog("正在保存结果数据……");
+                    ConsoleUtil.boostConsoleWithLog("正在保存结果数据……");
                     BoostForm.boostForm.getCompletedProgressBar().setIndeterminate(true);
                     // 空跑控制
                     if (!BoostForm.boostForm.getDryRunCheckBox().isSelected()) {
                         PushControl.savePushData();
                     }
-                    ConsoleUtil.consoleWithLog("结果数据保存完毕！");
+                    ConsoleUtil.boostConsoleWithLog("结果数据保存完毕！");
                 } catch (IOException e) {
                     logger.error(e);
                 } finally {

@@ -120,6 +120,11 @@ public class PushData {
     public static long endTime = 0;
 
     /**
+     * 是否为性能模式
+     */
+    public static boolean boostMode = false;
+
+    /**
      * 重置推送数据
      */
     static void reset() {

@@ -21,6 +21,7 @@ import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.logic.msgsender.SendResult;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
+import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
 import com.fangxuele.tool.push.ui.form.ScheduleForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
@@ -111,6 +112,20 @@ public class PushControl {
                     JOptionPane.INFORMATION_MESSAGE);
 
             return false;
+        }
+        if (!PushData.boostMode) {
+            if ("0".equals(PushForm.pushForm.getMaxThreadPoolTextField().getText()) || StringUtils.isEmpty(PushForm.pushForm.getMaxThreadPoolTextField().getText())) {
+                JOptionPane.showMessageDialog(PushForm.pushForm.getPushPanel(), "请设置每页分配用户数！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+                return false;
+            }
+            if ("0".equals(PushForm.pushForm.getThreadCountTextField().getText()) || StringUtils.isEmpty(PushForm.pushForm.getThreadCountTextField().getText())) {
+                JOptionPane.showMessageDialog(PushForm.pushForm.getPushPanel(), "请设置每个线程分配的页数！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+                return false;
+            }
         }
 
         int msgType = App.config.getMsgType();
