@@ -194,6 +194,7 @@ create table if not exists t_msg_wx_cp
     img_url       text,
     describe      text,
     url           text,
+    btn_txt       text,
     create_time   datetime,
     modified_time datetime
 );
