@@ -175,7 +175,7 @@
     {
       "version": "v_3.5.0_190713",
       "title": "新增性能模式",
-      "log": "● feature:新增性能模式（目前仅支持微信模板消息）\n● feature:e-mail消息支持抄送\n● feature:企业号消息新增支持……\n● fix:修复NICK_NAME变量失效的bug\n"
+      "log": "● feature:新增性能模式（目前仅支持微信模板消息）\n● feature:计划任务增加可以按Cron表达式触发\n● feature:e-mail消息支持抄送\n● feature:企业微信消息新增对文本卡片类型的支持\n● feature:企业微信消息新增对markdown类型的支持\n● optimization:优化平滑升级时sql执行的幂等\n● bug fix:修复普通计划任务保存时误提示最近5次运行时间的问题\n● fix:修复推送总进度条状态异常问题\n● 其他细节调整\n"
     }
   ]
 }
