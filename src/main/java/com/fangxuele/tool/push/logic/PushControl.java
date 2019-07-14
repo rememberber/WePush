@@ -19,6 +19,7 @@ import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.logic.msgsender.SendResult;
+import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
@@ -332,7 +333,7 @@ public class PushControl {
             contentBuilder.append("<br/>");
             contentBuilder.append("<hr/>");
             contentBuilder.append("<p>来自WePush，一款专注于批量推送的小而美的工具</p>");
-            contentBuilder.append("<img alt=\"WePush\" src=\"http://download.zhoubochina.com/file/wx-zanshang.jpg\">");
+            contentBuilder.append("<img alt=\"WePush\" src=\"" + UiConsts.INTRODUCE_QRCODE_URL + "\">");
 
             File[] files = new File[fileList.size()];
             fileList.toArray(files);

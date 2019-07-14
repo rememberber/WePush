@@ -69,4 +69,9 @@ public class UiConsts {
      */
     public final static String QR_CODE_URL = "http://download.zhoubochina.com/file/wepush_qrcode.json";
 
+    /**
+     * 介绍二维码URL
+     */
+    public final static String INTRODUCE_QRCODE_URL = "http://download.zhoubochina.com/qrcode/introduce-wepush-qrcode.png";
+
 }
