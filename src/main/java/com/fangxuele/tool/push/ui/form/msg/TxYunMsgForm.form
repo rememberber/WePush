@@ -71,7 +71,7 @@
                 </constraints>
                 <properties>
                   <icon value="icon/add.png"/>
-                  <text value="添加"/>
+                  <text value=""/>
                 </properties>
               </component>
               <scrollpane id="23307">
