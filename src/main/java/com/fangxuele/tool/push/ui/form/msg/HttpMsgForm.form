@@ -3,7 +3,7 @@
   <grid id="27dc6" binding="httpPanel" layout-manager="GridLayoutManager" row-count="5" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="8" bottom="0" right="8"/>
     <constraints>
-      <xy x="20" y="20" width="1001" height="574"/>
+      <xy x="20" y="20" width="1001" height="600"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -105,7 +105,9 @@
                 <preferred-size width="150" height="50"/>
               </grid>
             </constraints>
-            <properties/>
+            <properties>
+              <rowHeight value="36"/>
+            </properties>
           </component>
         </children>
       </grid>
@@ -164,7 +166,9 @@
                 <preferred-size width="150" height="50"/>
               </grid>
             </constraints>
-            <properties/>
+            <properties>
+              <rowHeight value="36"/>
+            </properties>
           </component>
         </children>
       </grid>
@@ -207,7 +211,9 @@
                 <preferred-size width="150" height="50"/>
               </grid>
             </constraints>
-            <properties/>
+            <properties>
+              <rowHeight value="36"/>
+            </properties>
           </component>
           <component id="8a5c1" class="javax.swing.JTextField" binding="cookieDomainTextField">
             <constraints>

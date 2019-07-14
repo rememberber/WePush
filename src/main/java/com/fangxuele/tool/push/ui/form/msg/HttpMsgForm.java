@@ -1,11 +1,18 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
+import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * <pre>
@@ -39,7 +46,64 @@ public class HttpMsgForm {
 
     public static HttpMsgForm httpMsgForm = new HttpMsgForm();
 
+    public HttpMsgForm() {
+        paramAddButton.addActionListener(e -> {
+            String[] data = new String[2];
+            data[0] = httpMsgForm.getParamNameTextField().getText();
+            data[1] = httpMsgForm.getParamValueTextField().getText();
+
+            if (httpMsgForm.getParamTable().getModel().getRowCount() == 0) {
+                initParamTable();
+            }
+
+            DefaultTableModel tableModel = (DefaultTableModel) httpMsgForm.getParamTable().getModel();
+            int rowCount = tableModel.getRowCount();
+
+            Set<String> keySet = new HashSet<>();
+            String keyData;
+            for (int i = 0; i < rowCount; i++) {
+                keyData = (String) tableModel.getValueAt(i, 0);
+                keySet.add(keyData);
+            }
+
+            if (StringUtils.isEmpty(data[0]) || StringUtils.isEmpty(data[1])) {
+                JOptionPane.showMessageDialog(httpMsgForm.getHttpPanel(), "参数Name和参数对应的值Value不能为空！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } else if (keySet.contains(data[0])) {
+                JOptionPane.showMessageDialog(httpMsgForm.getHttpPanel(), "参数Name不能重复！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                tableModel.addRow(data);
+            }
+        });
+    }
+
     public static void init(String msgName) {
+    }
+
+    /**
+     * 初始化paramTable
+     */
+    public static void initParamTable() {
+        JTable paramTable = httpMsgForm.getParamTable();
+        paramTable.setRowHeight(36);
+        String[] headerNames = {"Name", "Value", ""};
+        DefaultTableModel model = new DefaultTableModel(null, headerNames);
+        paramTable.setModel(model);
+        paramTable.updateUI();
+        DefaultTableCellRenderer hr = (DefaultTableCellRenderer) paramTable.getTableHeader().getDefaultRenderer();
+        // 表头列名居左
+        hr.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
+
+        TableColumnModel tableColumnModel = paramTable.getColumnModel();
+        tableColumnModel.getColumn(headerNames.length - 1).
+                setCellRenderer(new TableInCellButtonColumn(paramTable, headerNames.length - 1));
+        tableColumnModel.getColumn(headerNames.length - 1).
+                setCellEditor(new TableInCellButtonColumn(paramTable, headerNames.length - 1));
+
+        // 设置列宽
+        tableColumnModel.getColumn(2).setPreferredWidth(46);
+        tableColumnModel.getColumn(2).setMaxWidth(46);
     }
 
     {
@@ -97,6 +161,7 @@ public class HttpMsgForm {
         paramAddButton.setText("");
         panel2.add(paramAddButton, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         paramTable = new JTable();
+        paramTable.setRowHeight(36);
         panel2.add(paramTable, new GridConstraints(1, 0, 1, 5, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new GridLayoutManager(2, 5, new Insets(5, 5, 0, 0), -1, -1));
@@ -117,6 +182,7 @@ public class HttpMsgForm {
         headerAddButton.setText("");
         panel3.add(headerAddButton, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         headerTable = new JTable();
+        headerTable.setRowHeight(36);
         panel3.add(headerTable, new GridConstraints(1, 0, 1, 5, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new GridLayoutManager(3, 6, new Insets(5, 5, 0, 0), -1, -1));
@@ -131,6 +197,7 @@ public class HttpMsgForm {
         cookieAddButton.setText("");
         panel4.add(cookieAddButton, new GridConstraints(1, 5, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         cookieTable = new JTable();
+        cookieTable.setRowHeight(36);
         panel4.add(cookieTable, new GridConstraints(2, 0, 1, 6, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
         cookieDomainTextField = new JTextField();
         panel4.add(cookieDomainTextField, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));

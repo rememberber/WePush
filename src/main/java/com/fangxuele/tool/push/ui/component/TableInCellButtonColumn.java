@@ -52,7 +52,7 @@ public class TableInCellButtonColumn extends AbstractCellEditor implements
             renderButton.setBackground(UIManager.getColor("Button.background"));
         }
 
-        renderButton.setText("移除");
+        renderButton.setText("");
         renderButton.setIcon(new ImageIcon(getClass().getResource("/icon/remove.png")));
         return renderButton;
     }
@@ -60,14 +60,14 @@ public class TableInCellButtonColumn extends AbstractCellEditor implements
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value,
                                                  boolean isSelected, int row, int column) {
-        editButton.setText("移除");
+        editButton.setText("");
         editButton.setIcon(new ImageIcon(getClass().getResource("/icon/remove.png")));
         return editButton;
     }
 
     @Override
     public Object getCellEditorValue() {
-        return "移除";
+        return "remove";
     }
 
     @Override

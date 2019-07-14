@@ -115,8 +115,8 @@ public class AliTemplateMsgForm {
                 setCellEditor(new TableInCellButtonColumn(aliTemplateMsgForm.getTemplateMsgDataTable(), headerNames.length - 1));
 
         // 设置列宽
-        tableColumnModel.getColumn(2).setPreferredWidth(130);
-        tableColumnModel.getColumn(2).setMaxWidth(130);
+        tableColumnModel.getColumn(2).setPreferredWidth(46);
+        tableColumnModel.getColumn(2).setMaxWidth(46);
     }
 
     /**
@@ -139,8 +139,8 @@ public class AliTemplateMsgForm {
                 setCellEditor(new TableInCellButtonColumn(msgDataTable, headerNames.length - 1));
 
         // 设置列宽
-        tableColumnModel.getColumn(2).setPreferredWidth(130);
-        tableColumnModel.getColumn(2).setMaxWidth(130);
+        tableColumnModel.getColumn(2).setPreferredWidth(46);
+        tableColumnModel.getColumn(2).setMaxWidth(46);
     }
 
     /**

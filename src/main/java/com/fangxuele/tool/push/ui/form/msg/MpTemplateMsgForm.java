@@ -193,8 +193,8 @@ public class MpTemplateMsgForm {
                 setCellEditor(new TableInCellButtonColumn(mpTemplateMsgForm.getTemplateMsgDataTable(), headerNames.length - 1));
 
         // 设置列宽
-        tableColumnModel.getColumn(3).setPreferredWidth(130);
-        tableColumnModel.getColumn(3).setMaxWidth(130);
+        tableColumnModel.getColumn(3).setPreferredWidth(46);
+        tableColumnModel.getColumn(3).setMaxWidth(46);
     }
 
     /**
@@ -299,8 +299,8 @@ public class MpTemplateMsgForm {
                 setCellEditor(new TableInCellButtonColumn(msgDataTable, headerNames.length - 1));
 
         // 设置列宽
-        tableColumnModel.getColumn(3).setPreferredWidth(130);
-        tableColumnModel.getColumn(3).setMaxWidth(130);
+        tableColumnModel.getColumn(3).setPreferredWidth(46);
+        tableColumnModel.getColumn(3).setMaxWidth(46);
     }
 
     /**
