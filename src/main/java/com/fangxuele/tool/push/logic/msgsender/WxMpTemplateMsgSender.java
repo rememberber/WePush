@@ -2,6 +2,7 @@ package com.fangxuele.tool.push.logic.msgsender;
 
 import cn.hutool.json.JSONUtil;
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.logic.BoostPushRunThread;
 import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
@@ -106,10 +107,7 @@ public class WxMpTemplateMsgSender implements IMsgSender {
                     httpPost.setConfig(config);
                 }
                 Future<HttpResponse> httpResponseFuture = getCloseableHttpAsyncClient().execute(httpPost, new CallBack(msgData));
-                if (!PushData.running) {
-                    // TODO
-                    httpResponseFuture.cancel(true);
-                }
+                BoostPushRunThread.futureList.add(httpResponseFuture);
             }
         } catch (Exception e) {
             // 总发送失败+1
@@ -301,7 +299,7 @@ public class WxMpTemplateMsgSender implements IMsgSender {
 
         @Override
         public void cancelled() {
-
+            PushData.toSendCount.getAndDecrement();
         }
     }
 }

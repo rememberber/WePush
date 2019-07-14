@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
@@ -49,7 +50,7 @@ public class PushData {
     /**
      * 准备发送的数量
      */
-    public static volatile int toSendCount;
+    public static final AtomicInteger toSendCount = new AtomicInteger();
 
     /**
      * 发送成功的列表

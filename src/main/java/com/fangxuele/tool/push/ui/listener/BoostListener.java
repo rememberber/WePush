@@ -25,6 +25,7 @@ import com.fangxuele.tool.push.util.ComponentUtil;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.http.HttpResponse;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,6 +34,7 @@ import java.awt.event.MouseEvent;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -347,6 +349,9 @@ public class BoostListener {
                         BoostForm.boostForm.getStopButton().updateUI();
                         BoostForm.boostForm.getScheduledTaskLabel().setVisible(false);
                     }
+                }
+                for (Future<HttpResponse> httpResponseFuture : BoostPushRunThread.futureList) {
+                    httpResponseFuture.cancel(true);
                 }
             });
         });

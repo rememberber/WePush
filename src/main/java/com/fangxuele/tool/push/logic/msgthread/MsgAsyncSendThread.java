@@ -25,7 +25,7 @@ public class MsgAsyncSendThread extends Thread {
 
         for (int i = 0; i < PushData.toSendList.size(); i++) {
             if (!PushData.running) {
-                PushData.toSendCount = i;
+                PushData.toSendCount.set(i);
                 return;
             }
             // 本条消息所需的数据

@@ -14,11 +14,15 @@ import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.logic.msgthread.MsgAsyncSendThread;
 import com.fangxuele.tool.push.ui.form.BoostForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
+import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.http.HttpResponse;
 
 import javax.swing.*;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.Future;
 
 /**
  * <pre>
@@ -31,6 +35,8 @@ import java.util.Date;
 public class BoostPushRunThread extends Thread {
 
     private static final Log logger = LogFactory.get();
+
+    public static List<Future<HttpResponse>> futureList = Lists.newArrayList();
 
     @Override
     public void run() {
@@ -74,7 +80,7 @@ public class BoostPushRunThread extends Thread {
 
         // 拷贝准备的目标用户
         PushData.toSendList.addAll(PushData.allUser);
-        PushData.toSendCount = PushData.allUser.size();
+        PushData.toSendCount.set(PushData.allUser.size());
         // 总记录数
         PushData.totalRecords = PushData.toSendList.size();
 
@@ -111,7 +117,7 @@ public class BoostPushRunThread extends Thread {
         long startTimeMillis = System.currentTimeMillis();
         // 计时
         while (true) {
-            if (PushData.toSendCount <= PushData.successRecords.longValue() + PushData.failRecords.longValue()) {
+            if (PushData.toSendCount.get() <= PushData.successRecords.longValue() + PushData.failRecords.longValue()) {
                 if (!PushData.fixRateScheduling) {
                     BoostForm.boostForm.getStopButton().setEnabled(false);
                     BoostForm.boostForm.getStopButton().updateUI();
