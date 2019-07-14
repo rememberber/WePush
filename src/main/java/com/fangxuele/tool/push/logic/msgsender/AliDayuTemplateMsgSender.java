@@ -58,6 +58,11 @@ public class AliDayuTemplateMsgSender implements IMsgSender {
         return result;
     }
 
+    @Override
+    public SendResult asyncSend(String[] msgData) {
+        return null;
+    }
+
     /**
      * 获取阿里大于短信发送客户端
      *

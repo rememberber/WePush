@@ -29,6 +29,8 @@ public class WxCpMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
     public static String url;
 
+    public static String btnTxt;
+
     public static String msgContent;
 
     /**
@@ -40,7 +42,8 @@ public class WxCpMsgMaker extends BaseMsgMaker implements IMsgMaker {
         msgTitle = WxCpMsgForm.wxCpMsgForm.getTitleTextField().getText();
         picUrl = WxCpMsgForm.wxCpMsgForm.getPicUrlTextField().getText().trim();
         desc = WxCpMsgForm.wxCpMsgForm.getDescTextField().getText();
-        url = WxCpMsgForm.wxCpMsgForm.getPicUrlTextField().getText().trim();
+        url = WxCpMsgForm.wxCpMsgForm.getUrlTextField().getText().trim();
+        btnTxt = WxCpMsgForm.wxCpMsgForm.getBtnTxtTextField().getText().trim();
         msgContent = WxCpMsgForm.wxCpMsgForm.getContentTextArea().getText();
         WxCpMsgSender.wxCpConfigStorage = null;
         WxCpMsgSender.wxCpService = null;
@@ -78,6 +81,18 @@ public class WxCpMsgMaker extends BaseMsgMaker implements IMsgMaker {
         } else if ("文本消息".equals(msgType)) {
             String content = TemplateUtil.evaluate(msgContent, velocityContext);
             wxCpMessage = WxCpMessage.TEXT().agentId(Integer.valueOf(agentId)).toUser(msgData[0]).content(content).build();
+        } else if ("markdown消息".equals(msgType)) {
+            String content = TemplateUtil.evaluate(msgContent, velocityContext);
+            wxCpMessage = WxCpMessage.MARKDOWN().agentId(Integer.valueOf(agentId)).toUser(msgData[0]).content(content).build();
+        } else if ("文本卡片消息".equals(msgType)) {
+            // 标题
+            String title = TemplateUtil.evaluate(msgTitle, velocityContext);
+            // 描述
+            String description = TemplateUtil.evaluate(desc, velocityContext);
+            // 跳转url
+            String urlLink = TemplateUtil.evaluate(url, velocityContext);
+            wxCpMessage = WxCpMessage.TEXTCARD().agentId(Integer.valueOf(agentId)).toUser(msgData[0]).title(title)
+                    .description(description).url(urlLink).btnTxt(btnTxt).build();
         }
 
         return wxCpMessage;

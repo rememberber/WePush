@@ -16,7 +16,7 @@ public class UiConsts {
      * 软件名称,版本
      */
     public final static String APP_NAME = "WePush";
-    public final static String APP_VERSION = "v_3.4.2_190630";
+    public final static String APP_VERSION = "v_3.5.0_190713";
 
     /**
      * 主窗口图标-大
@@ -68,5 +68,10 @@ public class UiConsts {
      * 二维码url
      */
     public final static String QR_CODE_URL = "http://download.zhoubochina.com/file/wepush_qrcode.json";
+
+    /**
+     * 介绍二维码URL
+     */
+    public final static String INTRODUCE_QRCODE_URL = "http://download.zhoubochina.com/qrcode/introduce-wepush-qrcode.png";
 
 }

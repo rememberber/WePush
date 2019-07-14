@@ -155,6 +155,7 @@ create table if not exists t_msg_mail
     msg_type      integer,
     msg_name      text,
     title         text,
+    Cc            text,
     files         text,
     content       text,
     create_time   datetime,
@@ -193,6 +194,7 @@ create table if not exists t_msg_wx_cp
     img_url       text,
     describe      text,
     url           text,
+    btn_txt       text,
     create_time   datetime,
     modified_time datetime
 );

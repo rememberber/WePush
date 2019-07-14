@@ -48,6 +48,8 @@ public class WxCpMsgForm {
     private JComboBox appNameComboBox;
     private JButton appManageButton;
     private JTextArea contentTextArea;
+    private JTextField btnTxtTextField;
+    private JLabel btnTxtLabel;
 
     public static WxCpMsgForm wxCpMsgForm = new WxCpMsgForm();
 
@@ -82,14 +84,12 @@ public class WxCpMsgForm {
             String cpMsgType = tMsgWxCp.getCpMsgType();
             wxCpMsgForm.getAppNameComboBox().setSelectedItem(agentIdToAppNameMap.get(tMsgWxCp.getAgentId()));
             wxCpMsgForm.getMsgTypeComboBox().setSelectedItem(cpMsgType);
-            if ("文本消息".equals(cpMsgType)) {
-                wxCpMsgForm.getContentTextArea().setText(tMsgWxCp.getContent());
-            } else if ("图文消息".equals(cpMsgType)) {
-                wxCpMsgForm.getTitleTextField().setText(tMsgWxCp.getTitle());
-            }
+            wxCpMsgForm.getContentTextArea().setText(tMsgWxCp.getContent());
+            wxCpMsgForm.getTitleTextField().setText(tMsgWxCp.getTitle());
             wxCpMsgForm.getPicUrlTextField().setText(tMsgWxCp.getImgUrl());
             wxCpMsgForm.getDescTextField().setText(tMsgWxCp.getDescribe());
             wxCpMsgForm.getUrlTextField().setText(tMsgWxCp.getUrl());
+            wxCpMsgForm.getBtnTxtTextField().setText(tMsgWxCp.getBtnTxt());
 
             switchCpMsgType(cpMsgType);
         } else {
@@ -118,6 +118,7 @@ public class WxCpMsgForm {
     public static void switchCpMsgType(String msgType) {
         switch (msgType) {
             case "文本消息":
+            case "markdown消息":
                 wxCpMsgForm.getContentTextArea().setVisible(true);
                 wxCpMsgForm.getDescLabel().setVisible(false);
                 wxCpMsgForm.getDescTextField().setVisible(false);
@@ -127,14 +128,32 @@ public class WxCpMsgForm {
                 wxCpMsgForm.getUrlTextField().setVisible(false);
                 wxCpMsgForm.getTitleLabel().setVisible(false);
                 wxCpMsgForm.getTitleTextField().setVisible(false);
+                wxCpMsgForm.getBtnTxtLabel().setVisible(false);
+                wxCpMsgForm.getBtnTxtTextField().setVisible(false);
                 break;
             case "图文消息":
                 wxCpMsgForm.getContentLabel().setVisible(false);
                 wxCpMsgForm.getContentTextArea().setVisible(false);
+                wxCpMsgForm.getBtnTxtLabel().setVisible(false);
+                wxCpMsgForm.getBtnTxtTextField().setVisible(false);
                 wxCpMsgForm.getDescLabel().setVisible(true);
                 wxCpMsgForm.getDescTextField().setVisible(true);
                 wxCpMsgForm.getPicUrlLabel().setVisible(true);
                 wxCpMsgForm.getPicUrlTextField().setVisible(true);
+                wxCpMsgForm.getUrlLabel().setVisible(true);
+                wxCpMsgForm.getUrlTextField().setVisible(true);
+                wxCpMsgForm.getTitleLabel().setVisible(true);
+                wxCpMsgForm.getTitleTextField().setVisible(true);
+                break;
+            case "文本卡片消息":
+                wxCpMsgForm.getContentLabel().setVisible(false);
+                wxCpMsgForm.getContentTextArea().setVisible(false);
+                wxCpMsgForm.getPicUrlLabel().setVisible(false);
+                wxCpMsgForm.getPicUrlTextField().setVisible(false);
+                wxCpMsgForm.getDescLabel().setVisible(true);
+                wxCpMsgForm.getDescTextField().setVisible(true);
+                wxCpMsgForm.getBtnTxtLabel().setVisible(true);
+                wxCpMsgForm.getBtnTxtTextField().setVisible(true);
                 wxCpMsgForm.getUrlLabel().setVisible(true);
                 wxCpMsgForm.getUrlTextField().setVisible(true);
                 wxCpMsgForm.getTitleLabel().setVisible(true);
@@ -154,6 +173,7 @@ public class WxCpMsgForm {
         wxCpMsgForm.getPicUrlTextField().setText("");
         wxCpMsgForm.getDescTextField().setText("");
         wxCpMsgForm.getUrlTextField().setText("");
+        wxCpMsgForm.getBtnTxtTextField().setText("");
     }
 
     public static void save(String msgName) {
@@ -184,6 +204,7 @@ public class WxCpMsgForm {
             String picUrl = wxCpMsgForm.getPicUrlTextField().getText();
             String desc = wxCpMsgForm.getDescTextField().getText();
             String url = wxCpMsgForm.getUrlTextField().getText();
+            String btnTxt = wxCpMsgForm.getBtnTxtTextField().getText();
 
             String now = SqliteUtil.nowDateForSqlite();
 
@@ -197,6 +218,7 @@ public class WxCpMsgForm {
             tMsgWxCp.setImgUrl(picUrl);
             tMsgWxCp.setDescribe(desc);
             tMsgWxCp.setUrl(url);
+            tMsgWxCp.setBtnTxt(btnTxt);
             tMsgWxCp.setModifiedTime(now);
 
             if (existSameMsg) {
@@ -229,18 +251,20 @@ public class WxCpMsgForm {
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         wxCpMsgPanel = new JPanel();
-        wxCpMsgPanel.setLayout(new GridLayoutManager(8, 3, new Insets(10, 8, 0, 8), -1, -1));
+        wxCpMsgPanel.setLayout(new GridLayoutManager(9, 3, new Insets(10, 8, 0, 8), -1, -1));
         panel1.add(wxCpMsgPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         wxCpMsgPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, wxCpMsgPanel.getFont())));
         msgTypeLabel = new JLabel();
         msgTypeLabel.setText("消息类型");
         wxCpMsgPanel.add(msgTypeLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
-        wxCpMsgPanel.add(spacer1, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        wxCpMsgPanel.add(spacer1, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         msgTypeComboBox = new JComboBox();
         final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
         defaultComboBoxModel1.addElement("图文消息");
         defaultComboBoxModel1.addElement("文本消息");
+        defaultComboBoxModel1.addElement("文本卡片消息");
+        defaultComboBoxModel1.addElement("markdown消息");
         msgTypeComboBox.setModel(defaultComboBoxModel1);
         wxCpMsgPanel.add(msgTypeComboBox, new GridConstraints(1, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         titleLabel = new JLabel();
@@ -276,6 +300,13 @@ public class WxCpMsgForm {
         wxCpMsgPanel.add(titleTextField, new GridConstraints(3, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, new Dimension(380, -1), new Dimension(380, -1), null, 0, false));
         contentTextArea = new JTextArea();
         wxCpMsgPanel.add(contentTextArea, new GridConstraints(2, 1, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+        btnTxtLabel = new JLabel();
+        btnTxtLabel.setText("按钮文字");
+        btnTxtLabel.setToolTipText("可不填。默认为“详情”， 不超过4个文字，超过自动截断");
+        wxCpMsgPanel.add(btnTxtLabel, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        btnTxtTextField = new JTextField();
+        btnTxtTextField.setToolTipText("可不填。默认为“详情”， 不超过4个文字，超过自动截断");
+        wxCpMsgPanel.add(btnTxtTextField, new GridConstraints(7, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         msgTypeLabel.setLabelFor(msgTypeComboBox);
         titleLabel.setLabelFor(titleTextField);
         picUrlLabel.setLabelFor(picUrlTextField);

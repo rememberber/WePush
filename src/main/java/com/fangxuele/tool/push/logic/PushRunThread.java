@@ -14,8 +14,6 @@ import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.logic.msgthread.MsgSendThread;
 import com.fangxuele.tool.push.ui.component.TableInCellProgressBarRenderer;
 import com.fangxuele.tool.push.ui.form.PushForm;
-import com.fangxuele.tool.push.ui.form.ScheduleForm;
-import com.fangxuele.tool.push.ui.listener.MemberListener;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
@@ -40,17 +38,15 @@ public class PushRunThread extends Thread {
 
     @Override
     public void run() {
-        if (PushControl.pushCheck()) {
-            PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(true);
-            // 准备推送
-            preparePushRun();
-            PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
-            ConsoleUtil.consoleWithLog("推送开始……");
-            // 消息数据分片以及线程纷发
-            shardingAndMsgThread();
-            // 时间监控
-            timeMonitor();
-        }
+        PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(true);
+        // 准备推送
+        preparePushRun();
+        PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
+        ConsoleUtil.consoleWithLog("推送开始……");
+        // 消息数据分片以及线程纷发
+        shardingAndMsgThread();
+        // 时间监控
+        timeMonitor();
     }
 
     /**
@@ -71,7 +67,7 @@ public class PushRunThread extends Thread {
         PushControl.dryRun = PushForm.pushForm.getDryRunCheckBox().isSelected();
 
         // 执行前重新导入目标用户
-        reimportMembers();
+        PushControl.reimportMembers();
 
         // 重置推送数据
         PushData.reset();
@@ -177,6 +173,7 @@ public class PushRunThread extends Thread {
                     String finishTip = "发送完毕！\n";
                     JOptionPane.showMessageDialog(PushForm.pushForm.getPushPanel(), finishTip, "提示",
                             JOptionPane.INFORMATION_MESSAGE);
+                    PushForm.pushForm.getScheduleDetailLabel().setVisible(false);
                 } else {
                     if (App.config.isRadioCron()) {
                         Date nextDate = CronPatternUtil.nextDateAfter(new CronPattern(App.config.getTextCron()), new Date(), true);
@@ -189,13 +186,13 @@ public class PushRunThread extends Thread {
 
                 // 保存停止前的数据
                 try {
-                    ConsoleUtil.consoleWithLog("正在保存结果数据……");
-                    PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(true);
                     // 空跑控制
                     if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
+                        ConsoleUtil.consoleWithLog("正在保存结果数据……");
+                        PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(true);
                         PushControl.savePushData();
+                        ConsoleUtil.consoleWithLog("结果数据保存完毕！");
                     }
-                    ConsoleUtil.consoleWithLog("结果数据保存完毕！");
                 } catch (IOException e) {
                     logger.error(e);
                 } finally {
@@ -219,29 +216,6 @@ public class PushRunThread extends Thread {
             PushForm.pushForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
 
             ThreadUtil.safeSleep(100);
-        }
-    }
-
-    /**
-     * 重新导入目标用户(定时任务)
-     */
-    private void reimportMembers() {
-        if (PushData.fixRateScheduling && ScheduleForm.scheduleForm.getReimportCheckBox().isSelected()) {
-            switch ((String) ScheduleForm.scheduleForm.getReimportComboBox().getSelectedItem()) {
-                case "通过SQL导入":
-                    MemberListener.importFromSql();
-                    break;
-                case "通过文件导入":
-                    MemberListener.importFromFile();
-                    break;
-                case "导入所有关注公众号的用户":
-                    MemberListener.importWxAll();
-                    break;
-                case "导入企业通讯录中所有用户":
-                    MemberListener.importWxCpAll();
-                    break;
-                default:
-            }
         }
     }
 

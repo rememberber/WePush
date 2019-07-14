@@ -19,6 +19,8 @@ public class TMsgMail implements Serializable {
 
     private String modifiedTime;
 
+    private String cc;
+
     private static final long serialVersionUID = 1L;
 
     public Integer getId() {
@@ -83,5 +85,13 @@ public class TMsgMail implements Serializable {
 
     public void setModifiedTime(String modifiedTime) {
         this.modifiedTime = modifiedTime == null ? null : modifiedTime.trim();
+    }
+
+    public String getCc() {
+        return cc;
+    }
+
+    public void setCc(String cc) {
+        this.cc = cc == null ? null : cc.trim();
     }
 }

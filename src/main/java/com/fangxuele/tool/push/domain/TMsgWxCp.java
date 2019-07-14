@@ -27,6 +27,8 @@ public class TMsgWxCp implements Serializable {
 
     private String modifiedTime;
 
+    private String btnTxt;
+
     private static final long serialVersionUID = 1L;
 
     public Integer getId() {
@@ -123,5 +125,13 @@ public class TMsgWxCp implements Serializable {
 
     public void setModifiedTime(String modifiedTime) {
         this.modifiedTime = modifiedTime == null ? null : modifiedTime.trim();
+    }
+
+    public String getBtnTxt() {
+        return btnTxt;
+    }
+
+    public void setBtnTxt(String btnTxt) {
+        this.btnTxt = btnTxt == null ? null : btnTxt.trim();
     }
 }

@@ -70,6 +70,11 @@ public class WxCpMsgSender implements IMsgSender {
         return sendResult;
     }
 
+    @Override
+    public SendResult asyncSend(String[] msgData) {
+        return null;
+    }
+
     /**
      * 微信企业号配置
      *

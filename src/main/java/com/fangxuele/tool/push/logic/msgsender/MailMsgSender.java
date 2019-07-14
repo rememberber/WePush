@@ -8,6 +8,7 @@ import com.fangxuele.tool.push.bean.MailMsg;
 import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.msgmaker.MailMsgMaker;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -39,15 +40,21 @@ public class MailMsgSender implements IMsgSender {
 
         try {
             MailMsg mailMsg = mailMsgMaker.makeMsg(msgData);
-            String tos = msgData[0];
+            List<String> tos = Lists.newArrayList();
+            tos.add(msgData[0]);
             if (PushControl.dryRun) {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
+                List<String> ccList = null;
+                if (StringUtils.isNotBlank(mailMsg.getMailCc())) {
+                    ccList = Lists.newArrayList();
+                    ccList.add(mailMsg.getMailCc());
+                }
                 if (StringUtils.isEmpty(mailMsg.getMailFiles())) {
-                    MailUtil.send(mailAccount, tos, mailMsg.getMailTitle(), mailMsg.getMailContent(), true);
+                    MailUtil.send(mailAccount, tos, ccList, null, mailMsg.getMailTitle(), mailMsg.getMailContent(), true);
                 } else {
-                    MailUtil.send(mailAccount, tos, mailMsg.getMailTitle(), mailMsg.getMailContent(), true, FileUtil.file(mailMsg.getMailFiles()));
+                    MailUtil.send(mailAccount, tos, ccList, null, mailMsg.getMailTitle(), mailMsg.getMailContent(), true, FileUtil.file(mailMsg.getMailFiles()));
                 }
                 sendResult.setSuccess(true);
             }
@@ -58,6 +65,11 @@ public class MailMsgSender implements IMsgSender {
         }
 
         return sendResult;
+    }
+
+    @Override
+    public SendResult asyncSend(String[] msgData) {
+        return null;
     }
 
     public SendResult sendTestMail(String tos) {

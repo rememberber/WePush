@@ -88,7 +88,7 @@ public class BaseMsgThread extends Thread {
      */
     public void initCurrentThread() {
         ConsoleUtil.consoleWithLog("线程" + this.getName() + "负责处理第:" + startIndex + "-" +
-                endIndex + "条的数据");
+                endIndex + "条数据");
 
         list = PushData.toSendList.subList(startIndex, endIndex);
 

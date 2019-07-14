@@ -19,7 +19,10 @@ import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.logic.msgsender.SendResult;
+import com.fangxuele.tool.push.ui.UiConsts;
+import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
+import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
 import com.fangxuele.tool.push.ui.form.ScheduleForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
@@ -68,7 +71,7 @@ public class PushControl {
      */
     public static List<SendResult> preview() {
         List<SendResult> sendResultList = new ArrayList<>();
-        if (!pushCheck()) {
+        if (!configCheck()) {
             return null;
         }
         List<String[]> msgDataList = new ArrayList<>();
@@ -97,7 +100,44 @@ public class PushControl {
      *
      * @return boolean
      */
-    static boolean pushCheck() {
+    public static boolean pushCheck() {
+        if (StringUtils.isEmpty(MessageEditForm.messageEditForm.getMsgNameField().getText())) {
+            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMainPanel(), "请先选择一条消息！", "提示",
+                    JOptionPane.INFORMATION_MESSAGE);
+            MainWindow.mainWindow.getTabbedPane().setSelectedIndex(2);
+
+            return false;
+        }
+        if (PushData.allUser == null || PushData.allUser.size() == 0) {
+            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMainPanel(), "请先准备目标用户！", "提示",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+            return false;
+        }
+        if (!PushData.boostMode) {
+            if ("0".equals(PushForm.pushForm.getMaxThreadPoolTextField().getText()) || StringUtils.isEmpty(PushForm.pushForm.getMaxThreadPoolTextField().getText())) {
+                JOptionPane.showMessageDialog(PushForm.pushForm.getPushPanel(), "请设置每页分配用户数！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+                return false;
+            }
+            if ("0".equals(PushForm.pushForm.getThreadCountTextField().getText()) || StringUtils.isEmpty(PushForm.pushForm.getThreadCountTextField().getText())) {
+                JOptionPane.showMessageDialog(PushForm.pushForm.getPushPanel(), "请设置每个线程分配的页数！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+                return false;
+            }
+        }
+
+        return configCheck();
+    }
+
+    /**
+     * 配置检查
+     *
+     * @return
+     */
+    public static boolean configCheck() {
         int msgType = App.config.getMsgType();
         switch (msgType) {
             case MessageTypeEnum.MP_TEMPLATE_CODE:
@@ -293,7 +333,7 @@ public class PushControl {
             contentBuilder.append("<br/>");
             contentBuilder.append("<hr/>");
             contentBuilder.append("<p>来自WePush，一款专注于批量推送的小而美的工具</p>");
-            contentBuilder.append("<img alt=\"WePush\" src=\"http://download.zhoubochina.com/file/wx-zanshang.jpg\">");
+            contentBuilder.append("<img alt=\"WePush\" src=\"" + UiConsts.INTRODUCE_QRCODE_URL + "\">");
 
             File[] files = new File[fileList.size()];
             fileList.toArray(files);
@@ -360,6 +400,29 @@ public class PushControl {
                 WxCpMsgMaker.prepare();
                 break;
             default:
+        }
+    }
+
+    /**
+     * 重新导入目标用户(定时任务)
+     */
+    public static void reimportMembers() {
+        if (PushData.fixRateScheduling && ScheduleForm.scheduleForm.getReimportCheckBox().isSelected()) {
+            switch ((String) ScheduleForm.scheduleForm.getReimportComboBox().getSelectedItem()) {
+                case "通过SQL导入":
+                    MemberListener.importFromSql();
+                    break;
+                case "通过文件导入":
+                    MemberListener.importFromFile();
+                    break;
+                case "导入所有关注公众号的用户":
+                    MemberListener.importWxAll();
+                    break;
+                case "导入企业通讯录中所有用户":
+                    MemberListener.importWxCpAll();
+                    break;
+                default:
+            }
         }
     }
 

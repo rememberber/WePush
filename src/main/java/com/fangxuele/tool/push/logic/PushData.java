@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
@@ -27,6 +28,11 @@ public class PushData {
     static long totalRecords;
 
     /**
+     * (异步发送)已处理数
+     */
+    public static LongAdder processedRecords = new LongAdder();
+
+    /**
      * 发送成功数
      */
     public static LongAdder successRecords = new LongAdder();
@@ -40,6 +46,11 @@ public class PushData {
      * 准备发送的列表
      */
     public static List<String[]> toSendList;
+
+    /**
+     * 准备发送的数量
+     */
+    public static final AtomicInteger toSendCount = new AtomicInteger();
 
     /**
      * 发送成功的列表
@@ -77,6 +88,13 @@ public class PushData {
     static LongAdder stopedThreadCount = new LongAdder();
 
     /**
+     * 已处理数+1
+     */
+    public static void increaseProcessed() {
+        processedRecords.add(1);
+    }
+
+    /**
      * 成功数+1
      */
     public static void increaseSuccess() {
@@ -108,10 +126,16 @@ public class PushData {
     public static long endTime = 0;
 
     /**
+     * 是否为性能模式
+     */
+    public static boolean boostMode = false;
+
+    /**
      * 重置推送数据
      */
     static void reset() {
         running = true;
+        processedRecords.reset();
         successRecords.reset();
         failRecords.reset();
         stopedThreadCount.reset();

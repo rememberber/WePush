@@ -61,6 +61,11 @@ public class AliYunMsgSender implements IMsgSender {
         return sendResult;
     }
 
+    @Override
+    public SendResult asyncSend(String[] msgData) {
+        return null;
+    }
+
     /**
      * 获取阿里云短信发送客户端
      *
