@@ -24,7 +24,7 @@
               <text value="URL"/>
             </properties>
           </component>
-          <component id="502ad" class="javax.swing.JComboBox" binding="comboBox1" default-binding="true">
+          <component id="502ad" class="javax.swing.JComboBox" binding="methodComboBox">
             <constraints>
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -40,7 +40,7 @@
               </model>
             </properties>
           </component>
-          <component id="def35" class="javax.swing.JTextField" binding="textField1" default-binding="true">
+          <component id="def35" class="javax.swing.JTextField" binding="urlTextField">
             <constraints>
               <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -66,7 +66,7 @@
               <text value="Name"/>
             </properties>
           </component>
-          <component id="8b084" class="javax.swing.JTextField" binding="textField2" default-binding="true">
+          <component id="8b084" class="javax.swing.JTextField" binding="paramNameTextField">
             <constraints>
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -82,7 +82,7 @@
               <text value="Value"/>
             </properties>
           </component>
-          <component id="b9d8e" class="javax.swing.JTextField" binding="textField3" default-binding="true">
+          <component id="b9d8e" class="javax.swing.JTextField" binding="paramValueTextField">
             <constraints>
               <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -90,7 +90,7 @@
             </constraints>
             <properties/>
           </component>
-          <component id="82733" class="javax.swing.JButton" binding="button1" default-binding="true">
+          <component id="82733" class="javax.swing.JButton" binding="paramAddButton">
             <constraints>
               <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -99,7 +99,7 @@
               <text value=""/>
             </properties>
           </component>
-          <component id="1e1a4" class="javax.swing.JTable" binding="table1" default-binding="true">
+          <component id="1e1a4" class="javax.swing.JTable" binding="paramTable">
             <constraints>
               <grid row="1" column="0" row-span="1" col-span="5" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="50"/>
@@ -125,7 +125,7 @@
               <text value="Name"/>
             </properties>
           </component>
-          <component id="4e19c" class="javax.swing.JTextField" binding="textField4" default-binding="true">
+          <component id="4e19c" class="javax.swing.JTextField" binding="headerNameTextField">
             <constraints>
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -141,7 +141,7 @@
               <text value="Value"/>
             </properties>
           </component>
-          <component id="a971" class="javax.swing.JTextField" binding="textField5" default-binding="true">
+          <component id="a971" class="javax.swing.JTextField" binding="headerValueTextField5">
             <constraints>
               <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -149,7 +149,7 @@
             </constraints>
             <properties/>
           </component>
-          <component id="8c37b" class="javax.swing.JButton" binding="button2" default-binding="true">
+          <component id="8c37b" class="javax.swing.JButton" binding="headerAddButton">
             <constraints>
               <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -158,7 +158,7 @@
               <text value=""/>
             </properties>
           </component>
-          <component id="9ef44" class="javax.swing.JTable" binding="table2" default-binding="true">
+          <component id="9ef44" class="javax.swing.JTable" binding="headerTable">
             <constraints>
               <grid row="1" column="0" row-span="1" col-span="5" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="50"/>
@@ -176,7 +176,7 @@
         <properties/>
         <border type="etched" title="Cookies"/>
         <children>
-          <component id="ed2a" class="javax.swing.JTextField" binding="textField6" default-binding="true">
+          <component id="ed2a" class="javax.swing.JTextField" binding="cookieNameTextField">
             <constraints>
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -184,7 +184,7 @@
             </constraints>
             <properties/>
           </component>
-          <component id="fb46e" class="javax.swing.JTextField" binding="textField7" default-binding="true">
+          <component id="fb46e" class="javax.swing.JTextField" binding="cookieValueTextField">
             <constraints>
               <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -192,7 +192,7 @@
             </constraints>
             <properties/>
           </component>
-          <component id="53360" class="javax.swing.JButton" binding="button3" default-binding="true">
+          <component id="53360" class="javax.swing.JButton" binding="cookieAddButton">
             <constraints>
               <grid row="1" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -201,7 +201,7 @@
               <text value=""/>
             </properties>
           </component>
-          <component id="69a41" class="javax.swing.JTable" binding="table3" default-binding="true">
+          <component id="69a41" class="javax.swing.JTable" binding="cookieTable">
             <constraints>
               <grid row="2" column="0" row-span="1" col-span="6" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="50"/>
@@ -209,7 +209,7 @@
             </constraints>
             <properties/>
           </component>
-          <component id="8a5c1" class="javax.swing.JTextField" binding="textField8" default-binding="true">
+          <component id="8a5c1" class="javax.swing.JTextField" binding="cookieDomainTextField">
             <constraints>
               <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -217,7 +217,7 @@
             </constraints>
             <properties/>
           </component>
-          <component id="c36e" class="javax.swing.JTextField" binding="textField9" default-binding="true">
+          <component id="c36e" class="javax.swing.JTextField" binding="cookiePathTextField">
             <constraints>
               <grid row="1" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -265,7 +265,7 @@
               <text value="Expiry DateTime"/>
             </properties>
           </component>
-          <component id="3600b" class="javax.swing.JTextField" binding="textField10" default-binding="true">
+          <component id="3600b" class="javax.swing.JTextField" binding="cookieExpiryTextField">
             <constraints>
               <grid row="1" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -283,7 +283,7 @@
         <properties/>
         <border type="etched" title="Body"/>
         <children>
-          <component id="2c381" class="javax.swing.JTextArea" binding="textArea1" default-binding="true">
+          <component id="2c381" class="javax.swing.JTextArea" binding="bodyTextArea">
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="50"/>
