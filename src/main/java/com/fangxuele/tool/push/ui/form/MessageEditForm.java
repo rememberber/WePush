@@ -4,6 +4,7 @@ import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.form.msg.AliTemplateMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.AliYunMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.HttpMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.KefuMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.KefuPriorityMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.MaTemplateMsgForm;
@@ -91,6 +92,9 @@ public class MessageEditForm {
             case MessageTypeEnum.WX_CP_CODE:
                 WxCpMsgForm.init(msgName);
                 break;
+            case MessageTypeEnum.HTTP_CODE:
+                HttpMsgForm.init(msgName);
+                break;
             default:
         }
     }
@@ -146,6 +150,10 @@ public class MessageEditForm {
             case MessageTypeEnum.WX_CP_CODE:
                 WxCpMsgForm.init(null);
                 messageEditForm.getMsgEditorPanel().add(WxCpMsgForm.wxCpMsgForm.getWxCpMsgPanel(), gridConstraintsRow0);
+                break;
+            case MessageTypeEnum.HTTP_CODE:
+                HttpMsgForm.init(null);
+                messageEditForm.getMsgEditorPanel().add(HttpMsgForm.httpMsgForm.getHttpPanel(), gridConstraintsRow0);
                 break;
             default:
                 break;

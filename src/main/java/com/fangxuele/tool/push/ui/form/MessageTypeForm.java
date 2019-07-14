@@ -42,7 +42,7 @@ public class MessageTypeForm {
     private JRadioButton 钉钉RadioButton;
     private JScrollPane messageTypeScrollPane;
     private JLabel kefuPriorityTipsLabel;
-    private JRadioButton HTTP请求RadioButton;
+    private JRadioButton httpRadioButton;
     private JRadioButton 七牛云短信RadioButton;
 
     public static MessageTypeForm messageTypeForm = new MessageTypeForm();
@@ -90,6 +90,9 @@ public class MessageTypeForm {
                 break;
             case MessageTypeEnum.WX_CP_CODE:
                 messageTypeForm.getWxCpRadioButton().setSelected(true);
+                break;
+            case MessageTypeEnum.HTTP_CODE:
+                messageTypeForm.getHttpRadioButton().setSelected(true);
                 break;
 
             default:
@@ -223,10 +226,10 @@ public class MessageTypeForm {
         kefuPriorityTipsLabel.setIcon(new ImageIcon(getClass().getResource("/icon/helpButton.png")));
         kefuPriorityTipsLabel.setText("");
         msgTypeListPanel.add(kefuPriorityTipsLabel, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        HTTP请求RadioButton = new JRadioButton();
-        HTTP请求RadioButton.setEnabled(false);
-        HTTP请求RadioButton.setText("HTTP请求");
-        msgTypeListPanel.add(HTTP请求RadioButton, new GridConstraints(10, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        httpRadioButton = new JRadioButton();
+        httpRadioButton.setEnabled(true);
+        httpRadioButton.setText("HTTP请求");
+        msgTypeListPanel.add(httpRadioButton, new GridConstraints(10, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         eMailRadioButton = new JRadioButton();
         eMailRadioButton.setEnabled(true);
         eMailRadioButton.setText("E-Mail（BETA）");

@@ -85,7 +85,7 @@
                 </constraints>
                 <properties>
                   <icon value="icon/add.png"/>
-                  <text value="添加"/>
+                  <text value=""/>
                 </properties>
               </component>
               <component id="585df" class="javax.swing.JTable" binding="templateMsgDataTable">
