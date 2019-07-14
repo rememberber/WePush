@@ -47,6 +47,11 @@ public class PushData {
     public static List<String[]> toSendList;
 
     /**
+     * 准备发送的数量
+     */
+    public static volatile int toSendCount;
+
+    /**
      * 发送成功的列表
      */
     public static List<String[]> sendSuccessList;

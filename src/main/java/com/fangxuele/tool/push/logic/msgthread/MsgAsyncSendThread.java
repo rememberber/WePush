@@ -2,7 +2,6 @@ package com.fangxuele.tool.push.logic.msgthread;
 
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.SendResult;
 import com.fangxuele.tool.push.ui.form.BoostForm;
 
 /**
@@ -25,10 +24,13 @@ public class MsgAsyncSendThread extends Thread {
     public void run() {
 
         for (int i = 0; i < PushData.toSendList.size(); i++) {
-
+            if (!PushData.running) {
+                PushData.toSendCount = i;
+                return;
+            }
             // 本条消息所需的数据
             String[] msgData = PushData.toSendList.get(i);
-            SendResult sendResult = iMsgSender.asyncSend(msgData);
+            iMsgSender.asyncSend(msgData);
             // 已处理+1
             PushData.increaseProcessed();
             BoostForm.boostForm.getProcessedCountLabel().setText(String.valueOf(PushData.processedRecords));
