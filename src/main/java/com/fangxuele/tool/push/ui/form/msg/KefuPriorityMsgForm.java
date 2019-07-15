@@ -24,12 +24,15 @@ import java.util.Objects;
  * @author <a href="https://github.com/rememberber">Zhou Bo</a>
  * @since 2019/6/6.
  */
-public class KefuPriorityMsgForm {
+public class KefuPriorityMsgForm implements IMsgForm {
 
     private static TMsgKefuPriorityMapper msgKefuPriorityMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuPriorityMapper.class);
     private static TTemplateDataMapper templateDataMapper = MybatisUtil.getSqlSession().getMapper(TTemplateDataMapper.class);
 
-    public static void init(String msgName) {
+    public static KefuPriorityMsgForm kefuPriorityMsgForm = new KefuPriorityMsgForm();
+
+    @Override
+    public void init(String msgName) {
         clearAllField();
         List<TMsgKefuPriority> tMsgKefuPriorityList = msgKefuPriorityMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.KEFU_PRIORITY_CODE, msgName);
         if (tMsgKefuPriorityList.size() > 0) {
@@ -83,7 +86,8 @@ public class KefuPriorityMsgForm {
         MpTemplateMsgForm.initTemplateList();
     }
 
-    public static void save(String msgName) {
+    @Override
+    public void save(String msgName) {
         int msgId = 0;
         boolean existSameMsg = false;
 

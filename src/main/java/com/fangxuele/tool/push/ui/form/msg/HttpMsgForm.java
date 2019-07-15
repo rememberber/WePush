@@ -23,7 +23,7 @@ import java.util.Set;
  * @since 2019/7/14.
  */
 @Getter
-public class HttpMsgForm {
+public class HttpMsgForm implements IMsgForm {
     private JComboBox methodComboBox;
     private JTextField urlTextField;
     private JTextField paramNameTextField;
@@ -141,7 +141,13 @@ public class HttpMsgForm {
         });
     }
 
-    public static void init(String msgName) {
+    @Override
+    public void init(String msgName) {
+    }
+
+    @Override
+    public void save(String msgName) {
+
     }
 
     /**

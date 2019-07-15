@@ -12,7 +12,6 @@ import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
@@ -35,7 +34,7 @@ import java.util.Set;
  * @since 2019/6/3.
  */
 @Getter
-public class AliTemplateMsgForm {
+public class AliTemplateMsgForm implements IMsgForm {
     private JPanel templateMsgPanel;
     private JLabel templateIdLabel;
     private JTextField msgTemplateIdTextField;
@@ -86,7 +85,8 @@ public class AliTemplateMsgForm {
         });
     }
 
-    public static void init(String msgName) {
+    @Override
+    public void init(String msgName) {
         clearAllField();
         Integer msgId = 0;
         List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.ALI_TEMPLATE_CODE, msgName);
@@ -119,41 +119,8 @@ public class AliTemplateMsgForm {
         tableColumnModel.getColumn(2).setMaxWidth(46);
     }
 
-    /**
-     * 初始化模板消息数据table
-     */
-    public static void initTemplateDataTable() {
-        JTable msgDataTable = aliTemplateMsgForm.getTemplateMsgDataTable();
-        String[] headerNames = {"模板参数", "参数对应的值", "操作"};
-        DefaultTableModel model = new DefaultTableModel(null, headerNames);
-        msgDataTable.setModel(model);
-        msgDataTable.updateUI();
-        DefaultTableCellRenderer hr = (DefaultTableCellRenderer) msgDataTable.getTableHeader().getDefaultRenderer();
-        // 表头列名居左
-        hr.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
-
-        TableColumnModel tableColumnModel = msgDataTable.getColumnModel();
-        tableColumnModel.getColumn(headerNames.length - 1).
-                setCellRenderer(new TableInCellButtonColumn(msgDataTable, headerNames.length - 1));
-        tableColumnModel.getColumn(headerNames.length - 1).
-                setCellEditor(new TableInCellButtonColumn(msgDataTable, headerNames.length - 1));
-
-        // 设置列宽
-        tableColumnModel.getColumn(2).setPreferredWidth(46);
-        tableColumnModel.getColumn(2).setMaxWidth(46);
-    }
-
-    /**
-     * 清空所有界面字段
-     */
-    public static void clearAllField() {
-        aliTemplateMsgForm.getMsgTemplateIdTextField().setText("");
-        aliTemplateMsgForm.getTemplateDataNameTextField().setText("");
-        aliTemplateMsgForm.getTemplateDataValueTextField().setText("");
-        initTemplateDataTable();
-    }
-
-    public static void save(String msgName) {
+    @Override
+    public void save(String msgName) {
         int msgId = 0;
 
         boolean existSameMsg = false;
@@ -223,6 +190,40 @@ public class AliTemplateMsgForm {
             JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "保存成功！", "成功",
                     JOptionPane.INFORMATION_MESSAGE);
         }
+    }
+
+    /**
+     * 初始化模板消息数据table
+     */
+    public static void initTemplateDataTable() {
+        JTable msgDataTable = aliTemplateMsgForm.getTemplateMsgDataTable();
+        String[] headerNames = {"模板参数", "参数对应的值", "操作"};
+        DefaultTableModel model = new DefaultTableModel(null, headerNames);
+        msgDataTable.setModel(model);
+        msgDataTable.updateUI();
+        DefaultTableCellRenderer hr = (DefaultTableCellRenderer) msgDataTable.getTableHeader().getDefaultRenderer();
+        // 表头列名居左
+        hr.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
+
+        TableColumnModel tableColumnModel = msgDataTable.getColumnModel();
+        tableColumnModel.getColumn(headerNames.length - 1).
+                setCellRenderer(new TableInCellButtonColumn(msgDataTable, headerNames.length - 1));
+        tableColumnModel.getColumn(headerNames.length - 1).
+                setCellEditor(new TableInCellButtonColumn(msgDataTable, headerNames.length - 1));
+
+        // 设置列宽
+        tableColumnModel.getColumn(2).setPreferredWidth(46);
+        tableColumnModel.getColumn(2).setMaxWidth(46);
+    }
+
+    /**
+     * 清空所有界面字段
+     */
+    public static void clearAllField() {
+        aliTemplateMsgForm.getMsgTemplateIdTextField().setText("");
+        aliTemplateMsgForm.getTemplateDataNameTextField().setText("");
+        aliTemplateMsgForm.getTemplateDataValueTextField().setText("");
+        initTemplateDataTable();
     }
 
     {

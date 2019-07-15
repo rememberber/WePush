@@ -72,7 +72,7 @@ public class TableInCellButtonColumn extends AbstractCellEditor implements
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        int isDelete = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getMessagePanel(), "确认移除？", "确认",
+        int isDelete = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getMessagePanel(), "确定移除？", "请确认",
                 JOptionPane.YES_NO_OPTION);
         if (isDelete == JOptionPane.YES_OPTION) {
             fireEditingStopped();

@@ -27,7 +27,7 @@ import java.util.Objects;
  * @since 2019/6/3.
  */
 @Getter
-public class KefuMsgForm {
+public class KefuMsgForm implements IMsgForm {
     private JPanel kefuMsgPanel;
     private JLabel kefuMsgTypeLabel;
     private JComboBox msgKefuMsgTypeComboBox;
@@ -55,7 +55,8 @@ public class KefuMsgForm {
         });
     }
 
-    public static void init(String msgName) {
+    @Override
+    public void init(String msgName) {
         clearAllField();
         List<TMsgKefu> tMsgKefuList = msgKefuMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.KEFU_CODE, msgName);
         if (tMsgKefuList.size() > 0) {
@@ -74,6 +75,55 @@ public class KefuMsgForm {
             switchKefuMsgType(kefuMsgType);
         } else {
             switchKefuMsgType("图文消息");
+        }
+    }
+
+    @Override
+    public void save(String msgName) {
+        boolean existSameMsg = false;
+
+        List<TMsgKefu> tMsgKefuList = msgKefuMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.KEFU_CODE, msgName);
+        if (tMsgKefuList.size() > 0) {
+            existSameMsg = true;
+        }
+
+        int isCover = JOptionPane.NO_OPTION;
+        if (existSameMsg) {
+            // 如果存在，是否覆盖
+            isCover = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getMessagePanel(), "已经存在同名的历史消息，\n是否覆盖？", "确认",
+                    JOptionPane.YES_NO_OPTION);
+        }
+
+        if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
+            String kefuMsgType = Objects.requireNonNull(kefuMsgForm.getMsgKefuMsgTypeComboBox().getSelectedItem()).toString();
+            String kefuMsgContent = kefuMsgForm.getContentTextArea().getText();
+            String kefuMsgTitle = kefuMsgForm.getMsgKefuMsgTitleTextField().getText();
+            String kefuPicUrl = kefuMsgForm.getMsgKefuPicUrlTextField().getText();
+            String kefuDesc = kefuMsgForm.getMsgKefuDescTextField().getText();
+            String kefuUrl = kefuMsgForm.getMsgKefuUrlTextField().getText();
+
+            String now = SqliteUtil.nowDateForSqlite();
+
+            TMsgKefu tMsgKefu = new TMsgKefu();
+            tMsgKefu.setMsgType(MessageTypeEnum.KEFU_CODE);
+            tMsgKefu.setMsgName(msgName);
+            tMsgKefu.setKefuMsgType(kefuMsgType);
+            tMsgKefu.setContent(kefuMsgContent);
+            tMsgKefu.setTitle(kefuMsgTitle);
+            tMsgKefu.setImgUrl(kefuPicUrl);
+            tMsgKefu.setDescribe(kefuDesc);
+            tMsgKefu.setUrl(kefuUrl);
+            tMsgKefu.setModifiedTime(now);
+
+            if (existSameMsg) {
+                msgKefuMapper.updateByMsgTypeAndMsgName(tMsgKefu);
+            } else {
+                tMsgKefu.setCreateTime(now);
+                msgKefuMapper.insertSelective(tMsgKefu);
+            }
+
+            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "保存成功！", "成功",
+                    JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -121,54 +171,6 @@ public class KefuMsgForm {
         kefuMsgForm.getMsgKefuPicUrlTextField().setText("");
         kefuMsgForm.getMsgKefuDescTextField().setText("");
         kefuMsgForm.getMsgKefuUrlTextField().setText("");
-    }
-
-    public static void save(String msgName) {
-        boolean existSameMsg = false;
-
-        List<TMsgKefu> tMsgKefuList = msgKefuMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.KEFU_CODE, msgName);
-        if (tMsgKefuList.size() > 0) {
-            existSameMsg = true;
-        }
-
-        int isCover = JOptionPane.NO_OPTION;
-        if (existSameMsg) {
-            // 如果存在，是否覆盖
-            isCover = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getMessagePanel(), "已经存在同名的历史消息，\n是否覆盖？", "确认",
-                    JOptionPane.YES_NO_OPTION);
-        }
-
-        if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
-            String kefuMsgType = Objects.requireNonNull(kefuMsgForm.getMsgKefuMsgTypeComboBox().getSelectedItem()).toString();
-            String kefuMsgContent = kefuMsgForm.getContentTextArea().getText();
-            String kefuMsgTitle = kefuMsgForm.getMsgKefuMsgTitleTextField().getText();
-            String kefuPicUrl = kefuMsgForm.getMsgKefuPicUrlTextField().getText();
-            String kefuDesc = kefuMsgForm.getMsgKefuDescTextField().getText();
-            String kefuUrl = kefuMsgForm.getMsgKefuUrlTextField().getText();
-
-            String now = SqliteUtil.nowDateForSqlite();
-
-            TMsgKefu tMsgKefu = new TMsgKefu();
-            tMsgKefu.setMsgType(MessageTypeEnum.KEFU_CODE);
-            tMsgKefu.setMsgName(msgName);
-            tMsgKefu.setKefuMsgType(kefuMsgType);
-            tMsgKefu.setContent(kefuMsgContent);
-            tMsgKefu.setTitle(kefuMsgTitle);
-            tMsgKefu.setImgUrl(kefuPicUrl);
-            tMsgKefu.setDescribe(kefuDesc);
-            tMsgKefu.setUrl(kefuUrl);
-            tMsgKefu.setModifiedTime(now);
-
-            if (existSameMsg) {
-                msgKefuMapper.updateByMsgTypeAndMsgName(tMsgKefu);
-            } else {
-                tMsgKefu.setCreateTime(now);
-                msgKefuMapper.insertSelective(tMsgKefu);
-            }
-
-            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "保存成功！", "成功",
-                    JOptionPane.INFORMATION_MESSAGE);
-        }
     }
 
     {

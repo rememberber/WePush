@@ -45,7 +45,7 @@ import java.util.regex.Pattern;
  */
 @Getter
 @Slf4j
-public class MpTemplateMsgForm {
+public class MpTemplateMsgForm implements IMsgForm {
     private JPanel templateMsgPanel;
     private JLabel templateIdLabel;
     private JTextField msgTemplateIdTextField;
@@ -148,7 +148,8 @@ public class MpTemplateMsgForm {
         });
     }
 
-    public static void init(String msgName) {
+    @Override
+    public void init(String msgName) {
         clearAllField();
         Integer msgId = 0;
         List<TMsgMpTemplate> tMsgMpTemplateList = msgMpTemplateMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.MP_TEMPLATE_CODE, msgName);
@@ -166,6 +167,87 @@ public class MpTemplateMsgForm {
         initTemplateList();
         initTemplateDataTable();
         fillTemplateDataTable(msgId);
+    }
+
+    @Override
+    public void save(String msgName) {
+        int msgId = 0;
+        boolean existSameMsg = false;
+
+        List<TMsgMpTemplate> tMsgMpTemplateList = msgMpTemplateMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.MP_TEMPLATE_CODE, msgName);
+        if (tMsgMpTemplateList.size() > 0) {
+            existSameMsg = true;
+            msgId = tMsgMpTemplateList.get(0).getId();
+        }
+
+        int isCover = JOptionPane.NO_OPTION;
+        if (existSameMsg) {
+            // 如果存在，是否覆盖
+            isCover = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getMessagePanel(), "已经存在同名的历史消息，\n是否覆盖？", "确认",
+                    JOptionPane.YES_NO_OPTION);
+        }
+
+        if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
+            String templateId = mpTemplateMsgForm.getMsgTemplateIdTextField().getText();
+            String templateUrl = mpTemplateMsgForm.getMsgTemplateUrlTextField().getText();
+            String templateMiniAppid = mpTemplateMsgForm.getMsgTemplateMiniAppidTextField().getText();
+            String templateMiniPagePath = mpTemplateMsgForm.getMsgTemplateMiniPagePathTextField().getText();
+
+            String now = SqliteUtil.nowDateForSqlite();
+
+            TMsgMpTemplate tMsgMpTemplate = new TMsgMpTemplate();
+            tMsgMpTemplate.setMsgType(MessageTypeEnum.MP_TEMPLATE_CODE);
+            tMsgMpTemplate.setMsgName(msgName);
+            tMsgMpTemplate.setTemplateId(templateId);
+            tMsgMpTemplate.setUrl(templateUrl);
+            tMsgMpTemplate.setMaAppid(templateMiniAppid);
+            tMsgMpTemplate.setMaPagePath(templateMiniPagePath);
+            tMsgMpTemplate.setCreateTime(now);
+            tMsgMpTemplate.setModifiedTime(now);
+
+            if (existSameMsg) {
+                msgMpTemplateMapper.updateByMsgTypeAndMsgName(tMsgMpTemplate);
+            } else {
+                msgMpTemplateMapper.insertSelective(tMsgMpTemplate);
+                msgId = tMsgMpTemplate.getId();
+            }
+
+            // 保存模板数据
+
+            // 如果是覆盖保存，则先清空之前的模板数据
+            if (existSameMsg) {
+                templateDataMapper.deleteByMsgTypeAndMsgId(MessageTypeEnum.MP_TEMPLATE_CODE, msgId);
+            }
+
+            // 如果table为空，则初始化
+            if (mpTemplateMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+                initTemplateDataTable();
+            }
+
+            // 逐行读取
+            DefaultTableModel tableModel = (DefaultTableModel) mpTemplateMsgForm.getTemplateMsgDataTable()
+                    .getModel();
+            int rowCount = tableModel.getRowCount();
+            for (int i = 0; i < rowCount; i++) {
+                String name = (String) tableModel.getValueAt(i, 0);
+                String value = (String) tableModel.getValueAt(i, 1);
+                String color = ((String) tableModel.getValueAt(i, 2)).trim();
+
+                TTemplateData tTemplateData = new TTemplateData();
+                tTemplateData.setMsgType(MessageTypeEnum.MP_TEMPLATE_CODE);
+                tTemplateData.setMsgId(msgId);
+                tTemplateData.setName(name);
+                tTemplateData.setValue(value);
+                tTemplateData.setColor(color);
+                tTemplateData.setCreateTime(now);
+                tTemplateData.setModifiedTime(now);
+
+                templateDataMapper.insert(tTemplateData);
+            }
+
+            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "保存成功！", "成功",
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     /**
@@ -316,86 +398,6 @@ public class MpTemplateMsgForm {
         mpTemplateMsgForm.getTemplateDataColorTextField().setText("");
         selectedMsgTemplateId = null;
         initTemplateDataTable();
-    }
-
-    public static void save(String msgName) {
-        int msgId = 0;
-        boolean existSameMsg = false;
-
-        List<TMsgMpTemplate> tMsgMpTemplateList = msgMpTemplateMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.MP_TEMPLATE_CODE, msgName);
-        if (tMsgMpTemplateList.size() > 0) {
-            existSameMsg = true;
-            msgId = tMsgMpTemplateList.get(0).getId();
-        }
-
-        int isCover = JOptionPane.NO_OPTION;
-        if (existSameMsg) {
-            // 如果存在，是否覆盖
-            isCover = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getMessagePanel(), "已经存在同名的历史消息，\n是否覆盖？", "确认",
-                    JOptionPane.YES_NO_OPTION);
-        }
-
-        if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
-            String templateId = mpTemplateMsgForm.getMsgTemplateIdTextField().getText();
-            String templateUrl = mpTemplateMsgForm.getMsgTemplateUrlTextField().getText();
-            String templateMiniAppid = mpTemplateMsgForm.getMsgTemplateMiniAppidTextField().getText();
-            String templateMiniPagePath = mpTemplateMsgForm.getMsgTemplateMiniPagePathTextField().getText();
-
-            String now = SqliteUtil.nowDateForSqlite();
-
-            TMsgMpTemplate tMsgMpTemplate = new TMsgMpTemplate();
-            tMsgMpTemplate.setMsgType(MessageTypeEnum.MP_TEMPLATE_CODE);
-            tMsgMpTemplate.setMsgName(msgName);
-            tMsgMpTemplate.setTemplateId(templateId);
-            tMsgMpTemplate.setUrl(templateUrl);
-            tMsgMpTemplate.setMaAppid(templateMiniAppid);
-            tMsgMpTemplate.setMaPagePath(templateMiniPagePath);
-            tMsgMpTemplate.setCreateTime(now);
-            tMsgMpTemplate.setModifiedTime(now);
-
-            if (existSameMsg) {
-                msgMpTemplateMapper.updateByMsgTypeAndMsgName(tMsgMpTemplate);
-            } else {
-                msgMpTemplateMapper.insertSelective(tMsgMpTemplate);
-                msgId = tMsgMpTemplate.getId();
-            }
-
-            // 保存模板数据
-
-            // 如果是覆盖保存，则先清空之前的模板数据
-            if (existSameMsg) {
-                templateDataMapper.deleteByMsgTypeAndMsgId(MessageTypeEnum.MP_TEMPLATE_CODE, msgId);
-            }
-
-            // 如果table为空，则初始化
-            if (mpTemplateMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-                initTemplateDataTable();
-            }
-
-            // 逐行读取
-            DefaultTableModel tableModel = (DefaultTableModel) mpTemplateMsgForm.getTemplateMsgDataTable()
-                    .getModel();
-            int rowCount = tableModel.getRowCount();
-            for (int i = 0; i < rowCount; i++) {
-                String name = (String) tableModel.getValueAt(i, 0);
-                String value = (String) tableModel.getValueAt(i, 1);
-                String color = ((String) tableModel.getValueAt(i, 2)).trim();
-
-                TTemplateData tTemplateData = new TTemplateData();
-                tTemplateData.setMsgType(MessageTypeEnum.MP_TEMPLATE_CODE);
-                tTemplateData.setMsgId(msgId);
-                tTemplateData.setName(name);
-                tTemplateData.setValue(value);
-                tTemplateData.setColor(color);
-                tTemplateData.setCreateTime(now);
-                tTemplateData.setModifiedTime(now);
-
-                templateDataMapper.insert(tTemplateData);
-            }
-
-            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "保存成功！", "成功",
-                    JOptionPane.INFORMATION_MESSAGE);
-        }
     }
 
     {

@@ -32,7 +32,7 @@ import java.util.Objects;
  * @since 2019/6/29.
  */
 @Getter
-public class WxCpMsgForm {
+public class WxCpMsgForm implements IMsgForm {
     private JPanel wxCpMsgPanel;
     private JLabel msgTypeLabel;
     private JComboBox msgTypeComboBox;
@@ -75,7 +75,8 @@ public class WxCpMsgForm {
         });
     }
 
-    public static void init(String msgName) {
+    @Override
+    public void init(String msgName) {
         clearAllField();
         initAppNameList();
         List<TMsgWxCp> tMsgWxCpList = msgWxCpMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.WX_CP_CODE, msgName);
@@ -94,6 +95,64 @@ public class WxCpMsgForm {
             switchCpMsgType(cpMsgType);
         } else {
             switchCpMsgType("图文消息");
+        }
+    }
+
+    @Override
+    public void save(String msgName) {
+        boolean existSameMsg = false;
+
+        if (wxCpMsgForm.getAppNameComboBox().getSelectedItem() == null) {
+            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "请选择应用！", "成功",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        List<TMsgWxCp> tMsgWxCpList = msgWxCpMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.WX_CP_CODE, msgName);
+        if (tMsgWxCpList.size() > 0) {
+            existSameMsg = true;
+        }
+
+        int isCover = JOptionPane.NO_OPTION;
+        if (existSameMsg) {
+            // 如果存在，是否覆盖
+            isCover = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getMessagePanel(), "已经存在同名的历史消息，\n是否覆盖？", "确认",
+                    JOptionPane.YES_NO_OPTION);
+        }
+
+        if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
+            String cpMsgType = Objects.requireNonNull(wxCpMsgForm.getMsgTypeComboBox().getSelectedItem()).toString();
+            String content = wxCpMsgForm.getContentTextArea().getText();
+            String title = wxCpMsgForm.getTitleTextField().getText();
+            String picUrl = wxCpMsgForm.getPicUrlTextField().getText();
+            String desc = wxCpMsgForm.getDescTextField().getText();
+            String url = wxCpMsgForm.getUrlTextField().getText();
+            String btnTxt = wxCpMsgForm.getBtnTxtTextField().getText();
+
+            String now = SqliteUtil.nowDateForSqlite();
+
+            TMsgWxCp tMsgWxCp = new TMsgWxCp();
+            tMsgWxCp.setMsgType(MessageTypeEnum.WX_CP_CODE);
+            tMsgWxCp.setMsgName(msgName);
+            tMsgWxCp.setAgentId(appNameToAgentIdMap.get(wxCpMsgForm.getAppNameComboBox().getSelectedItem()));
+            tMsgWxCp.setCpMsgType(cpMsgType);
+            tMsgWxCp.setContent(content);
+            tMsgWxCp.setTitle(title);
+            tMsgWxCp.setImgUrl(picUrl);
+            tMsgWxCp.setDescribe(desc);
+            tMsgWxCp.setUrl(url);
+            tMsgWxCp.setBtnTxt(btnTxt);
+            tMsgWxCp.setModifiedTime(now);
+
+            if (existSameMsg) {
+                msgWxCpMapper.updateByMsgTypeAndMsgName(tMsgWxCp);
+            } else {
+                tMsgWxCp.setCreateTime(now);
+                msgWxCpMapper.insertSelective(tMsgWxCp);
+            }
+
+            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "保存成功！", "成功",
+                    JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -174,63 +233,6 @@ public class WxCpMsgForm {
         wxCpMsgForm.getDescTextField().setText("");
         wxCpMsgForm.getUrlTextField().setText("");
         wxCpMsgForm.getBtnTxtTextField().setText("");
-    }
-
-    public static void save(String msgName) {
-        boolean existSameMsg = false;
-
-        if (wxCpMsgForm.getAppNameComboBox().getSelectedItem() == null) {
-            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "请选择应用！", "成功",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        List<TMsgWxCp> tMsgWxCpList = msgWxCpMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.WX_CP_CODE, msgName);
-        if (tMsgWxCpList.size() > 0) {
-            existSameMsg = true;
-        }
-
-        int isCover = JOptionPane.NO_OPTION;
-        if (existSameMsg) {
-            // 如果存在，是否覆盖
-            isCover = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getMessagePanel(), "已经存在同名的历史消息，\n是否覆盖？", "确认",
-                    JOptionPane.YES_NO_OPTION);
-        }
-
-        if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
-            String cpMsgType = Objects.requireNonNull(wxCpMsgForm.getMsgTypeComboBox().getSelectedItem()).toString();
-            String content = wxCpMsgForm.getContentTextArea().getText();
-            String title = wxCpMsgForm.getTitleTextField().getText();
-            String picUrl = wxCpMsgForm.getPicUrlTextField().getText();
-            String desc = wxCpMsgForm.getDescTextField().getText();
-            String url = wxCpMsgForm.getUrlTextField().getText();
-            String btnTxt = wxCpMsgForm.getBtnTxtTextField().getText();
-
-            String now = SqliteUtil.nowDateForSqlite();
-
-            TMsgWxCp tMsgWxCp = new TMsgWxCp();
-            tMsgWxCp.setMsgType(MessageTypeEnum.WX_CP_CODE);
-            tMsgWxCp.setMsgName(msgName);
-            tMsgWxCp.setAgentId(appNameToAgentIdMap.get(wxCpMsgForm.getAppNameComboBox().getSelectedItem()));
-            tMsgWxCp.setCpMsgType(cpMsgType);
-            tMsgWxCp.setContent(content);
-            tMsgWxCp.setTitle(title);
-            tMsgWxCp.setImgUrl(picUrl);
-            tMsgWxCp.setDescribe(desc);
-            tMsgWxCp.setUrl(url);
-            tMsgWxCp.setBtnTxt(btnTxt);
-            tMsgWxCp.setModifiedTime(now);
-
-            if (existSameMsg) {
-                msgWxCpMapper.updateByMsgTypeAndMsgName(tMsgWxCp);
-            } else {
-                tMsgWxCp.setCreateTime(now);
-                msgWxCpMapper.insertSelective(tMsgWxCp);
-            }
-
-            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "保存成功！", "成功",
-                    JOptionPane.INFORMATION_MESSAGE);
-        }
     }
 
     {

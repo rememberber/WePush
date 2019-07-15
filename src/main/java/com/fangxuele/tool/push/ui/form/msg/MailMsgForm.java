@@ -30,7 +30,7 @@ import java.util.List;
  * @since 2019/6/23.
  */
 @Getter
-public class MailMsgForm {
+public class MailMsgForm implements IMsgForm {
 
     public static MailMsgForm mailMsgForm = new MailMsgForm();
     private JPanel mailPanel;
@@ -79,7 +79,8 @@ public class MailMsgForm {
         });
     }
 
-    public static void init(String msgName) {
+    @Override
+    public void init(String msgName) {
         clearAllField();
         List<TMsgMail> tMsgMailList = msgMailMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.EMAIL_CODE, msgName);
         if (tMsgMailList.size() > 0) {
@@ -91,17 +92,8 @@ public class MailMsgForm {
         }
     }
 
-    /**
-     * 清空所有界面字段
-     */
-    public static void clearAllField() {
-        mailMsgForm.getMailTitleTextField().setText("");
-        mailMsgForm.getMailCcTextField().setText("");
-        mailMsgForm.getMailFilesTextField().setText("");
-        mailMsgForm.getMailContentPane().setText("");
-    }
-
-    public static void save(String msgName) {
+    @Override
+    public void save(String msgName) {
         boolean existSameMsg = false;
 
         List<TMsgMail> tMsgMailList = msgMailMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.EMAIL_CODE, msgName);
@@ -142,6 +134,16 @@ public class MailMsgForm {
             JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "保存成功！", "成功",
                     JOptionPane.INFORMATION_MESSAGE);
         }
+    }
+
+    /**
+     * 清空所有界面字段
+     */
+    public static void clearAllField() {
+        mailMsgForm.getMailTitleTextField().setText("");
+        mailMsgForm.getMailCcTextField().setText("");
+        mailMsgForm.getMailFilesTextField().setText("");
+        mailMsgForm.getMailContentPane().setText("");
     }
 
     {

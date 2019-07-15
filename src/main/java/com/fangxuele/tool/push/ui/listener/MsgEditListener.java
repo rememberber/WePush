@@ -11,16 +11,8 @@ import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.MessageManageForm;
-import com.fangxuele.tool.push.ui.form.msg.AliTemplateMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.AliYunMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.KefuMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.KefuPriorityMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.MaTemplateMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.MailMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.MpTemplateMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.TxYunMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.MsgFormFactory;
 import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.YunpianMsgForm;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
@@ -52,42 +44,8 @@ public class MsgEditListener {
                 return;
             }
 
-            int msgType = App.config.getMsgType();
-
             try {
-                switch (msgType) {
-                    case MessageTypeEnum.KEFU_CODE:
-                        KefuMsgForm.save(msgName);
-                        break;
-                    case MessageTypeEnum.KEFU_PRIORITY_CODE:
-                        KefuPriorityMsgForm.save(msgName);
-                        break;
-                    case MessageTypeEnum.MA_TEMPLATE_CODE:
-                        MaTemplateMsgForm.save(msgName);
-                        break;
-                    case MessageTypeEnum.MP_TEMPLATE_CODE:
-                        MpTemplateMsgForm.save(msgName);
-                        break;
-                    case MessageTypeEnum.ALI_TEMPLATE_CODE:
-                        AliTemplateMsgForm.save(msgName);
-                        break;
-                    case MessageTypeEnum.ALI_YUN_CODE:
-                        AliYunMsgForm.save(msgName);
-                        break;
-                    case MessageTypeEnum.TX_YUN_CODE:
-                        TxYunMsgForm.save(msgName);
-                        break;
-                    case MessageTypeEnum.YUN_PIAN_CODE:
-                        YunpianMsgForm.save(msgName);
-                        break;
-                    case MessageTypeEnum.EMAIL_CODE:
-                        MailMsgForm.save(msgName);
-                        break;
-                    case MessageTypeEnum.WX_CP_CODE:
-                        WxCpMsgForm.save(msgName);
-                        break;
-                    default:
-                }
+                MsgFormFactory.getMsgForm().save(msgName);
 
                 App.config.setPreviewUser(MessageEditForm.messageEditForm.getPreviewUserField().getText());
                 App.config.save();
