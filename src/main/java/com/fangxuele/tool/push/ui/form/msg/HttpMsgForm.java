@@ -158,6 +158,27 @@ public class HttpMsgForm implements IMsgForm {
     }
 
     /**
+     * 清空所有界面字段
+     */
+    public static void clearAllField() {
+        getInstance().getMethodComboBox().setSelectedIndex(0);
+        getInstance().getUrlTextField().setText("");
+        getInstance().getParamNameTextField().setText("");
+        getInstance().getParamValueTextField().setText("");
+        getInstance().getHeaderNameTextField().setText("");
+        getInstance().getHeaderValueTextField5().setText("");
+        getInstance().getCookieNameTextField().setText("");
+        getInstance().getCookieValueTextField().setText("");
+        getInstance().getCookieDomainTextField().setText("");
+        getInstance().getCookiePathTextField().setText("");
+        getInstance().getCookieExpiryTextField().setText("");
+        getInstance().getBodyTextArea().setText("");
+        initParamTable();
+        initHeaderTable();
+        initCookieTable();
+    }
+
+    /**
      * 初始化ParamTable
      */
     public static void initParamTable() {
