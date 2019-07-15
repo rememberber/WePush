@@ -181,4 +181,10 @@
         where msg_type = #{msgType,jdbcType=INTEGER}
           and msg_name = #{msgName,jdbcType=VARCHAR}
     </update>
+    <select id="selectByMsgType" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_msg_http
+        where msg_type = #{msgType,jdbcType=INTEGER}
+    </select>
 </mapper>

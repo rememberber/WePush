@@ -21,4 +21,6 @@ public interface TMsgHttpMapper {
     List<TMsgHttp> selectByMsgTypeAndMsgName(@Param("msgType") int msgType, @Param("msgName") String msgName);
 
     int updateByMsgTypeAndMsgName(TMsgHttp tMsgHttp);
+
+    List<TMsgHttp> selectByMsgType(int msgType);
 }
