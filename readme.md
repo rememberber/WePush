@@ -171,7 +171,8 @@ https://gitee.com/zhoubochina/WePush/wikis/help
 
 ### 鼓励&赞赏  
 **如果WePush对您有所帮助或便利，  
-欢迎对我每天下班和周末时光的努力进行肯定，您的赞赏将会给我带来更多动力**
+欢迎对我每天下班和周末时光的努力进行肯定，  
+您的赞赏将会给我带来更多动力**
 <p align="left">
   <a href="https://gitee.com/zhoubochina/WePush">
    <img alt="WePush" src="http://download.zhoubochina.com/file/wx-zanshang.jpg">
