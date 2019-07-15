@@ -21,37 +21,37 @@ public class MsgFormFactory {
         IMsgForm iMsgForm = null;
         switch (App.config.getMsgType()) {
             case MessageTypeEnum.MP_TEMPLATE_CODE:
-                iMsgForm = MpTemplateMsgForm.mpTemplateMsgForm;
+                iMsgForm = MpTemplateMsgForm.getInstance();
                 break;
             case MessageTypeEnum.MA_TEMPLATE_CODE:
-                iMsgForm = MaTemplateMsgForm.maTemplateMsgForm;
+                iMsgForm = MaTemplateMsgForm.getInstance();
                 break;
             case MessageTypeEnum.KEFU_CODE:
-                iMsgForm = KefuMsgForm.kefuMsgForm;
+                iMsgForm = KefuMsgForm.getInstance();
                 break;
             case MessageTypeEnum.KEFU_PRIORITY_CODE:
-                iMsgForm = KefuPriorityMsgForm.kefuPriorityMsgForm;
+                iMsgForm = KefuPriorityMsgForm.getInstance();
                 break;
             case MessageTypeEnum.ALI_YUN_CODE:
-                iMsgForm = AliYunMsgForm.aliYunMsgForm;
+                iMsgForm = AliYunMsgForm.getInstance();
                 break;
             case MessageTypeEnum.ALI_TEMPLATE_CODE:
-                iMsgForm = AliTemplateMsgForm.aliTemplateMsgForm;
+                iMsgForm = AliTemplateMsgForm.getInstance();
                 break;
             case MessageTypeEnum.TX_YUN_CODE:
-                iMsgForm = TxYunMsgForm.txYunMsgForm;
+                iMsgForm = TxYunMsgForm.getInstance();
                 break;
             case MessageTypeEnum.YUN_PIAN_CODE:
-                iMsgForm = YunpianMsgForm.yunpianMsgForm;
+                iMsgForm = YunpianMsgForm.getInstance();
                 break;
             case MessageTypeEnum.EMAIL_CODE:
-                iMsgForm = MailMsgForm.mailMsgForm;
+                iMsgForm = MailMsgForm.getInstance();
                 break;
             case MessageTypeEnum.WX_CP_CODE:
-                iMsgForm = WxCpMsgForm.wxCpMsgForm;
+                iMsgForm = WxCpMsgForm.getInstance();
                 break;
             case MessageTypeEnum.HTTP_CODE:
-                iMsgForm = HttpMsgForm.httpMsgForm;
+                iMsgForm = HttpMsgForm.getInstance();
                 break;
             default:
         }

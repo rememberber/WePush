@@ -33,13 +33,13 @@ public class AliTemplateMsgMaker extends BaseMsgMaker implements IMsgMaker{
      */
     @Override
     public void prepare() {
-        templateId = AliTemplateMsgForm.aliTemplateMsgForm.getMsgTemplateIdTextField().getText();
+        templateId = AliTemplateMsgForm.getInstance().getMsgTemplateIdTextField().getText();
 
-        if (AliTemplateMsgForm.aliTemplateMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+        if (AliTemplateMsgForm.getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
             AliTemplateMsgForm.initTemplateDataTable();
         }
 
-        DefaultTableModel tableModel = (DefaultTableModel) AliTemplateMsgForm.aliTemplateMsgForm.getTemplateMsgDataTable().getModel();
+        DefaultTableModel tableModel = (DefaultTableModel) AliTemplateMsgForm.getInstance().getTemplateMsgDataTable().getModel();
         int rowCount = tableModel.getRowCount();
         TemplateData templateData;
         templateDataList = Lists.newArrayList();

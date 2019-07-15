@@ -44,19 +44,19 @@ public class HttpMsgForm implements IMsgForm {
     private JTextField cookieExpiryTextField;
     private JTextArea bodyTextArea;
 
-    public static HttpMsgForm httpMsgForm = new HttpMsgForm();
+    private static HttpMsgForm httpMsgForm;
 
     public HttpMsgForm() {
         paramAddButton.addActionListener(e -> {
             String[] data = new String[2];
-            data[0] = httpMsgForm.getParamNameTextField().getText();
-            data[1] = httpMsgForm.getParamValueTextField().getText();
+            data[0] = getInstance().getParamNameTextField().getText();
+            data[1] = getInstance().getParamValueTextField().getText();
 
-            if (httpMsgForm.getParamTable().getModel().getRowCount() == 0) {
+            if (getInstance().getParamTable().getModel().getRowCount() == 0) {
                 initParamTable();
             }
 
-            DefaultTableModel tableModel = (DefaultTableModel) httpMsgForm.getParamTable().getModel();
+            DefaultTableModel tableModel = (DefaultTableModel) getInstance().getParamTable().getModel();
             int rowCount = tableModel.getRowCount();
 
             Set<String> keySet = new HashSet<>();
@@ -67,10 +67,10 @@ public class HttpMsgForm implements IMsgForm {
             }
 
             if (StringUtils.isEmpty(data[0]) || StringUtils.isEmpty(data[1])) {
-                JOptionPane.showMessageDialog(httpMsgForm.getHttpPanel(), "Name和Value不能为空！", "提示",
+                JOptionPane.showMessageDialog(getInstance().getHttpPanel(), "Name和Value不能为空！", "提示",
                         JOptionPane.INFORMATION_MESSAGE);
             } else if (keySet.contains(data[0])) {
-                JOptionPane.showMessageDialog(httpMsgForm.getHttpPanel(), "Name不能重复！", "提示",
+                JOptionPane.showMessageDialog(getInstance().getHttpPanel(), "Name不能重复！", "提示",
                         JOptionPane.INFORMATION_MESSAGE);
             } else {
                 tableModel.addRow(data);
@@ -79,14 +79,14 @@ public class HttpMsgForm implements IMsgForm {
 
         headerAddButton.addActionListener(e -> {
             String[] data = new String[2];
-            data[0] = httpMsgForm.getHeaderNameTextField().getText();
-            data[1] = httpMsgForm.getHeaderValueTextField5().getText();
+            data[0] = getInstance().getHeaderNameTextField().getText();
+            data[1] = getInstance().getHeaderValueTextField5().getText();
 
-            if (httpMsgForm.getHeaderTable().getModel().getRowCount() == 0) {
+            if (getInstance().getHeaderTable().getModel().getRowCount() == 0) {
                 initHeaderTable();
             }
 
-            DefaultTableModel tableModel = (DefaultTableModel) httpMsgForm.getHeaderTable().getModel();
+            DefaultTableModel tableModel = (DefaultTableModel) getInstance().getHeaderTable().getModel();
             int rowCount = tableModel.getRowCount();
 
             Set<String> keySet = new HashSet<>();
@@ -97,10 +97,10 @@ public class HttpMsgForm implements IMsgForm {
             }
 
             if (StringUtils.isEmpty(data[0]) || StringUtils.isEmpty(data[1])) {
-                JOptionPane.showMessageDialog(httpMsgForm.getHttpPanel(), "Name和Value不能为空！", "提示",
+                JOptionPane.showMessageDialog(getInstance().getHttpPanel(), "Name和Value不能为空！", "提示",
                         JOptionPane.INFORMATION_MESSAGE);
             } else if (keySet.contains(data[0])) {
-                JOptionPane.showMessageDialog(httpMsgForm.getHttpPanel(), "Name不能重复！", "提示",
+                JOptionPane.showMessageDialog(getInstance().getHttpPanel(), "Name不能重复！", "提示",
                         JOptionPane.INFORMATION_MESSAGE);
             } else {
                 tableModel.addRow(data);
@@ -109,17 +109,17 @@ public class HttpMsgForm implements IMsgForm {
 
         cookieAddButton.addActionListener(e -> {
             String[] data = new String[5];
-            data[0] = httpMsgForm.getCookieNameTextField().getText();
-            data[1] = httpMsgForm.getCookieValueTextField().getText();
-            data[2] = httpMsgForm.getCookieDomainTextField().getText();
-            data[3] = httpMsgForm.getCookiePathTextField().getText();
-            data[4] = httpMsgForm.getCookieExpiryTextField().getText();
+            data[0] = getInstance().getCookieNameTextField().getText();
+            data[1] = getInstance().getCookieValueTextField().getText();
+            data[2] = getInstance().getCookieDomainTextField().getText();
+            data[3] = getInstance().getCookiePathTextField().getText();
+            data[4] = getInstance().getCookieExpiryTextField().getText();
 
-            if (httpMsgForm.getCookieTable().getModel().getRowCount() == 0) {
+            if (getInstance().getCookieTable().getModel().getRowCount() == 0) {
                 initCookieTable();
             }
 
-            DefaultTableModel tableModel = (DefaultTableModel) httpMsgForm.getCookieTable().getModel();
+            DefaultTableModel tableModel = (DefaultTableModel) getInstance().getCookieTable().getModel();
             int rowCount = tableModel.getRowCount();
 
             Set<String> keySet = new HashSet<>();
@@ -130,10 +130,10 @@ public class HttpMsgForm implements IMsgForm {
             }
 
             if (StringUtils.isEmpty(data[0]) || StringUtils.isEmpty(data[1]) || StringUtils.isEmpty(data[4])) {
-                JOptionPane.showMessageDialog(httpMsgForm.getHttpPanel(), "Name、Value、Expiry不能为空！", "提示",
+                JOptionPane.showMessageDialog(getInstance().getHttpPanel(), "Name、Value、Expiry不能为空！", "提示",
                         JOptionPane.INFORMATION_MESSAGE);
             } else if (keySet.contains(data[0])) {
-                JOptionPane.showMessageDialog(httpMsgForm.getHttpPanel(), "Name不能重复！", "提示",
+                JOptionPane.showMessageDialog(getInstance().getHttpPanel(), "Name不能重复！", "提示",
                         JOptionPane.INFORMATION_MESSAGE);
             } else {
                 tableModel.addRow(data);
@@ -150,11 +150,18 @@ public class HttpMsgForm implements IMsgForm {
 
     }
 
+    public static HttpMsgForm getInstance() {
+        if (httpMsgForm == null) {
+            httpMsgForm = new HttpMsgForm();
+        }
+        return httpMsgForm;
+    }
+
     /**
      * 初始化ParamTable
      */
     public static void initParamTable() {
-        JTable paramTable = httpMsgForm.getParamTable();
+        JTable paramTable = getInstance().getParamTable();
         paramTable.setRowHeight(36);
         String[] headerNames = {"Name", "Value", ""};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
@@ -179,7 +186,7 @@ public class HttpMsgForm implements IMsgForm {
      * 初始化HeaderTable
      */
     public static void initHeaderTable() {
-        JTable paramTable = httpMsgForm.getHeaderTable();
+        JTable paramTable = getInstance().getHeaderTable();
         paramTable.setRowHeight(36);
         String[] headerNames = {"Name", "Value", ""};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
@@ -204,7 +211,7 @@ public class HttpMsgForm implements IMsgForm {
      * 初始化CookieTable
      */
     public static void initCookieTable() {
-        JTable paramTable = httpMsgForm.getCookieTable();
+        JTable paramTable = getInstance().getCookieTable();
         paramTable.setRowHeight(36);
         String[] headerNames = {"Name", "Value", "Domain", "Path", "Expiry", ""};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);

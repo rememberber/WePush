@@ -52,7 +52,7 @@ public class MaTemplateMsgForm implements IMsgForm {
     private JButton templateMsgDataAddButton;
     private JTable templateMsgDataTable;
 
-    public static MaTemplateMsgForm maTemplateMsgForm = new MaTemplateMsgForm();
+    private static MaTemplateMsgForm maTemplateMsgForm;
 
     private static TMsgMaTemplateMapper msgMaTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMaTemplateMapper.class);
     private static TTemplateDataMapper templateDataMapper = MybatisUtil.getSqlSession().getMapper(TTemplateDataMapper.class);
@@ -61,15 +61,15 @@ public class MaTemplateMsgForm implements IMsgForm {
         // 模板数据-添加 按钮事件
         templateMsgDataAddButton.addActionListener(e -> {
             String[] data = new String[3];
-            data[0] = maTemplateMsgForm.getTemplateDataNameTextField().getText();
-            data[1] = maTemplateMsgForm.getTemplateDataValueTextField().getText();
-            data[2] = maTemplateMsgForm.getTemplateDataColorTextField().getText();
+            data[0] = getInstance().getTemplateDataNameTextField().getText();
+            data[1] = getInstance().getTemplateDataValueTextField().getText();
+            data[2] = getInstance().getTemplateDataColorTextField().getText();
 
-            if (maTemplateMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+            if (getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
                 initTemplateDataTable();
             }
 
-            DefaultTableModel tableModel = (DefaultTableModel) maTemplateMsgForm.getTemplateMsgDataTable()
+            DefaultTableModel tableModel = (DefaultTableModel) getInstance().getTemplateMsgDataTable()
                     .getModel();
             int rowCount = tableModel.getRowCount();
 
@@ -105,9 +105,9 @@ public class MaTemplateMsgForm implements IMsgForm {
         if (tMsgMaTemplateList.size() > 0) {
             TMsgMaTemplate tMsgMaTemplate = tMsgMaTemplateList.get(0);
             msgId = tMsgMaTemplate.getId();
-            maTemplateMsgForm.getMsgTemplateIdTextField().setText(tMsgMaTemplate.getTemplateId());
-            maTemplateMsgForm.getMsgTemplateUrlTextField().setText(tMsgMaTemplate.getPage());
-            maTemplateMsgForm.getMsgTemplateKeyWordTextField().setText(tMsgMaTemplate.getEmphasisKeyword());
+            getInstance().getMsgTemplateIdTextField().setText(tMsgMaTemplate.getTemplateId());
+            getInstance().getMsgTemplateUrlTextField().setText(tMsgMaTemplate.getPage());
+            getInstance().getMsgTemplateKeyWordTextField().setText(tMsgMaTemplate.getEmphasisKeyword());
         }
 
         initTemplateDataTable();
@@ -122,12 +122,12 @@ public class MaTemplateMsgForm implements IMsgForm {
             cellData[i][2] = tTemplateData.getColor();
         }
         DefaultTableModel model = new DefaultTableModel(cellData, headerNames);
-        maTemplateMsgForm.getTemplateMsgDataTable().setModel(model);
-        TableColumnModel tableColumnModel = maTemplateMsgForm.getTemplateMsgDataTable().getColumnModel();
+        getInstance().getTemplateMsgDataTable().setModel(model);
+        TableColumnModel tableColumnModel = getInstance().getTemplateMsgDataTable().getColumnModel();
         tableColumnModel.getColumn(headerNames.length - 1).
-                setCellRenderer(new TableInCellButtonColumn(maTemplateMsgForm.getTemplateMsgDataTable(), headerNames.length - 1));
+                setCellRenderer(new TableInCellButtonColumn(getInstance().getTemplateMsgDataTable(), headerNames.length - 1));
         tableColumnModel.getColumn(headerNames.length - 1).
-                setCellEditor(new TableInCellButtonColumn(maTemplateMsgForm.getTemplateMsgDataTable(), headerNames.length - 1));
+                setCellEditor(new TableInCellButtonColumn(getInstance().getTemplateMsgDataTable(), headerNames.length - 1));
 
         // 设置列宽
         tableColumnModel.getColumn(3).setPreferredWidth(46);
@@ -153,9 +153,9 @@ public class MaTemplateMsgForm implements IMsgForm {
         }
 
         if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
-            String templateId = maTemplateMsgForm.getMsgTemplateIdTextField().getText();
-            String templateUrl = maTemplateMsgForm.getMsgTemplateUrlTextField().getText();
-            String templateKeyWord = maTemplateMsgForm.getMsgTemplateKeyWordTextField().getText();
+            String templateId = getInstance().getMsgTemplateIdTextField().getText();
+            String templateUrl = getInstance().getMsgTemplateUrlTextField().getText();
+            String templateKeyWord = getInstance().getMsgTemplateKeyWordTextField().getText();
 
             String now = SqliteUtil.nowDateForSqlite();
 
@@ -183,12 +183,12 @@ public class MaTemplateMsgForm implements IMsgForm {
             }
 
             // 如果table为空，则初始化
-            if (maTemplateMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+            if (getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
                 initTemplateDataTable();
             }
 
             // 逐行读取
-            DefaultTableModel tableModel = (DefaultTableModel) maTemplateMsgForm.getTemplateMsgDataTable()
+            DefaultTableModel tableModel = (DefaultTableModel) getInstance().getTemplateMsgDataTable()
                     .getModel();
             int rowCount = tableModel.getRowCount();
             for (int i = 0; i < rowCount; i++) {
@@ -213,11 +213,18 @@ public class MaTemplateMsgForm implements IMsgForm {
         }
     }
 
+    public static MaTemplateMsgForm getInstance() {
+        if (maTemplateMsgForm == null) {
+            maTemplateMsgForm = new MaTemplateMsgForm();
+        }
+        return maTemplateMsgForm;
+    }
+
     /**
      * 初始化模板消息数据table
      */
     public static void initTemplateDataTable() {
-        JTable msgDataTable = maTemplateMsgForm.getTemplateMsgDataTable();
+        JTable msgDataTable = getInstance().getTemplateMsgDataTable();
         String[] headerNames = {"Name", "Value", "Color", "操作"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
         msgDataTable.setModel(model);
@@ -241,12 +248,12 @@ public class MaTemplateMsgForm implements IMsgForm {
      * 清空所有界面字段
      */
     public static void clearAllField() {
-        maTemplateMsgForm.getMsgTemplateIdTextField().setText("");
-        maTemplateMsgForm.getMsgTemplateUrlTextField().setText("");
-        maTemplateMsgForm.getMsgTemplateKeyWordTextField().setText("");
-        maTemplateMsgForm.getTemplateDataNameTextField().setText("");
-        maTemplateMsgForm.getTemplateDataValueTextField().setText("");
-        maTemplateMsgForm.getTemplateDataColorTextField().setText("");
+        getInstance().getMsgTemplateIdTextField().setText("");
+        getInstance().getMsgTemplateUrlTextField().setText("");
+        getInstance().getMsgTemplateKeyWordTextField().setText("");
+        getInstance().getTemplateDataNameTextField().setText("");
+        getInstance().getTemplateDataValueTextField().setText("");
+        getInstance().getTemplateDataColorTextField().setText("");
         initTemplateDataTable();
     }
 

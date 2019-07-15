@@ -32,7 +32,6 @@ import java.util.List;
 @Getter
 public class MailMsgForm implements IMsgForm {
 
-    public static MailMsgForm mailMsgForm = new MailMsgForm();
     private JPanel mailPanel;
     private JTextField mailTitleTextField;
     private JTextField mailFilesTextField;
@@ -41,6 +40,7 @@ public class MailMsgForm implements IMsgForm {
     private JLabel uEditorLabel;
     private JTextField mailCcTextField;
 
+    private static MailMsgForm mailMsgForm;
     private static TMsgMailMapper msgMailMapper = MybatisUtil.getSqlSession().getMapper(TMsgMailMapper.class);
 
     public MailMsgForm() {
@@ -85,10 +85,10 @@ public class MailMsgForm implements IMsgForm {
         List<TMsgMail> tMsgMailList = msgMailMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.EMAIL_CODE, msgName);
         if (tMsgMailList.size() > 0) {
             TMsgMail tMsgMail = tMsgMailList.get(0);
-            mailMsgForm.getMailTitleTextField().setText(tMsgMail.getTitle());
-            mailMsgForm.getMailCcTextField().setText(tMsgMail.getCc());
-            mailMsgForm.getMailFilesTextField().setText(tMsgMail.getFiles());
-            mailMsgForm.getMailContentPane().setText(tMsgMail.getContent());
+            getInstance().getMailTitleTextField().setText(tMsgMail.getTitle());
+            getInstance().getMailCcTextField().setText(tMsgMail.getCc());
+            getInstance().getMailFilesTextField().setText(tMsgMail.getFiles());
+            getInstance().getMailContentPane().setText(tMsgMail.getContent());
         }
     }
 
@@ -108,10 +108,10 @@ public class MailMsgForm implements IMsgForm {
                     JOptionPane.YES_NO_OPTION);
         }
         if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
-            String mailTitle = mailMsgForm.getMailTitleTextField().getText();
-            String mailCc = mailMsgForm.getMailCcTextField().getText();
-            String mailFiles = mailMsgForm.getMailFilesTextField().getText();
-            String mailContent = mailMsgForm.getMailContentPane().getText();
+            String mailTitle = getInstance().getMailTitleTextField().getText();
+            String mailCc = getInstance().getMailCcTextField().getText();
+            String mailFiles = getInstance().getMailFilesTextField().getText();
+            String mailContent = getInstance().getMailContentPane().getText();
 
             String now = SqliteUtil.nowDateForSqlite();
 
@@ -136,14 +136,21 @@ public class MailMsgForm implements IMsgForm {
         }
     }
 
+    public static MailMsgForm getInstance() {
+        if (mailMsgForm == null) {
+            mailMsgForm = new MailMsgForm();
+        }
+        return mailMsgForm;
+    }
+
     /**
      * 清空所有界面字段
      */
     public static void clearAllField() {
-        mailMsgForm.getMailTitleTextField().setText("");
-        mailMsgForm.getMailCcTextField().setText("");
-        mailMsgForm.getMailFilesTextField().setText("");
-        mailMsgForm.getMailContentPane().setText("");
+        getInstance().getMailTitleTextField().setText("");
+        getInstance().getMailCcTextField().setText("");
+        getInstance().getMailFilesTextField().setText("");
+        getInstance().getMailContentPane().setText("");
     }
 
     {

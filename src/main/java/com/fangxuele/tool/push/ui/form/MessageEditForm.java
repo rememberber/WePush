@@ -75,39 +75,39 @@ public class MessageEditForm {
         MsgFormFactory.getMsgForm().init(null);
         switch (msgType) {
             case MessageTypeEnum.MP_TEMPLATE_CODE:
-                messageEditForm.getMsgEditorPanel().add(MpTemplateMsgForm.mpTemplateMsgForm.getTemplateMsgPanel(), gridConstraintsRow0);
+                messageEditForm.getMsgEditorPanel().add(MpTemplateMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
                 break;
             case MessageTypeEnum.MA_TEMPLATE_CODE:
-                messageEditForm.getMsgEditorPanel().add(MaTemplateMsgForm.maTemplateMsgForm.getTemplateMsgPanel(), gridConstraintsRow0);
+                messageEditForm.getMsgEditorPanel().add(MaTemplateMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
                 break;
             case MessageTypeEnum.KEFU_CODE:
-                messageEditForm.getMsgEditorPanel().add(KefuMsgForm.kefuMsgForm.getKefuMsgPanel(), gridConstraintsRow0);
+                messageEditForm.getMsgEditorPanel().add(KefuMsgForm.getInstance().getKefuMsgPanel(), gridConstraintsRow0);
                 break;
             case MessageTypeEnum.KEFU_PRIORITY_CODE:
                 messageEditForm.getMsgEditorPanel().setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
-                messageEditForm.getMsgEditorPanel().add(KefuMsgForm.kefuMsgForm.getKefuMsgPanel(), gridConstraintsRow0);
-                messageEditForm.getMsgEditorPanel().add(MpTemplateMsgForm.mpTemplateMsgForm.getTemplateMsgPanel(), gridConstraintsRow1);
+                messageEditForm.getMsgEditorPanel().add(KefuMsgForm.getInstance().getKefuMsgPanel(), gridConstraintsRow0);
+                messageEditForm.getMsgEditorPanel().add(MpTemplateMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow1);
                 break;
             case MessageTypeEnum.ALI_YUN_CODE:
-                messageEditForm.getMsgEditorPanel().add(AliYunMsgForm.aliYunMsgForm.getTemplateMsgPanel(), gridConstraintsRow0);
+                messageEditForm.getMsgEditorPanel().add(AliYunMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
                 break;
             case MessageTypeEnum.TX_YUN_CODE:
-                messageEditForm.getMsgEditorPanel().add(TxYunMsgForm.txYunMsgForm.getTemplateMsgPanel(), gridConstraintsRow0);
+                messageEditForm.getMsgEditorPanel().add(TxYunMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
                 break;
             case MessageTypeEnum.ALI_TEMPLATE_CODE:
-                messageEditForm.getMsgEditorPanel().add(AliTemplateMsgForm.aliTemplateMsgForm.getTemplateMsgPanel(), gridConstraintsRow0);
+                messageEditForm.getMsgEditorPanel().add(AliTemplateMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
                 break;
             case MessageTypeEnum.YUN_PIAN_CODE:
-                messageEditForm.getMsgEditorPanel().add(YunpianMsgForm.yunpianMsgForm.getYunpianMsgPanel(), gridConstraintsRow0);
+                messageEditForm.getMsgEditorPanel().add(YunpianMsgForm.getInstance().getYunpianMsgPanel(), gridConstraintsRow0);
                 break;
             case MessageTypeEnum.EMAIL_CODE:
-                messageEditForm.getMsgEditorPanel().add(MailMsgForm.mailMsgForm.getMailPanel(), gridConstraintsRow0);
+                messageEditForm.getMsgEditorPanel().add(MailMsgForm.getInstance().getMailPanel(), gridConstraintsRow0);
                 break;
             case MessageTypeEnum.WX_CP_CODE:
-                messageEditForm.getMsgEditorPanel().add(WxCpMsgForm.wxCpMsgForm.getWxCpMsgPanel(), gridConstraintsRow0);
+                messageEditForm.getMsgEditorPanel().add(WxCpMsgForm.getInstance().getWxCpMsgPanel(), gridConstraintsRow0);
                 break;
             case MessageTypeEnum.HTTP_CODE:
-                messageEditForm.getMsgEditorPanel().add(HttpMsgForm.httpMsgForm.getHttpPanel(), gridConstraintsRow0);
+                messageEditForm.getMsgEditorPanel().add(HttpMsgForm.getInstance().getHttpPanel(), gridConstraintsRow0);
                 break;
             default:
                 break;

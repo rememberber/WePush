@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * <pre>
- * 类说明
+ * YunpianMsgForm
  * </pre>
  *
  * @author <a href="https://github.com/rememberber">Zhou Bo</a>
@@ -28,7 +28,7 @@ public class YunpianMsgForm implements IMsgForm {
     private JTextArea msgYunpianMsgContentTextField;
     private JPanel yunpianMsgPanel;
 
-    public static YunpianMsgForm yunpianMsgForm = new YunpianMsgForm();
+    private static YunpianMsgForm yunpianMsgForm;
 
     private static TMsgSmsMapper msgSmsMapper = MybatisUtil.getSqlSession().getMapper(TMsgSmsMapper.class);
 
@@ -38,7 +38,7 @@ public class YunpianMsgForm implements IMsgForm {
         List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.YUN_PIAN_CODE, msgName);
         if (tMsgSmsList.size() > 0) {
             TMsgSms tMsgSms = tMsgSmsList.get(0);
-            yunpianMsgForm.getMsgYunpianMsgContentTextField().setText(tMsgSms.getContent());
+            getInstance().getMsgYunpianMsgContentTextField().setText(tMsgSms.getContent());
         }
     }
 
@@ -58,7 +58,7 @@ public class YunpianMsgForm implements IMsgForm {
                     JOptionPane.YES_NO_OPTION);
         }
         if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
-            String yunpianMsgContent = yunpianMsgForm.getMsgYunpianMsgContentTextField().getText();
+            String yunpianMsgContent = getInstance().getMsgYunpianMsgContentTextField().getText();
 
             String now = SqliteUtil.nowDateForSqlite();
 
@@ -80,11 +80,18 @@ public class YunpianMsgForm implements IMsgForm {
         }
     }
 
+    public static YunpianMsgForm getInstance() {
+        if (yunpianMsgForm == null) {
+            yunpianMsgForm = new YunpianMsgForm();
+        }
+        return yunpianMsgForm;
+    }
+
     /**
      * 清空所有界面字段
      */
     public static void clearAllField() {
-        yunpianMsgForm.getMsgYunpianMsgContentTextField().setText("");
+        getInstance().getMsgYunpianMsgContentTextField().setText("");
     }
 
     {

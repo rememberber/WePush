@@ -83,7 +83,7 @@ public class WxCpMsgSender implements IMsgSender {
     private static WxCpInMemoryConfigStorage wxCpConfigStorage() {
         WxCpInMemoryConfigStorage configStorage = new WxCpInMemoryConfigStorage();
         configStorage.setCorpId(App.config.getWxCpCorpId());
-        String agentId = WxCpMsgForm.appNameToAgentIdMap.get(WxCpMsgForm.wxCpMsgForm.getAppNameComboBox().getSelectedItem());
+        String agentId = WxCpMsgForm.appNameToAgentIdMap.get(WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem());
         configStorage.setAgentId(Integer.valueOf(agentId));
 
         List<TWxCpApp> wxCpAppList = wxCpAppMapper.selectByAgentId(agentId);

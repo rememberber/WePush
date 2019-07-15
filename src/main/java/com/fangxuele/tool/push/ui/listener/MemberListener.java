@@ -220,7 +220,7 @@ public class MemberListener {
         // 企业号-按标签导入-刷新
         MemberForm.memberForm.getWxCpTagsRefreshButton().addActionListener(e -> {
             ThreadUtil.execute(() -> {
-                if (WxCpMsgForm.wxCpMsgForm.getAppNameComboBox().getSelectedItem() == null) {
+                if (WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem() == null) {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "请先在编辑消息tab中选择应用！", "提示",
                             JOptionPane.ERROR_MESSAGE);
                     MainWindow.mainWindow.getTabbedPane().setSelectedIndex(2);
@@ -292,7 +292,7 @@ public class MemberListener {
         // 企业号-按部门导入-刷新
         MemberForm.memberForm.getWxCpDeptsRefreshButton().addActionListener(e -> {
             ThreadUtil.execute(() -> {
-                if (WxCpMsgForm.wxCpMsgForm.getAppNameComboBox().getSelectedItem() == null) {
+                if (WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem() == null) {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "请先在编辑消息tab中选择应用！", "提示",
                             JOptionPane.ERROR_MESSAGE);
                     MainWindow.mainWindow.getTabbedPane().setSelectedIndex(2);
@@ -1033,7 +1033,7 @@ public class MemberListener {
      */
     public static void importWxCpAll() {
         try {
-            if (WxCpMsgForm.wxCpMsgForm.getAppNameComboBox().getSelectedItem() == null) {
+            if (WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem() == null) {
                 JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "请先在编辑消息tab中选择应用！", "提示",
                         JOptionPane.ERROR_MESSAGE);
                 MainWindow.mainWindow.getTabbedPane().setSelectedIndex(2);

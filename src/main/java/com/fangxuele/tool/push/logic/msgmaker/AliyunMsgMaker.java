@@ -34,13 +34,13 @@ public class AliyunMsgMaker extends BaseMsgMaker implements IMsgMaker {
      */
     @Override
     public void prepare() {
-        templateId = AliYunMsgForm.aliYunMsgForm.getMsgTemplateIdTextField().getText();
+        templateId = AliYunMsgForm.getInstance().getMsgTemplateIdTextField().getText();
 
-        if (AliYunMsgForm.aliYunMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+        if (AliYunMsgForm.getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
             AliYunMsgForm.initTemplateDataTable();
         }
 
-        DefaultTableModel tableModel = (DefaultTableModel) AliYunMsgForm.aliYunMsgForm.getTemplateMsgDataTable().getModel();
+        DefaultTableModel tableModel = (DefaultTableModel) AliYunMsgForm.getInstance().getTemplateMsgDataTable().getModel();
         int rowCount = tableModel.getRowCount();
         TemplateData templateData;
         templateDataList = Lists.newArrayList();

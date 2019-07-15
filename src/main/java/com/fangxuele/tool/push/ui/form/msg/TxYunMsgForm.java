@@ -27,7 +27,7 @@ import java.util.Set;
 
 /**
  * <pre>
- * 类说明
+ * TxYunMsgForm
  * </pre>
  *
  * @author <a href="https://github.com/rememberber">Zhou Bo</a>
@@ -46,7 +46,7 @@ public class TxYunMsgForm implements IMsgForm {
     private JButton templateMsgDataAddButton;
     private JTable templateMsgDataTable;
 
-    public static TxYunMsgForm txYunMsgForm = new TxYunMsgForm();
+    private static TxYunMsgForm txYunMsgForm;
 
     private static TMsgSmsMapper msgSmsMapper = MybatisUtil.getSqlSession().getMapper(TMsgSmsMapper.class);
     private static TTemplateDataMapper templateDataMapper = MybatisUtil.getSqlSession().getMapper(TTemplateDataMapper.class);
@@ -55,14 +55,14 @@ public class TxYunMsgForm implements IMsgForm {
         // 模板数据-添加 按钮事件
         templateMsgDataAddButton.addActionListener(e -> {
             String[] data = new String[2];
-            data[0] = txYunMsgForm.getTemplateDataNameTextField().getText();
-            data[1] = txYunMsgForm.getTemplateDataValueTextField().getText();
+            data[0] = getInstance().getTemplateDataNameTextField().getText();
+            data[1] = getInstance().getTemplateDataValueTextField().getText();
 
-            if (txYunMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+            if (getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
                 initTemplateDataTable();
             }
 
-            DefaultTableModel tableModel = (DefaultTableModel) txYunMsgForm.getTemplateMsgDataTable()
+            DefaultTableModel tableModel = (DefaultTableModel) getInstance().getTemplateMsgDataTable()
                     .getModel();
             int rowCount = tableModel.getRowCount();
 
@@ -93,7 +93,7 @@ public class TxYunMsgForm implements IMsgForm {
         if (tMsgSmsList.size() > 0) {
             TMsgSms tMsgSms = tMsgSmsList.get(0);
             msgId = tMsgSms.getId();
-            txYunMsgForm.getMsgTemplateIdTextField().setText(tMsgSms.getTemplateId());
+            getInstance().getMsgTemplateIdTextField().setText(tMsgSms.getTemplateId());
         }
 
         initTemplateDataTable();
@@ -107,12 +107,12 @@ public class TxYunMsgForm implements IMsgForm {
             cellData[i][1] = tTemplateData.getValue();
         }
         DefaultTableModel model = new DefaultTableModel(cellData, headerNames);
-        txYunMsgForm.getTemplateMsgDataTable().setModel(model);
-        TableColumnModel tableColumnModel = txYunMsgForm.getTemplateMsgDataTable().getColumnModel();
+        getInstance().getTemplateMsgDataTable().setModel(model);
+        TableColumnModel tableColumnModel = getInstance().getTemplateMsgDataTable().getColumnModel();
         tableColumnModel.getColumn(headerNames.length - 1).
-                setCellRenderer(new TableInCellButtonColumn(txYunMsgForm.getTemplateMsgDataTable(), headerNames.length - 1));
+                setCellRenderer(new TableInCellButtonColumn(getInstance().getTemplateMsgDataTable(), headerNames.length - 1));
         tableColumnModel.getColumn(headerNames.length - 1).
-                setCellEditor(new TableInCellButtonColumn(txYunMsgForm.getTemplateMsgDataTable(), headerNames.length - 1));
+                setCellEditor(new TableInCellButtonColumn(getInstance().getTemplateMsgDataTable(), headerNames.length - 1));
 
         // 设置列宽
         tableColumnModel.getColumn(2).setPreferredWidth(46);
@@ -138,7 +138,7 @@ public class TxYunMsgForm implements IMsgForm {
         }
 
         if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
-            String templateId = txYunMsgForm.getMsgTemplateIdTextField().getText();
+            String templateId = getInstance().getMsgTemplateIdTextField().getText();
 
             String now = SqliteUtil.nowDateForSqlite();
 
@@ -163,12 +163,12 @@ public class TxYunMsgForm implements IMsgForm {
             }
 
             // 如果table为空，则初始化
-            if (txYunMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+            if (getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
                 initTemplateDataTable();
             }
 
             // 逐行读取
-            DefaultTableModel tableModel = (DefaultTableModel) txYunMsgForm.getTemplateMsgDataTable()
+            DefaultTableModel tableModel = (DefaultTableModel) getInstance().getTemplateMsgDataTable()
                     .getModel();
             int rowCount = tableModel.getRowCount();
             for (int i = 0; i < rowCount; i++) {
@@ -192,11 +192,18 @@ public class TxYunMsgForm implements IMsgForm {
 
     }
 
+    public static TxYunMsgForm getInstance() {
+        if (txYunMsgForm == null) {
+            txYunMsgForm = new TxYunMsgForm();
+        }
+        return txYunMsgForm;
+    }
+
     /**
      * 初始化模板消息数据table
      */
     public static void initTemplateDataTable() {
-        JTable msgDataTable = txYunMsgForm.getTemplateMsgDataTable();
+        JTable msgDataTable = getInstance().getTemplateMsgDataTable();
         String[] headerNames = {"模板参数", "参数对应的值", "操作"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
         msgDataTable.setModel(model);
@@ -220,9 +227,9 @@ public class TxYunMsgForm implements IMsgForm {
      * 清空所有界面字段
      */
     public static void clearAllField() {
-        txYunMsgForm.getMsgTemplateIdTextField().setText("");
-        txYunMsgForm.getTemplateDataNameTextField().setText("");
-        txYunMsgForm.getTemplateDataValueTextField().setText("");
+        getInstance().getMsgTemplateIdTextField().setText("");
+        getInstance().getTemplateDataNameTextField().setText("");
+        getInstance().getTemplateDataValueTextField().setText("");
         initTemplateDataTable();
     }
 

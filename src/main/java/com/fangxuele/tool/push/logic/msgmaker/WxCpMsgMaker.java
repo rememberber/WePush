@@ -38,14 +38,14 @@ public class WxCpMsgMaker extends BaseMsgMaker implements IMsgMaker {
      */
     @Override
     public void prepare() {
-        agentId = WxCpMsgForm.appNameToAgentIdMap.get(WxCpMsgForm.wxCpMsgForm.getAppNameComboBox().getSelectedItem());
-        msgType = (String) WxCpMsgForm.wxCpMsgForm.getMsgTypeComboBox().getSelectedItem();
-        msgTitle = WxCpMsgForm.wxCpMsgForm.getTitleTextField().getText();
-        picUrl = WxCpMsgForm.wxCpMsgForm.getPicUrlTextField().getText().trim();
-        desc = WxCpMsgForm.wxCpMsgForm.getDescTextField().getText();
-        url = WxCpMsgForm.wxCpMsgForm.getUrlTextField().getText().trim();
-        btnTxt = WxCpMsgForm.wxCpMsgForm.getBtnTxtTextField().getText().trim();
-        msgContent = WxCpMsgForm.wxCpMsgForm.getContentTextArea().getText();
+        agentId = WxCpMsgForm.appNameToAgentIdMap.get(WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem());
+        msgType = (String) WxCpMsgForm.getInstance().getMsgTypeComboBox().getSelectedItem();
+        msgTitle = WxCpMsgForm.getInstance().getTitleTextField().getText();
+        picUrl = WxCpMsgForm.getInstance().getPicUrlTextField().getText().trim();
+        desc = WxCpMsgForm.getInstance().getDescTextField().getText();
+        url = WxCpMsgForm.getInstance().getUrlTextField().getText().trim();
+        btnTxt = WxCpMsgForm.getInstance().getBtnTxtTextField().getText().trim();
+        msgContent = WxCpMsgForm.getInstance().getContentTextArea().getText();
         WxCpMsgSender.wxCpConfigStorage = null;
         WxCpMsgSender.wxCpService = null;
     }

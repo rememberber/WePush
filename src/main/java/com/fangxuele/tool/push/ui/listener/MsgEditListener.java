@@ -81,7 +81,7 @@ public class MsgEditListener {
                 }
 
                 if (App.config.getMsgType() == MessageTypeEnum.WX_CP_CODE
-                        && WxCpMsgForm.wxCpMsgForm.getAppNameComboBox().getSelectedItem() == null) {
+                        && WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem() == null) {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "请选择应用！", "成功",
                             JOptionPane.ERROR_MESSAGE);
                     return;

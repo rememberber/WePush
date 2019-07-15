@@ -27,13 +27,13 @@ public class TxYunMsgMaker extends BaseMsgMaker implements IMsgMaker{
      */
     @Override
     public void prepare() {
-        templateId = Integer.parseInt(TxYunMsgForm.txYunMsgForm.getMsgTemplateIdTextField().getText());
+        templateId = Integer.parseInt(TxYunMsgForm.getInstance().getMsgTemplateIdTextField().getText());
 
-        if (TxYunMsgForm.txYunMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+        if (TxYunMsgForm.getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
             TxYunMsgForm.initTemplateDataTable();
         }
 
-        DefaultTableModel tableModel = (DefaultTableModel) TxYunMsgForm.txYunMsgForm.getTemplateMsgDataTable().getModel();
+        DefaultTableModel tableModel = (DefaultTableModel) TxYunMsgForm.getInstance().getTemplateMsgDataTable().getModel();
         int rowCount = tableModel.getRowCount();
         paramList = Lists.newArrayList();
         for (int i = 0; i < rowCount; i++) {
