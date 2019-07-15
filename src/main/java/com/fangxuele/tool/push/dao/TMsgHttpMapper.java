@@ -1,6 +1,9 @@
 package com.fangxuele.tool.push.dao;
 
 import com.fangxuele.tool.push.domain.TMsgHttp;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface TMsgHttpMapper {
     int deleteByPrimaryKey(Integer id);
@@ -14,4 +17,8 @@ public interface TMsgHttpMapper {
     int updateByPrimaryKeySelective(TMsgHttp record);
 
     int updateByPrimaryKey(TMsgHttp record);
+
+    List<TMsgHttp> selectByMsgTypeAndMsgName(@Param("msgType") int msgType, @Param("msgName") String msgName);
+
+    int updateByMsgTypeAndMsgName(TMsgHttp tMsgHttp);
 }

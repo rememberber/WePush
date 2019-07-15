@@ -1,164 +1,184 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fangxuele.tool.push.dao.TMsgHttpMapper">
-  <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TMsgHttp">
-    <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="msg_type" jdbcType="INTEGER" property="msgType" />
-    <result column="msg_name" jdbcType="VARCHAR" property="msgName" />
-    <result column="method" jdbcType="VARCHAR" property="method" />
-    <result column="url" jdbcType="VARCHAR" property="url" />
-    <result column="params" jdbcType="VARCHAR" property="params" />
-    <result column="headers" jdbcType="VARCHAR" property="headers" />
-    <result column="cookies" jdbcType="VARCHAR" property="cookies" />
-    <result column="body" jdbcType="VARCHAR" property="body" />
-    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
-    <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    id, msg_type, msg_name, method, url, params, headers, cookies, body, create_time, 
+    <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TMsgHttp">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="msg_type" jdbcType="INTEGER" property="msgType"/>
+        <result column="msg_name" jdbcType="VARCHAR" property="msgName"/>
+        <result column="method" jdbcType="VARCHAR" property="method"/>
+        <result column="url" jdbcType="VARCHAR" property="url"/>
+        <result column="params" jdbcType="VARCHAR" property="params"/>
+        <result column="headers" jdbcType="VARCHAR" property="headers"/>
+        <result column="cookies" jdbcType="VARCHAR" property="cookies"/>
+        <result column="body" jdbcType="VARCHAR" property="body"/>
+        <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
+        <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, msg_type, msg_name, method, url, params, headers, cookies, body, create_time,
     modified_time
-  </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from t_msg_http
-    where id = #{id,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from t_msg_http
-    where id = #{id,jdbcType=INTEGER}
-  </delete>
-  <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TMsgHttp">
-    insert into t_msg_http (id, msg_type, msg_name, 
-      method, url, params, 
-      headers, cookies, body, 
-      create_time, modified_time)
-    values (#{id,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER}, #{msgName,jdbcType=VARCHAR}, 
-      #{method,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, #{params,jdbcType=VARCHAR}, 
-      #{headers,jdbcType=VARCHAR}, #{cookies,jdbcType=VARCHAR}, #{body,jdbcType=VARCHAR}, 
-      #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR})
-  </insert>
-  <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TMsgHttp">
-    insert into t_msg_http
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="msgType != null">
-        msg_type,
-      </if>
-      <if test="msgName != null">
-        msg_name,
-      </if>
-      <if test="method != null">
-        method,
-      </if>
-      <if test="url != null">
-        url,
-      </if>
-      <if test="params != null">
-        params,
-      </if>
-      <if test="headers != null">
-        headers,
-      </if>
-      <if test="cookies != null">
-        cookies,
-      </if>
-      <if test="body != null">
-        body,
-      </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
-      <if test="modifiedTime != null">
-        modified_time,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=INTEGER},
-      </if>
-      <if test="msgType != null">
-        #{msgType,jdbcType=INTEGER},
-      </if>
-      <if test="msgName != null">
-        #{msgName,jdbcType=VARCHAR},
-      </if>
-      <if test="method != null">
-        #{method,jdbcType=VARCHAR},
-      </if>
-      <if test="url != null">
-        #{url,jdbcType=VARCHAR},
-      </if>
-      <if test="params != null">
-        #{params,jdbcType=VARCHAR},
-      </if>
-      <if test="headers != null">
-        #{headers,jdbcType=VARCHAR},
-      </if>
-      <if test="cookies != null">
-        #{cookies,jdbcType=VARCHAR},
-      </if>
-      <if test="body != null">
-        #{body,jdbcType=VARCHAR},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=VARCHAR},
-      </if>
-      <if test="modifiedTime != null">
-        #{modifiedTime,jdbcType=VARCHAR},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.fangxuele.tool.push.domain.TMsgHttp">
-    update t_msg_http
-    <set>
-      <if test="msgType != null">
-        msg_type = #{msgType,jdbcType=INTEGER},
-      </if>
-      <if test="msgName != null">
-        msg_name = #{msgName,jdbcType=VARCHAR},
-      </if>
-      <if test="method != null">
-        method = #{method,jdbcType=VARCHAR},
-      </if>
-      <if test="url != null">
-        url = #{url,jdbcType=VARCHAR},
-      </if>
-      <if test="params != null">
-        params = #{params,jdbcType=VARCHAR},
-      </if>
-      <if test="headers != null">
-        headers = #{headers,jdbcType=VARCHAR},
-      </if>
-      <if test="cookies != null">
-        cookies = #{cookies,jdbcType=VARCHAR},
-      </if>
-      <if test="body != null">
-        body = #{body,jdbcType=VARCHAR},
-      </if>
-      <if test="createTime != null">
-        create_time = #{createTime,jdbcType=VARCHAR},
-      </if>
-      <if test="modifiedTime != null">
-        modified_time = #{modifiedTime,jdbcType=VARCHAR},
-      </if>
-    </set>
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TMsgHttp">
-    update t_msg_http
-    set msg_type = #{msgType,jdbcType=INTEGER},
-      msg_name = #{msgName,jdbcType=VARCHAR},
-      method = #{method,jdbcType=VARCHAR},
-      url = #{url,jdbcType=VARCHAR},
-      params = #{params,jdbcType=VARCHAR},
-      headers = #{headers,jdbcType=VARCHAR},
-      cookies = #{cookies,jdbcType=VARCHAR},
-      body = #{body,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=VARCHAR},
-      modified_time = #{modifiedTime,jdbcType=VARCHAR}
-    where id = #{id,jdbcType=INTEGER}
-  </update>
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_msg_http
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from t_msg_http
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TMsgHttp">
+        insert into t_msg_http (id, msg_type, msg_name,
+                                method, url, params,
+                                headers, cookies, body,
+                                create_time, modified_time)
+        values (#{id,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER}, #{msgName,jdbcType=VARCHAR},
+                #{method,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, #{params,jdbcType=VARCHAR},
+                #{headers,jdbcType=VARCHAR}, #{cookies,jdbcType=VARCHAR}, #{body,jdbcType=VARCHAR},
+                #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TMsgHttp">
+        insert into t_msg_http
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="msgType != null">
+                msg_type,
+            </if>
+            <if test="msgName != null">
+                msg_name,
+            </if>
+            <if test="method != null">
+                method,
+            </if>
+            <if test="url != null">
+                url,
+            </if>
+            <if test="params != null">
+                params,
+            </if>
+            <if test="headers != null">
+                headers,
+            </if>
+            <if test="cookies != null">
+                cookies,
+            </if>
+            <if test="body != null">
+                body,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="modifiedTime != null">
+                modified_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="msgType != null">
+                #{msgType,jdbcType=INTEGER},
+            </if>
+            <if test="msgName != null">
+                #{msgName,jdbcType=VARCHAR},
+            </if>
+            <if test="method != null">
+                #{method,jdbcType=VARCHAR},
+            </if>
+            <if test="url != null">
+                #{url,jdbcType=VARCHAR},
+            </if>
+            <if test="params != null">
+                #{params,jdbcType=VARCHAR},
+            </if>
+            <if test="headers != null">
+                #{headers,jdbcType=VARCHAR},
+            </if>
+            <if test="cookies != null">
+                #{cookies,jdbcType=VARCHAR},
+            </if>
+            <if test="body != null">
+                #{body,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=VARCHAR},
+            </if>
+            <if test="modifiedTime != null">
+                #{modifiedTime,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.fangxuele.tool.push.domain.TMsgHttp">
+        update t_msg_http
+        <set>
+            <if test="msgType != null">
+                msg_type = #{msgType,jdbcType=INTEGER},
+            </if>
+            <if test="msgName != null">
+                msg_name = #{msgName,jdbcType=VARCHAR},
+            </if>
+            <if test="method != null">
+                method = #{method,jdbcType=VARCHAR},
+            </if>
+            <if test="url != null">
+                url = #{url,jdbcType=VARCHAR},
+            </if>
+            <if test="params != null">
+                params = #{params,jdbcType=VARCHAR},
+            </if>
+            <if test="headers != null">
+                headers = #{headers,jdbcType=VARCHAR},
+            </if>
+            <if test="cookies != null">
+                cookies = #{cookies,jdbcType=VARCHAR},
+            </if>
+            <if test="body != null">
+                body = #{body,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=VARCHAR},
+            </if>
+            <if test="modifiedTime != null">
+                modified_time = #{modifiedTime,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TMsgHttp">
+        update t_msg_http
+        set msg_type      = #{msgType,jdbcType=INTEGER},
+            msg_name      = #{msgName,jdbcType=VARCHAR},
+            method        = #{method,jdbcType=VARCHAR},
+            url           = #{url,jdbcType=VARCHAR},
+            params        = #{params,jdbcType=VARCHAR},
+            headers       = #{headers,jdbcType=VARCHAR},
+            cookies       = #{cookies,jdbcType=VARCHAR},
+            body          = #{body,jdbcType=VARCHAR},
+            create_time   = #{createTime,jdbcType=VARCHAR},
+            modified_time = #{modifiedTime,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <select id="selectByMsgTypeAndMsgName" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_msg_http
+        where msg_type = #{msgType,jdbcType=INTEGER}
+        and msg_name = #{msgName,jdbcType=VARCHAR}
+    </select>
+    <update id="updateByMsgTypeAndMsgName" parameterType="com.fangxuele.tool.push.domain.TMsgHttp">
+        update t_msg_http
+        set method        = #{method,jdbcType=VARCHAR},
+            url           = #{url,jdbcType=VARCHAR},
+            params        = #{params,jdbcType=VARCHAR},
+            headers       = #{headers,jdbcType=VARCHAR},
+            cookies       = #{cookies,jdbcType=VARCHAR},
+            body          = #{body,jdbcType=VARCHAR},
+            modified_time = #{modifiedTime,jdbcType=VARCHAR}
+        where msg_type = #{msgType,jdbcType=INTEGER}
+          and msg_name = #{msgName,jdbcType=VARCHAR}
+    </update>
 </mapper>

@@ -1,9 +1,17 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
+import cn.hutool.json.JSONUtil;
+import com.fangxuele.tool.push.dao.TMsgHttpMapper;
+import com.fangxuele.tool.push.domain.TMsgHttp;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
+import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.SqliteUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
@@ -11,7 +19,10 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -45,6 +56,8 @@ public class HttpMsgForm implements IMsgForm {
     private JTextArea bodyTextArea;
 
     private static HttpMsgForm httpMsgForm;
+
+    private static TMsgHttpMapper msgHttpMapper = MybatisUtil.getSqlSession().getMapper(TMsgHttpMapper.class);
 
     public HttpMsgForm() {
         paramAddButton.addActionListener(e -> {
@@ -147,7 +160,106 @@ public class HttpMsgForm implements IMsgForm {
 
     @Override
     public void save(String msgName) {
+        boolean existSameMsg = false;
 
+        List<TMsgHttp> tMsgHttpList = msgHttpMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.HTTP_CODE, msgName);
+        if (tMsgHttpList.size() > 0) {
+            existSameMsg = true;
+        }
+
+        int isCover = JOptionPane.NO_OPTION;
+        if (existSameMsg) {
+            // 如果存在，是否覆盖
+            isCover = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getMessagePanel(), "已经存在同名的历史消息，\n是否覆盖？", "确认",
+                    JOptionPane.YES_NO_OPTION);
+        }
+
+        if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
+            String method = (String) getInstance().getMethodComboBox().getSelectedItem();
+            String url = getInstance().getUrlTextField().getText();
+            String body = getInstance().getBodyTextArea().getText();
+            String now = SqliteUtil.nowDateForSqlite();
+
+            TMsgHttp tMsgHttp = new TMsgHttp();
+            tMsgHttp.setMsgType(MessageTypeEnum.HTTP_CODE);
+            tMsgHttp.setMsgName(msgName);
+            tMsgHttp.setMethod(method);
+            tMsgHttp.setUrl(url);
+            tMsgHttp.setBody(body);
+            tMsgHttp.setCreateTime(now);
+            tMsgHttp.setModifiedTime(now);
+
+            // =============params
+            // 如果table为空，则初始化
+            if (getInstance().getParamTable().getModel().getRowCount() == 0) {
+                initParamTable();
+            }
+            // 逐行读取
+            DefaultTableModel paraTableModel = (DefaultTableModel) getInstance().getParamTable().getModel();
+            int rowCount = paraTableModel.getRowCount();
+            List<NameValueObject> params = new ArrayList<>();
+            NameValueObject nameValueObject;
+            for (int i = 0; i < rowCount; i++) {
+                String name = (String) paraTableModel.getValueAt(i, 0);
+                String value = (String) paraTableModel.getValueAt(i, 1);
+                nameValueObject = new NameValueObject();
+                nameValueObject.setName(name);
+                nameValueObject.setValue(value);
+                params.add(nameValueObject);
+            }
+            tMsgHttp.setParams(JSONUtil.toJsonStr(params));
+            // =============headers
+            // 如果table为空，则初始化
+            if (getInstance().getHeaderTable().getModel().getRowCount() == 0) {
+                initHeaderTable();
+            }
+            // 逐行读取
+            DefaultTableModel headerTableModel = (DefaultTableModel) getInstance().getHeaderTable().getModel();
+            rowCount = headerTableModel.getRowCount();
+            List<NameValueObject> headers = new ArrayList<>();
+            for (int i = 0; i < rowCount; i++) {
+                String name = (String) headerTableModel.getValueAt(i, 0);
+                String value = (String) headerTableModel.getValueAt(i, 1);
+                nameValueObject = new NameValueObject();
+                nameValueObject.setName(name);
+                nameValueObject.setValue(value);
+                headers.add(nameValueObject);
+            }
+            tMsgHttp.setHeaders(JSONUtil.toJsonStr(headers));
+            // =============cookies
+            // 如果table为空，则初始化
+            if (getInstance().getCookieTable().getModel().getRowCount() == 0) {
+                initCookieTable();
+            }
+            // 逐行读取
+            DefaultTableModel cookiesTableModel = (DefaultTableModel) getInstance().getCookieTable().getModel();
+            rowCount = cookiesTableModel.getRowCount();
+            List<CookieObject> cookies = new ArrayList<>();
+            CookieObject cookieObject;
+            for (int i = 0; i < rowCount; i++) {
+                String name = (String) cookiesTableModel.getValueAt(i, 0);
+                String value = (String) cookiesTableModel.getValueAt(i, 1);
+                String domain = (String) cookiesTableModel.getValueAt(i, 2);
+                String path = (String) cookiesTableModel.getValueAt(i, 3);
+                String expiry = (String) cookiesTableModel.getValueAt(i, 4);
+                cookieObject = new CookieObject();
+                cookieObject.setName(name);
+                cookieObject.setValue(value);
+                cookieObject.setDomain(domain);
+                cookieObject.setPath(path);
+                cookieObject.setExpiry(expiry);
+                cookies.add(cookieObject);
+            }
+            tMsgHttp.setCookies(JSONUtil.toJsonStr(cookies));
+
+            if (existSameMsg) {
+                msgHttpMapper.updateByMsgTypeAndMsgName(tMsgHttp);
+            } else {
+                msgHttpMapper.insertSelective(tMsgHttp);
+            }
+            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "保存成功！", "成功",
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     public static HttpMsgForm getInstance() {
@@ -251,6 +363,33 @@ public class HttpMsgForm implements IMsgForm {
         // 设置列宽
         tableColumnModel.getColumn(headerNames.length - 1).setPreferredWidth(46);
         tableColumnModel.getColumn(headerNames.length - 1).setMaxWidth(46);
+    }
+
+    @Getter
+    @Setter
+    public static class NameValueObject implements Serializable {
+        private static final long serialVersionUID = -3828939498243146605L;
+
+        private String name;
+
+        private String value;
+    }
+
+    @Getter
+    @Setter
+    public static class CookieObject implements Serializable {
+
+        private static final long serialVersionUID = 810193087944524307L;
+
+        private String name;
+
+        private String value;
+
+        private String domain;
+
+        private String path;
+
+        private String expiry;
     }
 
     {
