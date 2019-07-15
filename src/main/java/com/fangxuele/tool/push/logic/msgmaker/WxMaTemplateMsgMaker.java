@@ -30,7 +30,8 @@ public class WxMaTemplateMsgMaker extends BaseMsgMaker implements IMsgMaker {
     /**
      * 准备(界面字段等)
      */
-    public static void prepare() {
+    @Override
+    public void prepare() {
         templateId = MaTemplateMsgForm.maTemplateMsgForm.getMsgTemplateIdTextField().getText().trim();
         templateUrl = MaTemplateMsgForm.maTemplateMsgForm.getMsgTemplateUrlTextField().getText().trim();
         templateKeyWord = MaTemplateMsgForm.maTemplateMsgForm.getMsgTemplateKeyWordTextField().getText().trim() + ".DATA";

@@ -36,7 +36,8 @@ public class WxCpMsgMaker extends BaseMsgMaker implements IMsgMaker {
     /**
      * 准备(界面字段等)
      */
-    public static void prepare() {
+    @Override
+    public void prepare() {
         agentId = WxCpMsgForm.appNameToAgentIdMap.get(WxCpMsgForm.wxCpMsgForm.getAppNameComboBox().getSelectedItem());
         msgType = (String) WxCpMsgForm.wxCpMsgForm.getMsgTypeComboBox().getSelectedItem();
         msgTitle = WxCpMsgForm.wxCpMsgForm.getTitleTextField().getText();

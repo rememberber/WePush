@@ -6,15 +6,7 @@ import cn.hutool.core.io.FileUtil;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPushHistoryMapper;
 import com.fangxuele.tool.push.domain.TPushHistory;
-import com.fangxuele.tool.push.logic.msgmaker.AliTemplateMsgMaker;
-import com.fangxuele.tool.push.logic.msgmaker.AliyunMsgMaker;
-import com.fangxuele.tool.push.logic.msgmaker.MailMsgMaker;
-import com.fangxuele.tool.push.logic.msgmaker.TxYunMsgMaker;
-import com.fangxuele.tool.push.logic.msgmaker.WxCpMsgMaker;
-import com.fangxuele.tool.push.logic.msgmaker.WxKefuMsgMaker;
-import com.fangxuele.tool.push.logic.msgmaker.WxMaTemplateMsgMaker;
-import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
-import com.fangxuele.tool.push.logic.msgmaker.YunPianMsgMaker;
+import com.fangxuele.tool.push.logic.msgmaker.MsgMakerFactory;
 import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
@@ -366,41 +358,7 @@ public class PushControl {
      * 准备消息构造器
      */
     static void prepareMsgMaker() {
-        int msgType = App.config.getMsgType();
-        switch (msgType) {
-            case MessageTypeEnum.MP_TEMPLATE_CODE:
-                WxMpTemplateMsgMaker.prepare();
-                break;
-            case MessageTypeEnum.MA_TEMPLATE_CODE:
-                WxMaTemplateMsgMaker.prepare();
-                break;
-            case MessageTypeEnum.KEFU_CODE:
-                WxKefuMsgMaker.prepare();
-                break;
-            case MessageTypeEnum.KEFU_PRIORITY_CODE:
-                WxKefuMsgMaker.prepare();
-                WxMpTemplateMsgMaker.prepare();
-                break;
-            case MessageTypeEnum.ALI_YUN_CODE:
-                AliyunMsgMaker.prepare();
-                break;
-            case MessageTypeEnum.ALI_TEMPLATE_CODE:
-                AliTemplateMsgMaker.prepare();
-                break;
-            case MessageTypeEnum.TX_YUN_CODE:
-                TxYunMsgMaker.prepare();
-                break;
-            case MessageTypeEnum.YUN_PIAN_CODE:
-                YunPianMsgMaker.prepare();
-                break;
-            case MessageTypeEnum.EMAIL_CODE:
-                MailMsgMaker.prepare();
-                break;
-            case MessageTypeEnum.WX_CP_CODE:
-                WxCpMsgMaker.prepare();
-                break;
-            default:
-        }
+        MsgMakerFactory.getMsgMaker().prepare();
     }
 
     /**

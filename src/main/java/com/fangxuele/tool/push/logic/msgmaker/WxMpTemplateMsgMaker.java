@@ -35,7 +35,8 @@ public class WxMpTemplateMsgMaker extends BaseMsgMaker implements IMsgMaker {
     /**
      * 准备(界面字段等)
      */
-    public static void prepare() {
+    @Override
+    public void prepare() {
         templateId = MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateIdTextField().getText().trim();
         templateUrl = MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateUrlTextField().getText().trim();
         miniAppId = MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateMiniAppidTextField().getText().trim();

@@ -32,7 +32,8 @@ public class AliyunMsgMaker extends BaseMsgMaker implements IMsgMaker {
     /**
      * 准备(界面字段等)
      */
-    public static void prepare() {
+    @Override
+    public void prepare() {
         templateId = AliYunMsgForm.aliYunMsgForm.getMsgTemplateIdTextField().getText();
 
         if (AliYunMsgForm.aliYunMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {

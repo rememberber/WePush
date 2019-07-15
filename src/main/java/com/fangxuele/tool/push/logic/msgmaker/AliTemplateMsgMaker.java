@@ -31,7 +31,8 @@ public class AliTemplateMsgMaker extends BaseMsgMaker implements IMsgMaker{
     /**
      * 准备(界面字段等)
      */
-    public static void prepare() {
+    @Override
+    public void prepare() {
         templateId = AliTemplateMsgForm.aliTemplateMsgForm.getMsgTemplateIdTextField().getText();
 
         if (AliTemplateMsgForm.aliTemplateMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {

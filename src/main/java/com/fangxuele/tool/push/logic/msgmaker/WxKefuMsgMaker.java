@@ -29,7 +29,8 @@ public class WxKefuMsgMaker extends BaseMsgMaker implements IMsgMaker {
     /**
      * 准备(界面字段等)
      */
-    public static void prepare() {
+    @Override
+    public void prepare() {
         msgKefuMsgType = KefuMsgForm.kefuMsgForm.getMsgKefuMsgTypeComboBox().getSelectedItem().toString();
         msgKefuMsgTitle = KefuMsgForm.kefuMsgForm.getMsgKefuMsgTitleTextField().getText();
         msgKefuPicUrl = KefuMsgForm.kefuMsgForm.getMsgKefuPicUrlTextField().getText();
