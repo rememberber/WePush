@@ -51,6 +51,9 @@ public class MsgSenderFactory {
             case MessageTypeEnum.WX_CP_CODE:
                 iMsgSender = new WxCpMsgSender();
                 break;
+            case MessageTypeEnum.HTTP_CODE:
+                iMsgSender = new HttpMsgSender();
+                break;
             default:
                 break;
         }
