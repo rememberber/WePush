@@ -80,7 +80,7 @@ public class BoostPushRunThread extends Thread {
 
         // 拷贝准备的目标用户
         PushData.toSendList.addAll(PushData.allUser);
-        PushData.toSendCount.set(PushData.allUser.size());
+        PushData.TO_SEND_COUNT.set(PushData.allUser.size());
         // 总记录数
         PushData.totalRecords = PushData.toSendList.size();
 
@@ -117,7 +117,7 @@ public class BoostPushRunThread extends Thread {
         long startTimeMillis = System.currentTimeMillis();
         // 计时
         while (true) {
-            if (PushData.toSendCount.get() <= PushData.successRecords.longValue() + PushData.failRecords.longValue()) {
+            if (PushData.TO_SEND_COUNT.get() <= PushData.successRecords.longValue() + PushData.failRecords.longValue()) {
                 if (!PushData.fixRateScheduling) {
                     BoostForm.boostForm.getStopButton().setEnabled(false);
                     BoostForm.boostForm.getStopButton().updateUI();

@@ -39,7 +39,7 @@ public class MsgSendThread extends BaseMsgThread {
         for (int i = 0; i < list.size(); i++) {
             if (!PushData.running) {
                 // 停止
-                PushData.increaseStopedThread();
+                PushData.increaseStoppedThread();
                 return;
             }
 
