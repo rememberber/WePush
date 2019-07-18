@@ -1,5 +1,8 @@
 package com.fangxuele.tool.push.logic.msgsender;
 
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
+import com.fangxuele.tool.push.bean.HttpMsg;
 import com.fangxuele.tool.push.logic.msgmaker.HttpMsgMaker;
 
 /**
@@ -21,7 +24,26 @@ public class HttpMsgSender implements IMsgSender {
     @Override
     public SendResult send(String[] msgData) {
         SendResult sendResult = new SendResult();
-
+        HttpMsg httpMsg = httpMsgMaker.makeMsg(msgData);
+        switch (HttpMsgMaker.method) {
+            case "GET":
+                HttpResponse httpResponse = HttpRequest.get(httpMsg.getUrl()).form(httpMsg.getParamMap()).execute();
+                System.err.println(httpResponse.body());
+                break;
+            case "POST":
+                break;
+            case "PUT":
+                break;
+            case "PATCH":
+                break;
+            case "DELETE":
+                break;
+            case "HEAD":
+                break;
+            case "OPTIONS":
+                break;
+            default:
+        }
         sendResult.setSuccess(true);
         return sendResult;
     }

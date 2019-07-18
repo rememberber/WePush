@@ -1,9 +1,18 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
+import com.fangxuele.tool.push.bean.HttpMsg;
 import com.fangxuele.tool.push.ui.form.msg.HttpMsgForm;
-import org.apache.commons.compress.utils.Lists;
+import com.fangxuele.tool.push.util.TemplateUtil;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.DateUtils;
+import org.apache.velocity.VelocityContext;
 
 import javax.swing.table.DefaultTableModel;
+import java.net.HttpCookie;
+import java.text.ParseException;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -14,7 +23,8 @@ import java.util.List;
  * @author <a href="https://github.com/rememberber">Zhou Bo</a>
  * @since 2019/7/16.
  */
-public class HttpMsgMaker implements IMsgMaker {
+@Slf4j
+public class HttpMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
     public static String method;
     public static String url;
@@ -85,7 +95,39 @@ public class HttpMsgMaker implements IMsgMaker {
     }
 
     @Override
-    public Object makeMsg(String[] msgData) {
-        return null;
+    public HttpMsg makeMsg(String[] msgData) {
+        HttpMsg httpMsg = new HttpMsg();
+
+        VelocityContext velocityContext = getVelocityContext(msgData);
+        httpMsg.setUrl(TemplateUtil.evaluate(url, velocityContext));
+        httpMsg.setBody(TemplateUtil.evaluate(body, velocityContext));
+
+        HashMap<String, Object> paramMap = Maps.newHashMap();
+        for (HttpMsgForm.NameValueObject nameValueObject : paramList) {
+            paramMap.put(nameValueObject.getName(), TemplateUtil.evaluate(nameValueObject.getValue(), velocityContext));
+        }
+        httpMsg.setParamMap(paramMap);
+
+        HashMap<String, Object> headerMap = Maps.newHashMap();
+        for (HttpMsgForm.NameValueObject nameValueObject : headerList) {
+            headerMap.put(nameValueObject.getName(), TemplateUtil.evaluate(nameValueObject.getValue(), velocityContext));
+        }
+        httpMsg.setHeaderMap(headerMap);
+
+        List<HttpCookie> cookies = Lists.newArrayList();
+        for (HttpMsgForm.CookieObject cookieObject : cookieList) {
+            HttpCookie httpCookie = new HttpCookie(cookieObject.getName(), TemplateUtil.evaluate(cookieObject.getValue(), velocityContext));
+            httpCookie.setDomain(cookieObject.getDomain());
+            httpCookie.setPath(cookieObject.getPath());
+            try {
+                httpCookie.setMaxAge(DateUtils.parseDate(cookieObject.getExpiry(), "yyyy-MM-dd").getTime());
+            } catch (ParseException e) {
+                log.error(e.toString());
+            }
+            cookies.add(httpCookie);
+        }
+        httpMsg.setCookies(cookies);
+
+        return httpMsg;
     }
 }
