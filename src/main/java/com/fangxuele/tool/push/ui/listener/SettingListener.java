@@ -317,6 +317,24 @@ public class SettingListener {
             }
         });
 
+        SettingForm.settingForm.getHttpSaveButton().addActionListener(e -> {
+            try {
+                App.config.setHttpUseProxy(SettingForm.settingForm.getHttpUseProxyCheckBox().isSelected());
+                App.config.setHttpProxyHost(SettingForm.settingForm.getHttpProxyHostTextField().getText());
+                App.config.setHttpProxyPort(SettingForm.settingForm.getHttpProxyPortTextField().getText());
+                App.config.setHttpProxyUserName(SettingForm.settingForm.getHttpProxyUserTextField().getText());
+                App.config.setHttpProxyPassword(SettingForm.settingForm.getHttpProxyPasswordTextField().getText());
+                App.config.save();
+
+                JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        });
+
         // E-Mail测试
         SettingForm.settingForm.getTestMailButton().addActionListener(e -> {
             App.config.setMailHost(SettingForm.settingForm.getMailHostTextField().getText());
@@ -465,6 +483,17 @@ public class SettingListener {
             @Override
             public void stateChanged(ChangeEvent e) {
                 SettingForm.toggleMaProxyPanel();
+            }
+        });
+        SettingForm.settingForm.getHttpUseProxyCheckBox().addChangeListener(new ChangeListener() {
+            /**
+             * Invoked when the target of the listener has changed its state.
+             *
+             * @param e a ChangeEvent object
+             */
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                SettingForm.toggleHttpProxyPanel();
             }
         });
     }

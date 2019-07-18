@@ -90,6 +90,13 @@ public class SettingForm {
     private JTextField wxCpCorpIdTextField;
     private JButton wxCpSaveButton;
     private JButton wxCpAppManageButton;
+    private JPanel httpProxyPanel;
+    private JButton httpSaveButton;
+    private JTextField httpProxyPortTextField;
+    private JTextField httpProxyPasswordTextField;
+    private JTextField httpProxyUserTextField;
+    private JTextField httpProxyHostTextField;
+    private JCheckBox httpUseProxyCheckBox;
 
     public static SettingForm settingForm = new SettingForm();
     private static TWxAccountMapper wxAccountMapper = MybatisUtil.getSqlSession().getMapper(TWxAccountMapper.class);
@@ -161,6 +168,13 @@ public class SettingForm {
         // 云片网短信
         settingForm.getYunpianApiKeyTextField().setText(App.config.getYunpianApiKey());
 
+        // HTTP请求
+        settingForm.getHttpUseProxyCheckBox().setSelected(App.config.isHttpUseProxy());
+        settingForm.getHttpProxyHostTextField().setText(App.config.getHttpProxyHost());
+        settingForm.getHttpProxyPortTextField().setText(App.config.getHttpProxyPort());
+        settingForm.getHttpProxyUserTextField().setText(App.config.getHttpProxyUserName());
+        settingForm.getHttpProxyPasswordTextField().setText(App.config.getHttpProxyPassword());
+
         // E-Mail
         settingForm.getMailHostTextField().setText(App.config.getMailHost());
         settingForm.getMailPortTextField().setText(App.config.getMailPort());
@@ -183,6 +197,7 @@ public class SettingForm {
 
         toggleMpProxyPanel();
         toggleMaProxyPanel();
+        toggleHttpProxyPanel();
     }
 
     /**
@@ -235,11 +250,23 @@ public class SettingForm {
      * 切换小程序代理设置面板显示/隐藏
      */
     public static void toggleMaProxyPanel() {
-        boolean maUseProxy = SettingForm.settingForm.getMaUseProxyCheckBox().isSelected();
+        boolean maUseProxy = settingForm.getMaUseProxyCheckBox().isSelected();
         if (maUseProxy) {
-            SettingForm.settingForm.getMaProxyPanel().setVisible(true);
+            settingForm.getMaProxyPanel().setVisible(true);
         } else {
-            SettingForm.settingForm.getMaProxyPanel().setVisible(false);
+            settingForm.getMaProxyPanel().setVisible(false);
+        }
+    }
+
+    /**
+     * 切换HTTP代理设置面板显示/隐藏
+     */
+    public static void toggleHttpProxyPanel() {
+        boolean httpUseProxy = settingForm.getHttpUseProxyCheckBox().isSelected();
+        if (httpUseProxy) {
+            settingForm.getHttpProxyPanel().setVisible(true);
+        } else {
+            settingForm.getHttpProxyPanel().setVisible(false);
         }
     }
 
@@ -273,7 +300,7 @@ public class SettingForm {
         final Spacer spacer1 = new Spacer();
         panel2.add(spacer1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(11, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel3.setLayout(new GridLayoutManager(12, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel2.add(panel3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(600, -1), null, 0, false));
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new GridLayoutManager(1, 1, new Insets(15, 15, 10, 0), -1, -1));
@@ -561,7 +588,7 @@ public class SettingForm {
         panel18.add(spacer8, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final JPanel panel19 = new JPanel();
         panel19.setLayout(new GridLayoutManager(8, 4, new Insets(15, 15, 10, 0), -1, -1));
-        panel3.add(panel19, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel3.add(panel19, new GridConstraints(9, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         panel19.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "E-Mail", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, panel19.getFont())));
         final JLabel label31 = new JLabel();
         label31.setText("邮件服务器的SMTP地址");
@@ -610,7 +637,7 @@ public class SettingForm {
         panel19.add(mailPasswordField, new GridConstraints(4, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         final JPanel panel21 = new JPanel();
         panel21.setLayout(new GridLayoutManager(4, 4, new Insets(15, 15, 10, 0), -1, -1));
-        panel3.add(panel21, new GridConstraints(9, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel3.add(panel21, new GridConstraints(10, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         panel21.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "MySQL数据库", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, panel21.getFont())));
         final JLabel label36 = new JLabel();
         label36.setText("数据库地址");
@@ -642,7 +669,7 @@ public class SettingForm {
         panel22.add(settingDbInfoSaveButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel23 = new JPanel();
         panel23.setLayout(new GridLayoutManager(4, 3, new Insets(15, 15, 10, 0), -1, -1));
-        panel3.add(panel23, new GridConstraints(10, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel3.add(panel23, new GridConstraints(11, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         panel23.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "外观", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, panel23.getFont())));
         final JLabel label39 = new JLabel();
         label39.setText("主题风格");
@@ -703,8 +730,49 @@ public class SettingForm {
         panel24.add(settingAppearanceSaveButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer11 = new Spacer();
         panel24.add(spacer11, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        final JPanel panel25 = new JPanel();
+        panel25.setLayout(new GridLayoutManager(3, 3, new Insets(15, 15, 10, 0), -1, -1));
+        Font panel25Font = this.$$$getFont$$$("Microsoft YaHei UI", -1, -1, panel25.getFont());
+        if (panel25Font != null) panel25.setFont(panel25Font);
+        panel3.add(panel25, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel25.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "HTTP请求", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, panel25.getFont())));
+        final JPanel panel26 = new JPanel();
+        panel26.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel25.add(panel26, new GridConstraints(2, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        httpSaveButton = new JButton();
+        httpSaveButton.setIcon(new ImageIcon(getClass().getResource("/icon/menu-saveall_dark.png")));
+        httpSaveButton.setText("保存");
+        panel26.add(httpSaveButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer12 = new Spacer();
-        panel2.add(spacer12, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        panel26.add(spacer12, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        httpUseProxyCheckBox = new JCheckBox();
+        httpUseProxyCheckBox.setText("使用HTTP代理");
+        panel25.add(httpUseProxyCheckBox, new GridConstraints(0, 0, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        httpProxyPanel = new JPanel();
+        httpProxyPanel.setLayout(new GridLayoutManager(4, 2, new Insets(0, 26, 0, 0), -1, -1));
+        panel25.add(httpProxyPanel, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        final JLabel label42 = new JLabel();
+        label42.setText("Host");
+        httpProxyPanel.add(label42, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        httpProxyHostTextField = new JTextField();
+        httpProxyPanel.add(httpProxyHostTextField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        final JLabel label43 = new JLabel();
+        label43.setText("端口");
+        httpProxyPanel.add(label43, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label44 = new JLabel();
+        label44.setText("用户名");
+        httpProxyPanel.add(label44, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label45 = new JLabel();
+        label45.setText("密码");
+        httpProxyPanel.add(label45, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        httpProxyPortTextField = new JTextField();
+        httpProxyPanel.add(httpProxyPortTextField, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        httpProxyUserTextField = new JTextField();
+        httpProxyPanel.add(httpProxyUserTextField, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        httpProxyPasswordTextField = new JTextField();
+        httpProxyPanel.add(httpProxyPasswordTextField, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        final Spacer spacer13 = new Spacer();
+        panel2.add(spacer13, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
     }
 
     /**
