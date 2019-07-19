@@ -5,14 +5,17 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.PushControl;
+import com.fangxuele.tool.push.logic.msgsender.HttpSendResult;
 import com.fangxuele.tool.push.logic.msgsender.SendResult;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
+import com.fangxuele.tool.push.ui.form.HttpResultForm;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.ui.form.msg.MsgFormFactory;
 import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
+import com.fangxuele.tool.push.ui.frame.HttpResultFrame;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
@@ -89,7 +92,6 @@ public class MsgEditListener {
 
                 List<SendResult> sendResultList = PushControl.preview();
                 if (sendResultList != null) {
-                    CommonTipsDialog dialog = new CommonTipsDialog();
 
                     StringBuilder tipsBuilder = new StringBuilder();
                     int totalCount = MessageEditForm.messageEditForm.getPreviewUserField().getText().split(";").length;
@@ -104,9 +106,17 @@ public class MsgEditListener {
                     sendResultList.stream().filter(sendResult -> !sendResult.isSuccess())
                             .forEach(sendResult -> tipsBuilder.append("<p>").append(sendResult.getInfo()).append("</p>"));
 
-                    dialog.setHtmlText(tipsBuilder.toString());
-                    dialog.pack();
-                    dialog.setVisible(true);
+                    if (App.config.getMsgType() == MessageTypeEnum.HTTP_CODE && totalCount == successCount) {
+                        HttpSendResult httpSendResult = (HttpSendResult) sendResultList.get(0);
+                        HttpResultForm.getInstance().getBodyTextPane().setText(httpSendResult.getBody());
+                        HttpResultFrame.showResultWindow();
+                    } else {
+                        CommonTipsDialog dialog = new CommonTipsDialog();
+                        dialog.setHtmlText(tipsBuilder.toString());
+                        dialog.pack();
+                        dialog.setVisible(true);
+                    }
+
                     // 保存累计推送总数
                     App.config.setPushTotal(App.config.getPushTotal() + successCount);
                     App.config.save();
