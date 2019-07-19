@@ -21,6 +21,8 @@ import java.util.List;
  */
 public class HttpResultFrame extends JFrame {
 
+    private static final long serialVersionUID = 5950950940687769444L;
+
     private static HttpResultFrame httpResultFrame;
 
     public void init() {
