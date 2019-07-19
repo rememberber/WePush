@@ -27,6 +27,7 @@ import java.net.URL;
  */
 @Getter
 public class CommonTipsDialog extends JDialog {
+    private static final long serialVersionUID = -4608047820923359408L;
     private JPanel contentPane;
     private JButton buttonOK;
     private JTextPane textPane1;

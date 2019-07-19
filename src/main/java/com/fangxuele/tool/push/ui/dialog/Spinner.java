@@ -19,10 +19,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Getter
 public class Spinner extends JDialog {
+    private static final long serialVersionUID = -2540975077707505185L;
     private JPanel contentPane;
     private JProgressBar progressBar;
 
-    private static final AtomicInteger progressValue = new AtomicInteger();
+    private static final AtomicInteger PROGRESS_VALUE = new AtomicInteger();
 
     private static Spinner spinner;
 
@@ -60,8 +61,8 @@ public class Spinner extends JDialog {
     }
 
     public static void increase(int increaseNum) {
-        progressValue.addAndGet(increaseNum);
-        getInstance().getProgressBar().setValue(progressValue.get());
+        PROGRESS_VALUE.addAndGet(increaseNum);
+        getInstance().getProgressBar().setValue(PROGRESS_VALUE.get());
     }
 
     {

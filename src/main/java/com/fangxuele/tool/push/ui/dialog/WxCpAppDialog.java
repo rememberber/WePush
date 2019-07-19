@@ -27,7 +27,16 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
 
+/**
+ * <pre>
+ * WxCpAppDialog
+ * </pre>
+ *
+ * @author <a href="https://github.com/rememberber">Zhou Bo</a>
+ * @since 2019/6/7.
+ */
 public class WxCpAppDialog extends JDialog {
+    private static final long serialVersionUID = -1508175617622474963L;
     private JPanel contentPane;
     private JButton buttonDelete;
     private JButton buttonCancel;
@@ -37,7 +46,7 @@ public class WxCpAppDialog extends JDialog {
     private JTextField secretTextField;
     private JButton saveButton;
 
-    Log logger = LogFactory.get();
+    private Log logger = LogFactory.get();
     private static TWxCpAppMapper wxCpAppMapper = MybatisUtil.getSqlSession().getMapper(TWxCpAppMapper.class);
 
     public WxCpAppDialog() {
