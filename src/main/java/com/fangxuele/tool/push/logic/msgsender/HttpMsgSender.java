@@ -77,6 +77,7 @@ public class HttpMsgSender implements IMsgSender {
         sendResult.setHeader(headerBuilder.toString());
 
         String body = httpResponse.body();
+        System.err.println(body);
         if (body.startsWith("{") && body.endsWith("}")) {
             try {
                 body = JSONUtil.toJsonPrettyStr(body);

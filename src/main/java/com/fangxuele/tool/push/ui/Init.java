@@ -8,6 +8,7 @@ import com.fangxuele.tool.push.ui.dialog.FontSizeAdjustDialog;
 import com.fangxuele.tool.push.ui.form.AboutForm;
 import com.fangxuele.tool.push.ui.form.BoostForm;
 import com.fangxuele.tool.push.ui.form.HelpForm;
+import com.fangxuele.tool.push.ui.form.HttpResultForm;
 import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.MessageManageForm;
@@ -99,6 +100,9 @@ public class Init {
 
         MessageTypeForm.messageTypeForm.getMessageTypeScrollPane().getVerticalScrollBar().setUnitIncrement(15);
         MessageTypeForm.messageTypeForm.getMessageTypeScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
+
+        HttpResultForm.getInstance().getHttpResultScrollPane().getVerticalScrollBar().setUnitIncrement(15);
+        HttpResultForm.getInstance().getHttpResultScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
 
         // 设置版本
         AboutForm.aboutForm.getVersionLabel().setText(UiConsts.APP_VERSION);
