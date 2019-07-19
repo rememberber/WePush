@@ -70,9 +70,8 @@ public class HttpMsgSender implements IMsgSender {
             return sendResult;
         }
         StringBuilder headerBuilder = StrUtil.builder();
-        headerBuilder.append("Request Headers: ").append(StrUtil.CRLF);
         for (Map.Entry<String, List<String>> entry : httpResponse.headers().entrySet()) {
-            headerBuilder.append("    ").append(entry).append(StrUtil.CRLF);
+            headerBuilder.append(entry).append(StrUtil.CRLF);
         }
         sendResult.setHeader(headerBuilder.toString());
 
