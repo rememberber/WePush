@@ -101,7 +101,12 @@ public class PushControl {
             return false;
         }
         if (PushData.allUser == null || PushData.allUser.size() == 0) {
-            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMainPanel(), "请先准备目标用户！", "提示",
+            int msgType = App.config.getMsgType();
+            String tipsTitle = "请先准备目标用户！";
+            if (msgType == MessageTypeEnum.HTTP_CODE) {
+                tipsTitle = "请先准备消息变量！";
+            }
+            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMainPanel(), tipsTitle, "提示",
                     JOptionPane.INFORMATION_MESSAGE);
 
             return false;
