@@ -11,9 +11,9 @@ import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
+import cn.hutool.poi.excel.BigExcelWriter;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
-import cn.hutool.poi.excel.ExcelWriter;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TWxMpUserMapper;
 import com.fangxuele.tool.push.domain.TWxMpUser;
@@ -472,7 +472,7 @@ public class MemberListener {
         MemberForm.memberForm.getExportButton().addActionListener(e -> ThreadUtil.execute(() -> {
             int[] selectedRows = memberListTable.getSelectedRows();
             int columnCount = memberListTable.getColumnCount();
-            ExcelWriter writer = null;
+            BigExcelWriter writer = null;
             try {
                 if (selectedRows.length > 0) {
                     JFileChooser fileChooser = new JFileChooser();
@@ -499,7 +499,7 @@ public class MemberListener {
                     String nowTime = DateUtil.now().replace(":", "_").replace(" ", "_");
                     String fileName = "MemberExport_" + MessageTypeEnum.getName(App.config.getMsgType()) + "_" + nowTime + ".xlsx";
                     //通过工具类创建writer
-                    writer = ExcelUtil.getWriter(exportPath + File.separator + fileName);
+                    writer = ExcelUtil.getBigWriter(exportPath + File.separator + fileName);
 
                     //合并单元格后的标题行，使用默认标题样式
                     writer.merge(rows.get(0).size() - 1, "目标用户列表导出");
