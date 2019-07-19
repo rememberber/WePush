@@ -34,7 +34,10 @@
                 <children>
                   <component id="df13c" class="javax.swing.JTextPane" binding="bodyTextPane">
                     <constraints/>
-                    <properties/>
+                    <properties>
+                      <minimumSize width="-1" height="-1"/>
+                      <preferredSize width="-1" height="-1"/>
+                    </properties>
                   </component>
                 </children>
               </scrollpane>
@@ -57,7 +60,10 @@
                 <children>
                   <component id="f3bfe" class="javax.swing.JTextPane" binding="headersTextPane">
                     <constraints/>
-                    <properties/>
+                    <properties>
+                      <minimumSize width="-1" height="-1"/>
+                      <preferredSize width="-1" height="-1"/>
+                    </properties>
                   </component>
                 </children>
               </scrollpane>

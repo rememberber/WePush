@@ -57,6 +57,8 @@ public class HttpResultForm {
         httpResultScrollPane = new JScrollPane();
         panel1.add(httpResultScrollPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         bodyTextPane = new JTextPane();
+        bodyTextPane.setMinimumSize(new Dimension(-1, -1));
+        bodyTextPane.setPreferredSize(new Dimension(-1, -1));
         httpResultScrollPane.setViewportView(bodyTextPane);
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
@@ -64,6 +66,8 @@ public class HttpResultForm {
         final JScrollPane scrollPane1 = new JScrollPane();
         panel2.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         headersTextPane = new JTextPane();
+        headersTextPane.setMinimumSize(new Dimension(-1, -1));
+        headersTextPane.setPreferredSize(new Dimension(-1, -1));
         scrollPane1.setViewportView(headersTextPane);
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
