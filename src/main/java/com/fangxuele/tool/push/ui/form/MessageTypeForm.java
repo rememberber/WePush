@@ -97,6 +97,7 @@ public class MessageTypeForm {
 
             default:
         }
+        initMessageEditFormLayOut(msgType);
         initMemberFormLayOut(msgType);
         MessageEditForm.switchMsgType(msgType);
         MessageEditForm.messageEditForm.getMsgTypeName().setText(MessageTypeEnum.getName(msgType));
@@ -104,6 +105,16 @@ public class MessageTypeForm {
         MemberForm.init();
         PushHisForm.init();
         ScheduleForm.init();
+    }
+
+    private static void initMessageEditFormLayOut(int msgType) {
+        if (msgType == MessageTypeEnum.HTTP_CODE) {
+            MessageEditForm.messageEditForm.getPreviewMemberLabel().setText("消息变量");
+            MessageEditForm.messageEditForm.getPreviewMsgButton().setText("发送请求");
+        } else {
+            MessageEditForm.messageEditForm.getPreviewMemberLabel().setText("预览用户");
+            MessageEditForm.messageEditForm.getPreviewMsgButton().setText("预览");
+        }
     }
 
     private static void initMemberFormLayOut(int msgType) {
@@ -122,6 +133,12 @@ public class MessageTypeForm {
         }
         if (msgType == MessageTypeEnum.WX_CP_CODE) {
             MemberForm.memberForm.getImportFromWxCpPanel().setVisible(true);
+        }
+
+        if (msgType == MessageTypeEnum.HTTP_CODE) {
+            MainWindow.mainWindow.getTabbedPane().setTitleAt(3, "准备消息变量");
+        } else {
+            MainWindow.mainWindow.getTabbedPane().setTitleAt(3, "准备目标用户");
         }
     }
 
@@ -226,14 +243,10 @@ public class MessageTypeForm {
         kefuPriorityTipsLabel.setIcon(new ImageIcon(getClass().getResource("/icon/helpButton.png")));
         kefuPriorityTipsLabel.setText("");
         msgTypeListPanel.add(kefuPriorityTipsLabel, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        httpRadioButton = new JRadioButton();
-        httpRadioButton.setEnabled(true);
-        httpRadioButton.setText("HTTP请求");
-        msgTypeListPanel.add(httpRadioButton, new GridConstraints(10, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         eMailRadioButton = new JRadioButton();
         eMailRadioButton.setEnabled(true);
         eMailRadioButton.setText("E-Mail（BETA）");
-        msgTypeListPanel.add(eMailRadioButton, new GridConstraints(9, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        msgTypeListPanel.add(eMailRadioButton, new GridConstraints(10, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         wxCpRadioButton = new JRadioButton();
         wxCpRadioButton.setEnabled(true);
         wxCpRadioButton.setText("企业号/企业微信");
@@ -242,6 +255,10 @@ public class MessageTypeForm {
         七牛云短信RadioButton.setEnabled(false);
         七牛云短信RadioButton.setText("七牛云短信");
         msgTypeListPanel.add(七牛云短信RadioButton, new GridConstraints(12, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        httpRadioButton = new JRadioButton();
+        httpRadioButton.setEnabled(true);
+        httpRadioButton.setText("HTTP请求（BETA）");
+        msgTypeListPanel.add(httpRadioButton, new GridConstraints(9, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(2, 1, new Insets(8, 8, 8, 0), -1, -1));
         messageTypePanel.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
