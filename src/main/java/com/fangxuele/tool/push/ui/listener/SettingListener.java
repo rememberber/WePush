@@ -7,6 +7,7 @@ import com.fangxuele.tool.push.dao.TWxAccountMapper;
 import com.fangxuele.tool.push.domain.TWxAccount;
 import com.fangxuele.tool.push.logic.msgsender.AliDayuTemplateMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.AliYunMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.HttpMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.TxYunMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.WxMaTemplateMsgSender;
@@ -326,6 +327,7 @@ public class SettingListener {
                 App.config.setHttpProxyPassword(SettingForm.settingForm.getHttpProxyPasswordTextField().getText());
                 App.config.save();
 
+                HttpMsgSender.proxy = null;
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {

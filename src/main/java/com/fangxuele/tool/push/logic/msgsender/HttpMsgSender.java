@@ -4,11 +4,14 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONUtil;
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.HttpMsg;
 import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.msgmaker.HttpMsgMaker;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +28,8 @@ public class HttpMsgSender implements IMsgSender {
 
     private HttpMsgMaker httpMsgMaker;
 
+    public volatile static Proxy proxy;
+
     public HttpMsgSender() {
         httpMsgMaker = new HttpMsgMaker();
     }
@@ -32,31 +37,37 @@ public class HttpMsgSender implements IMsgSender {
     @Override
     public HttpSendResult send(String[] msgData) {
         HttpSendResult sendResult = new HttpSendResult();
-        HttpResponse httpResponse = null;
+        HttpResponse httpResponse;
         try {
             HttpMsg httpMsg = httpMsgMaker.makeMsg(msgData);
+
+            HttpRequest httpRequest = null;
+            switch (HttpMsgMaker.method) {
+                case "GET":
+                    httpRequest = HttpRequest.get(httpMsg.getUrl()).form(httpMsg.getParamMap());
+                    if (App.config.isHttpUseProxy()) {
+                        httpRequest.setProxy(getProxy());
+                    }
+                    break;
+                case "POST":
+                    break;
+                case "PUT":
+                    break;
+                case "PATCH":
+                    break;
+                case "DELETE":
+                    break;
+                case "HEAD":
+                    break;
+                case "OPTIONS":
+                    break;
+                default:
+            }
             if (PushControl.dryRun) {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
-                switch (HttpMsgMaker.method) {
-                    case "GET":
-                        httpResponse = HttpRequest.get(httpMsg.getUrl()).form(httpMsg.getParamMap()).execute(true);
-                        break;
-                    case "POST":
-                        break;
-                    case "PUT":
-                        break;
-                    case "PATCH":
-                        break;
-                    case "DELETE":
-                        break;
-                    case "HEAD":
-                        break;
-                    case "OPTIONS":
-                        break;
-                    default:
-                }
+                httpResponse = httpRequest.execute(true);
                 if (!httpResponse.isOk()) {
                     sendResult.setSuccess(false);
                     sendResult.setInfo(httpResponse.toString());
@@ -87,6 +98,17 @@ public class HttpMsgSender implements IMsgSender {
 
         sendResult.setSuccess(true);
         return sendResult;
+    }
+
+    public static Proxy getProxy() {
+        if (proxy == null) {
+            synchronized (HttpMsgSender.class) {
+                if (proxy == null) {
+                    proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(App.config.getHttpProxyHost(), Integer.parseInt(App.config.getHttpProxyPort())));
+                }
+            }
+        }
+        return proxy;
     }
 
     @Override
