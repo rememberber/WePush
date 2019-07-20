@@ -382,6 +382,7 @@ public class HttpMsgForm implements IMsgForm {
      */
     private static void switchMethod(String method) {
         if ("GET".equals(method)) {
+            getInstance().getBodyTextArea().setText("");
             getInstance().getTabbedPane1().setEnabledAt(3, false);
         } else {
             getInstance().getTabbedPane1().setEnabledAt(3, true);
