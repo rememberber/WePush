@@ -566,6 +566,8 @@ public class MemberListener {
                             csvWriter.close();
                         } else if (ExportDialog.fileType == ExportDialog.TXT) {
                             fileFullName += ".txt";
+                            cn.hutool.core.io.file.FileWriter fileWriter = new cn.hutool.core.io.file.FileWriter(fileFullName);
+                            fileWriter.appendLines(rows);
                         }
                         JOptionPane.showMessageDialog(memberPanel, "导出成功！", "提示",
                                 JOptionPane.INFORMATION_MESSAGE);
