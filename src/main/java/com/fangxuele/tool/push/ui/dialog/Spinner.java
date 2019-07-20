@@ -29,7 +29,7 @@ public class Spinner extends JDialog {
 
     public Spinner() {
         setContentPane(contentPane);
-        setModal(true);
+        setModal(false);
         setUndecorated(true);
         ComponentUtil.setPrefersizeAndLocateToCenter(this, 420, 50);
     }
@@ -50,7 +50,7 @@ public class Spinner extends JDialog {
 
     public static void hideSpinner() {
         getInstance().getProgressBar().setIndeterminate(false);
-        getInstance().setVisible(false);
+        getInstance().dispose();
     }
 
     public static void showSpinner(int total) {
@@ -81,7 +81,7 @@ public class Spinner extends JDialog {
      */
     private void $$$setupUI$$$() {
         contentPane = new JPanel();
-        contentPane.setLayout(new GridLayoutManager(1, 1, new Insets(10, 10, 10, 10), -1, -1));
+        contentPane.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel1.setBackground(new Color(-12828863));
