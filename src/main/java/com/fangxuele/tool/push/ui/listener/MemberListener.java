@@ -139,7 +139,9 @@ public class MemberListener {
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());
 
                     for (int i = 0; i < importNum; i++) {
-                        PushData.allUser.add(new String[]{});
+                        String[] array = new String[1];
+                        array[0] = String.valueOf(i);
+                        PushData.allUser.add(array);
                         currentImported++;
                         memberCountLabel.setText(String.valueOf(currentImported));
                     }

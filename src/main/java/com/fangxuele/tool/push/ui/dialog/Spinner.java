@@ -49,7 +49,7 @@ public class Spinner extends JDialog {
     }
 
     public static void hideSpinner() {
-        spinner.getProgressBar().setIndeterminate(false);
+        getInstance().getProgressBar().setIndeterminate(false);
         getInstance().setVisible(false);
     }
 
