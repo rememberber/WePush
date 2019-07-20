@@ -16,7 +16,9 @@ import lombok.ToString;
 @Setter
 @ToString
 public class HttpSendResult extends SendResult {
-    private String header;
+    private String headers;
 
     private String body;
+
+    private String cookies;
 }

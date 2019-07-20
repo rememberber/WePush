@@ -22,6 +22,7 @@ public class HttpResultForm {
     private JScrollPane httpResultScrollPane;
     private JTextPane bodyTextPane;
     private JTextPane headersTextPane;
+    private JTextPane cookiesTextPane;
 
     private static HttpResultForm httpResultForm;
 
@@ -72,6 +73,10 @@ public class HttpResultForm {
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane1.addTab("Cookies", panel3);
+        final JScrollPane scrollPane2 = new JScrollPane();
+        panel3.add(scrollPane2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        cookiesTextPane = new JTextPane();
+        scrollPane2.setViewportView(cookiesTextPane);
     }
 
     /**

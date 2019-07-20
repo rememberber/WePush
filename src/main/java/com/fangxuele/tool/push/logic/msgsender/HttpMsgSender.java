@@ -1,6 +1,7 @@
 package com.fangxuele.tool.push.logic.msgsender;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.Header;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONUtil;
@@ -109,7 +110,7 @@ public class HttpMsgSender implements IMsgSender {
         for (Map.Entry<String, List<String>> entry : httpResponse.headers().entrySet()) {
             headerBuilder.append(entry).append(StrUtil.CRLF);
         }
-        sendResult.setHeader(headerBuilder.toString());
+        sendResult.setHeaders(headerBuilder.toString());
 
         String body = httpResponse.body();
         if (body != null && body.startsWith("{") && body.endsWith("}")) {
@@ -120,6 +121,12 @@ public class HttpMsgSender implements IMsgSender {
             }
         }
         sendResult.setBody(body);
+
+        StringBuilder cookiesBuilder = StrUtil.builder();
+        for (String cookieStr : httpResponse.headerList(Header.SET_COOKIE.toString())) {
+            cookiesBuilder.append(cookieStr).append(StrUtil.CRLF);
+        }
+        sendResult.setCookies(cookiesBuilder.toString());
 
         sendResult.setSuccess(true);
         return sendResult;
