@@ -137,6 +137,7 @@ public class MessageTypeForm {
 
         if (msgType == MessageTypeEnum.HTTP_CODE) {
             MainWindow.mainWindow.getTabbedPane().setTitleAt(3, "准备消息变量");
+            MemberForm.memberForm.getImportFromNumPanel().setVisible(true);
         } else {
             MainWindow.mainWindow.getTabbedPane().setTitleAt(3, "准备目标用户");
         }

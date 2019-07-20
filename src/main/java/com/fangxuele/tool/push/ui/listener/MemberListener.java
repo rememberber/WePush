@@ -120,6 +120,47 @@ public class MemberListener {
     private static JTable memberListTable = MemberForm.memberForm.getMemberListTable();
 
     public static void addListeners() {
+        // 按数量导入按钮事件
+        MemberForm.memberForm.getImportFromNumButton().addActionListener(e -> {
+            ThreadUtil.execute(() -> {
+                if (StringUtils.isBlank(MemberForm.memberForm.getImportNumTextField().getText())) {
+                    JOptionPane.showMessageDialog(memberPanel, "请填写数量！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+
+                int currentImported = 0;
+
+                try {
+                    int importNum = Integer.parseInt(MemberForm.memberForm.getImportNumTextField().getText());
+                    progressBar.setVisible(true);
+                    progressBar.setMaximum(importNum);
+
+                    PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+
+                    for (int i = 0; i < importNum; i++) {
+                        PushData.allUser.add(new String[]{});
+                        currentImported++;
+                        memberCountLabel.setText(String.valueOf(currentImported));
+                    }
+
+                    if (!PushData.fixRateScheduling) {
+                        JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } catch (Exception e1) {
+                    JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + e1.getMessage(), "失败",
+                            JOptionPane.ERROR_MESSAGE);
+                    logger.error(e1);
+                    e1.printStackTrace();
+                } finally {
+                    progressBar.setMaximum(100);
+                    progressBar.setValue(100);
+                    progressBar.setIndeterminate(false);
+                    progressBar.setVisible(false);
+                }
+            });
+        });
+
         // 从文件导入按钮事件
         MemberForm.memberForm.getImportFromFileButton().addActionListener(e -> ThreadUtil.execute(MemberListener::importFromFile));
 
