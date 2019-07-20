@@ -19,6 +19,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
+import java.awt.event.ItemEvent;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -153,6 +154,13 @@ public class HttpMsgForm implements IMsgForm {
                 tableModel.addRow(data);
             }
         });
+
+        // 消息类型切换事件
+        methodComboBox.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                switchMethod(e.getItem().toString());
+            }
+        });
     }
 
     @Override
@@ -164,6 +172,7 @@ public class HttpMsgForm implements IMsgForm {
             getInstance().getMethodComboBox().setSelectedItem(tMsgHttp.getMethod());
             getInstance().getUrlTextField().setText(tMsgHttp.getUrl());
             getInstance().getBodyTextArea().setText(tMsgHttp.getBody());
+            switchMethod(tMsgHttp.getMethod());
 
             // Params=====================================
             initParamTable();
@@ -340,6 +349,7 @@ public class HttpMsgForm implements IMsgForm {
     public static HttpMsgForm getInstance() {
         if (httpMsgForm == null) {
             httpMsgForm = new HttpMsgForm();
+            switchMethod("GET");
         }
         return httpMsgForm;
     }
@@ -363,6 +373,19 @@ public class HttpMsgForm implements IMsgForm {
         initParamTable();
         initHeaderTable();
         initCookieTable();
+    }
+
+    /**
+     * 切换方法
+     *
+     * @param method
+     */
+    private static void switchMethod(String method) {
+        if ("GET".equals(method)) {
+            getInstance().getTabbedPane1().setEnabledAt(3, false);
+        } else {
+            getInstance().getTabbedPane1().setEnabledAt(3, true);
+        }
     }
 
     /**
