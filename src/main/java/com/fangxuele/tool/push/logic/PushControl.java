@@ -3,6 +3,7 @@ package com.fangxuele.tool.push.logic;
 import cn.hutool.core.date.BetweenFormater;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.json.JSONUtil;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPushHistoryMapper;
 import com.fangxuele.tool.push.domain.TPushHistory;
@@ -24,6 +25,7 @@ import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.opencsv.CSVWriter;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
@@ -35,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <pre>
@@ -261,10 +264,22 @@ public class PushControl {
 
         // 保存未发送
         for (String[] str : PushData.sendSuccessList) {
-            PushData.toSendList.remove(str);
+            if (msgType == MessageTypeEnum.HTTP_CODE && PushControl.saveResponseBody) {
+                str = ArrayUtils.remove(str, str.length - 1);
+                String[] finalStr = str;
+                PushData.toSendList = PushData.toSendList.stream().filter(strings -> !JSONUtil.toJsonStr(strings).equals(JSONUtil.toJsonStr(finalStr))).collect(Collectors.toList());
+            } else {
+                PushData.toSendList.remove(str);
+            }
         }
         for (String[] str : PushData.sendFailList) {
-            PushData.toSendList.remove(str);
+            if (msgType == MessageTypeEnum.HTTP_CODE && PushControl.saveResponseBody) {
+                str = ArrayUtils.remove(str, str.length - 1);
+                String[] finalStr = str;
+                PushData.toSendList = PushData.toSendList.stream().filter(strings -> !JSONUtil.toJsonStr(strings).equals(JSONUtil.toJsonStr(finalStr))).collect(Collectors.toList());
+            } else {
+                PushData.toSendList.remove(str);
+            }
         }
 
         if (PushData.toSendList.size() > 0) {
