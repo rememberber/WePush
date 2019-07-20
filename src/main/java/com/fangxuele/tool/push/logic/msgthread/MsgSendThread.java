@@ -1,11 +1,14 @@
 package com.fangxuele.tool.push.logic.msgthread;
 
 import cn.hutool.json.JSONUtil;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.SendResult;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
+import org.bouncycastle.util.Arrays;
 
 /**
  * <pre>
@@ -46,6 +49,12 @@ public class MsgSendThread extends BaseMsgThread {
             // 本条消息所需的数据
             String[] msgData = list.get(i);
             SendResult sendResult = iMsgSender.send(msgData);
+
+            if (msgType == MessageTypeEnum.HTTP_CODE && PushControl.saveResponseBody) {
+                String body = sendResult.getInfo() == null ? "" : sendResult.getInfo();
+                msgData = Arrays.append(msgData, body);
+            }
+
             if (sendResult.isSuccess()) {
                 // 总发送成功+1
                 PushData.increaseSuccess();

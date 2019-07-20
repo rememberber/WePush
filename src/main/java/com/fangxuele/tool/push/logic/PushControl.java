@@ -51,6 +51,8 @@ public class PushControl {
      */
     public static boolean dryRun;
 
+    public volatile static boolean saveResponseBody = false;
+
     private static TPushHistoryMapper pushHistoryMapper = MybatisUtil.getSqlSession().getMapper(TPushHistoryMapper.class);
 
     /**

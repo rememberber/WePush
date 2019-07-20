@@ -113,6 +113,7 @@ public class HttpMsgSender implements IMsgSender {
         sendResult.setHeaders(headerBuilder.toString());
 
         String body = httpResponse.body();
+        sendResult.setInfo(body);
         if (body != null && body.startsWith("{") && body.endsWith("}")) {
             try {
                 body = JSONUtil.toJsonPrettyStr(body);
@@ -123,9 +124,13 @@ public class HttpMsgSender implements IMsgSender {
         sendResult.setBody(body);
 
         StringBuilder cookiesBuilder = StrUtil.builder();
-        for (String cookieStr : httpResponse.headerList(Header.SET_COOKIE.toString())) {
-            cookiesBuilder.append(cookieStr).append(StrUtil.CRLF);
+        List<String> headerList = httpResponse.headerList(Header.SET_COOKIE.toString());
+        if (headerList != null) {
+            for (String cookieStr : headerList) {
+                cookiesBuilder.append(cookieStr).append(StrUtil.CRLF);
+            }
         }
+
         sendResult.setCookies(cookiesBuilder.toString());
 
         sendResult.setSuccess(true);

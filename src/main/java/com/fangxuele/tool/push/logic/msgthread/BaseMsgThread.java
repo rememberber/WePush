@@ -67,6 +67,8 @@ public class BaseMsgThread extends Thread {
      */
     public int tableRow;
 
+    public static int msgType;
+
     /**
      * 构造函数
      *
