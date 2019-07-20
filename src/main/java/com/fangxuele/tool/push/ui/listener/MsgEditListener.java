@@ -5,22 +5,17 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.PushControl;
+import com.fangxuele.tool.push.logic.msgsender.HttpSendResult;
 import com.fangxuele.tool.push.logic.msgsender.SendResult;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
+import com.fangxuele.tool.push.ui.form.HttpResultForm;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.MessageManageForm;
-import com.fangxuele.tool.push.ui.form.msg.AliTemplateMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.AliYunMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.KefuMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.KefuPriorityMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.MaTemplateMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.MailMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.MpTemplateMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.TxYunMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.MsgFormFactory;
 import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.YunpianMsgForm;
+import com.fangxuele.tool.push.ui.frame.HttpResultFrame;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
@@ -52,42 +47,8 @@ public class MsgEditListener {
                 return;
             }
 
-            int msgType = App.config.getMsgType();
-
             try {
-                switch (msgType) {
-                    case MessageTypeEnum.KEFU_CODE:
-                        KefuMsgForm.save(msgName);
-                        break;
-                    case MessageTypeEnum.KEFU_PRIORITY_CODE:
-                        KefuPriorityMsgForm.save(msgName);
-                        break;
-                    case MessageTypeEnum.MA_TEMPLATE_CODE:
-                        MaTemplateMsgForm.save(msgName);
-                        break;
-                    case MessageTypeEnum.MP_TEMPLATE_CODE:
-                        MpTemplateMsgForm.save(msgName);
-                        break;
-                    case MessageTypeEnum.ALI_TEMPLATE_CODE:
-                        AliTemplateMsgForm.save(msgName);
-                        break;
-                    case MessageTypeEnum.ALI_YUN_CODE:
-                        AliYunMsgForm.save(msgName);
-                        break;
-                    case MessageTypeEnum.TX_YUN_CODE:
-                        TxYunMsgForm.save(msgName);
-                        break;
-                    case MessageTypeEnum.YUN_PIAN_CODE:
-                        YunpianMsgForm.save(msgName);
-                        break;
-                    case MessageTypeEnum.EMAIL_CODE:
-                        MailMsgForm.save(msgName);
-                        break;
-                    case MessageTypeEnum.WX_CP_CODE:
-                        WxCpMsgForm.save(msgName);
-                        break;
-                    default:
-                }
+                MsgFormFactory.getMsgForm().save(msgName);
 
                 App.config.setPreviewUser(MessageEditForm.messageEditForm.getPreviewUserField().getText());
                 App.config.save();
@@ -123,7 +84,7 @@ public class MsgEditListener {
                 }
 
                 if (App.config.getMsgType() == MessageTypeEnum.WX_CP_CODE
-                        && WxCpMsgForm.wxCpMsgForm.getAppNameComboBox().getSelectedItem() == null) {
+                        && WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem() == null) {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "请选择应用！", "成功",
                             JOptionPane.ERROR_MESSAGE);
                     return;
@@ -131,7 +92,6 @@ public class MsgEditListener {
 
                 List<SendResult> sendResultList = PushControl.preview();
                 if (sendResultList != null) {
-                    CommonTipsDialog dialog = new CommonTipsDialog();
 
                     StringBuilder tipsBuilder = new StringBuilder();
                     int totalCount = MessageEditForm.messageEditForm.getPreviewUserField().getText().split(";").length;
@@ -146,9 +106,19 @@ public class MsgEditListener {
                     sendResultList.stream().filter(sendResult -> !sendResult.isSuccess())
                             .forEach(sendResult -> tipsBuilder.append("<p>").append(sendResult.getInfo()).append("</p>"));
 
-                    dialog.setHtmlText(tipsBuilder.toString());
-                    dialog.pack();
-                    dialog.setVisible(true);
+                    if (App.config.getMsgType() == MessageTypeEnum.HTTP_CODE && totalCount == successCount) {
+                        HttpSendResult httpSendResult = (HttpSendResult) sendResultList.get(0);
+                        HttpResultForm.getInstance().getBodyTextPane().setText(httpSendResult.getBody());
+                        HttpResultForm.getInstance().getHeadersTextPane().setText(httpSendResult.getHeaders());
+                        HttpResultForm.getInstance().getCookiesTextPane().setText(httpSendResult.getCookies());
+                        HttpResultFrame.showResultWindow();
+                    } else {
+                        CommonTipsDialog dialog = new CommonTipsDialog();
+                        dialog.setHtmlText(tipsBuilder.toString());
+                        dialog.pack();
+                        dialog.setVisible(true);
+                    }
+
                     // 保存累计推送总数
                     App.config.setPushTotal(App.config.getPushTotal() + successCount);
                     App.config.save();
@@ -170,26 +140,31 @@ public class MsgEditListener {
                 String paraDemo = "";
                 if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE || msgType == MessageTypeEnum.KEFU_PRIORITY_CODE
                         || msgType == MessageTypeEnum.KEFU_CODE) {
-                    fillParaName = "openId";
+                    fillParaName = "预览消息用户的openId";
                     paraDemo = "ox_kxwS_gGt63adS-zemlETtuvw1;ox_kxwS_gGt63adS-zemlETtuvw2";
                 } else if (msgType == MessageTypeEnum.MA_TEMPLATE_CODE) {
-                    fillParaName = "openId|formId";
+                    fillParaName = "预览消息用户的openId|formId";
                     paraDemo = "opd-aswadfasdfasdfasdf|fi291834543;opd-aswadfasdfasdfasdf2|fi2918345432";
                 } else if (msgType == MessageTypeEnum.EMAIL_CODE) {
-                    fillParaName = "邮箱地址";
+                    fillParaName = "预览消息用户的邮箱地址";
                     paraDemo = "abc@163.com;def@163.com";
                 } else if (msgType == MessageTypeEnum.WX_CP_CODE) {
-                    fillParaName = "UserId";
+                    fillParaName = "预览消息用户的UserId";
                     paraDemo = "zhoubo;rememberber";
+                } else if (msgType == MessageTypeEnum.HTTP_CODE) {
+                    fillParaName = "消息变量(如果是变量消息)";
+                    paraDemo = "变量0|变量1|变量2";
                 } else if (msgType == MessageTypeEnum.ALI_YUN_CODE || msgType == MessageTypeEnum.ALI_TEMPLATE_CODE
                         || msgType == MessageTypeEnum.TX_YUN_CODE || msgType == MessageTypeEnum.YUN_PIAN_CODE) {
-                    fillParaName = "手机号";
+                    fillParaName = "预览消息用户的手机号";
                     paraDemo = "13910733521;13910733522";
                 }
                 StringBuilder tipsBuilder = new StringBuilder();
                 tipsBuilder.append("<h1>如何填写？</h1>");
-                tipsBuilder.append("<h2>此处填写预览消息用户的").append(fillParaName).append("</h2>");
-                tipsBuilder.append("<p>如有多个，请以半角分号分隔</p>");
+                tipsBuilder.append("<h2>此处填写").append(fillParaName).append("</h2>");
+                if (msgType != MessageTypeEnum.HTTP_CODE) {
+                    tipsBuilder.append("<p>如有多个，请以半角分号分隔</p>");
+                }
                 tipsBuilder.append("<p>示例：</p>");
                 tipsBuilder.append("<p>").append(paraDemo).append("</p>");
 

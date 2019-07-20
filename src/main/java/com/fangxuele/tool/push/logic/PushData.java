@@ -50,7 +50,7 @@ public class PushData {
     /**
      * 准备发送的数量
      */
-    public static final AtomicInteger toSendCount = new AtomicInteger();
+    public static final AtomicInteger TO_SEND_COUNT = new AtomicInteger();
 
     /**
      * 发送成功的列表
@@ -85,7 +85,7 @@ public class PushData {
     /**
      * 已经停止了的线程总数
      */
-    static LongAdder stopedThreadCount = new LongAdder();
+    static LongAdder stoppedThreadCount = new LongAdder();
 
     /**
      * 已处理数+1
@@ -111,8 +111,8 @@ public class PushData {
     /**
      * 停止线程数+1
      */
-    public static void increaseStopedThread() {
-        stopedThreadCount.add(1);
+    public static void increaseStoppedThread() {
+        stoppedThreadCount.add(1);
     }
 
     /**
@@ -138,7 +138,7 @@ public class PushData {
         processedRecords.reset();
         successRecords.reset();
         failRecords.reset();
-        stopedThreadCount.reset();
+        stoppedThreadCount.reset();
         threadCount = 0;
         toSendList = Collections.synchronizedList(new LinkedList<>());
         sendSuccessList = Collections.synchronizedList(new LinkedList<>());

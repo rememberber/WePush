@@ -24,6 +24,7 @@ import java.awt.event.WindowEvent;
  * @since 2019/6/7.
  */
 public class FontSizeAdjustDialog extends JDialog {
+    private static final long serialVersionUID = -5644281737118296595L;
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;

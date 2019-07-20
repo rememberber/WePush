@@ -11,6 +11,7 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
+import com.fangxuele.tool.push.logic.msgthread.BaseMsgThread;
 import com.fangxuele.tool.push.logic.msgthread.MsgSendThread;
 import com.fangxuele.tool.push.ui.component.TableInCellProgressBarRenderer;
 import com.fangxuele.tool.push.ui.form.PushForm;
@@ -65,6 +66,8 @@ public class PushRunThread extends Thread {
 
         // 设置是否空跑
         PushControl.dryRun = PushForm.pushForm.getDryRunCheckBox().isSelected();
+
+        PushControl.saveResponseBody = PushForm.pushForm.getSaveResponseBodyCheckBox().isSelected();
 
         // 执行前重新导入目标用户
         PushControl.reimportMembers();
@@ -126,6 +129,7 @@ public class PushRunThread extends Thread {
         // 每个线程分配
         int perThread = (int) (PushData.totalRecords / PushData.threadCount) + 1;
         DefaultTableModel tableModel = (DefaultTableModel) PushForm.pushForm.getPushThreadTable().getModel();
+        BaseMsgThread.msgType = App.config.getMsgType();
         for (int i = 0; i < PushData.threadCount; i++) {
             int startIndex = i * perThread;
             if (startIndex > PushData.totalRecords - 1) {
@@ -161,7 +165,7 @@ public class PushRunThread extends Thread {
         long startTimeMillis = System.currentTimeMillis();
         // 计时
         while (true) {
-            if (PushData.stopedThreadCount.intValue() == PushData.threadCount) {
+            if (PushData.stoppedThreadCount.intValue() == PushData.threadCount) {
                 if (!PushData.fixRateScheduling) {
                     PushForm.pushForm.getPushStopButton().setEnabled(false);
                     PushForm.pushForm.getPushStopButton().updateUI();

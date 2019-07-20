@@ -65,12 +65,14 @@ public class PushHisListener {
                         BufferedReader br = new BufferedReader(new FileReader(pushHisFile));
                         String line = br.readLine();
                         long count = 0;
+//                        ThreadUtil.execute(Spinner::showSpinner);
                         while (StringUtils.isNotEmpty(line)) {
                             PushHisForm.pushHisForm.getPushHisTextArea().append(line);
                             PushHisForm.pushHisForm.getPushHisTextArea().append("\n");
                             line = br.readLine();
                             count++;
                         }
+//                        ThreadUtil.execute(Spinner::hideSpinner);
 
                         PushHisForm.pushHisForm.getPushHisCountLabel().setText("共" + count + "条");
                     } catch (IOException e1) {

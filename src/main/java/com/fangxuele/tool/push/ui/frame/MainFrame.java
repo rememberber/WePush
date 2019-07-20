@@ -32,6 +32,9 @@ import java.util.List;
  * @since 2019/2/14.
  */
 public class MainFrame extends JFrame {
+
+    private static final long serialVersionUID = -332963894416012132L;
+
     public void init() {
         this.setName(UiConsts.APP_NAME);
         this.setTitle(UiConsts.APP_NAME);

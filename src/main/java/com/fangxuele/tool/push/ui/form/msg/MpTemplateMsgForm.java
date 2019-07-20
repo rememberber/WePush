@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
 
 /**
  * <pre>
- * 类说明
+ * MpTemplateMsgForm
  * </pre>
  *
  * @author <a href="https://github.com/rememberber">Zhou Bo</a>
@@ -45,7 +45,7 @@ import java.util.regex.Pattern;
  */
 @Getter
 @Slf4j
-public class MpTemplateMsgForm {
+public class MpTemplateMsgForm implements IMsgForm {
     private JPanel templateMsgPanel;
     private JLabel templateIdLabel;
     private JTextField msgTemplateIdTextField;
@@ -69,7 +69,7 @@ public class MpTemplateMsgForm {
     private JButton autoFillButton;
     private JTextArea templateContentTextArea;
 
-    public static MpTemplateMsgForm mpTemplateMsgForm = new MpTemplateMsgForm();
+    private static MpTemplateMsgForm mpTemplateMsgForm;
 
     private static TMsgMpTemplateMapper msgMpTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMpTemplateMapper.class);
 
@@ -101,15 +101,15 @@ public class MpTemplateMsgForm {
         // 模板数据-添加 按钮事件
         templateMsgDataAddButton.addActionListener(e -> {
             String[] data = new String[3];
-            data[0] = mpTemplateMsgForm.getTemplateDataNameTextField().getText();
-            data[1] = mpTemplateMsgForm.getTemplateDataValueTextField().getText();
-            data[2] = mpTemplateMsgForm.getTemplateDataColorTextField().getText();
+            data[0] = getInstance().getTemplateDataNameTextField().getText();
+            data[1] = getInstance().getTemplateDataValueTextField().getText();
+            data[2] = getInstance().getTemplateDataColorTextField().getText();
 
-            if (mpTemplateMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+            if (getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
                 initTemplateDataTable();
             }
 
-            DefaultTableModel tableModel = (DefaultTableModel) mpTemplateMsgForm.getTemplateMsgDataTable()
+            DefaultTableModel tableModel = (DefaultTableModel) getInstance().getTemplateMsgDataTable()
                     .getModel();
             int rowCount = tableModel.getRowCount();
 
@@ -148,17 +148,18 @@ public class MpTemplateMsgForm {
         });
     }
 
-    public static void init(String msgName) {
+    @Override
+    public void init(String msgName) {
         clearAllField();
         Integer msgId = 0;
         List<TMsgMpTemplate> tMsgMpTemplateList = msgMpTemplateMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.MP_TEMPLATE_CODE, msgName);
         if (tMsgMpTemplateList.size() > 0) {
             TMsgMpTemplate tMsgMpTemplate = tMsgMpTemplateList.get(0);
             msgId = tMsgMpTemplate.getId();
-            mpTemplateMsgForm.getMsgTemplateIdTextField().setText(tMsgMpTemplate.getTemplateId());
-            mpTemplateMsgForm.getMsgTemplateUrlTextField().setText(tMsgMpTemplate.getUrl());
-            mpTemplateMsgForm.getMsgTemplateMiniAppidTextField().setText(tMsgMpTemplate.getMaAppid());
-            mpTemplateMsgForm.getMsgTemplateMiniPagePathTextField().setText(tMsgMpTemplate.getMaPagePath());
+            getInstance().getMsgTemplateIdTextField().setText(tMsgMpTemplate.getTemplateId());
+            getInstance().getMsgTemplateUrlTextField().setText(tMsgMpTemplate.getUrl());
+            getInstance().getMsgTemplateMiniAppidTextField().setText(tMsgMpTemplate.getMaAppid());
+            getInstance().getMsgTemplateMiniPagePathTextField().setText(tMsgMpTemplate.getMaPagePath());
 
             selectedMsgTemplateId = tMsgMpTemplate.getTemplateId();
         }
@@ -168,157 +169,8 @@ public class MpTemplateMsgForm {
         fillTemplateDataTable(msgId);
     }
 
-    /**
-     * 填充模板参数表Table(从数据库读取)
-     *
-     * @param msgId
-     */
-    public static void fillTemplateDataTable(Integer msgId) {
-        // 模板消息Data表
-        List<TTemplateData> templateDataList = templateDataMapper.selectByMsgTypeAndMsgId(MessageTypeEnum.MP_TEMPLATE_CODE, msgId);
-        String[] headerNames = {"Name", "Value", "Color", "操作"};
-        Object[][] cellData = new String[templateDataList.size()][headerNames.length];
-        for (int i = 0; i < templateDataList.size(); i++) {
-            TTemplateData tTemplateData = templateDataList.get(i);
-            cellData[i][0] = tTemplateData.getName();
-            cellData[i][1] = tTemplateData.getValue();
-            cellData[i][2] = tTemplateData.getColor();
-        }
-        DefaultTableModel model = new DefaultTableModel(cellData, headerNames);
-        mpTemplateMsgForm.getTemplateMsgDataTable().setModel(model);
-        TableColumnModel tableColumnModel = mpTemplateMsgForm.getTemplateMsgDataTable().getColumnModel();
-        tableColumnModel.getColumn(headerNames.length - 1).
-                setCellRenderer(new TableInCellButtonColumn(mpTemplateMsgForm.getTemplateMsgDataTable(), headerNames.length - 1));
-        tableColumnModel.getColumn(headerNames.length - 1).
-                setCellEditor(new TableInCellButtonColumn(mpTemplateMsgForm.getTemplateMsgDataTable(), headerNames.length - 1));
-
-        // 设置列宽
-        tableColumnModel.getColumn(3).setPreferredWidth(130);
-        tableColumnModel.getColumn(3).setMaxWidth(130);
-    }
-
-    /**
-     * 初始化模板列表ComboBox
-     */
-    public static void initTemplateList() {
-        needListenTemplateListComboBox = false;
-        try {
-            templateMap = Maps.newHashMap();
-            templateList = WxMpTemplateMsgSender.getWxMpService().getTemplateMsgService().getAllPrivateTemplate();
-            mpTemplateMsgForm.getTemplateListComboBox().removeAllItems();
-            int selectedIndex = 0;
-            for (int i = 0; i < templateList.size(); i++) {
-                WxMpTemplate wxMpTemplate = templateList.get(i);
-                mpTemplateMsgForm.getTemplateListComboBox().addItem(wxMpTemplate.getTitle());
-                templateMap.put(wxMpTemplate.getTemplateId(), wxMpTemplate);
-                if (wxMpTemplate.getTemplateId().equals(selectedMsgTemplateId)) {
-                    selectedIndex = i;
-                }
-            }
-
-            mpTemplateMsgForm.getTemplateListComboBox().setSelectedIndex(selectedIndex);
-
-            fillWxTemplateContentToField();
-        } catch (Exception e) {
-            log.error(e.toString());
-        }
-        needListenTemplateListComboBox = true;
-    }
-
-    /**
-     * 根据模板内容获取模板中的参数list
-     *
-     * @param templateContent 模板内容
-     * @return params 模板中的参数
-     */
-    public static List<String> getTemplateParams(String templateContent) {
-        List<String> params = Lists.newArrayList();
-        Matcher matcher = BRACE_PATTERN.matcher(templateContent);
-        while (matcher.find()) {
-            params.add(matcher.group(1).replace(".DATA", ""));
-        }
-        return params;
-    }
-
-    /**
-     * 根据模板id填充模板列表中对应的WxTemplate内容到表单
-     */
-    public static void fillWxTemplateContentToField() {
-        WxMpTemplate wxMpTemplate = templateList.get(mpTemplateMsgForm.getTemplateListComboBox().getSelectedIndex());
-        if (wxMpTemplate != null) {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("-----------模板ID-----------\n").append(wxMpTemplate.getTemplateId()).append("\n");
-            stringBuilder.append("\n----------所属行业----------\n").append(wxMpTemplate.getPrimaryIndustry()).append("-").append(wxMpTemplate.getDeputyIndustry()).append("\n");
-            stringBuilder.append("\n----------模板内容----------\n").append(wxMpTemplate.getContent()).append("\n");
-            stringBuilder.append("\n----------模板示例----------\n").append(wxMpTemplate.getExample());
-            mpTemplateMsgForm.getTemplateContentTextArea().setText(stringBuilder.toString());
-            mpTemplateMsgForm.getMsgTemplateIdTextField().setText(wxMpTemplate.getTemplateId());
-        }
-    }
-
-    /**
-     * 自动填充模板数据Table
-     */
-    private static void autoFillTemplateDataTable() {
-        if (templateList != null) {
-            WxMpTemplate wxMpTemplate = templateList.get(mpTemplateMsgForm.getTemplateListComboBox().getSelectedIndex());
-            if (wxMpTemplate != null) {
-                initTemplateDataTable();
-                DefaultTableModel tableModel = (DefaultTableModel) mpTemplateMsgForm.getTemplateMsgDataTable()
-                        .getModel();
-                List<String> params = getTemplateParams(wxMpTemplate.getContent());
-                for (int i = 0; i < params.size(); i++) {
-                    String param = params.get(i);
-                    String[] data = new String[3];
-                    data[0] = param;
-                    data[1] = "示例值" + (i + 1);
-                    data[2] = "#000000";
-                    tableModel.addRow(data);
-                }
-            }
-        }
-    }
-
-    /**
-     * 初始化模板消息数据table
-     */
-    public static void initTemplateDataTable() {
-        JTable msgDataTable = mpTemplateMsgForm.getTemplateMsgDataTable();
-        String[] headerNames = {"Name", "Value", "Color", "操作"};
-        DefaultTableModel model = new DefaultTableModel(null, headerNames);
-        msgDataTable.setModel(model);
-        msgDataTable.updateUI();
-        DefaultTableCellRenderer hr = (DefaultTableCellRenderer) msgDataTable.getTableHeader().getDefaultRenderer();
-        // 表头列名居左
-        hr.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
-
-        TableColumnModel tableColumnModel = msgDataTable.getColumnModel();
-        tableColumnModel.getColumn(headerNames.length - 1).
-                setCellRenderer(new TableInCellButtonColumn(msgDataTable, headerNames.length - 1));
-        tableColumnModel.getColumn(headerNames.length - 1).
-                setCellEditor(new TableInCellButtonColumn(msgDataTable, headerNames.length - 1));
-
-        // 设置列宽
-        tableColumnModel.getColumn(3).setPreferredWidth(130);
-        tableColumnModel.getColumn(3).setMaxWidth(130);
-    }
-
-    /**
-     * 清空所有界面字段
-     */
-    public static void clearAllField() {
-        mpTemplateMsgForm.getMsgTemplateIdTextField().setText("");
-        mpTemplateMsgForm.getMsgTemplateUrlTextField().setText("");
-        mpTemplateMsgForm.getMsgTemplateMiniAppidTextField().setText("");
-        mpTemplateMsgForm.getMsgTemplateMiniPagePathTextField().setText("");
-        mpTemplateMsgForm.getTemplateDataNameTextField().setText("");
-        mpTemplateMsgForm.getTemplateDataValueTextField().setText("");
-        mpTemplateMsgForm.getTemplateDataColorTextField().setText("");
-        selectedMsgTemplateId = null;
-        initTemplateDataTable();
-    }
-
-    public static void save(String msgName) {
+    @Override
+    public void save(String msgName) {
         int msgId = 0;
         boolean existSameMsg = false;
 
@@ -336,10 +188,10 @@ public class MpTemplateMsgForm {
         }
 
         if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
-            String templateId = mpTemplateMsgForm.getMsgTemplateIdTextField().getText();
-            String templateUrl = mpTemplateMsgForm.getMsgTemplateUrlTextField().getText();
-            String templateMiniAppid = mpTemplateMsgForm.getMsgTemplateMiniAppidTextField().getText();
-            String templateMiniPagePath = mpTemplateMsgForm.getMsgTemplateMiniPagePathTextField().getText();
+            String templateId = getInstance().getMsgTemplateIdTextField().getText();
+            String templateUrl = getInstance().getMsgTemplateUrlTextField().getText();
+            String templateMiniAppid = getInstance().getMsgTemplateMiniAppidTextField().getText();
+            String templateMiniPagePath = getInstance().getMsgTemplateMiniPagePathTextField().getText();
 
             String now = SqliteUtil.nowDateForSqlite();
 
@@ -368,12 +220,12 @@ public class MpTemplateMsgForm {
             }
 
             // 如果table为空，则初始化
-            if (mpTemplateMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+            if (getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
                 initTemplateDataTable();
             }
 
             // 逐行读取
-            DefaultTableModel tableModel = (DefaultTableModel) mpTemplateMsgForm.getTemplateMsgDataTable()
+            DefaultTableModel tableModel = (DefaultTableModel) getInstance().getTemplateMsgDataTable()
                     .getModel();
             int rowCount = tableModel.getRowCount();
             for (int i = 0; i < rowCount; i++) {
@@ -398,6 +250,163 @@ public class MpTemplateMsgForm {
         }
     }
 
+    public static MpTemplateMsgForm getInstance() {
+        if (mpTemplateMsgForm == null) {
+            mpTemplateMsgForm = new MpTemplateMsgForm();
+        }
+        return mpTemplateMsgForm;
+    }
+
+    /**
+     * 填充模板参数表Table(从数据库读取)
+     *
+     * @param msgId
+     */
+    public static void fillTemplateDataTable(Integer msgId) {
+        // 模板消息Data表
+        List<TTemplateData> templateDataList = templateDataMapper.selectByMsgTypeAndMsgId(MessageTypeEnum.MP_TEMPLATE_CODE, msgId);
+        String[] headerNames = {"Name", "Value", "Color", "操作"};
+        Object[][] cellData = new String[templateDataList.size()][headerNames.length];
+        for (int i = 0; i < templateDataList.size(); i++) {
+            TTemplateData tTemplateData = templateDataList.get(i);
+            cellData[i][0] = tTemplateData.getName();
+            cellData[i][1] = tTemplateData.getValue();
+            cellData[i][2] = tTemplateData.getColor();
+        }
+        DefaultTableModel model = new DefaultTableModel(cellData, headerNames);
+        getInstance().getTemplateMsgDataTable().setModel(model);
+        TableColumnModel tableColumnModel = getInstance().getTemplateMsgDataTable().getColumnModel();
+        tableColumnModel.getColumn(headerNames.length - 1).
+                setCellRenderer(new TableInCellButtonColumn(getInstance().getTemplateMsgDataTable(), headerNames.length - 1));
+        tableColumnModel.getColumn(headerNames.length - 1).
+                setCellEditor(new TableInCellButtonColumn(getInstance().getTemplateMsgDataTable(), headerNames.length - 1));
+
+        // 设置列宽
+        tableColumnModel.getColumn(3).setPreferredWidth(getInstance().getTemplateMsgDataAddButton().getWidth());
+        tableColumnModel.getColumn(3).setMaxWidth(getInstance().getTemplateMsgDataAddButton().getWidth());
+    }
+
+    /**
+     * 初始化模板列表ComboBox
+     */
+    public static void initTemplateList() {
+        needListenTemplateListComboBox = false;
+        try {
+            templateMap = Maps.newHashMap();
+            templateList = WxMpTemplateMsgSender.getWxMpService().getTemplateMsgService().getAllPrivateTemplate();
+            getInstance().getTemplateListComboBox().removeAllItems();
+            int selectedIndex = 0;
+            for (int i = 0; i < templateList.size(); i++) {
+                WxMpTemplate wxMpTemplate = templateList.get(i);
+                getInstance().getTemplateListComboBox().addItem(wxMpTemplate.getTitle());
+                templateMap.put(wxMpTemplate.getTemplateId(), wxMpTemplate);
+                if (wxMpTemplate.getTemplateId().equals(selectedMsgTemplateId)) {
+                    selectedIndex = i;
+                }
+            }
+
+            getInstance().getTemplateListComboBox().setSelectedIndex(selectedIndex);
+
+            fillWxTemplateContentToField();
+        } catch (Exception e) {
+            log.error(e.toString());
+        }
+        needListenTemplateListComboBox = true;
+    }
+
+    /**
+     * 根据模板内容获取模板中的参数list
+     *
+     * @param templateContent 模板内容
+     * @return params 模板中的参数
+     */
+    public static List<String> getTemplateParams(String templateContent) {
+        List<String> params = Lists.newArrayList();
+        Matcher matcher = BRACE_PATTERN.matcher(templateContent);
+        while (matcher.find()) {
+            params.add(matcher.group(1).replace(".DATA", ""));
+        }
+        return params;
+    }
+
+    /**
+     * 根据模板id填充模板列表中对应的WxTemplate内容到表单
+     */
+    public static void fillWxTemplateContentToField() {
+        WxMpTemplate wxMpTemplate = templateList.get(getInstance().getTemplateListComboBox().getSelectedIndex());
+        if (wxMpTemplate != null) {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("-----------模板ID-----------\n").append(wxMpTemplate.getTemplateId()).append("\n");
+            stringBuilder.append("\n----------所属行业----------\n").append(wxMpTemplate.getPrimaryIndustry()).append("-").append(wxMpTemplate.getDeputyIndustry()).append("\n");
+            stringBuilder.append("\n----------模板内容----------\n").append(wxMpTemplate.getContent()).append("\n");
+            stringBuilder.append("\n----------模板示例----------\n").append(wxMpTemplate.getExample());
+            getInstance().getTemplateContentTextArea().setText(stringBuilder.toString());
+            getInstance().getMsgTemplateIdTextField().setText(wxMpTemplate.getTemplateId());
+        }
+    }
+
+    /**
+     * 自动填充模板数据Table
+     */
+    private static void autoFillTemplateDataTable() {
+        if (templateList != null) {
+            WxMpTemplate wxMpTemplate = templateList.get(getInstance().getTemplateListComboBox().getSelectedIndex());
+            if (wxMpTemplate != null) {
+                initTemplateDataTable();
+                DefaultTableModel tableModel = (DefaultTableModel) getInstance().getTemplateMsgDataTable()
+                        .getModel();
+                List<String> params = getTemplateParams(wxMpTemplate.getContent());
+                for (int i = 0; i < params.size(); i++) {
+                    String param = params.get(i);
+                    String[] data = new String[3];
+                    data[0] = param;
+                    data[1] = "示例值" + (i + 1);
+                    data[2] = "#000000";
+                    tableModel.addRow(data);
+                }
+            }
+        }
+    }
+
+    /**
+     * 初始化模板消息数据table
+     */
+    public static void initTemplateDataTable() {
+        JTable msgDataTable = getInstance().getTemplateMsgDataTable();
+        String[] headerNames = {"Name", "Value", "Color", "操作"};
+        DefaultTableModel model = new DefaultTableModel(null, headerNames);
+        msgDataTable.setModel(model);
+        msgDataTable.updateUI();
+        DefaultTableCellRenderer hr = (DefaultTableCellRenderer) msgDataTable.getTableHeader().getDefaultRenderer();
+        // 表头列名居左
+        hr.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
+
+        TableColumnModel tableColumnModel = msgDataTable.getColumnModel();
+        tableColumnModel.getColumn(headerNames.length - 1).
+                setCellRenderer(new TableInCellButtonColumn(msgDataTable, headerNames.length - 1));
+        tableColumnModel.getColumn(headerNames.length - 1).
+                setCellEditor(new TableInCellButtonColumn(msgDataTable, headerNames.length - 1));
+
+        // 设置列宽
+        tableColumnModel.getColumn(3).setPreferredWidth(getInstance().getTemplateMsgDataAddButton().getWidth());
+        tableColumnModel.getColumn(3).setMaxWidth(getInstance().getTemplateMsgDataAddButton().getWidth());
+    }
+
+    /**
+     * 清空所有界面字段
+     */
+    public static void clearAllField() {
+        getInstance().getMsgTemplateIdTextField().setText("");
+        getInstance().getMsgTemplateUrlTextField().setText("");
+        getInstance().getMsgTemplateMiniAppidTextField().setText("");
+        getInstance().getMsgTemplateMiniPagePathTextField().setText("");
+        getInstance().getTemplateDataNameTextField().setText("");
+        getInstance().getTemplateDataValueTextField().setText("");
+        getInstance().getTemplateDataColorTextField().setText("");
+        selectedMsgTemplateId = null;
+        initTemplateDataTable();
+    }
+
     {
 // GUI initializer generated by IntelliJ IDEA GUI Designer
 // >>> IMPORTANT!! <<<
@@ -416,45 +425,45 @@ public class MpTemplateMsgForm {
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         templateMsgPanel = new JPanel();
-        templateMsgPanel.setLayout(new GridLayoutManager(6, 3, new Insets(10, 15, 0, 0), -1, -1));
+        templateMsgPanel.setLayout(new GridLayoutManager(5, 3, new Insets(10, 15, 0, 0), -1, -1));
         panel1.add(templateMsgPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         templateMsgPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "公众号-模板消息编辑", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, templateMsgPanel.getFont())));
         templateMsgDataPanel = new JPanel();
-        templateMsgDataPanel.setLayout(new GridLayoutManager(2, 8, new Insets(10, 0, 0, 0), -1, -1));
-        templateMsgPanel.add(templateMsgDataPanel, new GridConstraints(4, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        templateMsgDataPanel.setLayout(new GridLayoutManager(3, 4, new Insets(10, 0, 0, 0), -1, -1));
+        templateMsgPanel.add(templateMsgDataPanel, new GridConstraints(4, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         templateMsgDataPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "模板变量（可使用\"$ENTER$\"作为换行符）", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, templateMsgDataPanel.getFont())));
-        templateMsgNameLabel = new JLabel();
-        templateMsgNameLabel.setText("name");
-        templateMsgNameLabel.setToolTipText("当消息类型是模板消息时的示例：first或者keyword1或者remark之类的");
-        templateMsgDataPanel.add(templateMsgNameLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         templateDataNameTextField = new JTextField();
         templateDataNameTextField.setToolTipText("当消息类型是模板消息时的示例：first或者keyword1或者remark之类的");
-        templateMsgDataPanel.add(templateDataNameTextField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        templateMsgValueLabel = new JLabel();
-        templateMsgValueLabel.setText("value");
-        templateMsgDataPanel.add(templateMsgValueLabel, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        templateMsgDataPanel.add(templateDataNameTextField, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         templateDataValueTextField = new JTextField();
-        templateMsgDataPanel.add(templateDataValueTextField, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        templateMsgColorLabel = new JLabel();
-        templateMsgColorLabel.setText("color");
-        templateMsgColorLabel.setToolTipText("示例值：FF0000");
-        templateMsgDataPanel.add(templateMsgColorLabel, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        templateMsgDataPanel.add(templateDataValueTextField, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         templateDataColorTextField = new JTextField();
         templateDataColorTextField.setToolTipText("示例值：FF0000");
-        templateMsgDataPanel.add(templateDataColorTextField, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        templateMsgDataPanel.add(templateDataColorTextField, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         templateMsgDataAddButton = new JButton();
         templateMsgDataAddButton.setIcon(new ImageIcon(getClass().getResource("/icon/add.png")));
-        templateMsgDataAddButton.setText("添加");
-        templateMsgDataPanel.add(templateMsgDataAddButton, new GridConstraints(0, 7, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        templateMsgDataAddButton.setText("");
+        templateMsgDataPanel.add(templateMsgDataAddButton, new GridConstraints(1, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         templateMsgDataTable = new JTable();
         templateMsgDataTable.setAutoCreateColumnsFromModel(true);
         templateMsgDataTable.setAutoCreateRowSorter(true);
         templateMsgDataTable.setGridColor(new Color(-12236470));
         templateMsgDataTable.setRowHeight(36);
-        templateMsgDataPanel.add(templateMsgDataTable, new GridConstraints(1, 0, 1, 8, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        templateMsgDataPanel.add(templateMsgDataTable, new GridConstraints(2, 0, 1, 4, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        templateMsgNameLabel = new JLabel();
+        templateMsgNameLabel.setText("name");
+        templateMsgNameLabel.setToolTipText("当消息类型是模板消息时的示例：first或者keyword1或者remark之类的");
+        templateMsgDataPanel.add(templateMsgNameLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        templateMsgValueLabel = new JLabel();
+        templateMsgValueLabel.setText("value");
+        templateMsgDataPanel.add(templateMsgValueLabel, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        templateMsgColorLabel = new JLabel();
+        templateMsgColorLabel.setText("color");
+        templateMsgColorLabel.setToolTipText("示例值：FF0000");
+        templateMsgDataPanel.add(templateMsgColorLabel, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         autoFillButton = new JButton();
         autoFillButton.setText("自动填充");
-        templateMsgDataPanel.add(autoFillButton, new GridConstraints(0, 6, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        templateMsgDataPanel.add(autoFillButton, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(6, 5, new Insets(0, 0, 5, 0), -1, -1));
         templateMsgPanel.add(panel2, new GridConstraints(0, 0, 4, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -496,8 +505,6 @@ public class MpTemplateMsgForm {
         templateContentTextArea = new JTextArea();
         templateContentTextArea.setEditable(false);
         panel2.add(templateContentTextArea, new GridConstraints(1, 0, 1, 5, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
-        final Spacer spacer1 = new Spacer();
-        templateMsgPanel.add(spacer1, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         templateMsgNameLabel.setLabelFor(templateDataNameTextField);
         templateMsgValueLabel.setLabelFor(templateDataValueTextField);
         templateMsgColorLabel.setLabelFor(templateDataColorTextField);

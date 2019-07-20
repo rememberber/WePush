@@ -24,32 +24,35 @@ import java.util.Objects;
  * @author <a href="https://github.com/rememberber">Zhou Bo</a>
  * @since 2019/6/6.
  */
-public class KefuPriorityMsgForm {
+public class KefuPriorityMsgForm implements IMsgForm {
 
     private static TMsgKefuPriorityMapper msgKefuPriorityMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuPriorityMapper.class);
     private static TTemplateDataMapper templateDataMapper = MybatisUtil.getSqlSession().getMapper(TTemplateDataMapper.class);
 
-    public static void init(String msgName) {
+    private static KefuPriorityMsgForm kefuPriorityMsgForm;
+
+    @Override
+    public void init(String msgName) {
         clearAllField();
         List<TMsgKefuPriority> tMsgKefuPriorityList = msgKefuPriorityMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.KEFU_PRIORITY_CODE, msgName);
         if (tMsgKefuPriorityList.size() > 0) {
             TMsgKefuPriority tMsgKefuPriority = tMsgKefuPriorityList.get(0);
             Integer msgId = tMsgKefuPriority.getId();
-            MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateIdTextField().setText(tMsgKefuPriority.getTemplateId());
-            MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateUrlTextField().setText(tMsgKefuPriority.getUrl());
-            MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateMiniAppidTextField().setText(tMsgKefuPriority.getMaAppid());
-            MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateMiniPagePathTextField().setText(tMsgKefuPriority.getMaPagePath());
+            MpTemplateMsgForm.getInstance().getMsgTemplateIdTextField().setText(tMsgKefuPriority.getTemplateId());
+            MpTemplateMsgForm.getInstance().getMsgTemplateUrlTextField().setText(tMsgKefuPriority.getUrl());
+            MpTemplateMsgForm.getInstance().getMsgTemplateMiniAppidTextField().setText(tMsgKefuPriority.getMaAppid());
+            MpTemplateMsgForm.getInstance().getMsgTemplateMiniPagePathTextField().setText(tMsgKefuPriority.getMaPagePath());
 
             String kefuMsgType = tMsgKefuPriority.getKefuMsgType();
-            KefuMsgForm.kefuMsgForm.getMsgKefuMsgTypeComboBox().setSelectedItem(kefuMsgType);
+            KefuMsgForm.getInstance().getMsgKefuMsgTypeComboBox().setSelectedItem(kefuMsgType);
             if ("文本消息".equals(kefuMsgType)) {
-                KefuMsgForm.kefuMsgForm.getContentTextArea().setText(tMsgKefuPriority.getContent());
+                KefuMsgForm.getInstance().getContentTextArea().setText(tMsgKefuPriority.getContent());
             } else if ("图文消息".equals(kefuMsgType)) {
-                KefuMsgForm.kefuMsgForm.getMsgKefuMsgTitleTextField().setText(tMsgKefuPriority.getTitle());
+                KefuMsgForm.getInstance().getMsgKefuMsgTitleTextField().setText(tMsgKefuPriority.getTitle());
             }
-            KefuMsgForm.kefuMsgForm.getMsgKefuPicUrlTextField().setText(tMsgKefuPriority.getImgUrl());
-            KefuMsgForm.kefuMsgForm.getMsgKefuDescTextField().setText(tMsgKefuPriority.getDescribe());
-            KefuMsgForm.kefuMsgForm.getMsgKefuUrlTextField().setText(tMsgKefuPriority.getKefuUrl());
+            KefuMsgForm.getInstance().getMsgKefuPicUrlTextField().setText(tMsgKefuPriority.getImgUrl());
+            KefuMsgForm.getInstance().getMsgKefuDescTextField().setText(tMsgKefuPriority.getDescribe());
+            KefuMsgForm.getInstance().getMsgKefuUrlTextField().setText(tMsgKefuPriority.getKefuUrl());
 
             KefuMsgForm.switchKefuMsgType(kefuMsgType);
 
@@ -65,25 +68,26 @@ public class KefuPriorityMsgForm {
                 cellData[i][2] = tTemplateData.getColor();
             }
             DefaultTableModel model = new DefaultTableModel(cellData, headerNames);
-            MpTemplateMsgForm.mpTemplateMsgForm.getTemplateMsgDataTable().setModel(model);
-            TableColumnModel tableColumnModel = MpTemplateMsgForm.mpTemplateMsgForm.getTemplateMsgDataTable().getColumnModel();
+            MpTemplateMsgForm.getInstance().getTemplateMsgDataTable().setModel(model);
+            TableColumnModel tableColumnModel = MpTemplateMsgForm.getInstance().getTemplateMsgDataTable().getColumnModel();
             tableColumnModel.getColumn(headerNames.length - 1).
-                    setCellRenderer(new TableInCellButtonColumn(MpTemplateMsgForm.mpTemplateMsgForm.getTemplateMsgDataTable(), headerNames.length - 1));
+                    setCellRenderer(new TableInCellButtonColumn(MpTemplateMsgForm.getInstance().getTemplateMsgDataTable(), headerNames.length - 1));
             tableColumnModel.getColumn(headerNames.length - 1).
-                    setCellEditor(new TableInCellButtonColumn(MpTemplateMsgForm.mpTemplateMsgForm.getTemplateMsgDataTable(), headerNames.length - 1));
+                    setCellEditor(new TableInCellButtonColumn(MpTemplateMsgForm.getInstance().getTemplateMsgDataTable(), headerNames.length - 1));
 
             // 设置列宽
-            tableColumnModel.getColumn(3).setPreferredWidth(130);
-            tableColumnModel.getColumn(3).setMaxWidth(130);
+            tableColumnModel.getColumn(3).setPreferredWidth(46);
+            tableColumnModel.getColumn(3).setMaxWidth(46);
 
-            MpTemplateMsgForm.mpTemplateMsgForm.getTemplateMsgDataTable().updateUI();
+            MpTemplateMsgForm.getInstance().getTemplateMsgDataTable().updateUI();
         } else {
             KefuMsgForm.switchKefuMsgType("图文消息");
         }
         MpTemplateMsgForm.initTemplateList();
     }
 
-    public static void save(String msgName) {
+    @Override
+    public void save(String msgName) {
         int msgId = 0;
         boolean existSameMsg = false;
 
@@ -101,16 +105,16 @@ public class KefuPriorityMsgForm {
         }
 
         if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
-            String templateId = MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateIdTextField().getText();
-            String templateUrl = MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateUrlTextField().getText();
-            String kefuMsgType = Objects.requireNonNull(KefuMsgForm.kefuMsgForm.getMsgKefuMsgTypeComboBox().getSelectedItem()).toString();
-            String kefuMsgContent = KefuMsgForm.kefuMsgForm.getContentTextArea().getText();
-            String kefuMsgTitle = KefuMsgForm.kefuMsgForm.getMsgKefuMsgTitleTextField().getText();
-            String kefuPicUrl = KefuMsgForm.kefuMsgForm.getMsgKefuPicUrlTextField().getText();
-            String kefuDesc = KefuMsgForm.kefuMsgForm.getMsgKefuDescTextField().getText();
-            String kefuUrl = KefuMsgForm.kefuMsgForm.getMsgKefuUrlTextField().getText();
-            String templateMiniAppid = MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateMiniAppidTextField().getText();
-            String templateMiniPagePath = MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateMiniPagePathTextField().getText();
+            String templateId = MpTemplateMsgForm.getInstance().getMsgTemplateIdTextField().getText();
+            String templateUrl = MpTemplateMsgForm.getInstance().getMsgTemplateUrlTextField().getText();
+            String kefuMsgType = Objects.requireNonNull(KefuMsgForm.getInstance().getMsgKefuMsgTypeComboBox().getSelectedItem()).toString();
+            String kefuMsgContent = KefuMsgForm.getInstance().getContentTextArea().getText();
+            String kefuMsgTitle = KefuMsgForm.getInstance().getMsgKefuMsgTitleTextField().getText();
+            String kefuPicUrl = KefuMsgForm.getInstance().getMsgKefuPicUrlTextField().getText();
+            String kefuDesc = KefuMsgForm.getInstance().getMsgKefuDescTextField().getText();
+            String kefuUrl = KefuMsgForm.getInstance().getMsgKefuUrlTextField().getText();
+            String templateMiniAppid = MpTemplateMsgForm.getInstance().getMsgTemplateMiniAppidTextField().getText();
+            String templateMiniPagePath = MpTemplateMsgForm.getInstance().getMsgTemplateMiniPagePathTextField().getText();
 
             String now = SqliteUtil.nowDateForSqlite();
 
@@ -144,12 +148,12 @@ public class KefuPriorityMsgForm {
             }
 
             // 如果table为空，则初始化
-            if (MpTemplateMsgForm.mpTemplateMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+            if (MpTemplateMsgForm.getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
                 MpTemplateMsgForm.initTemplateDataTable();
             }
 
             // 逐行读取
-            DefaultTableModel tableModel = (DefaultTableModel) MpTemplateMsgForm.mpTemplateMsgForm.getTemplateMsgDataTable()
+            DefaultTableModel tableModel = (DefaultTableModel) MpTemplateMsgForm.getInstance().getTemplateMsgDataTable()
                     .getModel();
             int rowCount = tableModel.getRowCount();
             for (int i = 0; i < rowCount; i++) {
@@ -172,6 +176,13 @@ public class KefuPriorityMsgForm {
             JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "保存成功！", "成功",
                     JOptionPane.INFORMATION_MESSAGE);
         }
+    }
+
+    public static KefuPriorityMsgForm getInstance() {
+        if (kefuPriorityMsgForm == null) {
+            kefuPriorityMsgForm = new KefuPriorityMsgForm();
+        }
+        return kefuPriorityMsgForm;
     }
 
     /**

@@ -29,6 +29,7 @@ import java.net.URISyntaxException;
  */
 @Getter
 public class UpdateInfoDialog extends JDialog {
+    private static final long serialVersionUID = -9114988145315865608L;
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;

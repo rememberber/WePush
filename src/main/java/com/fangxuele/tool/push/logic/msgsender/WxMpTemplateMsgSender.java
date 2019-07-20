@@ -299,7 +299,7 @@ public class WxMpTemplateMsgSender implements IMsgSender {
 
         @Override
         public void cancelled() {
-            PushData.toSendCount.getAndDecrement();
+            PushData.TO_SEND_COUNT.getAndDecrement();
         }
     }
 }

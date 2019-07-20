@@ -19,6 +19,8 @@ import java.io.Serializable;
 @ToString
 public class MailMsg implements Serializable {
 
+    private static final long serialVersionUID = 7269816872586216264L;
+
     /**
      * 标题
      */

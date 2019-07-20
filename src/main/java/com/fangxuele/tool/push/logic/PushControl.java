@@ -3,18 +3,11 @@ package com.fangxuele.tool.push.logic;
 import cn.hutool.core.date.BetweenFormater;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.json.JSONUtil;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPushHistoryMapper;
 import com.fangxuele.tool.push.domain.TPushHistory;
-import com.fangxuele.tool.push.logic.msgmaker.AliTemplateMsgMaker;
-import com.fangxuele.tool.push.logic.msgmaker.AliyunMsgMaker;
-import com.fangxuele.tool.push.logic.msgmaker.MailMsgMaker;
-import com.fangxuele.tool.push.logic.msgmaker.TxYunMsgMaker;
-import com.fangxuele.tool.push.logic.msgmaker.WxCpMsgMaker;
-import com.fangxuele.tool.push.logic.msgmaker.WxKefuMsgMaker;
-import com.fangxuele.tool.push.logic.msgmaker.WxMaTemplateMsgMaker;
-import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
-import com.fangxuele.tool.push.logic.msgmaker.YunPianMsgMaker;
+import com.fangxuele.tool.push.logic.msgmaker.MsgMakerFactory;
 import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
@@ -32,6 +25,7 @@ import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.opencsv.CSVWriter;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
@@ -43,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <pre>
@@ -58,6 +53,8 @@ public class PushControl {
      * 是否空跑
      */
     public static boolean dryRun;
+
+    public volatile static boolean saveResponseBody = false;
 
     private static TPushHistoryMapper pushHistoryMapper = MybatisUtil.getSqlSession().getMapper(TPushHistoryMapper.class);
 
@@ -109,7 +106,12 @@ public class PushControl {
             return false;
         }
         if (PushData.allUser == null || PushData.allUser.size() == 0) {
-            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMainPanel(), "请先准备目标用户！", "提示",
+            int msgType = App.config.getMsgType();
+            String tipsTitle = "请先准备目标用户！";
+            if (msgType == MessageTypeEnum.HTTP_CODE) {
+                tipsTitle = "请先准备消息变量！";
+            }
+            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMainPanel(), tipsTitle, "提示",
                     JOptionPane.INFORMATION_MESSAGE);
 
             return false;
@@ -262,10 +264,22 @@ public class PushControl {
 
         // 保存未发送
         for (String[] str : PushData.sendSuccessList) {
-            PushData.toSendList.remove(str);
+            if (msgType == MessageTypeEnum.HTTP_CODE && PushControl.saveResponseBody) {
+                str = ArrayUtils.remove(str, str.length - 1);
+                String[] finalStr = str;
+                PushData.toSendList = PushData.toSendList.stream().filter(strings -> !JSONUtil.toJsonStr(strings).equals(JSONUtil.toJsonStr(finalStr))).collect(Collectors.toList());
+            } else {
+                PushData.toSendList.remove(str);
+            }
         }
         for (String[] str : PushData.sendFailList) {
-            PushData.toSendList.remove(str);
+            if (msgType == MessageTypeEnum.HTTP_CODE && PushControl.saveResponseBody) {
+                str = ArrayUtils.remove(str, str.length - 1);
+                String[] finalStr = str;
+                PushData.toSendList = PushData.toSendList.stream().filter(strings -> !JSONUtil.toJsonStr(strings).equals(JSONUtil.toJsonStr(finalStr))).collect(Collectors.toList());
+            } else {
+                PushData.toSendList.remove(str);
+            }
         }
 
         if (PushData.toSendList.size() > 0) {
@@ -366,41 +380,7 @@ public class PushControl {
      * 准备消息构造器
      */
     static void prepareMsgMaker() {
-        int msgType = App.config.getMsgType();
-        switch (msgType) {
-            case MessageTypeEnum.MP_TEMPLATE_CODE:
-                WxMpTemplateMsgMaker.prepare();
-                break;
-            case MessageTypeEnum.MA_TEMPLATE_CODE:
-                WxMaTemplateMsgMaker.prepare();
-                break;
-            case MessageTypeEnum.KEFU_CODE:
-                WxKefuMsgMaker.prepare();
-                break;
-            case MessageTypeEnum.KEFU_PRIORITY_CODE:
-                WxKefuMsgMaker.prepare();
-                WxMpTemplateMsgMaker.prepare();
-                break;
-            case MessageTypeEnum.ALI_YUN_CODE:
-                AliyunMsgMaker.prepare();
-                break;
-            case MessageTypeEnum.ALI_TEMPLATE_CODE:
-                AliTemplateMsgMaker.prepare();
-                break;
-            case MessageTypeEnum.TX_YUN_CODE:
-                TxYunMsgMaker.prepare();
-                break;
-            case MessageTypeEnum.YUN_PIAN_CODE:
-                YunPianMsgMaker.prepare();
-                break;
-            case MessageTypeEnum.EMAIL_CODE:
-                MailMsgMaker.prepare();
-                break;
-            case MessageTypeEnum.WX_CP_CODE:
-                WxCpMsgMaker.prepare();
-                break;
-            default:
-        }
+        MsgMakerFactory.getMsgMaker().prepare();
     }
 
     /**

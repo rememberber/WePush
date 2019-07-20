@@ -135,6 +135,16 @@ public class ConfigUtil {
 
     private String yunpianApiKey;
 
+    private boolean httpUseProxy;
+
+    private String httpProxyHost;
+
+    private String httpProxyPort;
+
+    private String httpProxyUserName;
+
+    private String httpProxyPassword;
+
     private String mailHost;
 
     private String mailPort;
@@ -744,5 +754,45 @@ public class ConfigUtil {
 
     public void setYunpianApiKey(String yunpianApiKey) {
         setting.put("setting.yunpian", "apiKey", yunpianApiKey);
+    }
+
+    public boolean isHttpUseProxy() {
+        return setting.getBool("httpUseProxy", "setting.http", false);
+    }
+
+    public void setHttpUseProxy(boolean httpUseProxy) {
+        setting.put("setting.http", "httpUseProxy", String.valueOf(httpUseProxy));
+    }
+
+    public String getHttpProxyHost() {
+        return setting.getStr("httpProxyHost", "setting.http", "");
+    }
+
+    public void setHttpProxyHost(String httpProxyHost) {
+        setting.put("setting.http", "httpProxyHost", httpProxyHost);
+    }
+
+    public String getHttpProxyPort() {
+        return setting.getStr("httpProxyPort", "setting.http", "");
+    }
+
+    public void setHttpProxyPort(String httpProxyPort) {
+        setting.put("setting.http", "httpProxyPort", httpProxyPort);
+    }
+
+    public String getHttpProxyUserName() {
+        return setting.getStr("httpProxyUserName", "setting.http", "");
+    }
+
+    public void setHttpProxyUserName(String httpProxyUserName) {
+        setting.put("setting.http", "httpProxyUserName", httpProxyUserName);
+    }
+
+    public String getHttpProxyPassword() {
+        return setting.getStr("httpProxyPassword", "setting.http", "");
+    }
+
+    public void setHttpProxyPassword(String httpProxyPassword) {
+        setting.put("setting.http", "httpProxyPassword", httpProxyPassword);
     }
 }
