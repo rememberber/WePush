@@ -205,9 +205,12 @@ public class PushRunThread extends Thread {
                 break;
             }
 
+            int successCount = PushData.sendSuccessList.size();
+            int failCount = PushData.sendFailList.size();
+            int totalSentCount = successCount + failCount;
             long currentTimeMillis = System.currentTimeMillis();
             long lastTimeMillis = currentTimeMillis - startTimeMillis;
-            long leftTimeMillis = (long) ((double) lastTimeMillis / (PushData.sendSuccessList.size() + PushData.sendFailList.size()) * (PushData.allUser.size() - PushData.sendSuccessList.size() - PushData.sendFailList.size()));
+            long leftTimeMillis = (long) ((double) lastTimeMillis / (totalSentCount) * (PushData.allUser.size() - totalSentCount));
 
             // 耗时
             String formatBetweenLast = DateUtil.formatBetween(lastTimeMillis, BetweenFormater.Level.SECOND);
@@ -219,6 +222,12 @@ public class PushRunThread extends Thread {
 
             PushForm.pushForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
 
+            // TPS
+            if (lastTimeMillis == 0) {
+                lastTimeMillis = 1;
+            }
+            int tps = (int) (totalSentCount * 1000 / lastTimeMillis);
+            PushForm.pushForm.getTpsLabel().setText(String.valueOf(tps));
             ThreadUtil.safeSleep(100);
         }
     }
