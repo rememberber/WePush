@@ -5,6 +5,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.FileReader;
 import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.db.DbUtil;
 import cn.hutool.db.Entity;
 import cn.hutool.db.handler.EntityListHandler;
@@ -566,8 +567,17 @@ public class MemberListener {
                             csvWriter.close();
                         } else if (ExportDialog.fileType == ExportDialog.TXT) {
                             fileFullName += ".txt";
-                            cn.hutool.core.io.file.FileWriter fileWriter = new cn.hutool.core.io.file.FileWriter(fileFullName);
-                            fileWriter.appendLines(rows);
+                            FileWriter fileWriter = new FileWriter(fileFullName);
+                            int size = rows.size();
+                            for (int i = 0; i < size; i++) {
+                                List<String> row = rows.get(i);
+                                fileWriter.append(String.join("|", row));
+                                if (i < size - 1) {
+                                    fileWriter.append(StrUtil.CRLF);
+                                }
+                            }
+                            fileWriter.flush();
+                            fileWriter.close();
                         }
                         JOptionPane.showMessageDialog(memberPanel, "导出成功！", "提示",
                                 JOptionPane.INFORMATION_MESSAGE);
