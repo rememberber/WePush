@@ -8,12 +8,12 @@ import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
 import com.fangxuele.tool.push.ui.form.BoostForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
+import com.fangxuele.tool.push.util.WeWxMpServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.error.WxError;
 import me.chanjar.weixin.common.util.http.apache.DefaultApacheHttpClientBuilder;
 import me.chanjar.weixin.mp.api.WxMpInMemoryConfigStorage;
 import me.chanjar.weixin.mp.api.WxMpService;
-import me.chanjar.weixin.mp.api.impl.WxMpServiceImpl;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
 import org.apache.http.Consts;
 import org.apache.http.HttpHost;
@@ -185,7 +185,7 @@ public class WxMpTemplateMsgSender implements IMsgSender {
         if (wxMpService == null && wxMpConfigStorage != null) {
             synchronized (WxMpTemplateMsgSender.class) {
                 if (wxMpService == null && wxMpConfigStorage != null) {
-                    wxMpService = new WxMpServiceImpl();
+                    wxMpService = new WeWxMpServiceImpl();
                     wxMpService.setWxMpConfigStorage(wxMpConfigStorage);
                 }
             }
