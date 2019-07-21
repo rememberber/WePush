@@ -31,13 +31,6 @@ public class WeWxMpServiceImpl extends WxMpServiceImpl {
     private int count;
 
     @Override
-    public String getAccessToken() throws WxErrorException {
-        String accessToken = super.getAccessToken();
-        System.err.println(accessToken);
-        return accessToken;
-    }
-
-    @Override
     public String getAccessToken(boolean forceRefresh) throws WxErrorException {
         if (!this.getWxMpConfigStorage().isAccessTokenExpired() && !forceRefresh) {
             return this.getWxMpConfigStorage().getAccessToken();
