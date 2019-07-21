@@ -27,8 +27,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.event.ItemEvent;
 import java.util.List;
 import java.util.Objects;
@@ -464,40 +462,10 @@ public class SettingListener {
             }
         });
 
-        SettingForm.settingForm.getMpUseProxyCheckBox().addChangeListener(new ChangeListener() {
-            /**
-             * Invoked when the target of the listener has changed its state.
-             *
-             * @param e a ChangeEvent object
-             */
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                SettingForm.toggleMpProxyPanel();
-            }
-        });
-
-        SettingForm.settingForm.getMaUseProxyCheckBox().addChangeListener(new ChangeListener() {
-            /**
-             * Invoked when the target of the listener has changed its state.
-             *
-             * @param e a ChangeEvent object
-             */
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                SettingForm.toggleMaProxyPanel();
-            }
-        });
-        SettingForm.settingForm.getHttpUseProxyCheckBox().addChangeListener(new ChangeListener() {
-            /**
-             * Invoked when the target of the listener has changed its state.
-             *
-             * @param e a ChangeEvent object
-             */
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                SettingForm.toggleHttpProxyPanel();
-            }
-        });
+        SettingForm.settingForm.getMpUseProxyCheckBox().addChangeListener(e -> SettingForm.toggleMpProxyPanel());
+        SettingForm.settingForm.getMaUseProxyCheckBox().addChangeListener(e -> SettingForm.toggleMaProxyPanel());
+        SettingForm.settingForm.getHttpUseProxyCheckBox().addChangeListener(e -> SettingForm.toggleHttpProxyPanel());
+        SettingForm.settingForm.getUseOutSideAccessTokenCheckBox().addChangeListener(e -> SettingForm.toggleMpOutSideAccessTokenPanel());
     }
 
 }
