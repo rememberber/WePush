@@ -138,6 +138,13 @@ public class SettingForm {
         settingForm.getMpProxyUserNameTextField().setText(App.config.getMpProxyUserName());
         settingForm.getMpProxyPasswordTextField().setText(App.config.getMpProxyPassword());
 
+        settingForm.getUseOutSideAccessTokenCheckBox().setSelected(App.config.isMpUseOutSideAt());
+        settingForm.getManualAtRadioButton().setSelected(App.config.isMpManualAt());
+        settingForm.getApiAtRadioButton().setSelected(App.config.isMpApiAt());
+        settingForm.getAccessTokenTextField().setText(App.config.getMpAt());
+        settingForm.getAtExpiresInTextField().setText(App.config.getMpAtExpiresIn());
+        settingForm.getAtApiUrlTextField().setText(App.config.getMpAtApiUrl());
+
         // 微信小程序
         settingForm.getMaAccountSwitchComboBox().setSelectedItem(App.config.getMiniAppName());
         settingForm.getMiniAppAppIdTextField().setText(App.config.getMiniAppAppId());

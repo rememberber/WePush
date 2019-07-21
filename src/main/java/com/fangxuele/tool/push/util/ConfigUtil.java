@@ -88,6 +88,18 @@ public class ConfigUtil {
 
     private String mpProxyPassword;
 
+    private boolean mpUseOutSideAt;
+
+    private boolean mpManualAt;
+
+    private boolean mpApiAt;
+
+    private String mpAt;
+
+    private String mpAtExpiresIn;
+
+    private String mpAtApiUrl;
+
     private String miniAppName;
 
     private String miniAppAppId;
@@ -466,6 +478,54 @@ public class ConfigUtil {
 
     public void setMpProxyPassword(String mpProxyPassword) {
         setting.put("setting.wechat", "mpProxyPassword", mpProxyPassword);
+    }
+
+    public boolean isMpUseOutSideAt() {
+        return setting.getBool("mpUseOutSideAt", "setting.wechat", false);
+    }
+
+    public void setMpUseOutSideAt(boolean mpUseOutSideAt) {
+        setting.put("setting.wechat", "mpUseOutSideAt", String.valueOf(mpUseOutSideAt));
+    }
+
+    public boolean isMpManualAt() {
+        return setting.getBool("mpManualAt", "setting.wechat", false);
+    }
+
+    public void setMpManualAt(boolean mpManualAt) {
+        setting.put("setting.wechat", "mpManualAt", String.valueOf(mpManualAt));
+    }
+
+    public boolean isMpApiAt() {
+        return setting.getBool("mpApiAt", "setting.wechat", false);
+    }
+
+    public void setMpApiAt(boolean mpApiAt) {
+        setting.put("setting.wechat", "mpApiAt", String.valueOf(mpApiAt));
+    }
+
+    public String getMpAt() {
+        return setting.getStr("mpAt", "setting.wechat", "");
+    }
+
+    public void setMpAt(String mpAt) {
+        setting.put("setting.wechat", "mpAt", mpAt);
+    }
+
+    public String getMpAtExpiresIn() {
+        return setting.getStr("mpAtExpiresIn", "setting.wechat", "");
+    }
+
+    public void setMpAtExpiresIn(String mpAtExpiresIn) {
+        setting.put("setting.wechat", "mpAtExpiresIn", mpAtExpiresIn);
+    }
+
+    public String getMpAtApiUrl() {
+        return setting.getStr("mpAtApiUrl", "setting.wechat", "");
+    }
+
+    public void setMpAtApiUrl(String mpAtApiUrl) {
+        setting.put("setting.wechat", "mpAtApiUrl", mpAtApiUrl);
     }
 
     public String getAliServerUrl() {

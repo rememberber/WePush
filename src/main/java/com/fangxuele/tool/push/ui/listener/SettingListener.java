@@ -76,6 +76,14 @@ public class SettingListener {
                 App.config.setMpProxyPort(SettingForm.settingForm.getMpProxyPortTextField().getText());
                 App.config.setMpProxyUserName(SettingForm.settingForm.getMpProxyUserNameTextField().getText());
                 App.config.setMpProxyPassword(SettingForm.settingForm.getMpProxyPasswordTextField().getText());
+
+                App.config.setMpUseOutSideAt(SettingForm.settingForm.getUseOutSideAccessTokenCheckBox().isSelected());
+                App.config.setMpManualAt(SettingForm.settingForm.getManualAtRadioButton().isSelected());
+                App.config.setMpApiAt(SettingForm.settingForm.getApiAtRadioButton().isSelected());
+                App.config.setMpAt(SettingForm.settingForm.getAccessTokenTextField().getText());
+                App.config.setMpAtExpiresIn(SettingForm.settingForm.getAtExpiresInTextField().getText());
+                App.config.setMpAtApiUrl(SettingForm.settingForm.getAtApiUrlTextField().getText());
+
                 App.config.save();
 
                 boolean update = false;
