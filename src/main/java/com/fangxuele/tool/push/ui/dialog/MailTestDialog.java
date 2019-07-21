@@ -16,7 +16,16 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+/**
+ * <pre>
+ * 测试E-Mail服务器设置dialog
+ * </pre>
+ *
+ * @author <a href="https://github.com/rememberber">Zhou Bo</a>
+ * @since 2019/6/7.
+ */
 public class MailTestDialog extends JDialog {
+    private static final long serialVersionUID = -7446871196050064612L;
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;

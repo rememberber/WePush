@@ -88,6 +88,18 @@ public class ConfigUtil {
 
     private String mpProxyPassword;
 
+    private boolean mpUseOutSideAt;
+
+    private boolean mpManualAt;
+
+    private boolean mpApiAt;
+
+    private String mpAt;
+
+    private String mpAtExpiresIn;
+
+    private String mpAtApiUrl;
+
     private String miniAppName;
 
     private String miniAppAppId;
@@ -134,6 +146,16 @@ public class ConfigUtil {
     private String txyunSign;
 
     private String yunpianApiKey;
+
+    private boolean httpUseProxy;
+
+    private String httpProxyHost;
+
+    private String httpProxyPort;
+
+    private String httpProxyUserName;
+
+    private String httpProxyPassword;
 
     private String mailHost;
 
@@ -458,6 +480,54 @@ public class ConfigUtil {
         setting.put("setting.wechat", "mpProxyPassword", mpProxyPassword);
     }
 
+    public boolean isMpUseOutSideAt() {
+        return setting.getBool("mpUseOutSideAt", "setting.wechat", false);
+    }
+
+    public void setMpUseOutSideAt(boolean mpUseOutSideAt) {
+        setting.put("setting.wechat", "mpUseOutSideAt", String.valueOf(mpUseOutSideAt));
+    }
+
+    public boolean isMpManualAt() {
+        return setting.getBool("mpManualAt", "setting.wechat", false);
+    }
+
+    public void setMpManualAt(boolean mpManualAt) {
+        setting.put("setting.wechat", "mpManualAt", String.valueOf(mpManualAt));
+    }
+
+    public boolean isMpApiAt() {
+        return setting.getBool("mpApiAt", "setting.wechat", false);
+    }
+
+    public void setMpApiAt(boolean mpApiAt) {
+        setting.put("setting.wechat", "mpApiAt", String.valueOf(mpApiAt));
+    }
+
+    public String getMpAt() {
+        return setting.getStr("mpAt", "setting.wechat", "");
+    }
+
+    public void setMpAt(String mpAt) {
+        setting.put("setting.wechat", "mpAt", mpAt);
+    }
+
+    public String getMpAtExpiresIn() {
+        return setting.getStr("mpAtExpiresIn", "setting.wechat", "");
+    }
+
+    public void setMpAtExpiresIn(String mpAtExpiresIn) {
+        setting.put("setting.wechat", "mpAtExpiresIn", mpAtExpiresIn);
+    }
+
+    public String getMpAtApiUrl() {
+        return setting.getStr("mpAtApiUrl", "setting.wechat", "");
+    }
+
+    public void setMpAtApiUrl(String mpAtApiUrl) {
+        setting.put("setting.wechat", "mpAtApiUrl", mpAtApiUrl);
+    }
+
     public String getAliServerUrl() {
         return setting.getStr("serverUrl", "setting.ali", "");
     }
@@ -744,5 +814,45 @@ public class ConfigUtil {
 
     public void setYunpianApiKey(String yunpianApiKey) {
         setting.put("setting.yunpian", "apiKey", yunpianApiKey);
+    }
+
+    public boolean isHttpUseProxy() {
+        return setting.getBool("httpUseProxy", "setting.http", false);
+    }
+
+    public void setHttpUseProxy(boolean httpUseProxy) {
+        setting.put("setting.http", "httpUseProxy", String.valueOf(httpUseProxy));
+    }
+
+    public String getHttpProxyHost() {
+        return setting.getStr("httpProxyHost", "setting.http", "");
+    }
+
+    public void setHttpProxyHost(String httpProxyHost) {
+        setting.put("setting.http", "httpProxyHost", httpProxyHost);
+    }
+
+    public String getHttpProxyPort() {
+        return setting.getStr("httpProxyPort", "setting.http", "");
+    }
+
+    public void setHttpProxyPort(String httpProxyPort) {
+        setting.put("setting.http", "httpProxyPort", httpProxyPort);
+    }
+
+    public String getHttpProxyUserName() {
+        return setting.getStr("httpProxyUserName", "setting.http", "");
+    }
+
+    public void setHttpProxyUserName(String httpProxyUserName) {
+        setting.put("setting.http", "httpProxyUserName", httpProxyUserName);
+    }
+
+    public String getHttpProxyPassword() {
+        return setting.getStr("httpProxyPassword", "setting.http", "");
+    }
+
+    public void setHttpProxyPassword(String httpProxyPassword) {
+        setting.put("setting.http", "httpProxyPassword", httpProxyPassword);
     }
 }

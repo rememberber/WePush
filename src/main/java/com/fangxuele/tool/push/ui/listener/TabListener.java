@@ -1,5 +1,7 @@
 package com.fangxuele.tool.push.ui.listener;
 
+import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.form.AboutForm;
 import com.fangxuele.tool.push.ui.form.BoostForm;
 import com.fangxuele.tool.push.ui.form.MainWindow;
@@ -32,12 +34,13 @@ public class TabListener {
             @Override
             public void stateChanged(ChangeEvent e) {
                 int index = MainWindow.mainWindow.getTabbedPane().getSelectedIndex();
+                int msgType = App.config.getMsgType();
                 switch (index) {
                     case 0:
                         AboutForm.init();
                         break;
                     case 3:
-                        if (warnFlag) {
+                        if (warnFlag && msgType != MessageTypeEnum.EMAIL_CODE && msgType != MessageTypeEnum.HTTP_CODE) {
                             JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "\n请确认您了解所要发送消息类型的使用频率、使用规范和限制规则，\n" +
                                             "以免账号相关功能被封禁等给您带来麻烦\n", "提示",
                                     JOptionPane.INFORMATION_MESSAGE);

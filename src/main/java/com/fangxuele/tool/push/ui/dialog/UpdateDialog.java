@@ -31,6 +31,7 @@ import java.net.URL;
  * @since 2019/6/7.
  */
 public class UpdateDialog extends JDialog {
+    private static final long serialVersionUID = -5858063892133811698L;
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;

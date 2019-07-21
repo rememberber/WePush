@@ -116,7 +116,7 @@ public class MainWindow {
         pushHisPanel = new JPanel();
         pushHisPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         pushHisPanel.setMinimumSize(new Dimension(-1, -1));
-        tabbedPane.addTab("推送历史管理", pushHisPanel);
+        tabbedPane.addTab("推送历史", pushHisPanel);
         schedulePanel = new JPanel();
         schedulePanel.setLayout(new GridLayoutManager(1, 1, new Insets(10, 10, 10, 10), -1, -1));
         schedulePanel.setMinimumSize(new Dimension(-1, -1));

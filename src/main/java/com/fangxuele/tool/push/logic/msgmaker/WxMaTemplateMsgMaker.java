@@ -30,16 +30,17 @@ public class WxMaTemplateMsgMaker extends BaseMsgMaker implements IMsgMaker {
     /**
      * 准备(界面字段等)
      */
-    public static void prepare() {
-        templateId = MaTemplateMsgForm.maTemplateMsgForm.getMsgTemplateIdTextField().getText().trim();
-        templateUrl = MaTemplateMsgForm.maTemplateMsgForm.getMsgTemplateUrlTextField().getText().trim();
-        templateKeyWord = MaTemplateMsgForm.maTemplateMsgForm.getMsgTemplateKeyWordTextField().getText().trim() + ".DATA";
+    @Override
+    public void prepare() {
+        templateId = MaTemplateMsgForm.getInstance().getMsgTemplateIdTextField().getText().trim();
+        templateUrl = MaTemplateMsgForm.getInstance().getMsgTemplateUrlTextField().getText().trim();
+        templateKeyWord = MaTemplateMsgForm.getInstance().getMsgTemplateKeyWordTextField().getText().trim() + ".DATA";
 
-        if (MaTemplateMsgForm.maTemplateMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+        if (MaTemplateMsgForm.getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
             MaTemplateMsgForm.initTemplateDataTable();
         }
 
-        DefaultTableModel tableModel = (DefaultTableModel) MaTemplateMsgForm.maTemplateMsgForm.getTemplateMsgDataTable().getModel();
+        DefaultTableModel tableModel = (DefaultTableModel) MaTemplateMsgForm.getInstance().getTemplateMsgDataTable().getModel();
         int rowCount = tableModel.getRowCount();
         TemplateData templateData;
         templateDataList = Lists.newArrayList();

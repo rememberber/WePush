@@ -35,17 +35,18 @@ public class WxMpTemplateMsgMaker extends BaseMsgMaker implements IMsgMaker {
     /**
      * 准备(界面字段等)
      */
-    public static void prepare() {
-        templateId = MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateIdTextField().getText().trim();
-        templateUrl = MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateUrlTextField().getText().trim();
-        miniAppId = MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateMiniAppidTextField().getText().trim();
-        miniAppPagePath = MpTemplateMsgForm.mpTemplateMsgForm.getMsgTemplateMiniPagePathTextField().getText().trim();
+    @Override
+    public void prepare() {
+        templateId = MpTemplateMsgForm.getInstance().getMsgTemplateIdTextField().getText().trim();
+        templateUrl = MpTemplateMsgForm.getInstance().getMsgTemplateUrlTextField().getText().trim();
+        miniAppId = MpTemplateMsgForm.getInstance().getMsgTemplateMiniAppidTextField().getText().trim();
+        miniAppPagePath = MpTemplateMsgForm.getInstance().getMsgTemplateMiniPagePathTextField().getText().trim();
 
-        if (MpTemplateMsgForm.mpTemplateMsgForm.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+        if (MpTemplateMsgForm.getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
             MpTemplateMsgForm.initTemplateDataTable();
         }
 
-        DefaultTableModel tableModel = (DefaultTableModel) MpTemplateMsgForm.mpTemplateMsgForm.getTemplateMsgDataTable().getModel();
+        DefaultTableModel tableModel = (DefaultTableModel) MpTemplateMsgForm.getInstance().getTemplateMsgDataTable().getModel();
         int rowCount = tableModel.getRowCount();
         TemplateData templateData;
         templateDataList = Lists.newArrayList();

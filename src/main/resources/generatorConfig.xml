@@ -45,7 +45,7 @@
 
         <table schema="main" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false"
                enableSelectByExample="false" selectByExampleQueryId="false"
-               tableName="t_msg_wx_cp" domainObjectName="TMsgWxCp">
+               tableName="t_msg_http" domainObjectName="TMsgHttp">
             <property name="useActualColumnNames" value="false"/>
             <!--<generatedKey column="ID" sqlStatement="DB2" identity="true"/>-->
         </table>

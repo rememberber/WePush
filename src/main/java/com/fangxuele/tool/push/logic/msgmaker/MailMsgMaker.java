@@ -23,11 +23,12 @@ public class MailMsgMaker extends BaseMsgMaker implements IMsgMaker {
     /**
      * 准备(界面字段等)
      */
-    public static void prepare() {
-        mailTitle = MailMsgForm.mailMsgForm.getMailTitleTextField().getText();
-        mailCc = MailMsgForm.mailMsgForm.getMailCcTextField().getText();
-        mailFiles = MailMsgForm.mailMsgForm.getMailFilesTextField().getText();
-        mailContent = MailMsgForm.mailMsgForm.getMailContentPane().getText();
+    @Override
+    public void prepare() {
+        mailTitle = MailMsgForm.getInstance().getMailTitleTextField().getText();
+        mailCc = MailMsgForm.getInstance().getMailCcTextField().getText();
+        mailFiles = MailMsgForm.getInstance().getMailFilesTextField().getText();
+        mailContent = MailMsgForm.getInstance().getMailContentPane().getText();
     }
 
     /**

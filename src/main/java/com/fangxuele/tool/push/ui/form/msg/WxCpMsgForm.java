@@ -32,7 +32,7 @@ import java.util.Objects;
  * @since 2019/6/29.
  */
 @Getter
-public class WxCpMsgForm {
+public class WxCpMsgForm implements IMsgForm {
     private JPanel wxCpMsgPanel;
     private JLabel msgTypeLabel;
     private JComboBox msgTypeComboBox;
@@ -51,7 +51,7 @@ public class WxCpMsgForm {
     private JTextField btnTxtTextField;
     private JLabel btnTxtLabel;
 
-    public static WxCpMsgForm wxCpMsgForm = new WxCpMsgForm();
+    private static WxCpMsgForm wxCpMsgForm;
 
     private static TMsgWxCpMapper msgWxCpMapper = MybatisUtil.getSqlSession().getMapper(TMsgWxCpMapper.class);
     private static TWxCpAppMapper wxCpAppMapper = MybatisUtil.getSqlSession().getMapper(TWxCpAppMapper.class);
@@ -75,21 +75,22 @@ public class WxCpMsgForm {
         });
     }
 
-    public static void init(String msgName) {
+    @Override
+    public void init(String msgName) {
         clearAllField();
         initAppNameList();
         List<TMsgWxCp> tMsgWxCpList = msgWxCpMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.WX_CP_CODE, msgName);
         if (tMsgWxCpList.size() > 0) {
             TMsgWxCp tMsgWxCp = tMsgWxCpList.get(0);
             String cpMsgType = tMsgWxCp.getCpMsgType();
-            wxCpMsgForm.getAppNameComboBox().setSelectedItem(agentIdToAppNameMap.get(tMsgWxCp.getAgentId()));
-            wxCpMsgForm.getMsgTypeComboBox().setSelectedItem(cpMsgType);
-            wxCpMsgForm.getContentTextArea().setText(tMsgWxCp.getContent());
-            wxCpMsgForm.getTitleTextField().setText(tMsgWxCp.getTitle());
-            wxCpMsgForm.getPicUrlTextField().setText(tMsgWxCp.getImgUrl());
-            wxCpMsgForm.getDescTextField().setText(tMsgWxCp.getDescribe());
-            wxCpMsgForm.getUrlTextField().setText(tMsgWxCp.getUrl());
-            wxCpMsgForm.getBtnTxtTextField().setText(tMsgWxCp.getBtnTxt());
+            getInstance().getAppNameComboBox().setSelectedItem(agentIdToAppNameMap.get(tMsgWxCp.getAgentId()));
+            getInstance().getMsgTypeComboBox().setSelectedItem(cpMsgType);
+            getInstance().getContentTextArea().setText(tMsgWxCp.getContent());
+            getInstance().getTitleTextField().setText(tMsgWxCp.getTitle());
+            getInstance().getPicUrlTextField().setText(tMsgWxCp.getImgUrl());
+            getInstance().getDescTextField().setText(tMsgWxCp.getDescribe());
+            getInstance().getUrlTextField().setText(tMsgWxCp.getUrl());
+            getInstance().getBtnTxtTextField().setText(tMsgWxCp.getBtnTxt());
 
             switchCpMsgType(cpMsgType);
         } else {
@@ -97,89 +98,11 @@ public class WxCpMsgForm {
         }
     }
 
-    /**
-     * 初始化应用名称列表
-     */
-    public static void initAppNameList() {
-        List<TWxCpApp> tWxCpAppList = wxCpAppMapper.selectAll();
-        wxCpMsgForm.getAppNameComboBox().removeAllItems();
-        for (TWxCpApp tWxCpApp : tWxCpAppList) {
-            appNameToAgentIdMap.put(tWxCpApp.getAppName(), tWxCpApp.getAgentId());
-            agentIdToAppNameMap.put(tWxCpApp.getAgentId(), tWxCpApp.getAppName());
-            wxCpMsgForm.getAppNameComboBox().addItem(tWxCpApp.getAppName());
-        }
-    }
-
-    /**
-     * 根据消息类型转换界面显示
-     *
-     * @param msgType 消息类型
-     */
-    public static void switchCpMsgType(String msgType) {
-        switch (msgType) {
-            case "文本消息":
-            case "markdown消息":
-                wxCpMsgForm.getContentTextArea().setVisible(true);
-                wxCpMsgForm.getDescLabel().setVisible(false);
-                wxCpMsgForm.getDescTextField().setVisible(false);
-                wxCpMsgForm.getPicUrlLabel().setVisible(false);
-                wxCpMsgForm.getPicUrlTextField().setVisible(false);
-                wxCpMsgForm.getUrlLabel().setVisible(false);
-                wxCpMsgForm.getUrlTextField().setVisible(false);
-                wxCpMsgForm.getTitleLabel().setVisible(false);
-                wxCpMsgForm.getTitleTextField().setVisible(false);
-                wxCpMsgForm.getBtnTxtLabel().setVisible(false);
-                wxCpMsgForm.getBtnTxtTextField().setVisible(false);
-                break;
-            case "图文消息":
-                wxCpMsgForm.getContentLabel().setVisible(false);
-                wxCpMsgForm.getContentTextArea().setVisible(false);
-                wxCpMsgForm.getBtnTxtLabel().setVisible(false);
-                wxCpMsgForm.getBtnTxtTextField().setVisible(false);
-                wxCpMsgForm.getDescLabel().setVisible(true);
-                wxCpMsgForm.getDescTextField().setVisible(true);
-                wxCpMsgForm.getPicUrlLabel().setVisible(true);
-                wxCpMsgForm.getPicUrlTextField().setVisible(true);
-                wxCpMsgForm.getUrlLabel().setVisible(true);
-                wxCpMsgForm.getUrlTextField().setVisible(true);
-                wxCpMsgForm.getTitleLabel().setVisible(true);
-                wxCpMsgForm.getTitleTextField().setVisible(true);
-                break;
-            case "文本卡片消息":
-                wxCpMsgForm.getContentLabel().setVisible(false);
-                wxCpMsgForm.getContentTextArea().setVisible(false);
-                wxCpMsgForm.getPicUrlLabel().setVisible(false);
-                wxCpMsgForm.getPicUrlTextField().setVisible(false);
-                wxCpMsgForm.getDescLabel().setVisible(true);
-                wxCpMsgForm.getDescTextField().setVisible(true);
-                wxCpMsgForm.getBtnTxtLabel().setVisible(true);
-                wxCpMsgForm.getBtnTxtTextField().setVisible(true);
-                wxCpMsgForm.getUrlLabel().setVisible(true);
-                wxCpMsgForm.getUrlTextField().setVisible(true);
-                wxCpMsgForm.getTitleLabel().setVisible(true);
-                wxCpMsgForm.getTitleTextField().setVisible(true);
-                break;
-            default:
-                break;
-        }
-    }
-
-    /**
-     * 清空所有界面字段
-     */
-    public static void clearAllField() {
-        wxCpMsgForm.getContentTextArea().setText("");
-        wxCpMsgForm.getTitleTextField().setText("");
-        wxCpMsgForm.getPicUrlTextField().setText("");
-        wxCpMsgForm.getDescTextField().setText("");
-        wxCpMsgForm.getUrlTextField().setText("");
-        wxCpMsgForm.getBtnTxtTextField().setText("");
-    }
-
-    public static void save(String msgName) {
+    @Override
+    public void save(String msgName) {
         boolean existSameMsg = false;
 
-        if (wxCpMsgForm.getAppNameComboBox().getSelectedItem() == null) {
+        if (getInstance().getAppNameComboBox().getSelectedItem() == null) {
             JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "请选择应用！", "成功",
                     JOptionPane.ERROR_MESSAGE);
             return;
@@ -198,20 +121,20 @@ public class WxCpMsgForm {
         }
 
         if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
-            String cpMsgType = Objects.requireNonNull(wxCpMsgForm.getMsgTypeComboBox().getSelectedItem()).toString();
-            String content = wxCpMsgForm.getContentTextArea().getText();
-            String title = wxCpMsgForm.getTitleTextField().getText();
-            String picUrl = wxCpMsgForm.getPicUrlTextField().getText();
-            String desc = wxCpMsgForm.getDescTextField().getText();
-            String url = wxCpMsgForm.getUrlTextField().getText();
-            String btnTxt = wxCpMsgForm.getBtnTxtTextField().getText();
+            String cpMsgType = Objects.requireNonNull(getInstance().getMsgTypeComboBox().getSelectedItem()).toString();
+            String content = getInstance().getContentTextArea().getText();
+            String title = getInstance().getTitleTextField().getText();
+            String picUrl = getInstance().getPicUrlTextField().getText();
+            String desc = getInstance().getDescTextField().getText();
+            String url = getInstance().getUrlTextField().getText();
+            String btnTxt = getInstance().getBtnTxtTextField().getText();
 
             String now = SqliteUtil.nowDateForSqlite();
 
             TMsgWxCp tMsgWxCp = new TMsgWxCp();
             tMsgWxCp.setMsgType(MessageTypeEnum.WX_CP_CODE);
             tMsgWxCp.setMsgName(msgName);
-            tMsgWxCp.setAgentId(appNameToAgentIdMap.get(wxCpMsgForm.getAppNameComboBox().getSelectedItem()));
+            tMsgWxCp.setAgentId(appNameToAgentIdMap.get(getInstance().getAppNameComboBox().getSelectedItem()));
             tMsgWxCp.setCpMsgType(cpMsgType);
             tMsgWxCp.setContent(content);
             tMsgWxCp.setTitle(title);
@@ -231,6 +154,92 @@ public class WxCpMsgForm {
             JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "保存成功！", "成功",
                     JOptionPane.INFORMATION_MESSAGE);
         }
+    }
+
+    public static WxCpMsgForm getInstance() {
+        if (wxCpMsgForm == null) {
+            wxCpMsgForm = new WxCpMsgForm();
+        }
+        return wxCpMsgForm;
+    }
+
+    /**
+     * 初始化应用名称列表
+     */
+    public static void initAppNameList() {
+        List<TWxCpApp> tWxCpAppList = wxCpAppMapper.selectAll();
+        getInstance().getAppNameComboBox().removeAllItems();
+        for (TWxCpApp tWxCpApp : tWxCpAppList) {
+            appNameToAgentIdMap.put(tWxCpApp.getAppName(), tWxCpApp.getAgentId());
+            agentIdToAppNameMap.put(tWxCpApp.getAgentId(), tWxCpApp.getAppName());
+            getInstance().getAppNameComboBox().addItem(tWxCpApp.getAppName());
+        }
+    }
+
+    /**
+     * 根据消息类型转换界面显示
+     *
+     * @param msgType 消息类型
+     */
+    public static void switchCpMsgType(String msgType) {
+        switch (msgType) {
+            case "文本消息":
+            case "markdown消息":
+                getInstance().getContentTextArea().setVisible(true);
+                getInstance().getDescLabel().setVisible(false);
+                getInstance().getDescTextField().setVisible(false);
+                getInstance().getPicUrlLabel().setVisible(false);
+                getInstance().getPicUrlTextField().setVisible(false);
+                getInstance().getUrlLabel().setVisible(false);
+                getInstance().getUrlTextField().setVisible(false);
+                getInstance().getTitleLabel().setVisible(false);
+                getInstance().getTitleTextField().setVisible(false);
+                getInstance().getBtnTxtLabel().setVisible(false);
+                getInstance().getBtnTxtTextField().setVisible(false);
+                break;
+            case "图文消息":
+                getInstance().getContentLabel().setVisible(false);
+                getInstance().getContentTextArea().setVisible(false);
+                getInstance().getBtnTxtLabel().setVisible(false);
+                getInstance().getBtnTxtTextField().setVisible(false);
+                getInstance().getDescLabel().setVisible(true);
+                getInstance().getDescTextField().setVisible(true);
+                getInstance().getPicUrlLabel().setVisible(true);
+                getInstance().getPicUrlTextField().setVisible(true);
+                getInstance().getUrlLabel().setVisible(true);
+                getInstance().getUrlTextField().setVisible(true);
+                getInstance().getTitleLabel().setVisible(true);
+                getInstance().getTitleTextField().setVisible(true);
+                break;
+            case "文本卡片消息":
+                getInstance().getContentLabel().setVisible(false);
+                getInstance().getContentTextArea().setVisible(false);
+                getInstance().getPicUrlLabel().setVisible(false);
+                getInstance().getPicUrlTextField().setVisible(false);
+                getInstance().getDescLabel().setVisible(true);
+                getInstance().getDescTextField().setVisible(true);
+                getInstance().getBtnTxtLabel().setVisible(true);
+                getInstance().getBtnTxtTextField().setVisible(true);
+                getInstance().getUrlLabel().setVisible(true);
+                getInstance().getUrlTextField().setVisible(true);
+                getInstance().getTitleLabel().setVisible(true);
+                getInstance().getTitleTextField().setVisible(true);
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * 清空所有界面字段
+     */
+    public static void clearAllField() {
+        getInstance().getContentTextArea().setText("");
+        getInstance().getTitleTextField().setText("");
+        getInstance().getPicUrlTextField().setText("");
+        getInstance().getDescTextField().setText("");
+        getInstance().getUrlTextField().setText("");
+        getInstance().getBtnTxtTextField().setText("");
     }
 
     {

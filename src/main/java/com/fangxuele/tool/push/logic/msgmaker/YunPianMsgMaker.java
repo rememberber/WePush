@@ -23,8 +23,9 @@ public class YunPianMsgMaker extends BaseMsgMaker implements IMsgMaker {
     /**
      * 准备(界面字段等)
      */
-    public static void prepare() {
-        msgYunpianMsgContent = YunpianMsgForm.yunpianMsgForm.getMsgYunpianMsgContentTextField().getText();
+    @Override
+    public void prepare() {
+        msgYunpianMsgContent = YunpianMsgForm.getInstance().getMsgYunpianMsgContentTextField().getText();
     }
 
     /**

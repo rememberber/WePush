@@ -73,6 +73,10 @@ public class MessageTypeListener {
             App.config.setMsgType(MessageTypeEnum.WX_CP_CODE);
             saveType();
         });
+        messageTypeForm.getHttpRadioButton().addActionListener(e -> {
+            App.config.setMsgType(MessageTypeEnum.HTTP_CODE);
+            saveType();
+        });
 
         messageTypeForm.getKefuPriorityTipsLabel().addMouseListener(new MouseAdapter() {
             @Override

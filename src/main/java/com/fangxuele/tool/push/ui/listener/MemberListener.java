@@ -5,15 +5,16 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.FileReader;
 import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.db.DbUtil;
 import cn.hutool.db.Entity;
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
+import cn.hutool.poi.excel.BigExcelWriter;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
-import cn.hutool.poi.excel.ExcelWriter;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TWxMpUserMapper;
 import com.fangxuele.tool.push.domain.TWxMpUser;
@@ -22,6 +23,7 @@ import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.msgsender.WxCpMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
 import com.fangxuele.tool.push.ui.component.TableInCellImageLabelRenderer;
+import com.fangxuele.tool.push.ui.dialog.ExportDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
@@ -32,6 +34,7 @@ import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.google.common.collect.Maps;
 import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.cp.bean.WxCpDepart;
 import me.chanjar.weixin.cp.bean.WxCpTag;
@@ -57,6 +60,7 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
@@ -120,6 +124,49 @@ public class MemberListener {
     private static JTable memberListTable = MemberForm.memberForm.getMemberListTable();
 
     public static void addListeners() {
+        // 按数量导入按钮事件
+        MemberForm.memberForm.getImportFromNumButton().addActionListener(e -> {
+            ThreadUtil.execute(() -> {
+                if (StringUtils.isBlank(MemberForm.memberForm.getImportNumTextField().getText())) {
+                    JOptionPane.showMessageDialog(memberPanel, "请填写数量！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+
+                int currentImported = 0;
+
+                try {
+                    int importNum = Integer.parseInt(MemberForm.memberForm.getImportNumTextField().getText());
+                    progressBar.setVisible(true);
+                    progressBar.setMaximum(importNum);
+
+                    PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+
+                    for (int i = 0; i < importNum; i++) {
+                        String[] array = new String[1];
+                        array[0] = String.valueOf(i);
+                        PushData.allUser.add(array);
+                        currentImported++;
+                        memberCountLabel.setText(String.valueOf(currentImported));
+                    }
+
+                    if (!PushData.fixRateScheduling) {
+                        JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } catch (Exception e1) {
+                    JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + e1.getMessage(), "失败",
+                            JOptionPane.ERROR_MESSAGE);
+                    logger.error(e1);
+                    e1.printStackTrace();
+                } finally {
+                    progressBar.setMaximum(100);
+                    progressBar.setValue(100);
+                    progressBar.setIndeterminate(false);
+                    progressBar.setVisible(false);
+                }
+            });
+        });
+
         // 从文件导入按钮事件
         MemberForm.memberForm.getImportFromFileButton().addActionListener(e -> ThreadUtil.execute(MemberListener::importFromFile));
 
@@ -220,7 +267,7 @@ public class MemberListener {
         // 企业号-按标签导入-刷新
         MemberForm.memberForm.getWxCpTagsRefreshButton().addActionListener(e -> {
             ThreadUtil.execute(() -> {
-                if (WxCpMsgForm.wxCpMsgForm.getAppNameComboBox().getSelectedItem() == null) {
+                if (WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem() == null) {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "请先在编辑消息tab中选择应用！", "提示",
                             JOptionPane.ERROR_MESSAGE);
                     MainWindow.mainWindow.getTabbedPane().setSelectedIndex(2);
@@ -292,7 +339,7 @@ public class MemberListener {
         // 企业号-按部门导入-刷新
         MemberForm.memberForm.getWxCpDeptsRefreshButton().addActionListener(e -> {
             ThreadUtil.execute(() -> {
-                if (WxCpMsgForm.wxCpMsgForm.getAppNameComboBox().getSelectedItem() == null) {
+                if (WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem() == null) {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "请先在编辑消息tab中选择应用！", "提示",
                             JOptionPane.ERROR_MESSAGE);
                     MainWindow.mainWindow.getTabbedPane().setSelectedIndex(2);
@@ -472,48 +519,74 @@ public class MemberListener {
         MemberForm.memberForm.getExportButton().addActionListener(e -> ThreadUtil.execute(() -> {
             int[] selectedRows = memberListTable.getSelectedRows();
             int columnCount = memberListTable.getColumnCount();
-            ExcelWriter writer = null;
+            BigExcelWriter writer = null;
             try {
                 if (selectedRows.length > 0) {
-                    JFileChooser fileChooser = new JFileChooser();
-                    fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                    int approve = fileChooser.showOpenDialog(memberPanel);
-                    String exportPath;
-                    if (approve == JFileChooser.APPROVE_OPTION) {
-                        exportPath = fileChooser.getSelectedFile().getAbsolutePath();
-                    } else {
-                        return;
-                    }
-
-                    List<String> rowData;
-                    List<List<String>> rows = Lists.newArrayList();
-                    for (int selectedRow : selectedRows) {
-                        rowData = Lists.newArrayList();
-                        for (int i = 0; i < columnCount; i++) {
-                            String data = (String) memberListTable.getValueAt(selectedRow, i);
-                            rowData.add(data);
+                    ExportDialog.showDialog();
+                    if (ExportDialog.confirm) {
+                        JFileChooser fileChooser = new JFileChooser();
+                        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                        int approve = fileChooser.showOpenDialog(memberPanel);
+                        String exportPath;
+                        if (approve == JFileChooser.APPROVE_OPTION) {
+                            exportPath = fileChooser.getSelectedFile().getAbsolutePath();
+                        } else {
+                            return;
                         }
-                        rows.add(rowData);
-                    }
 
-                    String nowTime = DateUtil.now().replace(":", "_").replace(" ", "_");
-                    String fileName = "MemberExport_" + MessageTypeEnum.getName(App.config.getMsgType()) + "_" + nowTime + ".xlsx";
-                    //通过工具类创建writer
-                    writer = ExcelUtil.getWriter(exportPath + File.separator + fileName);
-
-                    //合并单元格后的标题行，使用默认标题样式
-                    writer.merge(rows.get(0).size() - 1, "目标用户列表导出");
-                    //一次性写出内容，强制输出标题
-                    writer.write(rows);
-
-                    writer.flush();
-                    JOptionPane.showMessageDialog(memberPanel, "导出成功！", "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    try {
-                        Desktop desktop = Desktop.getDesktop();
-                        desktop.open(FileUtil.file(exportPath + File.separator + fileName));
-                    } catch (Exception e2) {
-                        logger.error(e2);
+                        List<String> rowData;
+                        List<List<String>> rows = Lists.newArrayList();
+                        for (int selectedRow : selectedRows) {
+                            rowData = Lists.newArrayList();
+                            for (int i = 0; i < columnCount; i++) {
+                                String data = (String) memberListTable.getValueAt(selectedRow, i);
+                                rowData.add(data);
+                            }
+                            rows.add(rowData);
+                        }
+                        String nowTime = DateUtil.now().replace(":", "_").replace(" ", "_");
+                        String fileName = "MemberExport_" + MessageTypeEnum.getName(App.config.getMsgType()) + "_" + nowTime;
+                        String fileFullName = exportPath + File.separator + fileName;
+                        if (ExportDialog.fileType == ExportDialog.EXCEL) {
+                            fileFullName += ".xlsx";
+                            //通过工具类创建writer
+                            writer = ExcelUtil.getBigWriter(fileFullName);
+                            //合并单元格后的标题行，使用默认标题样式
+                            writer.merge(rows.get(0).size() - 1, "目标用户列表导出");
+                            //一次性写出内容，强制输出标题
+                            writer.write(rows);
+                            writer.flush();
+                        } else if (ExportDialog.fileType == ExportDialog.CSV) {
+                            fileFullName += ".csv";
+                            CSVWriter csvWriter = new CSVWriter(new FileWriter(FileUtil.touch(fileFullName)));
+                            for (List<String> row : rows) {
+                                String[] array = row.toArray(new String[row.size()]);
+                                csvWriter.writeNext(array);
+                            }
+                            csvWriter.flush();
+                            csvWriter.close();
+                        } else if (ExportDialog.fileType == ExportDialog.TXT) {
+                            fileFullName += ".txt";
+                            FileWriter fileWriter = new FileWriter(fileFullName);
+                            int size = rows.size();
+                            for (int i = 0; i < size; i++) {
+                                List<String> row = rows.get(i);
+                                fileWriter.append(String.join("|", row));
+                                if (i < size - 1) {
+                                    fileWriter.append(StrUtil.CRLF);
+                                }
+                            }
+                            fileWriter.flush();
+                            fileWriter.close();
+                        }
+                        JOptionPane.showMessageDialog(memberPanel, "导出成功！", "提示",
+                                JOptionPane.INFORMATION_MESSAGE);
+                        try {
+                            Desktop desktop = Desktop.getDesktop();
+                            desktop.open(FileUtil.file(fileFullName));
+                        } catch (Exception e2) {
+                            logger.error(e2);
+                        }
                     }
                 } else {
                     JOptionPane.showMessageDialog(memberPanel, "请至少选择一个！", "提示",
@@ -523,11 +596,6 @@ public class MemberListener {
                 JOptionPane.showMessageDialog(memberPanel, "导出失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
-            } finally {
-                //关闭writer，释放内存
-                if (writer != null) {
-                    writer.close();
-                }
             }
         }));
 
@@ -1033,7 +1101,7 @@ public class MemberListener {
      */
     public static void importWxCpAll() {
         try {
-            if (WxCpMsgForm.wxCpMsgForm.getAppNameComboBox().getSelectedItem() == null) {
+            if (WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem() == null) {
                 JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "请先在编辑消息tab中选择应用！", "提示",
                         JOptionPane.ERROR_MESSAGE);
                 MainWindow.mainWindow.getTabbedPane().setSelectedIndex(2);

@@ -67,6 +67,8 @@ public class BaseMsgThread extends Thread {
      */
     public int tableRow;
 
+    public static int msgType;
+
     /**
      * 构造函数
      *
@@ -109,7 +111,7 @@ public class BaseMsgThread extends Thread {
         ConsoleUtil.consoleWithLog(this.getName() + "已处理完第" + startIndex + "-" +
                 endIndex + "条的数据");
 
-        PushData.increaseStopedThread();
+        PushData.increaseStoppedThread();
     }
 
     public WxMpService getWxMpService() {

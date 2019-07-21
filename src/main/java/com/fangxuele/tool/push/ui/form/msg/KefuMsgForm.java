@@ -20,14 +20,14 @@ import java.util.Objects;
 
 /**
  * <pre>
- * 类说明
+ * KefuMsgForm
  * </pre>
  *
  * @author <a href="https://github.com/rememberber">Zhou Bo</a>
  * @since 2019/6/3.
  */
 @Getter
-public class KefuMsgForm {
+public class KefuMsgForm implements IMsgForm {
     private JPanel kefuMsgPanel;
     private JLabel kefuMsgTypeLabel;
     private JComboBox msgKefuMsgTypeComboBox;
@@ -42,7 +42,7 @@ public class KefuMsgForm {
     private JLabel contentLabel;
     private JTextArea contentTextArea;
 
-    public static KefuMsgForm kefuMsgForm = new KefuMsgForm();
+    private static KefuMsgForm kefuMsgForm;
 
     private static TMsgKefuMapper msgKefuMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuMapper.class);
 
@@ -50,26 +50,27 @@ public class KefuMsgForm {
         // 客服消息类型切换事件
         msgKefuMsgTypeComboBox.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
-                KefuMsgForm.switchKefuMsgType(e.getItem().toString());
+                getInstance().switchKefuMsgType(e.getItem().toString());
             }
         });
     }
 
-    public static void init(String msgName) {
+    @Override
+    public void init(String msgName) {
         clearAllField();
         List<TMsgKefu> tMsgKefuList = msgKefuMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.KEFU_CODE, msgName);
         if (tMsgKefuList.size() > 0) {
             TMsgKefu tMsgKefu = tMsgKefuList.get(0);
             String kefuMsgType = tMsgKefu.getKefuMsgType();
-            kefuMsgForm.getMsgKefuMsgTypeComboBox().setSelectedItem(kefuMsgType);
+            getInstance().getMsgKefuMsgTypeComboBox().setSelectedItem(kefuMsgType);
             if ("文本消息".equals(kefuMsgType)) {
-                kefuMsgForm.getContentTextArea().setText(tMsgKefu.getContent());
+                getInstance().getContentTextArea().setText(tMsgKefu.getContent());
             } else if ("图文消息".equals(kefuMsgType)) {
-                kefuMsgForm.getMsgKefuMsgTitleTextField().setText(tMsgKefu.getTitle());
+                getInstance().getMsgKefuMsgTitleTextField().setText(tMsgKefu.getTitle());
             }
-            kefuMsgForm.getMsgKefuPicUrlTextField().setText(tMsgKefu.getImgUrl());
-            kefuMsgForm.getMsgKefuDescTextField().setText(tMsgKefu.getDescribe());
-            kefuMsgForm.getMsgKefuUrlTextField().setText(tMsgKefu.getUrl());
+            getInstance().getMsgKefuPicUrlTextField().setText(tMsgKefu.getImgUrl());
+            getInstance().getMsgKefuDescTextField().setText(tMsgKefu.getDescribe());
+            getInstance().getMsgKefuUrlTextField().setText(tMsgKefu.getUrl());
 
             switchKefuMsgType(kefuMsgType);
         } else {
@@ -77,53 +78,8 @@ public class KefuMsgForm {
         }
     }
 
-    /**
-     * 根据客服消息类型转换界面显示
-     *
-     * @param msgType 消息类型
-     */
-    public static void switchKefuMsgType(String msgType) {
-        switch (msgType) {
-            case "文本消息":
-                kefuMsgForm.getContentTextArea().setVisible(true);
-                kefuMsgForm.getKefuMsgDescLabel().setVisible(false);
-                kefuMsgForm.getMsgKefuDescTextField().setVisible(false);
-                kefuMsgForm.getKefuMsgPicUrlLabel().setVisible(false);
-                kefuMsgForm.getMsgKefuPicUrlTextField().setVisible(false);
-                kefuMsgForm.getKefuMsgUrlLabel().setVisible(false);
-                kefuMsgForm.getMsgKefuUrlTextField().setVisible(false);
-                kefuMsgForm.getKefuMsgTitleLabel().setVisible(false);
-                kefuMsgForm.getMsgKefuMsgTitleTextField().setVisible(false);
-                break;
-            case "图文消息":
-                kefuMsgForm.getContentLabel().setVisible(false);
-                kefuMsgForm.getContentTextArea().setVisible(false);
-                kefuMsgForm.getKefuMsgDescLabel().setVisible(true);
-                kefuMsgForm.getMsgKefuDescTextField().setVisible(true);
-                kefuMsgForm.getKefuMsgPicUrlLabel().setVisible(true);
-                kefuMsgForm.getMsgKefuPicUrlTextField().setVisible(true);
-                kefuMsgForm.getKefuMsgUrlLabel().setVisible(true);
-                kefuMsgForm.getMsgKefuUrlTextField().setVisible(true);
-                kefuMsgForm.getKefuMsgTitleLabel().setVisible(true);
-                kefuMsgForm.getMsgKefuMsgTitleTextField().setVisible(true);
-                break;
-            default:
-                break;
-        }
-    }
-
-    /**
-     * 清空所有界面字段
-     */
-    public static void clearAllField() {
-        kefuMsgForm.getContentTextArea().setText("");
-        kefuMsgForm.getMsgKefuMsgTitleTextField().setText("");
-        kefuMsgForm.getMsgKefuPicUrlTextField().setText("");
-        kefuMsgForm.getMsgKefuDescTextField().setText("");
-        kefuMsgForm.getMsgKefuUrlTextField().setText("");
-    }
-
-    public static void save(String msgName) {
+    @Override
+    public void save(String msgName) {
         boolean existSameMsg = false;
 
         List<TMsgKefu> tMsgKefuList = msgKefuMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.KEFU_CODE, msgName);
@@ -139,12 +95,12 @@ public class KefuMsgForm {
         }
 
         if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
-            String kefuMsgType = Objects.requireNonNull(kefuMsgForm.getMsgKefuMsgTypeComboBox().getSelectedItem()).toString();
-            String kefuMsgContent = kefuMsgForm.getContentTextArea().getText();
-            String kefuMsgTitle = kefuMsgForm.getMsgKefuMsgTitleTextField().getText();
-            String kefuPicUrl = kefuMsgForm.getMsgKefuPicUrlTextField().getText();
-            String kefuDesc = kefuMsgForm.getMsgKefuDescTextField().getText();
-            String kefuUrl = kefuMsgForm.getMsgKefuUrlTextField().getText();
+            String kefuMsgType = Objects.requireNonNull(getInstance().getMsgKefuMsgTypeComboBox().getSelectedItem()).toString();
+            String kefuMsgContent = getInstance().getContentTextArea().getText();
+            String kefuMsgTitle = getInstance().getMsgKefuMsgTitleTextField().getText();
+            String kefuPicUrl = getInstance().getMsgKefuPicUrlTextField().getText();
+            String kefuDesc = getInstance().getMsgKefuDescTextField().getText();
+            String kefuUrl = getInstance().getMsgKefuUrlTextField().getText();
 
             String now = SqliteUtil.nowDateForSqlite();
 
@@ -169,6 +125,59 @@ public class KefuMsgForm {
             JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "保存成功！", "成功",
                     JOptionPane.INFORMATION_MESSAGE);
         }
+    }
+
+    public static KefuMsgForm getInstance() {
+        if (kefuMsgForm == null) {
+            kefuMsgForm = new KefuMsgForm();
+        }
+        return kefuMsgForm;
+    }
+
+    /**
+     * 根据客服消息类型转换界面显示
+     *
+     * @param msgType 消息类型
+     */
+    public static void switchKefuMsgType(String msgType) {
+        switch (msgType) {
+            case "文本消息":
+                getInstance().getContentTextArea().setVisible(true);
+                getInstance().getKefuMsgDescLabel().setVisible(false);
+                getInstance().getMsgKefuDescTextField().setVisible(false);
+                getInstance().getKefuMsgPicUrlLabel().setVisible(false);
+                getInstance().getMsgKefuPicUrlTextField().setVisible(false);
+                getInstance().getKefuMsgUrlLabel().setVisible(false);
+                getInstance().getMsgKefuUrlTextField().setVisible(false);
+                getInstance().getKefuMsgTitleLabel().setVisible(false);
+                getInstance().getMsgKefuMsgTitleTextField().setVisible(false);
+                break;
+            case "图文消息":
+                getInstance().getContentLabel().setVisible(false);
+                getInstance().getContentTextArea().setVisible(false);
+                getInstance().getKefuMsgDescLabel().setVisible(true);
+                getInstance().getMsgKefuDescTextField().setVisible(true);
+                getInstance().getKefuMsgPicUrlLabel().setVisible(true);
+                getInstance().getMsgKefuPicUrlTextField().setVisible(true);
+                getInstance().getKefuMsgUrlLabel().setVisible(true);
+                getInstance().getMsgKefuUrlTextField().setVisible(true);
+                getInstance().getKefuMsgTitleLabel().setVisible(true);
+                getInstance().getMsgKefuMsgTitleTextField().setVisible(true);
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * 清空所有界面字段
+     */
+    public static void clearAllField() {
+        getInstance().getContentTextArea().setText("");
+        getInstance().getMsgKefuMsgTitleTextField().setText("");
+        getInstance().getMsgKefuPicUrlTextField().setText("");
+        getInstance().getMsgKefuDescTextField().setText("");
+        getInstance().getMsgKefuUrlTextField().setText("");
     }
 
     {

@@ -7,12 +7,15 @@ import com.fangxuele.tool.push.dao.TWxAccountMapper;
 import com.fangxuele.tool.push.domain.TWxAccount;
 import com.fangxuele.tool.push.logic.msgsender.AliDayuTemplateMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.AliYunMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.HttpMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.TxYunMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.WxMaTemplateMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.YunPianMsgSender;
 import com.fangxuele.tool.push.ui.Init;
+import com.fangxuele.tool.push.ui.UiConsts;
+import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
 import com.fangxuele.tool.push.ui.dialog.MailTestDialog;
 import com.fangxuele.tool.push.ui.dialog.SwitchWxAccountDialog;
 import com.fangxuele.tool.push.ui.dialog.WxCpAppDialog;
@@ -26,9 +29,10 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import java.awt.*;
 import java.awt.event.ItemEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Objects;
 
@@ -77,6 +81,14 @@ public class SettingListener {
                 App.config.setMpProxyPort(SettingForm.settingForm.getMpProxyPortTextField().getText());
                 App.config.setMpProxyUserName(SettingForm.settingForm.getMpProxyUserNameTextField().getText());
                 App.config.setMpProxyPassword(SettingForm.settingForm.getMpProxyPasswordTextField().getText());
+
+                App.config.setMpUseOutSideAt(SettingForm.settingForm.getUseOutSideAccessTokenCheckBox().isSelected());
+                App.config.setMpManualAt(SettingForm.settingForm.getManualAtRadioButton().isSelected());
+                App.config.setMpApiAt(SettingForm.settingForm.getApiAtRadioButton().isSelected());
+                App.config.setMpAt(SettingForm.settingForm.getAccessTokenTextField().getText());
+                App.config.setMpAtExpiresIn(SettingForm.settingForm.getAtExpiresInTextField().getText());
+                App.config.setMpAtApiUrl(SettingForm.settingForm.getAtApiUrlTextField().getText());
+
                 App.config.save();
 
                 boolean update = false;
@@ -317,6 +329,25 @@ public class SettingListener {
             }
         });
 
+        SettingForm.settingForm.getHttpSaveButton().addActionListener(e -> {
+            try {
+                App.config.setHttpUseProxy(SettingForm.settingForm.getHttpUseProxyCheckBox().isSelected());
+                App.config.setHttpProxyHost(SettingForm.settingForm.getHttpProxyHostTextField().getText());
+                App.config.setHttpProxyPort(SettingForm.settingForm.getHttpProxyPortTextField().getText());
+                App.config.setHttpProxyUserName(SettingForm.settingForm.getHttpProxyUserTextField().getText());
+                App.config.setHttpProxyPassword(SettingForm.settingForm.getHttpProxyPasswordTextField().getText());
+                App.config.save();
+
+                HttpMsgSender.proxy = null;
+                JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        });
+
         // E-Mail测试
         SettingForm.settingForm.getTestMailButton().addActionListener(e -> {
             App.config.setMailHost(SettingForm.settingForm.getMailHostTextField().getText());
@@ -444,27 +475,126 @@ public class SettingListener {
             }
         });
 
-        SettingForm.settingForm.getMpUseProxyCheckBox().addChangeListener(new ChangeListener() {
-            /**
-             * Invoked when the target of the listener has changed its state.
-             *
-             * @param e a ChangeEvent object
-             */
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                SettingForm.toggleMpProxyPanel();
+        SettingForm.settingForm.getMpUseProxyCheckBox().addChangeListener(e -> SettingForm.toggleMpProxyPanel());
+        SettingForm.settingForm.getMaUseProxyCheckBox().addChangeListener(e -> SettingForm.toggleMaProxyPanel());
+        SettingForm.settingForm.getHttpUseProxyCheckBox().addChangeListener(e -> SettingForm.toggleHttpProxyPanel());
+        SettingForm.settingForm.getUseOutSideAccessTokenCheckBox().addChangeListener(e -> SettingForm.toggleMpOutSideAccessTokenPanel());
+        SettingForm.settingForm.getManualAtRadioButton().addChangeListener(e -> {
+            boolean isSelected = SettingForm.settingForm.getManualAtRadioButton().isSelected();
+            if (isSelected) {
+                SettingForm.settingForm.getApiAtRadioButton().setSelected(false);
+            }
+        });
+        SettingForm.settingForm.getApiAtRadioButton().addChangeListener(e -> {
+            boolean isSelected = SettingForm.settingForm.getApiAtRadioButton().isSelected();
+            if (isSelected) {
+                SettingForm.settingForm.getManualAtRadioButton().setSelected(false);
             }
         });
 
-        SettingForm.settingForm.getMaUseProxyCheckBox().addChangeListener(new ChangeListener() {
-            /**
-             * Invoked when the target of the listener has changed its state.
-             *
-             * @param e a ChangeEvent object
-             */
+        SettingForm.settingForm.getOutSideAtTipsLabel().addMouseListener(new MouseAdapter() {
             @Override
-            public void stateChanged(ChangeEvent e) {
-                SettingForm.toggleMaProxyPanel();
+            public void mousePressed(MouseEvent e) {
+                CommonTipsDialog dialog = new CommonTipsDialog();
+
+                StringBuilder tipsBuilder = new StringBuilder();
+                tipsBuilder.append("<h1>什么场景下需要使用外部AccessToken？</h1>");
+                tipsBuilder.append("<p>调用腾讯公众号接口需要AccessToken，上面配置的AppID、AppSecret等正是为了获得AccessToken；</p>");
+                tipsBuilder.append("<p>由于有些企业已经开发了微信公众号相关的服务，不必再次通过上面的AppID等配置再次获取；</p>");
+                tipsBuilder.append("<p>而且每次获取都会使之前的失效，加上每个公众号每天获取的次数有限；</p>");
+                tipsBuilder.append("<h2>建议每天使用WePush频率很高的时候可以使用此功能</h2>");
+                tipsBuilder.append("<h2>反之，可不用设置</h2>");
+
+                dialog.setHtmlText(tipsBuilder.toString());
+                dialog.pack();
+                dialog.setVisible(true);
+
+                super.mousePressed(e);
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                JLabel label = (JLabel) e.getComponent();
+                label.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                label.setIcon(new ImageIcon(UiConsts.HELP_FOCUSED_ICON));
+                super.mouseEntered(e);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                JLabel label = (JLabel) e.getComponent();
+                label.setIcon(new ImageIcon(UiConsts.HELP_ICON));
+                super.mouseExited(e);
+            }
+        });
+        SettingForm.settingForm.getManualAtTipsLabel().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                CommonTipsDialog dialog = new CommonTipsDialog();
+
+                StringBuilder tipsBuilder = new StringBuilder();
+                tipsBuilder.append("<h1>这是什么？</h1>");
+                tipsBuilder.append("<h2>手动填写AccessToken和过期时间</h2>");
+                tipsBuilder.append("<h2>建议仅在临时使用一次WePush且使用时间不会很长的时候才使用</h2>");
+                tipsBuilder.append("<p>请向您所在企业的开发人员索取，注意保密</p>");
+
+                dialog.setHtmlText(tipsBuilder.toString());
+                dialog.pack();
+                dialog.setVisible(true);
+
+                super.mousePressed(e);
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                JLabel label = (JLabel) e.getComponent();
+                label.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                label.setIcon(new ImageIcon(UiConsts.HELP_FOCUSED_ICON));
+                super.mouseEntered(e);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                JLabel label = (JLabel) e.getComponent();
+                label.setIcon(new ImageIcon(UiConsts.HELP_ICON));
+                super.mouseExited(e);
+            }
+        });
+        SettingForm.settingForm.getApiAtTipsLabel().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                CommonTipsDialog dialog = new CommonTipsDialog();
+
+                StringBuilder tipsBuilder = new StringBuilder();
+                tipsBuilder.append("<h1>这是什么？</h1>");
+                tipsBuilder.append("<h2>如果企业已经开发了微信公众号相关的服务，建议使用此项；</h2>");
+                tipsBuilder.append("<p>向您所在企业的开发人员索取该接口；</p>");
+                tipsBuilder.append("<p>接口使用GET请求，返回格式：</p>");
+                tipsBuilder.append("<p>{\"access_token\":\"ACCESS_TOKEN\",\"expires_in\":7200}</p>");
+                tipsBuilder.append("<p>请一定注意接口安全性，AccessToken一旦被他人利用，后果不堪设想</p>");
+                tipsBuilder.append("<p>例如在接口上添加密钥相关的参数：</p>");
+                tipsBuilder.append("<p>示例：http://mydomain.com/wechat/getAccessToken?secret=jad76^j2#SY</p>");
+
+                dialog.setHtmlText(tipsBuilder.toString());
+                dialog.pack();
+                dialog.setVisible(true);
+
+                super.mousePressed(e);
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                JLabel label = (JLabel) e.getComponent();
+                label.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                label.setIcon(new ImageIcon(UiConsts.HELP_FOCUSED_ICON));
+                super.mouseEntered(e);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                JLabel label = (JLabel) e.getComponent();
+                label.setIcon(new ImageIcon(UiConsts.HELP_ICON));
+                super.mouseExited(e);
             }
         });
     }
