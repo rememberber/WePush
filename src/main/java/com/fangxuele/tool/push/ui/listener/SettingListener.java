@@ -466,6 +466,18 @@ public class SettingListener {
         SettingForm.settingForm.getMaUseProxyCheckBox().addChangeListener(e -> SettingForm.toggleMaProxyPanel());
         SettingForm.settingForm.getHttpUseProxyCheckBox().addChangeListener(e -> SettingForm.toggleHttpProxyPanel());
         SettingForm.settingForm.getUseOutSideAccessTokenCheckBox().addChangeListener(e -> SettingForm.toggleMpOutSideAccessTokenPanel());
+        SettingForm.settingForm.getManualAtRadioButton().addChangeListener(e -> {
+            boolean isSelected = SettingForm.settingForm.getManualAtRadioButton().isSelected();
+            if (isSelected) {
+                SettingForm.settingForm.getApiAtRadioButton().setSelected(false);
+            }
+        });
+        SettingForm.settingForm.getApiAtRadioButton().addChangeListener(e -> {
+            boolean isSelected = SettingForm.settingForm.getApiAtRadioButton().isSelected();
+            if (isSelected) {
+                SettingForm.settingForm.getManualAtRadioButton().setSelected(false);
+            }
+        });
     }
 
 }

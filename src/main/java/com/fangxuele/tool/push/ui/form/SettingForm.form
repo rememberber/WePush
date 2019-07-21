@@ -368,7 +368,7 @@
                                     </constraints>
                                     <properties>
                                       <text value="接口url"/>
-                                      <toolTipText value="选填"/>
+                                      <toolTipText value=""/>
                                     </properties>
                                   </component>
                                   <component id="1f7f5" class="javax.swing.JTextField" binding="atApiUrlTextField">
@@ -378,7 +378,7 @@
                                       </grid>
                                     </constraints>
                                     <properties>
-                                      <toolTipText value="选填"/>
+                                      <toolTipText value=""/>
                                     </properties>
                                   </component>
                                 </children>
