@@ -137,6 +137,110 @@ public class HttpMsgSender implements IMsgSender {
         return sendResult;
     }
 
+    @Override
+    public SendResult asyncSend(String[] msgData) {
+        return null;
+    }
+
+    public HttpSendResult sendUseHutool(String[] msgData) {
+        HttpSendResult sendResult = new HttpSendResult();
+        HttpResponse httpResponse;
+        try {
+            HttpMsg httpMsg = httpMsgMaker.makeMsg(msgData);
+            HttpRequest httpRequest;
+            switch (HttpMsgMaker.method) {
+                case "GET":
+                    httpRequest = HttpRequest.get(httpMsg.getUrl());
+                    break;
+                case "POST":
+                    httpRequest = HttpRequest.post(httpMsg.getUrl());
+                    break;
+                case "PUT":
+                    httpRequest = HttpRequest.put(httpMsg.getUrl());
+                    break;
+                case "PATCH":
+                    httpRequest = HttpRequest.patch(httpMsg.getUrl());
+                    break;
+                case "DELETE":
+                    httpRequest = HttpRequest.delete(httpMsg.getUrl());
+                    break;
+                case "HEAD":
+                    httpRequest = HttpRequest.head(httpMsg.getUrl());
+                    break;
+                case "OPTIONS":
+                    httpRequest = HttpRequest.options(httpMsg.getUrl());
+                    break;
+                default:
+                    httpRequest = HttpRequest.get(httpMsg.getUrl()).form(httpMsg.getParamMap());
+            }
+            if (httpMsg.getParamMap() != null && !httpMsg.getParamMap().isEmpty()) {
+                httpRequest.form(httpMsg.getParamMap());
+            }
+            if (httpMsg.getHeaderMap() != null && !httpMsg.getHeaderMap().isEmpty()) {
+                for (Map.Entry<String, Object> entry : httpMsg.getHeaderMap().entrySet()) {
+                    httpRequest.header(entry.getKey(), (String) entry.getValue());
+                }
+            }
+            if (httpMsg.getCookies() != null && !httpMsg.getCookies().isEmpty()) {
+                for (HttpCookie cookie : httpMsg.getCookies()) {
+                    httpRequest.cookie(cookie);
+                }
+            }
+            if (StringUtils.isNotEmpty(httpMsg.getBody())) {
+                httpRequest.body(httpMsg.getBody());
+            }
+            if (App.config.isHttpUseProxy()) {
+                httpRequest.setProxy(getProxy());
+            }
+
+            if (PushControl.dryRun) {
+                sendResult.setSuccess(true);
+                return sendResult;
+            } else {
+                httpResponse = httpRequest.execute(true);
+                if (!httpResponse.isOk()) {
+                    sendResult.setSuccess(false);
+                    sendResult.setInfo(httpResponse.toString());
+                    return sendResult;
+                }
+            }
+        } catch (Exception e) {
+            sendResult.setSuccess(false);
+            sendResult.setInfo(e.getMessage());
+            log.error(e.toString());
+            return sendResult;
+        }
+        StringBuilder headerBuilder = StrUtil.builder();
+        for (Map.Entry<String, List<String>> entry : httpResponse.headers().entrySet()) {
+            headerBuilder.append(entry).append(StrUtil.CRLF);
+        }
+        sendResult.setHeaders(headerBuilder.toString());
+
+        String body = httpResponse.body();
+        sendResult.setInfo(body);
+        if (body != null && body.startsWith("{") && body.endsWith("}")) {
+            try {
+                body = JSONUtil.toJsonPrettyStr(body);
+            } catch (Exception e) {
+                log.error(e.toString());
+            }
+        }
+        sendResult.setBody(body);
+
+        StringBuilder cookiesBuilder = StrUtil.builder();
+        List<String> headerList = httpResponse.headerList(Header.SET_COOKIE.toString());
+        if (headerList != null) {
+            for (String cookieStr : headerList) {
+                cookiesBuilder.append(cookieStr).append(StrUtil.CRLF);
+            }
+        }
+
+        sendResult.setCookies(cookiesBuilder.toString());
+
+        sendResult.setSuccess(true);
+        return sendResult;
+    }
+
     private static Proxy getProxy() {
         if (proxy == null) {
             synchronized (HttpMsgSender.class) {
@@ -146,10 +250,5 @@ public class HttpMsgSender implements IMsgSender {
             }
         }
         return proxy;
-    }
-
-    @Override
-    public SendResult asyncSend(String[] msgData) {
-        return null;
     }
 }
