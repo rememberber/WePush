@@ -24,6 +24,7 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <pre>
@@ -44,7 +45,13 @@ public class HttpMsgSender implements IMsgSender {
 
     public HttpMsgSender() {
         httpMsgMaker = new HttpMsgMaker();
-        okHttpClient = new OkHttpClient();
+
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        builder.connectTimeout(3, TimeUnit.MINUTES);
+        if (App.config.isHttpUseProxy()) {
+            builder.proxy(getProxy());
+        }
+        okHttpClient = builder.build();
     }
 
     @Override
@@ -178,6 +185,10 @@ public class HttpMsgSender implements IMsgSender {
                 for (Map.Entry<String, Object> headerEntry : httpMsg.getHeaderMap().entrySet()) {
                     requestBuilder.addHeader(headerEntry.getKey(), (String) headerEntry.getValue());
                 }
+            }
+            if (httpMsg.getCookies() != null && !httpMsg.getCookies().isEmpty()) {
+                HttpCookie[] cookies = ArrayUtil.toArray(httpMsg.getCookies(), HttpCookie.class);
+                requestBuilder.addHeader(Header.COOKIE.toString(), ArrayUtil.join(cookies, ";"));
             }
             switch (HttpMsgMaker.method) {
                 case "GET":
