@@ -10,6 +10,7 @@ import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.intellij.uiDesigner.core.Spacer;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -56,6 +57,7 @@ public class HttpMsgForm implements IMsgForm {
     private JTextField cookieExpiryTextField;
     private JTextArea bodyTextArea;
     private JTabbedPane tabbedPane1;
+    private JComboBox bodyTypeComboBox;
 
     private static HttpMsgForm httpMsgForm;
 
@@ -172,6 +174,7 @@ public class HttpMsgForm implements IMsgForm {
             getInstance().getMethodComboBox().setSelectedItem(tMsgHttp.getMethod());
             getInstance().getUrlTextField().setText(tMsgHttp.getUrl());
             getInstance().getBodyTextArea().setText(tMsgHttp.getBody());
+            getInstance().getBodyTypeComboBox().setSelectedItem(tMsgHttp.getBodyType());
             switchMethod(tMsgHttp.getMethod());
 
             // Params=====================================
@@ -262,6 +265,7 @@ public class HttpMsgForm implements IMsgForm {
             String method = (String) getInstance().getMethodComboBox().getSelectedItem();
             String url = getInstance().getUrlTextField().getText();
             String body = getInstance().getBodyTextArea().getText();
+            String bodyType = (String) getInstance().getBodyTypeComboBox().getSelectedItem();
             String now = SqliteUtil.nowDateForSqlite();
 
             TMsgHttp tMsgHttp = new TMsgHttp();
@@ -270,6 +274,7 @@ public class HttpMsgForm implements IMsgForm {
             tMsgHttp.setMethod(method);
             tMsgHttp.setUrl(url);
             tMsgHttp.setBody(body);
+            tMsgHttp.setBodyType(bodyType);
             tMsgHttp.setCreateTime(now);
             tMsgHttp.setModifiedTime(now);
 
@@ -370,6 +375,7 @@ public class HttpMsgForm implements IMsgForm {
         getInstance().getCookiePathTextField().setText("");
         getInstance().getCookieExpiryTextField().setText("");
         getInstance().getBodyTextArea().setText("");
+        getInstance().getBodyTypeComboBox().setSelectedIndex(0);
         initParamTable();
         initHeaderTable();
         initCookieTable();
@@ -617,10 +623,22 @@ public class HttpMsgForm implements IMsgForm {
         panel8.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane1.addTab("Body", panel8);
         final JPanel panel9 = new JPanel();
-        panel9.setLayout(new GridLayoutManager(1, 1, new Insets(5, 0, 0, 0), -1, -1));
+        panel9.setLayout(new GridLayoutManager(2, 2, new Insets(5, 0, 0, 0), -1, -1));
         panel8.add(panel9, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         bodyTextArea = new JTextArea();
-        panel9.add(bodyTextArea, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+        panel9.add(bodyTextArea, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+        bodyTypeComboBox = new JComboBox();
+        final DefaultComboBoxModel defaultComboBoxModel2 = new DefaultComboBoxModel();
+        defaultComboBoxModel2.addElement("text/plain");
+        defaultComboBoxModel2.addElement("application/json");
+        defaultComboBoxModel2.addElement("application/javascript");
+        defaultComboBoxModel2.addElement("application/xml");
+        defaultComboBoxModel2.addElement("text/xml");
+        defaultComboBoxModel2.addElement("text/html");
+        bodyTypeComboBox.setModel(defaultComboBoxModel2);
+        panel9.add(bodyTypeComboBox, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final Spacer spacer1 = new Spacer();
+        panel9.add(spacer1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
     }
 
     /**

@@ -29,6 +29,7 @@ public class HttpMsgMaker extends BaseMsgMaker implements IMsgMaker {
     public static String method;
     public static String url;
     public static String body;
+    public static String bodyType;
     public static List<HttpMsgForm.NameValueObject> paramList;
     public static List<HttpMsgForm.NameValueObject> headerList;
     public static List<HttpMsgForm.CookieObject> cookieList;
@@ -38,6 +39,7 @@ public class HttpMsgMaker extends BaseMsgMaker implements IMsgMaker {
         method = (String) HttpMsgForm.getInstance().getMethodComboBox().getSelectedItem();
         url = HttpMsgForm.getInstance().getUrlTextField().getText().trim();
         body = HttpMsgForm.getInstance().getBodyTextArea().getText();
+        bodyType = (String) HttpMsgForm.getInstance().getBodyTypeComboBox().getSelectedItem();
 
         // Params=========================
         if (HttpMsgForm.getInstance().getParamTable().getModel().getRowCount() == 0) {
