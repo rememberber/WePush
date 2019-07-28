@@ -215,6 +215,7 @@ create table if not exists t_msg_http
     headers       text,
     cookies       text,
     body          text,
+    body_type     text,
     create_time   datetime,
     modified_time datetime
 );
