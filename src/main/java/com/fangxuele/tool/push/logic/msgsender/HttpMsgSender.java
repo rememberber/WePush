@@ -172,7 +172,8 @@ public class HttpMsgSender implements IMsgSender {
                 }
                 requestBody = formBodyBuilder.build();
             } else if (StringUtils.isNotEmpty(httpMsg.getBody())) {
-                MediaType mediaType = MediaType.get("application/json; charset=utf-8");
+                String bodyType = HttpMsgMaker.bodyType;
+                MediaType mediaType = MediaType.get(bodyType + "; charset=utf-8");
                 requestBody = RequestBody.create(httpMsg.getBody(), mediaType);
             }
 
