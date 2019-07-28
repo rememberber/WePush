@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.logic.msgsender;
 
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.Header;
 import cn.hutool.http.HttpRequest;
@@ -96,9 +97,8 @@ public class HttpMsgSender implements IMsgSender {
                 }
             }
             if (httpMsg.getCookies() != null && !httpMsg.getCookies().isEmpty()) {
-                for (HttpCookie cookie : httpMsg.getCookies()) {
-                    httpRequest.cookie(cookie);
-                }
+                HttpCookie[] cookies = ArrayUtil.toArray(httpMsg.getCookies(), HttpCookie.class);
+                httpRequest.cookie(cookies);
             }
             if (StringUtils.isNotEmpty(httpMsg.getBody())) {
                 httpRequest.body(httpMsg.getBody());
