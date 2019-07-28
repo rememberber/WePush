@@ -25,6 +25,8 @@ public class TMsgHttp implements Serializable {
 
     private String modifiedTime;
 
+    private String bodyType;
+
     private static final long serialVersionUID = 1L;
 
     public Integer getId() {
@@ -113,5 +115,13 @@ public class TMsgHttp implements Serializable {
 
     public void setModifiedTime(String modifiedTime) {
         this.modifiedTime = modifiedTime == null ? null : modifiedTime.trim();
+    }
+
+    public String getBodyType() {
+        return bodyType;
+    }
+
+    public void setBodyType(String bodyType) {
+        this.bodyType = bodyType == null ? null : bodyType.trim();
     }
 }

@@ -29,6 +29,7 @@ public class HttpMsgMaker extends BaseMsgMaker implements IMsgMaker {
     public static String method;
     public static String url;
     public static String body;
+    public static String bodyType;
     public static List<HttpMsgForm.NameValueObject> paramList;
     public static List<HttpMsgForm.NameValueObject> headerList;
     public static List<HttpMsgForm.CookieObject> cookieList;
@@ -38,6 +39,7 @@ public class HttpMsgMaker extends BaseMsgMaker implements IMsgMaker {
         method = (String) HttpMsgForm.getInstance().getMethodComboBox().getSelectedItem();
         url = HttpMsgForm.getInstance().getUrlTextField().getText().trim();
         body = HttpMsgForm.getInstance().getBodyTextArea().getText();
+        bodyType = (String) HttpMsgForm.getInstance().getBodyTypeComboBox().getSelectedItem();
 
         // Params=========================
         if (HttpMsgForm.getInstance().getParamTable().getModel().getRowCount() == 0) {
@@ -120,7 +122,7 @@ public class HttpMsgMaker extends BaseMsgMaker implements IMsgMaker {
             httpCookie.setDomain(cookieObject.getDomain());
             httpCookie.setPath(cookieObject.getPath());
             try {
-                httpCookie.setMaxAge(DateUtils.parseDate(cookieObject.getExpiry(), "yyyy-MM-dd").getTime());
+                httpCookie.setMaxAge(DateUtils.parseDate(cookieObject.getExpiry(), "yyyy-MM-dd HH:mm:ss").getTime());
             } catch (ParseException e) {
                 log.error(e.toString());
             }
