@@ -13,6 +13,7 @@ import com.fangxuele.tool.push.logic.msgmaker.HttpMsgMaker;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.ConnectionPool;
 import okhttp3.FormBody;
+import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -165,7 +166,7 @@ public class HttpMsgSender implements IMsgSender {
             Request.Builder requestBuilder = new Request.Builder();
 
             RequestBody requestBody = null;
-            if (httpMsg.getParamMap() != null && !httpMsg.getParamMap().isEmpty()) {
+            if (!"GET".equals(HttpMsgMaker.method) && httpMsg.getParamMap() != null && !httpMsg.getParamMap().isEmpty()) {
                 FormBody.Builder formBodyBuilder = new FormBody.Builder();
                 for (Map.Entry<String, Object> paramEntry : httpMsg.getParamMap().entrySet()) {
                     formBodyBuilder.add(paramEntry.getKey(), (String) paramEntry.getValue());
@@ -188,7 +189,13 @@ public class HttpMsgSender implements IMsgSender {
             }
             switch (HttpMsgMaker.method) {
                 case "GET":
-                    requestBuilder.url(httpMsg.getUrl()).get();
+                    HttpUrl.Builder urlBuilder = HttpUrl.parse(httpMsg.getUrl()).newBuilder();
+                    if (httpMsg.getParamMap() != null && !httpMsg.getParamMap().isEmpty()) {
+                        for (Map.Entry<String, Object> paramEntry : httpMsg.getParamMap().entrySet()) {
+                            urlBuilder.addQueryParameter(paramEntry.getKey(), (String) paramEntry.getValue());
+                        }
+                    }
+                    requestBuilder.url(urlBuilder.build()).get();
                     break;
                 case "POST":
                     requestBuilder.url(httpMsg.getUrl()).post(requestBody);
