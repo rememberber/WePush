@@ -11,6 +11,7 @@ import com.fangxuele.tool.push.bean.HttpMsg;
 import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.msgmaker.HttpMsgMaker;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.ConnectionPool;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -39,19 +40,13 @@ public class HttpMsgSender implements IMsgSender {
 
     private HttpMsgMaker httpMsgMaker;
 
-    private OkHttpClient okHttpClient;
+    public volatile static OkHttpClient okHttpClient;
 
     public volatile static Proxy proxy;
 
     public HttpMsgSender() {
         httpMsgMaker = new HttpMsgMaker();
-
-        OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        builder.connectTimeout(3, TimeUnit.MINUTES);
-        if (App.config.isHttpUseProxy()) {
-            builder.proxy(getProxy());
-        }
-        okHttpClient = builder.build();
+        okHttpClient = getOkHttpClient();
     }
 
     @Override
@@ -272,5 +267,24 @@ public class HttpMsgSender implements IMsgSender {
             }
         }
         return proxy;
+    }
+
+    public static OkHttpClient getOkHttpClient() {
+        if (okHttpClient == null) {
+            synchronized (HttpMsgSender.class) {
+                if (okHttpClient == null) {
+                    OkHttpClient.Builder builder = new OkHttpClient.Builder();
+                    builder.connectTimeout(3, TimeUnit.MINUTES);
+                    if (App.config.isHttpUseProxy()) {
+                        builder.proxy(getProxy());
+                    }
+
+                    ConnectionPool pool = new ConnectionPool(App.config.getThreadCount(), 10, TimeUnit.MINUTES);
+                    builder.connectionPool(pool);
+                    okHttpClient = builder.build();
+                }
+            }
+        }
+        return okHttpClient;
     }
 }
