@@ -122,7 +122,7 @@ public class HttpMsgMaker extends BaseMsgMaker implements IMsgMaker {
             httpCookie.setDomain(cookieObject.getDomain());
             httpCookie.setPath(cookieObject.getPath());
             try {
-                httpCookie.setMaxAge(DateUtils.parseDate(cookieObject.getExpiry(), "yyyy-MM-dd").getTime());
+                httpCookie.setMaxAge(DateUtils.parseDate(cookieObject.getExpiry(), "yyyy-MM-dd HH:mm:ss").getTime());
             } catch (ParseException e) {
                 log.error(e.toString());
             }

@@ -184,8 +184,7 @@ public class HttpMsgSender implements IMsgSender {
                 }
             }
             if (httpMsg.getCookies() != null && !httpMsg.getCookies().isEmpty()) {
-                HttpCookie[] cookies = ArrayUtil.toArray(httpMsg.getCookies(), HttpCookie.class);
-                requestBuilder.addHeader(Header.COOKIE.toString(), ArrayUtil.join(cookies, ";"));
+                requestBuilder.addHeader(Header.COOKIE.toString(), cookieHeader(httpMsg.getCookies()));
             }
             switch (HttpMsgMaker.method) {
                 case "GET":
@@ -264,6 +263,18 @@ public class HttpMsgSender implements IMsgSender {
             log.error(e.toString());
             return sendResult;
         }
+    }
+
+    private String cookieHeader(List<HttpCookie> cookies) {
+        StringBuilder cookieHeader = new StringBuilder();
+        for (int i = 0, size = cookies.size(); i < size; i++) {
+            if (i > 0) {
+                cookieHeader.append("; ");
+            }
+            HttpCookie cookie = cookies.get(i);
+            cookieHeader.append(cookie.getName()).append('=').append(cookie.getValue());
+        }
+        return cookieHeader.toString();
     }
 
     private static Proxy getProxy() {
