@@ -111,7 +111,7 @@ public class HttpMsgSender implements IMsgSender {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
-                httpResponse = httpRequest.execute(true);
+                httpResponse = httpRequest.execute();
                 if (!httpResponse.isOk()) {
                     sendResult.setSuccess(false);
                     sendResult.setInfo(httpResponse.toString());
