@@ -58,6 +58,16 @@
   </a>
 </p>  
 <p align="center">
+  <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/wepush-sshot-5.png">
+   <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/wepush-sshot-5.png">
+  </a>
+</p> 
+<p align="center">
+  <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/wepush-sshot-6.png">
+   <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/wepush-sshot-6.png">
+  </a>
+</p> 
+<p align="center">
   <a href="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20199.png">
    <img alt="WePush" src="https://raw.githubusercontent.com/rememberber/WePush/master/screen_shoot/%E5%9B%BE%E5%83%8F%20199.png">
   </a>
