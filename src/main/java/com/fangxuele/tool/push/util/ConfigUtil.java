@@ -209,7 +209,7 @@ public class ConfigUtil {
     }
 
     public int getMsgType() {
-        return setting.getInt("msgType", "msg", 1);
+        return setting.getInt("msgType", "msg", 13);
     }
 
     public void setMsgType(int msgType) {
