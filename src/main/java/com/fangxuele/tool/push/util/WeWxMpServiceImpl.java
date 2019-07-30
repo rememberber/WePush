@@ -40,7 +40,6 @@ public class WeWxMpServiceImpl extends WxMpServiceImpl {
         lock.lock();
 
         try {
-            System.err.println("hello");
             if (timedCache.get("count") != null && Integer.parseInt(timedCache.get("count")) > 10) {
                 WxError wxError = WxError.builder().errorCode(98).errorMsg("短时间内大量获取AccessToken失败").errorMsgEn("Fail to get AccessToken in a shot period").json("").build();
                 count = 0;
