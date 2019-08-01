@@ -11,7 +11,7 @@ before_install:
 - mvn install:install-file -Dfile=./src/main/lib/jargs-1.0.jar -DgroupId=net.sourceforge.cpdetector -DartifactId=jargs -Dpackaging=jar -Dversion=1.0.0 -DgeneratePom=true -DcreateChecksum=true
 
 jdk:
-  - oraclejdk8
+  - openjdk8
 script: "mvn clean package -Dmaven.test.skip=true"
 
 notifications:
