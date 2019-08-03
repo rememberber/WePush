@@ -229,6 +229,18 @@
             <version>1.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.taobao</groupId>
+            <artifactId>top-auto-sdk</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-dysmsapi</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
         <!--文件字符集格式检测-->
         <dependency>
             <groupId>net.sourceforge.cpdetector</groupId>
