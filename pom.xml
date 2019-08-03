@@ -263,6 +263,11 @@
             <version>1.0.0</version>
         </dependency>
         <dependency>
+            <groupId>com.taobao</groupId>
+            <artifactId>taobao-sdk-java-auto</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.velocity</groupId>
             <artifactId>velocity-engine-core</artifactId>
             <version>${velocity-engine-core.version}</version>
@@ -400,6 +405,21 @@
                             <groupId>com.taobao</groupId>
                             <artifactId>top-auto-sdk</artifactId>
                             <version>1.0</version>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
+                        </configuration>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>install-taobao-sdk-auto</id>
+                        <phase>clean</phase>
+                        <configuration>
+                            <file>./src/main/lib/taobao-sdk-java-auto.jar</file>
+                            <groupId>com.taobao</groupId>
+                            <artifactId>taobao-sdk-java-auto</artifactId>
+                            <version>1.0.0</version>
                             <packaging>jar</packaging>
                             <generatePom>true</generatePom>
                         </configuration>
