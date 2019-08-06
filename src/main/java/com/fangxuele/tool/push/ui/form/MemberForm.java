@@ -213,7 +213,7 @@ public class MemberForm {
         memberFilePathField = new JTextField();
         memberTabDownPanel.add(memberFilePathField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         memberImportExploreButton = new JButton();
-        memberImportExploreButton.setText("浏览");
+        memberImportExploreButton.setText("...");
         memberTabDownPanel.add(memberImportExploreButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         importFromFileButton = new JButton();
         importFromFileButton.setIcon(new ImageIcon(getClass().getResource("/icon/import_dark.png")));
