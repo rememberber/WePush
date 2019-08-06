@@ -172,10 +172,10 @@ https://gitee.com/zhoubochina/WePush/wikis/build
 ### 使用帮助
 
 https://gitee.com/zhoubochina/WePush/wikis/help  
-微信交流群：
+QQ交流群：
 <p align="left">
   <a href="https://gitee.com/zhoubochina/WePush/wikis/help">
-   <img alt="WePush" src="http://download.zhoubochina.com/file/wepush-wechat-group.jpg" height="200" >
+   <img alt="WePush" src="http://download.zhoubochina.com/file/wepush-qq-group.png" height="200" >
   </a>
 </p>
 
