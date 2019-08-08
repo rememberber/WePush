@@ -165,14 +165,14 @@ public class HttpMsgSender implements IMsgSender {
 
             Request.Builder requestBuilder = new Request.Builder();
 
-            RequestBody requestBody = null;
+            RequestBody requestBody = RequestBody.create("", MediaType.get("text/plain"));
             if (!"GET".equals(HttpMsgMaker.method) && httpMsg.getParamMap() != null && !httpMsg.getParamMap().isEmpty()) {
                 FormBody.Builder formBodyBuilder = new FormBody.Builder();
                 for (Map.Entry<String, Object> paramEntry : httpMsg.getParamMap().entrySet()) {
                     formBodyBuilder.add(paramEntry.getKey(), (String) paramEntry.getValue());
                 }
                 requestBody = formBodyBuilder.build();
-            } else if (StringUtils.isNotEmpty(httpMsg.getBody())) {
+            } else if (!"GET".equals(HttpMsgMaker.method) && StringUtils.isNotEmpty(httpMsg.getBody())) {
                 String bodyType = HttpMsgMaker.bodyType;
                 MediaType mediaType = MediaType.get(bodyType + "; charset=utf-8");
                 requestBody = RequestBody.create(httpMsg.getBody(), mediaType);
