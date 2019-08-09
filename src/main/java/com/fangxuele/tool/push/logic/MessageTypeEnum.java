@@ -17,7 +17,6 @@ public enum MessageTypeEnum {
     KEFU(3, "公众号-客服消息"),
     KEFU_PRIORITY(4, "公众号-客服消息优先"),
     ALI_YUN(5, "阿里云短信"),
-    ALI_TEMPLATE(6, "阿里大于模板短信"),
     TX_YUN(7, "腾讯云短信"),
     YUN_PIAN(8, "云片网短信"),
     UP_YUN(9, "又拍云短信"),
@@ -35,7 +34,6 @@ public enum MessageTypeEnum {
     public static final int KEFU_CODE = 3;
     public static final int KEFU_PRIORITY_CODE = 4;
     public static final int ALI_YUN_CODE = 5;
-    public static final int ALI_TEMPLATE_CODE = 6;
     public static final int TX_YUN_CODE = 7;
     public static final int YUN_PIAN_CODE = 8;
     public static final int UP_YUN_CODE = 9;
@@ -66,9 +64,6 @@ public enum MessageTypeEnum {
                 break;
             case 5:
                 name = ALI_YUN.name;
-                break;
-            case 6:
-                name = ALI_TEMPLATE.name;
                 break;
             case 7:
                 name = TX_YUN.name;

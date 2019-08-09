@@ -159,19 +159,6 @@ public class PushControl {
                     return false;
                 }
                 break;
-            case MessageTypeEnum.ALI_TEMPLATE_CODE:
-                String aliServerUrl = App.config.getAliServerUrl();
-                String aliAppKey = App.config.getAliAppKey();
-                String aliAppSecret = App.config.getAliAppSecret();
-
-                if (StringUtils.isEmpty(aliServerUrl) || StringUtils.isEmpty(aliAppKey)
-                        || StringUtils.isEmpty(aliAppSecret)) {
-                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
-                            "请先在设置中填写并保存阿里大于相关配置！", "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    return false;
-                }
-                break;
             case MessageTypeEnum.ALI_YUN_CODE:
                 String aliyunAccessKeyId = App.config.getAliyunAccessKeyId();
                 String aliyunAccessKeySecret = App.config.getAliyunAccessKeySecret();

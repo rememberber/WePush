@@ -2,7 +2,6 @@ package com.fangxuele.tool.push.ui.form;
 
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
-import com.fangxuele.tool.push.ui.form.msg.AliTemplateMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.AliYunMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.HttpMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.KefuMsgForm;
@@ -98,9 +97,6 @@ public class MessageEditForm {
                 break;
             case MessageTypeEnum.TX_YUN_CODE:
                 messageEditForm.getMsgEditorPanel().add(TxYunMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
-                break;
-            case MessageTypeEnum.ALI_TEMPLATE_CODE:
-                messageEditForm.getMsgEditorPanel().add(AliTemplateMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
                 break;
             case MessageTypeEnum.YUN_PIAN_CODE:
                 messageEditForm.getMsgEditorPanel().add(YunpianMsgForm.getInstance().getYunpianMsgPanel(), gridConstraintsRow0);

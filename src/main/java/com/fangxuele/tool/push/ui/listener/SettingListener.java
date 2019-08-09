@@ -5,7 +5,6 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TWxAccountMapper;
 import com.fangxuele.tool.push.domain.TWxAccount;
-import com.fangxuele.tool.push.logic.msgsender.AliDayuTemplateMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.AliYunMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.HttpMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
@@ -265,25 +264,6 @@ public class SettingListener {
                 App.config.setAliyunSign(SettingForm.settingForm.getAliyunSignTextField().getText());
                 App.config.save();
                 AliYunMsgSender.iAcsClient = null;
-
-                JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
-                        JOptionPane.INFORMATION_MESSAGE);
-            } catch (Exception e1) {
-                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
-                logger.error(e1);
-            }
-        });
-
-        // 设置-阿里大于-保存
-        SettingForm.settingForm.getSettingAliInfoSaveButton().addActionListener(e -> {
-            try {
-                App.config.setAliServerUrl(SettingForm.settingForm.getAliServerUrlTextField().getText());
-                App.config.setAliAppKey(new String(SettingForm.settingForm.getAliAppKeyPasswordField().getPassword()));
-                App.config.setAliAppSecret(new String(SettingForm.settingForm.getAliAppSecretPasswordField().getPassword()));
-                App.config.setAliSign(SettingForm.settingForm.getAliSignTextField().getText());
-                App.config.save();
-                AliDayuTemplateMsgSender.taobaoClient = null;
 
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);

@@ -45,10 +45,6 @@ public class MessageTypeListener {
             App.config.setMsgType(MessageTypeEnum.ALI_YUN_CODE);
             saveType();
         });
-        messageTypeForm.getAliTemplateRadioButton().addActionListener(e -> {
-            App.config.setMsgType(MessageTypeEnum.ALI_TEMPLATE_CODE);
-            saveType();
-        });
         messageTypeForm.getTxYunRadioButton().addActionListener(e -> {
             App.config.setMsgType(MessageTypeEnum.TX_YUN_CODE);
             saveType();

@@ -229,18 +229,6 @@
             <version>1.0</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.taobao</groupId>
-            <artifactId>top-auto-sdk</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>aliyun-java-sdk-dysmsapi</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-
         <!--文件字符集格式检测-->
         <dependency>
             <groupId>net.sourceforge.cpdetector</groupId>
@@ -307,6 +295,11 @@
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
             <version>${okhttp.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-dysmsapi</artifactId>
+            <version>1.1.0</version>
         </dependency>
 
     </dependencies>
@@ -398,42 +391,12 @@
                         </goals>
                     </execution>
                     <execution>
-                        <id>install-taobao-sdk</id>
-                        <phase>clean</phase>
-                        <configuration>
-                            <file>./src/main/lib/taobao-sdk-java.jar</file>
-                            <groupId>com.taobao</groupId>
-                            <artifactId>top-auto-sdk</artifactId>
-                            <version>1.0</version>
-                            <packaging>jar</packaging>
-                            <generatePom>true</generatePom>
-                        </configuration>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                    </execution>
-                    <execution>
                         <id>install-taobao-sdk-auto</id>
                         <phase>clean</phase>
                         <configuration>
                             <file>./src/main/lib/taobao-sdk-java-auto.jar</file>
                             <groupId>com.taobao</groupId>
                             <artifactId>taobao-sdk-java-auto</artifactId>
-                            <version>1.0.0</version>
-                            <packaging>jar</packaging>
-                            <generatePom>true</generatePom>
-                        </configuration>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>install-alysms-sdk</id>
-                        <phase>clean</phase>
-                        <configuration>
-                            <file>./src/main/lib/aliyun-java-sdk-dysmsapi-1.0.0.jar</file>
-                            <groupId>com.aliyun</groupId>
-                            <artifactId>aliyun-java-sdk-dysmsapi</artifactId>
                             <version>1.0.0</version>
                             <packaging>jar</packaging>
                             <generatePom>true</generatePom>

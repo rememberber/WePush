@@ -33,9 +33,6 @@ public class MsgMakerFactory {
             case MessageTypeEnum.ALI_YUN_CODE:
                 iMsgMaker = new AliyunMsgMaker();
                 break;
-            case MessageTypeEnum.ALI_TEMPLATE_CODE:
-                iMsgMaker = new AliTemplateMsgMaker();
-                break;
             case MessageTypeEnum.TX_YUN_CODE:
                 iMsgMaker = new TxYunMsgMaker();
                 break;
