@@ -3,6 +3,7 @@ package com.fangxuele.tool.push.ui.form;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.ui.listener.MemberListener;
+import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -73,6 +74,10 @@ public class MemberForm {
     private JButton importFromNumButton;
 
     public static MemberForm memberForm = new MemberForm();
+
+    public MemberForm() {
+        UndoUtil.register(this);
+    }
 
     /**
      * 初始化导入用户tab

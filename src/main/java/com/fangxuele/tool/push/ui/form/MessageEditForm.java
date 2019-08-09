@@ -13,6 +13,7 @@ import com.fangxuele.tool.push.ui.form.msg.MsgFormFactory;
 import com.fangxuele.tool.push.ui.form.msg.TxYunMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.YunpianMsgForm;
+import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Getter;
@@ -44,6 +45,10 @@ public class MessageEditForm {
     private JScrollPane msgEditScrollPane;
 
     public static MessageEditForm messageEditForm = new MessageEditForm();
+
+    public MessageEditForm() {
+        UndoUtil.register(this);
+    }
 
     /**
      * 初始化消息tab

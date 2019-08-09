@@ -50,7 +50,7 @@ public class KefuMsgForm implements IMsgForm {
         // 客服消息类型切换事件
         msgKefuMsgTypeComboBox.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
-                getInstance().switchKefuMsgType(e.getItem().toString());
+                switchKefuMsgType(e.getItem().toString());
             }
         });
     }

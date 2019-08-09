@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.form;
 
+import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Getter;
@@ -29,6 +30,7 @@ public class HttpResultForm {
     public static HttpResultForm getInstance() {
         if (httpResultForm == null) {
             httpResultForm = new HttpResultForm();
+            UndoUtil.register(httpResultForm);
         }
         return httpResultForm;
     }

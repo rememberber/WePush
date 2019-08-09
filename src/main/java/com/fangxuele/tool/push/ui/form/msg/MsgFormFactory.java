@@ -2,6 +2,7 @@ package com.fangxuele.tool.push.ui.form.msg;
 
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.util.UndoUtil;
 
 /**
  * <pre>
@@ -31,6 +32,8 @@ public class MsgFormFactory {
                 break;
             case MessageTypeEnum.KEFU_PRIORITY_CODE:
                 iMsgForm = KefuPriorityMsgForm.getInstance();
+                UndoUtil.register(KefuMsgForm.getInstance());
+                UndoUtil.register(MpTemplateMsgForm.getInstance());
                 break;
             case MessageTypeEnum.ALI_YUN_CODE:
                 iMsgForm = AliYunMsgForm.getInstance();
@@ -54,6 +57,9 @@ public class MsgFormFactory {
                 iMsgForm = HttpMsgForm.getInstance();
                 break;
             default:
+        }
+        if (iMsgForm != null) {
+            UndoUtil.register(iMsgForm);
         }
         return iMsgForm;
     }

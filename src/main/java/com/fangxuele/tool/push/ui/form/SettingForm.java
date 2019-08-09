@@ -4,6 +4,7 @@ import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TWxAccountMapper;
 import com.fangxuele.tool.push.domain.TWxAccount;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -120,6 +121,10 @@ public class SettingForm {
      * 多账号切换账号类型：小程序
      */
     public static final String WX_ACCOUNT_TYPE_MA = "ma";
+
+    public SettingForm() {
+        UndoUtil.register(this);
+    }
 
     /**
      * 初始化设置tab
