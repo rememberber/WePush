@@ -30,7 +30,6 @@ public class App {
     public static SqlSession sqlSession = MybatisUtil.getSqlSession();
 
     public static void main(String[] args) {
-        UpgradeUtil.smoothUpgrade();
         Init.initTheme();
         mainFrame = new MainFrame();
         mainFrame.init();
@@ -43,6 +42,7 @@ public class App {
         }
         mainFrame.pack();
         mainFrame.setVisible(true);
+        UpgradeUtil.smoothUpgrade();
 
         SwingUtilities.invokeLater(() -> {
             mainFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
