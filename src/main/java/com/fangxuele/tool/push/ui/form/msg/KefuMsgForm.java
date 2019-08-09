@@ -6,6 +6,7 @@ import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
+import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -13,12 +14,8 @@ import lombok.Getter;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import javax.swing.undo.UndoManager;
 import java.awt.*;
 import java.awt.event.ItemEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Objects;
 
@@ -58,73 +55,7 @@ public class KefuMsgForm implements IMsgForm {
             }
         });
 
-        Class strClass = this.getClass();
-        Field[] declaredFields = strClass.getDeclaredFields();
-        for (Field field : declaredFields) {
-            if (JTextField.class.getTypeName().equals(field.getType().getName())) {
-                UndoManager undoManager = new UndoManager();
-                try {
-                    ((JTextField) field.get(this)).getDocument().addUndoableEditListener(undoManager);
-                    ((JTextField) field.get(this)).addKeyListener(new KeyListener() {
-
-                        @Override
-                        public void keyReleased(KeyEvent arg0) {
-                        }
-
-                        @Override
-                        public void keyPressed(KeyEvent evt) {
-                            if (evt.isControlDown() && evt.getKeyCode() == KeyEvent.VK_Z) {
-                                if (undoManager.canUndo()) {
-                                    undoManager.undo();
-                                }
-                            }
-                            if (evt.isControlDown() && evt.getKeyCode() == KeyEvent.VK_Y) {
-                                if (undoManager.canRedo()) {
-                                    undoManager.redo();
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void keyTyped(KeyEvent arg0) {
-                        }
-                    });
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            } else if (JTextArea.class.getTypeName().equals(field.getType().getName())) {
-                UndoManager undoManager = new UndoManager();
-                try {
-                    ((JTextArea) field.get(this)).getDocument().addUndoableEditListener(undoManager);
-                    ((JTextArea) field.get(this)).addKeyListener(new KeyListener() {
-
-                        @Override
-                        public void keyReleased(KeyEvent arg0) {
-                        }
-
-                        @Override
-                        public void keyPressed(KeyEvent evt) {
-                            if (evt.isControlDown() && evt.getKeyCode() == KeyEvent.VK_Z) {
-                                if (undoManager.canUndo()) {
-                                    undoManager.undo();
-                                }
-                            }
-                            if (evt.isControlDown() && evt.getKeyCode() == KeyEvent.VK_Y) {
-                                if (undoManager.canRedo()) {
-                                    undoManager.redo();
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void keyTyped(KeyEvent arg0) {
-                        }
-                    });
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        UndoUtil.register(this);
     }
 
     @Override
