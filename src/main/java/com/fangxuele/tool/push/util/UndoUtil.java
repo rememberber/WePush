@@ -2,7 +2,6 @@ package com.fangxuele.tool.push.util;
 
 import lombok.extern.slf4j.Slf4j;
 
-import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import javax.swing.undo.UndoManager;
 import java.awt.event.KeyEvent;
@@ -29,8 +28,7 @@ public class UndoUtil {
         Class strClass = object.getClass();
         Field[] declaredFields = strClass.getDeclaredFields();
         for (Field field : declaredFields) {
-            if (JTextField.class.getTypeName().equals(field.getType().getName())
-                    || JTextArea.class.getTypeName().equals(field.getType().getName())) {
+            if (JTextComponent.class.isAssignableFrom(field.getType())) {
                 UndoManager undoManager = new UndoManager();
                 try {
                     field.setAccessible(true);

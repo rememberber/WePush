@@ -6,7 +6,6 @@ import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
-import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -54,8 +53,6 @@ public class KefuMsgForm implements IMsgForm {
                 switchKefuMsgType(e.getItem().toString());
             }
         });
-
-        UndoUtil.register(this);
     }
 
     @Override

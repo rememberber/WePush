@@ -5,6 +5,7 @@ import com.fangxuele.tool.push.dao.TPushHistoryMapper;
 import com.fangxuele.tool.push.domain.TPushHistory;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -38,6 +39,10 @@ public class PushHisForm {
     public static PushHisForm pushHisForm = new PushHisForm();
 
     private static TPushHistoryMapper pushHistoryMapper = MybatisUtil.getSqlSession().getMapper(TPushHistoryMapper.class);
+
+    public PushHisForm() {
+        UndoUtil.register(this);
+    }
 
     /**
      * 初始化推送历史tab

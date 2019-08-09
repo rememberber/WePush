@@ -2,6 +2,7 @@ package com.fangxuele.tool.push.ui.form;
 
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -39,6 +40,10 @@ public class ScheduleForm {
     private JLabel cronOnlineLabel;
 
     public static ScheduleForm scheduleForm = new ScheduleForm();
+
+    public ScheduleForm() {
+        UndoUtil.register(this);
+    }
 
     /**
      * 初始化计划任务tab
