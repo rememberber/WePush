@@ -13,8 +13,11 @@ import lombok.Getter;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.undo.UndoManager;
 import java.awt.*;
 import java.awt.event.ItemEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.List;
 import java.util.Objects;
 
@@ -50,7 +53,34 @@ public class KefuMsgForm implements IMsgForm {
         // 客服消息类型切换事件
         msgKefuMsgTypeComboBox.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
-                getInstance().switchKefuMsgType(e.getItem().toString());
+                switchKefuMsgType(e.getItem().toString());
+            }
+        });
+
+        UndoManager undoManager = new UndoManager();
+        contentTextArea.getDocument().addUndoableEditListener(undoManager);
+        contentTextArea.addKeyListener(new KeyListener() {
+
+            @Override
+            public void keyReleased(KeyEvent arg0) {
+            }
+
+            @Override
+            public void keyPressed(KeyEvent evt) {
+                if (evt.isControlDown() && evt.getKeyCode() == KeyEvent.VK_Z) {
+                    if (undoManager.canUndo()) {
+                        undoManager.undo();
+                    }
+                }
+                if (evt.isControlDown() && evt.getKeyCode() == KeyEvent.VK_Y) {
+                    if (undoManager.canRedo()) {
+                        undoManager.redo();
+                    }
+                }
+            }
+
+            @Override
+            public void keyTyped(KeyEvent arg0) {
             }
         });
     }
