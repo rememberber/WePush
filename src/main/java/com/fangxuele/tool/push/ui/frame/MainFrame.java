@@ -48,6 +48,9 @@ public class MainFrame extends JFrame {
         if (SystemUtil.isMacOs()) {
             Application application = Application.getApplication();
             application.setDockIconImage(UiConsts.IMAGE_ICON_LG);
+            application.setDockIconBadge("WePush");
+            application.setEnabledAboutMenu(false);
+            application.setEnabledPreferencesMenu(false);
         }
 
         ComponentUtil.setPrefersizeAndLocateToCenter(this, 0.8, 0.88);
