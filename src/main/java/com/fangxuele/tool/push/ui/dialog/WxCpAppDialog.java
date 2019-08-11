@@ -54,7 +54,7 @@ public class WxCpAppDialog extends JDialog {
         setContentPane(contentPane);
         setModal(true);
 
-        ComponentUtil.setPrefersizeAndLocateToCenter(this, 0.5, 0.5);
+        ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.5, 0.5);
 
         // 保存按钮事件
         saveButton.addActionListener(e -> {

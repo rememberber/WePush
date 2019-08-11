@@ -52,7 +52,7 @@ public class MainFrame extends JFrame {
             application.setEnabledPreferencesMenu(false);
         }
 
-        ComponentUtil.setPrefersizeAndLocateToCenter(this, 0.8, 0.88);
+        ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.8, 0.88);
     }
 
     /**

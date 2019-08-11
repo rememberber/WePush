@@ -31,7 +31,7 @@ public class Spinner extends JDialog {
         setContentPane(contentPane);
         setModal(false);
         setUndecorated(true);
-        ComponentUtil.setPrefersizeAndLocateToCenter(this, 420, 50);
+        ComponentUtil.setPreferSizeAndLocateToCenter(this, 420, 50);
     }
 
     public static Spinner getInstance() {

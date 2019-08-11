@@ -46,7 +46,7 @@ public class ExportDialog extends JDialog {
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
 
-        ComponentUtil.setPrefersizeAndLocateToCenter(this, 420, 300);
+        ComponentUtil.setPreferSizeAndLocateToCenter(this, 420, 300);
 
         buttonOK.addActionListener(e -> onOK());
 
