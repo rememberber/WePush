@@ -16,15 +16,15 @@ import org.apache.velocity.VelocityContext;
  */
 public class WxKefuMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
-    public static String msgKefuMsgType;
+    private static String msgKefuMsgType;
 
-    public static String msgKefuMsgTitle;
+    private static String msgKefuMsgTitle;
 
-    public static String msgKefuPicUrl;
+    private static String msgKefuPicUrl;
 
-    public static String msgKefuDesc;
+    private static String msgKefuDesc;
 
-    public static String msgKefuUrl;
+    private static String msgKefuUrl;
 
     /**
      * 准备(界面字段等)
@@ -66,7 +66,8 @@ public class WxKefuMsgMaker extends BaseMsgMaker implements IMsgMaker {
             article.setDescription(description);
 
             // 跳转url
-            article.setUrl(msgKefuUrl);
+            String url = TemplateUtil.evaluate(msgKefuUrl, velocityContext);
+            article.setUrl(url);
 
             kefuMessage = WxMpKefuMessage.NEWS().addArticle(article).build();
         } else if ("文本消息".equals(msgKefuMsgType)) {

@@ -23,8 +23,8 @@ import java.util.List;
 public class WxMaTemplateMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
     public static String templateId;
-    public static String templateUrl;
-    public static String templateKeyWord;
+    private static String templateUrl;
+    private static String templateKeyWord;
     public static List<TemplateData> templateDataList;
 
     /**
@@ -69,10 +69,10 @@ public class WxMaTemplateMsgMaker extends BaseMsgMaker implements IMsgMaker {
         // 拼模板
         WxMaTemplateMessage wxMessageTemplate = new WxMaTemplateMessage();
         wxMessageTemplate.setTemplateId(templateId);
-        wxMessageTemplate.setPage(templateUrl);
-        wxMessageTemplate.setEmphasisKeyword(templateKeyWord);
-
         VelocityContext velocityContext = getVelocityContext(msgData);
+        String templateUrlEvaluated = TemplateUtil.evaluate(templateUrl, velocityContext);
+        wxMessageTemplate.setPage(templateUrlEvaluated);
+        wxMessageTemplate.setEmphasisKeyword(templateKeyWord);
 
         WxMaTemplateData wxMaTemplateData;
         for (TemplateData templateData : templateDataList) {

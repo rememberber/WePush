@@ -24,11 +24,11 @@ public class WxMpTemplateMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
     public static String templateId;
 
-    public static String templateUrl;
+    private static String templateUrl;
 
-    public static String miniAppId;
+    private static String miniAppId;
 
-    public static String miniAppPagePath;
+    private static String miniAppPagePath;
 
     public static List<TemplateData> templateDataList;
 
@@ -76,11 +76,12 @@ public class WxMpTemplateMsgMaker extends BaseMsgMaker implements IMsgMaker {
         // 拼模板
         WxMpTemplateMessage wxMessageTemplate = new WxMpTemplateMessage();
         wxMessageTemplate.setTemplateId(templateId);
-        wxMessageTemplate.setUrl(templateUrl);
 
         VelocityContext velocityContext = getVelocityContext(msgData);
-        miniAppPagePath = TemplateUtil.evaluate(miniAppPagePath, velocityContext);
-        WxMpTemplateMessage.MiniProgram miniProgram = new WxMpTemplateMessage.MiniProgram(miniAppId, miniAppPagePath, true);
+        String templateUrlEvaluated = TemplateUtil.evaluate(templateUrl, velocityContext);
+        wxMessageTemplate.setUrl(templateUrlEvaluated);
+        String miniAppPagePathEvaluated = TemplateUtil.evaluate(miniAppPagePath, velocityContext);
+        WxMpTemplateMessage.MiniProgram miniProgram = new WxMpTemplateMessage.MiniProgram(miniAppId, miniAppPagePathEvaluated, true);
         wxMessageTemplate.setMiniProgram(miniProgram);
 
         WxMpTemplateData wxMpTemplateData;

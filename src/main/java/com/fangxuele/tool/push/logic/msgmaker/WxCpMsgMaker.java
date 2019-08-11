@@ -17,21 +17,21 @@ import org.apache.velocity.VelocityContext;
  */
 public class WxCpMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
-    public static String agentId;
+    private static String agentId;
 
     public static String msgType;
 
-    public static String msgTitle;
+    private static String msgTitle;
 
-    public static String picUrl;
+    private static String picUrl;
 
     public static String desc;
 
     public static String url;
 
-    public static String btnTxt;
+    private static String btnTxt;
 
-    public static String msgContent;
+    private static String msgContent;
 
     /**
      * 准备(界面字段等)
@@ -69,14 +69,14 @@ public class WxCpMsgMaker extends BaseMsgMaker implements IMsgMaker {
             article.setTitle(title);
 
             // 图片url
-            article.setPicUrl(picUrl);
+            article.setPicUrl(TemplateUtil.evaluate(picUrl, velocityContext));
 
             // 描述
             String description = TemplateUtil.evaluate(desc, velocityContext);
             article.setDescription(description);
 
             // 跳转url
-            article.setUrl(url);
+            article.setUrl(TemplateUtil.evaluate(url, velocityContext));
 
             wxCpMessage = WxCpMessage.NEWS().addArticle(article).build();
         } else if ("文本消息".equals(msgType)) {
