@@ -38,7 +38,7 @@ public class CommonTipsDialog extends JDialog {
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
 
-        ComponentUtil.setPrefersizeAndLocateToCenter(this, 0.4, 0.64);
+        ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.4, 0.64);
 
         textPane1.addHyperlinkListener(e -> {
             if (e.getEventType() != HyperlinkEvent.EventType.ACTIVATED) {

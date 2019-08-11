@@ -64,7 +64,7 @@ public class SwitchWxAccountDialog extends JDialog {
         setContentPane(contentPane);
         setModal(true);
 
-        ComponentUtil.setPrefersizeAndLocateToCenter(this, 0.6, 0.63);
+        ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.6, 0.63);
 
         buttonOk.addActionListener(e -> onCancel());
 

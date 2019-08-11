@@ -41,7 +41,7 @@ public class HttpResultFrame extends JFrame {
             application.setDockIconImage(UiConsts.IMAGE_ICON_LG);
         }
 
-        ComponentUtil.setPrefersizeAndLocateToCenter(this, 0.6, 0.66);
+        ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.6, 0.66);
     }
 
     public static HttpResultFrame getInstance() {

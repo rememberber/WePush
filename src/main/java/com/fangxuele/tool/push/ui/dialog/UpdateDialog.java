@@ -46,7 +46,7 @@ public class UpdateDialog extends JDialog {
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
 
-        ComponentUtil.setPrefersizeAndLocateToCenter(this, 600, 200);
+        ComponentUtil.setPreferSizeAndLocateToCenter(this, 600, 200);
 
         buttonOK.addActionListener(e -> onOK());
 

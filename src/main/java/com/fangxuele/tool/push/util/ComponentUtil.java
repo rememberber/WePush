@@ -24,7 +24,7 @@ public class ComponentUtil {
     /**
      * 设置组件preferSize并定位于屏幕中央
      */
-    public static void setPrefersizeAndLocateToCenter(Component component, int preferWidth, int preferHeight) {
+    public static void setPreferSizeAndLocateToCenter(Component component, int preferWidth, int preferHeight) {
         component.setBounds((screenWidth - preferWidth) / 2, (screenHeight - preferHeight) / 2,
                 preferWidth, preferHeight);
         Dimension preferSize = new Dimension(preferWidth, preferHeight);
@@ -34,9 +34,9 @@ public class ComponentUtil {
     /**
      * 设置组件preferSize并定位于屏幕中央(基于屏幕宽高的百分百)
      */
-    public static void setPrefersizeAndLocateToCenter(Component component, double preferWidthPercent, double preferHeightPercent) {
+    public static void setPreferSizeAndLocateToCenter(Component component, double preferWidthPercent, double preferHeightPercent) {
         int preferWidth = (int) (screenWidth * preferWidthPercent);
         int preferHeight = (int) (screenHeight * preferHeightPercent);
-        setPrefersizeAndLocateToCenter(component, preferWidth, preferHeight);
+        setPreferSizeAndLocateToCenter(component, preferWidth, preferHeight);
     }
 }
