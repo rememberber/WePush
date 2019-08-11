@@ -37,6 +37,7 @@ public class MainWindow {
     private static GridConstraints gridConstraints = new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false);
 
     public void init() {
+        mainWindow.getMainPanel().updateUI();
         mainWindow.getAboutPanel().add(AboutForm.aboutForm.getAboutPanel(), gridConstraints);
         mainWindow.getUserCasePanel().add(UserCaseForm.userCaseForm.getUserCasePanel(), gridConstraints);
         mainWindow.getSchedulePanel().add(ScheduleForm.scheduleForm.getSchedulePanel(), gridConstraints);
@@ -48,6 +49,7 @@ public class MainWindow {
         mainWindow.getPushPanel().add(PushForm.pushForm.getPushPanel(), gridConstraints);
         mainWindow.getMessageTypePanel().add(MessageTypeForm.messageTypeForm.getMessageTypePanel(), gridConstraints);
         mainWindow.getBoostPanel().add(BoostForm.boostForm.getBoostPanel(), gridConstraints);
+        mainWindow.getMainPanel().updateUI();
     }
 
     {
