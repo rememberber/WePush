@@ -366,7 +366,7 @@
                         <id>install-beautyeye</id>
                         <phase>clean</phase>
                         <configuration>
-                            <file>./src/main/lib/beautyeye_lnf.jar</file>
+                            <file>lib/beautyeye_lnf.jar</file>
                             <groupId>com.beautyeye</groupId>
                             <artifactId>beautyeye-lnf</artifactId>
                             <version>1.0</version>
@@ -381,7 +381,7 @@
                         <id>install-darcula</id>
                         <phase>clean</phase>
                         <configuration>
-                            <file>./src/main/lib/darcula.jar</file>
+                            <file>lib/darcula.jar</file>
                             <groupId>com.darcula</groupId>
                             <artifactId>darcula-lnf</artifactId>
                             <version>1.0</version>
@@ -396,7 +396,7 @@
                         <id>install-taobao-sdk</id>
                         <phase>clean</phase>
                         <configuration>
-                            <file>./src/main/lib/taobao-sdk-java.jar</file>
+                            <file>lib/taobao-sdk-java.jar</file>
                             <groupId>com.taobao</groupId>
                             <artifactId>top-auto-sdk</artifactId>
                             <version>1.0</version>
@@ -411,7 +411,7 @@
                         <id>install-alysms-sdk</id>
                         <phase>clean</phase>
                         <configuration>
-                            <file>./src/main/lib/aliyun-java-sdk-dysmsapi-1.0.0.jar</file>
+                            <file>lib/aliyun-java-sdk-dysmsapi-1.0.0.jar</file>
                             <groupId>com.aliyun</groupId>
                             <artifactId>aliyun-java-sdk-dysmsapi</artifactId>
                             <version>1.0.0</version>
@@ -426,7 +426,7 @@
                         <id>install-cpdetector</id>
                         <phase>clean</phase>
                         <configuration>
-                            <file>./src/main/lib/cpdetector_1.0.10.jar</file>
+                            <file>lib/cpdetector_1.0.10.jar</file>
                             <groupId>net.sourceforge.cpdetector</groupId>
                             <artifactId>cpdetector</artifactId>
                             <version>1.0.10</version>
@@ -441,7 +441,7 @@
                         <id>install-antlr</id>
                         <phase>clean</phase>
                         <configuration>
-                            <file>./src/main/lib/antlr-2.7.4.jar</file>
+                            <file>lib/antlr-2.7.4.jar</file>
                             <groupId>net.sourceforge.cpdetector</groupId>
                             <artifactId>antlr</artifactId>
                             <version>2.7.4</version>
@@ -456,7 +456,7 @@
                         <id>install-chardet</id>
                         <phase>clean</phase>
                         <configuration>
-                            <file>./src/main/lib/chardet-1.0.jar</file>
+                            <file>lib/chardet-1.0.jar</file>
                             <groupId>net.sourceforge.cpdetector</groupId>
                             <artifactId>chardet</artifactId>
                             <version>1.0.0</version>
@@ -471,7 +471,7 @@
                         <id>install-jargs</id>
                         <phase>clean</phase>
                         <configuration>
-                            <file>./src/main/lib/jargs-1.0.jar</file>
+                            <file>lib/jargs-1.0.jar</file>
                             <groupId>net.sourceforge.cpdetector</groupId>
                             <artifactId>jargs</artifactId>
                             <version>1.0.0</version>
