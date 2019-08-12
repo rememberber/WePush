@@ -12,9 +12,9 @@ import com.fangxuele.tool.push.util.WeWxMpServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.error.WxError;
 import me.chanjar.weixin.common.util.http.apache.DefaultApacheHttpClientBuilder;
-import me.chanjar.weixin.mp.api.WxMpInMemoryConfigStorage;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
+import me.chanjar.weixin.mp.config.impl.WxMpDefaultConfigImpl;
 import org.apache.http.Consts;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -43,7 +43,7 @@ import java.util.concurrent.Future;
  */
 @Slf4j
 public class WxMpTemplateMsgSender implements IMsgSender {
-    public volatile static WxMpInMemoryConfigStorage wxMpConfigStorage;
+    public volatile static WxMpDefaultConfigImpl wxMpConfigStorage;
     public volatile static WxMpService wxMpService;
     public volatile static CloseableHttpAsyncClient closeableHttpAsyncClient;
     private WxMpTemplateMsgMaker wxMpTemplateMsgMaker;
@@ -136,8 +136,8 @@ public class WxMpTemplateMsgSender implements IMsgSender {
      *
      * @return WxMpConfigStorage
      */
-    private static WxMpInMemoryConfigStorage wxMpConfigStorage() {
-        WxMpInMemoryConfigStorage configStorage = new WxMpInMemoryConfigStorage();
+    private static WxMpDefaultConfigImpl wxMpConfigStorage() {
+        WxMpDefaultConfigImpl configStorage = new WxMpDefaultConfigImpl();
         configStorage.setAppId(App.config.getWechatAppId());
         configStorage.setSecret(App.config.getWechatAppSecret());
         configStorage.setToken(App.config.getWechatToken());

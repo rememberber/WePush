@@ -13,7 +13,7 @@ import me.chanjar.weixin.cp.api.WxCpService;
 import me.chanjar.weixin.cp.api.impl.WxCpServiceApacheHttpClientImpl;
 import me.chanjar.weixin.cp.bean.WxCpMessage;
 import me.chanjar.weixin.cp.bean.WxCpMessageSendResult;
-import me.chanjar.weixin.cp.config.WxCpInMemoryConfigStorage;
+import me.chanjar.weixin.cp.config.impl.WxCpDefaultConfigImpl;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -28,7 +28,7 @@ import java.util.List;
  */
 @Slf4j
 public class WxCpMsgSender implements IMsgSender {
-    public volatile static WxCpInMemoryConfigStorage wxCpConfigStorage;
+    public volatile static WxCpDefaultConfigImpl wxCpConfigStorage;
     public volatile static WxCpService wxCpService;
     private WxCpMsgMaker wxCpMsgMaker;
 
@@ -80,8 +80,8 @@ public class WxCpMsgSender implements IMsgSender {
      *
      * @return WxCpConfigStorage
      */
-    private static WxCpInMemoryConfigStorage wxCpConfigStorage() {
-        WxCpInMemoryConfigStorage configStorage = new WxCpInMemoryConfigStorage();
+    private static WxCpDefaultConfigImpl wxCpConfigStorage() {
+        WxCpDefaultConfigImpl configStorage = new WxCpDefaultConfigImpl();
         configStorage.setCorpId(App.config.getWxCpCorpId());
         String agentId = WxCpMsgForm.appNameToAgentIdMap.get(WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem());
         configStorage.setAgentId(Integer.valueOf(agentId));
