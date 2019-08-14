@@ -47,6 +47,9 @@ public class MessageTypeForm {
 
     private static MessageTypeForm messageTypeForm;
 
+    private MessageTypeForm() {
+    }
+
     public static MessageTypeForm getInstance() {
         if (messageTypeForm == null) {
             messageTypeForm = new MessageTypeForm();
@@ -58,6 +61,8 @@ public class MessageTypeForm {
      * 初始化消息类型tab
      */
     public static void init() {
+        messageTypeForm = getInstance();
+
         int msgType = App.config.getMsgType();
         clearAllSelected();
 
@@ -154,6 +159,8 @@ public class MessageTypeForm {
      * 清除所有radio选中状态
      */
     public static void clearAllSelected() {
+        messageTypeForm = getInstance();
+
         Component[] components = messageTypeForm.getMsgTypeListPanel().getComponents();
         for (Component component : components) {
             if (component instanceof JRadioButton) {

@@ -26,6 +26,9 @@ public class HelpForm {
 
     private static HelpForm helpForm;
 
+    private HelpForm() {
+    }
+
     public static HelpForm getInstance() {
         if (helpForm == null) {
             helpForm = new HelpForm();
@@ -37,6 +40,7 @@ public class HelpForm {
      * 初始化使用帮助tab
      */
     public static void init() {
+        helpForm = getInstance();
 
         try {
             helpForm.getHelpTextPane().setEditable(false);

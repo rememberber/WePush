@@ -29,6 +29,9 @@ public class AboutForm {
 
     private static AboutForm aboutForm;
 
+    private AboutForm() {
+    }
+
     public static AboutForm getInstance() {
         if (aboutForm == null) {
             aboutForm = new AboutForm();
@@ -37,7 +40,7 @@ public class AboutForm {
     }
 
     public static void init() {
-        aboutForm.getPushTotalLabel().setText("<html>已累计为您推送 <b>" + App.config.getPushTotal() + "</b> 条消息</html>");
+        getInstance().getPushTotalLabel().setText("<html>已累计为您推送 <b>" + App.config.getPushTotal() + "</b> 条消息</html>");
     }
 
     {

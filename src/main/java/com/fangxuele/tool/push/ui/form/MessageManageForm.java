@@ -57,6 +57,9 @@ public class MessageManageForm {
     private static TMsgWxCpMapper msgWxCpMapper = MybatisUtil.getSqlSession().getMapper(TMsgWxCpMapper.class);
     private static TMsgHttpMapper msgHttpMapper = MybatisUtil.getSqlSession().getMapper(TMsgHttpMapper.class);
 
+    private MessageManageForm() {
+    }
+
     public static MessageManageForm getInstance() {
         if (messageManageForm == null) {
             messageManageForm = new MessageManageForm();
@@ -68,6 +71,7 @@ public class MessageManageForm {
      * 初始化消息列表
      */
     public static void init() {
+        messageManageForm = getInstance();
         // 历史消息管理
         String[] headerNames = {"消息名称"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);

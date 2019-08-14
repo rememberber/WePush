@@ -27,6 +27,9 @@ public class HttpResultForm {
 
     private static HttpResultForm httpResultForm;
 
+    private HttpResultForm() {
+    }
+
     public static HttpResultForm getInstance() {
         if (httpResultForm == null) {
             httpResultForm = new HttpResultForm();

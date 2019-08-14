@@ -40,7 +40,7 @@ public class PushHisForm {
 
     private static TPushHistoryMapper pushHistoryMapper = MybatisUtil.getSqlSession().getMapper(TPushHistoryMapper.class);
 
-    public PushHisForm() {
+    private PushHisForm() {
         UndoUtil.register(this);
     }
 
@@ -55,6 +55,7 @@ public class PushHisForm {
      * 初始化推送历史tab
      */
     public static void init() {
+        pushHisForm = getInstance();
         // 导入历史管理
         String[] headerNames = {"消息名称", "状态", "时间", "id"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);

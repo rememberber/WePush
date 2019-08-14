@@ -42,6 +42,10 @@ public class BoostForm {
 
     private static BoostForm boostForm;
 
+    private BoostForm() {
+        UndoUtil.register(this);
+    }
+
     public static BoostForm getInstance() {
         if (boostForm == null) {
             boostForm = new BoostForm();
@@ -49,11 +53,8 @@ public class BoostForm {
         return boostForm;
     }
 
-    public BoostForm() {
-        UndoUtil.register(this);
-    }
-
     public static void init() {
+        boostForm = getInstance();
         boostForm.getDryRunCheckBox().setSelected(App.config.isDryRun());
         boostForm.getScheduledTaskLabel().setVisible(false);
     }

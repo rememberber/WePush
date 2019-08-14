@@ -37,6 +37,9 @@ public class UserCaseForm {
 
     private static UserCaseForm userCaseForm;
 
+    private UserCaseForm() {
+    }
+
     public static UserCaseForm getInstance() {
         if (userCaseForm == null) {
             userCaseForm = new UserCaseForm();
@@ -48,6 +51,8 @@ public class UserCaseForm {
      * 初始化他们都在用tab
      */
     public static void init() {
+        userCaseForm = getInstance();
+        
         // 从github获取用户案例相关信息
         String userCaseInfoContent = HttpUtil.get(UiConsts.USER_CASE_URL);
         if (StringUtils.isNotEmpty(userCaseInfoContent)) {

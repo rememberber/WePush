@@ -46,6 +46,10 @@ public class MessageEditForm {
 
     private static MessageEditForm messageEditForm;
 
+    private MessageEditForm() {
+        UndoUtil.register(this);
+    }
+
     public static MessageEditForm getInstance() {
         if (messageEditForm == null) {
             messageEditForm = new MessageEditForm();
@@ -53,14 +57,11 @@ public class MessageEditForm {
         return messageEditForm;
     }
 
-    public MessageEditForm() {
-        UndoUtil.register(this);
-    }
-
     /**
      * 初始化消息tab
      */
     public static void init(String selectedMsgName) {
+        messageEditForm = getInstance();
         String msgName;
         if (StringUtils.isEmpty(selectedMsgName)) {
             msgName = App.config.getMsgName();
@@ -80,6 +81,7 @@ public class MessageEditForm {
      * @param msgType
      */
     public static void switchMsgType(int msgType) {
+        messageEditForm = getInstance();
         messageEditForm.getMsgEditorPanel().removeAll();
         GridConstraints gridConstraintsRow0 = new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false);
         GridConstraints gridConstraintsRow1 = new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false);

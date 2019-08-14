@@ -41,7 +41,7 @@ public class ScheduleForm {
 
     private static ScheduleForm scheduleForm;
 
-    public ScheduleForm() {
+    private ScheduleForm() {
         UndoUtil.register(this);
     }
 
@@ -56,6 +56,7 @@ public class ScheduleForm {
      * 初始化计划任务tab
      */
     public static void init() {
+        scheduleForm = getInstance();
         // 开始
         scheduleForm.getRunAtThisTimeRadioButton().setSelected(App.config.isRadioStartAt());
         scheduleForm.getStartAtThisTimeTextField().setText(App.config.getTextStartAt());
