@@ -58,7 +58,7 @@ public class MsgSendThread extends BaseMsgThread {
             if (sendResult.isSuccess()) {
                 // 总发送成功+1
                 PushData.increaseSuccess();
-                PushForm.pushForm.getPushSuccessCount().setText(String.valueOf(PushData.successRecords));
+                PushForm.getInstance().getPushSuccessCount().setText(String.valueOf(PushData.successRecords));
 
                 // 当前线程发送成功+1
                 currentThreadSuccessCount++;
@@ -69,7 +69,7 @@ public class MsgSendThread extends BaseMsgThread {
             } else {
                 // 总发送失败+1
                 PushData.increaseFail();
-                PushForm.pushForm.getPushFailCount().setText(String.valueOf(PushData.failRecords));
+                PushForm.getInstance().getPushFailCount().setText(String.valueOf(PushData.failRecords));
 
                 // 保存发送失败
                 PushData.sendFailList.add(msgData);
@@ -86,7 +86,7 @@ public class MsgSendThread extends BaseMsgThread {
             pushThreadTable.setValueAt((int) ((double) (i + 1) / list.size() * 100), tableRow, 5);
 
             // 总进度条
-            PushForm.pushForm.getPushTotalProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
+            PushForm.getInstance().getPushTotalProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
         }
 
         // 当前线程结束

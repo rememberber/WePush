@@ -54,19 +54,20 @@ public class PushListener {
 
     private static ScheduledExecutorService serviceStartPerWeek;
 
-    private static JPanel pushPanel = PushForm.pushForm.getPushPanel();
-
     public static void addListeners() {
+        PushForm pushForm = PushForm.getInstance();
+        JPanel pushPanel = pushForm.getPushPanel();
+
         // 开始按钮事件
-        PushForm.pushForm.getPushStartButton().addActionListener((e) -> ThreadUtil.execute(() -> {
+        pushForm.getPushStartButton().addActionListener((e) -> ThreadUtil.execute(() -> {
             PushData.boostMode = false;
             if (PushControl.pushCheck()) {
                 int isPush = JOptionPane.showConfirmDialog(pushPanel,
                         "确定开始推送吗？\n\n推送消息：" +
-                                MessageEditForm.messageEditForm.getMsgNameField().getText() +
+                                MessageEditForm.getInstance().getMsgNameField().getText() +
                                 "\n推送人数：" + PushData.allUser.size() +
                                 "\n\n空跑模式：" +
-                                PushForm.pushForm.getDryRunCheckBox().isSelected() + "\n", "确认推送？",
+                                pushForm.getDryRunCheckBox().isSelected() + "\n", "确认推送？",
                         JOptionPane.YES_NO_OPTION);
                 if (isPush == JOptionPane.YES_OPTION) {
                     ThreadUtil.execute(new PushRunThread());
@@ -75,27 +76,27 @@ public class PushListener {
         }));
 
         // 停止按钮事件
-        PushForm.pushForm.getPushStopButton().addActionListener((e) -> {
+        pushForm.getPushStopButton().addActionListener((e) -> {
             ThreadUtil.execute(() -> {
                 if (PushData.scheduling) {
-                    PushForm.pushForm.getScheduleDetailLabel().setText("");
+                    pushForm.getScheduleDetailLabel().setText("");
                     if (serviceStartAt != null) {
                         serviceStartAt.shutdownNow();
                     }
-                    PushForm.pushForm.getPushStartButton().setEnabled(true);
-                    PushForm.pushForm.getScheduleRunButton().setEnabled(true);
-                    PushForm.pushForm.getPushStopButton().setText("停止");
-                    PushForm.pushForm.getPushStopButton().setEnabled(false);
-                    PushForm.pushForm.getPushStartButton().updateUI();
-                    PushForm.pushForm.getScheduleRunButton().updateUI();
-                    PushForm.pushForm.getPushStopButton().updateUI();
-                    PushForm.pushForm.getScheduleDetailLabel().setVisible(false);
+                    pushForm.getPushStartButton().setEnabled(true);
+                    pushForm.getScheduleRunButton().setEnabled(true);
+                    pushForm.getPushStopButton().setText("停止");
+                    pushForm.getPushStopButton().setEnabled(false);
+                    pushForm.getPushStartButton().updateUI();
+                    pushForm.getScheduleRunButton().updateUI();
+                    pushForm.getPushStopButton().updateUI();
+                    pushForm.getScheduleDetailLabel().setVisible(false);
                     PushData.scheduling = false;
                     PushData.running = false;
                 }
 
                 if (PushData.fixRateScheduling) {
-                    PushForm.pushForm.getScheduleDetailLabel().setText("");
+                    pushForm.getScheduleDetailLabel().setText("");
                     if (serviceStartPerDay != null) {
                         serviceStartPerDay.shutdownNow();
                     }
@@ -107,14 +108,14 @@ public class PushListener {
                     } catch (Exception e1) {
                         logger.warn(e1.toString());
                     }
-                    PushForm.pushForm.getPushStartButton().setEnabled(true);
-                    PushForm.pushForm.getScheduleRunButton().setEnabled(true);
-                    PushForm.pushForm.getPushStopButton().setText("停止");
-                    PushForm.pushForm.getPushStopButton().setEnabled(false);
-                    PushForm.pushForm.getPushStartButton().updateUI();
-                    PushForm.pushForm.getScheduleRunButton().updateUI();
-                    PushForm.pushForm.getPushStopButton().updateUI();
-                    PushForm.pushForm.getScheduleDetailLabel().setVisible(false);
+                    pushForm.getPushStartButton().setEnabled(true);
+                    pushForm.getScheduleRunButton().setEnabled(true);
+                    pushForm.getPushStopButton().setText("停止");
+                    pushForm.getPushStopButton().setEnabled(false);
+                    pushForm.getPushStartButton().updateUI();
+                    pushForm.getScheduleRunButton().updateUI();
+                    pushForm.getPushStopButton().updateUI();
+                    pushForm.getScheduleDetailLabel().setVisible(false);
                     PushData.fixRateScheduling = false;
                     PushData.running = false;
                 }
@@ -125,21 +126,21 @@ public class PushListener {
                             JOptionPane.YES_NO_OPTION);
                     if (isStop == JOptionPane.YES_OPTION) {
                         PushData.running = false;
-                        PushForm.pushForm.getPushStartButton().setEnabled(true);
-                        PushForm.pushForm.getScheduleRunButton().setEnabled(true);
-                        PushForm.pushForm.getPushStopButton().setText("停止");
-                        PushForm.pushForm.getPushStopButton().setEnabled(false);
-                        PushForm.pushForm.getPushStartButton().updateUI();
-                        PushForm.pushForm.getScheduleRunButton().updateUI();
-                        PushForm.pushForm.getPushStopButton().updateUI();
-                        PushForm.pushForm.getScheduleDetailLabel().setVisible(false);
+                        pushForm.getPushStartButton().setEnabled(true);
+                        pushForm.getScheduleRunButton().setEnabled(true);
+                        pushForm.getPushStopButton().setText("停止");
+                        pushForm.getPushStopButton().setEnabled(false);
+                        pushForm.getPushStartButton().updateUI();
+                        pushForm.getScheduleRunButton().updateUI();
+                        pushForm.getPushStopButton().updateUI();
+                        pushForm.getScheduleDetailLabel().setVisible(false);
                     }
                 }
             });
         });
 
         // 按计划执行按钮事件
-        PushForm.pushForm.getScheduleRunButton().addActionListener((e -> ThreadUtil.execute(() -> {
+        pushForm.getScheduleRunButton().addActionListener((e -> ThreadUtil.execute(() -> {
             PushData.boostMode = false;
             if (PushControl.pushCheck()) {
                 // 看是否存在设置的计划任务
@@ -158,21 +159,21 @@ public class PushListener {
                             "将在" +
                                     App.config.getTextStartAt() +
                                     "推送\n\n消息：" +
-                                    MessageEditForm.messageEditForm.getMsgNameField().getText() +
+                                    MessageEditForm.getInstance().getMsgNameField().getText() +
                                     "\n\n推送人数：" + PushData.allUser.size() +
                                     "\n\n空跑模式：" +
-                                    PushForm.pushForm.getDryRunCheckBox().isSelected(), "确认定时推送？",
+                                    pushForm.getDryRunCheckBox().isSelected(), "确认定时推送？",
                             JOptionPane.YES_NO_OPTION);
                     if (isSchedulePush == JOptionPane.YES_OPTION) {
                         PushData.scheduling = true;
                         // 按钮状态
-                        PushForm.pushForm.getScheduleRunButton().setEnabled(false);
-                        PushForm.pushForm.getPushStartButton().setEnabled(false);
-                        PushForm.pushForm.getPushStopButton().setText("停止计划任务");
-                        PushForm.pushForm.getPushStopButton().setEnabled(true);
+                        pushForm.getScheduleRunButton().setEnabled(false);
+                        pushForm.getPushStartButton().setEnabled(false);
+                        pushForm.getPushStopButton().setText("停止计划任务");
+                        pushForm.getPushStopButton().setEnabled(true);
 
-                        PushForm.pushForm.getScheduleDetailLabel().setVisible(true);
-                        PushForm.pushForm.getScheduleDetailLabel().setText("计划任务执行中：将在" +
+                        pushForm.getScheduleDetailLabel().setVisible(true);
+                        pushForm.getScheduleDetailLabel().setText("计划任务执行中：将在" +
                                 App.config.getTextStartAt() +
                                 "开始推送");
 
@@ -190,21 +191,21 @@ public class PushListener {
                             "将在每天" +
                                     App.config.getTextPerDay() +
                                     "推送\n\n消息：" +
-                                    MessageEditForm.messageEditForm.getMsgNameField().getText() +
+                                    MessageEditForm.getInstance().getMsgNameField().getText() +
                                     "\n\n推送人数：" + PushData.allUser.size() +
                                     "\n\n空跑模式：" +
-                                    PushForm.pushForm.getDryRunCheckBox().isSelected(), "确认定时推送？",
+                                    pushForm.getDryRunCheckBox().isSelected(), "确认定时推送？",
                             JOptionPane.YES_NO_OPTION);
                     if (isSchedulePush == JOptionPane.YES_OPTION) {
                         PushData.fixRateScheduling = true;
                         // 按钮状态
-                        PushForm.pushForm.getScheduleRunButton().setEnabled(false);
-                        PushForm.pushForm.getPushStartButton().setEnabled(false);
-                        PushForm.pushForm.getPushStopButton().setText("停止计划任务");
-                        PushForm.pushForm.getPushStopButton().setEnabled(true);
+                        pushForm.getScheduleRunButton().setEnabled(false);
+                        pushForm.getPushStartButton().setEnabled(false);
+                        pushForm.getPushStopButton().setText("停止计划任务");
+                        pushForm.getPushStopButton().setEnabled(true);
 
-                        PushForm.pushForm.getScheduleDetailLabel().setVisible(true);
-                        PushForm.pushForm.getScheduleDetailLabel().setText("计划任务执行中：将在每天" +
+                        pushForm.getScheduleDetailLabel().setVisible(true);
+                        pushForm.getScheduleDetailLabel().setText("计划任务执行中：将在每天" +
                                 App.config.getTextPerDay() +
                                 "开始推送");
 
@@ -227,22 +228,22 @@ public class PushListener {
                             "将在每周" + App.config.getTextPerWeekWeek() +
                                     App.config.getTextPerWeekTime() +
                                     "推送\n\n消息：" +
-                                    MessageEditForm.messageEditForm.getMsgNameField().getText() +
+                                    MessageEditForm.getInstance().getMsgNameField().getText() +
                                     "\n\n推送人数：" + PushData.allUser.size() +
                                     "\n\n空跑模式：" +
-                                    PushForm.pushForm.getDryRunCheckBox().isSelected(), "确认定时推送？",
+                                    pushForm.getDryRunCheckBox().isSelected(), "确认定时推送？",
                             JOptionPane.YES_NO_OPTION);
                     if (isSchedulePush == JOptionPane.YES_OPTION) {
                         PushData.scheduling = true;
                         PushData.fixRateScheduling = true;
                         // 按钮状态
-                        PushForm.pushForm.getScheduleRunButton().setEnabled(false);
-                        PushForm.pushForm.getPushStartButton().setEnabled(false);
-                        PushForm.pushForm.getPushStopButton().setText("停止计划任务");
-                        PushForm.pushForm.getPushStopButton().setEnabled(true);
+                        pushForm.getScheduleRunButton().setEnabled(false);
+                        pushForm.getPushStartButton().setEnabled(false);
+                        pushForm.getPushStopButton().setText("停止计划任务");
+                        pushForm.getPushStopButton().setEnabled(true);
 
-                        PushForm.pushForm.getScheduleDetailLabel().setVisible(true);
-                        PushForm.pushForm.getScheduleDetailLabel().setText("计划任务执行中：将在每周" +
+                        pushForm.getScheduleDetailLabel().setVisible(true);
+                        pushForm.getScheduleDetailLabel().setText("计划任务执行中：将在每周" +
                                 App.config.getTextPerWeekWeek() +
                                 App.config.getTextPerWeekTime() +
                                 "开始推送");
@@ -272,21 +273,21 @@ public class PushListener {
                                     "最近5次运行时间:\n" +
                                     String.join("\n", latest5RunTimeList) +
                                     "\n\n消息名称：" +
-                                    MessageEditForm.messageEditForm.getMsgNameField().getText() +
+                                    MessageEditForm.getInstance().getMsgNameField().getText() +
                                     "\n推送人数：" + PushData.allUser.size() +
                                     "\n空跑模式：" +
-                                    PushForm.pushForm.getDryRunCheckBox().isSelected(), "确认定时推送？",
+                                    pushForm.getDryRunCheckBox().isSelected(), "确认定时推送？",
                             JOptionPane.YES_NO_OPTION);
                     if (isSchedulePush == JOptionPane.YES_OPTION) {
                         PushData.fixRateScheduling = true;
                         // 按钮状态
-                        PushForm.pushForm.getScheduleRunButton().setEnabled(false);
-                        PushForm.pushForm.getPushStartButton().setEnabled(false);
-                        PushForm.pushForm.getPushStopButton().setText("停止计划任务");
-                        PushForm.pushForm.getPushStopButton().setEnabled(true);
+                        pushForm.getScheduleRunButton().setEnabled(false);
+                        pushForm.getPushStartButton().setEnabled(false);
+                        pushForm.getPushStopButton().setText("停止计划任务");
+                        pushForm.getPushStopButton().setEnabled(true);
 
-                        PushForm.pushForm.getScheduleDetailLabel().setVisible(true);
-                        PushForm.pushForm.getScheduleDetailLabel().setText("计划任务执行中，下一次执行时间：" + latest5RunTimeList.get(0));
+                        pushForm.getScheduleDetailLabel().setVisible(true);
+                        pushForm.getScheduleDetailLabel().setText("计划任务执行中，下一次执行时间：" + latest5RunTimeList.get(0));
 
                         // 支持秒级别定时任务
                         CronUtil.setMatchSecond(true);
@@ -304,7 +305,7 @@ public class PushListener {
         })));
 
         // 线程池数失去焦点
-        PushForm.pushForm.getMaxThreadPoolTextField().addFocusListener(new FocusAdapter() {
+        pushForm.getMaxThreadPoolTextField().addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
                 try {
@@ -318,7 +319,7 @@ public class PushListener {
         });
 
         // 线程池数键入回车
-        PushForm.pushForm.getMaxThreadPoolTextField().addKeyListener(new KeyAdapter() {
+        pushForm.getMaxThreadPoolTextField().addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 try {
@@ -332,14 +333,14 @@ public class PushListener {
         });
 
         // 线程数滑块
-        PushForm.pushForm.getThreadCountSlider().addChangeListener(e -> {
-            int slideValue = PushForm.pushForm.getThreadCountSlider().getValue();
-            PushForm.pushForm.getThreadCountTextField().setText(String.valueOf(slideValue));
+        pushForm.getThreadCountSlider().addChangeListener(e -> {
+            int slideValue = pushForm.getThreadCountSlider().getValue();
+            pushForm.getThreadCountTextField().setText(String.valueOf(slideValue));
             App.config.setThreadCount(slideValue);
             refreshPushInfo();
         });
 
-        PushForm.pushForm.getThreadTipsLabel().addMouseListener(new MouseAdapter() {
+        pushForm.getThreadTipsLabel().addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 CommonTipsDialog dialog = new CommonTipsDialog();
@@ -374,7 +375,7 @@ public class PushListener {
             }
         });
 
-        PushForm.pushForm.getDryRunHelpLabel().addMouseListener(new MouseAdapter() {
+        pushForm.getDryRunHelpLabel().addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 CommonTipsDialog dialog = new CommonTipsDialog();
@@ -410,27 +411,31 @@ public class PushListener {
     }
 
     private static void tEvent() {
-        if (Integer.parseInt(PushForm.pushForm.getMaxThreadPoolTextField().getText()) > 1000) {
-            JOptionPane.showMessageDialog(pushPanel, "最大输入1000", "提示",
+        PushForm pushForm = PushForm.getInstance();
+
+        if (Integer.parseInt(pushForm.getMaxThreadPoolTextField().getText()) > 1000) {
+            JOptionPane.showMessageDialog(pushForm.getPushPanel(), "最大输入1000", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
-            PushForm.pushForm.getMaxThreadPoolTextField().setText("1000");
+            pushForm.getMaxThreadPoolTextField().setText("1000");
         }
-        PushForm.pushForm.getThreadCountSlider().setMaximum(Integer.parseInt(PushForm.pushForm.getMaxThreadPoolTextField().getText()));
+        pushForm.getThreadCountSlider().setMaximum(Integer.parseInt(pushForm.getMaxThreadPoolTextField().getText()));
         refreshPushInfo();
     }
 
     static void refreshPushInfo() {
+        PushForm pushForm = PushForm.getInstance();
+
         // 总记录数
         long totalCount = PushData.allUser.size();
-        PushForm.pushForm.getPushTotalCountLabel().setText("消息总数：" + totalCount);
+        pushForm.getPushTotalCountLabel().setText("消息总数：" + totalCount);
         // 每个线程平均分配
-        int threadCount = Integer.parseInt(PushForm.pushForm.getThreadCountTextField().getText());
+        int threadCount = Integer.parseInt(pushForm.getThreadCountTextField().getText());
         int perThread = (int) (totalCount / threadCount) + 1;
-        PushForm.pushForm.getCountPerThread().setText("每个线程平均分配：" + perThread);
+        pushForm.getCountPerThread().setText("每个线程平均分配：" + perThread);
         // 可用处理器核心
-        PushForm.pushForm.getAvailableProcessorLabel().setText("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
+        pushForm.getAvailableProcessorLabel().setText("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
         // JVM内存占用
-        PushForm.pushForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
+        pushForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
     }
 
 }

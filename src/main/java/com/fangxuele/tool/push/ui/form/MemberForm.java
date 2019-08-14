@@ -73,16 +73,24 @@ public class MemberForm {
     private JTextField importNumTextField;
     private JButton importFromNumButton;
 
-    public static MemberForm memberForm = new MemberForm();
+    private static MemberForm memberForm;
 
-    public MemberForm() {
+    private MemberForm() {
         UndoUtil.register(this);
+    }
+
+    public static MemberForm getInstance() {
+        if (memberForm == null) {
+            memberForm = new MemberForm();
+        }
+        return memberForm;
     }
 
     /**
      * 初始化导入用户tab
      */
     public static void init() {
+        memberForm = getInstance();
         memberForm.getMemberTabImportProgressBar().setVisible(false);
         memberForm.getImportFromSqlTextArea().setText(App.config.getMemberSql());
         memberForm.getMemberFilePathField().setText(App.config.getMemberFilePath());
@@ -92,6 +100,8 @@ public class MemberForm {
      * 清除
      */
     public static void clearMember() {
+        memberForm = getInstance();
+
         PushData.allUser = Collections.synchronizedList(new ArrayList<>());
         PushData.allUser.clear();
         memberForm.getMemberTabCountLabel().setText("0");

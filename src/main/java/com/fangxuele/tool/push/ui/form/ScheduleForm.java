@@ -39,16 +39,24 @@ public class ScheduleForm {
     private JLabel cronHelpLabel;
     private JLabel cronOnlineLabel;
 
-    public static ScheduleForm scheduleForm = new ScheduleForm();
+    private static ScheduleForm scheduleForm;
 
-    public ScheduleForm() {
+    private ScheduleForm() {
         UndoUtil.register(this);
+    }
+
+    public static ScheduleForm getInstance() {
+        if (scheduleForm == null) {
+            scheduleForm = new ScheduleForm();
+        }
+        return scheduleForm;
     }
 
     /**
      * 初始化计划任务tab
      */
     public static void init() {
+        scheduleForm = getInstance();
         // 开始
         scheduleForm.getRunAtThisTimeRadioButton().setSelected(App.config.isRadioStartAt());
         scheduleForm.getStartAtThisTimeTextField().setText(App.config.getTextStartAt());

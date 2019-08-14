@@ -25,7 +25,7 @@ public class TabListener {
     private static boolean warnFlag = true;
 
     public static void addListeners() {
-        MainWindow.mainWindow.getTabbedPane().addChangeListener(new ChangeListener() {
+        MainWindow.getInstance().getTabbedPane().addChangeListener(new ChangeListener() {
             /**
              * Invoked when the target of the listener has changed its state.
              *
@@ -33,7 +33,7 @@ public class TabListener {
              */
             @Override
             public void stateChanged(ChangeEvent e) {
-                int index = MainWindow.mainWindow.getTabbedPane().getSelectedIndex();
+                int index = MainWindow.getInstance().getTabbedPane().getSelectedIndex();
                 int msgType = App.config.getMsgType();
                 switch (index) {
                     case 0:
@@ -41,18 +41,18 @@ public class TabListener {
                         break;
                     case 3:
                         if (warnFlag && msgType != MessageTypeEnum.EMAIL_CODE && msgType != MessageTypeEnum.HTTP_CODE) {
-                            JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(), "\n请确认您了解所要发送消息类型的使用频率、使用规范和限制规则，\n" +
+                            JOptionPane.showMessageDialog(MainWindow.getInstance().getSettingPanel(), "\n请确认您了解所要发送消息类型的使用频率、使用规范和限制规则，\n" +
                                             "以免账号相关功能被封禁等给您带来麻烦\n", "提示",
                                     JOptionPane.INFORMATION_MESSAGE);
                             warnFlag = false;
                         }
                         break;
                     case 4:
-                        PushForm.pushForm.getPushMsgName().setText(MessageEditForm.messageEditForm.getMsgNameField().getText());
+                        PushForm.getInstance().getPushMsgName().setText(MessageEditForm.getInstance().getMsgNameField().getText());
                         PushListener.refreshPushInfo();
                         break;
                     case 5:
-                        BoostForm.boostForm.getMsgNameLabel().setText(MessageEditForm.messageEditForm.getMsgNameField().getText());
+                        BoostForm.getInstance().getMsgNameLabel().setText(MessageEditForm.getInstance().getMsgNameField().getText());
                         BoostListener.refreshPushInfo();
                         break;
                     default:

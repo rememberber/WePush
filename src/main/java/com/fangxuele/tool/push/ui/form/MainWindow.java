@@ -32,23 +32,34 @@ public class MainWindow {
     private JPanel messageTypePanel;
     private JPanel boostPanel;
 
-    public static MainWindow mainWindow = new MainWindow();
+    private static MainWindow mainWindow;
+
+    private MainWindow() {
+    }
+
+    public static MainWindow getInstance() {
+        if (mainWindow == null) {
+            mainWindow = new MainWindow();
+        }
+        return mainWindow;
+    }
 
     private static GridConstraints gridConstraints = new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false);
 
     public void init() {
+        mainWindow = getInstance();
         mainWindow.getMainPanel().updateUI();
-        mainWindow.getAboutPanel().add(AboutForm.aboutForm.getAboutPanel(), gridConstraints);
-        mainWindow.getUserCasePanel().add(UserCaseForm.userCaseForm.getUserCasePanel(), gridConstraints);
-        mainWindow.getSchedulePanel().add(ScheduleForm.scheduleForm.getSchedulePanel(), gridConstraints);
-        mainWindow.getPushHisPanel().add(PushHisForm.pushHisForm.getPushHisPanel(), gridConstraints);
-        mainWindow.getSettingPanel().add(SettingForm.settingForm.getSettingPanel(), gridConstraints);
-        mainWindow.getMessageEditPanel().add(MessageEditForm.messageEditForm.getMessageEditPanel(), gridConstraints);
-        mainWindow.getMessageManagePanel().add(MessageManageForm.messageManageForm.getMessageManagePanel(), gridConstraints);
-        mainWindow.getMemberPanel().add(MemberForm.memberForm.getMemberPanel(), gridConstraints);
-        mainWindow.getPushPanel().add(PushForm.pushForm.getPushPanel(), gridConstraints);
-        mainWindow.getMessageTypePanel().add(MessageTypeForm.messageTypeForm.getMessageTypePanel(), gridConstraints);
-        mainWindow.getBoostPanel().add(BoostForm.boostForm.getBoostPanel(), gridConstraints);
+        mainWindow.getAboutPanel().add(AboutForm.getInstance().getAboutPanel(), gridConstraints);
+        mainWindow.getUserCasePanel().add(UserCaseForm.getInstance().getUserCasePanel(), gridConstraints);
+        mainWindow.getSchedulePanel().add(ScheduleForm.getInstance().getSchedulePanel(), gridConstraints);
+        mainWindow.getPushHisPanel().add(PushHisForm.getInstance().getPushHisPanel(), gridConstraints);
+        mainWindow.getSettingPanel().add(SettingForm.getInstance().getSettingPanel(), gridConstraints);
+        mainWindow.getMessageEditPanel().add(MessageEditForm.getInstance().getMessageEditPanel(), gridConstraints);
+        mainWindow.getMessageManagePanel().add(MessageManageForm.getInstance().getMessageManagePanel(), gridConstraints);
+        mainWindow.getMemberPanel().add(MemberForm.getInstance().getMemberPanel(), gridConstraints);
+        mainWindow.getPushPanel().add(PushForm.getInstance().getPushPanel(), gridConstraints);
+        mainWindow.getMessageTypePanel().add(MessageTypeForm.getInstance().getMessageTypePanel(), gridConstraints);
+        mainWindow.getBoostPanel().add(BoostForm.getInstance().getBoostPanel(), gridConstraints);
         mainWindow.getMainPanel().updateUI();
     }
 

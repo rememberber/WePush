@@ -109,7 +109,7 @@ public class SettingForm {
     private JLabel manualAtTipsLabel;
     private JLabel apiAtTipsLabel;
 
-    public static SettingForm settingForm = new SettingForm();
+    private static SettingForm settingForm;
     private static TWxAccountMapper wxAccountMapper = MybatisUtil.getSqlSession().getMapper(TWxAccountMapper.class);
 
     /**
@@ -122,14 +122,22 @@ public class SettingForm {
      */
     public static final String WX_ACCOUNT_TYPE_MA = "ma";
 
-    public SettingForm() {
+    private SettingForm() {
         UndoUtil.register(this);
+    }
+
+    public static SettingForm getInstance() {
+        if (settingForm == null) {
+            settingForm = new SettingForm();
+        }
+        return settingForm;
     }
 
     /**
      * 初始化设置tab
      */
     public static void init() {
+        settingForm = getInstance();
         // 常规
         settingForm.getAutoCheckUpdateCheckBox().setSelected(App.config.isAutoCheckUpdate());
 
@@ -227,6 +235,8 @@ public class SettingForm {
      * 获取系统字体列表
      */
     private static void getSysFontList() {
+        settingForm = getInstance();
+
         settingForm.getSettingFontNameComboBox().removeAllItems();
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         String[] fonts = ge.getAvailableFontFamilyNames();
@@ -241,6 +251,8 @@ public class SettingForm {
      * 初始化多账号切换
      */
     public static void initSwitchMultiAccount() {
+        settingForm = getInstance();
+
         // 多账号切换-公众号
         settingForm.getMpAccountSwitchComboBox().removeAllItems();
         List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountType(WX_ACCOUNT_TYPE_MP);
@@ -261,6 +273,8 @@ public class SettingForm {
      * 切换公众号代理设置面板显示/隐藏
      */
     public static void toggleMpProxyPanel() {
+        settingForm = getInstance();
+
         boolean mpUseProxy = settingForm.getMpUseProxyCheckBox().isSelected();
         if (mpUseProxy) {
             settingForm.getMpProxyPanel().setVisible(true);
@@ -273,6 +287,8 @@ public class SettingForm {
      * 切换小程序代理设置面板显示/隐藏
      */
     public static void toggleMaProxyPanel() {
+        settingForm = getInstance();
+
         boolean maUseProxy = settingForm.getMaUseProxyCheckBox().isSelected();
         if (maUseProxy) {
             settingForm.getMaProxyPanel().setVisible(true);
@@ -285,6 +301,8 @@ public class SettingForm {
      * 切换HTTP代理设置面板显示/隐藏
      */
     public static void toggleHttpProxyPanel() {
+        settingForm = getInstance();
+
         boolean httpUseProxy = settingForm.getHttpUseProxyCheckBox().isSelected();
         if (httpUseProxy) {
             settingForm.getHttpProxyPanel().setVisible(true);
@@ -297,6 +315,8 @@ public class SettingForm {
      * 切换使用外部AccessToken面板显示/隐藏
      */
     public static void toggleMpOutSideAccessTokenPanel() {
+        settingForm = getInstance();
+
         boolean useOutSideAccessToken = settingForm.getUseOutSideAccessTokenCheckBox().isSelected();
         if (useOutSideAccessToken) {
             settingForm.getMpOutSideAccessTokenPanel().setVisible(true);

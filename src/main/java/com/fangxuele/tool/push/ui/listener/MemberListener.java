@@ -117,17 +117,18 @@ public class MemberListener {
 
     private static TWxMpUserMapper tWxMpUserMapper = MybatisUtil.getSqlSession().getMapper(TWxMpUserMapper.class);
 
-    private static JProgressBar progressBar = MemberForm.memberForm.getMemberTabImportProgressBar();
-    private static JTextField filePathField = MemberForm.memberForm.getMemberFilePathField();
-    private static JLabel memberCountLabel = MemberForm.memberForm.getMemberTabCountLabel();
-    private static JPanel memberPanel = MemberForm.memberForm.getMemberPanel();
-    private static JTable memberListTable = MemberForm.memberForm.getMemberListTable();
-
     public static void addListeners() {
+        MemberForm memberForm = MemberForm.getInstance();
+        JProgressBar progressBar = memberForm.getMemberTabImportProgressBar();
+        JTextField filePathField = memberForm.getMemberFilePathField();
+        JLabel memberCountLabel = memberForm.getMemberTabCountLabel();
+        JPanel memberPanel = memberForm.getMemberPanel();
+        JTable memberListTable = memberForm.getMemberListTable();
+
         // 按数量导入按钮事件
-        MemberForm.memberForm.getImportFromNumButton().addActionListener(e -> {
+        memberForm.getImportFromNumButton().addActionListener(e -> {
             ThreadUtil.execute(() -> {
-                if (StringUtils.isBlank(MemberForm.memberForm.getImportNumTextField().getText())) {
+                if (StringUtils.isBlank(memberForm.getImportNumTextField().getText())) {
                     JOptionPane.showMessageDialog(memberPanel, "请填写数量！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return;
@@ -136,7 +137,7 @@ public class MemberListener {
                 int currentImported = 0;
 
                 try {
-                    int importNum = Integer.parseInt(MemberForm.memberForm.getImportNumTextField().getText());
+                    int importNum = Integer.parseInt(memberForm.getImportNumTextField().getText());
                     progressBar.setVisible(true);
                     progressBar.setMaximum(importNum);
 
@@ -168,16 +169,16 @@ public class MemberListener {
         });
 
         // 从文件导入按钮事件
-        MemberForm.memberForm.getImportFromFileButton().addActionListener(e -> ThreadUtil.execute(MemberListener::importFromFile));
+        memberForm.getImportFromFileButton().addActionListener(e -> ThreadUtil.execute(MemberListener::importFromFile));
 
         // 从sql导入 按钮事件
-        MemberForm.memberForm.getImportFromSqlButton().addActionListener(e -> ThreadUtil.execute(MemberListener::importFromSql));
+        memberForm.getImportFromSqlButton().addActionListener(e -> ThreadUtil.execute(MemberListener::importFromSql));
 
         // 公众号-导入全员按钮事件
-        MemberForm.memberForm.getMemberImportAllButton().addActionListener(e -> ThreadUtil.execute(MemberListener::importWxAll));
+        memberForm.getMemberImportAllButton().addActionListener(e -> ThreadUtil.execute(MemberListener::importWxAll));
 
         // 公众号-刷新可选的标签按钮事件
-        MemberForm.memberForm.getMemberImportTagFreshButton().addActionListener(e -> {
+        memberForm.getMemberImportTagFreshButton().addActionListener(e -> {
             WxMpService wxMpService = WxMpTemplateMsgSender.getWxMpService();
             if (wxMpService.getWxMpConfigStorage() == null) {
                 return;
@@ -186,12 +187,12 @@ public class MemberListener {
             try {
                 List<WxUserTag> wxUserTagList = wxMpService.getUserTagService().tagGet();
 
-                MemberForm.memberForm.getMemberImportTagComboBox().removeAllItems();
+                memberForm.getMemberImportTagComboBox().removeAllItems();
                 userTagMap = new HashMap<>();
 
                 for (WxUserTag wxUserTag : wxUserTagList) {
                     String item = wxUserTag.getName() + "/" + wxUserTag.getCount() + "用户";
-                    MemberForm.memberForm.getMemberImportTagComboBox().addItem(item);
+                    memberForm.getMemberImportTagComboBox().addItem(item);
                     userTagMap.put(item, wxUserTag.getId());
                 }
 
@@ -204,12 +205,12 @@ public class MemberListener {
         });
 
         // 公众号-导入选择的标签分组用户按钮事件(取并集)
-        MemberForm.memberForm.getMemberImportTagButton().addActionListener(e -> ThreadUtil.execute(() -> {
+        memberForm.getMemberImportTagButton().addActionListener(e -> ThreadUtil.execute(() -> {
             try {
-                if (MemberForm.memberForm.getMemberImportTagComboBox().getSelectedItem() != null
-                        && StringUtils.isNotEmpty(MemberForm.memberForm.getMemberImportTagComboBox().getSelectedItem().toString())) {
+                if (memberForm.getMemberImportTagComboBox().getSelectedItem() != null
+                        && StringUtils.isNotEmpty(memberForm.getMemberImportTagComboBox().getSelectedItem().toString())) {
 
-                    long selectedTagId = userTagMap.get(MemberForm.memberForm.getMemberImportTagComboBox().getSelectedItem());
+                    long selectedTagId = userTagMap.get(memberForm.getMemberImportTagComboBox().getSelectedItem());
                     getMpUserListByTag(selectedTagId, false);
                     renderMemberListTable();
                     JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成",
@@ -231,12 +232,12 @@ public class MemberListener {
         }));
 
         // 公众号-导入选择的标签分组用户按钮事件(取交集)
-        MemberForm.memberForm.getMemberImportTagRetainButton().addActionListener(e -> ThreadUtil.execute(() -> {
+        memberForm.getMemberImportTagRetainButton().addActionListener(e -> ThreadUtil.execute(() -> {
             try {
-                if (MemberForm.memberForm.getMemberImportTagComboBox().getSelectedItem() != null
-                        && StringUtils.isNotEmpty(MemberForm.memberForm.getMemberImportTagComboBox().getSelectedItem().toString())) {
+                if (memberForm.getMemberImportTagComboBox().getSelectedItem() != null
+                        && StringUtils.isNotEmpty(memberForm.getMemberImportTagComboBox().getSelectedItem().toString())) {
 
-                    long selectedTagId = userTagMap.get(MemberForm.memberForm.getMemberImportTagComboBox().getSelectedItem());
+                    long selectedTagId = userTagMap.get(memberForm.getMemberImportTagComboBox().getSelectedItem());
                     getMpUserListByTag(selectedTagId, true);
                     renderMemberListTable();
                     JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成",
@@ -258,28 +259,28 @@ public class MemberListener {
         }));
 
         // 公众号-清空本地缓存按钮事件
-        MemberForm.memberForm.getClearDbCacheButton().addActionListener(e -> {
+        memberForm.getClearDbCacheButton().addActionListener(e -> {
             int count = tWxMpUserMapper.deleteAll();
             JOptionPane.showMessageDialog(memberPanel, "清理完毕！\n\n共清理：" + count + "条本地数据", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
         });
 
         // 企业号-按标签导入-刷新
-        MemberForm.memberForm.getWxCpTagsRefreshButton().addActionListener(e -> {
+        memberForm.getWxCpTagsRefreshButton().addActionListener(e -> {
             ThreadUtil.execute(() -> {
                 if (WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem() == null) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "请先在编辑消息tab中选择应用！", "提示",
+                    JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "请先在编辑消息tab中选择应用！", "提示",
                             JOptionPane.ERROR_MESSAGE);
-                    MainWindow.mainWindow.getTabbedPane().setSelectedIndex(2);
+                    MainWindow.getInstance().getTabbedPane().setSelectedIndex(2);
                     return;
                 }
-                MemberForm.memberForm.getWxCpTagsComboBox().removeAllItems();
+                memberForm.getWxCpTagsComboBox().removeAllItems();
 
                 try {
                     // 获取标签列表
                     List<WxCpTag> wxCpTagList = WxCpMsgSender.getWxCpService().getTagService().listAll();
                     for (WxCpTag wxCpTag : wxCpTagList) {
-                        MemberForm.memberForm.getWxCpTagsComboBox().addItem(wxCpTag.getName());
+                        memberForm.getWxCpTagsComboBox().addItem(wxCpTag.getName());
                         wxCpTagNameToIdMap.put(wxCpTag.getName(), wxCpTag.getId());
                         wxCpIdToTagNameMap.put(wxCpTag.getId(), wxCpTag.getName());
                     }
@@ -292,9 +293,9 @@ public class MemberListener {
         });
 
         // 企业号-按标签导入-导入
-        MemberForm.memberForm.getWxCpTagsImportButton().addActionListener(e -> {
+        memberForm.getWxCpTagsImportButton().addActionListener(e -> {
             ThreadUtil.execute(() -> {
-                if (MemberForm.memberForm.getWxCpTagsComboBox().getSelectedItem() == null) {
+                if (memberForm.getWxCpTagsComboBox().getSelectedItem() == null) {
                     return;
                 }
                 try {
@@ -304,7 +305,7 @@ public class MemberListener {
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());
 
                     // 获取标签id
-                    String tagId = wxCpTagNameToIdMap.get(MemberForm.memberForm.getWxCpTagsComboBox().getSelectedItem());
+                    String tagId = wxCpTagNameToIdMap.get(memberForm.getWxCpTagsComboBox().getSelectedItem());
                     // 获取用户
                     List<WxCpUser> wxCpUsers = WxCpMsgSender.getWxCpService().getTagService().listUsersByTagId(tagId);
                     for (WxCpUser wxCpUser : wxCpUsers) {
@@ -337,21 +338,21 @@ public class MemberListener {
         });
 
         // 企业号-按部门导入-刷新
-        MemberForm.memberForm.getWxCpDeptsRefreshButton().addActionListener(e -> {
+        memberForm.getWxCpDeptsRefreshButton().addActionListener(e -> {
             ThreadUtil.execute(() -> {
                 if (WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem() == null) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "请先在编辑消息tab中选择应用！", "提示",
+                    JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "请先在编辑消息tab中选择应用！", "提示",
                             JOptionPane.ERROR_MESSAGE);
-                    MainWindow.mainWindow.getTabbedPane().setSelectedIndex(2);
+                    MainWindow.getInstance().getTabbedPane().setSelectedIndex(2);
                     return;
                 }
-                MemberForm.memberForm.getWxCpDeptsComboBox().removeAllItems();
+                memberForm.getWxCpDeptsComboBox().removeAllItems();
 
                 try {
                     // 获取部门列表
                     List<WxCpDepart> wxCpDepartList = WxCpMsgSender.getWxCpService().getDepartmentService().list(null);
                     for (WxCpDepart wxCpDepart : wxCpDepartList) {
-                        MemberForm.memberForm.getWxCpDeptsComboBox().addItem(wxCpDepart.getName());
+                        memberForm.getWxCpDeptsComboBox().addItem(wxCpDepart.getName());
                         wxCpDeptNameToIdMap.put(wxCpDepart.getName(), wxCpDepart.getId());
                         wxCpIdToDeptNameMap.put(wxCpDepart.getId(), wxCpDepart.getName());
                     }
@@ -364,9 +365,9 @@ public class MemberListener {
         });
 
         // 企业号-按部门导入-导入
-        MemberForm.memberForm.getWxCpDeptsImportButton().addActionListener(e -> {
+        memberForm.getWxCpDeptsImportButton().addActionListener(e -> {
             ThreadUtil.execute(() -> {
-                if (MemberForm.memberForm.getWxCpDeptsComboBox().getSelectedItem() == null) {
+                if (memberForm.getWxCpDeptsComboBox().getSelectedItem() == null) {
                     return;
                 }
                 try {
@@ -376,7 +377,7 @@ public class MemberListener {
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());
 
                     // 获取部门id
-                    Long deptId = wxCpDeptNameToIdMap.get(MemberForm.memberForm.getWxCpDeptsComboBox().getSelectedItem());
+                    Long deptId = wxCpDeptNameToIdMap.get(memberForm.getWxCpDeptsComboBox().getSelectedItem());
                     // 获取用户
                     List<WxCpUser> wxCpUsers = WxCpMsgSender.getWxCpService().getUserService().listByDepartment(deptId, true, 0);
                     for (WxCpUser wxCpUser : wxCpUsers) {
@@ -417,14 +418,14 @@ public class MemberListener {
         });
 
         // 企业号-导入全部
-        MemberForm.memberForm.getWxCpImportAllButton().addActionListener(e -> {
+        memberForm.getWxCpImportAllButton().addActionListener(e -> {
             ThreadUtil.execute(() -> {
                 importWxCpAll();
             });
         });
 
         // 清除按钮事件
-        MemberForm.memberForm.getClearImportButton().addActionListener(e -> {
+        memberForm.getClearImportButton().addActionListener(e -> {
             int isClear = JOptionPane.showConfirmDialog(memberPanel, "确认清除？", "确认",
                     JOptionPane.YES_NO_OPTION);
             if (isClear == JOptionPane.YES_OPTION) {
@@ -433,7 +434,7 @@ public class MemberListener {
         });
 
         // 浏览按钮
-        MemberForm.memberForm.getMemberImportExploreButton().addActionListener(e -> {
+        memberForm.getMemberImportExploreButton().addActionListener(e -> {
             File beforeFile = new File(filePathField.getText());
             JFileChooser fileChooser;
 
@@ -454,10 +455,10 @@ public class MemberListener {
         });
 
         // 列表-全选按钮事件
-        MemberForm.memberForm.getSelectAllButton().addActionListener(e -> ThreadUtil.execute(() -> memberListTable.selectAll()));
+        memberForm.getSelectAllButton().addActionListener(e -> ThreadUtil.execute(() -> memberListTable.selectAll()));
 
         // 列表-删除按钮事件
-        MemberForm.memberForm.getDeleteButton().addActionListener(e -> ThreadUtil.execute(() -> {
+        memberForm.getDeleteButton().addActionListener(e -> ThreadUtil.execute(() -> {
             try {
                 int[] selectedRows = memberListTable.getSelectedRows();
                 if (selectedRows.length == 0) {
@@ -482,7 +483,7 @@ public class MemberListener {
         }));
 
         // 列表-导入按钮事件
-        MemberForm.memberForm.getImportSelectedButton().addActionListener(e -> ThreadUtil.execute(() -> {
+        memberForm.getImportSelectedButton().addActionListener(e -> ThreadUtil.execute(() -> {
             try {
                 int[] selectedRows = memberListTable.getSelectedRows();
                 if (selectedRows.length <= 0) {
@@ -516,7 +517,7 @@ public class MemberListener {
         }));
 
         // 列表-导出按钮事件
-        MemberForm.memberForm.getExportButton().addActionListener(e -> ThreadUtil.execute(() -> {
+        memberForm.getExportButton().addActionListener(e -> ThreadUtil.execute(() -> {
             int[] selectedRows = memberListTable.getSelectedRows();
             int columnCount = memberListTable.getColumnCount();
             BigExcelWriter writer = null;
@@ -600,10 +601,10 @@ public class MemberListener {
         }));
 
         // 列表-搜索按钮事件
-        MemberForm.memberForm.getSearchButton().addActionListener(e -> searchEvent());
+        memberForm.getSearchButton().addActionListener(e -> searchEvent());
 
         // 列表-搜索框键入回车
-        MemberForm.memberForm.getSearchTextField().addKeyListener(new KeyAdapter() {
+        memberForm.getSearchTextField().addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 try {
@@ -619,6 +620,7 @@ public class MemberListener {
     }
 
     private static void searchEvent() {
+        JTable memberListTable = MemberForm.getInstance().getMemberListTable();
         ThreadUtil.execute(() -> {
             int rowCount = memberListTable.getRowCount();
             int columnCount = memberListTable.getColumnCount();
@@ -637,7 +639,7 @@ public class MemberListener {
                         }
                     }
 
-                    String keyWord = MemberForm.memberForm.getSearchTextField().getText();
+                    String keyWord = MemberForm.getInstance().getSearchTextField().getText();
                     List<String> searchResultList = toSearchRowsList.parallelStream().filter(rowStr -> rowStr.contains(keyWord)).collect(Collectors.toList());
 
                     DefaultTableModel tableModel = (DefaultTableModel) memberListTable.getModel();
@@ -656,6 +658,9 @@ public class MemberListener {
      * 拉取公众平台用户列表
      */
     public static void getMpUserList() throws WxErrorException {
+        JProgressBar progressBar = MemberForm.getInstance().getMemberTabImportProgressBar();
+        JLabel memberCountLabel = MemberForm.getInstance().getMemberTabCountLabel();
+
         progressBar.setVisible(true);
         progressBar.setIndeterminate(true);
 
@@ -717,6 +722,9 @@ public class MemberListener {
      * @throws WxErrorException
      */
     public static void getMpUserListByTag(Long tagId, boolean retain) throws WxErrorException {
+        JProgressBar progressBar = MemberForm.getInstance().getMemberTabImportProgressBar();
+        JLabel memberCountLabel = MemberForm.getInstance().getMemberTabCountLabel();
+
         progressBar.setVisible(true);
         progressBar.setIndeterminate(true);
 
@@ -748,7 +756,6 @@ public class MemberListener {
             openIds.removeAll(tagUserSet);
             tagUserSet.addAll(openIds);
         }
-
 
         while (StringUtils.isNotEmpty(wxTagListUser.getNextOpenid())) {
             wxTagListUser = wxMpService.getUserTagService().tagListUser(tagId, wxTagListUser.getNextOpenid());
@@ -785,6 +792,10 @@ public class MemberListener {
      * 获取导入数据信息列表
      */
     private static void renderMemberListTable() {
+        JTable memberListTable = MemberForm.getInstance().getMemberListTable();
+        JProgressBar progressBar = MemberForm.getInstance().getMemberTabImportProgressBar();
+        MemberForm memberForm = MemberForm.getInstance();
+
         toSearchRowsList = null;
         DefaultTableModel tableModel = (DefaultTableModel) memberListTable.getModel();
         tableModel.setRowCount(0);
@@ -803,10 +814,10 @@ public class MemberListener {
         List<String> headerNameList = Lists.newArrayList();
         headerNameList.add("Data");
         if (isWeixinTypeMsg) {
-            if (MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
+            if (memberForm.getImportOptionAvatarCheckBox().isSelected()) {
                 headerNameList.add("头像");
             }
-            if (MemberForm.memberForm.getImportOptionBasicInfoCheckBox().isSelected()) {
+            if (memberForm.getImportOptionBasicInfoCheckBox().isSelected()) {
                 headerNameList.add("昵称");
                 headerNameList.add("性别");
                 headerNameList.add("地区");
@@ -821,7 +832,7 @@ public class MemberListener {
         headerNameList.toArray(headerNames);
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
         memberListTable.setModel(model);
-        if (isWeixinTypeMsg && MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
+        if (isWeixinTypeMsg && memberForm.getImportOptionAvatarCheckBox().isSelected()) {
             memberListTable.getColumn("头像").setCellRenderer(new TableInCellImageLabelRenderer());
         }
 
@@ -834,7 +845,7 @@ public class MemberListener {
         JTableUtil.hideColumn(memberListTable, 0);
 
         // 设置行高
-        if (isWeixinTypeMsg && MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
+        if (isWeixinTypeMsg && memberForm.getImportOptionAvatarCheckBox().isSelected()) {
             memberListTable.setRowHeight(66);
         } else {
             memberListTable.setRowHeight(36);
@@ -843,8 +854,8 @@ public class MemberListener {
         List<Object> rowDataList;
         WxMpService wxMpService = null;
         boolean needToGetInfoFromWeiXin = false;
-        if (isWeixinTypeMsg && (MemberForm.memberForm.getImportOptionBasicInfoCheckBox().isSelected() ||
-                MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected())) {
+        if (isWeixinTypeMsg && (memberForm.getImportOptionBasicInfoCheckBox().isSelected() ||
+                memberForm.getImportOptionAvatarCheckBox().isSelected())) {
             needToGetInfoFromWeiXin = true;
         }
         if (needToGetInfoFromWeiXin) {
@@ -878,20 +889,20 @@ public class MemberListener {
                     }
 
                     if (wxMpUser != null) {
-                        if (MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
+                        if (memberForm.getImportOptionAvatarCheckBox().isSelected()) {
                             rowDataList.add(wxMpUser.getHeadImgUrl());
                         }
-                        if (MemberForm.memberForm.getImportOptionBasicInfoCheckBox().isSelected()) {
+                        if (memberForm.getImportOptionBasicInfoCheckBox().isSelected()) {
                             rowDataList.add(wxMpUser.getNickname());
                             rowDataList.add(wxMpUser.getSexDesc());
                             rowDataList.add(wxMpUser.getCountry() + "-" + wxMpUser.getProvince() + "-" + wxMpUser.getCity());
                             rowDataList.add(DateFormatUtils.format(wxMpUser.getSubscribeTime() * 1000, "yyyy-MM-dd HH:mm:ss"));
                         }
                     } else {
-                        if (MemberForm.memberForm.getImportOptionAvatarCheckBox().isSelected()) {
+                        if (memberForm.getImportOptionAvatarCheckBox().isSelected()) {
                             rowDataList.add("");
                         }
-                        if (MemberForm.memberForm.getImportOptionBasicInfoCheckBox().isSelected()) {
+                        if (memberForm.getImportOptionBasicInfoCheckBox().isSelected()) {
                             rowDataList.add("");
                             rowDataList.add("");
                             rowDataList.add("");
@@ -915,6 +926,11 @@ public class MemberListener {
      * 通过文件导入
      */
     public static void importFromFile() {
+        JTextField filePathField = MemberForm.getInstance().getMemberFilePathField();
+        JPanel memberPanel = MemberForm.getInstance().getMemberPanel();
+        JProgressBar progressBar = MemberForm.getInstance().getMemberTabImportProgressBar();
+        JLabel memberCountLabel = MemberForm.getInstance().getMemberTabCountLabel();
+
         if (StringUtils.isBlank(filePathField.getText())) {
             JOptionPane.showMessageDialog(memberPanel, "请填写或点击浏览按钮选择要导入的文件的路径！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
@@ -1012,12 +1028,17 @@ public class MemberListener {
      * 通过SQL导入
      */
     public static void importFromSql() {
+        MemberForm memberForm = MemberForm.getInstance();
+        JPanel memberPanel = memberForm.getMemberPanel();
+        JProgressBar progressBar = memberForm.getMemberTabImportProgressBar();
+        JLabel memberCountLabel = memberForm.getMemberTabCountLabel();
+
         if (StringUtils.isBlank(App.config.getMysqlUrl()) || StringUtils.isBlank(App.config.getMysqlUser())) {
             JOptionPane.showMessageDialog(memberPanel, "请先在设置中填写并保存MySQL的配置信息！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
             return;
         }
-        String querySql = MemberForm.memberForm.getImportFromSqlTextArea().getText();
+        String querySql = memberForm.getImportFromSqlTextArea().getText();
         if (StringUtils.isBlank(querySql)) {
             JOptionPane.showMessageDialog(memberPanel, "请先填写要执行导入的SQL！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
@@ -1027,8 +1048,8 @@ public class MemberListener {
         if (StringUtils.isNotEmpty(querySql)) {
             Connection conn = null;
             try {
-                MemberForm.memberForm.getImportFromSqlButton().setEnabled(false);
-                MemberForm.memberForm.getImportFromSqlButton().updateUI();
+                memberForm.getImportFromSqlButton().setEnabled(false);
+                memberForm.getImportFromSqlButton().updateUI();
                 progressBar.setVisible(true);
                 progressBar.setIndeterminate(true);
 
@@ -1065,8 +1086,8 @@ public class MemberListener {
                 e1.printStackTrace();
             } finally {
                 DbUtil.close(conn);
-                MemberForm.memberForm.getImportFromSqlButton().setEnabled(true);
-                MemberForm.memberForm.getImportFromSqlButton().updateUI();
+                memberForm.getImportFromSqlButton().setEnabled(true);
+                memberForm.getImportFromSqlButton().updateUI();
                 progressBar.setMaximum(100);
                 progressBar.setValue(100);
                 progressBar.setIndeterminate(false);
@@ -1079,6 +1100,9 @@ public class MemberListener {
      * 导入微信全员
      */
     public static void importWxAll() {
+        JPanel memberPanel = MemberForm.getInstance().getMemberPanel();
+        JProgressBar progressBar = MemberForm.getInstance().getMemberTabImportProgressBar();
+
         try {
             getMpUserList();
             renderMemberListTable();
@@ -1100,11 +1124,15 @@ public class MemberListener {
      * 导入企业通讯录全员
      */
     public static void importWxCpAll() {
+        JProgressBar progressBar = MemberForm.getInstance().getMemberTabImportProgressBar();
+        JLabel memberCountLabel = MemberForm.getInstance().getMemberTabCountLabel();
+        JPanel memberPanel = MemberForm.getInstance().getMemberPanel();
+
         try {
             if (WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem() == null) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "请先在编辑消息tab中选择应用！", "提示",
+                JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "请先在编辑消息tab中选择应用！", "提示",
                         JOptionPane.ERROR_MESSAGE);
-                MainWindow.mainWindow.getTabbedPane().setSelectedIndex(2);
+                MainWindow.getInstance().getTabbedPane().setSelectedIndex(2);
                 return;
             }
 

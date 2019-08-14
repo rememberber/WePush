@@ -1,14 +1,14 @@
 package com.fangxuele.tool.push.ui.listener;
 
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.PushForm;
 
 import javax.swing.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import static com.fangxuele.tool.push.App.mainFrame;
-import static com.fangxuele.tool.push.ui.form.MainWindow.mainWindow;
-import static com.fangxuele.tool.push.ui.form.PushForm.pushForm;
 
 /**
  * <pre>
@@ -45,8 +45,8 @@ public class FrameListener {
 
             @Override
             public void windowClosing(WindowEvent e) {
-                if (!pushForm.getPushStartButton().isEnabled()) {
-                    JOptionPane.showMessageDialog(mainWindow.getPushPanel(),
+                if (!PushForm.getInstance().getPushStartButton().isEnabled()) {
+                    JOptionPane.showMessageDialog(MainWindow.getInstance().getPushPanel(),
                             "有推送任务正在进行！\n\n为避免数据丢失，请先停止!\n\n", "Sorry~",
                             JOptionPane.WARNING_MESSAGE);
                 } else {

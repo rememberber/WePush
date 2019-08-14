@@ -35,12 +35,13 @@ import java.util.List;
 public class MsgEditListener {
     private static final Log logger = LogFactory.get();
 
-    private static JSplitPane messagePanel = MainWindow.mainWindow.getMessagePanel();
-
     public static void addListeners() {
+        JSplitPane messagePanel = MainWindow.getInstance().getMessagePanel();
+        MessageEditForm messageEditForm = MessageEditForm.getInstance();
+
         // 保存按钮事件
-        MessageEditForm.messageEditForm.getMsgSaveButton().addActionListener(e -> {
-            String msgName = MessageEditForm.messageEditForm.getMsgNameField().getText();
+        messageEditForm.getMsgSaveButton().addActionListener(e -> {
+            String msgName = messageEditForm.getMsgNameField().getText();
             if (StringUtils.isBlank(msgName)) {
                 JOptionPane.showMessageDialog(messagePanel, "请填写消息名称！\n\n", "失败",
                         JOptionPane.ERROR_MESSAGE);
@@ -50,7 +51,7 @@ public class MsgEditListener {
             try {
                 MsgFormFactory.getMsgForm().save(msgName);
 
-                App.config.setPreviewUser(MessageEditForm.messageEditForm.getPreviewUserField().getText());
+                App.config.setPreviewUser(messageEditForm.getPreviewUserField().getText());
                 App.config.save();
                 MessageManageForm.init();
             } catch (Exception e1) {
@@ -62,20 +63,20 @@ public class MsgEditListener {
         });
 
         // 预览按钮事件
-        MessageEditForm.messageEditForm.getPreviewMsgButton().addActionListener(e -> {
+        messageEditForm.getPreviewMsgButton().addActionListener(e -> {
             try {
-                if (StringUtils.isEmpty(MessageEditForm.messageEditForm.getMsgNameField().getText())) {
+                if (StringUtils.isEmpty(messageEditForm.getMsgNameField().getText())) {
                     JOptionPane.showMessageDialog(messagePanel, "请先选择一条消息！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }
-                if ("".equals(MessageEditForm.messageEditForm.getPreviewUserField().getText().trim())) {
+                if ("".equals(messageEditForm.getPreviewUserField().getText().trim())) {
                     JOptionPane.showMessageDialog(messagePanel, "预览用户不能为空！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }
                 if (App.config.getMsgType() == MessageTypeEnum.MA_TEMPLATE_CODE
-                        && MessageEditForm.messageEditForm.getPreviewUserField().getText().split(";")[0].length() < 2) {
+                        && messageEditForm.getPreviewUserField().getText().split(";")[0].length() < 2) {
                     JOptionPane.showMessageDialog(messagePanel, "小程序模板消息预览时，“预览用户openid”输入框里填写openid|formId，\n" +
                                     "示例格式：\n" +
                                     "opd-aswadfasdfasdfasdf|fi291834543", "提示",
@@ -85,7 +86,7 @@ public class MsgEditListener {
 
                 if (App.config.getMsgType() == MessageTypeEnum.WX_CP_CODE
                         && WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem() == null) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "请选择应用！", "成功",
+                    JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "请选择应用！", "成功",
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
@@ -94,7 +95,7 @@ public class MsgEditListener {
                 if (sendResultList != null) {
 
                     StringBuilder tipsBuilder = new StringBuilder();
-                    int totalCount = MessageEditForm.messageEditForm.getPreviewUserField().getText().split(";").length;
+                    int totalCount = messageEditForm.getPreviewUserField().getText().split(";").length;
                     long successCount = sendResultList.stream().filter(SendResult::isSuccess).count();
                     if (totalCount == successCount) {
                         tipsBuilder.append("<h1>发送预览消息成功！</h1>");
@@ -130,7 +131,7 @@ public class MsgEditListener {
             }
         });
 
-        MessageEditForm.messageEditForm.getPreviewUserHelpLabel().addMouseListener(new MouseAdapter() {
+        messageEditForm.getPreviewUserHelpLabel().addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 CommonTipsDialog dialog = new CommonTipsDialog();

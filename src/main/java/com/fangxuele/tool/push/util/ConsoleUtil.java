@@ -25,8 +25,8 @@ public class ConsoleUtil {
      * @param log
      */
     public static void consoleWithLog(String log) {
-        PushForm.pushForm.getPushConsoleTextArea().append(log + "\n");
-        PushForm.pushForm.getPushConsoleTextArea().setCaretPosition(PushForm.pushForm.getPushConsoleTextArea().getText().length());
+        PushForm.getInstance().getPushConsoleTextArea().append(log + "\n");
+        PushForm.getInstance().getPushConsoleTextArea().setCaretPosition(PushForm.getInstance().getPushConsoleTextArea().getText().length());
         logger.warn(log);
     }
 
@@ -36,8 +36,8 @@ public class ConsoleUtil {
      * @param log
      */
     public static void boostConsoleWithLog(String log) {
-        BoostForm.boostForm.getConsoleTextArea().append(log + "\n");
-        BoostForm.boostForm.getConsoleTextArea().setCaretPosition(BoostForm.boostForm.getConsoleTextArea().getText().length());
+        BoostForm.getInstance().getConsoleTextArea().append(log + "\n");
+        BoostForm.getInstance().getConsoleTextArea().setCaretPosition(BoostForm.getInstance().getConsoleTextArea().getText().length());
         logger.warn(log);
     }
 
@@ -47,8 +47,8 @@ public class ConsoleUtil {
      * @param log
      */
     public static void consoleOnly(String log) {
-        PushForm.pushForm.getPushConsoleTextArea().append(log + "\n");
-        PushForm.pushForm.getPushConsoleTextArea().setCaretPosition(PushForm.pushForm.getPushConsoleTextArea().getText().length());
+        PushForm.getInstance().getPushConsoleTextArea().append(log + "\n");
+        PushForm.getInstance().getPushConsoleTextArea().setCaretPosition(PushForm.getInstance().getPushConsoleTextArea().getText().length());
     }
 
     /**
@@ -57,7 +57,7 @@ public class ConsoleUtil {
      * @param log
      */
     public static void boostConsoleOnly(String log) {
-        BoostForm.boostForm.getConsoleTextArea().append(log + "\n");
-        BoostForm.boostForm.getConsoleTextArea().setCaretPosition(BoostForm.boostForm.getConsoleTextArea().getText().length());
+        BoostForm.getInstance().getConsoleTextArea().append(log + "\n");
+        BoostForm.getInstance().getConsoleTextArea().setCaretPosition(BoostForm.getInstance().getConsoleTextArea().getText().length());
     }
 }

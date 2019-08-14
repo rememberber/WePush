@@ -51,16 +51,24 @@ public class PushForm {
     private JCheckBox saveResponseBodyCheckBox;
     private JLabel tpsLabel;
 
-    public static PushForm pushForm = new PushForm();
+    private static PushForm pushForm;
 
-    public PushForm() {
+    private PushForm() {
         UndoUtil.register(this);
+    }
+
+    public static PushForm getInstance() {
+        if (pushForm == null) {
+            pushForm = new PushForm();
+        }
+        return pushForm;
     }
 
     /**
      * 初始化推送tab
      */
     public static void init() {
+        pushForm = getInstance();
         pushForm.getPushMsgName().setText(App.config.getMsgName());
         pushForm.getMaxThreadPoolTextField().setText(String.valueOf(App.config.getMaxThreadPool()));
         pushForm.getThreadCountTextField().setText(String.valueOf(App.config.getThreadCount()));

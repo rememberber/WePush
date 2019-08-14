@@ -33,10 +33,10 @@ public class MsgAsyncSendThread extends Thread {
             iMsgSender.asyncSend(msgData);
             // 已处理+1
             PushData.increaseProcessed();
-            BoostForm.boostForm.getProcessedCountLabel().setText(String.valueOf(PushData.processedRecords));
+            BoostForm.getInstance().getProcessedCountLabel().setText(String.valueOf(PushData.processedRecords));
 
             // 总进度条
-            BoostForm.boostForm.getProcessedProgressBar().setValue(PushData.processedRecords.intValue());
+            BoostForm.getInstance().getProcessedProgressBar().setValue(PushData.processedRecords.intValue());
         }
 
     }

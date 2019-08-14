@@ -3,7 +3,7 @@ package com.fangxuele.tool.push.logic.msgsender;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.api.impl.WxMaServiceImpl;
 import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
-import cn.binarywang.wx.miniapp.config.WxMaInMemoryConfig;
+import cn.binarywang.wx.miniapp.config.impl.WxMaDefaultConfigImpl;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.msgmaker.WxMaTemplateMsgMaker;
@@ -22,7 +22,7 @@ import me.chanjar.weixin.common.util.http.apache.DefaultApacheHttpClientBuilder;
 public class WxMaTemplateMsgSender implements IMsgSender {
     public volatile static WxMaService wxMaService;
 
-    public volatile static WxMaInMemoryConfig wxMaConfigStorage;
+    public volatile static WxMaDefaultConfigImpl wxMaConfigStorage;
 
     private WxMaTemplateMsgMaker wxMaTemplateMsgMaker;
 
@@ -67,8 +67,8 @@ public class WxMaTemplateMsgSender implements IMsgSender {
      *
      * @return WxMaInMemoryConfig
      */
-    private static WxMaInMemoryConfig wxMaConfigStorage() {
-        WxMaInMemoryConfig configStorage = new WxMaInMemoryConfig();
+    private static WxMaDefaultConfigImpl wxMaConfigStorage() {
+        WxMaDefaultConfigImpl configStorage = new WxMaDefaultConfigImpl();
         configStorage.setAppid(App.config.getMiniAppAppId());
         configStorage.setSecret(App.config.getMiniAppAppSecret());
         configStorage.setToken(App.config.getMiniAppToken());

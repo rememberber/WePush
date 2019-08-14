@@ -80,7 +80,7 @@ public class WxCpAppDialog extends JDialog {
             TWxCpApp tWxCpApp = new TWxCpApp();
             String now = SqliteUtil.nowDateForSqlite();
             tWxCpApp.setAppName(appName);
-            tWxCpApp.setCorpid(SettingForm.settingForm.getWxCpCorpIdTextField().getText());
+            tWxCpApp.setCorpid(SettingForm.getInstance().getWxCpCorpIdTextField().getText());
             tWxCpApp.setAgentId(agentIdTextField.getText());
             tWxCpApp.setSecret(secretTextField.getText());
             tWxCpApp.setModifiedTime(now);

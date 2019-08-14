@@ -20,7 +20,7 @@ import java.net.URISyntaxException;
 public class HelpListener {
 
     public static void addListeners() {
-        HelpForm.helpForm.getLabelOnlineHelp().addMouseListener(new MouseAdapter() {
+        HelpForm.getInstance().getLabelOnlineHelp().addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 Desktop desktop = Desktop.getDesktop();
@@ -35,7 +35,7 @@ public class HelpListener {
             @Override
             public void mouseEntered(MouseEvent e) {
                 super.mouseEntered(e);
-                HelpForm.helpForm.getLabelOnlineHelp().setCursor(new Cursor(Cursor.HAND_CURSOR));
+                HelpForm.getInstance().getLabelOnlineHelp().setCursor(new Cursor(Cursor.HAND_CURSOR));
             }
 
         });

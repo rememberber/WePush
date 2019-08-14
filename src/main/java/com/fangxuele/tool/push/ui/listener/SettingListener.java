@@ -47,47 +47,47 @@ import java.util.Objects;
 public class SettingListener {
     private static final Log logger = LogFactory.get();
 
-    private static JPanel settingPanel = SettingForm.settingForm.getSettingPanel();
-
     public static String wxAccountType;
 
     private static TWxAccountMapper wxAccountMapper = MybatisUtil.getSqlSession().getMapper(TWxAccountMapper.class);
 
     public static void addListeners() {
+        SettingForm settingForm = SettingForm.getInstance();
+        JPanel settingPanel = settingForm.getSettingPanel();
 
         // 设置-常规-启动时自动检查更新
-        SettingForm.settingForm.getAutoCheckUpdateCheckBox().addActionListener(e -> {
-            App.config.setAutoCheckUpdate(SettingForm.settingForm.getAutoCheckUpdateCheckBox().isSelected());
+        settingForm.getAutoCheckUpdateCheckBox().addActionListener(e -> {
+            App.config.setAutoCheckUpdate(settingForm.getAutoCheckUpdateCheckBox().isSelected());
             App.config.save();
         });
 
         // 设置-公众号-保存
-        SettingForm.settingForm.getSettingMpInfoSaveButton().addActionListener(e -> {
+        settingForm.getSettingMpInfoSaveButton().addActionListener(e -> {
             try {
                 String accountName;
-                if (SettingForm.settingForm.getMpAccountSwitchComboBox().getSelectedItem() == null || StringUtils.isEmpty(SettingForm.settingForm.getMpAccountSwitchComboBox().getSelectedItem().toString())) {
+                if (settingForm.getMpAccountSwitchComboBox().getSelectedItem() == null || StringUtils.isEmpty(settingForm.getMpAccountSwitchComboBox().getSelectedItem().toString())) {
                     accountName = "默认账号";
                 } else {
-                    accountName = SettingForm.settingForm.getMpAccountSwitchComboBox().getSelectedItem().toString();
+                    accountName = settingForm.getMpAccountSwitchComboBox().getSelectedItem().toString();
                 }
                 App.config.setWechatMpName(accountName);
-                App.config.setWechatAppId(SettingForm.settingForm.getWechatAppIdTextField().getText());
-                App.config.setWechatAppSecret(new String(SettingForm.settingForm.getWechatAppSecretPasswordField().getPassword()));
-                App.config.setWechatToken(new String(SettingForm.settingForm.getWechatTokenPasswordField().getPassword()));
-                App.config.setWechatAesKey(new String(SettingForm.settingForm.getWechatAesKeyPasswordField().getPassword()));
+                App.config.setWechatAppId(settingForm.getWechatAppIdTextField().getText());
+                App.config.setWechatAppSecret(new String(settingForm.getWechatAppSecretPasswordField().getPassword()));
+                App.config.setWechatToken(new String(settingForm.getWechatTokenPasswordField().getPassword()));
+                App.config.setWechatAesKey(new String(settingForm.getWechatAesKeyPasswordField().getPassword()));
 
-                App.config.setMpUseProxy(SettingForm.settingForm.getMpUseProxyCheckBox().isSelected());
-                App.config.setMpProxyHost(SettingForm.settingForm.getMpProxyHostTextField().getText());
-                App.config.setMpProxyPort(SettingForm.settingForm.getMpProxyPortTextField().getText());
-                App.config.setMpProxyUserName(SettingForm.settingForm.getMpProxyUserNameTextField().getText());
-                App.config.setMpProxyPassword(SettingForm.settingForm.getMpProxyPasswordTextField().getText());
+                App.config.setMpUseProxy(settingForm.getMpUseProxyCheckBox().isSelected());
+                App.config.setMpProxyHost(settingForm.getMpProxyHostTextField().getText());
+                App.config.setMpProxyPort(settingForm.getMpProxyPortTextField().getText());
+                App.config.setMpProxyUserName(settingForm.getMpProxyUserNameTextField().getText());
+                App.config.setMpProxyPassword(settingForm.getMpProxyPasswordTextField().getText());
 
-                App.config.setMpUseOutSideAt(SettingForm.settingForm.getUseOutSideAccessTokenCheckBox().isSelected());
-                App.config.setMpManualAt(SettingForm.settingForm.getManualAtRadioButton().isSelected());
-                App.config.setMpApiAt(SettingForm.settingForm.getApiAtRadioButton().isSelected());
-                App.config.setMpAt(SettingForm.settingForm.getAccessTokenTextField().getText());
-                App.config.setMpAtExpiresIn(SettingForm.settingForm.getAtExpiresInTextField().getText());
-                App.config.setMpAtApiUrl(SettingForm.settingForm.getAtApiUrlTextField().getText());
+                App.config.setMpUseOutSideAt(settingForm.getUseOutSideAccessTokenCheckBox().isSelected());
+                App.config.setMpManualAt(settingForm.getManualAtRadioButton().isSelected());
+                App.config.setMpApiAt(settingForm.getApiAtRadioButton().isSelected());
+                App.config.setMpAt(settingForm.getAccessTokenTextField().getText());
+                App.config.setMpAtExpiresIn(settingForm.getAtExpiresInTextField().getText());
+                App.config.setMpAtApiUrl(settingForm.getAtApiUrlTextField().getText());
 
                 App.config.save();
 
@@ -127,7 +127,7 @@ public class SettingListener {
         });
 
         // 设置-公众号-多账号管理
-        SettingForm.settingForm.getMpAccountManageButton().addActionListener(e -> {
+        settingForm.getMpAccountManageButton().addActionListener(e -> {
             SwitchWxAccountDialog dialog = new SwitchWxAccountDialog();
             wxAccountType = SettingForm.WX_ACCOUNT_TYPE_MP;
             dialog.renderTable();
@@ -136,41 +136,41 @@ public class SettingListener {
         });
 
         // 公众号切换账号事件
-        SettingForm.settingForm.getMpAccountSwitchComboBox().addItemListener(e -> {
+        settingForm.getMpAccountSwitchComboBox().addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 String accountName = e.getItem().toString();
                 List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(SettingForm.WX_ACCOUNT_TYPE_MP, accountName);
                 if (wxAccountList.size() > 0) {
                     TWxAccount tWxAccount = wxAccountList.get(0);
-                    SettingForm.settingForm.getMpAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
-                    SettingForm.settingForm.getWechatAppIdTextField().setText(tWxAccount.getAppId());
-                    SettingForm.settingForm.getWechatAppSecretPasswordField().setText(tWxAccount.getAppSecret());
-                    SettingForm.settingForm.getWechatTokenPasswordField().setText(tWxAccount.getToken());
-                    SettingForm.settingForm.getWechatAesKeyPasswordField().setText(tWxAccount.getAesKey());
+                    settingForm.getMpAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
+                    settingForm.getWechatAppIdTextField().setText(tWxAccount.getAppId());
+                    settingForm.getWechatAppSecretPasswordField().setText(tWxAccount.getAppSecret());
+                    settingForm.getWechatTokenPasswordField().setText(tWxAccount.getToken());
+                    settingForm.getWechatAesKeyPasswordField().setText(tWxAccount.getAesKey());
                 }
             }
         });
 
         // 设置-小程序-保存
-        SettingForm.settingForm.getSettingMaInfoSaveButton().addActionListener(e -> {
+        settingForm.getSettingMaInfoSaveButton().addActionListener(e -> {
             try {
                 String accountName;
-                if (SettingForm.settingForm.getMaAccountSwitchComboBox().getSelectedItem() == null || StringUtils.isEmpty(SettingForm.settingForm.getMaAccountSwitchComboBox().getSelectedItem().toString())) {
+                if (settingForm.getMaAccountSwitchComboBox().getSelectedItem() == null || StringUtils.isEmpty(settingForm.getMaAccountSwitchComboBox().getSelectedItem().toString())) {
                     accountName = "默认账号";
                 } else {
-                    accountName = SettingForm.settingForm.getMaAccountSwitchComboBox().getSelectedItem().toString();
+                    accountName = settingForm.getMaAccountSwitchComboBox().getSelectedItem().toString();
                 }
                 App.config.setMiniAppName(accountName);
-                App.config.setMiniAppAppId(SettingForm.settingForm.getMiniAppAppIdTextField().getText());
-                App.config.setMiniAppAppSecret(new String(SettingForm.settingForm.getMiniAppAppSecretPasswordField().getPassword()));
-                App.config.setMiniAppToken(new String(SettingForm.settingForm.getMiniAppTokenPasswordField().getPassword()));
-                App.config.setMiniAppAesKey(new String(SettingForm.settingForm.getMiniAppAesKeyPasswordField().getPassword()));
+                App.config.setMiniAppAppId(settingForm.getMiniAppAppIdTextField().getText());
+                App.config.setMiniAppAppSecret(new String(settingForm.getMiniAppAppSecretPasswordField().getPassword()));
+                App.config.setMiniAppToken(new String(settingForm.getMiniAppTokenPasswordField().getPassword()));
+                App.config.setMiniAppAesKey(new String(settingForm.getMiniAppAesKeyPasswordField().getPassword()));
 
-                App.config.setMaUseProxy(SettingForm.settingForm.getMaUseProxyCheckBox().isSelected());
-                App.config.setMaProxyHost(SettingForm.settingForm.getMaProxyHostTextField().getText());
-                App.config.setMaProxyPort(SettingForm.settingForm.getMaProxyPortTextField().getText());
-                App.config.setMaProxyUserName(SettingForm.settingForm.getMaProxyUserNameTextField().getText());
-                App.config.setMaProxyPassword(SettingForm.settingForm.getMaProxyPasswordTextField().getText());
+                App.config.setMaUseProxy(settingForm.getMaUseProxyCheckBox().isSelected());
+                App.config.setMaProxyHost(settingForm.getMaProxyHostTextField().getText());
+                App.config.setMaProxyPort(settingForm.getMaProxyPortTextField().getText());
+                App.config.setMaProxyUserName(settingForm.getMaProxyUserNameTextField().getText());
+                App.config.setMaProxyPassword(settingForm.getMaProxyPasswordTextField().getText());
                 App.config.save();
 
                 boolean update = false;
@@ -209,7 +209,7 @@ public class SettingListener {
         });
 
         // 设置-小程序-多账号管理
-        SettingForm.settingForm.getMaAccountManageButton().addActionListener(e -> {
+        settingForm.getMaAccountManageButton().addActionListener(e -> {
             SwitchWxAccountDialog dialog = new SwitchWxAccountDialog();
             wxAccountType = SettingForm.WX_ACCOUNT_TYPE_MA;
             dialog.renderTable();
@@ -218,25 +218,25 @@ public class SettingListener {
         });
 
         // 小程序切换账号事件
-        SettingForm.settingForm.getMaAccountSwitchComboBox().addItemListener(e -> {
+        settingForm.getMaAccountSwitchComboBox().addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 String accountName = e.getItem().toString();
                 List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(SettingForm.WX_ACCOUNT_TYPE_MA, accountName);
                 if (wxAccountList.size() > 0) {
                     TWxAccount tWxAccount = wxAccountList.get(0);
-                    SettingForm.settingForm.getMaAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
-                    SettingForm.settingForm.getMiniAppAppIdTextField().setText(tWxAccount.getAppId());
-                    SettingForm.settingForm.getMiniAppAppSecretPasswordField().setText(tWxAccount.getAppSecret());
-                    SettingForm.settingForm.getMiniAppTokenPasswordField().setText(tWxAccount.getToken());
-                    SettingForm.settingForm.getMiniAppAesKeyPasswordField().setText(tWxAccount.getAesKey());
+                    settingForm.getMaAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
+                    settingForm.getMiniAppAppIdTextField().setText(tWxAccount.getAppId());
+                    settingForm.getMiniAppAppSecretPasswordField().setText(tWxAccount.getAppSecret());
+                    settingForm.getMiniAppTokenPasswordField().setText(tWxAccount.getToken());
+                    settingForm.getMiniAppAesKeyPasswordField().setText(tWxAccount.getAesKey());
                 }
             }
         });
 
         // 企业号-保存
-        SettingForm.settingForm.getWxCpSaveButton().addActionListener(e -> {
+        settingForm.getWxCpSaveButton().addActionListener(e -> {
             try {
-                App.config.setWxCpCorpId(SettingForm.settingForm.getWxCpCorpIdTextField().getText());
+                App.config.setWxCpCorpId(settingForm.getWxCpCorpIdTextField().getText());
                 App.config.save();
 
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
@@ -249,7 +249,7 @@ public class SettingListener {
         });
 
         // 设置-企业号-应用管理
-        SettingForm.settingForm.getWxCpAppManageButton().addActionListener(e -> {
+        settingForm.getWxCpAppManageButton().addActionListener(e -> {
             WxCpAppDialog dialog = new WxCpAppDialog();
             dialog.renderTable();
             dialog.pack();
@@ -258,11 +258,11 @@ public class SettingListener {
         });
 
         // 设置-阿里云短信-保存
-        SettingForm.settingForm.getSettingAliyunSaveButton().addActionListener(e -> {
+        settingForm.getSettingAliyunSaveButton().addActionListener(e -> {
             try {
-                App.config.setAliyunAccessKeyId(SettingForm.settingForm.getAliyunAccessKeyIdTextField().getText());
-                App.config.setAliyunAccessKeySecret(new String(SettingForm.settingForm.getAliyunAccessKeySecretTextField().getPassword()));
-                App.config.setAliyunSign(SettingForm.settingForm.getAliyunSignTextField().getText());
+                App.config.setAliyunAccessKeyId(settingForm.getAliyunAccessKeyIdTextField().getText());
+                App.config.setAliyunAccessKeySecret(new String(settingForm.getAliyunAccessKeySecretTextField().getPassword()));
+                App.config.setAliyunSign(settingForm.getAliyunSignTextField().getText());
                 App.config.save();
                 AliYunMsgSender.iAcsClient = null;
 
@@ -276,12 +276,12 @@ public class SettingListener {
         });
 
         // 设置-阿里大于-保存
-        SettingForm.settingForm.getSettingAliInfoSaveButton().addActionListener(e -> {
+        settingForm.getSettingAliInfoSaveButton().addActionListener(e -> {
             try {
-                App.config.setAliServerUrl(SettingForm.settingForm.getAliServerUrlTextField().getText());
-                App.config.setAliAppKey(new String(SettingForm.settingForm.getAliAppKeyPasswordField().getPassword()));
-                App.config.setAliAppSecret(new String(SettingForm.settingForm.getAliAppSecretPasswordField().getPassword()));
-                App.config.setAliSign(SettingForm.settingForm.getAliSignTextField().getText());
+                App.config.setAliServerUrl(settingForm.getAliServerUrlTextField().getText());
+                App.config.setAliAppKey(new String(settingForm.getAliAppKeyPasswordField().getPassword()));
+                App.config.setAliAppSecret(new String(settingForm.getAliAppSecretPasswordField().getPassword()));
+                App.config.setAliSign(settingForm.getAliSignTextField().getText());
                 App.config.save();
                 AliDayuTemplateMsgSender.taobaoClient = null;
 
@@ -295,11 +295,11 @@ public class SettingListener {
         });
 
         // 设置-腾讯云短信-保存
-        SettingForm.settingForm.getSettingTxyunSaveButton().addActionListener(e -> {
+        settingForm.getSettingTxyunSaveButton().addActionListener(e -> {
             try {
-                App.config.setTxyunAppId(SettingForm.settingForm.getTxyunAppIdTextField().getText());
-                App.config.setTxyunAppKey(new String(SettingForm.settingForm.getTxyunAppKeyTextField().getPassword()));
-                App.config.setTxyunSign(SettingForm.settingForm.getTxyunSignTextField().getText());
+                App.config.setTxyunAppId(settingForm.getTxyunAppIdTextField().getText());
+                App.config.setTxyunAppKey(new String(settingForm.getTxyunAppKeyTextField().getPassword()));
+                App.config.setTxyunSign(settingForm.getTxyunSignTextField().getText());
                 App.config.save();
 
                 TxYunMsgSender.smsSingleSender = null;
@@ -314,9 +314,9 @@ public class SettingListener {
         });
 
         // 设置-云片网短信-保存
-        SettingForm.settingForm.getSettingYunpianSaveButton().addActionListener(e -> {
+        settingForm.getSettingYunpianSaveButton().addActionListener(e -> {
             try {
-                App.config.setYunpianApiKey(new String(SettingForm.settingForm.getYunpianApiKeyTextField().getPassword()));
+                App.config.setYunpianApiKey(new String(settingForm.getYunpianApiKeyTextField().getPassword()));
                 App.config.save();
                 YunPianMsgSender.yunpianClient = null;
 
@@ -329,13 +329,13 @@ public class SettingListener {
             }
         });
 
-        SettingForm.settingForm.getHttpSaveButton().addActionListener(e -> {
+        settingForm.getHttpSaveButton().addActionListener(e -> {
             try {
-                App.config.setHttpUseProxy(SettingForm.settingForm.getHttpUseProxyCheckBox().isSelected());
-                App.config.setHttpProxyHost(SettingForm.settingForm.getHttpProxyHostTextField().getText());
-                App.config.setHttpProxyPort(SettingForm.settingForm.getHttpProxyPortTextField().getText());
-                App.config.setHttpProxyUserName(SettingForm.settingForm.getHttpProxyUserTextField().getText());
-                App.config.setHttpProxyPassword(SettingForm.settingForm.getHttpProxyPasswordTextField().getText());
+                App.config.setHttpUseProxy(settingForm.getHttpUseProxyCheckBox().isSelected());
+                App.config.setHttpProxyHost(settingForm.getHttpProxyHostTextField().getText());
+                App.config.setHttpProxyPort(settingForm.getHttpProxyPortTextField().getText());
+                App.config.setHttpProxyUserName(settingForm.getHttpProxyUserTextField().getText());
+                App.config.setHttpProxyPassword(settingForm.getHttpProxyPasswordTextField().getText());
                 App.config.save();
 
                 HttpMsgSender.proxy = null;
@@ -349,14 +349,14 @@ public class SettingListener {
         });
 
         // E-Mail测试
-        SettingForm.settingForm.getTestMailButton().addActionListener(e -> {
-            App.config.setMailHost(SettingForm.settingForm.getMailHostTextField().getText());
-            App.config.setMailPort(SettingForm.settingForm.getMailPortTextField().getText());
-            App.config.setMailFrom(SettingForm.settingForm.getMailFromTextField().getText());
-            App.config.setMailUser(SettingForm.settingForm.getMailUserTextField().getText());
-            App.config.setMailPassword(new String(SettingForm.settingForm.getMailPasswordField().getPassword()));
-            App.config.setMailUseStartTLS(SettingForm.settingForm.getMailStartTLSCheckBox().isSelected());
-            App.config.setMailUseSSL(SettingForm.settingForm.getMailSSLCheckBox().isSelected());
+        settingForm.getTestMailButton().addActionListener(e -> {
+            App.config.setMailHost(settingForm.getMailHostTextField().getText());
+            App.config.setMailPort(settingForm.getMailPortTextField().getText());
+            App.config.setMailFrom(settingForm.getMailFromTextField().getText());
+            App.config.setMailUser(settingForm.getMailUserTextField().getText());
+            App.config.setMailPassword(new String(settingForm.getMailPasswordField().getPassword()));
+            App.config.setMailUseStartTLS(settingForm.getMailStartTLSCheckBox().isSelected());
+            App.config.setMailUseSSL(settingForm.getMailSSLCheckBox().isSelected());
             MailMsgSender.mailAccount = null;
 
             MailTestDialog mailTestDialog = new MailTestDialog();
@@ -365,15 +365,15 @@ public class SettingListener {
         });
 
         // E-Mail保存
-        SettingForm.settingForm.getSaveMailButton().addActionListener(e -> {
+        settingForm.getSaveMailButton().addActionListener(e -> {
             try {
-                App.config.setMailHost(SettingForm.settingForm.getMailHostTextField().getText());
-                App.config.setMailPort(SettingForm.settingForm.getMailPortTextField().getText());
-                App.config.setMailFrom(SettingForm.settingForm.getMailFromTextField().getText());
-                App.config.setMailUser(SettingForm.settingForm.getMailUserTextField().getText());
-                App.config.setMailPassword(new String(SettingForm.settingForm.getMailPasswordField().getPassword()));
-                App.config.setMailUseStartTLS(SettingForm.settingForm.getMailStartTLSCheckBox().isSelected());
-                App.config.setMailUseSSL(SettingForm.settingForm.getMailSSLCheckBox().isSelected());
+                App.config.setMailHost(settingForm.getMailHostTextField().getText());
+                App.config.setMailPort(settingForm.getMailPortTextField().getText());
+                App.config.setMailFrom(settingForm.getMailFromTextField().getText());
+                App.config.setMailUser(settingForm.getMailUserTextField().getText());
+                App.config.setMailPassword(new String(settingForm.getMailPasswordField().getPassword()));
+                App.config.setMailUseStartTLS(settingForm.getMailStartTLSCheckBox().isSelected());
+                App.config.setMailUseSSL(settingForm.getMailSSLCheckBox().isSelected());
                 App.config.save();
 
                 MailMsgSender.mailAccount = null;
@@ -388,22 +388,22 @@ public class SettingListener {
         });
 
         // mysql数据库-测试链接
-        SettingForm.settingForm.getSettingTestDbLinkButton().addActionListener(e -> {
+        settingForm.getSettingTestDbLinkButton().addActionListener(e -> {
             HikariDataSource hikariDataSource = null;
             try {
-                String dbUrl = SettingForm.settingForm.getMysqlUrlTextField().getText();
-                String dbUser = SettingForm.settingForm.getMysqlUserTextField().getText();
-                String dbPassword = new String(SettingForm.settingForm.getMysqlPasswordField().getPassword());
+                String dbUrl = settingForm.getMysqlUrlTextField().getText();
+                String dbUser = settingForm.getMysqlUserTextField().getText();
+                String dbPassword = new String(settingForm.getMysqlPasswordField().getPassword());
                 if (StringUtils.isBlank(dbUrl)) {
-                    SettingForm.settingForm.getMysqlUrlTextField().grabFocus();
+                    settingForm.getMysqlUrlTextField().grabFocus();
                     return;
                 }
                 if (StringUtils.isBlank(dbUser)) {
-                    SettingForm.settingForm.getMysqlUserTextField().grabFocus();
+                    settingForm.getMysqlUserTextField().grabFocus();
                     return;
                 }
                 if (StringUtils.isBlank(dbPassword)) {
-                    SettingForm.settingForm.getMysqlPasswordField().grabFocus();
+                    settingForm.getMysqlPasswordField().grabFocus();
                     return;
                 }
                 hikariDataSource = new HikariDataSource();
@@ -433,11 +433,11 @@ public class SettingListener {
         });
 
         // mysql数据库-保存
-        SettingForm.settingForm.getSettingDbInfoSaveButton().addActionListener(e -> {
+        settingForm.getSettingDbInfoSaveButton().addActionListener(e -> {
             try {
-                App.config.setMysqlUrl(SettingForm.settingForm.getMysqlUrlTextField().getText());
-                App.config.setMysqlUser(SettingForm.settingForm.getMysqlUserTextField().getText());
-                App.config.setMysqlPassword(new String(SettingForm.settingForm.getMysqlPasswordField().getPassword()));
+                App.config.setMysqlUrl(settingForm.getMysqlUrlTextField().getText());
+                App.config.setMysqlUser(settingForm.getMysqlUserTextField().getText());
+                App.config.setMysqlPassword(new String(settingForm.getMysqlPasswordField().getPassword()));
                 App.config.save();
 
                 if (HikariUtil.getHikariDataSource() != null) {
@@ -454,17 +454,17 @@ public class SettingListener {
         });
 
         // 外观-保存
-        SettingForm.settingForm.getSettingAppearanceSaveButton().addActionListener(e -> {
+        settingForm.getSettingAppearanceSaveButton().addActionListener(e -> {
             try {
-                App.config.setTheme(Objects.requireNonNull(SettingForm.settingForm.getSettingThemeComboBox().getSelectedItem()).toString());
-                App.config.setFont(Objects.requireNonNull(SettingForm.settingForm.getSettingFontNameComboBox().getSelectedItem()).toString());
-                App.config.setFontSize(Integer.parseInt(Objects.requireNonNull(SettingForm.settingForm.getSettingFontSizeComboBox().getSelectedItem()).toString()));
+                App.config.setTheme(Objects.requireNonNull(settingForm.getSettingThemeComboBox().getSelectedItem()).toString());
+                App.config.setFont(Objects.requireNonNull(settingForm.getSettingFontNameComboBox().getSelectedItem()).toString());
+                App.config.setFontSize(Integer.parseInt(Objects.requireNonNull(settingForm.getSettingFontSizeComboBox().getSelectedItem()).toString()));
                 App.config.save();
 
                 Init.initTheme();
                 Init.initGlobalFont();
                 SwingUtilities.updateComponentTreeUI(App.mainFrame);
-                SwingUtilities.updateComponentTreeUI(MainWindow.mainWindow.getTabbedPane());
+                SwingUtilities.updateComponentTreeUI(MainWindow.getInstance().getTabbedPane());
 
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！\n\n部分细节将在下次启动时生效！\n\n", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
@@ -475,24 +475,24 @@ public class SettingListener {
             }
         });
 
-        SettingForm.settingForm.getMpUseProxyCheckBox().addChangeListener(e -> SettingForm.toggleMpProxyPanel());
-        SettingForm.settingForm.getMaUseProxyCheckBox().addChangeListener(e -> SettingForm.toggleMaProxyPanel());
-        SettingForm.settingForm.getHttpUseProxyCheckBox().addChangeListener(e -> SettingForm.toggleHttpProxyPanel());
-        SettingForm.settingForm.getUseOutSideAccessTokenCheckBox().addChangeListener(e -> SettingForm.toggleMpOutSideAccessTokenPanel());
-        SettingForm.settingForm.getManualAtRadioButton().addChangeListener(e -> {
-            boolean isSelected = SettingForm.settingForm.getManualAtRadioButton().isSelected();
+        settingForm.getMpUseProxyCheckBox().addChangeListener(e -> SettingForm.toggleMpProxyPanel());
+        settingForm.getMaUseProxyCheckBox().addChangeListener(e -> SettingForm.toggleMaProxyPanel());
+        settingForm.getHttpUseProxyCheckBox().addChangeListener(e -> SettingForm.toggleHttpProxyPanel());
+        settingForm.getUseOutSideAccessTokenCheckBox().addChangeListener(e -> SettingForm.toggleMpOutSideAccessTokenPanel());
+        settingForm.getManualAtRadioButton().addChangeListener(e -> {
+            boolean isSelected = settingForm.getManualAtRadioButton().isSelected();
             if (isSelected) {
-                SettingForm.settingForm.getApiAtRadioButton().setSelected(false);
+                settingForm.getApiAtRadioButton().setSelected(false);
             }
         });
-        SettingForm.settingForm.getApiAtRadioButton().addChangeListener(e -> {
-            boolean isSelected = SettingForm.settingForm.getApiAtRadioButton().isSelected();
+        settingForm.getApiAtRadioButton().addChangeListener(e -> {
+            boolean isSelected = settingForm.getApiAtRadioButton().isSelected();
             if (isSelected) {
-                SettingForm.settingForm.getManualAtRadioButton().setSelected(false);
+                settingForm.getManualAtRadioButton().setSelected(false);
             }
         });
 
-        SettingForm.settingForm.getOutSideAtTipsLabel().addMouseListener(new MouseAdapter() {
+        settingForm.getOutSideAtTipsLabel().addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 CommonTipsDialog dialog = new CommonTipsDialog();
@@ -527,7 +527,7 @@ public class SettingListener {
                 super.mouseExited(e);
             }
         });
-        SettingForm.settingForm.getManualAtTipsLabel().addMouseListener(new MouseAdapter() {
+        settingForm.getManualAtTipsLabel().addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 CommonTipsDialog dialog = new CommonTipsDialog();
@@ -560,7 +560,7 @@ public class SettingListener {
                 super.mouseExited(e);
             }
         });
-        SettingForm.settingForm.getApiAtTipsLabel().addMouseListener(new MouseAdapter() {
+        settingForm.getApiAtTipsLabel().addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 CommonTipsDialog dialog = new CommonTipsDialog();

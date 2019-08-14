@@ -12,8 +12,6 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import static com.fangxuele.tool.push.ui.form.MessageTypeForm.messageTypeForm;
-
 /**
  * <pre>
  * 消息类型form事件监听
@@ -25,6 +23,7 @@ import static com.fangxuele.tool.push.ui.form.MessageTypeForm.messageTypeForm;
 public class MessageTypeListener {
 
     public static void addListeners() {
+        MessageTypeForm messageTypeForm = MessageTypeForm.getInstance();
         messageTypeForm.getMpTemplateRadioButton().addActionListener(e -> {
             App.config.setMsgType(MessageTypeEnum.MP_TEMPLATE_CODE);
             saveType();
@@ -119,8 +118,8 @@ public class MessageTypeListener {
     private static void saveType() {
         String msgName = App.config.getMsgName();
 
-        MessageEditForm.messageEditForm.getMsgNameField().setText(msgName);
-        MessageEditForm.messageEditForm.getPreviewUserField().setText(App.config.getPreviewUser());
+        MessageEditForm.getInstance().getMsgNameField().setText(msgName);
+        MessageEditForm.getInstance().getPreviewUserField().setText(App.config.getPreviewUser());
         App.config.save();
         MessageTypeForm.init();
     }

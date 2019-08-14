@@ -43,17 +43,16 @@ public class MsgManageListener {
     private static TMsgMailMapper msgMailMapper = MybatisUtil.getSqlSession().getMapper(TMsgMailMapper.class);
     private static TMsgWxCpMapper msgWxCpMapper = MybatisUtil.getSqlSession().getMapper(TMsgWxCpMapper.class);
 
-    private static JTable msgHistable = MessageManageForm.messageManageForm.getMsgHistable();
-    private static JSplitPane messagePanel = MainWindow.mainWindow.getMessagePanel();
-
     public static void addListeners() {
+        JTable msgHistable = MessageManageForm.getInstance().getMsgHistable();
+        JSplitPane messagePanel = MainWindow.getInstance().getMessagePanel();
 
         // 点击左侧表格事件
         msgHistable.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 ThreadUtil.execute(() -> {
-                    PushHisForm.pushHisForm.getPushHisTextArea().setText("");
+                    PushHisForm.getInstance().getPushHisTextArea().setText("");
 
                     int selectedRow = msgHistable.getSelectedRow();
                     String selectedMsgName = msgHistable
@@ -66,7 +65,7 @@ public class MsgManageListener {
         });
 
         // 历史消息管理-删除
-        MessageManageForm.messageManageForm.getMsgHisTableDeleteButton().addActionListener(e -> ThreadUtil.execute(() -> {
+        MessageManageForm.getInstance().getMsgHisTableDeleteButton().addActionListener(e -> ThreadUtil.execute(() -> {
             try {
                 int[] selectedRows = msgHistable.getSelectedRows();
 
@@ -113,10 +112,10 @@ public class MsgManageListener {
         }));
 
         // 编辑消息-新建
-        MessageManageForm.messageManageForm.getCreateMsgButton().addActionListener(e -> {
+        MessageManageForm.getInstance().getCreateMsgButton().addActionListener(e -> {
             MessageTypeForm.init();
-            MessageEditForm.messageEditForm.getMsgNameField().setText("");
-            MessageEditForm.messageEditForm.getMsgNameField().grabFocus();
+            MessageEditForm.getInstance().getMsgNameField().setText("");
+            MessageEditForm.getInstance().getMsgNameField().grabFocus();
         });
     }
 }

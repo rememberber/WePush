@@ -36,18 +36,26 @@ public class PushHisForm {
     private JTextArea pushHisTextArea;
     private JButton resendFromHisButton;
 
-    public static PushHisForm pushHisForm = new PushHisForm();
+    private static PushHisForm pushHisForm;
 
     private static TPushHistoryMapper pushHistoryMapper = MybatisUtil.getSqlSession().getMapper(TPushHistoryMapper.class);
 
-    public PushHisForm() {
+    private PushHisForm() {
         UndoUtil.register(this);
+    }
+
+    public static PushHisForm getInstance() {
+        if (pushHisForm == null) {
+            pushHisForm = new PushHisForm();
+        }
+        return pushHisForm;
     }
 
     /**
      * 初始化推送历史tab
      */
     public static void init() {
+        pushHisForm = getInstance();
         // 导入历史管理
         String[] headerNames = {"消息名称", "状态", "时间", "id"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);

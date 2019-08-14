@@ -40,13 +40,21 @@ public class BoostForm {
     private JLabel jvmMemoryLabel;
     private JLabel scheduledTaskLabel;
 
-    public static BoostForm boostForm = new BoostForm();
+    private static BoostForm boostForm;
 
-    public BoostForm() {
+    private BoostForm() {
         UndoUtil.register(this);
     }
 
+    public static BoostForm getInstance() {
+        if (boostForm == null) {
+            boostForm = new BoostForm();
+        }
+        return boostForm;
+    }
+
     public static void init() {
+        boostForm = getInstance();
         boostForm.getDryRunCheckBox().setSelected(App.config.isDryRun());
         boostForm.getScheduledTaskLabel().setVisible(false);
     }

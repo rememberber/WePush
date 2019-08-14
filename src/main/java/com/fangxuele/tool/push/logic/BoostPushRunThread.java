@@ -40,12 +40,13 @@ public class BoostPushRunThread extends Thread {
 
     @Override
     public void run() {
-        BoostForm.boostForm.getProcessedProgressBar().setIndeterminate(true);
-        BoostForm.boostForm.getCompletedProgressBar().setIndeterminate(true);
+        BoostForm boostForm = BoostForm.getInstance();
+        boostForm.getProcessedProgressBar().setIndeterminate(true);
+        boostForm.getCompletedProgressBar().setIndeterminate(true);
         // 准备推送
         preparePushRun();
-        BoostForm.boostForm.getProcessedProgressBar().setIndeterminate(false);
-        BoostForm.boostForm.getCompletedProgressBar().setIndeterminate(false);
+        boostForm.getProcessedProgressBar().setIndeterminate(false);
+        boostForm.getCompletedProgressBar().setIndeterminate(false);
         ConsoleUtil.boostConsoleWithLog("推送开始……");
         // 消息数据分片以及线程纷发
         shardingAndMsgThread();
@@ -57,19 +58,21 @@ public class BoostPushRunThread extends Thread {
      * 准备推送
      */
     private void preparePushRun() {
-        // 按钮状态
-        BoostForm.boostForm.getScheduledRunButton().setEnabled(false);
-        BoostForm.boostForm.getStartButton().setEnabled(false);
-        BoostForm.boostForm.getStopButton().setEnabled(true);
+        BoostForm boostForm = BoostForm.getInstance();
 
-        BoostForm.boostForm.getStopButton().setText("停止");
+        // 按钮状态
+        boostForm.getScheduledRunButton().setEnabled(false);
+        boostForm.getStartButton().setEnabled(false);
+        boostForm.getStopButton().setEnabled(true);
+
+        boostForm.getStopButton().setText("停止");
         // 初始化
-        BoostForm.boostForm.getProcessedCountLabel().setText("0");
-        BoostForm.boostForm.getSuccessCountLabel().setText("0");
-        BoostForm.boostForm.getFailCountLabel().setText("0");
+        boostForm.getProcessedCountLabel().setText("0");
+        boostForm.getSuccessCountLabel().setText("0");
+        boostForm.getFailCountLabel().setText("0");
 
         // 设置是否空跑
-        PushControl.dryRun = BoostForm.boostForm.getDryRunCheckBox().isSelected();
+        PushControl.dryRun = boostForm.getDryRunCheckBox().isSelected();
 
         // 执行前重新导入目标用户
         PushControl.reimportMembers();
@@ -84,12 +87,12 @@ public class BoostPushRunThread extends Thread {
         // 总记录数
         PushData.totalRecords = PushData.toSendList.size();
 
-        BoostForm.boostForm.getMemberCountLabel().setText("消息总数：" + PushData.totalRecords);
-        BoostForm.boostForm.getProcessedProgressBar().setMaximum((int) PushData.totalRecords);
-        BoostForm.boostForm.getCompletedProgressBar().setMaximum((int) PushData.totalRecords);
+        boostForm.getMemberCountLabel().setText("消息总数：" + PushData.totalRecords);
+        boostForm.getProcessedProgressBar().setMaximum((int) PushData.totalRecords);
+        boostForm.getCompletedProgressBar().setMaximum((int) PushData.totalRecords);
         ConsoleUtil.boostConsoleWithLog("消息总数：" + PushData.totalRecords);
         // 可用处理器核心数量
-        BoostForm.boostForm.getProcessorCountLabel().setText("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
+        boostForm.getProcessorCountLabel().setText("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
         ConsoleUtil.boostConsoleWithLog("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
 
         // 准备消息构造器
@@ -114,28 +117,30 @@ public class BoostPushRunThread extends Thread {
      * 时间监控
      */
     private void timeMonitor() {
+        BoostForm boostForm = BoostForm.getInstance();
+
         long startTimeMillis = System.currentTimeMillis();
         // 计时
         while (true) {
             if (PushData.TO_SEND_COUNT.get() <= PushData.successRecords.longValue() + PushData.failRecords.longValue()) {
                 if (!PushData.fixRateScheduling) {
-                    BoostForm.boostForm.getStopButton().setEnabled(false);
-                    BoostForm.boostForm.getStopButton().updateUI();
-                    BoostForm.boostForm.getStartButton().setEnabled(true);
-                    BoostForm.boostForm.getStartButton().updateUI();
-                    BoostForm.boostForm.getScheduledRunButton().setEnabled(true);
-                    BoostForm.boostForm.getScheduledRunButton().updateUI();
-                    BoostForm.boostForm.getScheduledTaskLabel().setText("");
+                    boostForm.getStopButton().setEnabled(false);
+                    boostForm.getStopButton().updateUI();
+                    boostForm.getStartButton().setEnabled(true);
+                    boostForm.getStartButton().updateUI();
+                    boostForm.getScheduledRunButton().setEnabled(true);
+                    boostForm.getScheduledRunButton().updateUI();
+                    boostForm.getScheduledTaskLabel().setText("");
                     String finishTip = "发送完毕！\n";
-                    JOptionPane.showMessageDialog(BoostForm.boostForm.getBoostPanel(), finishTip, "提示",
+                    JOptionPane.showMessageDialog(boostForm.getBoostPanel(), finishTip, "提示",
                             JOptionPane.INFORMATION_MESSAGE);
-                    BoostForm.boostForm.getScheduledTaskLabel().setVisible(false);
+                    boostForm.getScheduledTaskLabel().setVisible(false);
                 } else {
                     if (App.config.isRadioCron()) {
                         Date nextDate = CronPatternUtil.nextDateAfter(new CronPattern(App.config.getTextCron()), new Date(), true);
-                        BoostForm.boostForm.getScheduledTaskLabel().setText("计划任务执行中，下一次执行时间：" + DateFormatUtils.format(nextDate, "yyyy-MM-dd HH:mm:ss"));
+                        boostForm.getScheduledTaskLabel().setText("计划任务执行中，下一次执行时间：" + DateFormatUtils.format(nextDate, "yyyy-MM-dd HH:mm:ss"));
                     }
-                    BoostForm.boostForm.getStopButton().setText("停止计划任务");
+                    boostForm.getStopButton().setText("停止计划任务");
                 }
 
                 PushData.endTime = System.currentTimeMillis();
@@ -143,16 +148,16 @@ public class BoostPushRunThread extends Thread {
                 // 保存停止前的数据
                 try {
                     // 空跑控制
-                    if (!BoostForm.boostForm.getDryRunCheckBox().isSelected()) {
+                    if (!boostForm.getDryRunCheckBox().isSelected()) {
                         ConsoleUtil.boostConsoleWithLog("正在保存结果数据……");
-                        BoostForm.boostForm.getCompletedProgressBar().setIndeterminate(true);
+                        boostForm.getCompletedProgressBar().setIndeterminate(true);
                         PushControl.savePushData();
                         ConsoleUtil.boostConsoleWithLog("结果数据保存完毕！");
                     }
                 } catch (IOException e) {
                     logger.error(e);
                 } finally {
-                    BoostForm.boostForm.getCompletedProgressBar().setIndeterminate(false);
+                    boostForm.getCompletedProgressBar().setIndeterminate(false);
                 }
                 break;
             }
@@ -163,13 +168,13 @@ public class BoostPushRunThread extends Thread {
 
             // 耗时
             String formatBetweenLast = DateUtil.formatBetween(lastTimeMillis, BetweenFormater.Level.SECOND);
-            BoostForm.boostForm.getLastTimeLabel().setText("".equals(formatBetweenLast) ? "0s" : formatBetweenLast);
+            boostForm.getLastTimeLabel().setText("".equals(formatBetweenLast) ? "0s" : formatBetweenLast);
 
             // 预计剩余
             String formatBetweenLeft = DateUtil.formatBetween(leftTimeMillis, BetweenFormater.Level.SECOND);
-            BoostForm.boostForm.getLeftTimeLabel().setText("".equals(formatBetweenLeft) ? "0s" : formatBetweenLeft);
+            boostForm.getLeftTimeLabel().setText("".equals(formatBetweenLeft) ? "0s" : formatBetweenLeft);
 
-            BoostForm.boostForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
+            boostForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
 
             ThreadUtil.safeSleep(100);
         }

@@ -64,10 +64,10 @@ public class MailTestDialog extends JDialog {
             SendResult sendResult = mailMsgSender.sendTestMail(mailToTextField.getText());
             dispose();
             if (sendResult.isSuccess()) {
-                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "发送成功！", "成功",
+                JOptionPane.showMessageDialog(SettingForm.getInstance().getSettingPanel(), "发送成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "发送失败！\n\n" + sendResult.getInfo(), "失败",
+                JOptionPane.showMessageDialog(SettingForm.getInstance().getSettingPanel(), "发送失败！\n\n" + sendResult.getInfo(), "失败",
                         JOptionPane.ERROR_MESSAGE);
             }
         }
