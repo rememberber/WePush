@@ -44,7 +44,14 @@ public class MessageEditForm {
     private JLabel previewUserHelpLabel;
     private JScrollPane msgEditScrollPane;
 
-    public static MessageEditForm messageEditForm = new MessageEditForm();
+    private static MessageEditForm messageEditForm;
+
+    public static MessageEditForm getInstance() {
+        if (messageEditForm == null) {
+            messageEditForm = new MessageEditForm();
+        }
+        return messageEditForm;
+    }
 
     public MessageEditForm() {
         UndoUtil.register(this);

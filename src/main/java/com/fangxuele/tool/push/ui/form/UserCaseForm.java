@@ -35,7 +35,14 @@ public class UserCaseForm {
     private JScrollPane userCaseScrollPane;
     private JPanel userCaseListPanel;
 
-    public static UserCaseForm userCaseForm = new UserCaseForm();
+    private static UserCaseForm userCaseForm;
+
+    public static UserCaseForm getInstance() {
+        if (userCaseForm == null) {
+            userCaseForm = new UserCaseForm();
+        }
+        return userCaseForm;
+    }
 
     /**
      * 初始化他们都在用tab

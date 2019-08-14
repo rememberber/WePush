@@ -45,7 +45,14 @@ public class MessageTypeForm {
     private JRadioButton httpRadioButton;
     private JRadioButton 七牛云短信RadioButton;
 
-    public static MessageTypeForm messageTypeForm = new MessageTypeForm();
+    private static MessageTypeForm messageTypeForm;
+
+    public static MessageTypeForm getInstance() {
+        if (messageTypeForm == null) {
+            messageTypeForm = new MessageTypeForm();
+        }
+        return messageTypeForm;
+    }
 
     /**
      * 初始化消息类型tab
@@ -100,7 +107,7 @@ public class MessageTypeForm {
         initMessageEditFormLayOut(msgType);
         initMemberFormLayOut(msgType);
         MessageEditForm.switchMsgType(msgType);
-        MessageEditForm.messageEditForm.getMsgTypeName().setText(MessageTypeEnum.getName(msgType));
+        MessageEditForm.getInstance().getMsgTypeName().setText(MessageTypeEnum.getName(msgType));
         MessageManageForm.init();
         MemberForm.init();
         PushHisForm.init();
@@ -109,37 +116,37 @@ public class MessageTypeForm {
 
     private static void initMessageEditFormLayOut(int msgType) {
         if (msgType == MessageTypeEnum.HTTP_CODE) {
-            MessageEditForm.messageEditForm.getPreviewMemberLabel().setText("消息变量");
-            MessageEditForm.messageEditForm.getPreviewMsgButton().setText("发送请求");
+            MessageEditForm.getInstance().getPreviewMemberLabel().setText("消息变量");
+            MessageEditForm.getInstance().getPreviewMsgButton().setText("发送请求");
         } else {
-            MessageEditForm.messageEditForm.getPreviewMemberLabel().setText("预览用户");
-            MessageEditForm.messageEditForm.getPreviewMsgButton().setText("预览");
+            MessageEditForm.getInstance().getPreviewMemberLabel().setText("预览用户");
+            MessageEditForm.getInstance().getPreviewMsgButton().setText("预览");
         }
     }
 
     private static void initMemberFormLayOut(int msgType) {
-        Component[] components = MemberForm.memberForm.getImportWayPanel().getComponents();
+        Component[] components = MemberForm.getInstance().getImportWayPanel().getComponents();
         for (Component component : components) {
             if (component instanceof JPanel) {
                 component.setVisible(false);
             }
         }
-        MemberForm.memberForm.getMemberTabDownPanel().setVisible(true);
-        MemberForm.memberForm.getMemberTabCenterPanel().setVisible(true);
+        MemberForm.getInstance().getMemberTabDownPanel().setVisible(true);
+        MemberForm.getInstance().getMemberTabCenterPanel().setVisible(true);
         if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE || msgType == MessageTypeEnum.MA_TEMPLATE_CODE
                 || msgType == MessageTypeEnum.KEFU_CODE || msgType == MessageTypeEnum.KEFU_PRIORITY_CODE) {
-            MemberForm.memberForm.getImportFromWeixinPanel().setVisible(true);
-            MemberForm.memberForm.getImportOptionPanel().setVisible(true);
+            MemberForm.getInstance().getImportFromWeixinPanel().setVisible(true);
+            MemberForm.getInstance().getImportOptionPanel().setVisible(true);
         }
         if (msgType == MessageTypeEnum.WX_CP_CODE) {
-            MemberForm.memberForm.getImportFromWxCpPanel().setVisible(true);
+            MemberForm.getInstance().getImportFromWxCpPanel().setVisible(true);
         }
 
         if (msgType == MessageTypeEnum.HTTP_CODE) {
-            MainWindow.mainWindow.getTabbedPane().setTitleAt(3, "准备消息变量");
-            MemberForm.memberForm.getImportFromNumPanel().setVisible(true);
+            MainWindow.getInstance().getTabbedPane().setTitleAt(3, "准备消息变量");
+            MemberForm.getInstance().getImportFromNumPanel().setVisible(true);
         } else {
-            MainWindow.mainWindow.getTabbedPane().setTitleAt(3, "准备目标用户");
+            MainWindow.getInstance().getTabbedPane().setTitleAt(3, "准备目标用户");
         }
     }
 

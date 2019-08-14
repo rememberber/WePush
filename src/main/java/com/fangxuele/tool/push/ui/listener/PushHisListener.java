@@ -45,16 +45,18 @@ public class PushHisListener {
 
     private static TPushHistoryMapper pushHistoryMapper = MybatisUtil.getSqlSession().getMapper(TPushHistoryMapper.class);
 
-    private static JTable pushHisLeftTable = PushHisForm.pushHisForm.getPushHisLeftTable();
-    private static JPanel pushHisPanel = MainWindow.mainWindow.getPushHisPanel();
-
     public static void addListeners() {
+        JTable pushHisLeftTable = PushHisForm.getInstance().getPushHisLeftTable();
+        JPanel pushHisPanel = MainWindow.getInstance().getPushHisPanel();
+        PushHisForm pushHisForm = PushHisForm.getInstance();
+        MemberForm memberForm = MemberForm.getInstance();
+
         // 点击左侧表格事件
         pushHisLeftTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 ThreadUtil.execute(() -> {
-                    PushHisForm.pushHisForm.getPushHisTextArea().setText("");
+                    pushHisForm.getPushHisTextArea().setText("");
 
                     int selectedRow = pushHisLeftTable.getSelectedRow();
                     String selectedId = pushHisLeftTable
@@ -68,14 +70,14 @@ public class PushHisListener {
                         long count = 0;
                         Spinner.showSpinner();
                         while (StringUtils.isNotEmpty(line)) {
-                            PushHisForm.pushHisForm.getPushHisTextArea().append(line);
-                            PushHisForm.pushHisForm.getPushHisTextArea().append("\n");
+                            pushHisForm.getPushHisTextArea().append(line);
+                            pushHisForm.getPushHisTextArea().append("\n");
                             line = br.readLine();
                             count++;
                         }
                         Spinner.hideSpinner();
 
-                        PushHisForm.pushHisForm.getPushHisCountLabel().setText("共" + count + "条");
+                        pushHisForm.getPushHisCountLabel().setText("共" + count + "条");
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
@@ -86,7 +88,7 @@ public class PushHisListener {
         });
 
         // 推送历史管理-删除
-        PushHisForm.pushHisForm.getPushHisLeftDeleteButton().addActionListener(e -> ThreadUtil.execute(() -> {
+        pushHisForm.getPushHisLeftDeleteButton().addActionListener(e -> ThreadUtil.execute(() -> {
             try {
                 int[] selectedRows = pushHisLeftTable.getSelectedRows();
                 if (selectedRows.length == 0) {
@@ -122,22 +124,22 @@ public class PushHisListener {
         }));
 
         // 推送历史管理-复制按钮
-        PushHisForm.pushHisForm.getPushHisCopyButton().addActionListener(e -> ThreadUtil.execute(() -> {
+        pushHisForm.getPushHisCopyButton().addActionListener(e -> ThreadUtil.execute(() -> {
             try {
-                PushHisForm.pushHisForm.getPushHisCopyButton().setEnabled(false);
+                pushHisForm.getPushHisCopyButton().setEnabled(false);
                 JOptionPane.showMessageDialog(pushHisPanel, "内容已经复制到剪贴板！", "复制成功",
                         JOptionPane.INFORMATION_MESSAGE);
-                ClipboardUtil.setStr(PushHisForm.pushHisForm.getPushHisTextArea().getText());
+                ClipboardUtil.setStr(pushHisForm.getPushHisTextArea().getText());
             } catch (Exception e1) {
                 logger.error(e1);
             } finally {
-                PushHisForm.pushHisForm.getPushHisCopyButton().setEnabled(true);
+                pushHisForm.getPushHisCopyButton().setEnabled(true);
             }
 
         }));
 
         // 推送历史管理-导出按钮
-        PushHisForm.pushHisForm.getPushHisExportButton().addActionListener(e -> {
+        pushHisForm.getPushHisExportButton().addActionListener(e -> {
             int[] selectedRows = pushHisLeftTable.getSelectedRows();
 
             try {
@@ -182,13 +184,13 @@ public class PushHisListener {
         });
 
         // 重发
-        PushHisForm.pushHisForm.getResendFromHisButton().addActionListener(e -> ThreadUtil.execute(() -> {
-            JProgressBar memberTabImportProgressBar = MemberForm.memberForm.getMemberTabImportProgressBar();
+        pushHisForm.getResendFromHisButton().addActionListener(e -> ThreadUtil.execute(() -> {
+            JProgressBar memberTabImportProgressBar = memberForm.getMemberTabImportProgressBar();
             int[] selectedRows = pushHisLeftTable.getSelectedRows();
             CSVReader reader = null;
             try {
                 if (selectedRows.length > 0) {
-                    MainWindow.mainWindow.getTabbedPane().setSelectedIndex(3);
+                    MainWindow.getInstance().getTabbedPane().setSelectedIndex(3);
                     PushData.allUser = Collections.synchronizedList(new ArrayList<>());
                     memberTabImportProgressBar.setVisible(true);
                     memberTabImportProgressBar.setIndeterminate(true);
@@ -203,7 +205,7 @@ public class PushHisListener {
                             String[] nextLine;
                             while ((nextLine = reader.readNext()) != null) {
                                 PushData.allUser.add(nextLine);
-                                MemberForm.memberForm.getMemberTabCountLabel().setText(String.valueOf(PushData.allUser.size()));
+                                memberForm.getMemberTabCountLabel().setText(String.valueOf(PushData.allUser.size()));
                             }
                         }
                     }

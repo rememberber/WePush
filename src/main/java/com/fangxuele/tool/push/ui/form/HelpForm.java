@@ -24,7 +24,14 @@ public class HelpForm {
     private JTextPane helpTextPane;
     private JLabel labelOnlineHelp;
 
-    public static HelpForm helpForm = new HelpForm();
+    private static HelpForm helpForm;
+
+    public static HelpForm getInstance() {
+        if (helpForm == null) {
+            helpForm = new HelpForm();
+        }
+        return helpForm;
+    }
 
     /**
      * 初始化使用帮助tab

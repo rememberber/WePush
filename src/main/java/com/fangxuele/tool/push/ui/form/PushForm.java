@@ -51,10 +51,17 @@ public class PushForm {
     private JCheckBox saveResponseBodyCheckBox;
     private JLabel tpsLabel;
 
-    public static PushForm pushForm = new PushForm();
+    private static PushForm pushForm;
 
     public PushForm() {
         UndoUtil.register(this);
+    }
+
+    public static PushForm getInstance() {
+        if (pushForm == null) {
+            pushForm = new PushForm();
+        }
+        return pushForm;
     }
 
     /**

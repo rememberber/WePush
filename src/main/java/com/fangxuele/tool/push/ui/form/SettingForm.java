@@ -109,7 +109,7 @@ public class SettingForm {
     private JLabel manualAtTipsLabel;
     private JLabel apiAtTipsLabel;
 
-    public static SettingForm settingForm = new SettingForm();
+    private static SettingForm settingForm;
     private static TWxAccountMapper wxAccountMapper = MybatisUtil.getSqlSession().getMapper(TWxAccountMapper.class);
 
     /**
@@ -124,6 +124,13 @@ public class SettingForm {
 
     public SettingForm() {
         UndoUtil.register(this);
+    }
+
+    public static SettingForm getInstance() {
+        if (settingForm == null) {
+            settingForm = new SettingForm();
+        }
+        return settingForm;
     }
 
     /**

@@ -39,10 +39,17 @@ public class ScheduleForm {
     private JLabel cronHelpLabel;
     private JLabel cronOnlineLabel;
 
-    public static ScheduleForm scheduleForm = new ScheduleForm();
+    private static ScheduleForm scheduleForm;
 
     public ScheduleForm() {
         UndoUtil.register(this);
+    }
+
+    public static ScheduleForm getInstance() {
+        if (scheduleForm == null) {
+            scheduleForm = new ScheduleForm();
+        }
+        return scheduleForm;
     }
 
     /**

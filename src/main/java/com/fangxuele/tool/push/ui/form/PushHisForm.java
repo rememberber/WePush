@@ -36,12 +36,19 @@ public class PushHisForm {
     private JTextArea pushHisTextArea;
     private JButton resendFromHisButton;
 
-    public static PushHisForm pushHisForm = new PushHisForm();
+    private static PushHisForm pushHisForm;
 
     private static TPushHistoryMapper pushHistoryMapper = MybatisUtil.getSqlSession().getMapper(TPushHistoryMapper.class);
 
     public PushHisForm() {
         UndoUtil.register(this);
+    }
+
+    public static PushHisForm getInstance() {
+        if (pushHisForm == null) {
+            pushHisForm = new PushHisForm();
+        }
+        return pushHisForm;
     }
 
     /**

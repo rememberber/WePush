@@ -38,8 +38,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import static com.fangxuele.tool.push.ui.form.BoostForm.boostForm;
-
 /**
  * <pre>
  * 性能模式监听器
@@ -59,6 +57,7 @@ public class BoostListener {
     private static ScheduledExecutorService serviceStartPerWeek;
 
     public static void addListeners() {
+        BoostForm boostForm = BoostForm.getInstance();
         boostForm.getBoostModeHelpLabel().addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -97,20 +96,20 @@ public class BoostListener {
         });
 
         // 开始按钮事件
-        BoostForm.boostForm.getStartButton().addActionListener((e) -> ThreadUtil.execute(() -> {
+        boostForm.getStartButton().addActionListener((e) -> ThreadUtil.execute(() -> {
             PushData.boostMode = true;
             if (App.config.getMsgType() != MessageTypeEnum.MP_TEMPLATE_CODE) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getMainPanel(), "性能模式目前仅支持微信模板消息，后续逐步增加对其他消息类型的支持！", "提示",
+                JOptionPane.showMessageDialog(MainWindow.getInstance().getMainPanel(), "性能模式目前仅支持微信模板消息，后续逐步增加对其他消息类型的支持！", "提示",
                         JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
             if (PushControl.pushCheck()) {
                 int isPush = JOptionPane.showConfirmDialog(boostForm.getBoostPanel(),
                         "确定开始推送吗？\n\n推送消息：" +
-                                MessageEditForm.messageEditForm.getMsgNameField().getText() +
+                                MessageEditForm.getInstance().getMsgNameField().getText() +
                                 "\n推送人数：" + PushData.allUser.size() +
                                 "\n\n空跑模式：" +
-                                BoostForm.boostForm.getDryRunCheckBox().isSelected() + "\n", "确认推送？",
+                                boostForm.getDryRunCheckBox().isSelected() + "\n", "确认推送？",
                         JOptionPane.YES_NO_OPTION);
                 if (isPush == JOptionPane.YES_OPTION) {
                     ThreadUtil.execute(new BoostPushRunThread());
@@ -119,10 +118,10 @@ public class BoostListener {
         }));
 
         // 按计划执行按钮事件
-        BoostForm.boostForm.getScheduledRunButton().addActionListener((e -> ThreadUtil.execute(() -> {
+        boostForm.getScheduledRunButton().addActionListener((e -> ThreadUtil.execute(() -> {
             PushData.boostMode = true;
             if (App.config.getMsgType() != MessageTypeEnum.MP_TEMPLATE_CODE) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getMainPanel(), "性能模式目前仅支持微信模板消息，后续逐步增加对其他消息类型的支持！", "提示",
+                JOptionPane.showMessageDialog(MainWindow.getInstance().getMainPanel(), "性能模式目前仅支持微信模板消息，后续逐步增加对其他消息类型的支持！", "提示",
                         JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
@@ -144,21 +143,21 @@ public class BoostListener {
                             "将在" +
                                     App.config.getTextStartAt() +
                                     "推送\n\n消息：" +
-                                    MessageEditForm.messageEditForm.getMsgNameField().getText() +
+                                    MessageEditForm.getInstance().getMsgNameField().getText() +
                                     "\n\n推送人数：" + PushData.allUser.size() +
                                     "\n\n空跑模式：" +
-                                    BoostForm.boostForm.getDryRunCheckBox().isSelected(), "确认定时推送？",
+                                    boostForm.getDryRunCheckBox().isSelected(), "确认定时推送？",
                             JOptionPane.YES_NO_OPTION);
                     if (isSchedulePush == JOptionPane.YES_OPTION) {
                         PushData.scheduling = true;
                         // 按钮状态
-                        BoostForm.boostForm.getScheduledRunButton().setEnabled(false);
-                        BoostForm.boostForm.getStartButton().setEnabled(false);
-                        BoostForm.boostForm.getStopButton().setText("停止计划任务");
-                        BoostForm.boostForm.getStopButton().setEnabled(true);
+                        boostForm.getScheduledRunButton().setEnabled(false);
+                        boostForm.getStartButton().setEnabled(false);
+                        boostForm.getStopButton().setText("停止计划任务");
+                        boostForm.getStopButton().setEnabled(true);
 
-                        BoostForm.boostForm.getScheduledTaskLabel().setVisible(true);
-                        BoostForm.boostForm.getScheduledTaskLabel().setText("计划任务执行中：将在" +
+                        boostForm.getScheduledTaskLabel().setVisible(true);
+                        boostForm.getScheduledTaskLabel().setText("计划任务执行中：将在" +
                                 App.config.getTextStartAt() +
                                 "开始推送");
 
@@ -176,21 +175,21 @@ public class BoostListener {
                             "将在每天" +
                                     App.config.getTextPerDay() +
                                     "推送\n\n消息：" +
-                                    MessageEditForm.messageEditForm.getMsgNameField().getText() +
+                                    MessageEditForm.getInstance().getMsgNameField().getText() +
                                     "\n\n推送人数：" + PushData.allUser.size() +
                                     "\n\n空跑模式：" +
-                                    BoostForm.boostForm.getDryRunCheckBox().isSelected(), "确认定时推送？",
+                                    boostForm.getDryRunCheckBox().isSelected(), "确认定时推送？",
                             JOptionPane.YES_NO_OPTION);
                     if (isSchedulePush == JOptionPane.YES_OPTION) {
                         PushData.fixRateScheduling = true;
                         // 按钮状态
-                        BoostForm.boostForm.getScheduledRunButton().setEnabled(false);
-                        BoostForm.boostForm.getStartButton().setEnabled(false);
-                        BoostForm.boostForm.getStopButton().setText("停止计划任务");
-                        BoostForm.boostForm.getStopButton().setEnabled(true);
+                        boostForm.getScheduledRunButton().setEnabled(false);
+                        boostForm.getStartButton().setEnabled(false);
+                        boostForm.getStopButton().setText("停止计划任务");
+                        boostForm.getStopButton().setEnabled(true);
 
-                        BoostForm.boostForm.getScheduledTaskLabel().setVisible(true);
-                        BoostForm.boostForm.getScheduledTaskLabel().setText("计划任务执行中：将在每天" +
+                        boostForm.getScheduledTaskLabel().setVisible(true);
+                        boostForm.getScheduledTaskLabel().setText("计划任务执行中：将在每天" +
                                 App.config.getTextPerDay() +
                                 "开始推送");
 
@@ -213,22 +212,22 @@ public class BoostListener {
                             "将在每周" + App.config.getTextPerWeekWeek() +
                                     App.config.getTextPerWeekTime() +
                                     "推送\n\n消息：" +
-                                    MessageEditForm.messageEditForm.getMsgNameField().getText() +
+                                    MessageEditForm.getInstance().getMsgNameField().getText() +
                                     "\n\n推送人数：" + PushData.allUser.size() +
                                     "\n\n空跑模式：" +
-                                    BoostForm.boostForm.getDryRunCheckBox().isSelected(), "确认定时推送？",
+                                    boostForm.getDryRunCheckBox().isSelected(), "确认定时推送？",
                             JOptionPane.YES_NO_OPTION);
                     if (isSchedulePush == JOptionPane.YES_OPTION) {
                         PushData.scheduling = true;
                         PushData.fixRateScheduling = true;
                         // 按钮状态
-                        BoostForm.boostForm.getScheduledRunButton().setEnabled(false);
-                        BoostForm.boostForm.getStartButton().setEnabled(false);
-                        BoostForm.boostForm.getStopButton().setText("停止计划任务");
-                        BoostForm.boostForm.getStopButton().setEnabled(true);
+                        boostForm.getScheduledRunButton().setEnabled(false);
+                        boostForm.getStartButton().setEnabled(false);
+                        boostForm.getStopButton().setText("停止计划任务");
+                        boostForm.getStopButton().setEnabled(true);
 
-                        BoostForm.boostForm.getScheduledTaskLabel().setVisible(true);
-                        BoostForm.boostForm.getScheduledTaskLabel().setText("计划任务执行中：将在每周" +
+                        boostForm.getScheduledTaskLabel().setVisible(true);
+                        boostForm.getScheduledTaskLabel().setText("计划任务执行中：将在每周" +
                                 App.config.getTextPerWeekWeek() +
                                 App.config.getTextPerWeekTime() +
                                 "开始推送");
@@ -258,21 +257,21 @@ public class BoostListener {
                                     "最近5次运行时间:\n" +
                                     String.join("\n", latest5RunTimeList) +
                                     "\n\n消息名称：" +
-                                    MessageEditForm.messageEditForm.getMsgNameField().getText() +
+                                    MessageEditForm.getInstance().getMsgNameField().getText() +
                                     "\n推送人数：" + PushData.allUser.size() +
                                     "\n空跑模式：" +
-                                    BoostForm.boostForm.getDryRunCheckBox().isSelected(), "确认定时推送？",
+                                    boostForm.getDryRunCheckBox().isSelected(), "确认定时推送？",
                             JOptionPane.YES_NO_OPTION);
                     if (isSchedulePush == JOptionPane.YES_OPTION) {
                         PushData.fixRateScheduling = true;
                         // 按钮状态
-                        BoostForm.boostForm.getScheduledRunButton().setEnabled(false);
-                        BoostForm.boostForm.getStartButton().setEnabled(false);
-                        BoostForm.boostForm.getStopButton().setText("停止计划任务");
-                        BoostForm.boostForm.getStopButton().setEnabled(true);
+                        boostForm.getScheduledRunButton().setEnabled(false);
+                        boostForm.getStartButton().setEnabled(false);
+                        boostForm.getStopButton().setText("停止计划任务");
+                        boostForm.getStopButton().setEnabled(true);
 
-                        BoostForm.boostForm.getScheduledTaskLabel().setVisible(true);
-                        BoostForm.boostForm.getScheduledTaskLabel().setText("计划任务执行中，下一次执行时间：" + latest5RunTimeList.get(0));
+                        boostForm.getScheduledTaskLabel().setVisible(true);
+                        boostForm.getScheduledTaskLabel().setText("计划任务执行中，下一次执行时间：" + latest5RunTimeList.get(0));
 
                         // 支持秒级别定时任务
                         CronUtil.setMatchSecond(true);
@@ -290,27 +289,27 @@ public class BoostListener {
         })));
 
         // 停止按钮事件
-        BoostForm.boostForm.getStopButton().addActionListener((e) -> {
+        boostForm.getStopButton().addActionListener((e) -> {
             ThreadUtil.execute(() -> {
                 if (PushData.scheduling) {
-                    BoostForm.boostForm.getScheduledTaskLabel().setText("");
+                    boostForm.getScheduledTaskLabel().setText("");
                     if (serviceStartAt != null) {
                         serviceStartAt.shutdownNow();
                     }
-                    BoostForm.boostForm.getStartButton().setEnabled(true);
-                    BoostForm.boostForm.getScheduledRunButton().setEnabled(true);
-                    BoostForm.boostForm.getStopButton().setText("停止");
-                    BoostForm.boostForm.getStopButton().setEnabled(false);
-                    BoostForm.boostForm.getStartButton().updateUI();
-                    BoostForm.boostForm.getScheduledRunButton().updateUI();
-                    BoostForm.boostForm.getStopButton().updateUI();
-                    BoostForm.boostForm.getScheduledTaskLabel().setVisible(false);
+                    boostForm.getStartButton().setEnabled(true);
+                    boostForm.getScheduledRunButton().setEnabled(true);
+                    boostForm.getStopButton().setText("停止");
+                    boostForm.getStopButton().setEnabled(false);
+                    boostForm.getStartButton().updateUI();
+                    boostForm.getScheduledRunButton().updateUI();
+                    boostForm.getStopButton().updateUI();
+                    boostForm.getScheduledTaskLabel().setVisible(false);
                     PushData.scheduling = false;
                     PushData.running = false;
                 }
 
                 if (PushData.fixRateScheduling) {
-                    BoostForm.boostForm.getScheduledTaskLabel().setText("");
+                    boostForm.getScheduledTaskLabel().setText("");
                     if (serviceStartPerDay != null) {
                         serviceStartPerDay.shutdownNow();
                     }
@@ -322,14 +321,14 @@ public class BoostListener {
                     } catch (Exception e1) {
                         logger.warn(e1.toString());
                     }
-                    BoostForm.boostForm.getStartButton().setEnabled(true);
-                    BoostForm.boostForm.getScheduledRunButton().setEnabled(true);
-                    BoostForm.boostForm.getStopButton().setText("停止");
-                    BoostForm.boostForm.getStopButton().setEnabled(false);
-                    BoostForm.boostForm.getStartButton().updateUI();
-                    BoostForm.boostForm.getScheduledRunButton().updateUI();
-                    BoostForm.boostForm.getStopButton().updateUI();
-                    BoostForm.boostForm.getScheduledTaskLabel().setVisible(false);
+                    boostForm.getStartButton().setEnabled(true);
+                    boostForm.getScheduledRunButton().setEnabled(true);
+                    boostForm.getStopButton().setText("停止");
+                    boostForm.getStopButton().setEnabled(false);
+                    boostForm.getStartButton().updateUI();
+                    boostForm.getScheduledRunButton().updateUI();
+                    boostForm.getStopButton().updateUI();
+                    boostForm.getScheduledTaskLabel().setVisible(false);
                     PushData.fixRateScheduling = false;
                     PushData.running = false;
                 }
@@ -340,14 +339,14 @@ public class BoostListener {
                             JOptionPane.YES_NO_OPTION);
                     if (isStop == JOptionPane.YES_OPTION) {
                         PushData.running = false;
-                        BoostForm.boostForm.getStartButton().setEnabled(true);
-                        BoostForm.boostForm.getScheduledRunButton().setEnabled(true);
-                        BoostForm.boostForm.getStopButton().setText("停止");
-                        BoostForm.boostForm.getStopButton().setEnabled(false);
-                        BoostForm.boostForm.getStartButton().updateUI();
-                        BoostForm.boostForm.getScheduledRunButton().updateUI();
-                        BoostForm.boostForm.getStopButton().updateUI();
-                        BoostForm.boostForm.getScheduledTaskLabel().setVisible(false);
+                        boostForm.getStartButton().setEnabled(true);
+                        boostForm.getScheduledRunButton().setEnabled(true);
+                        boostForm.getStopButton().setText("停止");
+                        boostForm.getStopButton().setEnabled(false);
+                        boostForm.getStartButton().updateUI();
+                        boostForm.getScheduledRunButton().updateUI();
+                        boostForm.getStopButton().updateUI();
+                        boostForm.getScheduledTaskLabel().setVisible(false);
                     }
                 }
                 for (Future<HttpResponse> httpResponseFuture : BoostPushRunThread.futureList) {
@@ -358,12 +357,13 @@ public class BoostListener {
     }
 
     static void refreshPushInfo() {
+        BoostForm boostForm = BoostForm.getInstance();
         // 总记录数
         long totalCount = PushData.allUser.size();
-        BoostForm.boostForm.getMemberCountLabel().setText("消息总数：" + totalCount);
+        boostForm.getMemberCountLabel().setText("消息总数：" + totalCount);
         // 可用处理器核心
-        BoostForm.boostForm.getProcessorCountLabel().setText("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
+        boostForm.getProcessorCountLabel().setText("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
         // JVM内存占用
-        BoostForm.boostForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
+        boostForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
     }
 }

@@ -81,16 +81,17 @@ public class WxMpTemplateMsgSender implements IMsgSender {
     @Override
     public SendResult asyncSend(String[] msgData) {
         SendResult sendResult = new SendResult();
+        BoostForm boostForm = BoostForm.getInstance();
 
         try {
             if (PushControl.dryRun) {
                 // 已成功+1
                 PushData.increaseSuccess();
-                BoostForm.boostForm.getSuccessCountLabel().setText(String.valueOf(PushData.successRecords));
+                boostForm.getSuccessCountLabel().setText(String.valueOf(PushData.successRecords));
                 // 保存发送成功
                 PushData.sendSuccessList.add(msgData);
                 // 总进度条
-                BoostForm.boostForm.getCompletedProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
+                boostForm.getCompletedProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
@@ -112,7 +113,7 @@ public class WxMpTemplateMsgSender implements IMsgSender {
         } catch (Exception e) {
             // 总发送失败+1
             PushData.increaseFail();
-            BoostForm.boostForm.getFailCountLabel().setText(String.valueOf(PushData.failRecords));
+            boostForm.getFailCountLabel().setText(String.valueOf(PushData.failRecords));
 
             // 保存发送失败
             PushData.sendFailList.add(msgData);
@@ -120,7 +121,7 @@ public class WxMpTemplateMsgSender implements IMsgSender {
             // 失败异常信息输出控制台
             ConsoleUtil.boostConsoleOnly("发送失败:" + e.toString() + ";msgData:" + JSONUtil.toJsonPrettyStr(msgData));
             // 总进度条
-            BoostForm.boostForm.getCompletedProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
+            boostForm.getCompletedProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
 
             sendResult.setSuccess(false);
             sendResult.setInfo(e.getMessage());
@@ -238,12 +239,14 @@ public class WxMpTemplateMsgSender implements IMsgSender {
 
         @Override
         public void completed(HttpResponse httpResponse) {
+            BoostForm boostForm = BoostForm.getInstance();
+
             try {
                 String response = EntityUtils.toString(httpResponse.getEntity(), Consts.UTF_8);
                 if (response.isEmpty()) {
                     // 总发送失败+1
                     PushData.increaseFail();
-                    BoostForm.boostForm.getFailCountLabel().setText(String.valueOf(PushData.failRecords));
+                    boostForm.getFailCountLabel().setText(String.valueOf(PushData.failRecords));
 
                     // 保存发送失败
                     PushData.sendFailList.add(msgData);
@@ -251,13 +254,13 @@ public class WxMpTemplateMsgSender implements IMsgSender {
                     // 失败异常信息输出控制台
                     ConsoleUtil.boostConsoleOnly("发送失败:" + WxError.builder().errorCode(9999).errorMsg("无响应内容").build() + ";msgData:" + JSONUtil.toJsonPrettyStr(msgData));
                     // 总进度条
-                    BoostForm.boostForm.getCompletedProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
+                    boostForm.getCompletedProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
                 } else {
                     WxError error = WxError.fromJson(response);
                     if (error.getErrorCode() != 0) {
                         // 总发送失败+1
                         PushData.increaseFail();
-                        BoostForm.boostForm.getFailCountLabel().setText(String.valueOf(PushData.failRecords));
+                        boostForm.getFailCountLabel().setText(String.valueOf(PushData.failRecords));
 
                         // 保存发送失败
                         PushData.sendFailList.add(msgData);
@@ -265,16 +268,16 @@ public class WxMpTemplateMsgSender implements IMsgSender {
                         // 失败异常信息输出控制台
                         ConsoleUtil.boostConsoleOnly("发送失败:" + error + ";msgData:" + JSONUtil.toJsonPrettyStr(msgData));
                         // 总进度条
-                        BoostForm.boostForm.getCompletedProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
+                        boostForm.getCompletedProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
                     } else {
                         // 已成功+1
                         PushData.increaseSuccess();
-                        BoostForm.boostForm.getSuccessCountLabel().setText(String.valueOf(PushData.successRecords));
+                        boostForm.getSuccessCountLabel().setText(String.valueOf(PushData.successRecords));
 
                         // 保存发送成功
                         PushData.sendSuccessList.add(msgData);
                         // 总进度条
-                        BoostForm.boostForm.getCompletedProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
+                        boostForm.getCompletedProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
                     }
                 }
             } catch (Exception e) {
@@ -284,9 +287,11 @@ public class WxMpTemplateMsgSender implements IMsgSender {
 
         @Override
         public void failed(Exception e) {
+            BoostForm boostForm = BoostForm.getInstance();
+
             // 总发送失败+1
             PushData.increaseFail();
-            BoostForm.boostForm.getFailCountLabel().setText(String.valueOf(PushData.failRecords));
+            boostForm.getFailCountLabel().setText(String.valueOf(PushData.failRecords));
 
             // 保存发送失败
             PushData.sendFailList.add(msgData);
@@ -294,7 +299,7 @@ public class WxMpTemplateMsgSender implements IMsgSender {
             // 失败异常信息输出控制台
             ConsoleUtil.boostConsoleOnly("发送失败:" + e.toString() + ";msgData:" + JSONUtil.toJsonPrettyStr(msgData));
             // 总进度条
-            BoostForm.boostForm.getCompletedProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
+            boostForm.getCompletedProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
         }
 
         @Override

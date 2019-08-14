@@ -72,7 +72,7 @@ public class PushControl {
             return null;
         }
         List<String[]> msgDataList = new ArrayList<>();
-        for (String data : MessageEditForm.messageEditForm.getPreviewUserField().getText().split(";")) {
+        for (String data : MessageEditForm.getInstance().getPreviewUserField().getText().split(";")) {
             msgDataList.add(data.split(MemberListener.TXT_FILE_DATA_SEPERATOR_REGEX));
         }
 
@@ -98,10 +98,13 @@ public class PushControl {
      * @return boolean
      */
     public static boolean pushCheck() {
-        if (StringUtils.isEmpty(MessageEditForm.messageEditForm.getMsgNameField().getText())) {
-            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMainPanel(), "请先选择一条消息！", "提示",
+        MainWindow mainWindow = MainWindow.getInstance();
+        PushForm pushForm = PushForm.getInstance();
+
+        if (StringUtils.isEmpty(MessageEditForm.getInstance().getMsgNameField().getText())) {
+            JOptionPane.showMessageDialog(mainWindow.getMainPanel(), "请先选择一条消息！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
-            MainWindow.mainWindow.getTabbedPane().setSelectedIndex(2);
+            mainWindow.getTabbedPane().setSelectedIndex(2);
 
             return false;
         }
@@ -111,20 +114,20 @@ public class PushControl {
             if (msgType == MessageTypeEnum.HTTP_CODE) {
                 tipsTitle = "请先准备消息变量！";
             }
-            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMainPanel(), tipsTitle, "提示",
+            JOptionPane.showMessageDialog(mainWindow.getMainPanel(), tipsTitle, "提示",
                     JOptionPane.INFORMATION_MESSAGE);
 
             return false;
         }
         if (!PushData.boostMode) {
-            if ("0".equals(PushForm.pushForm.getMaxThreadPoolTextField().getText()) || StringUtils.isEmpty(PushForm.pushForm.getMaxThreadPoolTextField().getText())) {
-                JOptionPane.showMessageDialog(PushForm.pushForm.getPushPanel(), "请设置每页分配用户数！", "提示",
+            if ("0".equals(pushForm.getMaxThreadPoolTextField().getText()) || StringUtils.isEmpty(pushForm.getMaxThreadPoolTextField().getText())) {
+                JOptionPane.showMessageDialog(pushForm.getPushPanel(), "请设置每页分配用户数！", "提示",
                         JOptionPane.INFORMATION_MESSAGE);
 
                 return false;
             }
-            if ("0".equals(PushForm.pushForm.getThreadCountTextField().getText()) || StringUtils.isEmpty(PushForm.pushForm.getThreadCountTextField().getText())) {
-                JOptionPane.showMessageDialog(PushForm.pushForm.getPushPanel(), "请设置每个线程分配的页数！", "提示",
+            if ("0".equals(pushForm.getThreadCountTextField().getText()) || StringUtils.isEmpty(pushForm.getThreadCountTextField().getText())) {
+                JOptionPane.showMessageDialog(pushForm.getPushPanel(), "请设置每个线程分配的页数！", "提示",
                         JOptionPane.INFORMATION_MESSAGE);
 
                 return false;
@@ -140,13 +143,15 @@ public class PushControl {
      * @return
      */
     public static boolean configCheck() {
+        SettingForm settingForm = SettingForm.getInstance();
+
         int msgType = App.config.getMsgType();
         switch (msgType) {
             case MessageTypeEnum.MP_TEMPLATE_CODE:
             case MessageTypeEnum.KEFU_CODE:
             case MessageTypeEnum.KEFU_PRIORITY_CODE: {
                 if (StringUtils.isEmpty(App.config.getWechatAppId()) || StringUtils.isEmpty(App.config.getWechatAppSecret())) {
-                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "请先在设置中填写并保存公众号相关配置！", "提示",
+                    JOptionPane.showMessageDialog(settingForm.getSettingPanel(), "请先在设置中填写并保存公众号相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return false;
                 }
@@ -154,7 +159,7 @@ public class PushControl {
             }
             case MessageTypeEnum.MA_TEMPLATE_CODE:
                 if (StringUtils.isEmpty(App.config.getMiniAppAppId()) || StringUtils.isEmpty(App.config.getMiniAppAppSecret())) {
-                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(), "请先在设置中填写并保存小程序相关配置！", "提示",
+                    JOptionPane.showMessageDialog(settingForm.getSettingPanel(), "请先在设置中填写并保存小程序相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return false;
                 }
@@ -166,7 +171,7 @@ public class PushControl {
 
                 if (StringUtils.isEmpty(aliServerUrl) || StringUtils.isEmpty(aliAppKey)
                         || StringUtils.isEmpty(aliAppSecret)) {
-                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
+                    JOptionPane.showMessageDialog(settingForm.getSettingPanel(),
                             "请先在设置中填写并保存阿里大于相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return false;
@@ -177,7 +182,7 @@ public class PushControl {
                 String aliyunAccessKeySecret = App.config.getAliyunAccessKeySecret();
 
                 if (StringUtils.isEmpty(aliyunAccessKeyId) || StringUtils.isEmpty(aliyunAccessKeySecret)) {
-                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
+                    JOptionPane.showMessageDialog(settingForm.getSettingPanel(),
                             "请先在设置中填写并保存阿里云短信相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return false;
@@ -188,7 +193,7 @@ public class PushControl {
                 String txyunAppKey = App.config.getTxyunAppKey();
 
                 if (StringUtils.isEmpty(txyunAppId) || StringUtils.isEmpty(txyunAppKey)) {
-                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
+                    JOptionPane.showMessageDialog(settingForm.getSettingPanel(),
                             "请先在设置中填写并保存腾讯云短信相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return false;
@@ -197,7 +202,7 @@ public class PushControl {
             case MessageTypeEnum.YUN_PIAN_CODE:
                 String yunpianApiKey = App.config.getYunpianApiKey();
                 if (StringUtils.isEmpty(yunpianApiKey)) {
-                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
+                    JOptionPane.showMessageDialog(settingForm.getSettingPanel(),
                             "请先在设置中填写并保存云片网短信相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return false;
@@ -207,7 +212,7 @@ public class PushControl {
                 String mailHost = App.config.getMailHost();
                 String mailFrom = App.config.getMailFrom();
                 if (StringUtils.isBlank(mailHost) || StringUtils.isBlank(mailFrom)) {
-                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
+                    JOptionPane.showMessageDialog(settingForm.getSettingPanel(),
                             "请先在设置中填写并保存E-Mail相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return false;
@@ -216,7 +221,7 @@ public class PushControl {
             case MessageTypeEnum.WX_CP_CODE:
                 String wxCpCorpId = App.config.getWxCpCorpId();
                 if (StringUtils.isBlank(wxCpCorpId)) {
-                    JOptionPane.showMessageDialog(SettingForm.settingForm.getSettingPanel(),
+                    JOptionPane.showMessageDialog(settingForm.getSettingPanel(),
                             "请先在设置中填写并保存微信企业号/企业微信相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return false;
@@ -231,12 +236,13 @@ public class PushControl {
      * 推送停止或结束后保存数据
      */
     static void savePushData() throws IOException {
+        MessageEditForm messageEditForm = MessageEditForm.getInstance();
         File pushHisDir = new File(SystemUtil.configHome + "data" + File.separator + "push_his");
         if (!pushHisDir.exists()) {
             pushHisDir.mkdirs();
         }
 
-        String msgName = MessageEditForm.messageEditForm.getMsgNameField().getText();
+        String msgName = messageEditForm.getMsgNameField().getText();
         String nowTime = DateUtil.now().replace(":", "_").replace(" ", "_");
         CSVWriter writer;
         int msgType = App.config.getMsgType();
@@ -316,20 +322,20 @@ public class PushControl {
 
         // 发送推送结果邮件
         if ((PushData.scheduling || PushData.fixRateScheduling)
-                && ScheduleForm.scheduleForm.getSendPushResultCheckBox().isSelected()) {
+                && ScheduleForm.getInstance().getSendPushResultCheckBox().isSelected()) {
             ConsoleUtil.consoleWithLog("发送推送结果邮件开始");
-            String mailResultTo = ScheduleForm.scheduleForm.getMailResultToTextField().getText().replace("；", ";").replace(" ", "");
+            String mailResultTo = ScheduleForm.getInstance().getMailResultToTextField().getText().replace("；", ";").replace(" ", "");
             String[] mailTos = mailResultTo.split(";");
             ArrayList<String> mailToList = new ArrayList<>(Arrays.asList(mailTos));
 
             MailMsgSender mailMsgSender = new MailMsgSender();
-            String title = "WePush推送结果：【" + MessageEditForm.messageEditForm.getMsgNameField().getText()
+            String title = "WePush推送结果：【" + messageEditForm.getMsgNameField().getText()
                     + "】" + PushData.sendSuccessList.size() + "成功；" + PushData.sendFailList.size() + "失败；"
                     + PushData.toSendList.size() + "未发送";
             StringBuilder contentBuilder = new StringBuilder();
             contentBuilder.append("<h2>WePush推送结果</h2>");
             contentBuilder.append("<p>消息类型：" + MessageTypeEnum.getName(App.config.getMsgType()) + "</p>");
-            contentBuilder.append("<p>消息名称：" + MessageEditForm.messageEditForm.getMsgNameField().getText() + "</p>");
+            contentBuilder.append("<p>消息名称：" + messageEditForm.getMsgNameField().getText() + "</p>");
             contentBuilder.append("<br/>");
 
             contentBuilder.append("<p style='color:green'><strong>成功数：" + PushData.sendSuccessList.size() + "</strong></p>");
@@ -387,8 +393,8 @@ public class PushControl {
      * 重新导入目标用户(定时任务)
      */
     public static void reimportMembers() {
-        if (PushData.fixRateScheduling && ScheduleForm.scheduleForm.getReimportCheckBox().isSelected()) {
-            switch ((String) ScheduleForm.scheduleForm.getReimportComboBox().getSelectedItem()) {
+        if (PushData.fixRateScheduling && ScheduleForm.getInstance().getReimportCheckBox().isSelected()) {
+            switch ((String) ScheduleForm.getInstance().getReimportComboBox().getSelectedItem()) {
                 case "通过SQL导入":
                     MemberListener.importFromSql();
                     break;

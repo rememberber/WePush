@@ -257,7 +257,7 @@ public class HttpMsgForm implements IMsgForm {
         int isCover = JOptionPane.NO_OPTION;
         if (existSameMsg) {
             // 如果存在，是否覆盖
-            isCover = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getMessagePanel(), "已经存在同名的历史消息，\n是否覆盖？", "确认",
+            isCover = JOptionPane.showConfirmDialog(MainWindow.getInstance().getMessagePanel(), "已经存在同名的历史消息，\n是否覆盖？", "确认",
                     JOptionPane.YES_NO_OPTION);
         }
 
@@ -346,7 +346,7 @@ public class HttpMsgForm implements IMsgForm {
             } else {
                 msgHttpMapper.insertSelective(tMsgHttp);
             }
-            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "保存成功！", "成功",
+            JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "保存成功！", "成功",
                     JOptionPane.INFORMATION_MESSAGE);
         }
     }

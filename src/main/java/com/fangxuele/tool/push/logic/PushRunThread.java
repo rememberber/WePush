@@ -39,10 +39,11 @@ public class PushRunThread extends Thread {
 
     @Override
     public void run() {
-        PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(true);
+        PushForm pushForm = PushForm.getInstance();
+        pushForm.getPushTotalProgressBar().setIndeterminate(true);
         // 准备推送
         preparePushRun();
-        PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
+        pushForm.getPushTotalProgressBar().setIndeterminate(false);
         ConsoleUtil.consoleWithLog("推送开始……");
         // 消息数据分片以及线程纷发
         shardingAndMsgThread();
@@ -54,20 +55,21 @@ public class PushRunThread extends Thread {
      * 准备推送
      */
     private void preparePushRun() {
+        PushForm pushForm = PushForm.getInstance();
         // 按钮状态
-        PushForm.pushForm.getScheduleRunButton().setEnabled(false);
-        PushForm.pushForm.getPushStartButton().setEnabled(false);
-        PushForm.pushForm.getPushStopButton().setEnabled(true);
+        pushForm.getScheduleRunButton().setEnabled(false);
+        pushForm.getPushStartButton().setEnabled(false);
+        pushForm.getPushStopButton().setEnabled(true);
 
-        PushForm.pushForm.getPushStopButton().setText("停止");
+        pushForm.getPushStopButton().setText("停止");
         // 初始化
-        PushForm.pushForm.getPushSuccessCount().setText("0");
-        PushForm.pushForm.getPushFailCount().setText("0");
+        pushForm.getPushSuccessCount().setText("0");
+        pushForm.getPushFailCount().setText("0");
 
         // 设置是否空跑
-        PushControl.dryRun = PushForm.pushForm.getDryRunCheckBox().isSelected();
+        PushControl.dryRun = pushForm.getDryRunCheckBox().isSelected();
 
-        PushControl.saveResponseBody = PushForm.pushForm.getSaveResponseBodyCheckBox().isSelected();
+        PushControl.saveResponseBody = pushForm.getSaveResponseBodyCheckBox().isSelected();
 
         // 执行前重新导入目标用户
         PushControl.reimportMembers();
@@ -81,46 +83,47 @@ public class PushRunThread extends Thread {
         // 总记录数
         PushData.totalRecords = PushData.toSendList.size();
 
-        PushForm.pushForm.getPushTotalCountLabel().setText("消息总数：" + PushData.totalRecords);
-        PushForm.pushForm.getPushTotalProgressBar().setMaximum((int) PushData.totalRecords);
+        pushForm.getPushTotalCountLabel().setText("消息总数：" + PushData.totalRecords);
+        pushForm.getPushTotalProgressBar().setMaximum((int) PushData.totalRecords);
         ConsoleUtil.consoleWithLog("消息总数：" + PushData.totalRecords);
         // 可用处理器核心数量
-        PushForm.pushForm.getAvailableProcessorLabel().setText("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
+        pushForm.getAvailableProcessorLabel().setText("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
         ConsoleUtil.consoleWithLog("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
 
         // 线程数
-        App.config.setThreadCount(Integer.parseInt(PushForm.pushForm.getThreadCountTextField().getText()));
+        App.config.setThreadCount(Integer.parseInt(pushForm.getThreadCountTextField().getText()));
         App.config.save();
-        ConsoleUtil.consoleWithLog("线程数：" + PushForm.pushForm.getThreadCountTextField().getText());
+        ConsoleUtil.consoleWithLog("线程数：" + pushForm.getThreadCountTextField().getText());
 
         // 线程池大小
-        App.config.setMaxThreadPool(Integer.parseInt(PushForm.pushForm.getMaxThreadPoolTextField().getText()));
+        App.config.setMaxThreadPool(Integer.parseInt(pushForm.getMaxThreadPoolTextField().getText()));
         App.config.save();
-        ConsoleUtil.consoleWithLog("线程池大小：" + PushForm.pushForm.getMaxThreadPoolTextField().getText());
+        ConsoleUtil.consoleWithLog("线程池大小：" + pushForm.getMaxThreadPoolTextField().getText());
 
         // 准备消息构造器
         PushControl.prepareMsgMaker();
 
         // 线程数
-        PushData.threadCount = Integer.parseInt(PushForm.pushForm.getThreadCountTextField().getText());
+        PushData.threadCount = Integer.parseInt(pushForm.getThreadCountTextField().getText());
 
         // 初始化线程table
         String[] headerNames = {"线程", "分片区间", "成功", "失败", "总数", "当前进度"};
         DefaultTableModel tableModel = new DefaultTableModel(null, headerNames);
-        PushForm.pushForm.getPushThreadTable().setModel(tableModel);
-        PushForm.pushForm.getPushThreadTable().getColumn("当前进度").setCellRenderer(new TableInCellProgressBarRenderer());
+        pushForm.getPushThreadTable().setModel(tableModel);
+        pushForm.getPushThreadTable().getColumn("当前进度").setCellRenderer(new TableInCellProgressBarRenderer());
 
-        DefaultTableCellRenderer hr = (DefaultTableCellRenderer) PushForm.pushForm.getPushThreadTable().getTableHeader()
+        DefaultTableCellRenderer hr = (DefaultTableCellRenderer) pushForm.getPushThreadTable().getTableHeader()
                 .getDefaultRenderer();
         // 表头列名居左
         hr.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
-        PushForm.pushForm.getPushThreadTable().updateUI();
+        pushForm.getPushThreadTable().updateUI();
     }
 
     /**
      * 消息数据分片以及线程纷发
      */
     private static void shardingAndMsgThread() {
+        PushForm pushForm = PushForm.getInstance();
         Object[] data;
 
         int maxThreadPoolSize = App.config.getMaxThreadPool();
@@ -128,7 +131,7 @@ public class PushRunThread extends Thread {
         MsgSendThread msgSendThread;
         // 每个线程分配
         int perThread = (int) (PushData.totalRecords / PushData.threadCount) + 1;
-        DefaultTableModel tableModel = (DefaultTableModel) PushForm.pushForm.getPushThreadTable().getModel();
+        DefaultTableModel tableModel = (DefaultTableModel) pushForm.getPushThreadTable().getModel();
         BaseMsgThread.msgType = App.config.getMsgType();
         for (int i = 0; i < PushData.threadCount; i++) {
             int startIndex = i * perThread;
@@ -162,28 +165,29 @@ public class PushRunThread extends Thread {
      * 时间监控
      */
     private void timeMonitor() {
+        PushForm pushForm = PushForm.getInstance();
         long startTimeMillis = System.currentTimeMillis();
         // 计时
         while (true) {
             if (PushData.stoppedThreadCount.intValue() == PushData.threadCount) {
                 if (!PushData.fixRateScheduling) {
-                    PushForm.pushForm.getPushStopButton().setEnabled(false);
-                    PushForm.pushForm.getPushStopButton().updateUI();
-                    PushForm.pushForm.getPushStartButton().setEnabled(true);
-                    PushForm.pushForm.getPushStartButton().updateUI();
-                    PushForm.pushForm.getScheduleRunButton().setEnabled(true);
-                    PushForm.pushForm.getScheduleRunButton().updateUI();
-                    PushForm.pushForm.getScheduleDetailLabel().setText("");
+                    pushForm.getPushStopButton().setEnabled(false);
+                    pushForm.getPushStopButton().updateUI();
+                    pushForm.getPushStartButton().setEnabled(true);
+                    pushForm.getPushStartButton().updateUI();
+                    pushForm.getScheduleRunButton().setEnabled(true);
+                    pushForm.getScheduleRunButton().updateUI();
+                    pushForm.getScheduleDetailLabel().setText("");
                     String finishTip = "发送完毕！\n";
-                    JOptionPane.showMessageDialog(PushForm.pushForm.getPushPanel(), finishTip, "提示",
+                    JOptionPane.showMessageDialog(pushForm.getPushPanel(), finishTip, "提示",
                             JOptionPane.INFORMATION_MESSAGE);
-                    PushForm.pushForm.getScheduleDetailLabel().setVisible(false);
+                    pushForm.getScheduleDetailLabel().setVisible(false);
                 } else {
                     if (App.config.isRadioCron()) {
                         Date nextDate = CronPatternUtil.nextDateAfter(new CronPattern(App.config.getTextCron()), new Date(), true);
-                        PushForm.pushForm.getScheduleDetailLabel().setText("计划任务执行中，下一次执行时间：" + DateFormatUtils.format(nextDate, "yyyy-MM-dd HH:mm:ss"));
+                        pushForm.getScheduleDetailLabel().setText("计划任务执行中，下一次执行时间：" + DateFormatUtils.format(nextDate, "yyyy-MM-dd HH:mm:ss"));
                     }
-                    PushForm.pushForm.getPushStopButton().setText("停止计划任务");
+                    pushForm.getPushStopButton().setText("停止计划任务");
                 }
 
                 PushData.endTime = System.currentTimeMillis();
@@ -191,16 +195,16 @@ public class PushRunThread extends Thread {
                 // 保存停止前的数据
                 try {
                     // 空跑控制
-                    if (!PushForm.pushForm.getDryRunCheckBox().isSelected()) {
+                    if (!pushForm.getDryRunCheckBox().isSelected()) {
                         ConsoleUtil.consoleWithLog("正在保存结果数据……");
-                        PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(true);
+                        pushForm.getPushTotalProgressBar().setIndeterminate(true);
                         PushControl.savePushData();
                         ConsoleUtil.consoleWithLog("结果数据保存完毕！");
                     }
                 } catch (IOException e) {
                     logger.error(e);
                 } finally {
-                    PushForm.pushForm.getPushTotalProgressBar().setIndeterminate(false);
+                    pushForm.getPushTotalProgressBar().setIndeterminate(false);
                 }
                 break;
             }
@@ -214,20 +218,20 @@ public class PushRunThread extends Thread {
 
             // 耗时
             String formatBetweenLast = DateUtil.formatBetween(lastTimeMillis, BetweenFormater.Level.SECOND);
-            PushForm.pushForm.getPushLastTimeLabel().setText("".equals(formatBetweenLast) ? "0s" : formatBetweenLast);
+            pushForm.getPushLastTimeLabel().setText("".equals(formatBetweenLast) ? "0s" : formatBetweenLast);
 
             // 预计剩余
             String formatBetweenLeft = DateUtil.formatBetween(leftTimeMillis, BetweenFormater.Level.SECOND);
-            PushForm.pushForm.getPushLeftTimeLabel().setText("".equals(formatBetweenLeft) ? "0s" : formatBetweenLeft);
+            pushForm.getPushLeftTimeLabel().setText("".equals(formatBetweenLeft) ? "0s" : formatBetweenLeft);
 
-            PushForm.pushForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
+            pushForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
 
             // TPS
             if (lastTimeMillis == 0) {
                 lastTimeMillis = 1;
             }
             int tps = (int) (totalSentCount * 1000 / lastTimeMillis);
-            PushForm.pushForm.getTpsLabel().setText(String.valueOf(tps));
+            pushForm.getTpsLabel().setText(String.valueOf(tps));
             ThreadUtil.safeSleep(100);
         }
     }

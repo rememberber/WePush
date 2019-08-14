@@ -40,7 +40,14 @@ public class BoostForm {
     private JLabel jvmMemoryLabel;
     private JLabel scheduledTaskLabel;
 
-    public static BoostForm boostForm = new BoostForm();
+    private static BoostForm boostForm;
+
+    public static BoostForm getInstance() {
+        if (boostForm == null) {
+            boostForm = new BoostForm();
+        }
+        return boostForm;
+    }
 
     public BoostForm() {
         UndoUtil.register(this);

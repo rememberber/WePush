@@ -95,7 +95,7 @@ public class BaseMsgThread extends Thread {
         list = PushData.toSendList.subList(startIndex, endIndex);
 
         // 初始化线程列表行
-        pushThreadTable = PushForm.pushForm.getPushThreadTable();
+        pushThreadTable = PushForm.getInstance().getPushThreadTable();
         currentThreadSuccessCount = 0;
         currentThreadFailCount = 0;
         pushThreadTable.setValueAt(currentThreadSuccessCount, tableRow, 2);

@@ -39,7 +39,7 @@ public class UpgradeUtil {
         // 从github获取最新版本相关信息
         String versionSummaryJsonContent = HttpUtil.get(UiConsts.CHECK_VERSION_URL);
         if (StringUtils.isEmpty(versionSummaryJsonContent) && !initCheck) {
-            JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
+            JOptionPane.showMessageDialog(MainWindow.getInstance().getSettingPanel(),
                     "检查超时，请关注GitHub Release！", "网络错误",
                     JOptionPane.INFORMATION_MESSAGE);
             return;
@@ -76,7 +76,7 @@ public class UpgradeUtil {
             updateInfoDialog.setVisible(true);
         } else {
             if (!initCheck) {
-                JOptionPane.showMessageDialog(MainWindow.mainWindow.getSettingPanel(),
+                JOptionPane.showMessageDialog(MainWindow.getInstance().getSettingPanel(),
                         "当前已经是最新版本！", "恭喜",
                         JOptionPane.INFORMATION_MESSAGE);
             }

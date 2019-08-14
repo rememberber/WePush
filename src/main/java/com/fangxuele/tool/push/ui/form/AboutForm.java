@@ -27,7 +27,14 @@ public class AboutForm {
     private JLabel helpDocLabel;
     private JLabel pushTotalLabel;
 
-    public static AboutForm aboutForm = new AboutForm();
+    private static AboutForm aboutForm;
+
+    public static AboutForm getInstance() {
+        if (aboutForm == null) {
+            aboutForm = new AboutForm();
+        }
+        return aboutForm;
+    }
 
     public static void init() {
         aboutForm.getPushTotalLabel().setText("<html>已累计为您推送 <b>" + App.config.getPushTotal() + "</b> 条消息</html>");

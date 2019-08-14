@@ -73,7 +73,14 @@ public class MemberForm {
     private JTextField importNumTextField;
     private JButton importFromNumButton;
 
-    public static MemberForm memberForm = new MemberForm();
+    private static MemberForm memberForm;
+
+    public static MemberForm getInstance() {
+        if (memberForm == null) {
+            memberForm = new MemberForm();
+        }
+        return memberForm;
+    }
 
     public MemberForm() {
         UndoUtil.register(this);

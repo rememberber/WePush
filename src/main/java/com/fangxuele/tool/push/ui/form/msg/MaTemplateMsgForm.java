@@ -81,10 +81,10 @@ public class MaTemplateMsgForm implements IMsgForm {
             }
 
             if (StringUtils.isEmpty(data[0]) || StringUtils.isEmpty(data[1])) {
-                JOptionPane.showMessageDialog(MessageEditForm.messageEditForm.getMsgEditorPanel(), "Name或value不能为空！", "提示",
+                JOptionPane.showMessageDialog(MessageEditForm.getInstance().getMsgEditorPanel(), "Name或value不能为空！", "提示",
                         JOptionPane.INFORMATION_MESSAGE);
             } else if (keySet.contains(data[0])) {
-                JOptionPane.showMessageDialog(MessageEditForm.messageEditForm.getMsgEditorPanel(), "Name不能重复！", "提示",
+                JOptionPane.showMessageDialog(MessageEditForm.getInstance().getMsgEditorPanel(), "Name不能重复！", "提示",
                         JOptionPane.INFORMATION_MESSAGE);
             } else {
                 if (StringUtils.isEmpty(data[2])) {
@@ -148,7 +148,7 @@ public class MaTemplateMsgForm implements IMsgForm {
         int isCover = JOptionPane.NO_OPTION;
         if (existSameMsg) {
             // 如果存在，是否覆盖
-            isCover = JOptionPane.showConfirmDialog(MainWindow.mainWindow.getMessagePanel(), "已经存在同名的历史消息，\n是否覆盖？", "确认",
+            isCover = JOptionPane.showConfirmDialog(MainWindow.getInstance().getMessagePanel(), "已经存在同名的历史消息，\n是否覆盖？", "确认",
                     JOptionPane.YES_NO_OPTION);
         }
 
@@ -208,7 +208,7 @@ public class MaTemplateMsgForm implements IMsgForm {
                 templateDataMapper.insert(tTemplateData);
             }
 
-            JOptionPane.showMessageDialog(MainWindow.mainWindow.getMessagePanel(), "保存成功！", "成功",
+            JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "保存成功！", "成功",
                     JOptionPane.INFORMATION_MESSAGE);
         }
     }

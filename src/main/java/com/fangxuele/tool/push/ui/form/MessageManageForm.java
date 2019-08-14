@@ -46,7 +46,7 @@ public class MessageManageForm {
     private JButton msgHisTableDeleteButton;
     private JButton createMsgButton;
 
-    public static MessageManageForm messageManageForm = new MessageManageForm();
+    private static MessageManageForm messageManageForm;
 
     private static TMsgKefuMapper msgKefuMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuMapper.class);
     private static TMsgKefuPriorityMapper msgKefuPriorityMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuPriorityMapper.class);
@@ -56,6 +56,13 @@ public class MessageManageForm {
     private static TMsgMailMapper msgMailMapper = MybatisUtil.getSqlSession().getMapper(TMsgMailMapper.class);
     private static TMsgWxCpMapper msgWxCpMapper = MybatisUtil.getSqlSession().getMapper(TMsgWxCpMapper.class);
     private static TMsgHttpMapper msgHttpMapper = MybatisUtil.getSqlSession().getMapper(TMsgHttpMapper.class);
+
+    public static MessageManageForm getInstance() {
+        if (messageManageForm == null) {
+            messageManageForm = new MessageManageForm();
+        }
+        return messageManageForm;
+    }
 
     /**
      * 初始化消息列表

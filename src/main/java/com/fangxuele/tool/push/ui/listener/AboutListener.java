@@ -35,7 +35,8 @@ public class AboutListener {
     private static final Log logger = LogFactory.get();
 
     public static void addListeners() {
-        AboutForm.aboutForm.getCompanyLabel().addMouseListener(new MouseAdapter() {
+        AboutForm aboutForm = AboutForm.getInstance();
+        aboutForm.getCompanyLabel().addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
@@ -56,7 +57,7 @@ public class AboutListener {
         });
 
         // 检查更新
-        AboutForm.aboutForm.getCheckUpdateLabel().addMouseListener(new MouseAdapter() {
+        aboutForm.getCheckUpdateLabel().addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
@@ -71,7 +72,7 @@ public class AboutListener {
         });
 
         // 帮助文档
-        AboutForm.aboutForm.getHelpDocLabel().addMouseListener(new MouseAdapter() {
+        aboutForm.getHelpDocLabel().addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
@@ -98,7 +99,7 @@ public class AboutListener {
         String qrCodeContent = HttpUtil.get(UiConsts.QR_CODE_URL);
         if (StringUtils.isNotEmpty(qrCodeContent)) {
             Map<String, String> urlMap = JSONUtil.toBean(qrCodeContent, Map.class);
-            JLabel qrCodeLabel = AboutForm.aboutForm.getQrCodeLabel();
+            JLabel qrCodeLabel = AboutForm.getInstance().getQrCodeLabel();
 
             try {
                 URL url = new URL(urlMap.get("url"));
@@ -109,7 +110,7 @@ public class AboutListener {
                 logger.error(e);
             }
 
-            MainWindow.mainWindow.getAboutPanel().updateUI();
+            MainWindow.getInstance().getAboutPanel().updateUI();
         }
     }
 }

@@ -86,26 +86,26 @@ public class Init {
     public static void initOthers() {
         // 设置滚动条速度
 
-        MessageEditForm.messageEditForm.getMsgEditScrollPane().getVerticalScrollBar().setUnitIncrement(15);
-        MessageEditForm.messageEditForm.getMsgEditScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
+        MessageEditForm.getInstance().getMsgEditScrollPane().getVerticalScrollBar().setUnitIncrement(15);
+        MessageEditForm.getInstance().getMsgEditScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
 
-        SettingForm.settingForm.getSettingScrollPane().getVerticalScrollBar().setUnitIncrement(16);
-        SettingForm.settingForm.getSettingScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
+        SettingForm.getInstance().getSettingScrollPane().getVerticalScrollBar().setUnitIncrement(16);
+        SettingForm.getInstance().getSettingScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
 
-        UserCaseForm.userCaseForm.getUserCaseScrollPane().getVerticalScrollBar().setUnitIncrement(15);
-        UserCaseForm.userCaseForm.getUserCaseScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
+        UserCaseForm.getInstance().getUserCaseScrollPane().getVerticalScrollBar().setUnitIncrement(15);
+        UserCaseForm.getInstance().getUserCaseScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
 
-        MemberForm.memberForm.getMemberImportScrollPane().getVerticalScrollBar().setUnitIncrement(15);
-        MemberForm.memberForm.getMemberImportScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
+        MemberForm.getInstance().getMemberImportScrollPane().getVerticalScrollBar().setUnitIncrement(15);
+        MemberForm.getInstance().getMemberImportScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
 
-        MessageTypeForm.messageTypeForm.getMessageTypeScrollPane().getVerticalScrollBar().setUnitIncrement(15);
-        MessageTypeForm.messageTypeForm.getMessageTypeScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
+        MessageTypeForm.getInstance().getMessageTypeScrollPane().getVerticalScrollBar().setUnitIncrement(15);
+        MessageTypeForm.getInstance().getMessageTypeScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
 
         HttpResultForm.getInstance().getHttpResultScrollPane().getVerticalScrollBar().setUnitIncrement(15);
         HttpResultForm.getInstance().getHttpResultScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
 
         // 设置版本
-        AboutForm.aboutForm.getVersionLabel().setText(UiConsts.APP_VERSION);
+        AboutForm.getInstance().getVersionLabel().setText(UiConsts.APP_VERSION);
     }
 
     /**
