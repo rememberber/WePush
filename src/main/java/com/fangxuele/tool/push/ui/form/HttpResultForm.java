@@ -28,6 +28,8 @@ public class HttpResultForm {
     private static HttpResultForm httpResultForm;
 
     private HttpResultForm() {
+        this.getHttpResultScrollPane().getVerticalScrollBar().setUnitIncrement(15);
+        this.getHttpResultScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
     }
 
     public static HttpResultForm getInstance() {

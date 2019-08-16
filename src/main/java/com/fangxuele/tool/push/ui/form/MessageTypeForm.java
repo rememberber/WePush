@@ -63,6 +63,9 @@ public class MessageTypeForm {
     public static void init() {
         messageTypeForm = getInstance();
 
+        messageTypeForm.getMessageTypeScrollPane().getVerticalScrollBar().setUnitIncrement(15);
+        messageTypeForm.getMessageTypeScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
+
         int msgType = App.config.getMsgType();
         clearAllSelected();
 

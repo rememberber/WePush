@@ -62,6 +62,10 @@ public class MessageEditForm {
      */
     public static void init(String selectedMsgName) {
         messageEditForm = getInstance();
+        // 设置滚动条速度
+        messageEditForm.getMsgEditScrollPane().getVerticalScrollBar().setUnitIncrement(15);
+        messageEditForm.getMsgEditScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
+
         String msgName;
         if (StringUtils.isEmpty(selectedMsgName)) {
             msgName = App.config.getMsgName();

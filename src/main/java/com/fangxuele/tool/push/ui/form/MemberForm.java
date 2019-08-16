@@ -91,6 +91,10 @@ public class MemberForm {
      */
     public static void init() {
         memberForm = getInstance();
+
+        memberForm.getMemberImportScrollPane().getVerticalScrollBar().setUnitIncrement(15);
+        memberForm.getMemberImportScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
+
         memberForm.getMemberTabImportProgressBar().setVisible(false);
         memberForm.getImportFromSqlTextArea().setText(App.config.getMemberSql());
         memberForm.getMemberFilePathField().setText(App.config.getMemberFilePath());
