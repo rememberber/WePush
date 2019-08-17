@@ -58,8 +58,19 @@ public class PushHisForm {
     public static void init() {
         pushHisForm = getInstance();
 
-        pushHisForm.getSplitPane().setDividerLocation((int) (App.mainFrame.getWidth() * 0.38));
+        if ("Darcula(推荐)".equals(App.config.getTheme())) {
+            Color bgColor = new Color(43, 43, 43);
+            pushHisForm.getPushHisTextArea().setBackground(bgColor);
+            Color foreColor = new Color(169, 183, 198);
+            pushHisForm.getPushHisTextArea().setForeground(foreColor);
+        }
 
+        pushHisForm.getSplitPane().setDividerLocation((int) (App.mainFrame.getWidth() * 0.38));
+        initHisLeftTable();
+
+    }
+
+    private static void initHisLeftTable() {
         // 导入历史管理
         String[] headerNames = {"消息名称", "状态", "时间", "id"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);

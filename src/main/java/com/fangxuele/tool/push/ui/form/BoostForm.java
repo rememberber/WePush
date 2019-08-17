@@ -57,6 +57,13 @@ public class BoostForm {
         boostForm = getInstance();
         boostForm.getDryRunCheckBox().setSelected(App.config.isDryRun());
         boostForm.getScheduledTaskLabel().setVisible(false);
+
+        if ("Darcula(推荐)".equals(App.config.getTheme())) {
+            Color bgColor = new Color(43, 43, 43);
+            boostForm.getConsoleTextArea().setBackground(bgColor);
+            Color foreColor = new Color(169, 183, 198);
+            boostForm.getConsoleTextArea().setForeground(foreColor);
+        }
     }
 
     {
