@@ -35,6 +35,7 @@ public class PushHisForm {
     private JButton pushHisCopyButton;
     private JTextArea pushHisTextArea;
     private JButton resendFromHisButton;
+    private JSplitPane splitPane;
 
     private static PushHisForm pushHisForm;
 
@@ -56,6 +57,9 @@ public class PushHisForm {
      */
     public static void init() {
         pushHisForm = getInstance();
+
+        pushHisForm.getSplitPane().setDividerLocation((int) (App.mainFrame.getWidth() * 0.38));
+
         // 导入历史管理
         String[] headerNames = {"消息名称", "状态", "时间", "id"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
@@ -101,20 +105,20 @@ public class PushHisForm {
         pushHisPanel = new JPanel();
         pushHisPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(pushHisPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        final JSplitPane splitPane1 = new JSplitPane();
-        splitPane1.setContinuousLayout(true);
-        splitPane1.setDividerLocation(620);
-        splitPane1.setDividerSize(4);
-        splitPane1.setDoubleBuffered(true);
-        splitPane1.setInheritsPopupMenu(false);
-        splitPane1.setLastDividerLocation(620);
-        splitPane1.setResizeWeight(0.0);
-        pushHisPanel.add(splitPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));
+        splitPane = new JSplitPane();
+        splitPane.setContinuousLayout(true);
+        splitPane.setDividerLocation(620);
+        splitPane.setDividerSize(4);
+        splitPane.setDoubleBuffered(true);
+        splitPane.setInheritsPopupMenu(false);
+        splitPane.setLastDividerLocation(620);
+        splitPane.setResizeWeight(0.0);
+        pushHisPanel.add(splitPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel2.setMinimumSize(new Dimension(100, 24));
         panel2.setPreferredSize(new Dimension(740, 24));
-        splitPane1.setLeftComponent(panel2);
+        splitPane.setLeftComponent(panel2);
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new GridLayoutManager(1, 4, new Insets(5, 5, 5, 0), -1, -1));
         panel2.add(panel3, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -145,7 +149,7 @@ public class PushHisForm {
         scrollPane1.setViewportView(pushHisLeftTable);
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
-        splitPane1.setRightComponent(panel4);
+        splitPane.setRightComponent(panel4);
         final JPanel panel5 = new JPanel();
         panel5.setLayout(new GridLayoutManager(1, 4, new Insets(5, 10, 5, 5), -1, -1));
         panel4.add(panel5, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));

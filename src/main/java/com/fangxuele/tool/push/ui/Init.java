@@ -84,26 +84,6 @@ public class Init {
      * 其他初始化
      */
     public static void initOthers() {
-        // 设置滚动条速度
-
-        MessageEditForm.getInstance().getMsgEditScrollPane().getVerticalScrollBar().setUnitIncrement(15);
-        MessageEditForm.getInstance().getMsgEditScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
-
-        SettingForm.getInstance().getSettingScrollPane().getVerticalScrollBar().setUnitIncrement(16);
-        SettingForm.getInstance().getSettingScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
-
-        UserCaseForm.getInstance().getUserCaseScrollPane().getVerticalScrollBar().setUnitIncrement(15);
-        UserCaseForm.getInstance().getUserCaseScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
-
-        MemberForm.getInstance().getMemberImportScrollPane().getVerticalScrollBar().setUnitIncrement(15);
-        MemberForm.getInstance().getMemberImportScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
-
-        MessageTypeForm.getInstance().getMessageTypeScrollPane().getVerticalScrollBar().setUnitIncrement(15);
-        MessageTypeForm.getInstance().getMessageTypeScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
-
-        HttpResultForm.getInstance().getHttpResultScrollPane().getVerticalScrollBar().setUnitIncrement(15);
-        HttpResultForm.getInstance().getHttpResultScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
-
         // 设置版本
         AboutForm.getInstance().getVersionLabel().setText(UiConsts.APP_VERSION);
     }

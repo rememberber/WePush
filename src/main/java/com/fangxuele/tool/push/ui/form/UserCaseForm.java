@@ -52,7 +52,10 @@ public class UserCaseForm {
      */
     public static void init() {
         userCaseForm = getInstance();
-        
+
+        userCaseForm.getUserCaseScrollPane().getVerticalScrollBar().setUnitIncrement(15);
+        userCaseForm.getUserCaseScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
+
         // 从github获取用户案例相关信息
         String userCaseInfoContent = HttpUtil.get(UiConsts.USER_CASE_URL);
         if (StringUtils.isNotEmpty(userCaseInfoContent)) {

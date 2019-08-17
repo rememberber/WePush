@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.form;
 
+import com.fangxuele.tool.push.App;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Getter;
@@ -60,6 +61,7 @@ public class MainWindow {
         mainWindow.getPushPanel().add(PushForm.getInstance().getPushPanel(), gridConstraints);
         mainWindow.getMessageTypePanel().add(MessageTypeForm.getInstance().getMessageTypePanel(), gridConstraints);
         mainWindow.getBoostPanel().add(BoostForm.getInstance().getBoostPanel(), gridConstraints);
+        mainWindow.getMessagePanel().setDividerLocation((int) (App.mainFrame.getWidth() / 5.6));
         mainWindow.getMainPanel().updateUI();
     }
 

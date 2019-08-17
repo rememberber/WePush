@@ -72,6 +72,7 @@ public class MemberForm {
     private JLabel 数量Label;
     private JTextField importNumTextField;
     private JButton importFromNumButton;
+    private JSplitPane splitPane;
 
     private static MemberForm memberForm;
 
@@ -91,6 +92,12 @@ public class MemberForm {
      */
     public static void init() {
         memberForm = getInstance();
+
+        memberForm.getSplitPane().setDividerLocation((int) (App.mainFrame.getWidth() * 0.6));
+
+        memberForm.getMemberImportScrollPane().getVerticalScrollBar().setUnitIncrement(15);
+        memberForm.getMemberImportScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
+
         memberForm.getMemberTabImportProgressBar().setVisible(false);
         memberForm.getImportFromSqlTextArea().setText(App.config.getMemberSql());
         memberForm.getMemberFilePathField().setText(App.config.getMemberFilePath());
@@ -133,18 +140,18 @@ public class MemberForm {
         memberPanel.setMinimumSize(new Dimension(-1, -1));
         memberPanel.setOpaque(true);
         memberPanel.setPreferredSize(new Dimension(-1, -1));
-        final JSplitPane splitPane1 = new JSplitPane();
-        splitPane1.setContinuousLayout(true);
-        splitPane1.setDividerLocation(800);
-        splitPane1.setDividerSize(4);
-        splitPane1.setDoubleBuffered(true);
-        splitPane1.setLastDividerLocation(800);
-        memberPanel.add(splitPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        splitPane = new JSplitPane();
+        splitPane.setContinuousLayout(true);
+        splitPane.setDividerLocation(800);
+        splitPane.setDividerSize(4);
+        splitPane.setDoubleBuffered(true);
+        splitPane.setLastDividerLocation(800);
+        memberPanel.add(splitPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel1.setMinimumSize(new Dimension(-1, -1));
         panel1.setPreferredSize(new Dimension(-1, -1));
-        splitPane1.setLeftComponent(panel1);
+        splitPane.setLeftComponent(panel1);
         final JScrollPane scrollPane1 = new JScrollPane();
         panel1.add(scrollPane1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         memberListTable = new JTable();
@@ -186,7 +193,7 @@ public class MemberForm {
         panel4.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel4.setMinimumSize(new Dimension(-1, -1));
         panel4.setPreferredSize(new Dimension(-1, -1));
-        splitPane1.setRightComponent(panel4);
+        splitPane.setRightComponent(panel4);
         memberPanelRight = new JPanel();
         memberPanelRight.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel4.add(memberPanelRight, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
