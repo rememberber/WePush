@@ -24,7 +24,7 @@
         <weixin-java-cp.version>3.5.0</weixin-java-cp.version>
         <weixin-java-miniapp.version>3.5.0</weixin-java-miniapp.version>
         <emoji-java.version>4.0.0</emoji-java.version>
-        <hutool-all.version>4.5.15</hutool-all.version>
+        <hutool-all.version>4.6.2</hutool-all.version>
         <opencsv.version>4.6</opencsv.version>
         <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
         <forms_rt.version>7.0.3</forms_rt.version>
