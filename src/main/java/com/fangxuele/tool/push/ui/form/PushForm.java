@@ -79,7 +79,7 @@ public class PushForm {
         if ("Darcula(推荐)".equals(App.config.getTheme())) {
             Color bgColor = new Color(43, 43, 43);
             pushForm.getPushConsoleTextArea().setBackground(bgColor);
-            Color foreColor = new Color(169, 183, 198);
+            Color foreColor = new Color(187, 187, 187);
             pushForm.getPushConsoleTextArea().setForeground(foreColor);
         }
     }
