@@ -101,6 +101,13 @@ public class MemberForm {
         memberForm.getMemberTabImportProgressBar().setVisible(false);
         memberForm.getImportFromSqlTextArea().setText(App.config.getMemberSql());
         memberForm.getMemberFilePathField().setText(App.config.getMemberFilePath());
+
+        if ("Darcula(推荐)".equals(App.config.getTheme())) {
+            Color bgColor = new Color(43, 43, 43);
+            memberForm.getImportFromSqlTextArea().setBackground(bgColor);
+            Color foreColor = new Color(169, 183, 198);
+            memberForm.getImportFromSqlTextArea().setForeground(foreColor);
+        }
     }
 
     /**

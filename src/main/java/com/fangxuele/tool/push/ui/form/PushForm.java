@@ -75,6 +75,13 @@ public class PushForm {
         pushForm.getThreadCountSlider().setMaximum(App.config.getMaxThreadPool());
         pushForm.getThreadCountSlider().setValue(App.config.getThreadCount());
         pushForm.getDryRunCheckBox().setSelected(App.config.isDryRun());
+
+        if ("Darcula(推荐)".equals(App.config.getTheme())) {
+            Color bgColor = new Color(43, 43, 43);
+            pushForm.getPushConsoleTextArea().setBackground(bgColor);
+            Color foreColor = new Color(169, 183, 198);
+            pushForm.getPushConsoleTextArea().setForeground(foreColor);
+        }
     }
 
     {
