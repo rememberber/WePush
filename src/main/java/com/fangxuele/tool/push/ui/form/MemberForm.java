@@ -105,7 +105,7 @@ public class MemberForm {
         if ("Darcula(推荐)".equals(App.config.getTheme())) {
             Color bgColor = new Color(43, 43, 43);
             memberForm.getImportFromSqlTextArea().setBackground(bgColor);
-            Color foreColor = new Color(169, 183, 198);
+            Color foreColor = new Color(187, 187, 187);
             memberForm.getImportFromSqlTextArea().setForeground(foreColor);
         }
     }
