@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TMsgMpTemplateMapper;
 import com.fangxuele.tool.push.dao.TTemplateDataMapper;
 import com.fangxuele.tool.push.domain.TMsgMpTemplate;
@@ -14,7 +15,6 @@ import com.fangxuele.tool.push.util.SqliteUtil;
 import com.google.common.collect.Maps;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplate;
@@ -150,16 +150,24 @@ public class MpTemplateMsgForm implements IMsgForm {
 
     @Override
     public void init(String msgName) {
+        MpTemplateMsgForm mpTemplateMsgForm = getInstance();
+        if ("Darcula(推荐)".equals(App.config.getTheme())) {
+            Color bgColor = new Color(43, 43, 43);
+            mpTemplateMsgForm.getTemplateContentTextArea().setBackground(bgColor);
+            Color foreColor = new Color(187, 187, 187);
+            mpTemplateMsgForm.getTemplateContentTextArea().setForeground(foreColor);
+        }
+
         clearAllField();
         Integer msgId = 0;
         List<TMsgMpTemplate> tMsgMpTemplateList = msgMpTemplateMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.MP_TEMPLATE_CODE, msgName);
         if (tMsgMpTemplateList.size() > 0) {
             TMsgMpTemplate tMsgMpTemplate = tMsgMpTemplateList.get(0);
             msgId = tMsgMpTemplate.getId();
-            getInstance().getMsgTemplateIdTextField().setText(tMsgMpTemplate.getTemplateId());
-            getInstance().getMsgTemplateUrlTextField().setText(tMsgMpTemplate.getUrl());
-            getInstance().getMsgTemplateMiniAppidTextField().setText(tMsgMpTemplate.getMaAppid());
-            getInstance().getMsgTemplateMiniPagePathTextField().setText(tMsgMpTemplate.getMaPagePath());
+            mpTemplateMsgForm.getMsgTemplateIdTextField().setText(tMsgMpTemplate.getTemplateId());
+            mpTemplateMsgForm.getMsgTemplateUrlTextField().setText(tMsgMpTemplate.getUrl());
+            mpTemplateMsgForm.getMsgTemplateMiniAppidTextField().setText(tMsgMpTemplate.getMaAppid());
+            mpTemplateMsgForm.getMsgTemplateMiniPagePathTextField().setText(tMsgMpTemplate.getMaPagePath());
 
             selectedMsgTemplateId = tMsgMpTemplate.getTemplateId();
         }
