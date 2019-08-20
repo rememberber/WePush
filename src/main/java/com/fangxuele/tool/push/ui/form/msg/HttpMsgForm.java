@@ -1,6 +1,7 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
 import cn.hutool.json.JSONUtil;
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TMsgHttpMapper;
 import com.fangxuele.tool.push.domain.TMsgHttp;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
@@ -163,6 +164,13 @@ public class HttpMsgForm implements IMsgForm {
                 switchMethod(e.getItem().toString());
             }
         });
+
+        if ("Darcula(推荐)".equals(App.config.getTheme())) {
+            Color bgColor = new Color(43, 43, 43);
+            bodyTextArea.setBackground(bgColor);
+            Color foreColor = new Color(187, 187, 187);
+            bodyTextArea.setForeground(foreColor);
+        }
     }
 
     @Override
