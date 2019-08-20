@@ -8,7 +8,6 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.dao.TPushHistoryMapper;
 import com.fangxuele.tool.push.domain.TPushHistory;
 import com.fangxuele.tool.push.logic.PushData;
-import com.fangxuele.tool.push.ui.dialog.Spinner;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
@@ -68,14 +67,19 @@ public class PushHisListener {
                         BufferedReader br = new BufferedReader(new FileReader(pushHisFile));
                         String line = br.readLine();
                         long count = 0;
-                        Spinner.showSpinner();
+                        pushHisForm.getProgressBar().setVisible(true);
+                        pushHisForm.getProgressBar().setIndeterminate(true);
+                        pushHisForm.getContentScrollPane().setVisible(false);
+                        pushHisForm.getContentControllPanel().setVisible(false);
                         while (StringUtils.isNotEmpty(line)) {
                             pushHisForm.getPushHisTextArea().append(line);
                             pushHisForm.getPushHisTextArea().append("\n");
                             line = br.readLine();
                             count++;
                         }
-                        Spinner.hideSpinner();
+                        pushHisForm.getContentScrollPane().setVisible(true);
+                        pushHisForm.getContentControllPanel().setVisible(true);
+                        pushHisForm.getProgressBar().setVisible(false);
 
                         pushHisForm.getPushHisCountLabel().setText("共" + count + "条");
                     } catch (IOException e1) {
