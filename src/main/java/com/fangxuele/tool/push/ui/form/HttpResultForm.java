@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.form;
 
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -21,15 +22,27 @@ public class HttpResultForm {
     private JTabbedPane tabbedPane1;
     private JPanel httpResultPanel;
     private JScrollPane httpResultScrollPane;
-    private JTextPane bodyTextPane;
-    private JTextPane headersTextPane;
-    private JTextPane cookiesTextPane;
+    private JTextArea bodyTextArea;
+    private JTextArea headersTextArea;
+    private JTextArea cookiesTextArea;
 
     private static HttpResultForm httpResultForm;
 
     private HttpResultForm() {
         this.getHttpResultScrollPane().getVerticalScrollBar().setUnitIncrement(15);
         this.getHttpResultScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
+
+
+        if ("Darcula(推荐)".equals(App.config.getTheme())) {
+            Color bgColor = new Color(43, 43, 43);
+            bodyTextArea.setBackground(bgColor);
+            headersTextArea.setBackground(bgColor);
+            cookiesTextArea.setBackground(bgColor);
+            Color foreColor = new Color(187, 187, 187);
+            bodyTextArea.setForeground(foreColor);
+            headersTextArea.setForeground(foreColor);
+            cookiesTextArea.setForeground(foreColor);
+        }
     }
 
     public static HttpResultForm getInstance() {
@@ -64,26 +77,22 @@ public class HttpResultForm {
         tabbedPane1.addTab("Body", panel1);
         httpResultScrollPane = new JScrollPane();
         panel1.add(httpResultScrollPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        bodyTextPane = new JTextPane();
-        bodyTextPane.setMinimumSize(new Dimension(-1, -1));
-        bodyTextPane.setPreferredSize(new Dimension(-1, -1));
-        httpResultScrollPane.setViewportView(bodyTextPane);
+        bodyTextArea = new JTextArea();
+        httpResultScrollPane.setViewportView(bodyTextArea);
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane1.addTab("Headers", panel2);
         final JScrollPane scrollPane1 = new JScrollPane();
         panel2.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        headersTextPane = new JTextPane();
-        headersTextPane.setMinimumSize(new Dimension(-1, -1));
-        headersTextPane.setPreferredSize(new Dimension(-1, -1));
-        scrollPane1.setViewportView(headersTextPane);
+        headersTextArea = new JTextArea();
+        scrollPane1.setViewportView(headersTextArea);
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane1.addTab("Cookies", panel3);
         final JScrollPane scrollPane2 = new JScrollPane();
         panel3.add(scrollPane2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        cookiesTextPane = new JTextPane();
-        scrollPane2.setViewportView(cookiesTextPane);
+        cookiesTextArea = new JTextArea();
+        scrollPane2.setViewportView(cookiesTextArea);
     }
 
     /**

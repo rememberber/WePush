@@ -104,9 +104,9 @@ public class MsgEditListener {
 
                     if (App.config.getMsgType() == MessageTypeEnum.HTTP_CODE && totalCount == successCount) {
                         HttpSendResult httpSendResult = (HttpSendResult) sendResultList.get(0);
-                        HttpResultForm.getInstance().getBodyTextPane().setText(httpSendResult.getBody());
-                        HttpResultForm.getInstance().getHeadersTextPane().setText(httpSendResult.getHeaders());
-                        HttpResultForm.getInstance().getCookiesTextPane().setText(httpSendResult.getCookies());
+                        HttpResultForm.getInstance().getBodyTextArea().setText(httpSendResult.getBody());
+                        HttpResultForm.getInstance().getHeadersTextArea().setText(httpSendResult.getHeaders());
+                        HttpResultForm.getInstance().getCookiesTextArea().setText(httpSendResult.getCookies());
                         HttpResultFrame.showResultWindow();
                     } else {
                         CommonTipsDialog dialog = new CommonTipsDialog();
