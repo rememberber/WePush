@@ -32,12 +32,9 @@
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <component id="df13c" class="javax.swing.JTextPane" binding="bodyTextPane">
+                  <component id="bd1eb" class="javax.swing.JTextArea" binding="bodyTextArea">
                     <constraints/>
-                    <properties>
-                      <minimumSize width="-1" height="-1"/>
-                      <preferredSize width="-1" height="-1"/>
-                    </properties>
+                    <properties/>
                   </component>
                 </children>
               </scrollpane>
@@ -58,12 +55,9 @@
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <component id="f3bfe" class="javax.swing.JTextPane" binding="headersTextPane">
+                  <component id="63785" class="javax.swing.JTextArea" binding="headersTextArea">
                     <constraints/>
-                    <properties>
-                      <minimumSize width="-1" height="-1"/>
-                      <preferredSize width="-1" height="-1"/>
-                    </properties>
+                    <properties/>
                   </component>
                 </children>
               </scrollpane>
@@ -84,7 +78,7 @@
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <component id="b8bb9" class="javax.swing.JTextPane" binding="cookiesTextPane">
+                  <component id="df14b" class="javax.swing.JTextArea" binding="cookiesTextArea">
                     <constraints/>
                     <properties/>
                   </component>

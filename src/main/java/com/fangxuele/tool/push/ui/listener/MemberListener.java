@@ -151,6 +151,8 @@ public class MemberListener {
                         memberCountLabel.setText(String.valueOf(currentImported));
                     }
 
+                    renderMemberListTable();
+
                     if (!PushData.fixRateScheduling) {
                         JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
                     }

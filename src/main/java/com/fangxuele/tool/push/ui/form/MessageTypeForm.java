@@ -153,8 +153,10 @@ public class MessageTypeForm {
         if (msgType == MessageTypeEnum.HTTP_CODE) {
             MainWindow.getInstance().getTabbedPane().setTitleAt(3, "③准备消息变量");
             MemberForm.getInstance().getImportFromNumPanel().setVisible(true);
+            PushForm.getInstance().getSaveResponseBodyCheckBox().setVisible(true);
         } else {
             MainWindow.getInstance().getTabbedPane().setTitleAt(3, "③准备目标用户");
+            PushForm.getInstance().getSaveResponseBodyCheckBox().setVisible(false);
         }
     }
 
