@@ -61,7 +61,7 @@ public class AboutForm {
         aboutPanel = new JPanel();
         aboutPanel.setLayout(new GridLayoutManager(10, 2, new Insets(0, 0, 0, 0), -1, -1));
         sloganLabel = new JLabel();
-        sloganLabel.setIcon(new ImageIcon(getClass().getResource("/icon/logo-md.png")));
+        sloganLabel.setIcon(new ImageIcon(getClass().getResource("/icon/logo-128.png")));
         sloganLabel.setText("");
         aboutPanel.add(sloganLabel, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
