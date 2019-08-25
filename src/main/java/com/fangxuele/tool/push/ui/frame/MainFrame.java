@@ -39,15 +39,20 @@ public class MainFrame extends JFrame {
         this.setName(UiConsts.APP_NAME);
         this.setTitle(UiConsts.APP_NAME);
         List<Image> images = Lists.newArrayList();
-        images.add(UiConsts.IMAGE_ICON_LG);
-        images.add(UiConsts.IMAGE_ICON_MD);
-        images.add(UiConsts.IMAGE_ICON_SM);
-        images.add(UiConsts.IMAGE_ICON_XS);
+        images.add(UiConsts.IMAGE_LOGO_1024);
+        images.add(UiConsts.IMAGE_LOGO_512);
+        images.add(UiConsts.IMAGE_LOGO_256);
+        images.add(UiConsts.IMAGE_LOGO_128);
+        images.add(UiConsts.IMAGE_LOGO_64);
+        images.add(UiConsts.IMAGE_LOGO_48);
+        images.add(UiConsts.IMAGE_LOGO_32);
+        images.add(UiConsts.IMAGE_LOGO_24);
+        images.add(UiConsts.IMAGE_LOGO_16);
         this.setIconImages(images);
         // Mac系统Dock图标
         if (SystemUtil.isMacOs()) {
             Application application = Application.getApplication();
-            application.setDockIconImage(UiConsts.IMAGE_ICON_LG);
+            application.setDockIconImage(UiConsts.IMAGE_LOGO_1024);
             application.setEnabledAboutMenu(false);
             application.setEnabledPreferencesMenu(false);
         }
