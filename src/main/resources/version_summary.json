@@ -1,5 +1,5 @@
 {
-  "currentVersion": "v_3.6.2_190811",
+  "currentVersion": "v_3.6.3_190825",
   "versionIndex": {
     "v_1.1.0_170701": "0",
     "v_1.2.0_170831": "1",
@@ -32,7 +32,8 @@
     "v_3.5.0_190713": "28",
     "v_3.6.0_190721": "29",
     "v_3.6.1_190728": "30",
-    "v_3.6.2_190811": "31"
+    "v_3.6.2_190811": "31",
+    "v_3.6.3_190825": "32"
   },
   "versionDetailList": [
     {
@@ -189,6 +190,11 @@
       "version": "v_3.6.1_190728",
       "title": "HTTP请求类型消息使用OkHttp",
       "log": "● feature:HTTP请求类型消息使用OkHttp引擎\n● optimization:HTTP请求支持选择body类型\n"
+    },
+    {
+      "version": "v_3.6.2_190811",
+      "title": "全局支持撤销",
+      "log": "● feature:全局输入框支持撤销/重做\n● bugfix:修复http请求消息非get请求不支持空参的问题\n● optimization:MacOS环境时的菜单禁用\n● optimization:优化启动时UI渲染速度\n"
     },
     {
       "version": "v_3.6.3_190825",
