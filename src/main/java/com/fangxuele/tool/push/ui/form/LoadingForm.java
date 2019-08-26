@@ -40,6 +40,7 @@ public class LoadingForm {
         Font label1Font = this.$$$getFont$$$(null, -1, 26, label1.getFont());
         if (label1Font != null) label1.setFont(label1Font);
         label1.setHorizontalAlignment(10);
+        label1.setIcon(new ImageIcon(getClass().getResource("/icon/loading_dark.gif")));
         label1.setText("Loading……");
         loadingPanel.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }

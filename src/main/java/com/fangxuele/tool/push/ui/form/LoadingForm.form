@@ -15,6 +15,7 @@
         <properties>
           <font size="26"/>
           <horizontalAlignment value="10"/>
+          <icon value="icon/loading_dark.gif"/>
           <text value="Loading……"/>
         </properties>
       </component>
