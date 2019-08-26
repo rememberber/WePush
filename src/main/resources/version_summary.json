@@ -1,5 +1,5 @@
 {
-  "currentVersion": "v_3.6.2_190811",
+  "currentVersion": "v_3.6.3_190825",
   "versionIndex": {
     "v_1.1.0_170701": "0",
     "v_1.2.0_170831": "1",
@@ -32,7 +32,8 @@
     "v_3.5.0_190713": "28",
     "v_3.6.0_190721": "29",
     "v_3.6.1_190728": "30",
-    "v_3.6.2_190811": "31"
+    "v_3.6.2_190811": "31",
+    "v_3.6.3_190825": "32"
   },
   "versionDetailList": [
     {
@@ -194,6 +195,11 @@
       "version": "v_3.6.2_190811",
       "title": "全局支持撤销",
       "log": "● feature:全局输入框支持撤销/重做\n● bugfix:修复http请求消息非get请求不支持空参的问题\n● optimization:MacOS环境时的菜单禁用\n● optimization:优化启动时UI渲染速度\n"
+    },
+    {
+      "version": "v_3.6.3_190825",
+      "title": "小的优化和修复",
+      "log": "● feature:微信相关消息类型url支持变量\n● 代码大规模重构，优化加载速度\n● optimization:一些界面相关的bug修复和细节调整\n● optimization:更新高清logo\n"
     }
   ]
 }
