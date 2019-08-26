@@ -1,5 +1,5 @@
 <a href="https://gitee.com/zhoubochina/WePush">
- <img alt="WePush-Logo" src="https://raw.githubusercontent.com/rememberber/WePush/master/src/main/resources/icon/logo-md.png">
+ <img alt="WePush-Logo" src="https://raw.githubusercontent.com/rememberber/WePush/master/src/main/resources/icon/logo-128.png">
 </a>
   
 # WePush 
