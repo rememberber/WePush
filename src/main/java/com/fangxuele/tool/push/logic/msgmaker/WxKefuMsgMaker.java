@@ -20,6 +20,8 @@ public class WxKefuMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
     private static String msgKefuMsgTitle;
 
+    private static String msgKefuMsgContent;
+
     private static String msgKefuPicUrl;
 
     private static String msgKefuDesc;
@@ -36,6 +38,7 @@ public class WxKefuMsgMaker extends BaseMsgMaker implements IMsgMaker {
         msgKefuPicUrl = KefuMsgForm.getInstance().getMsgKefuPicUrlTextField().getText();
         msgKefuDesc = KefuMsgForm.getInstance().getMsgKefuDescTextField().getText();
         msgKefuUrl = KefuMsgForm.getInstance().getMsgKefuUrlTextField().getText();
+        msgKefuMsgContent = KefuMsgForm.getInstance().getContentTextArea().getText();
         WxMpTemplateMsgSender.wxMpConfigStorage = null;
         WxMpTemplateMsgSender.wxMpService = null;
     }
@@ -71,7 +74,7 @@ public class WxKefuMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
             kefuMessage = WxMpKefuMessage.NEWS().addArticle(article).build();
         } else if ("文本消息".equals(msgKefuMsgType)) {
-            String content = TemplateUtil.evaluate(msgKefuMsgTitle, velocityContext);
+            String content = TemplateUtil.evaluate(msgKefuMsgContent, velocityContext);
             kefuMessage = WxMpKefuMessage.TEXT().content(content).build();
         }
 
