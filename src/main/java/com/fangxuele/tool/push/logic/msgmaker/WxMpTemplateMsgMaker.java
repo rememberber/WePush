@@ -1,7 +1,6 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
 import com.fangxuele.tool.push.bean.TemplateData;
-import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
 import com.fangxuele.tool.push.ui.form.msg.MpTemplateMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
@@ -61,8 +60,6 @@ public class WxMpTemplateMsgMaker extends BaseMsgMaker implements IMsgMaker {
             templateDataList.add(templateData);
         }
 
-        WxMpTemplateMsgSender.wxMpConfigStorage = null;
-        WxMpTemplateMsgSender.wxMpService = null;
     }
 
     /**
