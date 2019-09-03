@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
 
 <generatorConfiguration>
-    <classPathEntry location="D:\maven_repository\org\xerial\sqlite-jdbc\3.25.2\sqlite-jdbc-3.25.2.jar"/>
+    <classPathEntry location="D:\maven_repository\org\xerial\sqlite-jdbc\3.27.2.1\sqlite-jdbc-3.27.2.1.jar"/>
 
     <context id="SQLiteTables" targetRuntime="MyBatis3">
         <!-- JavaBean 实现 序列化 接口 -->
@@ -45,7 +45,7 @@
 
         <table schema="main" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false"
                enableSelectByExample="false" selectByExampleQueryId="false"
-               tableName="t_msg_http" domainObjectName="TMsgHttp">
+               tableName="t_msg_ding" domainObjectName="TMsgDing">
             <property name="useActualColumnNames" value="false"/>
             <!--<generatedKey column="ID" sqlStatement="DB2" identity="true"/>-->
         </table>
