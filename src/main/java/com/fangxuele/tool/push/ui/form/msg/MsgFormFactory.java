@@ -38,9 +38,6 @@ public class MsgFormFactory {
             case MessageTypeEnum.ALI_YUN_CODE:
                 iMsgForm = AliYunMsgForm.getInstance();
                 break;
-            case MessageTypeEnum.ALI_TEMPLATE_CODE:
-                iMsgForm = AliTemplateMsgForm.getInstance();
-                break;
             case MessageTypeEnum.TX_YUN_CODE:
                 iMsgForm = TxYunMsgForm.getInstance();
                 break;

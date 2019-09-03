@@ -928,6 +928,7 @@ public class MemberListener {
      * 通过文件导入
      */
     public static void importFromFile() {
+        MemberForm.getInstance().getImportFromFileButton().setEnabled(false);
         JTextField filePathField = MemberForm.getInstance().getMemberFilePathField();
         JPanel memberPanel = MemberForm.getInstance().getMemberPanel();
         JProgressBar progressBar = MemberForm.getInstance().getMemberTabImportProgressBar();
@@ -1015,6 +1016,7 @@ public class MemberListener {
             progressBar.setValue(100);
             progressBar.setIndeterminate(false);
             progressBar.setVisible(false);
+            MemberForm.getInstance().getImportFromFileButton().setEnabled(true);
             if (reader != null) {
                 try {
                     reader.close();
@@ -1031,6 +1033,7 @@ public class MemberListener {
      */
     public static void importFromSql() {
         MemberForm memberForm = MemberForm.getInstance();
+        memberForm.getImportFromSqlButton().setEnabled(false);
         JPanel memberPanel = memberForm.getMemberPanel();
         JProgressBar progressBar = memberForm.getMemberTabImportProgressBar();
         JLabel memberCountLabel = memberForm.getMemberTabCountLabel();
@@ -1094,6 +1097,7 @@ public class MemberListener {
                 progressBar.setValue(100);
                 progressBar.setIndeterminate(false);
                 progressBar.setVisible(false);
+                memberForm.getImportFromSqlButton().setEnabled(true);
             }
         }
     }
@@ -1104,6 +1108,7 @@ public class MemberListener {
     public static void importWxAll() {
         JPanel memberPanel = MemberForm.getInstance().getMemberPanel();
         JProgressBar progressBar = MemberForm.getInstance().getMemberTabImportProgressBar();
+        MemberForm.getInstance().getMemberImportAllButton().setEnabled(false);
 
         try {
             getMpUserList();
@@ -1119,6 +1124,7 @@ public class MemberListener {
         } finally {
             progressBar.setIndeterminate(false);
             progressBar.setVisible(false);
+            MemberForm.getInstance().getMemberImportAllButton().setEnabled(true);
         }
     }
 

@@ -38,7 +38,12 @@ public class WxCpMsgMaker extends BaseMsgMaker implements IMsgMaker {
      */
     @Override
     public void prepare() {
-        agentId = WxCpMsgForm.appNameToAgentIdMap.get(WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem());
+        String agentIdBefore = agentId;
+        String agentIdNow = WxCpMsgForm.appNameToAgentIdMap.get(WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem());
+        if (agentIdBefore == null || !agentIdBefore.equals(agentIdNow)) {
+            WxCpMsgSender.wxCpConfigStorage = null;
+            WxCpMsgSender.wxCpService = null;
+        }
         msgType = (String) WxCpMsgForm.getInstance().getMsgTypeComboBox().getSelectedItem();
         msgTitle = WxCpMsgForm.getInstance().getTitleTextField().getText();
         picUrl = WxCpMsgForm.getInstance().getPicUrlTextField().getText().trim();
@@ -46,8 +51,6 @@ public class WxCpMsgMaker extends BaseMsgMaker implements IMsgMaker {
         url = WxCpMsgForm.getInstance().getUrlTextField().getText().trim();
         btnTxt = WxCpMsgForm.getInstance().getBtnTxtTextField().getText().trim();
         msgContent = WxCpMsgForm.getInstance().getContentTextArea().getText();
-        WxCpMsgSender.wxCpConfigStorage = null;
-        WxCpMsgSender.wxCpService = null;
     }
 
     /**

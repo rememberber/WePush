@@ -150,8 +150,7 @@ public class MsgEditListener {
                 } else if (msgType == MessageTypeEnum.HTTP_CODE) {
                     fillParaName = "消息变量(如果是变量消息)";
                     paraDemo = "变量0|变量1|变量2";
-                } else if (msgType == MessageTypeEnum.ALI_YUN_CODE || msgType == MessageTypeEnum.ALI_TEMPLATE_CODE
-                        || msgType == MessageTypeEnum.TX_YUN_CODE || msgType == MessageTypeEnum.YUN_PIAN_CODE) {
+                } else if (msgType == MessageTypeEnum.ALI_YUN_CODE || msgType == MessageTypeEnum.TX_YUN_CODE || msgType == MessageTypeEnum.YUN_PIAN_CODE) {
                     fillParaName = "预览消息用户的手机号";
                     paraDemo = "13910733521;13910733522";
                 }
