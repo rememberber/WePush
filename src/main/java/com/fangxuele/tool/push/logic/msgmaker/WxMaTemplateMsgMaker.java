@@ -3,7 +3,6 @@ package com.fangxuele.tool.push.logic.msgmaker;
 import cn.binarywang.wx.miniapp.bean.WxMaTemplateData;
 import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
 import com.fangxuele.tool.push.bean.TemplateData;
-import com.fangxuele.tool.push.logic.msgsender.WxMaTemplateMsgSender;
 import com.fangxuele.tool.push.ui.form.msg.MaTemplateMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import org.apache.commons.compress.utils.Lists;
@@ -54,8 +53,6 @@ public class WxMaTemplateMsgMaker extends BaseMsgMaker implements IMsgMaker {
             templateData.setColor(color);
             templateDataList.add(templateData);
         }
-        WxMaTemplateMsgSender.wxMaConfigStorage = null;
-        WxMaTemplateMsgSender.wxMaService = null;
     }
 
     /**
