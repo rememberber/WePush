@@ -40,9 +40,12 @@ public class WxCpMsgMaker extends BaseMsgMaker implements IMsgMaker {
     public void prepare() {
         String agentIdBefore = agentId;
         String agentIdNow = WxCpMsgForm.appNameToAgentIdMap.get(WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem());
-        if (agentIdBefore == null || !agentIdBefore.equals(agentIdNow)) {
-            WxCpMsgSender.wxCpConfigStorage = null;
-            WxCpMsgSender.wxCpService = null;
+        synchronized (this) {
+            if (agentIdBefore == null || !agentIdBefore.equals(agentIdNow)) {
+                agentId = agentIdNow;
+                WxCpMsgSender.wxCpConfigStorage = null;
+                WxCpMsgSender.wxCpService = null;
+            }
         }
         msgType = (String) WxCpMsgForm.getInstance().getMsgTypeComboBox().getSelectedItem();
         msgTitle = WxCpMsgForm.getInstance().getTitleTextField().getText();
