@@ -3,6 +3,7 @@
 <details>
 <summary>Windows</summary>
 
+[WePush-v3.7.0_190904-x64-Setup.exe](http://download.zhoubochina.com/exe/WePush-v3.7.0_190904-x64-Setup.exe)  
 [WePush-v3.6.3_190825-x64-Setup.exe](http://download.zhoubochina.com/exe/WePush-v3.6.3_190825-x64-Setup.exe)  
 [WePush-v3.6.2_190811-x64-Setup.exe](http://download.zhoubochina.com/exe/WePush-v3.6.2_190811-x64-Setup.exe)  
 [WePush-v3.6.1_190728-x64-Setup.exe](http://download.zhoubochina.com/exe/WePush-v3.6.1_190728-x64-Setup.exe)  
@@ -107,6 +108,7 @@
 <details>
 <summary>Linux</summary>
 
+[v3.7.0_190904](http://download.zhoubochina.com/linux/WePush-3.7.0.zip)  
 [v3.6.3_190825](http://download.zhoubochina.com/linux/WePush-3.6.3.zip)  
 [v3.6.2_190811](http://download.zhoubochina.com/linux/WePush-3.6.2.zip)  
 [v3.6.1_190728](http://download.zhoubochina.com/linux/WePush-3.6.1.zip)  
