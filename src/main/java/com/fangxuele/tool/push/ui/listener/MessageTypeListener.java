@@ -72,6 +72,10 @@ public class MessageTypeListener {
             App.config.setMsgType(MessageTypeEnum.HTTP_CODE);
             saveType();
         });
+        messageTypeForm.getDingRadioButton().addActionListener(e -> {
+            App.config.setMsgType(MessageTypeEnum.DING_CODE);
+            saveType();
+        });
 
         messageTypeForm.getKefuPriorityTipsLabel().addMouseListener(new MouseAdapter() {
             @Override

@@ -3,6 +3,7 @@ package com.fangxuele.tool.push.ui.form;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.form.msg.AliYunMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.DingMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.HttpMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.KefuMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.MaTemplateMsgForm;
@@ -122,6 +123,9 @@ public class MessageEditForm {
                 break;
             case MessageTypeEnum.HTTP_CODE:
                 messageEditForm.getMsgEditorPanel().add(HttpMsgForm.getInstance().getHttpPanel(), gridConstraintsRow0);
+                break;
+            case MessageTypeEnum.DING_CODE:
+                messageEditForm.getMsgEditorPanel().add(DingMsgForm.getInstance().getDingMsgPanel(), gridConstraintsRow0);
                 break;
             default:
                 break;
