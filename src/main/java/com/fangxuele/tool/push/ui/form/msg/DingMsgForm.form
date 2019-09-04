@@ -38,10 +38,10 @@
             </constraints>
             <properties>
               <model>
-                <item value="图文消息"/>
                 <item value="文本消息"/>
-                <item value="文本卡片消息"/>
+                <item value="链接消息"/>
                 <item value="markdown消息"/>
+                <item value="卡片消息"/>
               </model>
             </properties>
           </component>

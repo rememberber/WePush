@@ -270,10 +270,10 @@ public class DingMsgForm implements IMsgForm {
         dingMsgPanel.add(spacer1, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         msgTypeComboBox = new JComboBox();
         final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
-        defaultComboBoxModel1.addElement("图文消息");
         defaultComboBoxModel1.addElement("文本消息");
-        defaultComboBoxModel1.addElement("文本卡片消息");
+        defaultComboBoxModel1.addElement("链接消息");
         defaultComboBoxModel1.addElement("markdown消息");
+        defaultComboBoxModel1.addElement("卡片消息");
         msgTypeComboBox.setModel(defaultComboBoxModel1);
         dingMsgPanel.add(msgTypeComboBox, new GridConstraints(1, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         titleLabel = new JLabel();
