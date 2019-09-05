@@ -16,7 +16,7 @@ import org.apache.velocity.VelocityContext;
  */
 public class DingMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
-    private static String agentId;
+    public static String agentId;
 
     public static String msgType;
 
@@ -44,8 +44,8 @@ public class DingMsgMaker extends BaseMsgMaker implements IMsgMaker {
         synchronized (this) {
             if (agentIdBefore == null || !agentIdBefore.equals(agentIdNow)) {
                 agentId = agentIdNow;
-                DingMsgSender.wxCpConfigStorage = null;
-                DingMsgSender.wxCpService = null;
+                DingMsgSender.accessToken = null;
+                DingMsgSender.defaultDingTalkClient = null;
             }
         }
         msgType = (String) DingMsgForm.getInstance().getMsgTypeComboBox().getSelectedItem();

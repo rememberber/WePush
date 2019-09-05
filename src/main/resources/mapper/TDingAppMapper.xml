@@ -126,4 +126,10 @@
         <include refid="Base_Column_List"/>
         from t_ding_app
     </select>
+    <select id="selectByAgentId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_ding_app
+        where agent_id = #{agentId,jdbcType=VARCHAR}
+    </select>
 </mapper>

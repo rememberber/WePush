@@ -21,4 +21,5 @@ public interface TDingAppMapper {
 
     List<TDingApp> selectAll();
 
+    TDingApp selectByAgentId(String agentId);
 }
