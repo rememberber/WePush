@@ -138,4 +138,22 @@
             modified_time = #{modifiedTime,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>
+    <select id="selectByMsgTypeAndMsgName" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_msg_ding
+        where msg_type = #{msgType,jdbcType=INTEGER}
+        and msg_name = #{msgName,jdbcType=VARCHAR}
+    </select>
+    <update id="updateByMsgTypeAndMsgName" parameterType="com.fangxuele.tool.push.domain.TMsgDing">
+        update t_msg_ding
+        set ding_msg_type = #{dingMsgType,jdbcType=VARCHAR},
+            agent_id      = #{agentId,jdbcType=VARCHAR},
+            web_hook      = #{webHook,jdbcType=VARCHAR},
+            content       = #{content,jdbcType=VARCHAR},
+            create_time   = #{createTime,jdbcType=VARCHAR},
+            modified_time = #{modifiedTime,jdbcType=VARCHAR}
+        where msg_type = #{msgType,jdbcType=INTEGER}
+          and msg_name = #{msgName,jdbcType=VARCHAR}
+    </update>
 </mapper>

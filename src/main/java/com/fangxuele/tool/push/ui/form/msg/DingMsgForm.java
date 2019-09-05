@@ -1,9 +1,9 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
 import com.fangxuele.tool.push.dao.TDingAppMapper;
-import com.fangxuele.tool.push.dao.TMsgWxCpMapper;
+import com.fangxuele.tool.push.dao.TMsgDingMapper;
 import com.fangxuele.tool.push.domain.TDingApp;
-import com.fangxuele.tool.push.domain.TMsgWxCp;
+import com.fangxuele.tool.push.domain.TMsgDing;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.dialog.DingAppDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
@@ -55,7 +55,7 @@ public class DingMsgForm implements IMsgForm {
 
     private static DingMsgForm dingMsgForm;
 
-    private static TMsgWxCpMapper msgWxCpMapper = MybatisUtil.getSqlSession().getMapper(TMsgWxCpMapper.class);
+    private static TMsgDingMapper msgDingMapper = MybatisUtil.getSqlSession().getMapper(TMsgDingMapper.class);
     private static TDingAppMapper dingAppMapper = MybatisUtil.getSqlSession().getMapper(TDingAppMapper.class);
 
     public static Map<String, String> appNameToAgentIdMap = Maps.newHashMap();
@@ -65,7 +65,7 @@ public class DingMsgForm implements IMsgForm {
         // 消息类型切换事件
         msgTypeComboBox.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
-                switchCpMsgType(e.getItem().toString());
+                switchDingMsgType(e.getItem().toString());
             }
         });
         appManageButton.addActionListener(e -> {
@@ -81,22 +81,22 @@ public class DingMsgForm implements IMsgForm {
     public void init(String msgName) {
         clearAllField();
         initAppNameList();
-        List<TMsgWxCp> tMsgWxCpList = msgWxCpMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.WX_CP_CODE, msgName);
-        if (tMsgWxCpList.size() > 0) {
-            TMsgWxCp tMsgWxCp = tMsgWxCpList.get(0);
-            String cpMsgType = tMsgWxCp.getCpMsgType();
-            getInstance().getAppNameComboBox().setSelectedItem(agentIdToAppNameMap.get(tMsgWxCp.getAgentId()));
-            getInstance().getMsgTypeComboBox().setSelectedItem(cpMsgType);
-            getInstance().getContentTextArea().setText(tMsgWxCp.getContent());
-            getInstance().getTitleTextField().setText(tMsgWxCp.getTitle());
-            getInstance().getPicUrlTextField().setText(tMsgWxCp.getImgUrl());
-            getInstance().getDescTextField().setText(tMsgWxCp.getDescribe());
-            getInstance().getUrlTextField().setText(tMsgWxCp.getUrl());
-            getInstance().getBtnTxtTextField().setText(tMsgWxCp.getBtnTxt());
+        List<TMsgDing> tMsgDingList = msgDingMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.DING_CODE, msgName);
+        if (tMsgDingList.size() > 0) {
+            TMsgDing tMsgDing = tMsgDingList.get(0);
+            String dingMsgType = tMsgDing.getDingMsgType();
+            getInstance().getAppNameComboBox().setSelectedItem(agentIdToAppNameMap.get(tMsgDing.getAgentId()));
+            getInstance().getMsgTypeComboBox().setSelectedItem(dingMsgType);
+//            getInstance().getContentTextArea().setText(tMsgDing.getContent());
+//            getInstance().getTitleTextField().setText(tMsgDing.getTitle());
+//            getInstance().getPicUrlTextField().setText(tMsgDing.getImgUrl());
+//            getInstance().getDescTextField().setText(tMsgDing.getDescribe());
+//            getInstance().getUrlTextField().setText(tMsgDing.getUrl());
+//            getInstance().getBtnTxtTextField().setText(tMsgDing.getBtnTxt());
 
-            switchCpMsgType(cpMsgType);
+            switchDingMsgType(dingMsgType);
         } else {
-            switchCpMsgType("文本消息");
+            switchDingMsgType("文本消息");
         }
     }
 
@@ -110,8 +110,8 @@ public class DingMsgForm implements IMsgForm {
             return;
         }
 
-        List<TMsgWxCp> tMsgWxCpList = msgWxCpMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.WX_CP_CODE, msgName);
-        if (tMsgWxCpList.size() > 0) {
+        List<TMsgDing> tMsgDingList = msgDingMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.DING_CODE, msgName);
+        if (tMsgDingList.size() > 0) {
             existSameMsg = true;
         }
 
@@ -123,34 +123,35 @@ public class DingMsgForm implements IMsgForm {
         }
 
         if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
-            String cpMsgType = Objects.requireNonNull(getInstance().getMsgTypeComboBox().getSelectedItem()).toString();
+            String dingMsgType = Objects.requireNonNull(getInstance().getMsgTypeComboBox().getSelectedItem()).toString();
             String content = getInstance().getContentTextArea().getText();
             String title = getInstance().getTitleTextField().getText();
             String picUrl = getInstance().getPicUrlTextField().getText();
             String desc = getInstance().getDescTextField().getText();
             String url = getInstance().getUrlTextField().getText();
             String btnTxt = getInstance().getBtnTxtTextField().getText();
+            String btnUrl = getInstance().getBtnURLTextField().getText();
 
             String now = SqliteUtil.nowDateForSqlite();
 
-            TMsgWxCp tMsgWxCp = new TMsgWxCp();
-            tMsgWxCp.setMsgType(MessageTypeEnum.WX_CP_CODE);
-            tMsgWxCp.setMsgName(msgName);
-            tMsgWxCp.setAgentId(appNameToAgentIdMap.get(getInstance().getAppNameComboBox().getSelectedItem()));
-            tMsgWxCp.setCpMsgType(cpMsgType);
-            tMsgWxCp.setContent(content);
-            tMsgWxCp.setTitle(title);
-            tMsgWxCp.setImgUrl(picUrl);
-            tMsgWxCp.setDescribe(desc);
-            tMsgWxCp.setUrl(url);
-            tMsgWxCp.setBtnTxt(btnTxt);
-            tMsgWxCp.setModifiedTime(now);
+            TMsgDing tMsgDing = new TMsgDing();
+            tMsgDing.setMsgType(MessageTypeEnum.DING_CODE);
+            tMsgDing.setMsgName(msgName);
+            tMsgDing.setAgentId(appNameToAgentIdMap.get(getInstance().getAppNameComboBox().getSelectedItem()));
+            tMsgDing.setDingMsgType(dingMsgType);
+//            tMsgDing.setContent(content);
+//            tMsgDing.setTitle(title);
+//            tMsgDing.setImgUrl(picUrl);
+//            tMsgDing.setDescribe(desc);
+//            tMsgDing.setUrl(url);
+//            tMsgDing.setBtnTxt(btnTxt);
+            tMsgDing.setModifiedTime(now);
 
             if (existSameMsg) {
-                msgWxCpMapper.updateByMsgTypeAndMsgName(tMsgWxCp);
+                msgDingMapper.updateByMsgTypeAndMsgName(tMsgDing);
             } else {
-                tMsgWxCp.setCreateTime(now);
-                msgWxCpMapper.insertSelective(tMsgWxCp);
+                tMsgDing.setCreateTime(now);
+                msgDingMapper.insertSelective(tMsgDing);
             }
 
             JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "保存成功！", "成功",
@@ -183,7 +184,7 @@ public class DingMsgForm implements IMsgForm {
      *
      * @param msgType 消息类型
      */
-    public static void switchCpMsgType(String msgType) {
+    public static void switchDingMsgType(String msgType) {
         switch (msgType) {
             case "文本消息":
                 getInstance().getContentTextArea().setVisible(true);
