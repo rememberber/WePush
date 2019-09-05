@@ -51,6 +51,9 @@ public class MsgSenderFactory {
             case MessageTypeEnum.HTTP_CODE:
                 iMsgSender = new HttpMsgSender();
                 break;
+            case MessageTypeEnum.DING_CODE:
+                iMsgSender = new DingMsgSender();
+                break;
             default:
                 break;
         }
