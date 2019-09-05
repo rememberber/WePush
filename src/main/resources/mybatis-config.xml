@@ -28,5 +28,6 @@
         <mapper resource="mapper/TMsgWxCpMapper.xml"/>
         <mapper resource="mapper/TMsgHttpMapper.xml"/>
         <mapper resource="mapper/TMsgDingMapper.xml"/>
+        <mapper resource="mapper/TDingAppMapper.xml"/>
     </mappers>
 </configuration>
