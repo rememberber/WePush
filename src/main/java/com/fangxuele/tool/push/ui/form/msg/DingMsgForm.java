@@ -50,6 +50,8 @@ public class DingMsgForm implements IMsgForm {
     private JTextArea contentTextArea;
     private JLabel btnTxtLabel;
     private JTextField btnTxtTextField;
+    private JTextField btnURLTextField;
+    private JLabel btnURLLabel;
 
     private static DingMsgForm dingMsgForm;
 
@@ -94,7 +96,7 @@ public class DingMsgForm implements IMsgForm {
 
             switchCpMsgType(cpMsgType);
         } else {
-            switchCpMsgType("图文消息");
+            switchCpMsgType("文本消息");
         }
     }
 
@@ -184,7 +186,6 @@ public class DingMsgForm implements IMsgForm {
     public static void switchCpMsgType(String msgType) {
         switch (msgType) {
             case "文本消息":
-            case "markdown消息":
                 getInstance().getContentTextArea().setVisible(true);
                 getInstance().getDescLabel().setVisible(false);
                 getInstance().getDescTextField().setVisible(false);
@@ -196,8 +197,26 @@ public class DingMsgForm implements IMsgForm {
                 getInstance().getTitleTextField().setVisible(false);
                 getInstance().getBtnTxtLabel().setVisible(false);
                 getInstance().getBtnTxtTextField().setVisible(false);
+                getInstance().getBtnURLLabel().setVisible(false);
+                getInstance().getBtnURLTextField().setVisible(false);
                 break;
-            case "图文消息":
+            case "markdown消息":
+                getInstance().getContentLabel().setVisible(true);
+                getInstance().getContentTextArea().setVisible(true);
+                getInstance().getDescLabel().setVisible(false);
+                getInstance().getDescTextField().setVisible(false);
+                getInstance().getPicUrlLabel().setVisible(false);
+                getInstance().getPicUrlTextField().setVisible(false);
+                getInstance().getUrlLabel().setVisible(false);
+                getInstance().getUrlTextField().setVisible(false);
+                getInstance().getTitleLabel().setVisible(true);
+                getInstance().getTitleTextField().setVisible(true);
+                getInstance().getBtnTxtLabel().setVisible(false);
+                getInstance().getBtnTxtTextField().setVisible(false);
+                getInstance().getBtnURLLabel().setVisible(false);
+                getInstance().getBtnURLTextField().setVisible(false);
+                break;
+            case "链接消息":
                 getInstance().getContentLabel().setVisible(false);
                 getInstance().getContentTextArea().setVisible(false);
                 getInstance().getBtnTxtLabel().setVisible(false);
@@ -210,20 +229,24 @@ public class DingMsgForm implements IMsgForm {
                 getInstance().getUrlTextField().setVisible(true);
                 getInstance().getTitleLabel().setVisible(true);
                 getInstance().getTitleTextField().setVisible(true);
+                getInstance().getBtnURLLabel().setVisible(false);
+                getInstance().getBtnURLTextField().setVisible(false);
                 break;
-            case "文本卡片消息":
-                getInstance().getContentLabel().setVisible(false);
-                getInstance().getContentTextArea().setVisible(false);
-                getInstance().getPicUrlLabel().setVisible(false);
-                getInstance().getPicUrlTextField().setVisible(false);
-                getInstance().getDescLabel().setVisible(true);
-                getInstance().getDescTextField().setVisible(true);
-                getInstance().getBtnTxtLabel().setVisible(true);
-                getInstance().getBtnTxtTextField().setVisible(true);
-                getInstance().getUrlLabel().setVisible(true);
-                getInstance().getUrlTextField().setVisible(true);
+            case "卡片消息":
                 getInstance().getTitleLabel().setVisible(true);
                 getInstance().getTitleTextField().setVisible(true);
+                getInstance().getContentLabel().setVisible(true);
+                getInstance().getContentTextArea().setVisible(true);
+                getInstance().getBtnTxtLabel().setVisible(true);
+                getInstance().getBtnTxtTextField().setVisible(true);
+                getInstance().getDescLabel().setVisible(false);
+                getInstance().getDescTextField().setVisible(false);
+                getInstance().getPicUrlLabel().setVisible(false);
+                getInstance().getPicUrlTextField().setVisible(false);
+                getInstance().getUrlLabel().setVisible(false);
+                getInstance().getUrlTextField().setVisible(false);
+                getInstance().getBtnURLLabel().setVisible(true);
+                getInstance().getBtnURLTextField().setVisible(true);
                 break;
             default:
                 break;
@@ -240,6 +263,7 @@ public class DingMsgForm implements IMsgForm {
         getInstance().getDescTextField().setText("");
         getInstance().getUrlTextField().setText("");
         getInstance().getBtnTxtTextField().setText("");
+        getInstance().getBtnURLTextField().setText("");
     }
 
     {
@@ -260,14 +284,14 @@ public class DingMsgForm implements IMsgForm {
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
         dingMsgPanel = new JPanel();
-        dingMsgPanel.setLayout(new GridLayoutManager(9, 3, new Insets(10, 8, 0, 8), -1, -1));
+        dingMsgPanel.setLayout(new GridLayoutManager(10, 3, new Insets(10, 8, 0, 8), -1, -1));
         panel1.add(dingMsgPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         dingMsgPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, dingMsgPanel.getFont())));
         msgTypeLabel = new JLabel();
         msgTypeLabel.setText("消息类型");
         dingMsgPanel.add(msgTypeLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
-        dingMsgPanel.add(spacer1, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        dingMsgPanel.add(spacer1, new GridConstraints(9, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         msgTypeComboBox = new JComboBox();
         final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
         defaultComboBoxModel1.addElement("文本消息");
@@ -316,6 +340,11 @@ public class DingMsgForm implements IMsgForm {
         btnTxtTextField = new JTextField();
         btnTxtTextField.setToolTipText("可不填。默认为“详情”， 不超过4个文字，超过自动截断");
         dingMsgPanel.add(btnTxtTextField, new GridConstraints(7, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        btnURLTextField = new JTextField();
+        dingMsgPanel.add(btnURLTextField, new GridConstraints(8, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        btnURLLabel = new JLabel();
+        btnURLLabel.setText("按钮URL");
+        dingMsgPanel.add(btnURLLabel, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
         panel1.add(spacer2, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final Spacer spacer3 = new Spacer();
@@ -325,6 +354,7 @@ public class DingMsgForm implements IMsgForm {
         picUrlLabel.setLabelFor(picUrlTextField);
         descLabel.setLabelFor(descTextField);
         urlLabel.setLabelFor(urlTextField);
+        btnURLLabel.setLabelFor(btnURLTextField);
     }
 
     /**
