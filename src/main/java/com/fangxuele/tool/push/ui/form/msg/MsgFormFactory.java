@@ -54,6 +54,7 @@ public class MsgFormFactory {
                 iMsgForm = HttpMsgForm.getInstance();
                 break;
             default:
+                iMsgForm = HttpMsgForm.getInstance();
         }
         if (iMsgForm != null) {
             UndoUtil.register(iMsgForm);
