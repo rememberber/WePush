@@ -241,3 +241,15 @@ create table if not exists t_msg_ding
 create unique index if not exists t_msg_ding_msg_type_msg_name_uindex
     on t_msg_ding (msg_type, msg_name);
 
+create table if not exists t_ding_app
+(
+    id            INTEGER
+        constraint t_ding_app_pk
+            primary key autoincrement,
+    app_name      text,
+    agent_id      text,
+    app_key       text,
+    app_secret    text,
+    create_time   datetime,
+    modified_time datetime
+);

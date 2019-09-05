@@ -15,6 +15,7 @@ import com.fangxuele.tool.push.logic.msgsender.YunPianMsgSender;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
+import com.fangxuele.tool.push.ui.dialog.DingAppDialog;
 import com.fangxuele.tool.push.ui.dialog.MailTestDialog;
 import com.fangxuele.tool.push.ui.dialog.SwitchWxAccountDialog;
 import com.fangxuele.tool.push.ui.dialog.WxCpAppDialog;
@@ -259,7 +260,7 @@ public class SettingListener {
 
         // 设置-钉钉-应用管理
         settingForm.getDingAppManageButton().addActionListener(e -> {
-            WxCpAppDialog dialog = new WxCpAppDialog();
+            DingAppDialog dialog = new DingAppDialog();
             dialog.renderTable();
             dialog.pack();
             dialog.setVisible(true);

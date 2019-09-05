@@ -1,11 +1,11 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
+import com.fangxuele.tool.push.dao.TDingAppMapper;
 import com.fangxuele.tool.push.dao.TMsgWxCpMapper;
-import com.fangxuele.tool.push.dao.TWxCpAppMapper;
+import com.fangxuele.tool.push.domain.TDingApp;
 import com.fangxuele.tool.push.domain.TMsgWxCp;
-import com.fangxuele.tool.push.domain.TWxCpApp;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
-import com.fangxuele.tool.push.ui.dialog.WxCpAppDialog;
+import com.fangxuele.tool.push.ui.dialog.DingAppDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
@@ -54,7 +54,7 @@ public class DingMsgForm implements IMsgForm {
     private static DingMsgForm dingMsgForm;
 
     private static TMsgWxCpMapper msgWxCpMapper = MybatisUtil.getSqlSession().getMapper(TMsgWxCpMapper.class);
-    private static TWxCpAppMapper wxCpAppMapper = MybatisUtil.getSqlSession().getMapper(TWxCpAppMapper.class);
+    private static TDingAppMapper dingAppMapper = MybatisUtil.getSqlSession().getMapper(TDingAppMapper.class);
 
     public static Map<String, String> appNameToAgentIdMap = Maps.newHashMap();
     public static Map<String, String> agentIdToAppNameMap = Maps.newHashMap();
@@ -67,7 +67,7 @@ public class DingMsgForm implements IMsgForm {
             }
         });
         appManageButton.addActionListener(e -> {
-            WxCpAppDialog dialog = new WxCpAppDialog();
+            DingAppDialog dialog = new DingAppDialog();
             dialog.renderTable();
             dialog.pack();
             dialog.setVisible(true);
@@ -167,12 +167,12 @@ public class DingMsgForm implements IMsgForm {
      * 初始化应用名称列表
      */
     public static void initAppNameList() {
-        List<TWxCpApp> tWxCpAppList = wxCpAppMapper.selectAll();
+        List<TDingApp> tDingAppList = dingAppMapper.selectAll();
         getInstance().getAppNameComboBox().removeAllItems();
-        for (TWxCpApp tWxCpApp : tWxCpAppList) {
-            appNameToAgentIdMap.put(tWxCpApp.getAppName(), tWxCpApp.getAgentId());
-            agentIdToAppNameMap.put(tWxCpApp.getAgentId(), tWxCpApp.getAppName());
-            getInstance().getAppNameComboBox().addItem(tWxCpApp.getAppName());
+        for (TDingApp tDingApp : tDingAppList) {
+            appNameToAgentIdMap.put(tDingApp.getAppName(), tDingApp.getAgentId());
+            agentIdToAppNameMap.put(tDingApp.getAgentId(), tDingApp.getAppName());
+            getInstance().getAppNameComboBox().addItem(tDingApp.getAppName());
         }
     }
 
