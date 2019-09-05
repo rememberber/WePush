@@ -21,4 +21,6 @@ public interface TMsgDingMapper {
     List<TMsgDing> selectByMsgTypeAndMsgName(@Param("msgType") int msgType, @Param("msgName") String msgName);
 
     int updateByMsgTypeAndMsgName(TMsgDing tMsgDing);
+
+    List<TMsgDing> selectByMsgType(int msgType);
 }
