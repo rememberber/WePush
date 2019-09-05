@@ -2,6 +2,7 @@ package com.fangxuele.tool.push.util;
 
 import cn.hutool.cache.CacheUtil;
 import cn.hutool.cache.impl.TimedCache;
+import cn.hutool.json.JSONUtil;
 import com.fangxuele.tool.push.App;
 import me.chanjar.weixin.common.WxType;
 import me.chanjar.weixin.common.bean.WxAccessToken;
@@ -82,7 +83,7 @@ public class WeWxMpServiceImpl extends WxMpServiceImpl {
                                 throw new WxErrorException(error);
                             }
                         }
-                        accessToken = WxAccessToken.fromJson(resultContent);
+                        accessToken = JSONUtil.toBean(resultContent, WxAccessToken.class);
                     } finally {
                         httpGet.releaseConnection();
                     }

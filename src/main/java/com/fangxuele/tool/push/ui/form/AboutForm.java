@@ -41,6 +41,7 @@ public class AboutForm {
 
     public static void init() {
         getInstance().getPushTotalLabel().setText("<html>已累计为您推送 <b>" + App.config.getPushTotal() + "</b> 条消息</html>");
+        aboutForm.getAboutPanel().updateUI();
     }
 
     {
