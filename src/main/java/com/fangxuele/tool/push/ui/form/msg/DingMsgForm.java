@@ -148,8 +148,11 @@ public class DingMsgForm implements IMsgForm {
             getInstance().getPicUrlTextField().setText(dingMsg.getPicUrl());
             getInstance().getUrlTextField().setText(dingMsg.getUrl());
             getInstance().getBtnTxtTextField().setText(dingMsg.getBtnTxt());
+            getInstance().getWebHookTextField().setText(tMsgDing.getWebHook());
 
             switchDingMsgType(dingMsgType);
+
+            switchRadio(tMsgDing.getRadioType());
         } else {
             switchDingMsgType("文本消息");
         }
@@ -185,6 +188,7 @@ public class DingMsgForm implements IMsgForm {
             String url = getInstance().getUrlTextField().getText();
             String btnTxt = getInstance().getBtnTxtTextField().getText();
             String btnUrl = getInstance().getBtnURLTextField().getText();
+            String webHook = getInstance().getWebHookTextField().getText();
 
             String now = SqliteUtil.nowDateForSqlite();
 
@@ -203,6 +207,13 @@ public class DingMsgForm implements IMsgForm {
 
             tMsgDing.setContent(JSONUtil.toJsonStr(dingMsg));
             tMsgDing.setModifiedTime(now);
+
+            if (getInstance().getWorkRadioButton().isSelected()) {
+                tMsgDing.setRadioType("work");
+            } else {
+                tMsgDing.setRadioType("robot");
+            }
+            tMsgDing.setWebHook(webHook);
 
             if (existSameMsg) {
                 msgDingMapper.updateByMsgTypeAndMsgName(tMsgDing);
@@ -300,6 +311,16 @@ public class DingMsgForm implements IMsgForm {
                 break;
             default:
                 break;
+        }
+    }
+
+    private void switchRadio(String radioType) {
+        getInstance().getWorkRadioButton().setSelected(false);
+        getInstance().getRobotRadioButton().setSelected(false);
+        if ("work".equals(radioType)) {
+            getInstance().getWorkRadioButton().setSelected(true);
+        } else if ("robot".equals(radioType)) {
+            getInstance().getRobotRadioButton().setSelected(true);
         }
     }
 
