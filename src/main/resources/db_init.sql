@@ -230,6 +230,7 @@ create table if not exists t_msg_ding
             primary key autoincrement,
     msg_type      integer,
     msg_name      text,
+    radio_type    text,
     ding_msg_type text,
     agent_id      text,
     web_hook      text,

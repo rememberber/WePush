@@ -21,6 +21,8 @@ public class TMsgDing implements Serializable {
 
     private String modifiedTime;
 
+    private String radioType;
+
     private static final long serialVersionUID = 1L;
 
     public Integer getId() {
@@ -93,5 +95,13 @@ public class TMsgDing implements Serializable {
 
     public void setModifiedTime(String modifiedTime) {
         this.modifiedTime = modifiedTime == null ? null : modifiedTime.trim();
+    }
+
+    public String getRadioType() {
+        return radioType;
+    }
+
+    public void setRadioType(String radioType) {
+        this.radioType = radioType == null ? null : radioType.trim();
     }
 }

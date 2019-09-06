@@ -11,10 +11,11 @@
         <result column="content" jdbcType="VARCHAR" property="content"/>
         <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
         <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime"/>
+        <result column="radio_type" jdbcType="VARCHAR" property="radioType"/>
     </resultMap>
     <sql id="Base_Column_List">
         id, msg_type, msg_name, ding_msg_type, agent_id, web_hook, content, create_time,
-    modified_time
+    modified_time, radio_type
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -30,10 +31,12 @@
     <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TMsgDing">
         insert into t_msg_ding (id, msg_type, msg_name,
                                 ding_msg_type, agent_id, web_hook,
-                                content, create_time, modified_time)
+                                content, create_time, modified_time,
+                                radio_type)
         values (#{id,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER}, #{msgName,jdbcType=VARCHAR},
                 #{dingMsgType,jdbcType=VARCHAR}, #{agentId,jdbcType=VARCHAR}, #{webHook,jdbcType=VARCHAR},
-                #{content,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR})
+                #{content,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR},
+                #{radioType,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TMsgDing">
         insert into t_msg_ding
@@ -65,6 +68,9 @@
             <if test="modifiedTime != null">
                 modified_time,
             </if>
+            <if test="radioType != null">
+                radio_type,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -93,6 +99,9 @@
             </if>
             <if test="modifiedTime != null">
                 #{modifiedTime,jdbcType=VARCHAR},
+            </if>
+            <if test="radioType != null">
+                #{radioType,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -123,6 +132,9 @@
             <if test="modifiedTime != null">
                 modified_time = #{modifiedTime,jdbcType=VARCHAR},
             </if>
+            <if test="radioType != null">
+                radio_type = #{radioType,jdbcType=VARCHAR},
+            </if>
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>
@@ -135,7 +147,8 @@
             web_hook      = #{webHook,jdbcType=VARCHAR},
             content       = #{content,jdbcType=VARCHAR},
             create_time   = #{createTime,jdbcType=VARCHAR},
-            modified_time = #{modifiedTime,jdbcType=VARCHAR}
+            modified_time = #{modifiedTime,jdbcType=VARCHAR},
+            radio_type    = #{radioType,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>
     <select id="selectByMsgTypeAndMsgName" resultMap="BaseResultMap">
@@ -151,6 +164,7 @@
             agent_id      = #{agentId,jdbcType=VARCHAR},
             web_hook      = #{webHook,jdbcType=VARCHAR},
             content       = #{content,jdbcType=VARCHAR},
+            radio_type    = #{radioType,jdbcType=VARCHAR},
             create_time   = #{createTime,jdbcType=VARCHAR},
             modified_time = #{modifiedTime,jdbcType=VARCHAR}
         where msg_type = #{msgType,jdbcType=INTEGER}
