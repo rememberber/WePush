@@ -1237,25 +1237,32 @@ public class MemberListener {
             request.setSize(100L);
             request.setHttpMethod("GET");
 
-            OapiUserSimplelistResponse response = client.execute(request, DingMsgSender.getAccessTokenTimedCache().get("accessToken"));
-            if (response.getErrcode() != 0) {
-                if (response.getErrcode() == 60011) {
-                    JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + response.getErrmsg() + "\n\n进入开发者后台，在小程序或者微应用详情的「接口权限」模块，点击申请对应的通讯录接口读写权限", "失败",
-                            JOptionPane.ERROR_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + response.getErrmsg(), "失败", JOptionPane.ERROR_MESSAGE);
-                }
+            long offset = 0;
+            OapiUserSimplelistResponse response = new OapiUserSimplelistResponse();
+            while (response.getErrcode() == null || response.getUserlist().size() > 0) {
+                response = client.execute(request, DingMsgSender.getAccessTokenTimedCache().get("accessToken"));
+                if (response.getErrcode() != 0) {
+                    if (response.getErrcode() == 60011) {
+                        JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + response.getErrmsg() + "\n\n进入开发者后台，在小程序或者微应用详情的「接口权限」模块，点击申请对应的通讯录接口读写权限", "失败",
+                                JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + response.getErrmsg(), "失败", JOptionPane.ERROR_MESSAGE);
+                    }
 
-                logger.error(response.getErrmsg());
-                return;
+                    logger.error(response.getErrmsg());
+                    return;
+                }
+                List<OapiUserSimplelistResponse.Userlist> userlist = response.getUserlist();
+                for (OapiUserSimplelistResponse.Userlist dingUser : userlist) {
+                    String[] dataArray = new String[]{dingUser.getUserid(), dingUser.getName()};
+                    PushData.allUser.add(dataArray);
+                    importedCount++;
+                    memberCountLabel.setText(String.valueOf(importedCount));
+                }
+                offset += 100;
+                request.setOffset(offset);
             }
-            List<OapiUserSimplelistResponse.Userlist> userlist = response.getUserlist();
-            for (OapiUserSimplelistResponse.Userlist dingUser : userlist) {
-                String[] dataArray = new String[]{dingUser.getUserid(), dingUser.getName()};
-                PushData.allUser.add(dataArray);
-                importedCount++;
-                memberCountLabel.setText(String.valueOf(importedCount));
-            }
+
             renderMemberListTable();
             if (!PushData.fixRateScheduling) {
                 JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
