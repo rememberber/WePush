@@ -44,7 +44,7 @@ public class DingMsgMaker extends BaseMsgMaker implements IMsgMaker {
         synchronized (this) {
             if (agentIdBefore == null || !agentIdBefore.equals(agentIdNow)) {
                 agentId = agentIdNow;
-                DingMsgSender.accessToken = null;
+                DingMsgSender.accessTokenTimedCache = null;
                 DingMsgSender.defaultDingTalkClient = null;
             }
         }

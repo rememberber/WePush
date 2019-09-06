@@ -1,5 +1,7 @@
 package com.fangxuele.tool.push.logic.msgsender;
 
+import cn.hutool.cache.CacheUtil;
+import cn.hutool.cache.impl.TimedCache;
 import com.dingtalk.api.DefaultDingTalkClient;
 import com.dingtalk.api.request.OapiGettokenRequest;
 import com.dingtalk.api.request.OapiMessageCorpconversationAsyncsendV2Request;
@@ -13,6 +15,7 @@ import com.fangxuele.tool.push.logic.msgmaker.DingMsgMaker;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.taobao.api.ApiException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * <pre>
@@ -25,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DingMsgSender implements IMsgSender {
     public volatile static DefaultDingTalkClient defaultDingTalkClient;
-    public volatile static String accessToken;
+    public static TimedCache<String, String> accessTokenTimedCache;
     private DingMsgMaker dingMsgMaker;
 
     private static TDingAppMapper dingAppMapper = MybatisUtil.getSqlSession().getMapper(TDingAppMapper.class);
@@ -55,7 +58,7 @@ public class DingMsgSender implements IMsgSender {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
-                OapiMessageCorpconversationAsyncsendV2Response response2 = defaultDingTalkClient.execute(request2, getAccessToken());
+                OapiMessageCorpconversationAsyncsendV2Response response2 = defaultDingTalkClient.execute(request2, getAccessTokenTimedCache().get("accessToken"));
                 if (response2.getErrcode() != 0) {
                     sendResult.setSuccess(false);
                     sendResult.setInfo(response2.getErrmsg());
@@ -124,20 +127,27 @@ public class DingMsgSender implements IMsgSender {
         return defaultDingTalkClient;
     }
 
-    public static String getAccessToken() {
-        DefaultDingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/gettoken");
-        OapiGettokenRequest request = new OapiGettokenRequest();
-        TDingApp tDingApp = dingAppMapper.selectByAgentId(DingMsgMaker.agentId);
-        request.setAppkey(tDingApp.getAppKey());
-        request.setAppsecret(tDingApp.getAppSecret());
-        request.setHttpMethod("GET");
-        OapiGettokenResponse response = null;
-        try {
-            response = client.execute(request);
-        } catch (ApiException e) {
-            e.printStackTrace();
+    public static TimedCache<String, String> getAccessTokenTimedCache() {
+        if (accessTokenTimedCache == null || StringUtils.isEmpty(accessTokenTimedCache.get("accessToken"))) {
+            synchronized (PushControl.class) {
+                if (accessTokenTimedCache == null || StringUtils.isEmpty(accessTokenTimedCache.get("accessToken"))) {
+                    DefaultDingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/gettoken");
+                    OapiGettokenRequest request = new OapiGettokenRequest();
+                    TDingApp tDingApp = dingAppMapper.selectByAgentId(DingMsgMaker.agentId);
+                    request.setAppkey(tDingApp.getAppKey());
+                    request.setAppsecret(tDingApp.getAppSecret());
+                    request.setHttpMethod("GET");
+                    OapiGettokenResponse response = null;
+                    try {
+                        response = client.execute(request);
+                    } catch (ApiException e) {
+                        e.printStackTrace();
+                    }
+                    accessTokenTimedCache = CacheUtil.newTimedCache((response.getExpiresIn() - 60) * 1000);
+                    accessTokenTimedCache.put("accessToken", response.getAccessToken());
+                }
+            }
         }
-        accessToken = response.getAccessToken();
-        return accessToken;
+        return accessTokenTimedCache;
     }
 }
