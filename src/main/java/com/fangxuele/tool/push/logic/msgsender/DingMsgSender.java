@@ -48,6 +48,8 @@ public class DingMsgSender implements IMsgSender {
             request2.setToAllUser(false);
 
             DingMsg dingMsg = dingMsgMaker.makeMsg(msgData);
+            OapiMessageCorpconversationAsyncsendV2Request.Msg msg = getMsg(dingMsg);
+            request2.setMsg(msg);
 
             if (PushControl.dryRun) {
                 sendResult.setSuccess(true);
@@ -70,6 +72,35 @@ public class DingMsgSender implements IMsgSender {
 
         sendResult.setSuccess(true);
         return sendResult;
+    }
+
+    private OapiMessageCorpconversationAsyncsendV2Request.Msg getMsg(DingMsg dingMsg) {
+        OapiMessageCorpconversationAsyncsendV2Request.Msg msg = new OapiMessageCorpconversationAsyncsendV2Request.Msg();
+        if ("文本消息".equals(DingMsgMaker.msgType)) {
+            msg.setMsgtype("text");
+            msg.setText(new OapiMessageCorpconversationAsyncsendV2Request.Text());
+            msg.getText().setContent(dingMsg.getContent());
+        } else if ("链接消息".equals(DingMsgMaker.msgType)) {
+            msg.setMsgtype("link");
+            msg.setLink(new OapiMessageCorpconversationAsyncsendV2Request.Link());
+            msg.getLink().setTitle(dingMsg.getTitle());
+            msg.getLink().setText(dingMsg.getContent());
+            msg.getLink().setMessageUrl(dingMsg.getUrl());
+            msg.getLink().setPicUrl(dingMsg.getPicUrl());
+        } else if ("markdown消息".equals(DingMsgMaker.msgType)) {
+            msg.setMsgtype("markdown");
+            msg.setMarkdown(new OapiMessageCorpconversationAsyncsendV2Request.Markdown());
+            msg.getMarkdown().setText(dingMsg.getContent());
+            msg.getMarkdown().setTitle(dingMsg.getTitle());
+        } else if ("卡片消息".equals(DingMsgMaker.msgType)) {
+            msg.setMsgtype("action_card");
+            msg.setActionCard(new OapiMessageCorpconversationAsyncsendV2Request.ActionCard());
+            msg.getActionCard().setTitle(dingMsg.getTitle());
+            msg.getActionCard().setMarkdown(dingMsg.getContent());
+            msg.getActionCard().setSingleTitle(dingMsg.getBtnTxt());
+            msg.getActionCard().setSingleUrl(dingMsg.getBtnUrl());
+        }
+        return msg;
     }
 
     @Override
