@@ -73,6 +73,11 @@ public class MemberForm {
     private JTextField importNumTextField;
     private JButton importFromNumButton;
     private JSplitPane splitPane;
+    private JButton dingImportAllButton;
+    private JPanel importFromDingPanel;
+    private JButton dingDeptsImportButton;
+    private JComboBox dingDeptsComboBox;
+    private JButton dingDeptsRefreshButton;
 
     private static MemberForm memberForm;
 
@@ -226,7 +231,7 @@ public class MemberForm {
         memberImportScrollPane = new JScrollPane();
         memberPanelRight.add(memberImportScrollPane, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         importWayPanel = new JPanel();
-        importWayPanel.setLayout(new GridLayoutManager(6, 1, new Insets(8, 0, 0, 0), -1, -1));
+        importWayPanel.setLayout(new GridLayoutManager(7, 1, new Insets(8, 0, 0, 0), -1, -1));
         importWayPanel.setMinimumSize(new Dimension(-1, -1));
         importWayPanel.setPreferredSize(new Dimension(150, 600));
         memberImportScrollPane.setViewportView(importWayPanel);
@@ -338,9 +343,36 @@ public class MemberForm {
         wxCpDeptsImportButton.setIcon(new ImageIcon(getClass().getResource("/icon/import_dark.png")));
         wxCpDeptsImportButton.setText("导入");
         importFromWxCpPanel.add(wxCpDeptsImportButton, new GridConstraints(1, 7, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        importFromDingPanel = new JPanel();
+        importFromDingPanel.setLayout(new GridLayoutManager(2, 8, new Insets(8, 15, 0, 5), -1, -1));
+        importWayPanel.add(importFromDingPanel, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        importFromDingPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "通过钉钉通讯录导入", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, importFromDingPanel.getFont())));
+        dingDeptsComboBox = new JComboBox();
+        final DefaultComboBoxModel defaultComboBoxModel4 = new DefaultComboBoxModel();
+        dingDeptsComboBox.setModel(defaultComboBoxModel4);
+        importFromDingPanel.add(dingDeptsComboBox, new GridConstraints(0, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        dingImportAllButton = new JButton();
+        Font dingImportAllButtonFont = this.$$$getFont$$$(null, Font.PLAIN, -1, dingImportAllButton.getFont());
+        if (dingImportAllButtonFont != null) dingImportAllButton.setFont(dingImportAllButtonFont);
+        dingImportAllButton.setIcon(new ImageIcon(getClass().getResource("/icon/import_dark.png")));
+        dingImportAllButton.setText("导入通讯录中所有用户");
+        importFromDingPanel.add(dingImportAllButton, new GridConstraints(1, 0, 1, 8, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        dingDeptsRefreshButton = new JButton();
+        Font dingDeptsRefreshButtonFont = this.$$$getFont$$$(null, Font.PLAIN, -1, dingDeptsRefreshButton.getFont());
+        if (dingDeptsRefreshButtonFont != null) dingDeptsRefreshButton.setFont(dingDeptsRefreshButtonFont);
+        dingDeptsRefreshButton.setIcon(new ImageIcon(getClass().getResource("/icon/refresh.png")));
+        dingDeptsRefreshButton.setText("刷新");
+        importFromDingPanel.add(dingDeptsRefreshButton, new GridConstraints(0, 4, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, 1, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label5 = new JLabel();
+        label5.setText("按部门导入");
+        importFromDingPanel.add(label5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        dingDeptsImportButton = new JButton();
+        dingDeptsImportButton.setIcon(new ImageIcon(getClass().getResource("/icon/import_dark.png")));
+        dingDeptsImportButton.setText("导入");
+        importFromDingPanel.add(dingDeptsImportButton, new GridConstraints(0, 7, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         importOptionPanel = new JPanel();
         importOptionPanel.setLayout(new GridLayoutManager(1, 5, new Insets(0, 15, 0, 0), -1, -1));
-        importWayPanel.add(importOptionPanel, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        importWayPanel.add(importOptionPanel, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         importOptionPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(new Color(-276358)), "导入选项", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, importOptionPanel.getFont()), new Color(-276358)));
         importOptionOpenIdCheckBox = new JCheckBox();
         importOptionOpenIdCheckBox.setEnabled(false);

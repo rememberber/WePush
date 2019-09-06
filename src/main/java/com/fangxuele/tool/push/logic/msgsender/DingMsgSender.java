@@ -15,6 +15,7 @@ import com.fangxuele.tool.push.dao.TDingAppMapper;
 import com.fangxuele.tool.push.domain.TDingApp;
 import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.msgmaker.DingMsgMaker;
+import com.fangxuele.tool.push.ui.form.msg.DingMsgForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.taobao.api.ApiException;
 import lombok.extern.slf4j.Slf4j;
@@ -222,7 +223,8 @@ public class DingMsgSender implements IMsgSender {
                 if (accessTokenTimedCache == null || StringUtils.isEmpty(accessTokenTimedCache.get("accessToken"))) {
                     DefaultDingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/gettoken");
                     OapiGettokenRequest request = new OapiGettokenRequest();
-                    TDingApp tDingApp = dingAppMapper.selectByAgentId(DingMsgMaker.agentId);
+                    String agentId = DingMsgForm.appNameToAgentIdMap.get(DingMsgForm.getInstance().getAppNameComboBox().getSelectedItem());
+                    TDingApp tDingApp = dingAppMapper.selectByAgentId(agentId);
                     request.setAppkey(tDingApp.getAppKey());
                     request.setAppsecret(tDingApp.getAppSecret());
                     request.setHttpMethod("GET");

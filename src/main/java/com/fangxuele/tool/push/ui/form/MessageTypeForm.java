@@ -149,6 +149,9 @@ public class MessageTypeForm {
         if (msgType == MessageTypeEnum.WX_CP_CODE) {
             MemberForm.getInstance().getImportFromWxCpPanel().setVisible(true);
         }
+        if (msgType == MessageTypeEnum.DING_CODE) {
+            MemberForm.getInstance().getImportFromDingPanel().setVisible(true);
+        }
 
         if (msgType == MessageTypeEnum.HTTP_CODE) {
             MainWindow.getInstance().getTabbedPane().setTitleAt(3, "③准备消息变量");
