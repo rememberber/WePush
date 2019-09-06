@@ -17,7 +17,9 @@ import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import com.dingtalk.api.DefaultDingTalkClient;
 import com.dingtalk.api.DingTalkClient;
+import com.dingtalk.api.request.OapiDepartmentListRequest;
 import com.dingtalk.api.request.OapiUserSimplelistRequest;
+import com.dingtalk.api.response.OapiDepartmentListResponse;
 import com.dingtalk.api.response.OapiUserSimplelistResponse;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TWxMpUserMapper;
@@ -429,6 +431,42 @@ public class MemberListener {
         memberForm.getWxCpImportAllButton().addActionListener(e -> {
             ThreadUtil.execute(() -> {
                 importWxCpAll();
+            });
+        });
+
+        // 钉钉-按部门导入-刷新
+        memberForm.getDingDeptsRefreshButton().addActionListener(e -> {
+            ThreadUtil.execute(() -> {
+                if (DingMsgForm.getInstance().getAppNameComboBox().getSelectedItem() == null) {
+                    JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "请先在编辑消息tab中选择应用！", "提示",
+                            JOptionPane.ERROR_MESSAGE);
+                    MainWindow.getInstance().getTabbedPane().setSelectedIndex(2);
+                    return;
+                }
+                memberForm.getDingDeptsComboBox().removeAllItems();
+
+                try {
+                    // 获取部门列表
+                    DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/department/list");
+                    OapiDepartmentListRequest request = new OapiDepartmentListRequest();
+                    request.setHttpMethod("GET");
+                    OapiDepartmentListResponse response = client.execute(request, DingMsgSender.getAccessTokenTimedCache().get("accessToken"));
+                    if (response.getErrcode() != 0) {
+                        JOptionPane.showMessageDialog(memberPanel, "刷新失败！\n\n" + response.getErrmsg(), "失败",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    List<OapiDepartmentListResponse.Department> departmentList = response.getDepartment();
+                    for (OapiDepartmentListResponse.Department department : departmentList) {
+                        memberForm.getDingDeptsComboBox().addItem(department.getName());
+                        wxCpDeptNameToIdMap.put(department.getName(), department.getId());
+                        wxCpIdToDeptNameMap.put(department.getId(), department.getName());
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(memberPanel, "刷新失败！\n\n" + ex, "失败",
+                            JOptionPane.ERROR_MESSAGE);
+                    logger.error(ex.toString());
+                }
             });
         });
 
