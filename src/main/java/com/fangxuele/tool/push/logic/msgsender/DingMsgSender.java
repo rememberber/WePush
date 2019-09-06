@@ -18,7 +18,10 @@ import com.fangxuele.tool.push.logic.msgmaker.DingMsgMaker;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.taobao.api.ApiException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.List;
 
 /**
  * <pre>
@@ -102,7 +105,13 @@ public class DingMsgSender implements IMsgSender {
                 text.setContent(dingMsg.getContent());
                 request2.setText(text);
                 OapiRobotSendRequest.At at = new OapiRobotSendRequest.At();
-                at.setIsAtAll("true");
+                if (msgData != null && StringUtils.isNotBlank(msgData[0])) {
+                    List<String> mobiles = Lists.newArrayList();
+                    mobiles.add(msgData[0]);
+                    at.setAtMobiles(mobiles);
+                } else {
+                    at.setIsAtAll("true");
+                }
                 request2.setAt(at);
             } else if ("链接消息".equals(DingMsgMaker.msgType)) {
                 request2.setMsgtype("link");
