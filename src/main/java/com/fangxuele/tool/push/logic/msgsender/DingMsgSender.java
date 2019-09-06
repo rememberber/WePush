@@ -3,10 +3,13 @@ package com.fangxuele.tool.push.logic.msgsender;
 import cn.hutool.cache.CacheUtil;
 import cn.hutool.cache.impl.TimedCache;
 import com.dingtalk.api.DefaultDingTalkClient;
+import com.dingtalk.api.DingTalkClient;
 import com.dingtalk.api.request.OapiGettokenRequest;
 import com.dingtalk.api.request.OapiMessageCorpconversationAsyncsendV2Request;
+import com.dingtalk.api.request.OapiRobotSendRequest;
 import com.dingtalk.api.response.OapiGettokenResponse;
 import com.dingtalk.api.response.OapiMessageCorpconversationAsyncsendV2Response;
+import com.dingtalk.api.response.OapiRobotSendResponse;
 import com.fangxuele.tool.push.bean.DingMsg;
 import com.fangxuele.tool.push.dao.TDingAppMapper;
 import com.fangxuele.tool.push.domain.TDingApp;
@@ -28,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 @Slf4j
 public class DingMsgSender implements IMsgSender {
     public volatile static DefaultDingTalkClient defaultDingTalkClient;
+    public volatile static DefaultDingTalkClient robotClient;
     public static TimedCache<String, String> accessTokenTimedCache;
     private DingMsgMaker dingMsgMaker;
 
@@ -40,6 +44,14 @@ public class DingMsgSender implements IMsgSender {
 
     @Override
     public SendResult send(String[] msgData) {
+        if ("work".equals(DingMsgMaker.radioType)) {
+            return sendWorkMsg(msgData);
+        } else {
+            return sendRobotMsg(msgData);
+        }
+    }
+
+    public SendResult sendWorkMsg(String[] msgData) {
         SendResult sendResult = new SendResult();
 
         try {
@@ -59,6 +71,68 @@ public class DingMsgSender implements IMsgSender {
                 return sendResult;
             } else {
                 OapiMessageCorpconversationAsyncsendV2Response response2 = defaultDingTalkClient.execute(request2, getAccessTokenTimedCache().get("accessToken"));
+                if (response2.getErrcode() != 0) {
+                    sendResult.setSuccess(false);
+                    sendResult.setInfo(response2.getErrmsg());
+                    log.error(response2.getErrmsg());
+                    return sendResult;
+                }
+            }
+        } catch (Exception e) {
+            sendResult.setSuccess(false);
+            sendResult.setInfo(e.getMessage());
+            log.error(e.toString());
+            return sendResult;
+        }
+
+        sendResult.setSuccess(true);
+        return sendResult;
+    }
+
+    public SendResult sendRobotMsg(String[] msgData) {
+        SendResult sendResult = new SendResult();
+
+        try {
+            DingTalkClient client = getRobotClient();
+            OapiRobotSendRequest request2 = new OapiRobotSendRequest();
+            DingMsg dingMsg = dingMsgMaker.makeMsg(msgData);
+            if ("文本消息".equals(DingMsgMaker.msgType)) {
+                request2.setMsgtype("text");
+                OapiRobotSendRequest.Text text = new OapiRobotSendRequest.Text();
+                text.setContent(dingMsg.getContent());
+                request2.setText(text);
+                OapiRobotSendRequest.At at = new OapiRobotSendRequest.At();
+                at.setIsAtAll("true");
+                request2.setAt(at);
+            } else if ("链接消息".equals(DingMsgMaker.msgType)) {
+                request2.setMsgtype("link");
+                OapiRobotSendRequest.Link link = new OapiRobotSendRequest.Link();
+                link.setMessageUrl(dingMsg.getUrl());
+                link.setPicUrl(dingMsg.getPicUrl());
+                link.setTitle(dingMsg.getTitle());
+                link.setText(dingMsg.getContent());
+                request2.setLink(link);
+            } else if ("markdown消息".equals(DingMsgMaker.msgType)) {
+                request2.setMsgtype("markdown");
+                OapiRobotSendRequest.Markdown markdown = new OapiRobotSendRequest.Markdown();
+                markdown.setTitle(dingMsg.getTitle());
+                markdown.setText(dingMsg.getContent());
+                request2.setMarkdown(markdown);
+            } else if ("卡片消息".equals(DingMsgMaker.msgType)) {
+                request2.setMsgtype("actionCard");
+                OapiRobotSendRequest.Actioncard actionCard = new OapiRobotSendRequest.Actioncard();
+                actionCard.setTitle(dingMsg.getTitle());
+                actionCard.setText(dingMsg.getContent());
+                actionCard.setSingleTitle(dingMsg.getBtnTxt());
+                actionCard.setSingleURL(dingMsg.getBtnUrl());
+                request2.setActionCard(actionCard);
+            }
+
+            if (PushControl.dryRun) {
+                sendResult.setSuccess(true);
+                return sendResult;
+            } else {
+                OapiRobotSendResponse response2 = client.execute(request2);
                 if (response2.getErrcode() != 0) {
                     sendResult.setSuccess(false);
                     sendResult.setInfo(response2.getErrmsg());
@@ -111,11 +185,6 @@ public class DingMsgSender implements IMsgSender {
         return null;
     }
 
-    /**
-     * 获取微信企业号工具服务
-     *
-     * @return WxCpService
-     */
     public static DefaultDingTalkClient getDefaultDingTalkClient() {
         if (defaultDingTalkClient == null) {
             synchronized (PushControl.class) {
@@ -125,6 +194,17 @@ public class DingMsgSender implements IMsgSender {
             }
         }
         return defaultDingTalkClient;
+    }
+
+    public static DefaultDingTalkClient getRobotClient() {
+        if (robotClient == null) {
+            synchronized (PushControl.class) {
+                if (robotClient == null) {
+                    robotClient = new DefaultDingTalkClient(DingMsgMaker.webHook);
+                }
+            }
+        }
+        return robotClient;
     }
 
     public static TimedCache<String, String> getAccessTokenTimedCache() {

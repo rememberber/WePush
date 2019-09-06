@@ -34,6 +34,10 @@ public class DingMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
     private static String msgContent;
 
+    public static String radioType;
+
+    public static String webHook;
+
     /**
      * 准备(界面字段等)
      */
@@ -41,11 +45,17 @@ public class DingMsgMaker extends BaseMsgMaker implements IMsgMaker {
     public void prepare() {
         String agentIdBefore = agentId;
         String agentIdNow = DingMsgForm.appNameToAgentIdMap.get(DingMsgForm.getInstance().getAppNameComboBox().getSelectedItem());
+
+        String webHookBefore = webHook;
+        String webHookNow = DingMsgForm.getInstance().getWebHookTextField().getText().trim();
         synchronized (this) {
             if (agentIdBefore == null || !agentIdBefore.equals(agentIdNow)) {
                 agentId = agentIdNow;
                 DingMsgSender.accessTokenTimedCache = null;
                 DingMsgSender.defaultDingTalkClient = null;
+            }
+            if (webHookBefore == null || !webHookBefore.equals(webHookNow)) {
+                DingMsgSender.robotClient = null;
             }
         }
         msgType = (String) DingMsgForm.getInstance().getMsgTypeComboBox().getSelectedItem();
@@ -55,6 +65,12 @@ public class DingMsgMaker extends BaseMsgMaker implements IMsgMaker {
         btnTxt = DingMsgForm.getInstance().getBtnTxtTextField().getText().trim();
         btnUrl = DingMsgForm.getInstance().getBtnURLTextField().getText().trim();
         msgContent = DingMsgForm.getInstance().getContentTextArea().getText();
+        if (DingMsgForm.getInstance().getWorkRadioButton().isSelected()) {
+            radioType = "work";
+        } else {
+            radioType = "robot";
+        }
+        webHook = DingMsgForm.getInstance().getWebHookTextField().getText();
     }
 
     /**
