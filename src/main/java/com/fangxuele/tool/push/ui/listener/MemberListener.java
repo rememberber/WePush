@@ -470,6 +470,69 @@ public class MemberListener {
             });
         });
 
+        // 钉钉-按部门导入-导入
+        memberForm.getDingDeptsImportButton().addActionListener(e -> {
+            ThreadUtil.execute(() -> {
+                if (memberForm.getDingDeptsComboBox().getSelectedItem() == null) {
+                    return;
+                }
+                try {
+                    progressBar.setVisible(true);
+                    progressBar.setIndeterminate(true);
+                    int importedCount = 0;
+                    PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+
+                    // 获取部门id
+                    Long deptId = wxCpDeptNameToIdMap.get(memberForm.getDingDeptsComboBox().getSelectedItem());
+                    // 获取用户
+                    DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/user/simplelist");
+                    OapiUserSimplelistRequest request = new OapiUserSimplelistRequest();
+                    request.setDepartmentId(deptId);
+                    request.setOffset(0L);
+                    request.setSize(100L);
+                    request.setHttpMethod("GET");
+
+                    long offset = 0;
+                    OapiUserSimplelistResponse response = new OapiUserSimplelistResponse();
+                    while (response.getErrcode() == null || response.getUserlist().size() > 0) {
+                        response = client.execute(request, DingMsgSender.getAccessTokenTimedCache().get("accessToken"));
+                        if (response.getErrcode() != 0) {
+                            if (response.getErrcode() == 60011) {
+                                JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + response.getErrmsg() + "\n\n进入开发者后台，在小程序或者微应用详情的「接口权限」模块，点击申请对应的通讯录接口读写权限", "失败",
+                                        JOptionPane.ERROR_MESSAGE);
+                            } else {
+                                JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + response.getErrmsg(), "失败", JOptionPane.ERROR_MESSAGE);
+                            }
+
+                            logger.error(response.getErrmsg());
+                            return;
+                        }
+                        List<OapiUserSimplelistResponse.Userlist> userlist = response.getUserlist();
+                        for (OapiUserSimplelistResponse.Userlist dingUser : userlist) {
+                            String[] dataArray = new String[]{dingUser.getUserid(), dingUser.getName()};
+                            PushData.allUser.add(dataArray);
+                            importedCount++;
+                            memberCountLabel.setText(String.valueOf(importedCount));
+                        }
+                        offset += 100;
+                        request.setOffset(offset);
+                    }
+                    renderMemberListTable();
+                    if (!PushData.fixRateScheduling) {
+                        JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + ex, "失败",
+                            JOptionPane.ERROR_MESSAGE);
+                    logger.error(ex.toString());
+                } finally {
+                    progressBar.setIndeterminate(false);
+                    progressBar.setVisible(false);
+                }
+
+            });
+        });
+
         // 钉钉-导入全部
         memberForm.getDingImportAllButton().addActionListener(e -> {
             ThreadUtil.execute(() -> {
