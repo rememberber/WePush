@@ -123,7 +123,7 @@ public class HttpMsgSender implements IMsgSender {
             }
         } catch (Exception e) {
             sendResult.setSuccess(false);
-            sendResult.setInfo(e.getMessage());
+            sendResult.setInfo(e.toString());
             log.error(e.toString());
             return sendResult;
         }
