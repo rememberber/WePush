@@ -48,6 +48,9 @@ public class MsgMakerFactory {
             case MessageTypeEnum.HTTP_CODE:
                 iMsgMaker = new HttpMsgMaker();
                 break;
+            case MessageTypeEnum.DING_CODE:
+                iMsgMaker = new DingMsgMaker();
+                break;
             default:
         }
         return iMsgMaker;

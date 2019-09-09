@@ -4,8 +4,8 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.dao.TWxCpAppMapper;
-import com.fangxuele.tool.push.domain.TWxCpApp;
+import com.fangxuele.tool.push.dao.TDingAppMapper;
+import com.fangxuele.tool.push.domain.TDingApp;
 import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.JTableUtil;
@@ -29,28 +29,28 @@ import java.util.List;
 
 /**
  * <pre>
- * WxCpAppDialog
+ * DingAppDialog
  * </pre>
  *
  * @author <a href="https://github.com/rememberber">Zhou Bo</a>
- * @since 2019/6/7.
+ * @since 2019/9/5.
  */
-public class WxCpAppDialog extends JDialog {
-    private static final long serialVersionUID = -1508175617622474963L;
+public class DingAppDialog extends JDialog {
     private JPanel contentPane;
     private JButton buttonDelete;
     private JButton buttonCancel;
     private JTable appsTable;
     private JTextField appNameTextField;
     private JTextField agentIdTextField;
-    private JTextField secretTextField;
+    private JTextField appKeyTextField;
+    private JTextField appSecretTextField;
     private JButton saveButton;
 
     private Log logger = LogFactory.get();
-    private static TWxCpAppMapper wxCpAppMapper = MybatisUtil.getSqlSession().getMapper(TWxCpAppMapper.class);
+    private static TDingAppMapper dingAppMapper = MybatisUtil.getSqlSession().getMapper(TDingAppMapper.class);
 
-    public WxCpAppDialog() {
-        super(App.mainFrame, "企业号/企业微信 应用管理");
+    public DingAppDialog() {
+        super(App.mainFrame, "钉钉-应用管理");
         setContentPane(contentPane);
         setModal(true);
 
@@ -72,25 +72,25 @@ public class WxCpAppDialog extends JDialog {
             }
 
             boolean update = false;
-            List<TWxCpApp> tWxCpAppList = wxCpAppMapper.selectByAppName(appName);
-            if (tWxCpAppList.size() > 0) {
+            List<TDingApp> tDingAppList = dingAppMapper.selectByAppName(appName);
+            if (tDingAppList.size() > 0) {
                 update = true;
             }
 
-            TWxCpApp tWxCpApp = new TWxCpApp();
+            TDingApp tDingApp = new TDingApp();
             String now = SqliteUtil.nowDateForSqlite();
-            tWxCpApp.setAppName(appName);
-            tWxCpApp.setCorpid(SettingForm.getInstance().getWxCpCorpIdTextField().getText());
-            tWxCpApp.setAgentId(agentIdTextField.getText());
-            tWxCpApp.setSecret(secretTextField.getText());
-            tWxCpApp.setModifiedTime(now);
+            tDingApp.setAppName(appName);
+            tDingApp.setAgentId(agentIdTextField.getText());
+            tDingApp.setAppKey(appKeyTextField.getText());
+            tDingApp.setAppSecret(appSecretTextField.getText());
+            tDingApp.setModifiedTime(now);
 
             if (update) {
-                tWxCpApp.setId(tWxCpAppList.get(0).getId());
-                wxCpAppMapper.updateByPrimaryKeySelective(tWxCpApp);
+                tDingApp.setId(tDingAppList.get(0).getId());
+                dingAppMapper.updateByPrimaryKeySelective(tDingApp);
             } else {
-                tWxCpApp.setCreateTime(now);
-                wxCpAppMapper.insert(tWxCpApp);
+                tDingApp.setCreateTime(now);
+                dingAppMapper.insert(tDingApp);
             }
             renderTable();
             JOptionPane.showMessageDialog(this, "保存成功！", "成功",
@@ -112,7 +112,7 @@ public class WxCpAppDialog extends JDialog {
                         for (int i = selectedRows.length; i > 0; i--) {
                             int selectedRow = appsTable.getSelectedRow();
                             Integer selectedId = (Integer) tableModel.getValueAt(selectedRow, 0);
-                            wxCpAppMapper.deleteByPrimaryKey(selectedId);
+                            dingAppMapper.deleteByPrimaryKey(selectedId);
                             tableModel.removeRow(selectedRow);
                         }
                         SettingForm.initSwitchMultiAccount();
@@ -132,10 +132,11 @@ public class WxCpAppDialog extends JDialog {
 
                 int selectedRow = appsTable.getSelectedRow();
                 String selectedId = appsTable.getValueAt(selectedRow, 0).toString();
-                TWxCpApp tWxCpApp = wxCpAppMapper.selectByPrimaryKey(Integer.valueOf(selectedId));
-                appNameTextField.setText(tWxCpApp.getAppName());
-                agentIdTextField.setText(tWxCpApp.getAgentId());
-                secretTextField.setText(tWxCpApp.getSecret());
+                TDingApp tDingApp = dingAppMapper.selectByPrimaryKey(Integer.valueOf(selectedId));
+                appNameTextField.setText(tDingApp.getAppName());
+                agentIdTextField.setText(tDingApp.getAgentId());
+                appKeyTextField.setText(tDingApp.getAppKey());
+                appSecretTextField.setText(tDingApp.getAppSecret());
                 super.mousePressed(e);
             }
         });
@@ -164,23 +165,23 @@ public class WxCpAppDialog extends JDialog {
      * 应用列表表格
      */
     public void renderTable() {
-        String[] headerNames = {"id", "应用名称", "AgentId", "Secret"};
+        String[] headerNames = {"id", "应用名称", "AgentId", "AppKey", "AppSecret"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
         appsTable.setModel(model);
 
-        DefaultTableCellRenderer hr = (DefaultTableCellRenderer) appsTable.getTableHeader()
-                .getDefaultRenderer();
+        DefaultTableCellRenderer hr = (DefaultTableCellRenderer) appsTable.getTableHeader().getDefaultRenderer();
         // 表头列名居左
         hr.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
 
-        List<TWxCpApp> wxCpAppList = wxCpAppMapper.selectAll();
+        List<TDingApp> dingAppList = dingAppMapper.selectAll();
         Object[] data;
-        for (TWxCpApp tWxCpApp : wxCpAppList) {
-            data = new Object[4];
-            data[0] = tWxCpApp.getId();
-            data[1] = tWxCpApp.getAppName();
-            data[2] = tWxCpApp.getAgentId();
-            data[3] = tWxCpApp.getSecret();
+        for (TDingApp tDingApp : dingAppList) {
+            data = new Object[5];
+            data[0] = tDingApp.getId();
+            data[1] = tDingApp.getAppName();
+            data[2] = tDingApp.getAgentId();
+            data[3] = tDingApp.getAppKey();
+            data[4] = tDingApp.getAppSecret();
             model.addRow(data);
         }
 
@@ -194,7 +195,8 @@ public class WxCpAppDialog extends JDialog {
     public void clearFields() {
         appNameTextField.setText("");
         agentIdTextField.setText("");
-        secretTextField.setText("");
+        appKeyTextField.setText("");
+        appSecretTextField.setText("");
     }
 
     {
@@ -229,29 +231,34 @@ public class WxCpAppDialog extends JDialog {
         buttonCancel.setText("好了");
         panel2.add(buttonCancel, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(4, 3, new Insets(5, 5, 0, 5), -1, -1));
+        panel3.setLayout(new GridLayoutManager(5, 3, new Insets(5, 5, 0, 5), -1, -1));
         contentPane.add(panel3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         panel3.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "添加应用"));
         final JLabel label1 = new JLabel();
         label1.setText("应用名称");
         panel3.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        appNameTextField = new JTextField();
-        panel3.add(appNameTextField, new GridConstraints(0, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         final JLabel label2 = new JLabel();
         label2.setText("AgentId");
         panel3.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label3 = new JLabel();
+        label3.setText("Appkey");
+        panel3.add(label3, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label4 = new JLabel();
+        label4.setText("AppSecret");
+        panel3.add(label4, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        appNameTextField = new JTextField();
+        panel3.add(appNameTextField, new GridConstraints(0, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         agentIdTextField = new JTextField();
         panel3.add(agentIdTextField, new GridConstraints(1, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        final JLabel label3 = new JLabel();
-        label3.setText("Secret");
-        panel3.add(label3, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        secretTextField = new JTextField();
-        panel3.add(secretTextField, new GridConstraints(2, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        appKeyTextField = new JTextField();
+        panel3.add(appKeyTextField, new GridConstraints(2, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        appSecretTextField = new JTextField();
+        panel3.add(appSecretTextField, new GridConstraints(3, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         saveButton = new JButton();
         saveButton.setText("保存");
-        panel3.add(saveButton, new GridConstraints(3, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(saveButton, new GridConstraints(4, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
-        panel3.add(spacer2, new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        panel3.add(spacer2, new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final JScrollPane scrollPane1 = new JScrollPane();
         contentPane.add(scrollPane1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         appsTable = new JTable();

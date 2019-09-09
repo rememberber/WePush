@@ -15,11 +15,13 @@ import com.fangxuele.tool.push.logic.msgsender.YunPianMsgSender;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
+import com.fangxuele.tool.push.ui.dialog.DingAppDialog;
 import com.fangxuele.tool.push.ui.dialog.MailTestDialog;
 import com.fangxuele.tool.push.ui.dialog.SwitchWxAccountDialog;
 import com.fangxuele.tool.push.ui.dialog.WxCpAppDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.SettingForm;
+import com.fangxuele.tool.push.ui.form.msg.DingMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
 import com.fangxuele.tool.push.util.HikariUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
@@ -254,6 +256,15 @@ public class SettingListener {
             dialog.pack();
             dialog.setVisible(true);
             WxCpMsgForm.initAppNameList();
+        });
+
+        // 设置-钉钉-应用管理
+        settingForm.getDingAppManageButton().addActionListener(e -> {
+            DingAppDialog dialog = new DingAppDialog();
+            dialog.renderTable();
+            dialog.pack();
+            dialog.setVisible(true);
+            DingMsgForm.initAppNameList();
         });
 
         // 设置-阿里云短信-保存

@@ -53,6 +53,9 @@ public class MsgFormFactory {
             case MessageTypeEnum.HTTP_CODE:
                 iMsgForm = HttpMsgForm.getInstance();
                 break;
+            case MessageTypeEnum.DING_CODE:
+                iMsgForm = DingMsgForm.getInstance();
+                break;
             default:
                 iMsgForm = HttpMsgForm.getInstance();
         }

@@ -13,6 +13,7 @@ import com.fangxuele.tool.push.ui.form.HttpResultForm;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.MessageManageForm;
+import com.fangxuele.tool.push.ui.form.msg.DingMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.MsgFormFactory;
 import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
 import com.fangxuele.tool.push.ui.frame.HttpResultFrame;
@@ -66,9 +67,13 @@ public class MsgEditListener {
         messageEditForm.getPreviewMsgButton().addActionListener(e -> {
             try {
                 if (App.config.getMsgType() != MessageTypeEnum.HTTP_CODE && "".equals(messageEditForm.getPreviewUserField().getText().trim())) {
-                    JOptionPane.showMessageDialog(messagePanel, "预览用户不能为空！", "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    return;
+                    if (App.config.getMsgType() == MessageTypeEnum.DING_CODE && DingMsgForm.getInstance().getRobotRadioButton().isSelected()) {
+                        // Do Nothing
+                    } else {
+                        JOptionPane.showMessageDialog(messagePanel, "预览用户不能为空！", "提示",
+                                JOptionPane.INFORMATION_MESSAGE);
+                        return;
+                    }
                 }
                 if (App.config.getMsgType() == MessageTypeEnum.MA_TEMPLATE_CODE
                         && messageEditForm.getPreviewUserField().getText().split(";")[0].length() < 2) {
@@ -81,7 +86,7 @@ public class MsgEditListener {
 
                 if (App.config.getMsgType() == MessageTypeEnum.WX_CP_CODE
                         && WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem() == null) {
-                    JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "请选择应用！", "成功",
+                    JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "请选择应用！", "失败",
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
@@ -150,6 +155,9 @@ public class MsgEditListener {
                 } else if (msgType == MessageTypeEnum.HTTP_CODE) {
                     fillParaName = "消息变量(如果是变量消息)";
                     paraDemo = "变量0|变量1|变量2";
+                } else if (msgType == MessageTypeEnum.DING_CODE) {
+                    fillParaName = "预览消息用户的UserId(如果是聊天机器人消息，填写需要@ 的用户的手机号，如果@所有人 可不填写)";
+                    paraDemo = "manager9115|manager9116|manager9117";
                 } else if (msgType == MessageTypeEnum.ALI_YUN_CODE || msgType == MessageTypeEnum.TX_YUN_CODE || msgType == MessageTypeEnum.YUN_PIAN_CODE) {
                     fillParaName = "预览消息用户的手机号";
                     paraDemo = "13910733521;13910733522";
