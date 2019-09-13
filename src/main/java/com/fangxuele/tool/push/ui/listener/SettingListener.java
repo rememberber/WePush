@@ -304,6 +304,27 @@ public class SettingListener {
             }
         });
 
+        // 设置-华为云短信-保存
+        settingForm.getHwSaveButton().addActionListener(e -> {
+            try {
+                App.config.setHwAppKey(settingForm.getHwAppKeyTextField().getText());
+                App.config.setHwAppSecretPassword(new String(settingForm.getHwAppSecretPasswordField().getPassword()));
+                App.config.setHwAccessUrl(settingForm.getHwAccessUrlTextField().getText());
+                App.config.setHwSenderCode(settingForm.getHwSenderCodeTextField().getText());
+                App.config.setHwSignature(settingForm.getHwSignatureTextField().getText());
+                App.config.save();
+
+//          TODO      TxYunMsgSender.smsSingleSender = null;
+
+                JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        });
+
         // 设置-云片网短信-保存
         settingForm.getSettingYunpianSaveButton().addActionListener(e -> {
             try {
