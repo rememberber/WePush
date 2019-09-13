@@ -41,6 +41,9 @@ public class MsgFormFactory {
             case MessageTypeEnum.TX_YUN_CODE:
                 iMsgForm = TxYunMsgForm.getInstance();
                 break;
+            case MessageTypeEnum.HW_YUN_CODE:
+                iMsgForm = HwYunMsgForm.getInstance();
+                break;
             case MessageTypeEnum.YUN_PIAN_CODE:
                 iMsgForm = YunpianMsgForm.getInstance();
                 break;

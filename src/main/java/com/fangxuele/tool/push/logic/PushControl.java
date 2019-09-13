@@ -186,6 +186,17 @@ public class PushControl {
                     return false;
                 }
                 break;
+            case MessageTypeEnum.HW_YUN_CODE:
+                String hwAppKey = App.config.getHwAppKey();
+                String hwAppSecretPassword = App.config.getHwAppSecretPassword();
+
+                if (StringUtils.isEmpty(hwAppKey) || StringUtils.isEmpty(hwAppSecretPassword)) {
+                    JOptionPane.showMessageDialog(settingForm.getSettingPanel(),
+                            "请先在设置中填写并保存华为云短信相关配置！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return false;
+                }
+                break;
             case MessageTypeEnum.YUN_PIAN_CODE:
                 String yunpianApiKey = App.config.getYunpianApiKey();
                 if (StringUtils.isEmpty(yunpianApiKey)) {

@@ -79,7 +79,7 @@
               </component>
               <component id="845d8" class="javax.swing.JRadioButton" binding="yunPianRadioButton">
                 <constraints>
-                  <grid row="9" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text value="云片网短信"/>
@@ -87,20 +87,11 @@
               </component>
               <component id="63100" class="javax.swing.JRadioButton" binding="upYunRadioButton">
                 <constraints>
-                  <grid row="11" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="12" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <enabled value="false"/>
                   <text value="又拍云短信"/>
-                </properties>
-              </component>
-              <component id="fddfa" class="javax.swing.JRadioButton" binding="hwYunRadioButton">
-                <constraints>
-                  <grid row="13" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <enabled value="false"/>
-                  <text value="华为云短信"/>
                 </properties>
               </component>
               <component id="15067" class="javax.swing.JRadioButton" binding="网易云信短信RadioButton" default-binding="true">
@@ -159,7 +150,7 @@
               </component>
               <component id="c9ddb" class="javax.swing.JRadioButton" binding="eMailRadioButton">
                 <constraints>
-                  <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="11" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <enabled value="true"/>
@@ -177,7 +168,7 @@
               </component>
               <component id="b537f" class="javax.swing.JRadioButton" binding="七牛云短信RadioButton" default-binding="true">
                 <constraints>
-                  <grid row="12" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="13" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <enabled value="false"/>
@@ -214,6 +205,15 @@
                 <properties>
                   <enabled value="false"/>
                   <text value="百度云短信"/>
+                </properties>
+              </component>
+              <component id="fddfa" class="javax.swing.JRadioButton" binding="hwYunRadioButton">
+                <constraints>
+                  <grid row="9" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <enabled value="true"/>
+                  <text value="华为云短信"/>
                 </properties>
               </component>
             </children>

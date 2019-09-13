@@ -5,6 +5,7 @@ import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.form.msg.AliYunMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.DingMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.HttpMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.HwYunMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.KefuMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.MaTemplateMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.MailMsgForm;
@@ -111,6 +112,9 @@ public class MessageEditForm {
                 break;
             case MessageTypeEnum.TX_YUN_CODE:
                 messageEditForm.getMsgEditorPanel().add(TxYunMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
+                break;
+            case MessageTypeEnum.HW_YUN_CODE:
+                messageEditForm.getMsgEditorPanel().add(HwYunMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
                 break;
             case MessageTypeEnum.YUN_PIAN_CODE:
                 messageEditForm.getMsgEditorPanel().add(YunpianMsgForm.getInstance().getYunpianMsgPanel(), gridConstraintsRow0);

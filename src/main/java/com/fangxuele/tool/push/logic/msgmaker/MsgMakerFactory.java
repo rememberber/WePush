@@ -36,6 +36,9 @@ public class MsgMakerFactory {
             case MessageTypeEnum.TX_YUN_CODE:
                 iMsgMaker = new TxYunMsgMaker();
                 break;
+            case MessageTypeEnum.HW_YUN_CODE:
+                iMsgMaker = new HwYunMsgMaker();
+                break;
             case MessageTypeEnum.YUN_PIAN_CODE:
                 iMsgMaker = new YunPianMsgMaker();
                 break;
