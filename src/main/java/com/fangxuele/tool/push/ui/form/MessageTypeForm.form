@@ -204,7 +204,7 @@
                 </constraints>
                 <properties>
                   <enabled value="true"/>
-                  <text value="华为云短信"/>
+                  <text value="华为云短信（BETA）"/>
                 </properties>
               </component>
               <component id="93d99" class="javax.swing.JRadioButton" binding="bdYunRadioButton">
@@ -213,7 +213,7 @@
                 </constraints>
                 <properties>
                   <enabled value="true"/>
-                  <text value="百度云短信"/>
+                  <text value="百度云短信（BETA）"/>
                 </properties>
               </component>
             </children>
