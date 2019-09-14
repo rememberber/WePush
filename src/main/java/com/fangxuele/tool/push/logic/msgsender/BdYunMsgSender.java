@@ -1,15 +1,21 @@
 package com.fangxuele.tool.push.logic.msgsender;
 
+import com.baidubce.auth.DefaultBceCredentials;
+import com.baidubce.services.sms.SmsClient;
+import com.baidubce.services.sms.SmsClientConfiguration;
+import com.baidubce.services.sms.model.SendMessageV2Request;
+import com.baidubce.services.sms.model.SendMessageV2Response;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.PushControl;
-import com.fangxuele.tool.push.logic.msgmaker.TxYunMsgMaker;
-import com.github.qcloudsms.SmsSingleSender;
-import com.github.qcloudsms.SmsSingleSenderResult;
+import com.fangxuele.tool.push.logic.msgmaker.BdYunMsgMaker;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Map;
 
 /**
  * <pre>
  * 百度云模板短信发送器
+ * 部分代码来源于官网文档示例
  * </pre>
  *
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
@@ -18,37 +24,47 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BdYunMsgSender implements IMsgSender {
     /**
-     * 百度云短信sender
+     * 百度云短信SmsClient
      */
-    public volatile static SmsSingleSender smsSingleSender;
+    public volatile static SmsClient smsClient;
 
-    private TxYunMsgMaker txYunMsgMaker;
+    private BdYunMsgMaker bdYunMsgMaker;
 
     public BdYunMsgSender() {
-        txYunMsgMaker = new TxYunMsgMaker();
-        smsSingleSender = getTxYunSender();
+        bdYunMsgMaker = new BdYunMsgMaker();
+        smsClient = getBdYunSmsClient();
     }
 
     @Override
     public SendResult send(String[] msgData) {
         SendResult sendResult = new SendResult();
         try {
-            int templateId = TxYunMsgMaker.templateId;
-            String smsSign = App.config.getTxyunSign();
-            String[] params = txYunMsgMaker.makeMsg(msgData);
-            String telNum = msgData[0];
+            String templateCode = BdYunMsgMaker.templateId;
+            Map<String, String> params = bdYunMsgMaker.makeMsg(msgData);
+            String phoneNumber = msgData[0];
             if (PushControl.dryRun) {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
-                SmsSingleSenderResult result = smsSingleSender.sendWithParam("86", telNum,
-                        templateId, params, smsSign, "", "");
+                // 定义请求参数
+                // 发送使用签名的调用ID
+                String invokeId = App.config.getBdInvokeId();
 
-                if (result.result == 0) {
+                //实例化请求对象
+                SendMessageV2Request request = new SendMessageV2Request();
+                request.withInvokeId(invokeId)
+                        .withPhoneNumber(phoneNumber)
+                        .withTemplateCode(templateCode)
+                        .withContentVar(params);
+
+                // 发送请求
+                SendMessageV2Response response = smsClient.sendMessage(request);
+
+                if (response != null && response.isSuccess()) {
                     sendResult.setSuccess(true);
                 } else {
                     sendResult.setSuccess(false);
-                    sendResult.setInfo(result.toString());
+                    sendResult.setInfo(response.getMessage());
                 }
             }
         } catch (Exception e) {
@@ -68,19 +84,29 @@ public class BdYunMsgSender implements IMsgSender {
     /**
      * 获取百度云短信发送客户端
      *
-     * @return SmsSingleSender
+     * @return SmsClient
      */
-    private static SmsSingleSender getTxYunSender() {
-        if (smsSingleSender == null) {
+    private static SmsClient getBdYunSmsClient() {
+        if (smsClient == null) {
             synchronized (BdYunMsgSender.class) {
-                if (smsSingleSender == null) {
-                    String txyunAppId = App.config.getTxyunAppId();
-                    String txyunAppKey = App.config.getTxyunAppKey();
+                if (smsClient == null) {
+                    // SMS服务域名，可根据环境选择具体域名
+                    String endPoint = App.config.getBdEndPoint();
+                    // 发送账号安全认证的Access Key ID
+                    String accessKeyId = App.config.getBdAccessKeyId();
+                    // 发送账号安全认证的Secret Access Key
+                    String secretAccessKy = App.config.getBdSecretAccessKey();
 
-                    smsSingleSender = new SmsSingleSender(Integer.parseInt(txyunAppId), txyunAppKey);
+                    // ak、sk等config
+                    SmsClientConfiguration config = new SmsClientConfiguration();
+                    config.setCredentials(new DefaultBceCredentials(accessKeyId, secretAccessKy));
+                    config.setEndpoint(endPoint);
+
+                    // 实例化发送客户端
+                    smsClient = new SmsClient(config);
                 }
             }
         }
-        return smsSingleSender;
+        return smsClient;
     }
 }

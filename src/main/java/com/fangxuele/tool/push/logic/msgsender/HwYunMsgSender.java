@@ -34,6 +34,7 @@ import java.util.UUID;
 /**
  * <pre>
  * 华为云模板短信发送器
+ * 部分代码来源于官网文档示例
  * </pre>
  *
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
@@ -46,9 +47,13 @@ public class HwYunMsgSender implements IMsgSender {
      */
     public volatile static CloseableHttpClient closeableHttpClient;
 
-    //无需修改,用于格式化鉴权头域,给"X-WSSE"参数赋值
+    /**
+     * 无需修改,用于格式化鉴权头域,给"X-WSSE"参数赋值
+     */
     private static final String WSSE_HEADER_FORMAT = "UsernameToken Username=\"%s\",PasswordDigest=\"%s\",Nonce=\"%s\",Created=\"%s\"";
-    //无需修改,用于格式化鉴权头域,给"Authorization"参数赋值
+    /**
+     * 无需修改,用于格式化鉴权头域,给"Authorization"参数赋值
+     */
     private static final String AUTH_HEADER_VALUE = "WSSE realm=\"SDP\",profile=\"UsernameToken\",type=\"Appkey\"";
 
     private HwYunMsgMaker hwYunMsgMaker;

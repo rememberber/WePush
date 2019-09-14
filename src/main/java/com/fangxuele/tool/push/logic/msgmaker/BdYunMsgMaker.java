@@ -1,12 +1,12 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
-import com.fangxuele.tool.push.ui.form.msg.TxYunMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.BdYunMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
-import org.apache.commons.compress.utils.Lists;
+import com.google.common.collect.Maps;
 import org.apache.velocity.VelocityContext;
 
 import javax.swing.table.DefaultTableModel;
-import java.util.List;
+import java.util.Map;
 
 /**
  * <pre>
@@ -16,29 +16,30 @@ import java.util.List;
  * @author <a href="https://github.com/rememberber">Zhou Bo</a>
  * @since 2019/6/14.
  */
-public class BdYunMsgMaker extends BaseMsgMaker implements IMsgMaker{
+public class BdYunMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
-    public static int templateId;
+    public static String templateId;
 
-    public static List<String> paramList;
+    public static Map<String, String> paramMap;
 
     /**
      * 准备(界面字段等)
      */
     @Override
     public void prepare() {
-        templateId = Integer.parseInt(TxYunMsgForm.getInstance().getMsgTemplateIdTextField().getText());
+        templateId = BdYunMsgForm.getInstance().getMsgTemplateIdTextField().getText();
 
-        if (TxYunMsgForm.getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-            TxYunMsgForm.initTemplateDataTable();
+        if (BdYunMsgForm.getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+            BdYunMsgForm.initTemplateDataTable();
         }
 
-        DefaultTableModel tableModel = (DefaultTableModel) TxYunMsgForm.getInstance().getTemplateMsgDataTable().getModel();
+        DefaultTableModel tableModel = (DefaultTableModel) BdYunMsgForm.getInstance().getTemplateMsgDataTable().getModel();
         int rowCount = tableModel.getRowCount();
-        paramList = Lists.newArrayList();
+        paramMap = Maps.newHashMap();
         for (int i = 0; i < rowCount; i++) {
+            String key = ((String) tableModel.getValueAt(i, 0));
             String value = ((String) tableModel.getValueAt(i, 1));
-            paramList.add(value);
+            paramMap.put(key, value);
         }
     }
 
@@ -49,13 +50,12 @@ public class BdYunMsgMaker extends BaseMsgMaker implements IMsgMaker{
      * @return String[]
      */
     @Override
-    public String[] makeMsg(String[] msgData) {
+    public Map<String, String> makeMsg(String[] msgData) {
 
         VelocityContext velocityContext = getVelocityContext(msgData);
-        for (int i = 0; i < paramList.size(); i++) {
-            paramList.set(i, TemplateUtil.evaluate(paramList.get(i), velocityContext));
+        for (Map.Entry<String, String> stringStringEntry : paramMap.entrySet()) {
+            stringStringEntry.setValue(TemplateUtil.evaluate(stringStringEntry.getValue(), velocityContext));
         }
-        String[] paramArray = new String[paramList.size()];
-        return paramList.toArray(paramArray);
+        return paramMap;
     }
 }
