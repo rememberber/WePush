@@ -7,6 +7,7 @@ import com.fangxuele.tool.push.dao.TWxAccountMapper;
 import com.fangxuele.tool.push.domain.TWxAccount;
 import com.fangxuele.tool.push.logic.msgsender.AliYunMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.HttpMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.HwYunMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.TxYunMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.WxMaTemplateMsgSender;
@@ -314,7 +315,27 @@ public class SettingListener {
                 App.config.setHwSignature(settingForm.getHwSignatureTextField().getText());
                 App.config.save();
 
-//          TODO      TxYunMsgSender.smsSingleSender = null;
+                HwYunMsgSender.closeableHttpClient = null;
+
+                JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        });
+
+        // 设置-百度云短信-保存
+        settingForm.getBdSaveButton().addActionListener(e -> {
+            try {
+                App.config.setBdAccessKeyId(settingForm.getBdAccessKeyIdTextField().getText());
+                App.config.setBdSecretAccessKey(new String(settingForm.getBdSecretAccessKeyPasswordField().getPassword()));
+                App.config.setBdEndPoint(settingForm.getBdEndPointTextField().getText());
+                App.config.setBdInvokeId(settingForm.getBdInvokeIdTextField().getText());
+                App.config.save();
+
+//                TODO HwYunMsgSender.closeableHttpClient = null;
 
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);

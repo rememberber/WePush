@@ -147,6 +147,11 @@ public class ConfigUtil extends ConfigBaseUtil {
     private String hwSignature;
     private String hwSenderCode;
 
+    private String bdSecretAccessKey;
+    private String bdAccessKeyId;
+    private String bdEndPoint;
+    private String bdInvokeId;
+
     private String yunpianApiKey;
 
     private boolean httpUseProxy;
@@ -825,6 +830,38 @@ public class ConfigUtil extends ConfigBaseUtil {
 
     public void setHwSenderCode(String hwSenderCode) {
         setting.put("setting.hwyun", "hwSenderCode", hwSenderCode);
+    }
+
+    public String getBdSecretAccessKey() {
+        return setting.getStr("bdSecretAccessKey", "setting.bdyun", "");
+    }
+
+    public void setBdSecretAccessKey(String bdSecretAccessKey) {
+        setting.put("setting.bdyun", "bdSecretAccessKey", bdSecretAccessKey);
+    }
+
+    public String getBdAccessKeyId() {
+        return setting.getStr("bdAccessKeyId", "setting.bdyun", "");
+    }
+
+    public void setBdAccessKeyId(String bdAccessKeyId) {
+        setting.put("setting.bdyun", "bdAccessKeyId", bdAccessKeyId);
+    }
+
+    public String getBdEndPoint() {
+        return setting.getStr("bdEndPoint", "setting.bdyun", "");
+    }
+
+    public void setBdEndPoint(String bdEndPoint) {
+        setting.put("setting.bdyun", "bdEndPoint", bdEndPoint);
+    }
+
+    public String getBdInvokeId() {
+        return setting.getStr("bdInvokeId", "setting.bdyun", "");
+    }
+
+    public void setBdInvokeId(String bdInvokeId) {
+        setting.put("setting.bdyun", "bdInvokeId", bdInvokeId);
     }
 
     public String getYunpianApiKey() {
