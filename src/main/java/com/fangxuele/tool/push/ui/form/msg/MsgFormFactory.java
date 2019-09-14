@@ -59,6 +59,9 @@ public class MsgFormFactory {
             case MessageTypeEnum.DING_CODE:
                 iMsgForm = DingMsgForm.getInstance();
                 break;
+            case MessageTypeEnum.BD_YUN_CODE:
+                iMsgForm = BdYunMsgForm.getInstance();
+                break;
             default:
                 iMsgForm = HttpMsgForm.getInstance();
         }

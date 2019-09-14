@@ -57,6 +57,9 @@ public class MsgSenderFactory {
             case MessageTypeEnum.DING_CODE:
                 iMsgSender = new DingMsgSender();
                 break;
+            case MessageTypeEnum.BD_YUN_CODE:
+                iMsgSender = new BdYunMsgSender();
+                break;
             default:
                 break;
         }

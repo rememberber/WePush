@@ -54,6 +54,9 @@ public class MsgMakerFactory {
             case MessageTypeEnum.DING_CODE:
                 iMsgMaker = new DingMsgMaker();
                 break;
+            case MessageTypeEnum.BD_YUN_CODE:
+                iMsgMaker = new BdYunMsgMaker();
+                break;
             default:
         }
         return iMsgMaker;

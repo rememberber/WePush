@@ -48,6 +48,10 @@ public class MessageTypeListener {
             App.config.setMsgType(MessageTypeEnum.TX_YUN_CODE);
             saveType();
         });
+        messageTypeForm.getBdYunRadioButton().addActionListener(e -> {
+            App.config.setMsgType(MessageTypeEnum.BD_YUN_CODE);
+            saveType();
+        });
         messageTypeForm.getYunPianRadioButton().addActionListener(e -> {
             App.config.setMsgType(MessageTypeEnum.YUN_PIAN_CODE);
             saveType();
