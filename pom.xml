@@ -303,6 +303,12 @@
             <version>${aliyun-java-sdk-dysmsapi.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.baidubce</groupId>
+            <artifactId>bce-java-sdk</artifactId>
+            <version>0.10.75</version>
+        </dependency>
+
     </dependencies>
 
     <build>
