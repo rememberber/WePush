@@ -1,6 +1,6 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
-import com.fangxuele.tool.push.ui.form.msg.TxYunMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.HwYunMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.velocity.VelocityContext;
@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class HwYunMsgMaker extends BaseMsgMaker implements IMsgMaker{
 
-    public static int templateId;
+    public static String templateId;
 
     public static List<String> paramList;
 
@@ -27,13 +27,13 @@ public class HwYunMsgMaker extends BaseMsgMaker implements IMsgMaker{
      */
     @Override
     public void prepare() {
-        templateId = Integer.parseInt(TxYunMsgForm.getInstance().getMsgTemplateIdTextField().getText());
+        templateId = HwYunMsgForm.getInstance().getMsgTemplateIdTextField().getText();
 
-        if (TxYunMsgForm.getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-            TxYunMsgForm.initTemplateDataTable();
+        if (HwYunMsgForm.getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+            HwYunMsgForm.initTemplateDataTable();
         }
 
-        DefaultTableModel tableModel = (DefaultTableModel) TxYunMsgForm.getInstance().getTemplateMsgDataTable().getModel();
+        DefaultTableModel tableModel = (DefaultTableModel) HwYunMsgForm.getInstance().getTemplateMsgDataTable().getModel();
         int rowCount = tableModel.getRowCount();
         paramList = Lists.newArrayList();
         for (int i = 0; i < rowCount; i++) {
@@ -43,7 +43,7 @@ public class HwYunMsgMaker extends BaseMsgMaker implements IMsgMaker{
     }
 
     /**
-     * 组织腾讯云短信消息
+     * 组织华为云短信消息
      *
      * @param msgData 消息信息
      * @return String[]
