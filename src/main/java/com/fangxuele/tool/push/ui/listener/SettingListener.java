@@ -352,6 +352,24 @@ public class SettingListener {
             }
         });
 
+        // 设置-七牛云短信-保存
+        settingForm.getQiniuSaveButton().addActionListener(e -> {
+            try {
+                App.config.setQiniuAccessKey(settingForm.getQiniuAccessKeyTextField().getText());
+                App.config.setQiniuSecretKey(settingForm.getQiniuSecretKeyTextField().getText());
+                App.config.save();
+
+//              TODO  HttpMsgSender.okHttpClient = null;
+
+                JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        });
+
         // 设置-云片网短信-保存
         settingForm.getSettingYunpianSaveButton().addActionListener(e -> {
             try {

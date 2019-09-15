@@ -154,6 +154,9 @@ public class ConfigUtil extends ConfigBaseUtil {
 
     private String upAuthorizationToken;
 
+    private String qiniuAccessKey;
+    private String qiniuSecretKey;
+
     private String yunpianApiKey;
 
     private boolean httpUseProxy;
@@ -872,6 +875,22 @@ public class ConfigUtil extends ConfigBaseUtil {
 
     public void setUpAuthorizationToken(String upAuthorizationToken) {
         setting.put("setting.upyun", "upAuthorizationToken", upAuthorizationToken);
+    }
+
+    public String getQiniuAccessKey() {
+        return setting.getStr("qiniuAccessKey", "setting.qiniu", "");
+    }
+
+    public void setQiniuAccessKey(String qiniuAccessKey) {
+        setting.put("setting.qiniu", "qiniuAccessKey", qiniuAccessKey);
+    }
+
+    public String getQiniuSecretKey() {
+        return setting.getStr("qiniuSecretKey", "setting.qiniu", "");
+    }
+
+    public void setQiniuSecretKey(String qiniuSecretKey) {
+        setting.put("setting.qiniu", "qiniuSecretKey", qiniuSecretKey);
     }
 
     public String getYunpianApiKey() {
