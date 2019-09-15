@@ -141,7 +141,7 @@
               </component>
               <component id="c9ddb" class="javax.swing.JRadioButton" binding="eMailRadioButton">
                 <constraints>
-                  <grid row="13" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="14" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <enabled value="true"/>
@@ -155,15 +155,6 @@
                 <properties>
                   <enabled value="true"/>
                   <text value="企业号/企业微信"/>
-                </properties>
-              </component>
-              <component id="b537f" class="javax.swing.JRadioButton" binding="七牛云短信RadioButton" default-binding="true">
-                <constraints>
-                  <grid row="14" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <enabled value="false"/>
-                  <text value="七牛云短信"/>
                 </properties>
               </component>
               <component id="445b8" class="javax.swing.JRadioButton" binding="httpRadioButton">
@@ -214,6 +205,15 @@
                 <properties>
                   <enabled value="true"/>
                   <text value="又拍云短信（BETA）"/>
+                </properties>
+              </component>
+              <component id="b537f" class="javax.swing.JRadioButton" binding="qiniuRadioButton">
+                <constraints>
+                  <grid row="13" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <enabled value="true"/>
+                  <text value="七牛云短信（BETA）"/>
                 </properties>
               </component>
             </children>

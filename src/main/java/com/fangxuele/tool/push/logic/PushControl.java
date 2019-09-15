@@ -186,6 +186,17 @@ public class PushControl {
                     return false;
                 }
                 break;
+            case MessageTypeEnum.QI_NIU_YUN_CODE:
+                String qiniuAccessKey = App.config.getQiniuAccessKey();
+                String qiniuSecretKey = App.config.getQiniuSecretKey();
+
+                if (StringUtils.isEmpty(qiniuAccessKey) || StringUtils.isEmpty(qiniuSecretKey)) {
+                    JOptionPane.showMessageDialog(settingForm.getSettingPanel(),
+                            "请先在设置中填写并保存七牛云短信相关配置！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return false;
+                }
+                break;
             case MessageTypeEnum.UP_YUN_CODE:
                 String upAuthorizationToken = App.config.getUpAuthorizationToken();
 

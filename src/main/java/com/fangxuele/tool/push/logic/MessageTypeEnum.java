@@ -25,7 +25,8 @@ public enum MessageTypeEnum {
     WX_CP(12, "微信企业号/企业微信"),
     HTTP(13, "HTTP请求"),
     DING(14, "钉钉"),
-    BD_YUN(15, "百度云短信");
+    BD_YUN(15, "百度云短信"),
+    QI_NIU_YUN(16, "七牛云短信");
 
     private int code;
 
@@ -45,6 +46,7 @@ public enum MessageTypeEnum {
     public static final int HTTP_CODE = 13;
     public static final int DING_CODE = 14;
     public static final int BD_YUN_CODE = 15;
+    public static final int QI_NIU_YUN_CODE = 16;
 
     MessageTypeEnum(int code, String name) {
         this.code = code;
@@ -95,6 +97,9 @@ public enum MessageTypeEnum {
                 break;
             case 15:
                 name = BD_YUN.name;
+                break;
+            case 16:
+                name = QI_NIU_YUN.name;
                 break;
             default:
                 name = "";
