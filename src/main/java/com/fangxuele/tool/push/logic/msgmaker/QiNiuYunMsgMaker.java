@@ -2,11 +2,11 @@ package com.fangxuele.tool.push.logic.msgmaker;
 
 import com.fangxuele.tool.push.ui.form.msg.QiNiuYunMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
-import org.apache.commons.compress.utils.Lists;
+import com.google.common.collect.Maps;
 import org.apache.velocity.VelocityContext;
 
 import javax.swing.table.DefaultTableModel;
-import java.util.List;
+import java.util.Map;
 
 /**
  * <pre>
@@ -16,18 +16,18 @@ import java.util.List;
  * @author <a href="https://github.com/rememberber">Zhou Bo</a>
  * @since 2019/6/14.
  */
-public class QiNiuYunMsgMaker extends BaseMsgMaker implements IMsgMaker{
+public class QiNiuYunMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
-    public static int templateId;
+    public static String templateId;
 
-    public static List<String> paramList;
+    public static Map<String, String> paramMap;
 
     /**
      * 准备(界面字段等)
      */
     @Override
     public void prepare() {
-        templateId = Integer.parseInt(QiNiuYunMsgForm.getInstance().getMsgTemplateIdTextField().getText());
+        templateId = QiNiuYunMsgForm.getInstance().getMsgTemplateIdTextField().getText();
 
         if (QiNiuYunMsgForm.getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
             QiNiuYunMsgForm.initTemplateDataTable();
@@ -35,10 +35,11 @@ public class QiNiuYunMsgMaker extends BaseMsgMaker implements IMsgMaker{
 
         DefaultTableModel tableModel = (DefaultTableModel) QiNiuYunMsgForm.getInstance().getTemplateMsgDataTable().getModel();
         int rowCount = tableModel.getRowCount();
-        paramList = Lists.newArrayList();
+        paramMap = Maps.newHashMap();
         for (int i = 0; i < rowCount; i++) {
+            String key = ((String) tableModel.getValueAt(i, 0));
             String value = ((String) tableModel.getValueAt(i, 1));
-            paramList.add(value);
+            paramMap.put(key, value);
         }
     }
 
@@ -49,13 +50,12 @@ public class QiNiuYunMsgMaker extends BaseMsgMaker implements IMsgMaker{
      * @return String[]
      */
     @Override
-    public String[] makeMsg(String[] msgData) {
+    public Map<String, String> makeMsg(String[] msgData) {
 
         VelocityContext velocityContext = getVelocityContext(msgData);
-        for (int i = 0; i < paramList.size(); i++) {
-            paramList.set(i, TemplateUtil.evaluate(paramList.get(i), velocityContext));
+        for (Map.Entry<String, String> entry : paramMap.entrySet()) {
+            entry.setValue(TemplateUtil.evaluate(entry.getValue(), velocityContext));
         }
-        String[] paramArray = new String[paramList.size()];
-        return paramList.toArray(paramArray);
+        return paramMap;
     }
 }

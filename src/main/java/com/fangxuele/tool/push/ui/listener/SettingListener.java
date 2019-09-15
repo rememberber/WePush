@@ -359,7 +359,7 @@ public class SettingListener {
                 App.config.setQiniuSecretKey(settingForm.getQiniuSecretKeyTextField().getText());
                 App.config.save();
 
-//              TODO  HttpMsgSender.okHttpClient = null;
+                QiNiuYunMsgSender.smsManager = null;
 
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);

@@ -53,8 +53,8 @@ public class BdYunMsgMaker extends BaseMsgMaker implements IMsgMaker {
     public Map<String, String> makeMsg(String[] msgData) {
 
         VelocityContext velocityContext = getVelocityContext(msgData);
-        for (Map.Entry<String, String> stringStringEntry : paramMap.entrySet()) {
-            stringStringEntry.setValue(TemplateUtil.evaluate(stringStringEntry.getValue(), velocityContext));
+        for (Map.Entry<String, String> entry : paramMap.entrySet()) {
+            entry.setValue(TemplateUtil.evaluate(entry.getValue(), velocityContext));
         }
         return paramMap;
     }

@@ -3,13 +3,17 @@ package com.fangxuele.tool.push.logic.msgsender;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.msgmaker.QiNiuYunMsgMaker;
-import com.github.qcloudsms.SmsSingleSender;
-import com.github.qcloudsms.SmsSingleSenderResult;
+import com.qiniu.http.Response;
+import com.qiniu.sms.SmsManager;
+import com.qiniu.util.Auth;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Map;
 
 /**
  * <pre>
  * 七牛云模板短信发送器
+ * 部分代码来源于官网文档示例
  * </pre>
  *
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
@@ -18,38 +22,37 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class QiNiuYunMsgSender implements IMsgSender {
     /**
-     * 七牛云短信sender
+     * 七牛云短信smsManager
      */
-    public volatile static SmsSingleSender smsSingleSender;
+    public volatile static SmsManager smsManager;
 
     private QiNiuYunMsgMaker qiNiuYunMsgMaker;
 
     public QiNiuYunMsgSender() {
         qiNiuYunMsgMaker = new QiNiuYunMsgMaker();
-        smsSingleSender = getTxYunSender();
+        smsManager = getSmsManager();
     }
 
     @Override
     public SendResult send(String[] msgData) {
         SendResult sendResult = new SendResult();
         try {
-            int templateId = QiNiuYunMsgMaker.templateId;
-            String smsSign = App.config.getTxyunSign();
-            String[] params = qiNiuYunMsgMaker.makeMsg(msgData);
+            String templateId = QiNiuYunMsgMaker.templateId;
+            Map<String, String> params = qiNiuYunMsgMaker.makeMsg(msgData);
             String telNum = msgData[0];
+
             if (PushControl.dryRun) {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
-                SmsSingleSenderResult result = smsSingleSender.sendWithParam("86", telNum,
-                        templateId, params, smsSign, "", "");
+                Response resp = smsManager.sendMessage(templateId, new String[]{telNum}, params);
 
-                if (result.result == 0) {
-                    sendResult.setSuccess(true);
-                } else {
-                    sendResult.setSuccess(false);
-                    sendResult.setInfo(result.toString());
-                }
+//                if (resp.statusCode == 200) {
+                sendResult.setSuccess(true);
+//                } else {
+//                    sendResult.setSuccess(false);
+//                    sendResult.setInfo(resp.error);
+//                }
             }
         } catch (Exception e) {
             sendResult.setSuccess(false);
@@ -70,17 +73,19 @@ public class QiNiuYunMsgSender implements IMsgSender {
      *
      * @return SmsSingleSender
      */
-    private static SmsSingleSender getTxYunSender() {
-        if (smsSingleSender == null) {
+    private static SmsManager getSmsManager() {
+        if (smsManager == null) {
             synchronized (QiNiuYunMsgSender.class) {
-                if (smsSingleSender == null) {
-                    String txyunAppId = App.config.getTxyunAppId();
-                    String txyunAppKey = App.config.getTxyunAppKey();
+                if (smsManager == null) {
+                    // 设置需要操作的账号的AK和SK
+                    String qiniuAccessKey = App.config.getQiniuAccessKey();
+                    String qiniuSecretKey = App.config.getQiniuSecretKey();
+                    Auth auth = Auth.create(qiniuAccessKey, qiniuSecretKey);
 
-                    smsSingleSender = new SmsSingleSender(Integer.parseInt(txyunAppId), txyunAppKey);
+                    smsManager = new SmsManager(auth);
                 }
             }
         }
-        return smsSingleSender;
+        return smsManager;
     }
 }
