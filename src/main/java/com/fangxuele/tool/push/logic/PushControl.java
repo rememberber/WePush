@@ -186,6 +186,16 @@ public class PushControl {
                     return false;
                 }
                 break;
+            case MessageTypeEnum.UP_YUN_CODE:
+                String upAuthorizationToken = App.config.getUpAuthorizationToken();
+
+                if (StringUtils.isEmpty(upAuthorizationToken)) {
+                    JOptionPane.showMessageDialog(settingForm.getSettingPanel(),
+                            "请先在设置中填写并保存又拍云短信相关配置！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return false;
+                }
+                break;
             case MessageTypeEnum.BD_YUN_CODE:
                 String bdAccessKeyId = App.config.getBdAccessKeyId();
                 String bdSecretAccessKey = App.config.getBdSecretAccessKey();

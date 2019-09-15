@@ -85,15 +85,6 @@
                   <text value="云片网短信"/>
                 </properties>
               </component>
-              <component id="63100" class="javax.swing.JRadioButton" binding="upYunRadioButton">
-                <constraints>
-                  <grid row="13" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <enabled value="false"/>
-                  <text value="又拍云短信"/>
-                </properties>
-              </component>
               <component id="15067" class="javax.swing.JRadioButton" binding="网易云信短信RadioButton" default-binding="true">
                 <constraints>
                   <grid row="15" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
@@ -150,7 +141,7 @@
               </component>
               <component id="c9ddb" class="javax.swing.JRadioButton" binding="eMailRadioButton">
                 <constraints>
-                  <grid row="12" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="13" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <enabled value="true"/>
@@ -214,6 +205,15 @@
                 <properties>
                   <enabled value="true"/>
                   <text value="百度云短信（BETA）"/>
+                </properties>
+              </component>
+              <component id="63100" class="javax.swing.JRadioButton" binding="upYunRadioButton">
+                <constraints>
+                  <grid row="12" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <enabled value="true"/>
+                  <text value="又拍云短信（BETA）"/>
                 </properties>
               </component>
             </children>

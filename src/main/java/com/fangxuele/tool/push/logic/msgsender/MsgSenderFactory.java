@@ -60,6 +60,9 @@ public class MsgSenderFactory {
             case MessageTypeEnum.BD_YUN_CODE:
                 iMsgSender = new BdYunMsgSender();
                 break;
+            case MessageTypeEnum.UP_YUN_CODE:
+                iMsgSender = new UpYunMsgSender();
+                break;
             default:
                 break;
         }
