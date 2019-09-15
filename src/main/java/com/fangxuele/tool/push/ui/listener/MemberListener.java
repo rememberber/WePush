@@ -1051,12 +1051,14 @@ public class MemberListener {
         if (StringUtils.isBlank(filePathField.getText())) {
             JOptionPane.showMessageDialog(memberPanel, "请填写或点击浏览按钮选择要导入的文件的路径！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
+            MemberForm.getInstance().getImportFromFileButton().setEnabled(true);
             return;
         }
         File file = new File(filePathField.getText());
         if (!file.exists()) {
             JOptionPane.showMessageDialog(memberPanel, filePathField.getText() + "\n该文件不存在！", "文件不存在",
                     JOptionPane.ERROR_MESSAGE);
+            MemberForm.getInstance().getImportFromFileButton().setEnabled(true);
             return;
         }
         CSVReader reader = null;
@@ -1110,6 +1112,7 @@ public class MemberListener {
             } else {
                 JOptionPane.showMessageDialog(memberPanel, "不支持该格式的文件！", "文件格式不支持",
                         JOptionPane.ERROR_MESSAGE);
+                MemberForm.getInstance().getImportFromFileButton().setEnabled(true);
                 return;
             }
             renderMemberListTable();
@@ -1155,12 +1158,14 @@ public class MemberListener {
         if (StringUtils.isBlank(App.config.getMysqlUrl()) || StringUtils.isBlank(App.config.getMysqlUser())) {
             JOptionPane.showMessageDialog(memberPanel, "请先在设置中填写并保存MySQL的配置信息！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
+            memberForm.getImportFromSqlButton().setEnabled(true);
             return;
         }
         String querySql = memberForm.getImportFromSqlTextArea().getText();
         if (StringUtils.isBlank(querySql)) {
             JOptionPane.showMessageDialog(memberPanel, "请先填写要执行导入的SQL！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
+            memberForm.getImportFromSqlButton().setEnabled(true);
             return;
         }
 
