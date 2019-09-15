@@ -39,6 +39,9 @@ public class MsgSenderFactory {
             case MessageTypeEnum.TX_YUN_CODE:
                 iMsgSender = new TxYunMsgSender();
                 break;
+            case MessageTypeEnum.HW_YUN_CODE:
+                iMsgSender = new HwYunMsgSender();
+                break;
             case MessageTypeEnum.YUN_PIAN_CODE:
                 iMsgSender = new YunPianMsgSender();
                 break;
@@ -53,6 +56,9 @@ public class MsgSenderFactory {
                 break;
             case MessageTypeEnum.DING_CODE:
                 iMsgSender = new DingMsgSender();
+                break;
+            case MessageTypeEnum.BD_YUN_CODE:
+                iMsgSender = new BdYunMsgSender();
                 break;
             default:
                 break;

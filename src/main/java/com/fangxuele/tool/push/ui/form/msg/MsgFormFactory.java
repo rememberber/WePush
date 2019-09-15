@@ -41,6 +41,9 @@ public class MsgFormFactory {
             case MessageTypeEnum.TX_YUN_CODE:
                 iMsgForm = TxYunMsgForm.getInstance();
                 break;
+            case MessageTypeEnum.HW_YUN_CODE:
+                iMsgForm = HwYunMsgForm.getInstance();
+                break;
             case MessageTypeEnum.YUN_PIAN_CODE:
                 iMsgForm = YunpianMsgForm.getInstance();
                 break;
@@ -55,6 +58,9 @@ public class MsgFormFactory {
                 break;
             case MessageTypeEnum.DING_CODE:
                 iMsgForm = DingMsgForm.getInstance();
+                break;
+            case MessageTypeEnum.BD_YUN_CODE:
+                iMsgForm = BdYunMsgForm.getInstance();
                 break;
             default:
                 iMsgForm = HttpMsgForm.getInstance();
