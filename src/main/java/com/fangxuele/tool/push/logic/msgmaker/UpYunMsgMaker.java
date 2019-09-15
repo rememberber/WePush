@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class UpYunMsgMaker extends BaseMsgMaker implements IMsgMaker{
 
-    public static int templateId;
+    public static String templateId;
 
     public static List<String> paramList;
 
@@ -27,7 +27,7 @@ public class UpYunMsgMaker extends BaseMsgMaker implements IMsgMaker{
      */
     @Override
     public void prepare() {
-        templateId = Integer.parseInt(UpYunMsgForm.getInstance().getMsgTemplateIdTextField().getText());
+        templateId = UpYunMsgForm.getInstance().getMsgTemplateIdTextField().getText();
 
         if (UpYunMsgForm.getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
             UpYunMsgForm.initTemplateDataTable();

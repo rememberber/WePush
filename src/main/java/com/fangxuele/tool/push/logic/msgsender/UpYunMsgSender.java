@@ -3,9 +3,8 @@ package com.fangxuele.tool.push.logic.msgsender;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.msgmaker.UpYunMsgMaker;
-import com.github.qcloudsms.SmsSingleSender;
-import com.github.qcloudsms.SmsSingleSenderResult;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.*;
 
 /**
  * <pre>
@@ -20,35 +19,44 @@ public class UpYunMsgSender implements IMsgSender {
     /**
      * 又拍云短信sender
      */
-    public volatile static SmsSingleSender smsSingleSender;
+    public volatile static OkHttpClient okHttpClint;
 
     private UpYunMsgMaker upYunMsgMaker;
 
+    private static final String URL = "https://sms-api.upyun.com/api/messages";
+
     public UpYunMsgSender() {
         upYunMsgMaker = new UpYunMsgMaker();
-        smsSingleSender = getTxYunSender();
+        okHttpClint = HttpMsgSender.getOkHttpClient();
     }
 
     @Override
     public SendResult send(String[] msgData) {
         SendResult sendResult = new SendResult();
         try {
-            int templateId = UpYunMsgMaker.templateId;
-            String smsSign = App.config.getTxyunSign();
+            String templateId = UpYunMsgMaker.templateId;
             String[] params = upYunMsgMaker.makeMsg(msgData);
             String telNum = msgData[0];
+
+            Request.Builder requestBuilder = new Request.Builder();
+            FormBody.Builder formBodyBuilder = new FormBody.Builder();
+            formBodyBuilder.add("mobile", telNum);
+            formBodyBuilder.add("template_id", templateId);
+            formBodyBuilder.add("vars", String.join("|", params));
+            RequestBody requestBody = formBodyBuilder.build();
+            requestBuilder.url(URL).post(requestBody);
+            requestBuilder.addHeader("Authorization", App.config.getUpAuthorizationToken());
+            Request request = requestBuilder.build();
             if (PushControl.dryRun) {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
-                SmsSingleSenderResult result = smsSingleSender.sendWithParam("86", telNum,
-                        templateId, params, smsSign, "", "");
-
-                if (result.result == 0) {
+                Response response = okHttpClint.newCall(request).execute();
+                if (response.isSuccessful()) {
                     sendResult.setSuccess(true);
                 } else {
                     sendResult.setSuccess(false);
-                    sendResult.setInfo(result.toString());
+                    sendResult.setInfo(response.toString());
                 }
             }
         } catch (Exception e) {
@@ -65,22 +73,4 @@ public class UpYunMsgSender implements IMsgSender {
         return null;
     }
 
-    /**
-     * 获取又拍云短信发送客户端
-     *
-     * @return SmsSingleSender
-     */
-    private static SmsSingleSender getTxYunSender() {
-        if (smsSingleSender == null) {
-            synchronized (UpYunMsgSender.class) {
-                if (smsSingleSender == null) {
-                    String txyunAppId = App.config.getTxyunAppId();
-                    String txyunAppKey = App.config.getTxyunAppKey();
-
-                    smsSingleSender = new SmsSingleSender(Integer.parseInt(txyunAppId), txyunAppKey);
-                }
-            }
-        }
-        return smsSingleSender;
-    }
 }

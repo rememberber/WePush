@@ -341,7 +341,7 @@ public class SettingListener {
                 App.config.setUpAuthorizationToken(settingForm.getUpAuthorizationTokenTextField().getText());
                 App.config.save();
 
-//            TODO    BdYunMsgSender.smsClient = null;
+                HttpMsgSender.okHttpClient = null;
 
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
