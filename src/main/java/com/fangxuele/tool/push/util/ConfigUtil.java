@@ -152,6 +152,8 @@ public class ConfigUtil extends ConfigBaseUtil {
     private String bdEndPoint;
     private String bdInvokeId;
 
+    private String upAuthorizationToken;
+
     private String yunpianApiKey;
 
     private boolean httpUseProxy;
@@ -862,6 +864,14 @@ public class ConfigUtil extends ConfigBaseUtil {
 
     public void setBdInvokeId(String bdInvokeId) {
         setting.put("setting.bdyun", "bdInvokeId", bdInvokeId);
+    }
+
+    public String getUpAuthorizationToken() {
+        return setting.getStr("upAuthorizationToken", "setting.upyun", "");
+    }
+
+    public void setUpAuthorizationToken(String upAuthorizationToken) {
+        setting.put("setting.upyun", "upAuthorizationToken", upAuthorizationToken);
     }
 
     public String getYunpianApiKey() {

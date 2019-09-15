@@ -5,21 +5,10 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TWxAccountMapper;
 import com.fangxuele.tool.push.domain.TWxAccount;
-import com.fangxuele.tool.push.logic.msgsender.AliYunMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.HttpMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.HwYunMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.TxYunMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.WxMaTemplateMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.YunPianMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.*;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.UiConsts;
-import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
-import com.fangxuele.tool.push.ui.dialog.DingAppDialog;
-import com.fangxuele.tool.push.ui.dialog.MailTestDialog;
-import com.fangxuele.tool.push.ui.dialog.SwitchWxAccountDialog;
-import com.fangxuele.tool.push.ui.dialog.WxCpAppDialog;
+import com.fangxuele.tool.push.ui.dialog.*;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.ui.form.msg.DingMsgForm;
@@ -335,7 +324,24 @@ public class SettingListener {
                 App.config.setBdInvokeId(settingForm.getBdInvokeIdTextField().getText());
                 App.config.save();
 
-//                TODO HwYunMsgSender.closeableHttpClient = null;
+                BdYunMsgSender.smsClient = null;
+
+                JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        });
+
+        // 设置-又拍云短信-保存
+        settingForm.getUpSaveButton().addActionListener(e -> {
+            try {
+                App.config.setUpAuthorizationToken(settingForm.getUpAuthorizationTokenTextField().getText());
+                App.config.save();
+
+//            TODO    BdYunMsgSender.smsClient = null;
 
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
