@@ -59,15 +59,13 @@ public class MsgFormFactory {
             case MessageTypeEnum.WX_CP_CODE:
                 iMsgForm = WxCpMsgForm.getInstance();
                 break;
-            case MessageTypeEnum.HTTP_CODE:
-                iMsgForm = HttpMsgForm.getInstance();
-                break;
             case MessageTypeEnum.DING_CODE:
                 iMsgForm = DingMsgForm.getInstance();
                 break;
             case MessageTypeEnum.BD_YUN_CODE:
                 iMsgForm = BdYunMsgForm.getInstance();
                 break;
+            case MessageTypeEnum.HTTP_CODE:
             default:
                 iMsgForm = HttpMsgForm.getInstance();
         }
