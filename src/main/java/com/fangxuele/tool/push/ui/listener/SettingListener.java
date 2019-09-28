@@ -51,6 +51,18 @@ public class SettingListener {
             App.config.setAutoCheckUpdate(settingForm.getAutoCheckUpdateCheckBox().isSelected());
             App.config.save();
         });
+        // 设置-常规-显示系统托盘图标
+        settingForm.getUseTrayCheckBox().addActionListener(e -> {
+            App.config.setUseTray(settingForm.getUseTrayCheckBox().isSelected());
+            App.config.save();
+            if (App.tray == null && App.config.isUseTray()) {
+                Init.initTray();
+            } else if (App.tray != null && !App.config.isUseTray()) {
+                App.tray.remove(App.trayIcon);
+                App.trayIcon = null;
+                App.tray = null;
+            }
+        });
 
         // 设置-公众号-保存
         settingForm.getSettingMpInfoSaveButton().addActionListener(e -> {

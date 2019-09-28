@@ -120,6 +120,7 @@ public class SettingForm {
     private JTextField qiniuAccessKeyTextField;
     private JButton qiniuSaveButton;
     private JTextField qiniuSecretKeyTextField;
+    private JCheckBox useTrayCheckBox;
 
     private static SettingForm settingForm;
     private static TWxAccountMapper wxAccountMapper = MybatisUtil.getSqlSession().getMapper(TWxAccountMapper.class);
@@ -156,6 +157,7 @@ public class SettingForm {
 
         // 常规
         settingForm.getAutoCheckUpdateCheckBox().setSelected(App.config.isAutoCheckUpdate());
+        settingForm.getUseTrayCheckBox().setSelected(App.config.isUseTray());
 
         // 微信公众号
         settingForm.getMpAccountSwitchComboBox().setSelectedItem(App.config.getWechatMpName());
@@ -388,12 +390,15 @@ public class SettingForm {
         panel3.setLayout(new GridLayoutManager(16, 1, new Insets(40, 60, 0, 330), -1, -1));
         panel2.add(panel3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(600, -1), null, 0, false));
         final JPanel panel4 = new JPanel();
-        panel4.setLayout(new GridLayoutManager(1, 1, new Insets(15, 15, 10, 0), -1, -1));
+        panel4.setLayout(new GridLayoutManager(2, 1, new Insets(15, 15, 10, 0), -1, -1));
         panel3.add(panel4, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         panel4.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "常规", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, panel4.getFont())));
         autoCheckUpdateCheckBox = new JCheckBox();
         autoCheckUpdateCheckBox.setText("启动时自动检查更新");
         panel4.add(autoCheckUpdateCheckBox, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        useTrayCheckBox = new JCheckBox();
+        useTrayCheckBox.setText("显示系统托盘图标");
+        panel4.add(useTrayCheckBox, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel5 = new JPanel();
         panel5.setLayout(new GridLayoutManager(6, 3, new Insets(15, 15, 10, 0), -1, -1));
         Font panel5Font = this.$$$getFont$$$("Microsoft YaHei UI", -1, -1, panel5.getFont());

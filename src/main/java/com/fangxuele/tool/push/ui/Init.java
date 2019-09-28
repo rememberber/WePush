@@ -33,8 +33,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Enumeration;
 
-import static com.fangxuele.tool.push.App.mainFrame;
-
 /**
  * <pre>
  * 初始化类
@@ -162,7 +160,7 @@ public class Init {
     public static void initTray() {
 
         try {
-            if (SystemTray.isSupported()) {
+            if (App.config.isUseTray() && SystemTray.isSupported()) {
                 App.tray = SystemTray.getSystemTray();
 
                 PopupMenu popupMenu = new PopupMenu();

@@ -60,6 +60,8 @@ public class ConfigUtil extends ConfigBaseUtil {
 
     private boolean autoCheckUpdate;
 
+    private boolean useTray;
+
     private long pushTotal;
 
     private String beforeVersion;
@@ -371,6 +373,14 @@ public class ConfigUtil extends ConfigBaseUtil {
 
     public void setAutoCheckUpdate(boolean autoCheckUpdate) {
         setting.put("setting.normal", "autoCheckUpdate", String.valueOf(autoCheckUpdate));
+    }
+
+    public boolean isUseTray() {
+        return setting.getBool("useTray", "setting.normal", true);
+    }
+
+    public void setUseTray(boolean useTray) {
+        setting.put("setting.normal", "useTray", String.valueOf(useTray));
     }
 
     public long getPushTotal() {
