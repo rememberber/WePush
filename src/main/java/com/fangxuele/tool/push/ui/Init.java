@@ -217,7 +217,6 @@ public class Init {
 
                 try {
                     App.tray.add(App.trayIcon);
-                    App.trayIcon.displayMessage("WePush", "WePush已显示在系统托盘", TrayIcon.MessageType.INFO);
                 } catch (AWTException e) {
                     e.printStackTrace();
                     logger.error(ExceptionUtils.getStackTrace(e));

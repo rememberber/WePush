@@ -14,6 +14,7 @@ import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.logic.msgthread.BaseMsgThread;
 import com.fangxuele.tool.push.logic.msgthread.MsgSendThread;
 import com.fangxuele.tool.push.ui.component.TableInCellProgressBarRenderer;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -21,6 +22,7 @@ import org.apache.commons.lang3.time.DateFormatUtils;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -178,6 +180,13 @@ public class PushRunThread extends Thread {
                     pushForm.getScheduleRunButton().setEnabled(true);
                     pushForm.getScheduleRunButton().updateUI();
                     pushForm.getScheduleDetailLabel().setText("");
+
+                    if (App.trayIcon != null) {
+                        MessageEditForm messageEditForm = MessageEditForm.getInstance();
+                        String msgName = messageEditForm.getMsgNameField().getText();
+                        App.trayIcon.displayMessage("WePush", msgName + " 发送完毕！", TrayIcon.MessageType.INFO);
+                    }
+
                     String finishTip = "发送完毕！\n";
                     JOptionPane.showMessageDialog(pushForm.getPushPanel(), finishTip, "提示",
                             JOptionPane.INFORMATION_MESSAGE);
