@@ -8,7 +8,6 @@ import com.fangxuele.tool.push.ui.dialog.FontSizeAdjustDialog;
 import com.fangxuele.tool.push.ui.form.AboutForm;
 import com.fangxuele.tool.push.ui.form.BoostForm;
 import com.fangxuele.tool.push.ui.form.HelpForm;
-import com.fangxuele.tool.push.ui.form.HttpResultForm;
 import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.MessageManageForm;
@@ -23,11 +22,14 @@ import com.fangxuele.tool.push.util.SystemUtil;
 import com.fangxuele.tool.push.util.UIUtil;
 import com.fangxuele.tool.push.util.UpgradeUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Enumeration;
 
 /**
@@ -149,5 +151,82 @@ public class Init {
 
         App.config.setProps(FONT_SIZE_INIT_PROP, "true");
         App.config.save();
+    }
+
+    /**
+     * 初始化系统托盘
+     */
+    public static void initTray() {
+
+        try {
+            if (SystemTray.isSupported()) {
+                SystemTray tray = SystemTray.getSystemTray();
+
+                PopupMenu popupMenu = new PopupMenu();
+                popupMenu.setFont(App.mainFrame.getContentPane().getFont());
+
+                MenuItem openItem = new MenuItem("WePush");
+                MenuItem exitItem = new MenuItem("Quit");
+
+                openItem.addActionListener(e -> {
+                    App.mainFrame.setExtendedState(JFrame.NORMAL);
+                    App.mainFrame.setVisible(true);
+                    App.mainFrame.requestFocus();
+                });
+                exitItem.addActionListener(e -> {
+                    App.config.save();
+                    App.sqlSession.close();
+                    System.exit(0);
+                });
+
+                popupMenu.add(openItem);
+                popupMenu.add(exitItem);
+
+                TrayIcon trayIcon = new TrayIcon(UiConsts.IMAGE_LOGO_64, "WePush", popupMenu);
+                trayIcon.setImageAutoSize(true);
+
+                trayIcon.addActionListener(e -> {
+                    App.mainFrame.setExtendedState(JFrame.NORMAL);
+                    App.mainFrame.setVisible(true);
+                    App.mainFrame.requestFocus();
+                });
+                trayIcon.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        switch (e.getButton()) {
+                            case MouseEvent.BUTTON1: {
+                                App.mainFrame.setExtendedState(JFrame.NORMAL);
+                                App.mainFrame.setVisible(true);
+                                App.mainFrame.requestFocus();
+                                break;
+                            }
+                            case MouseEvent.BUTTON2: {
+                                logger.debug("托盘图标被鼠标中键被点击");
+                                break;
+                            }
+                            case MouseEvent.BUTTON3: {
+                                logger.debug("托盘图标被鼠标右键被点击");
+                                break;
+                            }
+                            default: {
+                                break;
+                            }
+                        }
+                    }
+                });
+
+                try {
+                    tray.add(trayIcon);
+                    trayIcon.displayMessage("WePush", "WePush已显示在系统托盘", TrayIcon.MessageType.INFO);
+                } catch (AWTException e) {
+                    e.printStackTrace();
+                    logger.error(ExceptionUtils.getStackTrace(e));
+                }
+
+            }
+
+        } catch (Exception e) {
+            logger.error(ExceptionUtils.getStackTrace(e));
+        }
     }
 }
