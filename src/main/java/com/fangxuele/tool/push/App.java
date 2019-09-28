@@ -29,6 +29,10 @@ public class App {
 
     public static SqlSession sqlSession = MybatisUtil.getSqlSession();
 
+    public static SystemTray tray;
+
+    public static TrayIcon trayIcon;
+
     public static void main(String[] args) {
         Init.initTheme();
         mainFrame = new MainFrame();
