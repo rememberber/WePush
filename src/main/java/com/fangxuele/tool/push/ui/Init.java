@@ -8,6 +8,7 @@ import com.fangxuele.tool.push.ui.dialog.FontSizeAdjustDialog;
 import com.fangxuele.tool.push.ui.form.AboutForm;
 import com.fangxuele.tool.push.ui.form.BoostForm;
 import com.fangxuele.tool.push.ui.form.HelpForm;
+import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.MessageManageForm;
@@ -31,6 +32,8 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Enumeration;
+
+import static com.fangxuele.tool.push.App.mainFrame;
 
 /**
  * <pre>
@@ -174,9 +177,15 @@ public class Init {
                     App.mainFrame.requestFocus();
                 });
                 exitItem.addActionListener(e -> {
-                    App.config.save();
-                    App.sqlSession.close();
-                    System.exit(0);
+                    if (!PushForm.getInstance().getPushStartButton().isEnabled()) {
+                        JOptionPane.showMessageDialog(MainWindow.getInstance().getPushPanel(),
+                                "有推送任务正在进行！\n\n为避免数据丢失，请先停止!\n\n", "Sorry~",
+                                JOptionPane.WARNING_MESSAGE);
+                    } else {
+                        App.config.save();
+                        App.sqlSession.close();
+                        System.exit(0);
+                    }
                 });
 
                 popupMenu.add(openItem);
