@@ -2,19 +2,7 @@ package com.fangxuele.tool.push.ui.form;
 
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
-import com.fangxuele.tool.push.ui.form.msg.AliYunMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.BdYunMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.DingMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.HttpMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.HwYunMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.KefuMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.MaTemplateMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.MailMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.MpTemplateMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.MsgFormFactory;
-import com.fangxuele.tool.push.ui.form.msg.TxYunMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.YunpianMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.*;
 import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -113,6 +101,12 @@ public class MessageEditForm {
                 break;
             case MessageTypeEnum.TX_YUN_CODE:
                 messageEditForm.getMsgEditorPanel().add(TxYunMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
+                break;
+            case MessageTypeEnum.QI_NIU_YUN_CODE:
+                messageEditForm.getMsgEditorPanel().add(QiNiuYunMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
+                break;
+            case MessageTypeEnum.UP_YUN_CODE:
+                messageEditForm.getMsgEditorPanel().add(UpYunMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
                 break;
             case MessageTypeEnum.HW_YUN_CODE:
                 messageEditForm.getMsgEditorPanel().add(HwYunMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);

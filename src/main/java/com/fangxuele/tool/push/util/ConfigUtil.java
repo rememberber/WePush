@@ -60,6 +60,8 @@ public class ConfigUtil extends ConfigBaseUtil {
 
     private boolean autoCheckUpdate;
 
+    private boolean useTray;
+
     private long pushTotal;
 
     private String beforeVersion;
@@ -151,6 +153,11 @@ public class ConfigUtil extends ConfigBaseUtil {
     private String bdAccessKeyId;
     private String bdEndPoint;
     private String bdInvokeId;
+
+    private String upAuthorizationToken;
+
+    private String qiniuAccessKey;
+    private String qiniuSecretKey;
 
     private String yunpianApiKey;
 
@@ -366,6 +373,14 @@ public class ConfigUtil extends ConfigBaseUtil {
 
     public void setAutoCheckUpdate(boolean autoCheckUpdate) {
         setting.put("setting.normal", "autoCheckUpdate", String.valueOf(autoCheckUpdate));
+    }
+
+    public boolean isUseTray() {
+        return setting.getBool("useTray", "setting.normal", true);
+    }
+
+    public void setUseTray(boolean useTray) {
+        setting.put("setting.normal", "useTray", String.valueOf(useTray));
     }
 
     public long getPushTotal() {
@@ -862,6 +877,30 @@ public class ConfigUtil extends ConfigBaseUtil {
 
     public void setBdInvokeId(String bdInvokeId) {
         setting.put("setting.bdyun", "bdInvokeId", bdInvokeId);
+    }
+
+    public String getUpAuthorizationToken() {
+        return setting.getStr("upAuthorizationToken", "setting.upyun", "");
+    }
+
+    public void setUpAuthorizationToken(String upAuthorizationToken) {
+        setting.put("setting.upyun", "upAuthorizationToken", upAuthorizationToken);
+    }
+
+    public String getQiniuAccessKey() {
+        return setting.getStr("qiniuAccessKey", "setting.qiniu", "");
+    }
+
+    public void setQiniuAccessKey(String qiniuAccessKey) {
+        setting.put("setting.qiniu", "qiniuAccessKey", qiniuAccessKey);
+    }
+
+    public String getQiniuSecretKey() {
+        return setting.getStr("qiniuSecretKey", "setting.qiniu", "");
+    }
+
+    public void setQiniuSecretKey(String qiniuSecretKey) {
+        setting.put("setting.qiniu", "qiniuSecretKey", qiniuSecretKey);
     }
 
     public String getYunpianApiKey() {

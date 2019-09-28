@@ -150,6 +150,20 @@ public class PushControl {
             case MessageTypeEnum.MP_TEMPLATE_CODE:
             case MessageTypeEnum.KEFU_CODE:
             case MessageTypeEnum.KEFU_PRIORITY_CODE: {
+                if (App.config.isMpUseOutSideAt()) {
+                    if (App.config.isMpManualAt() &&
+                            (StringUtils.isEmpty(App.config.getMpAt()) || StringUtils.isEmpty(App.config.getMpAtExpiresIn()))) {
+                        JOptionPane.showMessageDialog(settingForm.getSettingPanel(), "请先在设置中填写并保存手动输入的外部accessToken信息！", "提示",
+                                JOptionPane.INFORMATION_MESSAGE);
+                        return false;
+                    }
+                    if (App.config.isMpApiAt() && StringUtils.isEmpty(App.config.getMpAtApiUrl())) {
+                        JOptionPane.showMessageDialog(settingForm.getSettingPanel(), "请先在设置中填写并保存用于获取外部accessToken的URL！", "提示",
+                                JOptionPane.INFORMATION_MESSAGE);
+                        return false;
+                    }
+                    return true;
+                }
                 if (StringUtils.isEmpty(App.config.getWechatAppId()) || StringUtils.isEmpty(App.config.getWechatAppSecret())) {
                     JOptionPane.showMessageDialog(settingForm.getSettingPanel(), "请先在设置中填写并保存公众号相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
@@ -182,6 +196,27 @@ public class PushControl {
                 if (StringUtils.isEmpty(txyunAppId) || StringUtils.isEmpty(txyunAppKey)) {
                     JOptionPane.showMessageDialog(settingForm.getSettingPanel(),
                             "请先在设置中填写并保存腾讯云短信相关配置！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return false;
+                }
+                break;
+            case MessageTypeEnum.QI_NIU_YUN_CODE:
+                String qiniuAccessKey = App.config.getQiniuAccessKey();
+                String qiniuSecretKey = App.config.getQiniuSecretKey();
+
+                if (StringUtils.isEmpty(qiniuAccessKey) || StringUtils.isEmpty(qiniuSecretKey)) {
+                    JOptionPane.showMessageDialog(settingForm.getSettingPanel(),
+                            "请先在设置中填写并保存七牛云短信相关配置！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return false;
+                }
+                break;
+            case MessageTypeEnum.UP_YUN_CODE:
+                String upAuthorizationToken = App.config.getUpAuthorizationToken();
+
+                if (StringUtils.isEmpty(upAuthorizationToken)) {
+                    JOptionPane.showMessageDialog(settingForm.getSettingPanel(),
+                            "请先在设置中填写并保存又拍云短信相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return false;
                 }

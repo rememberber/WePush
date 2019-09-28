@@ -8,7 +8,7 @@ import com.fangxuele.tool.push.ui.dialog.FontSizeAdjustDialog;
 import com.fangxuele.tool.push.ui.form.AboutForm;
 import com.fangxuele.tool.push.ui.form.BoostForm;
 import com.fangxuele.tool.push.ui.form.HelpForm;
-import com.fangxuele.tool.push.ui.form.HttpResultForm;
+import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.MessageManageForm;
@@ -23,11 +23,14 @@ import com.fangxuele.tool.push.util.SystemUtil;
 import com.fangxuele.tool.push.util.UIUtil;
 import com.fangxuele.tool.push.util.UpgradeUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Enumeration;
 
 /**
@@ -149,5 +152,87 @@ public class Init {
 
         App.config.setProps(FONT_SIZE_INIT_PROP, "true");
         App.config.save();
+    }
+
+    /**
+     * 初始化系统托盘
+     */
+    public static void initTray() {
+
+        try {
+            if (App.config.isUseTray() && SystemTray.isSupported()) {
+                App.tray = SystemTray.getSystemTray();
+
+                PopupMenu popupMenu = new PopupMenu();
+                popupMenu.setFont(App.mainFrame.getContentPane().getFont());
+
+                MenuItem openItem = new MenuItem("WePush");
+                MenuItem exitItem = new MenuItem("退出");
+
+                openItem.addActionListener(e -> {
+                    App.mainFrame.setExtendedState(JFrame.NORMAL);
+                    App.mainFrame.setVisible(true);
+                    App.mainFrame.requestFocus();
+                });
+                exitItem.addActionListener(e -> {
+                    if (!PushForm.getInstance().getPushStartButton().isEnabled()) {
+                        JOptionPane.showMessageDialog(MainWindow.getInstance().getPushPanel(),
+                                "有推送任务正在进行！\n\n为避免数据丢失，请先停止!\n\n", "Sorry~",
+                                JOptionPane.WARNING_MESSAGE);
+                    } else {
+                        App.config.save();
+                        App.sqlSession.close();
+                        System.exit(0);
+                    }
+                });
+
+                popupMenu.add(openItem);
+                popupMenu.add(exitItem);
+
+                App.trayIcon = new TrayIcon(UiConsts.IMAGE_LOGO_64, "WePush", popupMenu);
+                App.trayIcon.setImageAutoSize(true);
+
+                App.trayIcon.addActionListener(e -> {
+                    App.mainFrame.setExtendedState(JFrame.NORMAL);
+                    App.mainFrame.setVisible(true);
+                    App.mainFrame.requestFocus();
+                });
+                App.trayIcon.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        switch (e.getButton()) {
+                            case MouseEvent.BUTTON1: {
+                                App.mainFrame.setExtendedState(JFrame.NORMAL);
+                                App.mainFrame.setVisible(true);
+                                App.mainFrame.requestFocus();
+                                break;
+                            }
+                            case MouseEvent.BUTTON2: {
+                                logger.debug("托盘图标被鼠标中键被点击");
+                                break;
+                            }
+                            case MouseEvent.BUTTON3: {
+                                logger.debug("托盘图标被鼠标右键被点击");
+                                break;
+                            }
+                            default: {
+                                break;
+                            }
+                        }
+                    }
+                });
+
+                try {
+                    App.tray.add(App.trayIcon);
+                } catch (AWTException e) {
+                    e.printStackTrace();
+                    logger.error(ExceptionUtils.getStackTrace(e));
+                }
+
+            }
+
+        } catch (Exception e) {
+            logger.error(ExceptionUtils.getStackTrace(e));
+        }
     }
 }
