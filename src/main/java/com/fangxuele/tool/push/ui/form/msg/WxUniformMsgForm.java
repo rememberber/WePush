@@ -43,19 +43,11 @@ public class WxUniformMsgForm implements IMsgForm {
             MpTemplateMsgForm.getInstance().getMsgTemplateMiniAppidTextField().setText(tMsgWxUniform.getMaAppid());
             MpTemplateMsgForm.getInstance().getMsgTemplateMiniPagePathTextField().setText(tMsgWxUniform.getMaPagePath());
 
-            String kefuMsgType = tMsgWxUniform.getKefuMsgType();
-            KefuMsgForm.getInstance().getMsgKefuMsgTypeComboBox().setSelectedItem(kefuMsgType);
-            if ("文本消息".equals(kefuMsgType)) {
-                KefuMsgForm.getInstance().getContentTextArea().setText(tMsgWxUniform.getContent());
-            } else if ("图文消息".equals(kefuMsgType)) {
-                KefuMsgForm.getInstance().getMsgKefuMsgTitleTextField().setText(tMsgWxUniform.getTitle());
-            }
-            KefuMsgForm.getInstance().getMsgKefuPicUrlTextField().setText(tMsgWxUniform.getImgUrl());
-            KefuMsgForm.getInstance().getMsgKefuDescTextField().setText(tMsgWxUniform.getDescribe());
-            KefuMsgForm.getInstance().getMsgKefuUrlTextField().setText(tMsgWxUniform.getKefuUrl());
+            MaTemplateMsgForm.getInstance().getMsgTemplateIdTextField().setText(tMsgWxUniform.getMaTemplateId());
+            MaTemplateMsgForm.getInstance().getMsgTemplateUrlTextField().setText(tMsgWxUniform.getPage());
+            MaTemplateMsgForm.getInstance().getMsgTemplateKeyWordTextField().setText(tMsgWxUniform.getEmphasisKeyword());
 
-            KefuMsgForm.switchKefuMsgType(kefuMsgType);
-
+            // -------------公众号模板数据开始
             MpTemplateMsgForm.selectedMsgTemplateId = tMsgWxUniform.getMpTemplateId();
             // 模板消息Data表
             List<TTemplateData> templateDataList = templateDataMapper.selectByMsgTypeAndMsgId(MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE * MessageTypeEnum.MP_TEMPLATE_CODE, msgId);
@@ -80,8 +72,31 @@ public class WxUniformMsgForm implements IMsgForm {
             tableColumnModel.getColumn(3).setMaxWidth(46);
 
             MpTemplateMsgForm.getInstance().getTemplateMsgDataTable().updateUI();
-        } else {
-            KefuMsgForm.switchKefuMsgType("图文消息");
+            // -------------公众号模板数据结束
+
+            // -------------小程序模板数据开始
+            MaTemplateMsgForm.initTemplateDataTable();
+            // 模板消息Data表
+            templateDataList = templateDataMapper.selectByMsgTypeAndMsgId(MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE * MessageTypeEnum.MA_TEMPLATE_CODE, msgId);
+            for (int i = 0; i < templateDataList.size(); i++) {
+                TTemplateData tTemplateData = templateDataList.get(i);
+                cellData[i][0] = tTemplateData.getName();
+                cellData[i][1] = tTemplateData.getValue();
+                cellData[i][2] = tTemplateData.getColor();
+            }
+            model = new DefaultTableModel(cellData, headerNames);
+            MaTemplateMsgForm.getInstance().getTemplateMsgDataTable().setModel(model);
+            tableColumnModel = MaTemplateMsgForm.getInstance().getTemplateMsgDataTable().getColumnModel();
+            tableColumnModel.getColumn(headerNames.length - 1).
+                    setCellRenderer(new TableInCellButtonColumn(MaTemplateMsgForm.getInstance().getTemplateMsgDataTable(), headerNames.length - 1));
+            tableColumnModel.getColumn(headerNames.length - 1).
+                    setCellEditor(new TableInCellButtonColumn(MaTemplateMsgForm.getInstance().getTemplateMsgDataTable(), headerNames.length - 1));
+
+            // 设置列宽
+            tableColumnModel.getColumn(3).setPreferredWidth(46);
+            tableColumnModel.getColumn(3).setMaxWidth(46);
+            // -------------小程序模板数据结束
+
         }
         MpTemplateMsgForm.initTemplateList();
     }
