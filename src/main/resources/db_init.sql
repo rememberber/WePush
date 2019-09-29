@@ -269,12 +269,6 @@ create table if not exists t_msg_wx_uniform
     ma_page_path     text,
     page             text,
     emphasis_keyword text,
-    kefu_msg_type    text,
-    content          text,
-    title            text,
-    img_url          text,
-    describe         text,
-    kefu_url         text,
     create_time      datetime,
     modified_time    datetime
 );
