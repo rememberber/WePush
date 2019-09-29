@@ -923,7 +923,8 @@ public class MemberListener {
         // 是否是微信平台类消息
         boolean isWeixinTypeMsg = false;
         if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE || msgType == MessageTypeEnum.MA_TEMPLATE_CODE
-                || msgType == MessageTypeEnum.KEFU_CODE || msgType == MessageTypeEnum.KEFU_PRIORITY_CODE) {
+                || msgType == MessageTypeEnum.KEFU_CODE || msgType == MessageTypeEnum.KEFU_PRIORITY_CODE
+                || msgType == MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE) {
             isWeixinTypeMsg = true;
         }
         // 导入列表
