@@ -21,4 +21,8 @@ public interface TMsgWxUniformMapper {
     List<TMsgWxUniform> selectByMsgType(int msgType);
 
     int deleteByMsgTypeAndName(@Param("msgType") int msgType, @Param("msgName") String msgName);
+
+    List<TMsgWxUniform> selectByMsgTypeAndMsgName(@Param("msgType") int msgType, @Param("msgName") String msgName);
+
+    int updateByMsgTypeAndMsgName(TMsgWxUniform tMsgWxUniform);
 }
