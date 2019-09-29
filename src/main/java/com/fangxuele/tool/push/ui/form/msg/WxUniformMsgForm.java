@@ -17,11 +17,11 @@ import java.util.List;
 
 /**
  * <pre>
- * 客服消息优先(伪form)
+ * 微信统一服务消息(伪form)
  * </pre>
  *
  * @author <a href="https://github.com/rememberber">Zhou Bo</a>
- * @since 2019/6/6.
+ * @since 2019/9/29.
  */
 public class WxUniformMsgForm implements IMsgForm {
 
