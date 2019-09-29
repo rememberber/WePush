@@ -10,6 +10,7 @@ import com.fangxuele.tool.push.dao.TMsgMailMapper;
 import com.fangxuele.tool.push.dao.TMsgMpTemplateMapper;
 import com.fangxuele.tool.push.dao.TMsgSmsMapper;
 import com.fangxuele.tool.push.dao.TMsgWxCpMapper;
+import com.fangxuele.tool.push.dao.TMsgWxUniformMapper;
 import com.fangxuele.tool.push.domain.TMsgDing;
 import com.fangxuele.tool.push.domain.TMsgHttp;
 import com.fangxuele.tool.push.domain.TMsgKefu;
@@ -19,6 +20,7 @@ import com.fangxuele.tool.push.domain.TMsgMail;
 import com.fangxuele.tool.push.domain.TMsgMpTemplate;
 import com.fangxuele.tool.push.domain.TMsgSms;
 import com.fangxuele.tool.push.domain.TMsgWxCp;
+import com.fangxuele.tool.push.domain.TMsgWxUniform;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
@@ -52,6 +54,7 @@ public class MessageManageForm {
 
     private static TMsgKefuMapper msgKefuMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuMapper.class);
     private static TMsgKefuPriorityMapper msgKefuPriorityMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuPriorityMapper.class);
+    private static TMsgWxUniformMapper wxUniformMapper = MybatisUtil.getSqlSession().getMapper(TMsgWxUniformMapper.class);
     private static TMsgMaTemplateMapper msgMaTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMaTemplateMapper.class);
     private static TMsgMpTemplateMapper msgMpTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMpTemplateMapper.class);
     private static TMsgSmsMapper msgSmsMapper = MybatisUtil.getSqlSession().getMapper(TMsgSmsMapper.class);
@@ -98,6 +101,13 @@ public class MessageManageForm {
             for (TMsgKefuPriority tMsgKefuPriority : tMsgKefuPriorityList) {
                 data = new Object[1];
                 data[0] = tMsgKefuPriority.getMsgName();
+                model.addRow(data);
+            }
+        } else if (msgType == MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE) {
+            List<TMsgWxUniform> tMsgWxUniformList = wxUniformMapper.selectByMsgType(msgType);
+            for (TMsgWxUniform tMsgWxUniform : tMsgWxUniformList) {
+                data = new Object[1];
+                data[0] = tMsgWxUniform.getMsgName();
                 model.addRow(data);
             }
         } else if (msgType == MessageTypeEnum.MA_TEMPLATE_CODE) {

@@ -149,7 +149,8 @@ public class PushControl {
         switch (msgType) {
             case MessageTypeEnum.MP_TEMPLATE_CODE:
             case MessageTypeEnum.KEFU_CODE:
-            case MessageTypeEnum.KEFU_PRIORITY_CODE: {
+            case MessageTypeEnum.KEFU_PRIORITY_CODE:
+            case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE: {
                 if (App.config.isMpUseOutSideAt()) {
                     if (App.config.isMpManualAt() &&
                             (StringUtils.isEmpty(App.config.getMpAt()) || StringUtils.isEmpty(App.config.getMpAtExpiresIn()))) {

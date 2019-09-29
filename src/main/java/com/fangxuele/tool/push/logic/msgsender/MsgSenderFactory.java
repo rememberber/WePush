@@ -33,6 +33,9 @@ public class MsgSenderFactory {
             case MessageTypeEnum.KEFU_PRIORITY_CODE:
                 iMsgSender = new WxKefuPriorMsgSender();
                 break;
+            case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE:
+                iMsgSender = new WxUniformMsgSender();
+                break;
             case MessageTypeEnum.ALI_YUN_CODE:
                 iMsgSender = new AliYunMsgSender();
                 break;

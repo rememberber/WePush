@@ -1,6 +1,9 @@
 package com.fangxuele.tool.push.dao;
 
 import com.fangxuele.tool.push.domain.TMsgWxUniform;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface TMsgWxUniformMapper {
     int deleteByPrimaryKey(Integer id);
@@ -14,4 +17,8 @@ public interface TMsgWxUniformMapper {
     int updateByPrimaryKeySelective(TMsgWxUniform record);
 
     int updateByPrimaryKey(TMsgWxUniform record);
+
+    List<TMsgWxUniform> selectByMsgType(int msgType);
+
+    int deleteByMsgTypeAndName(@Param("msgType") int msgType, @Param("msgName") String msgName);
 }
