@@ -433,10 +433,11 @@ public class PushControl {
      * 准备消息构造器
      */
     static void prepareMsgMaker() {
-        MsgMakerFactory.getMsgMaker().prepare();
         if (App.config.getMsgType() == MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE) {
             new WxMpTemplateMsgMaker().prepare();
             new WxMaTemplateMsgMaker().prepare();
+        } else {
+            MsgMakerFactory.getMsgMaker().prepare();
         }
     }
 

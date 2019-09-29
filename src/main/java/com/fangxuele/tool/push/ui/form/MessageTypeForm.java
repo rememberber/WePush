@@ -295,7 +295,7 @@ public class MessageTypeForm {
         qiniuRadioButton.setText("七牛云短信（BETA）");
         msgTypeListPanel.add(qiniuRadioButton, new GridConstraints(14, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         wxUniformMessageRadioButton = new JRadioButton();
-        wxUniformMessageRadioButton.setText("小程序-统一服务消息");
+        wxUniformMessageRadioButton.setText("小程序-统一服务消息（BETA）");
         msgTypeListPanel.add(wxUniformMessageRadioButton, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(2, 1, new Insets(8, 8, 8, 0), -1, -1));
