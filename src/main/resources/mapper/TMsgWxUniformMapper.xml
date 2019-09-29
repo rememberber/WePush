@@ -25,13 +25,13 @@
         from t_msg_wx_uniform
         where id = #{id,jdbcType=INTEGER}
     </select>
-    <select id="selectByMsgType" resultType="com.fangxuele.tool.push.domain.TMsgWxUniform">
+    <select id="selectByMsgType" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from t_msg_wx_uniform
         where msg_type = #{msgType,jdbcType=INTEGER}
     </select>
-    <select id="selectByMsgTypeAndMsgName" resultType="com.fangxuele.tool.push.domain.TMsgWxUniform">
+    <select id="selectByMsgTypeAndMsgName" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from t_msg_wx_uniform
@@ -59,7 +59,8 @@
                 #{maAppid,jdbcType=VARCHAR}, #{maPagePath,jdbcType=VARCHAR}, #{page,jdbcType=VARCHAR},
                 #{emphasisKeyword,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR})
     </insert>
-    <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TMsgWxUniform">
+    <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TMsgWxUniform" useGeneratedKeys="true"
+            keyColumn="id" keyProperty="id">
         insert into t_msg_wx_uniform
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
