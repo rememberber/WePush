@@ -40,6 +40,7 @@ public class AliYunMsgSender implements IMsgSender {
         try {
             //初始化acsClient,暂不支持region化
             SendSmsRequest sendSmsRequest = aliyunMsgMaker.makeMsg(msgData);
+            sendSmsRequest.setPhoneNumbers(msgData[0]);
             if (PushControl.dryRun) {
                 sendResult.setSuccess(true);
                 return sendResult;
