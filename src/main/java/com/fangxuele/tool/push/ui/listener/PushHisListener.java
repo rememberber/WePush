@@ -131,9 +131,9 @@ public class PushHisListener {
         pushHisForm.getPushHisCopyButton().addActionListener(e -> ThreadUtil.execute(() -> {
             try {
                 pushHisForm.getPushHisCopyButton().setEnabled(false);
+                ClipboardUtil.setStr(pushHisForm.getPushHisTextArea().getText());
                 JOptionPane.showMessageDialog(pushHisPanel, "内容已经复制到剪贴板！", "复制成功",
                         JOptionPane.INFORMATION_MESSAGE);
-                ClipboardUtil.setStr(pushHisForm.getPushHisTextArea().getText());
             } catch (Exception e1) {
                 logger.error(e1);
             } finally {
