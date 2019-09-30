@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fangxuele.tool.push.dao.TMsgWxUniformMapper">
+    <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TMsgWxUniform">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="msg_type" jdbcType="INTEGER" property="msgType"/>
+        <result column="msg_name" jdbcType="VARCHAR" property="msgName"/>
+        <result column="mp_template_id" jdbcType="VARCHAR" property="mpTemplateId"/>
+        <result column="ma_template_id" jdbcType="VARCHAR" property="maTemplateId"/>
+        <result column="mp_url" jdbcType="VARCHAR" property="mpUrl"/>
+        <result column="ma_appid" jdbcType="VARCHAR" property="maAppid"/>
+        <result column="ma_page_path" jdbcType="VARCHAR" property="maPagePath"/>
+        <result column="page" jdbcType="VARCHAR" property="page"/>
+        <result column="emphasis_keyword" jdbcType="VARCHAR" property="emphasisKeyword"/>
+        <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
+        <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, msg_type, msg_name, mp_template_id, ma_template_id, mp_url, ma_appid, ma_page_path,
+    page, emphasis_keyword, create_time, modified_time
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_msg_wx_uniform
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="selectByMsgType" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_msg_wx_uniform
+        where msg_type = #{msgType,jdbcType=INTEGER}
+    </select>
+    <select id="selectByMsgTypeAndMsgName" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_msg_wx_uniform
+        where msg_type = #{msgType,jdbcType=INTEGER}
+        and msg_name = #{msgName,jdbcType=VARCHAR}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from t_msg_wx_uniform
+        where msg_type = #{msgType,jdbcType=INTEGER}
+    </delete>
+    <delete id="deleteByMsgTypeAndName">
+        delete
+        from t_msg_wx_uniform
+        where msg_type = #{msgType,jdbcType=INTEGER}
+          and msg_name = #{msgName,jdbcType=VARCHAR}
+    </delete>
+    <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TMsgWxUniform">
+        insert into t_msg_wx_uniform (id, msg_type, msg_name,
+                                      mp_template_id, ma_template_id, mp_url,
+                                      ma_appid, ma_page_path, page,
+                                      emphasis_keyword, create_time, modified_time)
+        values (#{id,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER}, #{msgName,jdbcType=VARCHAR},
+                #{mpTemplateId,jdbcType=VARCHAR}, #{maTemplateId,jdbcType=VARCHAR}, #{mpUrl,jdbcType=VARCHAR},
+                #{maAppid,jdbcType=VARCHAR}, #{maPagePath,jdbcType=VARCHAR}, #{page,jdbcType=VARCHAR},
+                #{emphasisKeyword,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TMsgWxUniform" useGeneratedKeys="true"
+            keyColumn="id" keyProperty="id">
+        insert into t_msg_wx_uniform
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="msgType != null">
+                msg_type,
+            </if>
+            <if test="msgName != null">
+                msg_name,
+            </if>
+            <if test="mpTemplateId != null">
+                mp_template_id,
+            </if>
+            <if test="maTemplateId != null">
+                ma_template_id,
+            </if>
+            <if test="mpUrl != null">
+                mp_url,
+            </if>
+            <if test="maAppid != null">
+                ma_appid,
+            </if>
+            <if test="maPagePath != null">
+                ma_page_path,
+            </if>
+            <if test="page != null">
+                page,
+            </if>
+            <if test="emphasisKeyword != null">
+                emphasis_keyword,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="modifiedTime != null">
+                modified_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="msgType != null">
+                #{msgType,jdbcType=INTEGER},
+            </if>
+            <if test="msgName != null">
+                #{msgName,jdbcType=VARCHAR},
+            </if>
+            <if test="mpTemplateId != null">
+                #{mpTemplateId,jdbcType=VARCHAR},
+            </if>
+            <if test="maTemplateId != null">
+                #{maTemplateId,jdbcType=VARCHAR},
+            </if>
+            <if test="mpUrl != null">
+                #{mpUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="maAppid != null">
+                #{maAppid,jdbcType=VARCHAR},
+            </if>
+            <if test="maPagePath != null">
+                #{maPagePath,jdbcType=VARCHAR},
+            </if>
+            <if test="page != null">
+                #{page,jdbcType=VARCHAR},
+            </if>
+            <if test="emphasisKeyword != null">
+                #{emphasisKeyword,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=VARCHAR},
+            </if>
+            <if test="modifiedTime != null">
+                #{modifiedTime,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.fangxuele.tool.push.domain.TMsgWxUniform">
+        update t_msg_wx_uniform
+        <set>
+            <if test="msgType != null">
+                msg_type = #{msgType,jdbcType=INTEGER},
+            </if>
+            <if test="msgName != null">
+                msg_name = #{msgName,jdbcType=VARCHAR},
+            </if>
+            <if test="mpTemplateId != null">
+                mp_template_id = #{mpTemplateId,jdbcType=VARCHAR},
+            </if>
+            <if test="maTemplateId != null">
+                ma_template_id = #{maTemplateId,jdbcType=VARCHAR},
+            </if>
+            <if test="mpUrl != null">
+                mp_url = #{mpUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="maAppid != null">
+                ma_appid = #{maAppid,jdbcType=VARCHAR},
+            </if>
+            <if test="maPagePath != null">
+                ma_page_path = #{maPagePath,jdbcType=VARCHAR},
+            </if>
+            <if test="page != null">
+                page = #{page,jdbcType=VARCHAR},
+            </if>
+            <if test="emphasisKeyword != null">
+                emphasis_keyword = #{emphasisKeyword,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=VARCHAR},
+            </if>
+            <if test="modifiedTime != null">
+                modified_time = #{modifiedTime,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TMsgWxUniform">
+        update t_msg_wx_uniform
+        set msg_type         = #{msgType,jdbcType=INTEGER},
+            msg_name         = #{msgName,jdbcType=VARCHAR},
+            mp_template_id   = #{mpTemplateId,jdbcType=VARCHAR},
+            ma_template_id   = #{maTemplateId,jdbcType=VARCHAR},
+            mp_url           = #{mpUrl,jdbcType=VARCHAR},
+            ma_appid         = #{maAppid,jdbcType=VARCHAR},
+            ma_page_path     = #{maPagePath,jdbcType=VARCHAR},
+            page             = #{page,jdbcType=VARCHAR},
+            emphasis_keyword = #{emphasisKeyword,jdbcType=VARCHAR},
+            create_time      = #{createTime,jdbcType=VARCHAR},
+            modified_time    = #{modifiedTime,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByMsgTypeAndMsgName">
+        update t_msg_wx_uniform
+        set mp_template_id   = #{mpTemplateId,jdbcType=VARCHAR},
+            ma_template_id   = #{maTemplateId,jdbcType=VARCHAR},
+            mp_url           = #{mpUrl,jdbcType=VARCHAR},
+            ma_appid         = #{maAppid,jdbcType=VARCHAR},
+            ma_page_path     = #{maPagePath,jdbcType=VARCHAR},
+            page             = #{page,jdbcType=VARCHAR},
+            emphasis_keyword = #{emphasisKeyword,jdbcType=VARCHAR},
+            create_time      = #{createTime,jdbcType=VARCHAR},
+            modified_time    = #{modifiedTime,jdbcType=VARCHAR}
+        where msg_type = #{msgType,jdbcType=INTEGER}
+          and msg_name = #{msgName,jdbcType=VARCHAR}
+    </update>
+</mapper>

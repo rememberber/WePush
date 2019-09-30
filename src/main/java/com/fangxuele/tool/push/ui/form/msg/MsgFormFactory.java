@@ -35,6 +35,11 @@ public class MsgFormFactory {
                 UndoUtil.register(KefuMsgForm.getInstance());
                 UndoUtil.register(MpTemplateMsgForm.getInstance());
                 break;
+            case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE:
+                iMsgForm = WxUniformMsgForm.getInstance();
+                UndoUtil.register(MaTemplateMsgForm.getInstance());
+                UndoUtil.register(MpTemplateMsgForm.getInstance());
+                break;
             case MessageTypeEnum.ALI_YUN_CODE:
                 iMsgForm = AliYunMsgForm.getInstance();
                 break;

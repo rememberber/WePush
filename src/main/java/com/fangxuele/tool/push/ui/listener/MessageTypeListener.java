@@ -40,6 +40,10 @@ public class MessageTypeListener {
             App.config.setMsgType(MessageTypeEnum.KEFU_PRIORITY_CODE);
             saveType();
         });
+        messageTypeForm.getWxUniformMessageRadioButton().addActionListener(e -> {
+            App.config.setMsgType(MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE);
+            saveType();
+        });
         messageTypeForm.getAliYunRadioButton().addActionListener(e -> {
             App.config.setMsgType(MessageTypeEnum.ALI_YUN_CODE);
             saveType();

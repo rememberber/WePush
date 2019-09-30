@@ -8,6 +8,8 @@ import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPushHistoryMapper;
 import com.fangxuele.tool.push.domain.TPushHistory;
 import com.fangxuele.tool.push.logic.msgmaker.MsgMakerFactory;
+import com.fangxuele.tool.push.logic.msgmaker.WxMaTemplateMsgMaker;
+import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
 import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
@@ -149,7 +151,8 @@ public class PushControl {
         switch (msgType) {
             case MessageTypeEnum.MP_TEMPLATE_CODE:
             case MessageTypeEnum.KEFU_CODE:
-            case MessageTypeEnum.KEFU_PRIORITY_CODE: {
+            case MessageTypeEnum.KEFU_PRIORITY_CODE:
+            case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE: {
                 if (App.config.isMpUseOutSideAt()) {
                     if (App.config.isMpManualAt() &&
                             (StringUtils.isEmpty(App.config.getMpAt()) || StringUtils.isEmpty(App.config.getMpAtExpiresIn()))) {
@@ -430,7 +433,12 @@ public class PushControl {
      * 准备消息构造器
      */
     static void prepareMsgMaker() {
-        MsgMakerFactory.getMsgMaker().prepare();
+        if (App.config.getMsgType() == MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE) {
+            new WxMpTemplateMsgMaker().prepare();
+            new WxMaTemplateMsgMaker().prepare();
+        } else {
+            MsgMakerFactory.getMsgMaker().prepare();
+        }
     }
 
     /**

@@ -91,7 +91,8 @@ public class ScheduleForm {
         scheduleForm.getReimportComboBox().addItem("通过文件导入");
         int msgType = App.config.getMsgType();
         if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE || msgType == MessageTypeEnum.MA_TEMPLATE_CODE
-                || msgType == MessageTypeEnum.KEFU_CODE || msgType == MessageTypeEnum.KEFU_PRIORITY_CODE) {
+                || msgType == MessageTypeEnum.KEFU_CODE || msgType == MessageTypeEnum.KEFU_PRIORITY_CODE
+                || msgType == MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE) {
             scheduleForm.getReimportComboBox().addItem("导入所有关注公众号的用户");
         } else if (msgType == MessageTypeEnum.WX_CP_CODE) {
             scheduleForm.getReimportComboBox().addItem("导入企业通讯录中所有用户");

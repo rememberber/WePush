@@ -254,3 +254,24 @@ create table if not exists t_ding_app
     create_time   datetime,
     modified_time datetime
 );
+
+create table if not exists t_msg_wx_uniform
+(
+    id               integer
+        constraint t_msg_wx_uniform_pk
+            primary key autoincrement,
+    msg_type         integer,
+    msg_name         text,
+    mp_template_id   text,
+    ma_template_id   text,
+    mp_url           text,
+    ma_appid         text,
+    ma_page_path     text,
+    page             text,
+    emphasis_keyword text,
+    create_time      datetime,
+    modified_time    datetime
+);
+
+create unique index if not exists t_msg_wx_uniform_msg_type_msg_name_uindex
+    on t_msg_wx_uniform (msg_type, msg_name);

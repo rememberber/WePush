@@ -11,6 +11,7 @@ import com.fangxuele.tool.push.dao.TMsgMailMapper;
 import com.fangxuele.tool.push.dao.TMsgMpTemplateMapper;
 import com.fangxuele.tool.push.dao.TMsgSmsMapper;
 import com.fangxuele.tool.push.dao.TMsgWxCpMapper;
+import com.fangxuele.tool.push.dao.TMsgWxUniformMapper;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
@@ -37,6 +38,7 @@ public class MsgManageListener {
 
     private static TMsgKefuMapper msgKefuMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuMapper.class);
     private static TMsgKefuPriorityMapper msgKefuPriorityMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuPriorityMapper.class);
+    private static TMsgWxUniformMapper wxUniformMapper = MybatisUtil.getSqlSession().getMapper(TMsgWxUniformMapper.class);
     private static TMsgMaTemplateMapper msgMaTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMaTemplateMapper.class);
     private static TMsgMpTemplateMapper msgMpTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMpTemplateMapper.class);
     private static TMsgSmsMapper msgSmsMapper = MybatisUtil.getSqlSession().getMapper(TMsgSmsMapper.class);
@@ -87,6 +89,8 @@ public class MsgManageListener {
                                 msgKefuMapper.deleteByMsgTypeAndName(msgType, msgName);
                             } else if (msgType == MessageTypeEnum.KEFU_PRIORITY_CODE) {
                                 msgKefuPriorityMapper.deleteByMsgTypeAndName(msgType, msgName);
+                            } else if (msgType == MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE) {
+                                wxUniformMapper.deleteByMsgTypeAndName(msgType, msgName);
                             } else if (msgType == MessageTypeEnum.MA_TEMPLATE_CODE) {
                                 msgMaTemplateMapper.deleteByMsgTypeAndName(msgType, msgName);
                             } else if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE) {
