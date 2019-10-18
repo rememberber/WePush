@@ -51,6 +51,7 @@ public class FrameListener {
                             JOptionPane.WARNING_MESSAGE);
                 } else {
                     App.sqlSession.close();
+                    mainFrame.dispose();
                     mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 }
             }

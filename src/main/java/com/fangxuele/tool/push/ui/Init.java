@@ -182,6 +182,7 @@ public class Init {
                     } else {
                         App.config.save();
                         App.sqlSession.close();
+                        App.mainFrame.dispose();
                         System.exit(0);
                     }
                 });
