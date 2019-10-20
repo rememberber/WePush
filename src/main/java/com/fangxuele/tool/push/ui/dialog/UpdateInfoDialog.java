@@ -92,6 +92,7 @@ public class UpdateInfoDialog extends JDialog {
 //        DefaultEditorKit kit = new DefaultEditorKit();
 //        textPane1.setEditorKit(kit);
         textPane1.setText(planeText);
+        textPane1.setCaretPosition(0);
     }
 
     public void setHtmlText(String htmlText) {
@@ -102,6 +103,7 @@ public class UpdateInfoDialog extends JDialog {
         styleSheet.addRule("h2{color:#FBC87A;}");
         styleSheet.addRule("body{font-family:" + buttonOK.getFont().getName() + ";font-size:" + buttonOK.getFont().getSize() + ";}");
         textPane1.setText(htmlText);
+        textPane1.setCaretPosition(0);
     }
 
     {

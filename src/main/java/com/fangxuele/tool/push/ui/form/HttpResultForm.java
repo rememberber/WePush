@@ -32,7 +32,6 @@ public class HttpResultForm {
         this.getHttpResultScrollPane().getVerticalScrollBar().setUnitIncrement(15);
         this.getHttpResultScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
 
-
         if ("Darcula(推荐)".equals(App.config.getTheme())) {
             Color bgColor = new Color(43, 43, 43);
             bodyTextArea.setBackground(bgColor);
