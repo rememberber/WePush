@@ -79,7 +79,7 @@ public class AboutForm {
         versionLabel = new JLabel();
         Font versionLabelFont = this.$$$getFont$$$("Microsoft YaHei UI", -1, -1, versionLabel.getFont());
         if (versionLabelFont != null) versionLabel.setFont(versionLabelFont);
-        versionLabel.setText("版本：v_1.00_170607");
+        versionLabel.setText("v_0.0.0");
         aboutPanel.add(versionLabel, new GridConstraints(7, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         checkUpdateLabel = new JLabel();
         Font checkUpdateLabelFont = this.$$$getFont$$$(null, Font.BOLD, -1, checkUpdateLabel.getFont());

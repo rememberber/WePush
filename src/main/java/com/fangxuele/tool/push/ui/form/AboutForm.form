@@ -43,7 +43,7 @@
         </constraints>
         <properties>
           <font name="Microsoft YaHei UI"/>
-          <text value="版本：v_1.00_170607"/>
+          <text value="v_0.0.0"/>
         </properties>
       </component>
       <component id="beefe" class="javax.swing.JLabel" binding="checkUpdateLabel">
