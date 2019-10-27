@@ -3,6 +3,7 @@
 <details>
 <summary>Windows</summary>
 
+[WePush-v4.1.1_191027-x64-Setup.exe](http://download.zhoubochina.com/exe/WePush-v4.1.1_191027-x64-Setup.exe)  
 [WePush-v4.1.0_190930-x64-Setup.exe](http://download.zhoubochina.com/exe/WePush-v4.1.0_190930-x64-Setup.exe)  
 [WePush-v4.0.0_190928-x64-Setup.exe](http://download.zhoubochina.com/exe/WePush-v4.0.0_190928-x64-Setup.exe)  
 [WePush-v3.9.0_190915-x64-Setup.exe](http://download.zhoubochina.com/exe/WePush-v3.9.0_190915-x64-Setup.exe)  
@@ -72,6 +73,7 @@
 <details>
 <summary>Mac OS</summary>
 
+[v_4.1.1_191027.app](http://download.zhoubochina.com/mac/4.1.1.zip)  
 [v_3.9.0_190915.app](http://download.zhoubochina.com/mac/3.9.0.zip)  
 [v_3.6.2_190811.app](http://download.zhoubochina.com/mac/3.6.2.zip)  
 [v_3.6.1_190728.app](http://download.zhoubochina.com/mac/3.6.1.zip)  
@@ -113,6 +115,7 @@
 <details>
 <summary>Linux</summary>
 
+[v4.1.1_191027](http://download.zhoubochina.com/linux/WePush-4.1.1.zip)  
 [v4.1.0_190930](http://download.zhoubochina.com/linux/WePush-4.1.0.zip)  
 [v4.0.0_190928](http://download.zhoubochina.com/linux/WePush-4.0.0.zip)  
 [v3.9.0_190915](http://download.zhoubochina.com/linux/WePush-3.9.0.zip)  
@@ -128,4 +131,12 @@
 [v3.4.0_190619](http://download.zhoubochina.com/linux/WePush-3.4.0.zip)  
 [v3.3.0_190608](http://download.zhoubochina.com/linux/WePush-3.3.0.zip)  
 
+</details>
+
+<details>
+<summary>Portable(各系统通用绿色便携版32/64位)</summary>
+
+[v4.1.1_191027](http://download.zhoubochina.com/linux/WePush-4.1.1.zip)  
+[v4.1.0_190930](http://download.zhoubochina.com/linux/WePush-4.1.0.zip)  
+[v4.0.0_190928](http://download.zhoubochina.com/linux/WePush-4.0.0.zip)  
 </details>
