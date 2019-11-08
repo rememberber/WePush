@@ -30,6 +30,12 @@
         from t_msg_http
         where id = #{id,jdbcType=INTEGER}
     </delete>
+    <delete id="deleteByMsgTypeAndName">
+        delete
+        from t_msg_http
+        where msg_type = #{msgType,jdbcType=INTEGER}
+        and msg_name = #{msgName,jdbcType=VARCHAR}
+    </delete>
     <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TMsgHttp">
         insert into t_msg_http (id, msg_type, msg_name,
                                 method, url, params,

@@ -23,4 +23,6 @@ public interface TMsgHttpMapper {
     int updateByMsgTypeAndMsgName(TMsgHttp tMsgHttp);
 
     List<TMsgHttp> selectByMsgType(int msgType);
+
+    int deleteByMsgTypeAndName(@Param("msgType") int msgType, @Param("msgName") String msgName);
 }

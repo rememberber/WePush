@@ -28,6 +28,12 @@
         from t_msg_ding
         where id = #{id,jdbcType=INTEGER}
     </delete>
+    <delete id="deleteByMsgTypeAndName">
+        delete
+        from t_msg_ding
+        where msg_type = #{msgType,jdbcType=INTEGER}
+        and msg_name = #{msgName,jdbcType=VARCHAR}
+    </delete>
     <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TMsgDing">
         insert into t_msg_ding (id, msg_type, msg_name,
                                 ding_msg_type, agent_id, web_hook,
