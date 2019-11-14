@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.frame;
 
+import cn.hutool.core.thread.ThreadUtil;
 import com.apple.eawt.Application;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.listener.AboutListener;
@@ -64,18 +65,18 @@ public class MainFrame extends JFrame {
      * 添加事件监听
      */
     public void addListeners() {
-        MessageTypeListener.addListeners();
-        AboutListener.addListeners();
-        HelpListener.addListeners();
-        PushHisListener.addListeners();
-        SettingListener.addListeners();
-        MsgEditListener.addListeners();
-        MsgManageListener.addListeners();
-        MemberListener.addListeners();
-        PushListener.addListeners();
-        BoostListener.addListeners();
-        ScheduleListener.addListeners();
-        TabListener.addListeners();
-        FrameListener.addListeners();
+        ThreadUtil.execute(MessageTypeListener::addListeners);
+        ThreadUtil.execute(AboutListener::addListeners);
+        ThreadUtil.execute(HelpListener::addListeners);
+        ThreadUtil.execute(PushHisListener::addListeners);
+        ThreadUtil.execute(SettingListener::addListeners);
+        ThreadUtil.execute(MsgEditListener::addListeners);
+        ThreadUtil.execute(MsgManageListener::addListeners);
+        ThreadUtil.execute(MemberListener::addListeners);
+        ThreadUtil.execute(PushListener::addListeners);
+        ThreadUtil.execute(BoostListener::addListeners);
+        ThreadUtil.execute(ScheduleListener::addListeners);
+        ThreadUtil.execute(TabListener::addListeners);
+        ThreadUtil.execute(FrameListener::addListeners);
     }
 }

@@ -119,18 +119,18 @@ public class Init {
      * 初始化所有tab
      */
     public static void initAllTab() {
-        AboutForm.init();
+        ThreadUtil.execute(AboutForm::init);
         MessageTypeForm.init();
-        HelpForm.init();
+        ThreadUtil.execute(HelpForm::init);
         ThreadUtil.execute(UserCaseForm::init);
-        MessageEditForm.init(null);
-        MessageManageForm.init();
-        MemberForm.init();
-        PushForm.init();
-        BoostForm.init();
-        ScheduleForm.init();
-        SettingForm.init();
-        PushHisForm.init();
+        ThreadUtil.execute(() -> MessageEditForm.init(null));
+        ThreadUtil.execute(MessageManageForm::init);
+        ThreadUtil.execute(MemberForm::init);
+        ThreadUtil.execute(PushForm::init);
+        ThreadUtil.execute(BoostForm::init);
+        ThreadUtil.execute(ScheduleForm::init);
+        ThreadUtil.execute(SettingForm::init);
+        ThreadUtil.execute(PushHisForm::init);
 
         // 检查新版版
         if (App.config.isAutoCheckUpdate()) {
