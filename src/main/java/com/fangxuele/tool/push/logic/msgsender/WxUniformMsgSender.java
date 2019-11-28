@@ -9,6 +9,7 @@ import com.fangxuele.tool.push.logic.msgmaker.WxMaTemplateMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 /**
  * <pre>
@@ -64,7 +65,7 @@ public class WxUniformMsgSender implements IMsgSender {
         } catch (Exception e) {
             sendResult.setSuccess(false);
             sendResult.setInfo(e.getMessage());
-            log.error(e.toString());
+            log.error(ExceptionUtils.getStackTrace(e));
             return sendResult;
         }
 

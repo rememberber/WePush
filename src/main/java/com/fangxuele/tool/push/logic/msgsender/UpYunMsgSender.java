@@ -5,6 +5,7 @@ import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.msgmaker.UpYunMsgMaker;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 /**
  * <pre>
@@ -62,7 +63,7 @@ public class UpYunMsgSender implements IMsgSender {
         } catch (Exception e) {
             sendResult.setSuccess(false);
             sendResult.setInfo(e.getMessage());
-            log.error(e.toString());
+            log.error(ExceptionUtils.getStackTrace(e));
         }
 
         return sendResult;

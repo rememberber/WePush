@@ -5,6 +5,7 @@ import com.fangxuele.tool.push.logic.msgmaker.WxKefuMsgMaker;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 /**
  * <pre>
@@ -41,7 +42,7 @@ public class WxKefuMsgSender implements IMsgSender {
         } catch (Exception e) {
             sendResult.setSuccess(false);
             sendResult.setInfo(e.getMessage());
-            log.error(e.toString());
+            log.error(ExceptionUtils.getStackTrace(e));
             return sendResult;
         }
 
