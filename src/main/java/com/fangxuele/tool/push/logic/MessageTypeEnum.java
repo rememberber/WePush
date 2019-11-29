@@ -27,7 +27,8 @@ public enum MessageTypeEnum {
     DING(14, "钉钉"),
     BD_YUN(15, "百度云短信"),
     QI_NIU_YUN(16, "七牛云短信"),
-    WX_UNIFORM_MESSAGE(17, "小程序-统一服务消息");
+    WX_UNIFORM_MESSAGE(17, "小程序-统一服务消息"),
+    MA_SUBSCRIBE(18, "小程序-订阅消息");
 
     private int code;
 
@@ -49,6 +50,7 @@ public enum MessageTypeEnum {
     public static final int BD_YUN_CODE = 15;
     public static final int QI_NIU_YUN_CODE = 16;
     public static final int WX_UNIFORM_MESSAGE_CODE = 17;
+    public static final int MA_SUBSCRIBE_CODE = 18;
 
     MessageTypeEnum(int code, String name) {
         this.code = code;
@@ -105,6 +107,9 @@ public enum MessageTypeEnum {
                 break;
             case 17:
                 name = WX_UNIFORM_MESSAGE.name;
+                break;
+            case 18:
+                name = MA_SUBSCRIBE.name;
                 break;
             default:
                 name = "";

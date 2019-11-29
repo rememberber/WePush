@@ -275,3 +275,20 @@ create table if not exists t_msg_wx_uniform
 
 create unique index if not exists t_msg_wx_uniform_msg_type_msg_name_uindex
     on t_msg_wx_uniform (msg_type, msg_name);
+
+create table t_msg_ma_subscribe
+(
+    id            integer
+        constraint t_msg_ma_subscribe_pk
+            primary key autoincrement,
+    msg_type      integer,
+    msg_name      text,
+    template_id   text,
+    page          text,
+    create_time   datetime,
+    modified_time datetime
+);
+
+create unique index t_msg_ma_subscribe_msg_type_msg_name_uindex
+    on t_msg_ma_subscribe (msg_type, msg_name);
+
