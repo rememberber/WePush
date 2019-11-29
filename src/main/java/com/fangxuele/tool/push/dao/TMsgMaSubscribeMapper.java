@@ -1,6 +1,9 @@
 package com.fangxuele.tool.push.dao;
 
 import com.fangxuele.tool.push.domain.TMsgMaSubscribe;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface TMsgMaSubscribeMapper {
     int deleteByPrimaryKey(Integer id);
@@ -14,4 +17,8 @@ public interface TMsgMaSubscribeMapper {
     int updateByPrimaryKeySelective(TMsgMaSubscribe record);
 
     int updateByPrimaryKey(TMsgMaSubscribe record);
+
+    List<TMsgMaSubscribe> selectByMsgTypeAndMsgName(@Param("msgType") int msgType, @Param("msgName") String msgName);
+
+    int updateByMsgTypeAndMsgName(TMsgMaSubscribe tMsgMaSubscribe);
 }
