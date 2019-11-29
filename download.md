@@ -3,6 +3,7 @@
 <details>
 <summary>Windows</summary>
 
+[WePush-v4.2.0_191129-x64-Setup.exe](http://download.zhoubochina.com/exe/WePush-v4.2.0_191129-x64-Setup.exe)  
 [WePush-v4.1.1_191027-x64-Setup.exe](http://download.zhoubochina.com/exe/WePush-v4.1.1_191027-x64-Setup.exe)  
 [WePush-v4.1.0_190930-x64-Setup.exe](http://download.zhoubochina.com/exe/WePush-v4.1.0_190930-x64-Setup.exe)  
 [WePush-v4.0.0_190928-x64-Setup.exe](http://download.zhoubochina.com/exe/WePush-v4.0.0_190928-x64-Setup.exe)  
@@ -115,27 +116,15 @@
 <details>
 <summary>Linux</summary>
 
+[v4.2.0_191129](http://download.zhoubochina.com/linux/WePush-4.2.0.zip)  
 [v4.1.1_191027](http://download.zhoubochina.com/linux/WePush-4.1.1.zip)  
-[v4.1.0_190930](http://download.zhoubochina.com/linux/WePush-4.1.0.zip)  
-[v4.0.0_190928](http://download.zhoubochina.com/linux/WePush-4.0.0.zip)  
-[v3.9.0_190915](http://download.zhoubochina.com/linux/WePush-3.9.0.zip)  
-[v3.8.0_190909](http://download.zhoubochina.com/linux/WePush-3.8.0.zip)  
-[v3.7.0_190904](http://download.zhoubochina.com/linux/WePush-3.7.0.zip)  
-[v3.6.3_190825](http://download.zhoubochina.com/linux/WePush-3.6.3.zip)  
-[v3.6.2_190811](http://download.zhoubochina.com/linux/WePush-3.6.2.zip)  
-[v3.6.1_190728](http://download.zhoubochina.com/linux/WePush-3.6.1.zip)  
-[v3.6.0_190721](http://download.zhoubochina.com/linux/WePush-3.6.0.zip)  
-[v3.5.0_190713](http://download.zhoubochina.com/linux/WePush-3.5.0.zip)  
-[v3.4.2_190630](http://download.zhoubochina.com/linux/WePush-3.4.2.zip)  
-[v3.4.1_190624](http://download.zhoubochina.com/linux/WePush-3.4.1.zip)  
-[v3.4.0_190619](http://download.zhoubochina.com/linux/WePush-3.4.0.zip)  
-[v3.3.0_190608](http://download.zhoubochina.com/linux/WePush-3.3.0.zip)  
 
 </details>
 
 <details>
 <summary>Portable(各系统通用绿色便携版32/64位)</summary>
 
+[v4.2.0_191129](http://download.zhoubochina.com/linux/WePush-4.2.0.zip)  
 [v4.1.1_191027](http://download.zhoubochina.com/linux/WePush-4.1.1.zip)  
 [v4.1.0_190930](http://download.zhoubochina.com/linux/WePush-4.1.0.zip)  
 [v4.0.0_190928](http://download.zhoubochina.com/linux/WePush-4.0.0.zip)  
