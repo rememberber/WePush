@@ -27,6 +27,9 @@ public class MsgSenderFactory {
             case MessageTypeEnum.MA_TEMPLATE_CODE:
                 iMsgSender = new WxMaTemplateMsgSender();
                 break;
+            case MessageTypeEnum.MA_SUBSCRIBE_CODE:
+                iMsgSender = new WxMaSubscribeMsgSender();
+                break;
             case MessageTypeEnum.KEFU_CODE:
                 iMsgSender = new WxKefuMsgSender();
                 break;
