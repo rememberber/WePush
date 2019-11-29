@@ -27,6 +27,9 @@ public class MsgFormFactory {
             case MessageTypeEnum.MA_TEMPLATE_CODE:
                 iMsgForm = MaTemplateMsgForm.getInstance();
                 break;
+            case MessageTypeEnum.MA_SUBSCRIBE_CODE:
+                iMsgForm = MaSubscribeMsgForm.getInstance();
+                break;
             case MessageTypeEnum.KEFU_CODE:
                 iMsgForm = KefuMsgForm.getInstance();
                 break;

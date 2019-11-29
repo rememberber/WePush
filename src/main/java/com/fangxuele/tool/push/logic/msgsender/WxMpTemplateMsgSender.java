@@ -15,6 +15,7 @@ import me.chanjar.weixin.common.util.http.apache.DefaultApacheHttpClientBuilder;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
 import me.chanjar.weixin.mp.config.impl.WxMpDefaultConfigImpl;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.Consts;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -70,7 +71,7 @@ public class WxMpTemplateMsgSender implements IMsgSender {
         } catch (Exception e) {
             sendResult.setSuccess(false);
             sendResult.setInfo(e.getMessage());
-            log.error(e.toString());
+            log.error(ExceptionUtils.getStackTrace(e));
             return sendResult;
         }
 

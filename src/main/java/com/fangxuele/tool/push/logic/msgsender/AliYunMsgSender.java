@@ -10,6 +10,7 @@ import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.msgmaker.AliyunMsgMaker;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 /**
  * <pre>
@@ -56,7 +57,7 @@ public class AliYunMsgSender implements IMsgSender {
         } catch (Exception e) {
             sendResult.setSuccess(false);
             sendResult.setInfo(e.getMessage());
-            log.error(e.toString());
+            log.error(ExceptionUtils.getStackTrace(e));
         }
 
         return sendResult;

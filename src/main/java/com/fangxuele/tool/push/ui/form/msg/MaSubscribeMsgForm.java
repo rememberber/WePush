@@ -1,8 +1,8 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
-import com.fangxuele.tool.push.dao.TMsgMaTemplateMapper;
+import com.fangxuele.tool.push.dao.TMsgMaSubscribeMapper;
 import com.fangxuele.tool.push.dao.TTemplateDataMapper;
-import com.fangxuele.tool.push.domain.TMsgMaTemplate;
+import com.fangxuele.tool.push.domain.TMsgMaSubscribe;
 import com.fangxuele.tool.push.domain.TTemplateData;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
@@ -27,22 +27,20 @@ import java.util.Set;
 
 /**
  * <pre>
- * MaTemplateMsgForm
+ * MaSubscribeMsgForm
  * </pre>
  *
  * @author <a href="https://github.com/rememberber">Zhou Bo</a>
- * @since 2019/6/3.
+ * @since 2019/11/29.
  */
 @Getter
-public class MaTemplateMsgForm implements IMsgForm {
+public class MaSubscribeMsgForm implements IMsgForm {
     private JPanel templateMsgPanel;
     private JLabel templateIdLabel;
     private JTextField msgTemplateIdTextField;
     private JLabel templateUrlLabel;
     private JTextField msgTemplateUrlTextField;
     private JPanel templateMsgDataPanel;
-    private JLabel templateKeyWordLabel;
-    private JTextField msgTemplateKeyWordTextField;
     private JLabel templateMsgNameLabel;
     private JTextField templateDataNameTextField;
     private JLabel templateMsgValueLabel;
@@ -52,12 +50,12 @@ public class MaTemplateMsgForm implements IMsgForm {
     private JButton templateMsgDataAddButton;
     private JTable templateMsgDataTable;
 
-    private static MaTemplateMsgForm maTemplateMsgForm;
+    private static MaSubscribeMsgForm maSubscribeMsgForm;
 
-    private static TMsgMaTemplateMapper msgMaTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMaTemplateMapper.class);
+    private static TMsgMaSubscribeMapper msgMaSubscribeMapper = MybatisUtil.getSqlSession().getMapper(TMsgMaSubscribeMapper.class);
     private static TTemplateDataMapper templateDataMapper = MybatisUtil.getSqlSession().getMapper(TTemplateDataMapper.class);
 
-    public MaTemplateMsgForm() {
+    public MaSubscribeMsgForm() {
         // 模板数据-添加 按钮事件
         templateMsgDataAddButton.addActionListener(e -> {
             String[] data = new String[3];
@@ -100,19 +98,18 @@ public class MaTemplateMsgForm implements IMsgForm {
     @Override
     public void init(String msgName) {
         clearAllField();
-        List<TMsgMaTemplate> tMsgMaTemplateList = msgMaTemplateMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.MA_TEMPLATE_CODE, msgName);
+        List<TMsgMaSubscribe> tMsgMaSubscribeList = msgMaSubscribeMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.MA_SUBSCRIBE_CODE, msgName);
         Integer msgId = 0;
-        if (tMsgMaTemplateList.size() > 0) {
-            TMsgMaTemplate tMsgMaTemplate = tMsgMaTemplateList.get(0);
-            msgId = tMsgMaTemplate.getId();
-            getInstance().getMsgTemplateIdTextField().setText(tMsgMaTemplate.getTemplateId());
-            getInstance().getMsgTemplateUrlTextField().setText(tMsgMaTemplate.getPage());
-            getInstance().getMsgTemplateKeyWordTextField().setText(tMsgMaTemplate.getEmphasisKeyword());
+        if (tMsgMaSubscribeList.size() > 0) {
+            TMsgMaSubscribe tMsgMaSubscribe = tMsgMaSubscribeList.get(0);
+            msgId = tMsgMaSubscribe.getId();
+            getInstance().getMsgTemplateIdTextField().setText(tMsgMaSubscribe.getTemplateId());
+            getInstance().getMsgTemplateUrlTextField().setText(tMsgMaSubscribe.getPage());
         }
 
         initTemplateDataTable();
         // 模板消息Data表
-        List<TTemplateData> templateDataList = templateDataMapper.selectByMsgTypeAndMsgId(MessageTypeEnum.MA_TEMPLATE_CODE, msgId);
+        List<TTemplateData> templateDataList = templateDataMapper.selectByMsgTypeAndMsgId(MessageTypeEnum.MA_SUBSCRIBE_CODE, msgId);
         String[] headerNames = {"Name", "Value", "Color", "操作"};
         Object[][] cellData = new String[templateDataList.size()][headerNames.length];
         for (int i = 0; i < templateDataList.size(); i++) {
@@ -139,10 +136,10 @@ public class MaTemplateMsgForm implements IMsgForm {
         int msgId = 0;
         boolean existSameMsg = false;
 
-        List<TMsgMaTemplate> tMsgMaTemplateList = msgMaTemplateMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.MA_TEMPLATE_CODE, msgName);
-        if (tMsgMaTemplateList.size() > 0) {
+        List<TMsgMaSubscribe> tMsgMaSubscribeList = msgMaSubscribeMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.MA_SUBSCRIBE_CODE, msgName);
+        if (tMsgMaSubscribeList.size() > 0) {
             existSameMsg = true;
-            msgId = tMsgMaTemplateList.get(0).getId();
+            msgId = tMsgMaSubscribeList.get(0).getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -155,31 +152,29 @@ public class MaTemplateMsgForm implements IMsgForm {
         if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
             String templateId = getInstance().getMsgTemplateIdTextField().getText();
             String templateUrl = getInstance().getMsgTemplateUrlTextField().getText();
-            String templateKeyWord = getInstance().getMsgTemplateKeyWordTextField().getText();
 
             String now = SqliteUtil.nowDateForSqlite();
 
-            TMsgMaTemplate tMsgMaTemplate = new TMsgMaTemplate();
-            tMsgMaTemplate.setMsgType(MessageTypeEnum.MA_TEMPLATE_CODE);
-            tMsgMaTemplate.setMsgName(msgName);
-            tMsgMaTemplate.setTemplateId(templateId);
-            tMsgMaTemplate.setPage(templateUrl);
-            tMsgMaTemplate.setEmphasisKeyword(templateKeyWord);
-            tMsgMaTemplate.setCreateTime(now);
-            tMsgMaTemplate.setModifiedTime(now);
+            TMsgMaSubscribe tMsgMaSubscribe = new TMsgMaSubscribe();
+            tMsgMaSubscribe.setMsgType(MessageTypeEnum.MA_SUBSCRIBE_CODE);
+            tMsgMaSubscribe.setMsgName(msgName);
+            tMsgMaSubscribe.setTemplateId(templateId);
+            tMsgMaSubscribe.setPage(templateUrl);
+            tMsgMaSubscribe.setCreateTime(now);
+            tMsgMaSubscribe.setModifiedTime(now);
 
             if (existSameMsg) {
-                msgMaTemplateMapper.updateByMsgTypeAndMsgName(tMsgMaTemplate);
+                msgMaSubscribeMapper.updateByMsgTypeAndMsgName(tMsgMaSubscribe);
             } else {
-                msgMaTemplateMapper.insertSelective(tMsgMaTemplate);
-                msgId = tMsgMaTemplate.getId();
+                msgMaSubscribeMapper.insertSelective(tMsgMaSubscribe);
+                msgId = tMsgMaSubscribe.getId();
             }
 
             // 保存模板数据
 
             // 如果是覆盖保存，则先清空之前的模板数据
             if (existSameMsg) {
-                templateDataMapper.deleteByMsgTypeAndMsgId(MessageTypeEnum.MA_TEMPLATE_CODE, msgId);
+                templateDataMapper.deleteByMsgTypeAndMsgId(MessageTypeEnum.MA_SUBSCRIBE_CODE, msgId);
             }
 
             // 如果table为空，则初始化
@@ -197,7 +192,7 @@ public class MaTemplateMsgForm implements IMsgForm {
                 String color = ((String) tableModel.getValueAt(i, 2)).trim();
 
                 TTemplateData tTemplateData = new TTemplateData();
-                tTemplateData.setMsgType(MessageTypeEnum.MA_TEMPLATE_CODE);
+                tTemplateData.setMsgType(MessageTypeEnum.MA_SUBSCRIBE_CODE);
                 tTemplateData.setMsgId(msgId);
                 tTemplateData.setName(name);
                 tTemplateData.setValue(value);
@@ -213,11 +208,11 @@ public class MaTemplateMsgForm implements IMsgForm {
         }
     }
 
-    public static MaTemplateMsgForm getInstance() {
-        if (maTemplateMsgForm == null) {
-            maTemplateMsgForm = new MaTemplateMsgForm();
+    public static MaSubscribeMsgForm getInstance() {
+        if (maSubscribeMsgForm == null) {
+            maSubscribeMsgForm = new MaSubscribeMsgForm();
         }
-        return maTemplateMsgForm;
+        return maSubscribeMsgForm;
     }
 
     /**
@@ -250,7 +245,6 @@ public class MaTemplateMsgForm implements IMsgForm {
     public static void clearAllField() {
         getInstance().getMsgTemplateIdTextField().setText("");
         getInstance().getMsgTemplateUrlTextField().setText("");
-        getInstance().getMsgTemplateKeyWordTextField().setText("");
         getInstance().getTemplateDataNameTextField().setText("");
         getInstance().getTemplateDataValueTextField().setText("");
         getInstance().getTemplateDataColorTextField().setText("");
@@ -277,7 +271,7 @@ public class MaTemplateMsgForm implements IMsgForm {
         templateMsgPanel = new JPanel();
         templateMsgPanel.setLayout(new GridLayoutManager(2, 1, new Insets(10, 15, 0, 0), -1, -1));
         panel1.add(templateMsgPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        templateMsgPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "小程序-模板消息编辑", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, templateMsgPanel.getFont())));
+        templateMsgPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "小程序-订阅消息编辑", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, templateMsgPanel.getFont())));
         templateMsgDataPanel = new JPanel();
         templateMsgDataPanel.setLayout(new GridLayoutManager(3, 4, new Insets(10, 0, 0, 0), -1, -1));
         templateMsgPanel.add(templateMsgDataPanel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
@@ -312,7 +306,7 @@ public class MaTemplateMsgForm implements IMsgForm {
         templateMsgColorLabel.setToolTipText("示例值：FF0000");
         templateMsgDataPanel.add(templateMsgColorLabel, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(3, 2, new Insets(0, 0, 5, 0), -1, -1));
+        panel2.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 5, 0), -1, -1));
         templateMsgPanel.add(panel2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         templateIdLabel = new JLabel();
         templateIdLabel.setText("模板ID *");
@@ -320,21 +314,15 @@ public class MaTemplateMsgForm implements IMsgForm {
         msgTemplateIdTextField = new JTextField();
         panel2.add(msgTemplateIdTextField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         templateUrlLabel = new JLabel();
-        templateUrlLabel.setText("跳转URL");
+        templateUrlLabel.setText("跳转页面");
         panel2.add(templateUrlLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         msgTemplateUrlTextField = new JTextField();
         panel2.add(msgTemplateUrlTextField, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        templateKeyWordLabel = new JLabel();
-        templateKeyWordLabel.setText("放大关键词");
-        panel2.add(templateKeyWordLabel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        msgTemplateKeyWordTextField = new JTextField();
-        panel2.add(msgTemplateKeyWordTextField, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         templateMsgNameLabel.setLabelFor(templateDataNameTextField);
         templateMsgValueLabel.setLabelFor(templateDataValueTextField);
         templateMsgColorLabel.setLabelFor(templateDataColorTextField);
         templateIdLabel.setLabelFor(msgTemplateIdTextField);
         templateUrlLabel.setLabelFor(msgTemplateUrlTextField);
-        templateKeyWordLabel.setLabelFor(msgTemplateUrlTextField);
     }
 
     /**

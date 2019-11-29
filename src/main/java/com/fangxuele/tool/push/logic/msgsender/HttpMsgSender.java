@@ -20,6 +20,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.net.HttpCookie;
 import java.net.InetSocketAddress;
@@ -124,7 +125,7 @@ public class HttpMsgSender implements IMsgSender {
         } catch (Exception e) {
             sendResult.setSuccess(false);
             sendResult.setInfo(e.toString());
-            log.error(e.toString());
+            log.error(ExceptionUtils.getStackTrace(e));
             return sendResult;
         }
         StringBuilder headerBuilder = StrUtil.builder();
@@ -260,7 +261,7 @@ public class HttpMsgSender implements IMsgSender {
         } catch (Exception e) {
             sendResult.setSuccess(false);
             sendResult.setInfo(e.getMessage());
-            log.error(e.toString());
+            log.error(ExceptionUtils.getStackTrace(e));
             return sendResult;
         }
     }

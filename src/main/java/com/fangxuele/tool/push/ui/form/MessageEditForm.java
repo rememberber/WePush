@@ -88,6 +88,9 @@ public class MessageEditForm {
             case MessageTypeEnum.MA_TEMPLATE_CODE:
                 messageEditForm.getMsgEditorPanel().add(MaTemplateMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
                 break;
+            case MessageTypeEnum.MA_SUBSCRIBE_CODE:
+                messageEditForm.getMsgEditorPanel().add(MaSubscribeMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
+                break;
             case MessageTypeEnum.KEFU_CODE:
                 messageEditForm.getMsgEditorPanel().add(KefuMsgForm.getInstance().getKefuMsgPanel(), gridConstraintsRow0);
                 break;

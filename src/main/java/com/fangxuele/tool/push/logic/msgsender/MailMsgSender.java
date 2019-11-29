@@ -10,6 +10,7 @@ import com.fangxuele.tool.push.logic.msgmaker.MailMsgMaker;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.io.File;
 import java.util.List;
@@ -61,7 +62,7 @@ public class MailMsgSender implements IMsgSender {
         } catch (Exception e) {
             sendResult.setSuccess(false);
             sendResult.setInfo(e.getMessage());
-            log.error(e.toString());
+            log.error(ExceptionUtils.getStackTrace(e));
         }
 
         return sendResult;
