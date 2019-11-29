@@ -143,7 +143,8 @@ public class MsgEditListener {
                 String fillParaName = "";
                 String paraDemo = "";
                 if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE || msgType == MessageTypeEnum.KEFU_PRIORITY_CODE
-                        || msgType == MessageTypeEnum.KEFU_CODE || msgType == MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE) {
+                        || msgType == MessageTypeEnum.KEFU_CODE || msgType == MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE
+                        || msgType == MessageTypeEnum.MA_SUBSCRIBE_CODE) {
                     fillParaName = "预览消息用户的openId";
                     paraDemo = "ox_kxwS_gGt63adS-zemlETtuvw1;ox_kxwS_gGt63adS-zemlETtuvw2";
                 } else if (msgType == MessageTypeEnum.MA_TEMPLATE_CODE) {

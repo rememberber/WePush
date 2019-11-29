@@ -21,4 +21,8 @@ public interface TMsgMaSubscribeMapper {
     List<TMsgMaSubscribe> selectByMsgTypeAndMsgName(@Param("msgType") int msgType, @Param("msgName") String msgName);
 
     int updateByMsgTypeAndMsgName(TMsgMaSubscribe tMsgMaSubscribe);
+
+    List<TMsgMaSubscribe> selectByMsgType(int msgType);
+
+    int deleteByMsgTypeAndName(@Param("msgType") int msgType, @Param("msgName") String msgName);
 }

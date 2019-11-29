@@ -175,6 +175,7 @@ public class PushControl {
                 break;
             }
             case MessageTypeEnum.MA_TEMPLATE_CODE:
+            case MessageTypeEnum.MA_SUBSCRIBE_CODE:
                 if (StringUtils.isEmpty(App.config.getMiniAppAppId()) || StringUtils.isEmpty(App.config.getMiniAppAppSecret())) {
                     JOptionPane.showMessageDialog(settingForm.getSettingPanel(), "请先在设置中填写并保存小程序相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);

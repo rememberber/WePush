@@ -26,10 +26,22 @@
         where msg_type = #{msgType,jdbcType=INTEGER}
         and msg_name = #{msgName,jdbcType=VARCHAR}
     </select>
+    <select id="selectByMsgType" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_msg_ma_subscribe
+        where msg_type = #{msgType,jdbcType=INTEGER}
+    </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
         delete
         from t_msg_ma_subscribe
         where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <delete id="deleteByMsgTypeAndName">
+        delete
+        from t_msg_ma_subscribe
+        where msg_type = #{msgType,jdbcType=INTEGER}
+          and msg_name = #{msgName,jdbcType=VARCHAR}
     </delete>
     <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TMsgMaSubscribe">
         insert into t_msg_ma_subscribe (id, msg_type, msg_name,
@@ -39,7 +51,8 @@
                 #{templateId,jdbcType=VARCHAR}, #{page,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR},
                 #{modifiedTime,jdbcType=VARCHAR})
     </insert>
-    <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TMsgMaSubscribe">
+    <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TMsgMaSubscribe" useGeneratedKeys="true"
+            keyColumn="id" keyProperty="id">
         insert into t_msg_ma_subscribe
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">

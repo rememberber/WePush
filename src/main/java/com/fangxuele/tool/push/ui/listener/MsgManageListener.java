@@ -8,6 +8,7 @@ import com.fangxuele.tool.push.dao.TMsgDingMapper;
 import com.fangxuele.tool.push.dao.TMsgHttpMapper;
 import com.fangxuele.tool.push.dao.TMsgKefuMapper;
 import com.fangxuele.tool.push.dao.TMsgKefuPriorityMapper;
+import com.fangxuele.tool.push.dao.TMsgMaSubscribeMapper;
 import com.fangxuele.tool.push.dao.TMsgMaTemplateMapper;
 import com.fangxuele.tool.push.dao.TMsgMailMapper;
 import com.fangxuele.tool.push.dao.TMsgMpTemplateMapper;
@@ -42,6 +43,7 @@ public class MsgManageListener {
     private static TMsgKefuPriorityMapper msgKefuPriorityMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuPriorityMapper.class);
     private static TMsgWxUniformMapper wxUniformMapper = MybatisUtil.getSqlSession().getMapper(TMsgWxUniformMapper.class);
     private static TMsgMaTemplateMapper msgMaTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMaTemplateMapper.class);
+    private static TMsgMaSubscribeMapper msgMaSubscribeMapper = MybatisUtil.getSqlSession().getMapper(TMsgMaSubscribeMapper.class);
     private static TMsgMpTemplateMapper msgMpTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMpTemplateMapper.class);
     private static TMsgSmsMapper msgSmsMapper = MybatisUtil.getSqlSession().getMapper(TMsgSmsMapper.class);
     private static TMsgMailMapper msgMailMapper = MybatisUtil.getSqlSession().getMapper(TMsgMailMapper.class);
@@ -97,6 +99,8 @@ public class MsgManageListener {
                                 wxUniformMapper.deleteByMsgTypeAndName(msgType, msgName);
                             } else if (msgType == MessageTypeEnum.MA_TEMPLATE_CODE) {
                                 msgMaTemplateMapper.deleteByMsgTypeAndName(msgType, msgName);
+                            } else if (msgType == MessageTypeEnum.MA_SUBSCRIBE_CODE) {
+                                msgMaSubscribeMapper.deleteByMsgTypeAndName(msgType, msgName);
                             } else if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE) {
                                 msgMpTemplateMapper.deleteByMsgTypeAndName(msgType, msgName);
                             } else if (msgType == MessageTypeEnum.EMAIL_CODE) {

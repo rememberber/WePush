@@ -32,6 +32,10 @@ public class MessageTypeListener {
             App.config.setMsgType(MessageTypeEnum.MA_TEMPLATE_CODE);
             saveType();
         });
+        messageTypeForm.getMaSubscribeRadioButton().addActionListener(e -> {
+            App.config.setMsgType(MessageTypeEnum.MA_SUBSCRIBE_CODE);
+            saveType();
+        });
         messageTypeForm.getKefuRadioButton().addActionListener(e -> {
             App.config.setMsgType(MessageTypeEnum.KEFU_CODE);
             saveType();
