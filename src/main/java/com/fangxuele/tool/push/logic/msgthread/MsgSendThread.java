@@ -62,8 +62,8 @@ public class MsgSendThread extends BaseMsgThread {
                     PushForm.getInstance().getPushSuccessCount().setText(String.valueOf(PushData.successRecords));
 
                     // 当前线程发送成功+1
-                    currentThreadSuccessCount.set(currentThreadSuccessCount.get() + 1);
-                    pushThreadTable.setValueAt(currentThreadSuccessCount.get(), tableRow, 2);
+                    successCountLocal.set(successCountLocal.get() + 1);
+                    pushTableLocal.get().setValueAt(successCountLocal.get(), tableRow, 2);
 
                     // 保存发送成功
                     PushData.sendSuccessList.add(msgData);
@@ -79,12 +79,12 @@ public class MsgSendThread extends BaseMsgThread {
                     ConsoleUtil.consoleOnly("发送失败:" + sendResult.getInfo() + ";msgData:" + JSONUtil.toJsonPrettyStr(msgData));
 
                     // 当前线程发送失败+1
-                    currentThreadFailCount.set(currentThreadFailCount.get() + 1);
-                    pushThreadTable.setValueAt(currentThreadFailCount.get(), tableRow, 3);
+                    failCountLocal.set(failCountLocal.get() + 1);
+                    pushTableLocal.get().setValueAt(failCountLocal.get(), tableRow, 3);
                 }
 
                 // 当前线程进度条
-                pushThreadTable.setValueAt((int) ((double) (i + 1) / list.size() * 100), tableRow, 5);
+                pushTableLocal.get().setValueAt((int) ((double) (i + 1) / list.size() * 100), tableRow, 5);
 
                 // 总进度条
                 PushForm.getInstance().getPushTotalProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
@@ -95,8 +95,9 @@ public class MsgSendThread extends BaseMsgThread {
         } catch (Exception e) {
             logger.error(ExceptionUtils.getStackTrace(e));
         } finally {
-            currentThreadSuccessCount.remove();
-            currentThreadFailCount.remove();
+            successCountLocal.remove();
+            failCountLocal.remove();
+            pushTableLocal.remove();
         }
 
     }
