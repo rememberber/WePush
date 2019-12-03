@@ -50,12 +50,12 @@ public class BaseMsgThread extends Thread {
     /**
      * 当前线程成功数
      */
-    public int currentThreadSuccessCount;
+    public final ThreadLocal<Integer> currentThreadSuccessCount = ThreadLocal.withInitial(() -> 0);
 
     /**
      * 当前线程失败数
      */
-    public int currentThreadFailCount;
+    public final ThreadLocal<Integer> currentThreadFailCount = ThreadLocal.withInitial(() -> 0);
 
     /**
      * 线程列表table
@@ -96,10 +96,10 @@ public class BaseMsgThread extends Thread {
 
         // 初始化线程列表行
         pushThreadTable = PushForm.getInstance().getPushThreadTable();
-        currentThreadSuccessCount = 0;
-        currentThreadFailCount = 0;
-        pushThreadTable.setValueAt(currentThreadSuccessCount, tableRow, 2);
-        pushThreadTable.setValueAt(currentThreadFailCount, tableRow, 3);
+        currentThreadSuccessCount.set(0);
+        currentThreadFailCount.set(0);
+        pushThreadTable.setValueAt(currentThreadSuccessCount.get(), tableRow, 2);
+        pushThreadTable.setValueAt(currentThreadFailCount.get(), tableRow, 3);
         pushThreadTable.setValueAt(list.size(), tableRow, 4);
         pushThreadTable.setValueAt(0, tableRow, 5);
     }
