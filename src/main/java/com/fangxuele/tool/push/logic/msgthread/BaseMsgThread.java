@@ -5,7 +5,6 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
-import me.chanjar.weixin.mp.api.WxMpService;
 
 import javax.swing.*;
 import java.util.List;
@@ -33,19 +32,9 @@ public class BaseMsgThread extends Thread {
     private int endIndex;
 
     /**
-     * 页大小
-     */
-    private int pageSize;
-
-    /**
      * 当前线程要发送的list
      */
     public List<String[]> list;
-
-    /**
-     * 微信工具服务
-     */
-    public WxMpService wxMpService;
 
     /**
      * 当前线程成功数
@@ -89,8 +78,7 @@ public class BaseMsgThread extends Thread {
      * 初始化当前线程
      */
     public void initCurrentThread() {
-        ConsoleUtil.consoleWithLog("线程" + this.getName() + "负责处理第:" + startIndex + "-" +
-                endIndex + "条数据");
+        ConsoleUtil.consoleWithLog("线程" + this.getName() + "负责处理第:" + startIndex + "-" + endIndex + "条数据");
 
         list = PushData.toSendList.subList(startIndex, endIndex);
 
@@ -108,42 +96,9 @@ public class BaseMsgThread extends Thread {
      * 当前线程结束
      */
     public void currentThreadFinish() {
-        ConsoleUtil.consoleWithLog(this.getName() + "已处理完第" + startIndex + "-" +
-                endIndex + "条的数据");
+        ConsoleUtil.consoleWithLog(this.getName() + "已处理完第" + startIndex + "-" + endIndex + "条的数据");
 
         PushData.increaseStoppedThread();
-    }
-
-    public WxMpService getWxMpService() {
-        return wxMpService;
-    }
-
-    public void setWxMpService(WxMpService wxMpService) {
-        this.wxMpService = wxMpService;
-    }
-
-    public int getPageSize() {
-        return pageSize;
-    }
-
-    public void setPageSize(int pageSize) {
-        this.pageSize = pageSize;
-    }
-
-    public int getStartIndex() {
-        return startIndex;
-    }
-
-    public void setStartIndex(int startIndex) {
-        this.startIndex = startIndex;
-    }
-
-    public int getEndIndex() {
-        return endIndex;
-    }
-
-    public void setEndIndex(int endIndex) {
-        this.endIndex = endIndex;
     }
 
     public int getTableRow() {
