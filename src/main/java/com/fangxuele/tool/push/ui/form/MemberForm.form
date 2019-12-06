@@ -150,7 +150,7 @@
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <grid id="c436a" binding="memberTabUpPanel" layout-manager="GridLayoutManager" row-count="5" column-count="6" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                  <grid id="c436a" binding="memberTabUpPanel" layout-manager="GridLayoutManager" row-count="2" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                     <margin top="0" left="5" bottom="5" right="0"/>
                     <constraints>
                       <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -160,7 +160,7 @@
                     <children>
                       <component id="9907d" class="javax.swing.JLabel" binding="memberTabCountLabel">
                         <constraints>
-                          <grid row="0" column="0" row-span="4" col-span="3" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <font size="72"/>
@@ -170,18 +170,18 @@
                       </component>
                       <component id="decd8" class="javax.swing.JProgressBar" binding="memberTabImportProgressBar">
                         <constraints>
-                          <grid row="4" column="0" row-span="1" col-span="6" vsize-policy="0" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="1" column="0" row-span="1" col-span="4" vsize-policy="0" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties/>
                       </component>
                       <hspacer id="c4bad">
                         <constraints>
-                          <grid row="0" column="5" row-span="2" col-span="1" vsize-policy="1" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="1" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                       </hspacer>
                       <component id="b5052" class="javax.swing.JLabel">
                         <constraints>
-                          <grid row="0" column="3" row-span="4" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text value="已导入"/>
@@ -189,7 +189,7 @@
                       </component>
                       <component id="7e103" class="javax.swing.JButton" binding="clearImportButton">
                         <constraints>
-                          <grid row="0" column="4" row-span="4" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <text value="清除"/>
@@ -287,7 +287,7 @@
                               </component>
                             </children>
                           </grid>
-                          <grid id="b86d2" binding="importFromWeixinPanel" layout-manager="GridLayoutManager" row-count="4" column-count="7" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                          <grid id="b86d2" binding="importFromWeixinPanel" layout-manager="GridLayoutManager" row-count="4" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                             <margin top="0" left="15" bottom="0" right="5"/>
                             <constraints>
                               <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -299,7 +299,7 @@
                             <children>
                               <component id="a1b4b" class="javax.swing.JComboBox" binding="memberImportTagComboBox">
                                 <constraints>
-                                  <grid row="0" column="1" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                                 </constraints>
                                 <properties>
                                   <model/>
@@ -307,7 +307,7 @@
                               </component>
                               <component id="2341f" class="javax.swing.JButton" binding="memberImportAllButton">
                                 <constraints>
-                                  <grid row="3" column="0" row-span="1" col-span="7" vsize-policy="3" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                  <grid row="3" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                                 </constraints>
                                 <properties>
                                   <font style="0"/>
@@ -317,7 +317,7 @@
                               </component>
                               <component id="dd99c" class="javax.swing.JButton" binding="memberImportTagFreshButton">
                                 <constraints>
-                                  <grid row="0" column="4" row-span="1" col-span="3" vsize-policy="0" hsize-policy="1" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="1" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                                 </constraints>
                                 <properties>
                                   <font style="0"/>
@@ -327,7 +327,7 @@
                               </component>
                               <component id="26432" class="javax.swing.JButton" binding="memberImportTagButton">
                                 <constraints>
-                                  <grid row="1" column="0" row-span="1" col-span="7" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                  <grid row="1" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                                 </constraints>
                                 <properties>
                                   <font style="0"/>
@@ -337,7 +337,7 @@
                               </component>
                               <component id="62c5c" class="javax.swing.JButton" binding="memberImportTagRetainButton">
                                 <constraints>
-                                  <grid row="2" column="0" row-span="1" col-span="7" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                  <grid row="2" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                                 </constraints>
                                 <properties>
                                   <font style="0"/>
@@ -355,7 +355,7 @@
                               </component>
                             </children>
                           </grid>
-                          <grid id="e7ab0" binding="importFromWxCpPanel" layout-manager="GridLayoutManager" row-count="3" column-count="8" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                          <grid id="e7ab0" binding="importFromWxCpPanel" layout-manager="GridLayoutManager" row-count="3" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                             <margin top="8" left="15" bottom="0" right="5"/>
                             <constraints>
                               <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -367,7 +367,7 @@
                             <children>
                               <component id="17320" class="javax.swing.JComboBox" binding="wxCpTagsComboBox">
                                 <constraints>
-                                  <grid row="0" column="1" row-span="1" col-span="3" vsize-policy="3" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                                 </constraints>
                                 <properties>
                                   <model/>
@@ -375,7 +375,7 @@
                               </component>
                               <component id="c5a38" class="javax.swing.JComboBox" binding="wxCpDeptsComboBox">
                                 <constraints>
-                                  <grid row="1" column="1" row-span="1" col-span="3" vsize-policy="3" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                                 </constraints>
                                 <properties>
                                   <model/>
@@ -383,7 +383,7 @@
                               </component>
                               <component id="b909d" class="javax.swing.JButton" binding="wxCpImportAllButton">
                                 <constraints>
-                                  <grid row="2" column="0" row-span="1" col-span="8" vsize-policy="3" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                  <grid row="2" column="0" row-span="1" col-span="4" vsize-policy="3" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                                 </constraints>
                                 <properties>
                                   <font style="0"/>
@@ -393,7 +393,7 @@
                               </component>
                               <component id="d3697" class="javax.swing.JButton" binding="wxCpTagsRefreshButton">
                                 <constraints>
-                                  <grid row="0" column="4" row-span="1" col-span="3" vsize-policy="0" hsize-policy="1" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="1" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                                 </constraints>
                                 <properties>
                                   <font style="0"/>
@@ -403,7 +403,7 @@
                               </component>
                               <component id="f11d5" class="javax.swing.JButton" binding="wxCpDeptsRefreshButton">
                                 <constraints>
-                                  <grid row="1" column="4" row-span="1" col-span="3" vsize-policy="0" hsize-policy="1" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                  <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="1" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                                 </constraints>
                                 <properties>
                                   <font style="0"/>
@@ -429,7 +429,7 @@
                               </component>
                               <component id="ab826" class="javax.swing.JButton" binding="wxCpTagsImportButton">
                                 <constraints>
-                                  <grid row="0" column="7" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                  <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                                 </constraints>
                                 <properties>
                                   <icon value="icon/import_dark.png"/>
@@ -438,7 +438,7 @@
                               </component>
                               <component id="20cfc" class="javax.swing.JButton" binding="wxCpDeptsImportButton">
                                 <constraints>
-                                  <grid row="1" column="7" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                  <grid row="1" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                                 </constraints>
                                 <properties>
                                   <icon value="icon/import_dark.png"/>
@@ -447,7 +447,7 @@
                               </component>
                             </children>
                           </grid>
-                          <grid id="c482d" binding="importFromDingPanel" layout-manager="GridLayoutManager" row-count="2" column-count="8" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                          <grid id="c482d" binding="importFromDingPanel" layout-manager="GridLayoutManager" row-count="2" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                             <margin top="8" left="15" bottom="0" right="5"/>
                             <constraints>
                               <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -459,7 +459,7 @@
                             <children>
                               <component id="6b36c" class="javax.swing.JComboBox" binding="dingDeptsComboBox">
                                 <constraints>
-                                  <grid row="0" column="1" row-span="1" col-span="3" vsize-policy="3" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                                 </constraints>
                                 <properties>
                                   <model/>
@@ -467,7 +467,7 @@
                               </component>
                               <component id="2634" class="javax.swing.JButton" binding="dingImportAllButton">
                                 <constraints>
-                                  <grid row="1" column="0" row-span="1" col-span="8" vsize-policy="3" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                  <grid row="1" column="0" row-span="1" col-span="4" vsize-policy="3" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                                 </constraints>
                                 <properties>
                                   <font style="0"/>
@@ -477,7 +477,7 @@
                               </component>
                               <component id="cd9d0" class="javax.swing.JButton" binding="dingDeptsRefreshButton">
                                 <constraints>
-                                  <grid row="0" column="4" row-span="1" col-span="3" vsize-policy="0" hsize-policy="1" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="1" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                                 </constraints>
                                 <properties>
                                   <font style="0"/>
@@ -495,7 +495,7 @@
                               </component>
                               <component id="e8a64" class="javax.swing.JButton" binding="dingDeptsImportButton">
                                 <constraints>
-                                  <grid row="0" column="7" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                  <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                                 </constraints>
                                 <properties>
                                   <icon value="icon/import_dark.png"/>
