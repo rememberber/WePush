@@ -60,7 +60,7 @@ public class AboutForm {
      */
     private void $$$setupUI$$$() {
         aboutPanel = new JPanel();
-        aboutPanel.setLayout(new GridLayoutManager(10, 2, new Insets(0, 0, 0, 0), -1, -1));
+        aboutPanel.setLayout(new GridLayoutManager(9, 2, new Insets(0, 0, 0, 0), -1, -1));
         sloganLabel = new JLabel();
         sloganLabel.setIcon(new ImageIcon(getClass().getResource("/icon/logo-128.png")));
         sloganLabel.setText("");
@@ -75,37 +75,37 @@ public class AboutForm {
         qrCodeLabel.setIcon(new ImageIcon(getClass().getResource("/icon/weixin-qrcode.png")));
         qrCodeLabel.setText("");
         qrCodeLabel.setToolTipText("感谢您的鼓励和支持！");
-        aboutPanel.add(qrCodeLabel, new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        aboutPanel.add(qrCodeLabel, new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         versionLabel = new JLabel();
         Font versionLabelFont = this.$$$getFont$$$("Microsoft YaHei UI", -1, -1, versionLabel.getFont());
         if (versionLabelFont != null) versionLabel.setFont(versionLabelFont);
         versionLabel.setText("v_0.0.0");
-        aboutPanel.add(versionLabel, new GridConstraints(7, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        aboutPanel.add(versionLabel, new GridConstraints(6, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         checkUpdateLabel = new JLabel();
         Font checkUpdateLabelFont = this.$$$getFont$$$(null, Font.BOLD, -1, checkUpdateLabel.getFont());
         if (checkUpdateLabelFont != null) checkUpdateLabel.setFont(checkUpdateLabelFont);
         checkUpdateLabel.setText("检查更新");
-        aboutPanel.add(checkUpdateLabel, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        aboutPanel.add(checkUpdateLabel, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         companyLabel = new JLabel();
         Font companyLabelFont = this.$$$getFont$$$("Microsoft YaHei UI", -1, -1, companyLabel.getFont());
         if (companyLabelFont != null) companyLabel.setFont(companyLabelFont);
         companyLabel.setText("<html>Fork me on Gitee: <a href='https://github.com/rememberber/wepush'>https://gitee.com/zhoubochina/WePush</a></html>");
-        aboutPanel.add(companyLabel, new GridConstraints(9, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        aboutPanel.add(companyLabel, new GridConstraints(8, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         helpDocLabel = new JLabel();
         Font helpDocLabelFont = this.$$$getFont$$$(null, Font.BOLD, -1, helpDocLabel.getFont());
         if (helpDocLabelFont != null) helpDocLabel.setFont(helpDocLabelFont);
         helpDocLabel.setText("| 帮助文档");
-        aboutPanel.add(helpDocLabel, new GridConstraints(8, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        aboutPanel.add(helpDocLabel, new GridConstraints(7, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         pushTotalLabel = new JLabel();
         pushTotalLabel.setText("<html>已累计为您推送 <b>0</b> 条消息</html>");
         pushTotalLabel.setToolTipText(" 自3.4.0版本开始算起");
-        aboutPanel.add(pushTotalLabel, new GridConstraints(5, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        aboutPanel.add(pushTotalLabel, new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
         label2.setText("专注批量推送的小而美的工具");
         aboutPanel.add(label2, new GridConstraints(2, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label3 = new JLabel();
         label3.setText("Proudly by RememBerBer 周波");
-        aboutPanel.add(label3, new GridConstraints(6, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        aboutPanel.add(label3, new GridConstraints(5, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
