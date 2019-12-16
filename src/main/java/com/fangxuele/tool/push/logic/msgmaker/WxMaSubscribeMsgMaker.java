@@ -3,7 +3,7 @@ package com.fangxuele.tool.push.logic.msgmaker;
 import cn.binarywang.wx.miniapp.bean.WxMaSubscribeData;
 import cn.binarywang.wx.miniapp.bean.WxMaSubscribeMessage;
 import com.fangxuele.tool.push.bean.TemplateData;
-import com.fangxuele.tool.push.ui.form.msg.MaTemplateMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.MaSubscribeMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.velocity.VelocityContext;
@@ -30,14 +30,14 @@ public class WxMaSubscribeMsgMaker extends BaseMsgMaker implements IMsgMaker {
      */
     @Override
     public void prepare() {
-        templateId = MaTemplateMsgForm.getInstance().getMsgTemplateIdTextField().getText().trim();
-        templateUrl = MaTemplateMsgForm.getInstance().getMsgTemplateUrlTextField().getText().trim();
+        templateId = MaSubscribeMsgForm.getInstance().getMsgTemplateIdTextField().getText().trim();
+        templateUrl = MaSubscribeMsgForm.getInstance().getMsgTemplateUrlTextField().getText().trim();
 
-        if (MaTemplateMsgForm.getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-            MaTemplateMsgForm.initTemplateDataTable();
+        if (MaSubscribeMsgForm.getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+            MaSubscribeMsgForm.initTemplateDataTable();
         }
 
-        DefaultTableModel tableModel = (DefaultTableModel) MaTemplateMsgForm.getInstance().getTemplateMsgDataTable().getModel();
+        DefaultTableModel tableModel = (DefaultTableModel) MaSubscribeMsgForm.getInstance().getTemplateMsgDataTable().getModel();
         int rowCount = tableModel.getRowCount();
         TemplateData templateData;
         templateDataList = Lists.newArrayList();
