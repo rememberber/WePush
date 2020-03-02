@@ -2,6 +2,7 @@ package com.fangxuele.tool.push.logic.msgsender;
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.api.impl.WxMaServiceImpl;
+import cn.binarywang.wx.miniapp.bean.WxMaSubscribeMessage;
 import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
 import cn.binarywang.wx.miniapp.config.impl.WxMaDefaultConfigImpl;
 import com.fangxuele.tool.push.App;
@@ -38,14 +39,14 @@ public class WxMaTemplateMsgSender implements IMsgSender {
 
         try {
             String openId = msgData[0];
-            WxMaTemplateMessage wxMaTemplateMessage = wxMaTemplateMsgMaker.makeMsg(msgData);
-            wxMaTemplateMessage.setToUser(openId);
-            wxMaTemplateMessage.setFormId(msgData[1]);
+            WxMaSubscribeMessage wxMaSubscribeMessage = new WxMaSubscribeMessage();
+            wxMaSubscribeMessage.setToUser(openId);
+            wxMaSubscribeMessage.setTemplateId(msgData[1]);
             if (PushControl.dryRun) {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
-                wxMaService.getMsgService().sendTemplateMsg(wxMaTemplateMessage);
+                wxMaService.getMsgService().sendSubscribeMsg(wxMaSubscribeMessage);
             }
         } catch (Exception e) {
             sendResult.setSuccess(false);
