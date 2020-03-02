@@ -1,6 +1,5 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
-import cn.binarywang.wx.miniapp.bean.WxMaSubscribeData;
 import cn.binarywang.wx.miniapp.bean.WxMaSubscribeMessage;
 import com.fangxuele.tool.push.bean.TemplateData;
 import com.fangxuele.tool.push.ui.form.msg.MaSubscribeMsgForm;
@@ -68,12 +67,11 @@ public class WxMaSubscribeMsgMaker extends BaseMsgMaker implements IMsgMaker {
         String templateUrlEvaluated = TemplateUtil.evaluate(templateUrl, velocityContext);
         wxMaSubscribeMessage.setPage(templateUrlEvaluated);
 
-        WxMaSubscribeData wxMaSubscribeData;
+        WxMaSubscribeMessage.Data wxMaSubscribeData;
         for (TemplateData templateData : templateDataList) {
-            wxMaSubscribeData = new WxMaSubscribeData();
+            wxMaSubscribeData = new WxMaSubscribeMessage.Data();
             wxMaSubscribeData.setName(templateData.getName());
             wxMaSubscribeData.setValue(TemplateUtil.evaluate(templateData.getValue(), velocityContext));
-            wxMaSubscribeData.setColor(templateData.getColor());
             wxMaSubscribeMessage.addData(wxMaSubscribeData);
         }
 
