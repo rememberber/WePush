@@ -222,6 +222,7 @@ public class MessageTypeForm {
         mpTemplateRadioButton.setText("公众号-模板消息");
         msgTypeListPanel.add(mpTemplateRadioButton, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         maTemplateRadioButton = new JRadioButton();
+        maTemplateRadioButton.setEnabled(false);
         maTemplateRadioButton.setText("小程序-模板消息");
         msgTypeListPanel.add(maTemplateRadioButton, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         maSubscribeRadioButton = new JRadioButton();

@@ -78,7 +78,7 @@ public class WxMpTemplateMsgMaker extends BaseMsgMaker implements IMsgMaker {
         String templateUrlEvaluated = TemplateUtil.evaluate(templateUrl, velocityContext);
         wxMessageTemplate.setUrl(templateUrlEvaluated);
         String miniAppPagePathEvaluated = TemplateUtil.evaluate(miniAppPagePath, velocityContext);
-        WxMpTemplateMessage.MiniProgram miniProgram = new WxMpTemplateMessage.MiniProgram(miniAppId, miniAppPagePathEvaluated, true);
+        WxMpTemplateMessage.MiniProgram miniProgram = new WxMpTemplateMessage.MiniProgram(miniAppId, miniAppPagePathEvaluated, false);
         wxMessageTemplate.setMiniProgram(miniProgram);
 
         WxMpTemplateData wxMpTemplateData;

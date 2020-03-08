@@ -238,7 +238,7 @@ public class MemberForm {
         memberTabDownPanel = new JPanel();
         memberTabDownPanel.setLayout(new GridLayoutManager(2, 3, new Insets(8, 15, 0, 5), -1, -1));
         importWayPanel.add(memberTabDownPanel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        memberTabDownPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "通过文件导入", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, memberTabDownPanel.getFont())));
+        memberTabDownPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "通过文件导入", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, memberTabDownPanel.getFont()), null));
         importFromFileLabel = new JLabel();
         importFromFileLabel.setHorizontalAlignment(11);
         importFromFileLabel.setHorizontalTextPosition(4);
@@ -256,7 +256,7 @@ public class MemberForm {
         memberTabCenterPanel = new JPanel();
         memberTabCenterPanel.setLayout(new GridLayoutManager(2, 1, new Insets(8, 15, 0, 5), -1, -1));
         importWayPanel.add(memberTabCenterPanel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        memberTabCenterPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "通过SQL导入", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, memberTabCenterPanel.getFont())));
+        memberTabCenterPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "通过SQL导入", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, memberTabCenterPanel.getFont()), null));
         importFromSqlButton = new JButton();
         importFromSqlButton.setIcon(new ImageIcon(getClass().getResource("/icon/import_dark.png")));
         importFromSqlButton.setText("导入");
@@ -266,7 +266,7 @@ public class MemberForm {
         importFromWeixinPanel = new JPanel();
         importFromWeixinPanel.setLayout(new GridLayoutManager(4, 3, new Insets(0, 15, 0, 5), -1, -1));
         importWayPanel.add(importFromWeixinPanel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        importFromWeixinPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "通过微信公众平台导入", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, importFromWeixinPanel.getFont())));
+        importFromWeixinPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "通过微信公众平台导入", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, importFromWeixinPanel.getFont()), null));
         memberImportTagComboBox = new JComboBox();
         final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
         memberImportTagComboBox.setModel(defaultComboBoxModel1);
@@ -302,7 +302,7 @@ public class MemberForm {
         importFromWxCpPanel = new JPanel();
         importFromWxCpPanel.setLayout(new GridLayoutManager(3, 4, new Insets(8, 15, 0, 5), -1, -1));
         importWayPanel.add(importFromWxCpPanel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        importFromWxCpPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "通过企业通讯录导入", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, importFromWxCpPanel.getFont())));
+        importFromWxCpPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "通过企业通讯录导入", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, importFromWxCpPanel.getFont()), null));
         wxCpTagsComboBox = new JComboBox();
         final DefaultComboBoxModel defaultComboBoxModel2 = new DefaultComboBoxModel();
         wxCpTagsComboBox.setModel(defaultComboBoxModel2);
@@ -346,7 +346,7 @@ public class MemberForm {
         importFromDingPanel = new JPanel();
         importFromDingPanel.setLayout(new GridLayoutManager(2, 4, new Insets(8, 15, 0, 5), -1, -1));
         importWayPanel.add(importFromDingPanel, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        importFromDingPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "通过钉钉通讯录导入", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, importFromDingPanel.getFont())));
+        importFromDingPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "通过钉钉通讯录导入", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, importFromDingPanel.getFont()), null));
         dingDeptsComboBox = new JComboBox();
         final DefaultComboBoxModel defaultComboBoxModel4 = new DefaultComboBoxModel();
         dingDeptsComboBox.setModel(defaultComboBoxModel4);
@@ -395,7 +395,7 @@ public class MemberForm {
         importFromNumPanel = new JPanel();
         importFromNumPanel.setLayout(new GridLayoutManager(1, 3, new Insets(8, 15, 0, 5), -1, -1));
         importWayPanel.add(importFromNumPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        importFromNumPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "没有变量，直接按数量发送", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, importFromNumPanel.getFont())));
+        importFromNumPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "没有变量，直接按数量发送", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, importFromNumPanel.getFont()), null));
         数量Label = new JLabel();
         数量Label.setHorizontalAlignment(11);
         数量Label.setHorizontalTextPosition(4);
