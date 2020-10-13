@@ -42,9 +42,8 @@ public class WxUniformMsgForm implements IMsgForm {
             MpTemplateMsgForm.getInstance().getMsgTemplateMiniAppidTextField().setText(tMsgWxUniform.getMaAppid());
             MpTemplateMsgForm.getInstance().getMsgTemplateMiniPagePathTextField().setText(tMsgWxUniform.getMaPagePath());
 
-            MaTemplateMsgForm.getInstance().getMsgTemplateIdTextField().setText(tMsgWxUniform.getMaTemplateId());
-            MaTemplateMsgForm.getInstance().getMsgTemplateUrlTextField().setText(tMsgWxUniform.getPage());
-            MaTemplateMsgForm.getInstance().getMsgTemplateKeyWordTextField().setText(tMsgWxUniform.getEmphasisKeyword());
+            MaSubscribeMsgForm.getInstance().getMsgTemplateIdTextField().setText(tMsgWxUniform.getMaTemplateId());
+            MaSubscribeMsgForm.getInstance().getMsgTemplateUrlTextField().setText(tMsgWxUniform.getPage());
 
             // -------------公众号模板数据开始
             MpTemplateMsgForm.selectedMsgTemplateId = tMsgWxUniform.getMpTemplateId();
@@ -74,7 +73,7 @@ public class WxUniformMsgForm implements IMsgForm {
             // -------------公众号模板数据结束
 
             // -------------小程序模板数据开始
-            MaTemplateMsgForm.initTemplateDataTable();
+            MaSubscribeMsgForm.initTemplateDataTable();
             // 模板消息Data表
             templateDataList = templateDataMapper.selectByMsgTypeAndMsgId(MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE * MessageTypeEnum.MA_TEMPLATE_CODE, msgId);
             for (int i = 0; i < templateDataList.size(); i++) {
@@ -84,12 +83,12 @@ public class WxUniformMsgForm implements IMsgForm {
                 cellData[i][2] = tTemplateData.getColor();
             }
             model = new DefaultTableModel(cellData, headerNames);
-            MaTemplateMsgForm.getInstance().getTemplateMsgDataTable().setModel(model);
-            tableColumnModel = MaTemplateMsgForm.getInstance().getTemplateMsgDataTable().getColumnModel();
+            MaSubscribeMsgForm.getInstance().getTemplateMsgDataTable().setModel(model);
+            tableColumnModel = MaSubscribeMsgForm.getInstance().getTemplateMsgDataTable().getColumnModel();
             tableColumnModel.getColumn(headerNames.length - 1).
-                    setCellRenderer(new TableInCellButtonColumn(MaTemplateMsgForm.getInstance().getTemplateMsgDataTable(), headerNames.length - 1));
+                    setCellRenderer(new TableInCellButtonColumn(MaSubscribeMsgForm.getInstance().getTemplateMsgDataTable(), headerNames.length - 1));
             tableColumnModel.getColumn(headerNames.length - 1).
-                    setCellEditor(new TableInCellButtonColumn(MaTemplateMsgForm.getInstance().getTemplateMsgDataTable(), headerNames.length - 1));
+                    setCellEditor(new TableInCellButtonColumn(MaSubscribeMsgForm.getInstance().getTemplateMsgDataTable(), headerNames.length - 1));
 
             // 设置列宽
             tableColumnModel.getColumn(3).setPreferredWidth(46);
@@ -124,9 +123,8 @@ public class WxUniformMsgForm implements IMsgForm {
             String templateMiniAppid = MpTemplateMsgForm.getInstance().getMsgTemplateMiniAppidTextField().getText();
             String templateMiniPagePath = MpTemplateMsgForm.getInstance().getMsgTemplateMiniPagePathTextField().getText();
 
-            String maTemplateId = MaTemplateMsgForm.getInstance().getMsgTemplateIdTextField().getText();
-            String page = MaTemplateMsgForm.getInstance().getMsgTemplateUrlTextField().getText();
-            String templateKeyWord = MaTemplateMsgForm.getInstance().getMsgTemplateKeyWordTextField().getText();
+            String maTemplateId = MaSubscribeMsgForm.getInstance().getMsgTemplateIdTextField().getText();
+            String page = MaSubscribeMsgForm.getInstance().getMsgTemplateUrlTextField().getText();
 
             String now = SqliteUtil.nowDateForSqlite();
 
@@ -139,7 +137,6 @@ public class WxUniformMsgForm implements IMsgForm {
             tMsgWxUniform.setMaAppid(templateMiniAppid);
             tMsgWxUniform.setMaPagePath(templateMiniPagePath);
             tMsgWxUniform.setPage(page);
-            tMsgWxUniform.setEmphasisKeyword(templateKeyWord);
             tMsgWxUniform.setCreateTime(now);
             tMsgWxUniform.setModifiedTime(now);
 
@@ -187,12 +184,12 @@ public class WxUniformMsgForm implements IMsgForm {
 
             // -------------小程序模板数据开始
             // 如果table为空，则初始化
-            if (MaTemplateMsgForm.getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-                MaTemplateMsgForm.initTemplateDataTable();
+            if (MaSubscribeMsgForm.getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+                MaSubscribeMsgForm.initTemplateDataTable();
             }
 
             // 逐行读取
-            tableModel = (DefaultTableModel) MaTemplateMsgForm.getInstance().getTemplateMsgDataTable()
+            tableModel = (DefaultTableModel) MaSubscribeMsgForm.getInstance().getTemplateMsgDataTable()
                     .getModel();
             rowCount = tableModel.getRowCount();
             for (int i = 0; i < rowCount; i++) {
@@ -228,7 +225,7 @@ public class WxUniformMsgForm implements IMsgForm {
      * 清空所有界面字段
      */
     public static void clearAllField() {
-        MaTemplateMsgForm.clearAllField();
+        MaSubscribeMsgForm.clearAllField();
         MpTemplateMsgForm.clearAllField();
     }
 }

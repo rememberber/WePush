@@ -200,8 +200,8 @@ public class SettingListener {
                 }
 
                 SettingForm.initSwitchMultiAccount();
-                WxMaTemplateMsgSender.wxMaConfigStorage = null;
-                WxMaTemplateMsgSender.wxMaService = null;
+                WxMaSubscribeMsgSender.wxMaConfigStorage = null;
+                WxMaSubscribeMsgSender.wxMaService = null;
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {

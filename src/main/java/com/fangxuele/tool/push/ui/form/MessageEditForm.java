@@ -86,8 +86,6 @@ public class MessageEditForm {
                 messageEditForm.getMsgEditorPanel().add(MpTemplateMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
                 break;
             case MessageTypeEnum.MA_TEMPLATE_CODE:
-                messageEditForm.getMsgEditorPanel().add(MaTemplateMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
-                break;
             case MessageTypeEnum.MA_SUBSCRIBE_CODE:
                 messageEditForm.getMsgEditorPanel().add(MaSubscribeMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
                 break;
@@ -101,7 +99,7 @@ public class MessageEditForm {
                 break;
             case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE:
                 messageEditForm.getMsgEditorPanel().setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
-                messageEditForm.getMsgEditorPanel().add(MaTemplateMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
+                messageEditForm.getMsgEditorPanel().add(MaSubscribeMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
                 messageEditForm.getMsgEditorPanel().add(MpTemplateMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow1);
                 break;
             case MessageTypeEnum.ALI_YUN_CODE:

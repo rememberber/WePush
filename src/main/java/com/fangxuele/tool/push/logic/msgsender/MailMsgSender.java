@@ -133,7 +133,7 @@ public class MailMsgSender implements IMsgSender {
                     mailAccount.setUser(mailUser);
                     mailAccount.setPass(mailPassword);
                     mailAccount.setSslEnable(App.config.isMailUseSSL());
-                    mailAccount.setStartttlsEnable(App.config.isMailUseStartTLS());
+                    mailAccount.setStarttlsEnable(App.config.isMailUseStartTLS());
                 }
             }
         }
