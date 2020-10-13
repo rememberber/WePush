@@ -39,7 +39,7 @@
         <lombok.version>1.18.8</lombok.version>
         <mybatis.version>3.5.3</mybatis.version>
         <sqlite-jdbc.version>3.28.0</sqlite-jdbc.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.1</junit.version>
         <httpasyncclient.version>4.1.4</httpasyncclient.version>
         <HikariCP.version>3.3.1</HikariCP.version>
         <quartz.version>2.3.1</quartz.version>
