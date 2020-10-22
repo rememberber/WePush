@@ -134,49 +134,47 @@ public class MemberListener {
         JTable memberListTable = memberForm.getMemberListTable();
 
         // 按数量导入按钮事件
-        memberForm.getImportFromNumButton().addActionListener(e -> {
-            ThreadUtil.execute(() -> {
-                if (StringUtils.isBlank(memberForm.getImportNumTextField().getText())) {
-                    JOptionPane.showMessageDialog(memberPanel, "请填写数量！", "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    return;
+        memberForm.getImportFromNumButton().addActionListener(e -> ThreadUtil.execute(() -> {
+            if (StringUtils.isBlank(memberForm.getImportNumTextField().getText())) {
+                JOptionPane.showMessageDialog(memberPanel, "请填写数量！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            int currentImported = 0;
+
+            try {
+                int importNum = Integer.parseInt(memberForm.getImportNumTextField().getText());
+                progressBar.setVisible(true);
+                progressBar.setMaximum(importNum);
+
+                PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+
+                for (int i = 0; i < importNum; i++) {
+                    String[] array = new String[1];
+                    array[0] = String.valueOf(i);
+                    PushData.allUser.add(array);
+                    currentImported++;
+                    memberCountLabel.setText(String.valueOf(currentImported));
                 }
 
-                int currentImported = 0;
+                renderMemberListTable();
 
-                try {
-                    int importNum = Integer.parseInt(memberForm.getImportNumTextField().getText());
-                    progressBar.setVisible(true);
-                    progressBar.setMaximum(importNum);
-
-                    PushData.allUser = Collections.synchronizedList(new ArrayList<>());
-
-                    for (int i = 0; i < importNum; i++) {
-                        String[] array = new String[1];
-                        array[0] = String.valueOf(i);
-                        PushData.allUser.add(array);
-                        currentImported++;
-                        memberCountLabel.setText(String.valueOf(currentImported));
-                    }
-
-                    renderMemberListTable();
-
-                    if (!PushData.fixRateScheduling) {
-                        JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
-                    }
-                } catch (Exception e1) {
-                    JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + e1.getMessage(), "失败",
-                            JOptionPane.ERROR_MESSAGE);
-                    logger.error(e1);
-                    e1.printStackTrace();
-                } finally {
-                    progressBar.setMaximum(100);
-                    progressBar.setValue(100);
-                    progressBar.setIndeterminate(false);
-                    progressBar.setVisible(false);
+                if (!PushData.fixRateScheduling) {
+                    JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
                 }
-            });
-        });
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+                e1.printStackTrace();
+            } finally {
+                progressBar.setMaximum(100);
+                progressBar.setValue(100);
+                progressBar.setIndeterminate(false);
+                progressBar.setVisible(false);
+            }
+        }));
 
         // 从文件导入按钮事件
         memberForm.getImportFromFileButton().addActionListener(e -> ThreadUtil.execute(MemberListener::importFromFile));
@@ -1208,7 +1206,6 @@ public class MemberListener {
                 JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
-                e1.printStackTrace();
             } finally {
                 DbUtil.close(conn);
                 memberForm.getImportFromSqlButton().setEnabled(true);
