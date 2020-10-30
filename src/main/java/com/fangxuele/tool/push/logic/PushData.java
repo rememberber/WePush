@@ -80,7 +80,7 @@ public class PushData {
     /**
      * 线程总数
      */
-    static int threadCount;
+    public static int threadCount;
 
     /**
      * 已处理数+1

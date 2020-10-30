@@ -160,7 +160,7 @@ public class WxMpTemplateMsgSender implements IMsgSender {
         //空闲链接的超时时间(单位ms)
         clientBuilder.setIdleConnTimeout(60000);
         //空闲链接的检测周期(单位ms)
-        clientBuilder.setCheckWaitTime(60000);
+        clientBuilder.setCheckWaitTime(3000);
         //每路最大连接数
         clientBuilder.setMaxConnPerHost(App.config.getMaxThreadPool() * 2);
         //连接池最大连接数
