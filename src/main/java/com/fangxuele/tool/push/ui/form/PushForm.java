@@ -169,7 +169,7 @@ public class PushForm {
         scheduleDetailLabel.setText("");
         pushUpPanel.add(scheduleDetailLabel, new GridConstraints(5, 8, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         countPerThread = new JLabel();
-        countPerThread.setText("每个线程平均分配：0");
+        countPerThread.setText("平均每个线程分配：0");
         pushUpPanel.add(countPerThread, new GridConstraints(2, 8, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label4 = new JLabel();
         label4.setText("预计剩余");
