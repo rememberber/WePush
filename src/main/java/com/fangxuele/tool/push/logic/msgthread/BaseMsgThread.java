@@ -97,8 +97,6 @@ public class BaseMsgThread extends Thread {
      */
     public void currentThreadFinish() {
         ConsoleUtil.consoleWithLog(this.getName() + "已处理完第" + startIndex + "-" + endIndex + "条的数据");
-
-        PushData.increaseStoppedThread();
     }
 
     public int getTableRow() {

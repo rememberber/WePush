@@ -83,11 +83,6 @@ public class PushData {
     static int threadCount;
 
     /**
-     * 已经停止了的线程总数
-     */
-    static LongAdder stoppedThreadCount = new LongAdder();
-
-    /**
      * 已处理数+1
      */
     public static void increaseProcessed() {
@@ -106,13 +101,6 @@ public class PushData {
      */
     public static void increaseFail() {
         failRecords.add(1);
-    }
-
-    /**
-     * 停止线程数+1
-     */
-    public static void increaseStoppedThread() {
-        stoppedThreadCount.add(1);
     }
 
     /**
@@ -138,7 +126,6 @@ public class PushData {
         processedRecords.reset();
         successRecords.reset();
         failRecords.reset();
-        stoppedThreadCount.reset();
         threadCount = 0;
         toSendList = Collections.synchronizedList(new LinkedList<>());
         sendSuccessList = Collections.synchronizedList(new LinkedList<>());
