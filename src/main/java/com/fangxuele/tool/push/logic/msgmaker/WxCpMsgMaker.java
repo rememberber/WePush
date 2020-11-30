@@ -3,8 +3,8 @@ package com.fangxuele.tool.push.logic.msgmaker;
 import com.fangxuele.tool.push.logic.msgsender.WxCpMsgSender;
 import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
-import me.chanjar.weixin.cp.bean.WxCpMessage;
 import me.chanjar.weixin.cp.bean.article.NewArticle;
+import me.chanjar.weixin.cp.bean.message.WxCpMessage;
 import org.apache.velocity.VelocityContext;
 
 /**
