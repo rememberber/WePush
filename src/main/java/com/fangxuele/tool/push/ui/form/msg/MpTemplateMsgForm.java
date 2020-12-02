@@ -316,7 +316,7 @@ public class MpTemplateMsgForm implements IMsgForm {
                 }
             }
 
-            if (selectedIndex > 0) {
+            if (getInstance().getTemplateListComboBox().getItemCount() > 0) {
                 getInstance().getTemplateListComboBox().setSelectedIndex(selectedIndex);
                 fillWxTemplateContentToField();
             }
