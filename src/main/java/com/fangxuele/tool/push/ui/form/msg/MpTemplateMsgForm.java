@@ -23,13 +23,16 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.plaf.FontUIResource;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
+import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -313,9 +316,11 @@ public class MpTemplateMsgForm implements IMsgForm {
                 }
             }
 
-            getInstance().getTemplateListComboBox().setSelectedIndex(selectedIndex);
+            if (selectedIndex > 0) {
+                getInstance().getTemplateListComboBox().setSelectedIndex(selectedIndex);
+                fillWxTemplateContentToField();
+            }
 
-            fillWxTemplateContentToField();
         } catch (Exception e) {
             log.error(e.toString());
         }
@@ -538,7 +543,10 @@ public class MpTemplateMsgForm implements IMsgForm {
                 resultName = currentFont.getName();
             }
         }
-        return new Font(resultName, style >= 0 ? style : currentFont.getStyle(), size >= 0 ? size : currentFont.getSize());
+        Font font = new Font(resultName, style >= 0 ? style : currentFont.getStyle(), size >= 0 ? size : currentFont.getSize());
+        boolean isMac = System.getProperty("os.name", "").toLowerCase(Locale.ENGLISH).startsWith("mac");
+        Font fontWithFallback = isMac ? new Font(font.getFamily(), font.getStyle(), font.getSize()) : new StyleContext().getFont(font.getFamily(), font.getStyle(), font.getSize());
+        return fontWithFallback instanceof FontUIResource ? fontWithFallback : new FontUIResource(fontWithFallback);
     }
 
 }
