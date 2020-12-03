@@ -96,14 +96,14 @@ public class SettingListener {
                 App.config.save();
 
                 boolean update = false;
-                List<TWxAccount> tWxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(SettingForm.WX_ACCOUNT_TYPE_MP, accountName);
+                List<TWxAccount> tWxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(UiConsts.WX_ACCOUNT_TYPE_MP, accountName);
                 if (tWxAccountList.size() > 0) {
                     update = true;
                 }
 
                 TWxAccount tWxAccount = new TWxAccount();
                 String now = SqliteUtil.nowDateForSqlite();
-                tWxAccount.setAccountType(SettingForm.WX_ACCOUNT_TYPE_MP);
+                tWxAccount.setAccountType(UiConsts.WX_ACCOUNT_TYPE_MP);
                 tWxAccount.setAccountName(accountName);
                 tWxAccount.setAppId(App.config.getWechatAppId());
                 tWxAccount.setAppSecret(App.config.getWechatAppSecret());
@@ -133,7 +133,7 @@ public class SettingListener {
         // 设置-公众号-多账号管理
         settingForm.getMpAccountManageButton().addActionListener(e -> {
             SwitchWxAccountDialog dialog = new SwitchWxAccountDialog();
-            wxAccountType = SettingForm.WX_ACCOUNT_TYPE_MP;
+            wxAccountType = UiConsts.WX_ACCOUNT_TYPE_MP;
             dialog.renderTable();
             dialog.pack();
             dialog.setVisible(true);
@@ -143,7 +143,7 @@ public class SettingListener {
         settingForm.getMpAccountSwitchComboBox().addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 String accountName = e.getItem().toString();
-                List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(SettingForm.WX_ACCOUNT_TYPE_MP, accountName);
+                List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(UiConsts.WX_ACCOUNT_TYPE_MP, accountName);
                 if (wxAccountList.size() > 0) {
                     TWxAccount tWxAccount = wxAccountList.get(0);
                     settingForm.getMpAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
@@ -178,14 +178,14 @@ public class SettingListener {
                 App.config.save();
 
                 boolean update = false;
-                List<TWxAccount> tWxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(SettingForm.WX_ACCOUNT_TYPE_MA, accountName);
+                List<TWxAccount> tWxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(UiConsts.WX_ACCOUNT_TYPE_MA, accountName);
                 if (tWxAccountList.size() > 0) {
                     update = true;
                 }
 
                 TWxAccount tWxAccount = new TWxAccount();
                 String now = SqliteUtil.nowDateForSqlite();
-                tWxAccount.setAccountType(SettingForm.WX_ACCOUNT_TYPE_MA);
+                tWxAccount.setAccountType(UiConsts.WX_ACCOUNT_TYPE_MA);
                 tWxAccount.setAccountName(accountName);
                 tWxAccount.setAppId(App.config.getMiniAppAppId());
                 tWxAccount.setAppSecret(App.config.getMiniAppAppSecret());
@@ -215,7 +215,7 @@ public class SettingListener {
         // 设置-小程序-多账号管理
         settingForm.getMaAccountManageButton().addActionListener(e -> {
             SwitchWxAccountDialog dialog = new SwitchWxAccountDialog();
-            wxAccountType = SettingForm.WX_ACCOUNT_TYPE_MA;
+            wxAccountType = UiConsts.WX_ACCOUNT_TYPE_MA;
             dialog.renderTable();
             dialog.pack();
             dialog.setVisible(true);
@@ -225,7 +225,7 @@ public class SettingListener {
         settingForm.getMaAccountSwitchComboBox().addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 String accountName = e.getItem().toString();
-                List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(SettingForm.WX_ACCOUNT_TYPE_MA, accountName);
+                List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(UiConsts.WX_ACCOUNT_TYPE_MA, accountName);
                 if (wxAccountList.size() > 0) {
                     TWxAccount tWxAccount = wxAccountList.get(0);
                     settingForm.getMaAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());

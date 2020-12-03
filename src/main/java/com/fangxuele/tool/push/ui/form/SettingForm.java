@@ -3,6 +3,7 @@ package com.fangxuele.tool.push.ui.form;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TWxAccountMapper;
 import com.fangxuele.tool.push.domain.TWxAccount;
+import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -128,16 +129,6 @@ public class SettingForm {
 
     private static SettingForm settingForm;
     private static TWxAccountMapper wxAccountMapper = MybatisUtil.getSqlSession().getMapper(TWxAccountMapper.class);
-
-    /**
-     * 多账号切换账号类型：公众号
-     */
-    public static final String WX_ACCOUNT_TYPE_MP = "mp";
-
-    /**
-     * 多账号切换账号类型：小程序
-     */
-    public static final String WX_ACCOUNT_TYPE_MA = "ma";
 
     private SettingForm() {
         UndoUtil.register(this);
@@ -291,14 +282,14 @@ public class SettingForm {
 
         // 多账号切换-公众号
         settingForm.getMpAccountSwitchComboBox().removeAllItems();
-        List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountType(WX_ACCOUNT_TYPE_MP);
+        List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountType(UiConsts.WX_ACCOUNT_TYPE_MP);
         for (TWxAccount tWxAccount : wxAccountList) {
             settingForm.getMpAccountSwitchComboBox().addItem(tWxAccount.getAccountName());
         }
         settingForm.getMpAccountSwitchComboBox().setSelectedItem(App.config.getWechatMpName());
         // 多账号切换-小程序
         settingForm.getMaAccountSwitchComboBox().removeAllItems();
-        wxAccountList = wxAccountMapper.selectByAccountType(WX_ACCOUNT_TYPE_MA);
+        wxAccountList = wxAccountMapper.selectByAccountType(UiConsts.WX_ACCOUNT_TYPE_MA);
         for (TWxAccount tWxAccount : wxAccountList) {
             settingForm.getMaAccountSwitchComboBox().addItem(tWxAccount.getAccountName());
         }

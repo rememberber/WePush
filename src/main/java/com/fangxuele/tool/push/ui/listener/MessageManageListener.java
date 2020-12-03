@@ -15,18 +15,22 @@ import com.fangxuele.tool.push.dao.TMsgMpTemplateMapper;
 import com.fangxuele.tool.push.dao.TMsgSmsMapper;
 import com.fangxuele.tool.push.dao.TMsgWxCpMapper;
 import com.fangxuele.tool.push.dao.TMsgWxUniformMapper;
+import com.fangxuele.tool.push.domain.TWxAccount;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.ui.form.MessageTypeForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
+import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 /**
  * <pre>
@@ -36,7 +40,7 @@ import java.awt.event.MouseEvent;
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
  * @since 2017/6/18.
  */
-public class MsgManageListener {
+public class MessageManageListener {
     private static final Log logger = LogFactory.get();
 
     private static TMsgKefuMapper msgKefuMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuMapper.class);
@@ -132,6 +136,23 @@ public class MsgManageListener {
             MessageTypeForm.init();
             MessageEditForm.getInstance().getMsgNameField().setText("");
             MessageEditForm.getInstance().getMsgNameField().grabFocus();
+        });
+
+
+        // 切换账号事件
+        MessageManageForm.getInstance().getAccountSwitchComboBox().addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                String accountName = e.getItem().toString();
+//                List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(SettingForm.WX_ACCOUNT_TYPE_MP, accountName);
+//                if (wxAccountList.size() > 0) {
+//                    TWxAccount tWxAccount = wxAccountList.get(0);
+//                    settingForm.getMpAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
+//                    settingForm.getWechatAppIdTextField().setText(tWxAccount.getAppId());
+//                    settingForm.getWechatAppSecretPasswordField().setText(tWxAccount.getAppSecret());
+//                    settingForm.getWechatTokenPasswordField().setText(tWxAccount.getToken());
+//                    settingForm.getWechatAesKeyPasswordField().setText(tWxAccount.getAesKey());
+//                }
+            }
         });
     }
 }

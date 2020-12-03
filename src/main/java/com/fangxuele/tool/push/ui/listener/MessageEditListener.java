@@ -33,7 +33,7 @@ import java.util.List;
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
  * @since 2017/6/18.
  */
-public class MsgEditListener {
+public class MessageEditListener {
     private static final Log logger = LogFactory.get();
 
     public static void addListeners() {

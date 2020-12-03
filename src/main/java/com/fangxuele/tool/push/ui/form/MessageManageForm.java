@@ -12,6 +12,7 @@ import com.fangxuele.tool.push.dao.TMsgMpTemplateMapper;
 import com.fangxuele.tool.push.dao.TMsgSmsMapper;
 import com.fangxuele.tool.push.dao.TMsgWxCpMapper;
 import com.fangxuele.tool.push.dao.TMsgWxUniformMapper;
+import com.fangxuele.tool.push.dao.TWxAccountMapper;
 import com.fangxuele.tool.push.domain.TMsgDing;
 import com.fangxuele.tool.push.domain.TMsgHttp;
 import com.fangxuele.tool.push.domain.TMsgKefu;
@@ -23,7 +24,9 @@ import com.fangxuele.tool.push.domain.TMsgMpTemplate;
 import com.fangxuele.tool.push.domain.TMsgSms;
 import com.fangxuele.tool.push.domain.TMsgWxCp;
 import com.fangxuele.tool.push.domain.TMsgWxUniform;
+import com.fangxuele.tool.push.domain.TWxAccount;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -51,6 +54,7 @@ public class MessageManageForm {
     private JTable msgHistable;
     private JButton msgHisTableDeleteButton;
     private JButton createMsgButton;
+    private JComboBox accountSwitchComboBox;
 
     private static MessageManageForm messageManageForm;
 
@@ -65,6 +69,7 @@ public class MessageManageForm {
     private static TMsgWxCpMapper msgWxCpMapper = MybatisUtil.getSqlSession().getMapper(TMsgWxCpMapper.class);
     private static TMsgHttpMapper msgHttpMapper = MybatisUtil.getSqlSession().getMapper(TMsgHttpMapper.class);
     private static TMsgDingMapper msgDingMapper = MybatisUtil.getSqlSession().getMapper(TMsgDingMapper.class);
+    private static TWxAccountMapper wxAccountMapper = MybatisUtil.getSqlSession().getMapper(TWxAccountMapper.class);
 
     private MessageManageForm() {
     }
@@ -81,6 +86,9 @@ public class MessageManageForm {
      */
     public static void init() {
         messageManageForm = getInstance();
+
+        initSwitchMultiAccount();
+
         // 历史消息管理
         String[] headerNames = {"消息名称"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
@@ -92,83 +100,131 @@ public class MessageManageForm {
 
         Object[] data;
 
-        if (msgType == MessageTypeEnum.KEFU_CODE) {
-            List<TMsgKefu> tMsgKefuList = msgKefuMapper.selectByMsgType(msgType);
-            for (TMsgKefu tMsgKefu : tMsgKefuList) {
-                data = new Object[1];
-                data[0] = tMsgKefu.getMsgName();
-                model.addRow(data);
-            }
-        } else if (msgType == MessageTypeEnum.KEFU_PRIORITY_CODE) {
-            List<TMsgKefuPriority> tMsgKefuPriorityList = msgKefuPriorityMapper.selectByMsgType(msgType);
-            for (TMsgKefuPriority tMsgKefuPriority : tMsgKefuPriorityList) {
-                data = new Object[1];
-                data[0] = tMsgKefuPriority.getMsgName();
-                model.addRow(data);
-            }
-        } else if (msgType == MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE) {
-            List<TMsgWxUniform> tMsgWxUniformList = wxUniformMapper.selectByMsgType(msgType);
-            for (TMsgWxUniform tMsgWxUniform : tMsgWxUniformList) {
-                data = new Object[1];
-                data[0] = tMsgWxUniform.getMsgName();
-                model.addRow(data);
-            }
-        } else if (msgType == MessageTypeEnum.MA_TEMPLATE_CODE) {
-            List<TMsgMaTemplate> tMsgMaTemplateList = msgMaTemplateMapper.selectByMsgType(msgType);
-            for (TMsgMaTemplate tMsgMaTemplate : tMsgMaTemplateList) {
-                data = new Object[1];
-                data[0] = tMsgMaTemplate.getMsgName();
-                model.addRow(data);
-            }
-        } else if (msgType == MessageTypeEnum.MA_SUBSCRIBE_CODE) {
-            List<TMsgMaSubscribe> tMsgMaSubscribeList = msgMaSubscribeMapper.selectByMsgType(msgType);
-            for (TMsgMaSubscribe tMsgMaSubscribe : tMsgMaSubscribeList) {
-                data = new Object[1];
-                data[0] = tMsgMaSubscribe.getMsgName();
-                model.addRow(data);
-            }
-        } else if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE) {
-            List<TMsgMpTemplate> tMsgMpTemplateList = msgMpTemplateMapper.selectByMsgType(msgType);
-            for (TMsgMpTemplate tMsgMpTemplate : tMsgMpTemplateList) {
-                data = new Object[1];
-                data[0] = tMsgMpTemplate.getMsgName();
-                model.addRow(data);
-            }
-        } else if (msgType == MessageTypeEnum.EMAIL_CODE) {
-            List<TMsgMail> tMsgMailList = msgMailMapper.selectByMsgType(msgType);
-            for (TMsgMail tMsgMail : tMsgMailList) {
-                data = new Object[1];
-                data[0] = tMsgMail.getMsgName();
-                model.addRow(data);
-            }
-        } else if (msgType == MessageTypeEnum.WX_CP_CODE) {
-            List<TMsgWxCp> tMsgWxCpList = msgWxCpMapper.selectByMsgType(msgType);
-            for (TMsgWxCp tMsgWxCp : tMsgWxCpList) {
-                data = new Object[1];
-                data[0] = tMsgWxCp.getMsgName();
-                model.addRow(data);
-            }
-        } else if (msgType == MessageTypeEnum.HTTP_CODE) {
-            List<TMsgHttp> tMsgHttpList = msgHttpMapper.selectByMsgType(msgType);
-            for (TMsgHttp tMsgHttp : tMsgHttpList) {
-                data = new Object[1];
-                data[0] = tMsgHttp.getMsgName();
-                model.addRow(data);
-            }
-        } else if (msgType == MessageTypeEnum.DING_CODE) {
-            List<TMsgDing> tMsgDingList = msgDingMapper.selectByMsgType(msgType);
-            for (TMsgDing tMsgDing : tMsgDingList) {
-                data = new Object[1];
-                data[0] = tMsgDing.getMsgName();
-                model.addRow(data);
-            }
-        } else {
-            List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgType(msgType);
-            for (TMsgSms tMsgSms : tMsgSmsList) {
-                data = new Object[1];
-                data[0] = tMsgSms.getMsgName();
-                model.addRow(data);
-            }
+        switch (msgType) {
+            case MessageTypeEnum.KEFU_CODE:
+                List<TMsgKefu> tMsgKefuList = msgKefuMapper.selectByMsgType(msgType);
+                for (TMsgKefu tMsgKefu : tMsgKefuList) {
+                    data = new Object[1];
+                    data[0] = tMsgKefu.getMsgName();
+                    model.addRow(data);
+                }
+                break;
+            case MessageTypeEnum.KEFU_PRIORITY_CODE:
+                List<TMsgKefuPriority> tMsgKefuPriorityList = msgKefuPriorityMapper.selectByMsgType(msgType);
+                for (TMsgKefuPriority tMsgKefuPriority : tMsgKefuPriorityList) {
+                    data = new Object[1];
+                    data[0] = tMsgKefuPriority.getMsgName();
+                    model.addRow(data);
+                }
+                break;
+            case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE:
+                List<TMsgWxUniform> tMsgWxUniformList = wxUniformMapper.selectByMsgType(msgType);
+                for (TMsgWxUniform tMsgWxUniform : tMsgWxUniformList) {
+                    data = new Object[1];
+                    data[0] = tMsgWxUniform.getMsgName();
+                    model.addRow(data);
+                }
+                break;
+            case MessageTypeEnum.MA_TEMPLATE_CODE:
+                List<TMsgMaTemplate> tMsgMaTemplateList = msgMaTemplateMapper.selectByMsgType(msgType);
+                for (TMsgMaTemplate tMsgMaTemplate : tMsgMaTemplateList) {
+                    data = new Object[1];
+                    data[0] = tMsgMaTemplate.getMsgName();
+                    model.addRow(data);
+                }
+                break;
+            case MessageTypeEnum.MA_SUBSCRIBE_CODE:
+                List<TMsgMaSubscribe> tMsgMaSubscribeList = msgMaSubscribeMapper.selectByMsgType(msgType);
+                for (TMsgMaSubscribe tMsgMaSubscribe : tMsgMaSubscribeList) {
+                    data = new Object[1];
+                    data[0] = tMsgMaSubscribe.getMsgName();
+                    model.addRow(data);
+                }
+                break;
+            case MessageTypeEnum.MP_TEMPLATE_CODE:
+                List<TMsgMpTemplate> tMsgMpTemplateList = msgMpTemplateMapper.selectByMsgType(msgType);
+                for (TMsgMpTemplate tMsgMpTemplate : tMsgMpTemplateList) {
+                    data = new Object[1];
+                    data[0] = tMsgMpTemplate.getMsgName();
+                    model.addRow(data);
+                }
+                break;
+            case MessageTypeEnum.EMAIL_CODE:
+                List<TMsgMail> tMsgMailList = msgMailMapper.selectByMsgType(msgType);
+                for (TMsgMail tMsgMail : tMsgMailList) {
+                    data = new Object[1];
+                    data[0] = tMsgMail.getMsgName();
+                    model.addRow(data);
+                }
+                break;
+            case MessageTypeEnum.WX_CP_CODE:
+                List<TMsgWxCp> tMsgWxCpList = msgWxCpMapper.selectByMsgType(msgType);
+                for (TMsgWxCp tMsgWxCp : tMsgWxCpList) {
+                    data = new Object[1];
+                    data[0] = tMsgWxCp.getMsgName();
+                    model.addRow(data);
+                }
+                break;
+            case MessageTypeEnum.HTTP_CODE:
+                List<TMsgHttp> tMsgHttpList = msgHttpMapper.selectByMsgType(msgType);
+                for (TMsgHttp tMsgHttp : tMsgHttpList) {
+                    data = new Object[1];
+                    data[0] = tMsgHttp.getMsgName();
+                    model.addRow(data);
+                }
+                break;
+            case MessageTypeEnum.DING_CODE:
+                List<TMsgDing> tMsgDingList = msgDingMapper.selectByMsgType(msgType);
+                for (TMsgDing tMsgDing : tMsgDingList) {
+                    data = new Object[1];
+                    data[0] = tMsgDing.getMsgName();
+                    model.addRow(data);
+                }
+                break;
+            default:
+                List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgType(msgType);
+                for (TMsgSms tMsgSms : tMsgSmsList) {
+                    data = new Object[1];
+                    data[0] = tMsgSms.getMsgName();
+                    model.addRow(data);
+                }
+                break;
+        }
+    }
+
+
+    /**
+     * 初始化多账号切换
+     */
+    public static void initSwitchMultiAccount() {
+        messageManageForm = getInstance();
+        int msgType = App.config.getMsgType();
+        messageManageForm.getAccountSwitchComboBox().removeAllItems();
+
+        switch (msgType) {
+            case MessageTypeEnum.MP_TEMPLATE_CODE:
+            case MessageTypeEnum.KEFU_CODE:
+            case MessageTypeEnum.KEFU_PRIORITY_CODE:
+                // 多账号切换-公众号
+                List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountType(UiConsts.WX_ACCOUNT_TYPE_MP);
+                for (TWxAccount tWxAccount : wxAccountList) {
+                    messageManageForm.getAccountSwitchComboBox().addItem(tWxAccount.getAccountName());
+                }
+                messageManageForm.getAccountSwitchComboBox().setSelectedItem(App.config.getWechatMpName());
+                break;
+
+            case MessageTypeEnum.MA_SUBSCRIBE_CODE:
+            case MessageTypeEnum.MA_TEMPLATE_CODE:
+            case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE:
+                // 多账号切换-小程序
+                wxAccountList = wxAccountMapper.selectByAccountType(UiConsts.WX_ACCOUNT_TYPE_MA);
+                for (TWxAccount tWxAccount : wxAccountList) {
+                    messageManageForm.getAccountSwitchComboBox().addItem(tWxAccount.getAccountName());
+                }
+                messageManageForm.getAccountSwitchComboBox().setSelectedItem(App.config.getMiniAppName());
+                break;
+            default:
+                break;
         }
     }
 
@@ -190,13 +246,13 @@ public class MessageManageForm {
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         messageManagePanel = new JPanel();
-        messageManagePanel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
+        messageManagePanel.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
         messageManagePanel.setMaximumSize(new Dimension(-1, -1));
         messageManagePanel.setMinimumSize(new Dimension(-1, -1));
         messageManagePanel.setPreferredSize(new Dimension(280, -1));
         panel1.add(messageManagePanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JScrollPane scrollPane1 = new JScrollPane();
-        messageManagePanel.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        messageManagePanel.add(scrollPane1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         msgHistable = new JTable();
         msgHistable.setGridColor(new Color(-12236470));
         msgHistable.setRowHeight(36);
@@ -204,7 +260,7 @@ public class MessageManageForm {
         scrollPane1.setViewportView(msgHistable);
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 3, new Insets(0, 5, 5, 0), -1, -1));
-        messageManagePanel.add(panel2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        messageManagePanel.add(panel2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         msgHisTableDeleteButton = new JButton();
         msgHisTableDeleteButton.setIcon(new ImageIcon(getClass().getResource("/icon/remove.png")));
         msgHisTableDeleteButton.setText("删除");
@@ -216,5 +272,10 @@ public class MessageManageForm {
         createMsgButton.setIcon(new ImageIcon(getClass().getResource("/icon/add.png")));
         createMsgButton.setText("新建");
         panel2.add(createMsgButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JPanel panel3 = new JPanel();
+        panel3.setLayout(new GridLayoutManager(1, 1, new Insets(5, 0, 0, 0), -1, -1));
+        messageManagePanel.add(panel3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        accountSwitchComboBox = new JComboBox();
+        panel3.add(accountSwitchComboBox, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 }
