@@ -104,4 +104,9 @@ public class UiConsts {
      */
     public final static String INTRODUCE_QRCODE_URL = "http://download.zhoubochina.com/qrcode/introduce-wepush-qrcode.png";
 
+    /**
+     * 日志文件路径
+     */
+    public final static String LOG_DIR = "./logs/";
+
 }

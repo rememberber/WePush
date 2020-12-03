@@ -24,6 +24,7 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.List;
 import java.util.Objects;
 
@@ -541,6 +542,16 @@ public class SettingListener {
                 JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
+            }
+        });
+
+        // 调试-查看日志
+        settingForm.getShowLogButton().addActionListener(e -> {
+            try {
+                Desktop desktop = Desktop.getDesktop();
+                desktop.open(new File(UiConsts.LOG_DIR));
+            } catch (Exception e2) {
+                logger.error("查看日志打开失败", e2);
             }
         });
 
