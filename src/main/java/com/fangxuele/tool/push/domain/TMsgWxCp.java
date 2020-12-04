@@ -23,11 +23,13 @@ public class TMsgWxCp implements Serializable {
 
     private String url;
 
+    private String btnTxt;
+
     private String createTime;
 
     private String modifiedTime;
 
-    private String btnTxt;
+    private String previewUser;
 
     private static final long serialVersionUID = 1L;
 
@@ -111,6 +113,14 @@ public class TMsgWxCp implements Serializable {
         this.url = url == null ? null : url.trim();
     }
 
+    public String getBtnTxt() {
+        return btnTxt;
+    }
+
+    public void setBtnTxt(String btnTxt) {
+        this.btnTxt = btnTxt == null ? null : btnTxt.trim();
+    }
+
     public String getCreateTime() {
         return createTime;
     }
@@ -127,11 +137,11 @@ public class TMsgWxCp implements Serializable {
         this.modifiedTime = modifiedTime == null ? null : modifiedTime.trim();
     }
 
-    public String getBtnTxt() {
-        return btnTxt;
+    public String getPreviewUser() {
+        return previewUser;
     }
 
-    public void setBtnTxt(String btnTxt) {
-        this.btnTxt = btnTxt == null ? null : btnTxt.trim();
+    public void setPreviewUser(String previewUser) {
+        this.previewUser = previewUser == null ? null : previewUser.trim();
     }
 }

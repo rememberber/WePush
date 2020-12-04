@@ -33,6 +33,10 @@ public class TMsgKefuPriority implements Serializable {
 
     private String modifiedTime;
 
+    private String previewUser;
+
+    private Integer wxAccountId;
+
     private static final long serialVersionUID = 1L;
 
     public Integer getId() {
@@ -153,5 +157,21 @@ public class TMsgKefuPriority implements Serializable {
 
     public void setModifiedTime(String modifiedTime) {
         this.modifiedTime = modifiedTime == null ? null : modifiedTime.trim();
+    }
+
+    public String getPreviewUser() {
+        return previewUser;
+    }
+
+    public void setPreviewUser(String previewUser) {
+        this.previewUser = previewUser == null ? null : previewUser.trim();
+    }
+
+    public Integer getWxAccountId() {
+        return wxAccountId;
+    }
+
+    public void setWxAccountId(Integer wxAccountId) {
+        this.wxAccountId = wxAccountId;
     }
 }

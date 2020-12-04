@@ -11,6 +11,8 @@ public class TMsgMail implements Serializable {
 
     private String title;
 
+    private String cc;
+
     private String files;
 
     private String content;
@@ -19,7 +21,7 @@ public class TMsgMail implements Serializable {
 
     private String modifiedTime;
 
-    private String cc;
+    private String previewUser;
 
     private static final long serialVersionUID = 1L;
 
@@ -55,6 +57,14 @@ public class TMsgMail implements Serializable {
         this.title = title == null ? null : title.trim();
     }
 
+    public String getCc() {
+        return cc;
+    }
+
+    public void setCc(String cc) {
+        this.cc = cc == null ? null : cc.trim();
+    }
+
     public String getFiles() {
         return files;
     }
@@ -87,11 +97,11 @@ public class TMsgMail implements Serializable {
         this.modifiedTime = modifiedTime == null ? null : modifiedTime.trim();
     }
 
-    public String getCc() {
-        return cc;
+    public String getPreviewUser() {
+        return previewUser;
     }
 
-    public void setCc(String cc) {
-        this.cc = cc == null ? null : cc.trim();
+    public void setPreviewUser(String previewUser) {
+        this.previewUser = previewUser == null ? null : previewUser.trim();
     }
 }

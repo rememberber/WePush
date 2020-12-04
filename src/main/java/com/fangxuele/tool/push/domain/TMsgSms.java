@@ -17,6 +17,8 @@ public class TMsgSms implements Serializable {
 
     private String modifiedTime;
 
+    private String previewUser;
+
     private static final long serialVersionUID = 1L;
 
     public Integer getId() {
@@ -73,5 +75,13 @@ public class TMsgSms implements Serializable {
 
     public void setModifiedTime(String modifiedTime) {
         this.modifiedTime = modifiedTime == null ? null : modifiedTime.trim();
+    }
+
+    public String getPreviewUser() {
+        return previewUser;
+    }
+
+    public void setPreviewUser(String previewUser) {
+        this.previewUser = previewUser == null ? null : previewUser.trim();
     }
 }
