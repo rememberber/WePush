@@ -97,6 +97,9 @@ public class BdYunMsgForm implements IMsgForm {
             TMsgSms tMsgSms = tMsgSmsList.get(0);
             msgId = tMsgSms.getId();
             getInstance().getMsgTemplateIdTextField().setText(tMsgSms.getTemplateId());
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            messageEditForm.getMsgNameField().setText(tMsgSms.getMsgName());
+            messageEditForm.getPreviewUserField().setText(tMsgSms.getPreviewUser());
         }
 
         initTemplateDataTable();
@@ -151,6 +154,8 @@ public class BdYunMsgForm implements IMsgForm {
             tMsgSms.setTemplateId(templateId);
             tMsgSms.setCreateTime(now);
             tMsgSms.setModifiedTime(now);
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            tMsgSms.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             if (existSameMsg) {
                 msgSmsMapper.updateByMsgTypeAndMsgName(tMsgSms);

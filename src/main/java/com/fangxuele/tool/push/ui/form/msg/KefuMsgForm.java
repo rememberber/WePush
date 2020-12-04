@@ -4,6 +4,7 @@ import com.fangxuele.tool.push.dao.TMsgKefuMapper;
 import com.fangxuele.tool.push.domain.TMsgKefu;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -76,6 +77,10 @@ public class KefuMsgForm implements IMsgForm {
             getInstance().getMsgKefuUrlTextField().setText(tMsgKefu.getUrl());
 
             switchKefuMsgType(kefuMsgType);
+
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            messageEditForm.getMsgNameField().setText(tMsgKefu.getMsgName());
+            messageEditForm.getPreviewUserField().setText(tMsgKefu.getPreviewUser());
         } else {
             switchKefuMsgType("图文消息");
         }
@@ -117,6 +122,9 @@ public class KefuMsgForm implements IMsgForm {
             tMsgKefu.setDescribe(kefuDesc);
             tMsgKefu.setUrl(kefuUrl);
             tMsgKefu.setModifiedTime(now);
+
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            tMsgKefu.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             if (existSameMsg) {
                 msgKefuMapper.updateByMsgTypeAndMsgName(tMsgKefu);

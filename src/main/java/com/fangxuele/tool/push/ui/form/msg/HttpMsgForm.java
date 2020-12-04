@@ -7,6 +7,7 @@ import com.fangxuele.tool.push.domain.TMsgHttp;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -185,6 +186,10 @@ public class HttpMsgForm implements IMsgForm {
             getInstance().getBodyTypeComboBox().setSelectedItem(tMsgHttp.getBodyType());
             switchMethod(tMsgHttp.getMethod());
 
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            messageEditForm.getMsgNameField().setText(tMsgHttp.getMsgName());
+            messageEditForm.getPreviewUserField().setText(tMsgHttp.getPreviewUser());
+
             // Params=====================================
             initParamTable();
             List<NameValueObject> params = JSONUtil.toList(JSONUtil.parseArray(tMsgHttp.getParams()), NameValueObject.class);
@@ -285,6 +290,8 @@ public class HttpMsgForm implements IMsgForm {
             tMsgHttp.setBodyType(bodyType);
             tMsgHttp.setCreateTime(now);
             tMsgHttp.setModifiedTime(now);
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            tMsgHttp.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             // =============params
             // 如果table为空，则初始化

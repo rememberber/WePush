@@ -52,8 +52,8 @@ public class MessageEditListener {
             try {
                 MsgFormFactory.getMsgForm().save(msgName);
 
-                App.config.setPreviewUser(messageEditForm.getPreviewUserField().getText());
-                App.config.save();
+//  TODO              App.config.setPreviewUser(messageEditForm.getPreviewUserField().getText());
+//  TODO              App.config.save();
                 MessageManageForm.init();
             } catch (Exception e1) {
                 JOptionPane.showMessageDialog(messagePanel, "保存失败！\n\n" + e1.getMessage(), "失败",

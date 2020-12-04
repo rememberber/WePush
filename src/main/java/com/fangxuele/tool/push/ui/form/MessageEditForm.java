@@ -6,6 +6,7 @@ import com.fangxuele.tool.push.ui.form.msg.*;
 import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.sun.xml.internal.bind.v2.TODO;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
@@ -59,17 +60,7 @@ public class MessageEditForm {
         messageEditForm.getMsgEditScrollPane().getVerticalScrollBar().setUnitIncrement(15);
         messageEditForm.getMsgEditScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
 
-        String msgName;
-        if (StringUtils.isEmpty(selectedMsgName)) {
-            msgName = App.config.getMsgName();
-        } else {
-            msgName = selectedMsgName;
-        }
-
-        messageEditForm.getMsgNameField().setText(msgName);
-        messageEditForm.getPreviewUserField().setText(App.config.getPreviewUser());
-
-        MsgFormFactory.getMsgForm().init(msgName);
+        MsgFormFactory.getMsgForm().init(selectedMsgName);
     }
 
     /**

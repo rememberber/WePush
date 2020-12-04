@@ -108,6 +108,10 @@ public class MaSubscribeMsgForm implements IMsgForm {
             msgId = tMsgMaSubscribe.getId();
             getInstance().getMsgTemplateIdTextField().setText(tMsgMaSubscribe.getTemplateId());
             getInstance().getMsgTemplateUrlTextField().setText(tMsgMaSubscribe.getPage());
+
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            messageEditForm.getMsgNameField().setText(tMsgMaSubscribe.getMsgName());
+            messageEditForm.getPreviewUserField().setText(tMsgMaSubscribe.getPreviewUser());
         }
 
         initTemplateDataTable();
@@ -165,6 +169,9 @@ public class MaSubscribeMsgForm implements IMsgForm {
             tMsgMaSubscribe.setPage(templateUrl);
             tMsgMaSubscribe.setCreateTime(now);
             tMsgMaSubscribe.setModifiedTime(now);
+
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            tMsgMaSubscribe.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             if (existSameMsg) {
                 msgMaSubscribeMapper.updateByMsgTypeAndMsgName(tMsgMaSubscribe);

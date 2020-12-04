@@ -11,6 +11,7 @@ import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
 import com.fangxuele.tool.push.ui.dialog.DingAppDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.google.common.collect.Maps;
@@ -156,6 +157,10 @@ public class DingMsgForm implements IMsgForm {
             switchDingMsgType(dingMsgType);
 
             switchRadio(tMsgDing.getRadioType());
+
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            messageEditForm.getMsgNameField().setText(tMsgDing.getMsgName());
+            messageEditForm.getPreviewUserField().setText(tMsgDing.getPreviewUser());
         } else {
             switchDingMsgType("文本消息");
         }
@@ -210,6 +215,8 @@ public class DingMsgForm implements IMsgForm {
 
             tMsgDing.setContent(JSONUtil.toJsonStr(dingMsg));
             tMsgDing.setModifiedTime(now);
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            tMsgDing.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             if (getInstance().getWorkRadioButton().isSelected()) {
                 tMsgDing.setRadioType("work");

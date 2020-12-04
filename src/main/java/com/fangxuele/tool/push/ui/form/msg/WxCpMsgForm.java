@@ -7,6 +7,7 @@ import com.fangxuele.tool.push.domain.TWxCpApp;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.dialog.WxCpAppDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.google.common.collect.Maps;
@@ -95,6 +96,10 @@ public class WxCpMsgForm implements IMsgForm {
             getInstance().getUrlTextField().setText(tMsgWxCp.getUrl());
             getInstance().getBtnTxtTextField().setText(tMsgWxCp.getBtnTxt());
 
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            messageEditForm.getMsgNameField().setText(tMsgWxCp.getMsgName());
+            messageEditForm.getPreviewUserField().setText(tMsgWxCp.getPreviewUser());
+
             switchCpMsgType(cpMsgType);
         } else {
             switchCpMsgType("图文消息");
@@ -146,6 +151,9 @@ public class WxCpMsgForm implements IMsgForm {
             tMsgWxCp.setUrl(url);
             tMsgWxCp.setBtnTxt(btnTxt);
             tMsgWxCp.setModifiedTime(now);
+
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            tMsgWxCp.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             if (existSameMsg) {
                 msgWxCpMapper.updateByMsgTypeAndMsgName(tMsgWxCp);

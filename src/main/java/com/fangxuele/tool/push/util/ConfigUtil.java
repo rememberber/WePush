@@ -24,8 +24,6 @@ public class ConfigUtil extends ConfigBaseUtil {
 
     private String msgName;
 
-    private String previewUser;
-
     private String memberSql;
 
     private String memberFilePath;
@@ -213,14 +211,6 @@ public class ConfigUtil extends ConfigBaseUtil {
 
     public void setMsgName(String msgName) {
         setting.put("msg", "msgName", msgName);
-    }
-
-    public String getPreviewUser() {
-        return setting.getStr("previewUser", "msg", "");
-    }
-
-    public void setPreviewUser(String previewUser) {
-        setting.put("msg", "previewUser", previewUser);
     }
 
     public String getMemberSql() {

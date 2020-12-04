@@ -172,6 +172,10 @@ public class MpTemplateMsgForm implements IMsgForm {
             mpTemplateMsgForm.getMsgTemplateMiniAppidTextField().setText(tMsgMpTemplate.getMaAppid());
             mpTemplateMsgForm.getMsgTemplateMiniPagePathTextField().setText(tMsgMpTemplate.getMaPagePath());
 
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            messageEditForm.getMsgNameField().setText(tMsgMpTemplate.getMsgName());
+            messageEditForm.getPreviewUserField().setText(tMsgMpTemplate.getPreviewUser());
+
             selectedMsgTemplateId = tMsgMpTemplate.getTemplateId();
         }
 
@@ -215,6 +219,9 @@ public class MpTemplateMsgForm implements IMsgForm {
             tMsgMpTemplate.setMaPagePath(templateMiniPagePath);
             tMsgMpTemplate.setCreateTime(now);
             tMsgMpTemplate.setModifiedTime(now);
+
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            tMsgMpTemplate.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             if (existSameMsg) {
                 msgMpTemplateMapper.updateByMsgTypeAndMsgName(tMsgMpTemplate);

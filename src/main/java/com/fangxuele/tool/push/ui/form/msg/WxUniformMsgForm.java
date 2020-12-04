@@ -7,6 +7,7 @@ import com.fangxuele.tool.push.domain.TTemplateData;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 
@@ -44,6 +45,10 @@ public class WxUniformMsgForm implements IMsgForm {
 
             MaSubscribeMsgForm.getInstance().getMsgTemplateIdTextField().setText(tMsgWxUniform.getMaTemplateId());
             MaSubscribeMsgForm.getInstance().getMsgTemplateUrlTextField().setText(tMsgWxUniform.getPage());
+
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            messageEditForm.getMsgNameField().setText(tMsgWxUniform.getMsgName());
+            messageEditForm.getPreviewUserField().setText(tMsgWxUniform.getPreviewUser());
 
             // -------------公众号模板数据开始
             MpTemplateMsgForm.selectedMsgTemplateId = tMsgWxUniform.getMpTemplateId();
@@ -139,6 +144,9 @@ public class WxUniformMsgForm implements IMsgForm {
             tMsgWxUniform.setPage(page);
             tMsgWxUniform.setCreateTime(now);
             tMsgWxUniform.setModifiedTime(now);
+
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            tMsgWxUniform.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             if (existSameMsg) {
                 msgWxUniformMapper.updateByMsgTypeAndMsgName(tMsgWxUniform);

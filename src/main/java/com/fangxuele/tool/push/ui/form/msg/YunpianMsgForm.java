@@ -4,6 +4,7 @@ import com.fangxuele.tool.push.dao.TMsgSmsMapper;
 import com.fangxuele.tool.push.domain.TMsgSms;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -42,6 +43,10 @@ public class YunpianMsgForm implements IMsgForm {
         if (tMsgSmsList.size() > 0) {
             TMsgSms tMsgSms = tMsgSmsList.get(0);
             getInstance().getMsgYunpianMsgContentTextField().setText(tMsgSms.getContent());
+
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            messageEditForm.getMsgNameField().setText(tMsgSms.getMsgName());
+            messageEditForm.getPreviewUserField().setText(tMsgSms.getPreviewUser());
         }
     }
 
@@ -71,6 +76,9 @@ public class YunpianMsgForm implements IMsgForm {
             tMsgSms.setContent(yunpianMsgContent);
             tMsgSms.setCreateTime(now);
             tMsgSms.setModifiedTime(now);
+
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            tMsgSms.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             if (existSameMsg) {
                 msgSmsMapper.updateByMsgTypeAndMsgName(tMsgSms);
