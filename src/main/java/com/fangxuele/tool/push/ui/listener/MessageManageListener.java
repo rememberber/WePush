@@ -15,8 +15,10 @@ import com.fangxuele.tool.push.dao.TMsgMpTemplateMapper;
 import com.fangxuele.tool.push.dao.TMsgSmsMapper;
 import com.fangxuele.tool.push.dao.TMsgWxCpMapper;
 import com.fangxuele.tool.push.dao.TMsgWxUniformMapper;
+import com.fangxuele.tool.push.dao.TWxAccountMapper;
 import com.fangxuele.tool.push.domain.TWxAccount;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.MessageManageForm;
@@ -54,6 +56,7 @@ public class MessageManageListener {
     private static TMsgHttpMapper msgHttpMapper = MybatisUtil.getSqlSession().getMapper(TMsgHttpMapper.class);
     private static TMsgWxCpMapper msgWxCpMapper = MybatisUtil.getSqlSession().getMapper(TMsgWxCpMapper.class);
     private static TMsgDingMapper msgDingMapper = MybatisUtil.getSqlSession().getMapper(TMsgDingMapper.class);
+    private static TWxAccountMapper wxAccountMapper = MybatisUtil.getSqlSession().getMapper(TWxAccountMapper.class);
 
     public static void addListeners() {
         JTable msgHistable = MessageManageForm.getInstance().getMsgHistable();
@@ -138,20 +141,47 @@ public class MessageManageListener {
             MessageEditForm.getInstance().getMsgNameField().grabFocus();
         });
 
-
         // 切换账号事件
         MessageManageForm.getInstance().getAccountSwitchComboBox().addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 String accountName = e.getItem().toString();
-//                List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(SettingForm.WX_ACCOUNT_TYPE_MP, accountName);
-//                if (wxAccountList.size() > 0) {
-//                    TWxAccount tWxAccount = wxAccountList.get(0);
-//                    settingForm.getMpAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
-//                    settingForm.getWechatAppIdTextField().setText(tWxAccount.getAppId());
-//                    settingForm.getWechatAppSecretPasswordField().setText(tWxAccount.getAppSecret());
-//                    settingForm.getWechatTokenPasswordField().setText(tWxAccount.getToken());
-//                    settingForm.getWechatAesKeyPasswordField().setText(tWxAccount.getAesKey());
-//                }
+
+                int msgType = App.config.getMsgType();
+                SettingForm settingForm = SettingForm.getInstance();
+
+                switch (msgType) {
+                    case MessageTypeEnum.MP_TEMPLATE_CODE:
+                    case MessageTypeEnum.KEFU_CODE:
+                    case MessageTypeEnum.KEFU_PRIORITY_CODE:
+                        // 多账号切换-公众号
+                        List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(UiConsts.WX_ACCOUNT_TYPE_MP, accountName);
+                        if (wxAccountList.size() > 0) {
+                            TWxAccount tWxAccount = wxAccountList.get(0);
+                            settingForm.getMpAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
+                            settingForm.getWechatAppIdTextField().setText(tWxAccount.getAppId());
+                            settingForm.getWechatAppSecretPasswordField().setText(tWxAccount.getAppSecret());
+                            settingForm.getWechatTokenPasswordField().setText(tWxAccount.getToken());
+                            settingForm.getWechatAesKeyPasswordField().setText(tWxAccount.getAesKey());
+                        }
+                        break;
+
+                    case MessageTypeEnum.MA_SUBSCRIBE_CODE:
+                    case MessageTypeEnum.MA_TEMPLATE_CODE:
+                    case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE:
+                        // 多账号切换-小程序
+                        wxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(UiConsts.WX_ACCOUNT_TYPE_MA, accountName);
+                        if (wxAccountList.size() > 0) {
+                            TWxAccount tWxAccount = wxAccountList.get(0);
+                            settingForm.getMaAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
+                            settingForm.getMiniAppAppIdTextField().setText(tWxAccount.getAppId());
+                            settingForm.getMiniAppAppSecretPasswordField().setText(tWxAccount.getAppSecret());
+                            settingForm.getMiniAppTokenPasswordField().setText(tWxAccount.getToken());
+                            settingForm.getMiniAppAesKeyPasswordField().setText(tWxAccount.getAesKey());
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
         });
     }
