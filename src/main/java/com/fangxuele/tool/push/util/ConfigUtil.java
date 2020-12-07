@@ -197,6 +197,11 @@ public class ConfigUtil extends ConfigBaseUtil {
 
     private int fontSize;
 
+    /**
+     * 当前所选的微信账户的id
+     */
+    private Integer wxAccountId;
+
     public int getMsgType() {
         return setting.getInt("msgType", "msg", 13);
     }
@@ -939,5 +944,13 @@ public class ConfigUtil extends ConfigBaseUtil {
 
     public void setHttpProxyPassword(String httpProxyPassword) {
         setting.put("setting.http", "httpProxyPassword", httpProxyPassword);
+    }
+
+    public Integer getWxAccountId() {
+        return setting.getInt("wxAccountId", "setting.wechat");
+    }
+
+    public void setWxAccountId(Integer wxAccountId) {
+        setting.put("setting.wechat", "wxAccountId", String.valueOf(wxAccountId));
     }
 }

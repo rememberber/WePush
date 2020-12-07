@@ -158,10 +158,8 @@ public class MessageManageListener {
                         if (wxAccountList.size() > 0) {
                             TWxAccount tWxAccount = wxAccountList.get(0);
                             settingForm.getMpAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
-                            settingForm.getWechatAppIdTextField().setText(tWxAccount.getAppId());
-                            settingForm.getWechatAppSecretPasswordField().setText(tWxAccount.getAppSecret());
-                            settingForm.getWechatTokenPasswordField().setText(tWxAccount.getToken());
-                            settingForm.getWechatAesKeyPasswordField().setText(tWxAccount.getAesKey());
+                            App.config.setWxAccountId(tWxAccount.getId());
+                            App.config.save();
                         }
                         break;
 
@@ -173,10 +171,8 @@ public class MessageManageListener {
                         if (wxAccountList.size() > 0) {
                             TWxAccount tWxAccount = wxAccountList.get(0);
                             settingForm.getMaAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
-                            settingForm.getMiniAppAppIdTextField().setText(tWxAccount.getAppId());
-                            settingForm.getMiniAppAppSecretPasswordField().setText(tWxAccount.getAppSecret());
-                            settingForm.getMiniAppTokenPasswordField().setText(tWxAccount.getToken());
-                            settingForm.getMiniAppAesKeyPasswordField().setText(tWxAccount.getAesKey());
+                            App.config.setWxAccountId(tWxAccount.getId());
+                            App.config.save();
                         }
                         break;
                     default:

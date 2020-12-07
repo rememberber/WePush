@@ -151,6 +151,8 @@ public class SettingListener {
                     settingForm.getWechatAppSecretPasswordField().setText(tWxAccount.getAppSecret());
                     settingForm.getWechatTokenPasswordField().setText(tWxAccount.getToken());
                     settingForm.getWechatAesKeyPasswordField().setText(tWxAccount.getAesKey());
+                    App.config.setWxAccountId(tWxAccount.getId());
+                    App.config.save();
                 }
             }
         });
@@ -233,6 +235,8 @@ public class SettingListener {
                     settingForm.getMiniAppAppSecretPasswordField().setText(tWxAccount.getAppSecret());
                     settingForm.getMiniAppTokenPasswordField().setText(tWxAccount.getToken());
                     settingForm.getMiniAppAesKeyPasswordField().setText(tWxAccount.getAesKey());
+                    App.config.setWxAccountId(tWxAccount.getId());
+                    App.config.save();
                 }
             }
         });
