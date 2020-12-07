@@ -10,6 +10,7 @@ import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.*;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.ui.form.msg.DingMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
@@ -153,6 +154,7 @@ public class SettingListener {
                     settingForm.getWechatAesKeyPasswordField().setText(tWxAccount.getAesKey());
                     App.config.setWxAccountId(tWxAccount.getId());
                     App.config.save();
+                    MessageManageForm.getInstance().getAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
                 }
             }
         });
@@ -237,6 +239,7 @@ public class SettingListener {
                     settingForm.getMiniAppAesKeyPasswordField().setText(tWxAccount.getAesKey());
                     App.config.setWxAccountId(tWxAccount.getId());
                     App.config.save();
+                    MessageManageForm.getInstance().getAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
                 }
             }
         });
