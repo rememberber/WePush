@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TMsgKefuPriorityMapper;
 import com.fangxuele.tool.push.dao.TTemplateDataMapper;
 import com.fangxuele.tool.push.domain.TMsgKefuPriority;
@@ -140,6 +141,7 @@ public class KefuPriorityMsgForm implements IMsgForm {
             tMsgKefuPriority.setModifiedTime(now);
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
             tMsgKefuPriority.setPreviewUser(messageEditForm.getPreviewUserField().getText());
+            tMsgKefuPriority.setWxAccountId(App.config.getWxAccountId());
 
             if (existSameMsg) {
                 msgKefuPriorityMapper.updateByMsgTypeAndMsgName(tMsgKefuPriority);

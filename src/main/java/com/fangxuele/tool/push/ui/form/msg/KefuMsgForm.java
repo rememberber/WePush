@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TMsgKefuMapper;
 import com.fangxuele.tool.push.domain.TMsgKefu;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
@@ -125,6 +126,7 @@ public class KefuMsgForm implements IMsgForm {
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
             tMsgKefu.setPreviewUser(messageEditForm.getPreviewUserField().getText());
+            tMsgKefu.setWxAccountId(App.config.getWxAccountId());
 
             if (existSameMsg) {
                 msgKefuMapper.updateByMsgTypeAndMsgName(tMsgKefu);

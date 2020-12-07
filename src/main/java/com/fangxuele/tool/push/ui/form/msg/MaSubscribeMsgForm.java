@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TMsgMaSubscribeMapper;
 import com.fangxuele.tool.push.dao.TTemplateDataMapper;
 import com.fangxuele.tool.push.domain.TMsgMaSubscribe;
@@ -172,6 +173,7 @@ public class MaSubscribeMsgForm implements IMsgForm {
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
             tMsgMaSubscribe.setPreviewUser(messageEditForm.getPreviewUserField().getText());
+            tMsgMaSubscribe.setWxAccountId(App.config.getWxAccountId());
 
             if (existSameMsg) {
                 msgMaSubscribeMapper.updateByMsgTypeAndMsgName(tMsgMaSubscribe);

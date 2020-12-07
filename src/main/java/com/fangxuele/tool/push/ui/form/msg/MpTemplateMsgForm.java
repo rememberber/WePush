@@ -222,6 +222,7 @@ public class MpTemplateMsgForm implements IMsgForm {
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
             tMsgMpTemplate.setPreviewUser(messageEditForm.getPreviewUserField().getText());
+            tMsgMpTemplate.setWxAccountId(App.config.getWxAccountId());
 
             if (existSameMsg) {
                 msgMpTemplateMapper.updateByMsgTypeAndMsgName(tMsgMpTemplate);
@@ -423,6 +424,8 @@ public class MpTemplateMsgForm implements IMsgForm {
         getInstance().getTemplateDataNameTextField().setText("");
         getInstance().getTemplateDataValueTextField().setText("");
         getInstance().getTemplateDataColorTextField().setText("");
+        getInstance().getTemplateListComboBox().removeAllItems();
+        getInstance().getTemplateContentTextArea().setText("");
         selectedMsgTemplateId = null;
         initTemplateDataTable();
     }

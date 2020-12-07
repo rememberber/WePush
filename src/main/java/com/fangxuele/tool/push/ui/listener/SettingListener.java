@@ -152,9 +152,31 @@ public class SettingListener {
                     settingForm.getWechatAppSecretPasswordField().setText(tWxAccount.getAppSecret());
                     settingForm.getWechatTokenPasswordField().setText(tWxAccount.getToken());
                     settingForm.getWechatAesKeyPasswordField().setText(tWxAccount.getAesKey());
+
+                    App.config.setWechatMpName(accountName);
+                    App.config.setWechatAppId(settingForm.getWechatAppIdTextField().getText());
+                    App.config.setWechatAppSecret(new String(settingForm.getWechatAppSecretPasswordField().getPassword()));
+                    App.config.setWechatToken(new String(settingForm.getWechatTokenPasswordField().getPassword()));
+                    App.config.setWechatAesKey(new String(settingForm.getWechatAesKeyPasswordField().getPassword()));
+
+                    App.config.setMpUseProxy(settingForm.getMpUseProxyCheckBox().isSelected());
+                    App.config.setMpProxyHost(settingForm.getMpProxyHostTextField().getText());
+                    App.config.setMpProxyPort(settingForm.getMpProxyPortTextField().getText());
+                    App.config.setMpProxyUserName(settingForm.getMpProxyUserNameTextField().getText());
+                    App.config.setMpProxyPassword(settingForm.getMpProxyPasswordTextField().getText());
+
+                    App.config.setMpUseOutSideAt(settingForm.getUseOutSideAccessTokenCheckBox().isSelected());
+                    App.config.setMpManualAt(settingForm.getManualAtRadioButton().isSelected());
+                    App.config.setMpApiAt(settingForm.getApiAtRadioButton().isSelected());
+                    App.config.setMpAt(settingForm.getAccessTokenTextField().getText());
+                    App.config.setMpAtExpiresIn(settingForm.getAtExpiresInTextField().getText());
+                    App.config.setMpAtApiUrl(settingForm.getAtApiUrlTextField().getText());
+
                     App.config.setWxAccountId(tWxAccount.getId());
                     App.config.save();
                     MessageManageForm.getInstance().getAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
+                    WxMpTemplateMsgSender.wxMpConfigStorage = null;
+                    WxMpTemplateMsgSender.wxMpService = null;
                 }
             }
         });
@@ -237,9 +259,24 @@ public class SettingListener {
                     settingForm.getMiniAppAppSecretPasswordField().setText(tWxAccount.getAppSecret());
                     settingForm.getMiniAppTokenPasswordField().setText(tWxAccount.getToken());
                     settingForm.getMiniAppAesKeyPasswordField().setText(tWxAccount.getAesKey());
+
+                    App.config.setMiniAppName(accountName);
+                    App.config.setMiniAppAppId(settingForm.getMiniAppAppIdTextField().getText());
+                    App.config.setMiniAppAppSecret(new String(settingForm.getMiniAppAppSecretPasswordField().getPassword()));
+                    App.config.setMiniAppToken(new String(settingForm.getMiniAppTokenPasswordField().getPassword()));
+                    App.config.setMiniAppAesKey(new String(settingForm.getMiniAppAesKeyPasswordField().getPassword()));
+
+                    App.config.setMaUseProxy(settingForm.getMaUseProxyCheckBox().isSelected());
+                    App.config.setMaProxyHost(settingForm.getMaProxyHostTextField().getText());
+                    App.config.setMaProxyPort(settingForm.getMaProxyPortTextField().getText());
+                    App.config.setMaProxyUserName(settingForm.getMaProxyUserNameTextField().getText());
+                    App.config.setMaProxyPassword(settingForm.getMaProxyPasswordTextField().getText());
+
                     App.config.setWxAccountId(tWxAccount.getId());
                     App.config.save();
                     MessageManageForm.getInstance().getAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
+                    WxMaSubscribeMsgSender.wxMaConfigStorage = null;
+                    WxMaSubscribeMsgSender.wxMaService = null;
                 }
             }
         });

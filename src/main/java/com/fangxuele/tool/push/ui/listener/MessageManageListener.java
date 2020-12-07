@@ -25,6 +25,9 @@ import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.ui.form.MessageTypeForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
+import com.fangxuele.tool.push.ui.form.msg.KefuMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.MaSubscribeMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.MpTemplateMsgForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 
 import javax.swing.*;
@@ -151,8 +154,12 @@ public class MessageManageListener {
 
                 switch (msgType) {
                     case MessageTypeEnum.MP_TEMPLATE_CODE:
+                        MpTemplateMsgForm.clearAllField();
                     case MessageTypeEnum.KEFU_CODE:
+                        KefuMsgForm.clearAllField();
                     case MessageTypeEnum.KEFU_PRIORITY_CODE:
+                        KefuMsgForm.clearAllField();
+                        MpTemplateMsgForm.clearAllField();
                         // 多账号切换-公众号
                         List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(UiConsts.WX_ACCOUNT_TYPE_MP, accountName);
                         if (wxAccountList.size() > 0) {
@@ -164,8 +171,11 @@ public class MessageManageListener {
                         break;
 
                     case MessageTypeEnum.MA_SUBSCRIBE_CODE:
+                        MaSubscribeMsgForm.clearAllField();
                     case MessageTypeEnum.MA_TEMPLATE_CODE:
                     case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE:
+                        MaSubscribeMsgForm.clearAllField();
+                        MpTemplateMsgForm.clearAllField();
                         // 多账号切换-小程序
                         wxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(UiConsts.WX_ACCOUNT_TYPE_MA, accountName);
                         if (wxAccountList.size() > 0) {

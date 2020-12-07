@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TMsgWxUniformMapper;
 import com.fangxuele.tool.push.dao.TTemplateDataMapper;
 import com.fangxuele.tool.push.domain.TMsgWxUniform;
@@ -147,6 +148,7 @@ public class WxUniformMsgForm implements IMsgForm {
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
             tMsgWxUniform.setPreviewUser(messageEditForm.getPreviewUserField().getText());
+            tMsgWxUniform.setWxAccountId(App.config.getWxAccountId());
 
             if (existSameMsg) {
                 msgWxUniformMapper.updateByMsgTypeAndMsgName(tMsgWxUniform);
