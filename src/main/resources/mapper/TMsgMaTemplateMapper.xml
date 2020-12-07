@@ -164,7 +164,8 @@
         set template_id      = #{templateId,jdbcType=VARCHAR},
             page             = #{page,jdbcType=VARCHAR},
             emphasis_keyword = #{emphasisKeyword,jdbcType=VARCHAR},
-            modified_time    = #{modifiedTime,jdbcType=VARCHAR}
+            modified_time    = #{modifiedTime,jdbcType=VARCHAR},
+            preview_user     = #{previewUser,jdbcType=VARCHAR}
         where msg_type = #{msgType,jdbcType=INTEGER}
           and msg_name = #{msgName,jdbcType=VARCHAR}
     </update>

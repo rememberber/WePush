@@ -209,7 +209,8 @@
             cookies       = #{cookies,jdbcType=VARCHAR},
             body          = #{body,jdbcType=VARCHAR},
             body_type     = #{bodyType,jdbcType=VARCHAR},
-            modified_time = #{modifiedTime,jdbcType=VARCHAR}
+            modified_time = #{modifiedTime,jdbcType=VARCHAR},
+            preview_user  = #{previewUser,jdbcType=VARCHAR}
         where msg_type = #{msgType,jdbcType=INTEGER}
           and msg_name = #{msgName,jdbcType=VARCHAR}
     </update>
