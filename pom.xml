@@ -26,7 +26,7 @@
         <emoji-java.version>5.1.1</emoji-java.version>
         <hutool-all.version>5.4.4</hutool-all.version>
         <opencsv.version>5.2</opencsv.version>
-        <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
+        <mysql-connector-java.version>8.0.16</mysql-connector-java.version>
         <forms_rt.version>7.0.3</forms_rt.version>
         <fastjson.version>1.2.74</fastjson.version>
         <sun-mail.version>1.6.2</sun-mail.version>
