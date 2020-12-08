@@ -9,6 +9,8 @@ public class TMsgDing implements Serializable {
 
     private String msgName;
 
+    private String radioType;
+
     private String dingMsgType;
 
     private String agentId;
@@ -21,7 +23,7 @@ public class TMsgDing implements Serializable {
 
     private String modifiedTime;
 
-    private String radioType;
+    private String previewUser;
 
     private static final long serialVersionUID = 1L;
 
@@ -47,6 +49,14 @@ public class TMsgDing implements Serializable {
 
     public void setMsgName(String msgName) {
         this.msgName = msgName == null ? null : msgName.trim();
+    }
+
+    public String getRadioType() {
+        return radioType;
+    }
+
+    public void setRadioType(String radioType) {
+        this.radioType = radioType == null ? null : radioType.trim();
     }
 
     public String getDingMsgType() {
@@ -97,11 +107,11 @@ public class TMsgDing implements Serializable {
         this.modifiedTime = modifiedTime == null ? null : modifiedTime.trim();
     }
 
-    public String getRadioType() {
-        return radioType;
+    public String getPreviewUser() {
+        return previewUser;
     }
 
-    public void setRadioType(String radioType) {
-        this.radioType = radioType == null ? null : radioType.trim();
+    public void setPreviewUser(String previewUser) {
+        this.previewUser = previewUser == null ? null : previewUser.trim();
     }
 }

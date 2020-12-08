@@ -12,13 +12,15 @@
         <result column="img_url" jdbcType="VARCHAR" property="imgUrl"/>
         <result column="describe" jdbcType="VARCHAR" property="describe"/>
         <result column="url" jdbcType="VARCHAR" property="url"/>
+        <result column="btn_txt" jdbcType="VARCHAR" property="btnTxt"/>
         <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
         <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime"/>
-        <result column="btn_txt" jdbcType="VARCHAR" property="btnTxt"/>
+        <result column="preview_user" jdbcType="VARCHAR" property="previewUser"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, msg_type, msg_name, cp_msg_type, agent_id, content, title, img_url, describe,
-    url, create_time, modified_time, btn_txt
+        id, msg_type, msg_name, cp_msg_type, agent_id, content, title, img_url,
+                describe,
+                        url, btn_txt, create_time, modified_time, preview_user
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -35,15 +37,16 @@
         insert into t_msg_wx_cp (id, msg_type, msg_name,
                                  cp_msg_type, agent_id, content,
                                  title, img_url, describe,
-                                 url, create_time, modified_time,
-                                 btn_txt)
+                                 url, btn_txt, create_time,
+                                 modified_time, preview_user)
         values (#{id,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER}, #{msgName,jdbcType=VARCHAR},
                 #{cpMsgType,jdbcType=VARCHAR}, #{agentId,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR},
                 #{title,jdbcType=VARCHAR}, #{imgUrl,jdbcType=VARCHAR}, #{describe,jdbcType=VARCHAR},
-                #{url,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR},
-                #{btnTxt,jdbcType=VARCHAR})
+                #{url,jdbcType=VARCHAR}, #{btnTxt,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR},
+                #{modifiedTime,jdbcType=VARCHAR}, #{previewUser,jdbcType=VARCHAR})
     </insert>
-    <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TMsgWxCp">
+    <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TMsgWxCp" useGeneratedKeys="true"
+            keyColumn="id" keyProperty="id">
         insert into t_msg_wx_cp
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -76,14 +79,17 @@
             <if test="url != null">
                 url,
             </if>
+            <if test="btnTxt != null">
+                btn_txt,
+            </if>
             <if test="createTime != null">
                 create_time,
             </if>
             <if test="modifiedTime != null">
                 modified_time,
             </if>
-            <if test="btnTxt != null">
-                btn_txt,
+            <if test="previewUser != null">
+                preview_user,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -117,14 +123,17 @@
             <if test="url != null">
                 #{url,jdbcType=VARCHAR},
             </if>
+            <if test="btnTxt != null">
+                #{btnTxt,jdbcType=VARCHAR},
+            </if>
             <if test="createTime != null">
                 #{createTime,jdbcType=VARCHAR},
             </if>
             <if test="modifiedTime != null">
                 #{modifiedTime,jdbcType=VARCHAR},
             </if>
-            <if test="btnTxt != null">
-                #{btnTxt,jdbcType=VARCHAR},
+            <if test="previewUser != null">
+                #{previewUser,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -158,14 +167,17 @@
             <if test="url != null">
                 url = #{url,jdbcType=VARCHAR},
             </if>
+            <if test="btnTxt != null">
+                btn_txt = #{btnTxt,jdbcType=VARCHAR},
+            </if>
             <if test="createTime != null">
                 create_time = #{createTime,jdbcType=VARCHAR},
             </if>
             <if test="modifiedTime != null">
                 modified_time = #{modifiedTime,jdbcType=VARCHAR},
             </if>
-            <if test="btnTxt != null">
-                btn_txt = #{btnTxt,jdbcType=VARCHAR},
+            <if test="previewUser != null">
+                preview_user = #{previewUser,jdbcType=VARCHAR},
             </if>
         </set>
         where id = #{id,jdbcType=INTEGER}
@@ -181,9 +193,10 @@
             img_url       = #{imgUrl,jdbcType=VARCHAR},
             describe      = #{describe,jdbcType=VARCHAR},
             url           = #{url,jdbcType=VARCHAR},
+            btn_txt       = #{btnTxt,jdbcType=VARCHAR},
             create_time   = #{createTime,jdbcType=VARCHAR},
             modified_time = #{modifiedTime,jdbcType=VARCHAR},
-            btn_txt       = #{btnTxt,jdbcType=VARCHAR}
+            preview_user  = #{previewUser,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>
     <select id="selectByMsgTypeAndMsgName" resultMap="BaseResultMap">
@@ -204,7 +217,8 @@
             url           = #{url,jdbcType=VARCHAR},
             btn_txt       = #{btnTxt,jdbcType=VARCHAR},
             create_time   = #{createTime,jdbcType=VARCHAR},
-            modified_time = #{modifiedTime,jdbcType=VARCHAR}
+            modified_time = #{modifiedTime,jdbcType=VARCHAR},
+            preview_user  = #{previewUser,jdbcType=VARCHAR}
         where msg_type = #{msgType,jdbcType=INTEGER}
           and msg_name = #{msgName,jdbcType=VARCHAR}
     </update>

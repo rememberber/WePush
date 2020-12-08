@@ -11,13 +11,14 @@
         <result column="headers" jdbcType="VARCHAR" property="headers"/>
         <result column="cookies" jdbcType="VARCHAR" property="cookies"/>
         <result column="body" jdbcType="VARCHAR" property="body"/>
+        <result column="body_type" jdbcType="VARCHAR" property="bodyType"/>
         <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
         <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime"/>
-        <result column="body_type" jdbcType="VARCHAR" property="bodyType"/>
+        <result column="preview_user" jdbcType="VARCHAR" property="previewUser"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, msg_type, msg_name, method, url, params, headers, cookies, body, create_time,
-    modified_time, body_type
+        id, msg_type, msg_name, method, url, params, headers, cookies, body, body_type, create_time,
+    modified_time, preview_user
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -34,19 +35,22 @@
         delete
         from t_msg_http
         where msg_type = #{msgType,jdbcType=INTEGER}
-        and msg_name = #{msgName,jdbcType=VARCHAR}
+          and msg_name = #{msgName,jdbcType=VARCHAR}
     </delete>
     <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TMsgHttp">
         insert into t_msg_http (id, msg_type, msg_name,
                                 method, url, params,
                                 headers, cookies, body,
-                                create_time, modified_time, body_type)
+                                body_type, create_time, modified_time,
+                                preview_user)
         values (#{id,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER}, #{msgName,jdbcType=VARCHAR},
                 #{method,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, #{params,jdbcType=VARCHAR},
                 #{headers,jdbcType=VARCHAR}, #{cookies,jdbcType=VARCHAR}, #{body,jdbcType=VARCHAR},
-                #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR}, #{bodyType,jdbcType=VARCHAR})
+                #{bodyType,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR},
+                #{previewUser,jdbcType=VARCHAR})
     </insert>
-    <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TMsgHttp">
+    <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TMsgHttp" useGeneratedKeys="true"
+            keyColumn="id" keyProperty="id">
         insert into t_msg_http
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -76,14 +80,17 @@
             <if test="body != null">
                 body,
             </if>
+            <if test="bodyType != null">
+                body_type,
+            </if>
             <if test="createTime != null">
                 create_time,
             </if>
             <if test="modifiedTime != null">
                 modified_time,
             </if>
-            <if test="bodyType != null">
-                body_type,
+            <if test="previewUser != null">
+                preview_user,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -114,14 +121,17 @@
             <if test="body != null">
                 #{body,jdbcType=VARCHAR},
             </if>
+            <if test="bodyType != null">
+                #{bodyType,jdbcType=VARCHAR},
+            </if>
             <if test="createTime != null">
                 #{createTime,jdbcType=VARCHAR},
             </if>
             <if test="modifiedTime != null">
                 #{modifiedTime,jdbcType=VARCHAR},
             </if>
-            <if test="bodyType != null">
-                #{bodyType,jdbcType=VARCHAR},
+            <if test="previewUser != null">
+                #{previewUser,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -152,14 +162,17 @@
             <if test="body != null">
                 body = #{body,jdbcType=VARCHAR},
             </if>
+            <if test="bodyType != null">
+                body_type = #{bodyType,jdbcType=VARCHAR},
+            </if>
             <if test="createTime != null">
                 create_time = #{createTime,jdbcType=VARCHAR},
             </if>
             <if test="modifiedTime != null">
                 modified_time = #{modifiedTime,jdbcType=VARCHAR},
             </if>
-            <if test="bodyType != null">
-                body_type = #{bodyType,jdbcType=VARCHAR},
+            <if test="previewUser != null">
+                preview_user = #{previewUser,jdbcType=VARCHAR},
             </if>
         </set>
         where id = #{id,jdbcType=INTEGER}
@@ -174,8 +187,10 @@
             headers       = #{headers,jdbcType=VARCHAR},
             cookies       = #{cookies,jdbcType=VARCHAR},
             body          = #{body,jdbcType=VARCHAR},
+            body_type     = #{bodyType,jdbcType=VARCHAR},
+            create_time   = #{createTime,jdbcType=VARCHAR},
             modified_time = #{modifiedTime,jdbcType=VARCHAR},
-            body_type     = #{bodyType,jdbcType=VARCHAR}
+            preview_user  = #{previewUser,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>
     <select id="selectByMsgTypeAndMsgName" resultMap="BaseResultMap">
@@ -194,7 +209,8 @@
             cookies       = #{cookies,jdbcType=VARCHAR},
             body          = #{body,jdbcType=VARCHAR},
             body_type     = #{bodyType,jdbcType=VARCHAR},
-            modified_time = #{modifiedTime,jdbcType=VARCHAR}
+            modified_time = #{modifiedTime,jdbcType=VARCHAR},
+            preview_user  = #{previewUser,jdbcType=VARCHAR}
         where msg_type = #{msgType,jdbcType=INTEGER}
           and msg_name = #{msgName,jdbcType=VARCHAR}
     </update>

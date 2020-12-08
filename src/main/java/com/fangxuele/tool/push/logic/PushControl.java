@@ -8,7 +8,7 @@ import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPushHistoryMapper;
 import com.fangxuele.tool.push.domain.TPushHistory;
 import com.fangxuele.tool.push.logic.msgmaker.MsgMakerFactory;
-import com.fangxuele.tool.push.logic.msgmaker.WxMaTemplateMsgMaker;
+import com.fangxuele.tool.push.logic.msgmaker.WxMaSubscribeMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
 import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
@@ -30,6 +30,7 @@ import com.opencsv.CSVWriter;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.springframework.util.CollectionUtils;
 
 import javax.swing.*;
 import java.io.File;
@@ -39,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -110,7 +112,7 @@ public class PushControl {
 
             return false;
         }
-        if (PushData.allUser == null || PushData.allUser.size() == 0) {
+        if (CollectionUtils.isEmpty(PushData.allUser)) {
             int msgType = App.config.getMsgType();
             String tipsTitle = "请先准备目标用户！";
             if (msgType == MessageTypeEnum.HTTP_CODE) {
@@ -142,7 +144,7 @@ public class PushControl {
     /**
      * 配置检查
      *
-     * @return
+     * @return isConfig
      */
     public static boolean configCheck() {
         SettingForm settingForm = SettingForm.getInstance();
@@ -287,7 +289,7 @@ public class PushControl {
         MessageEditForm messageEditForm = MessageEditForm.getInstance();
         File pushHisDir = new File(SystemUtil.configHome + "data" + File.separator + "push_his");
         if (!pushHisDir.exists()) {
-            pushHisDir.mkdirs();
+            boolean mkdirs = pushHisDir.mkdirs();
         }
 
         String msgName = messageEditForm.getMsgNameField().getText();
@@ -382,18 +384,18 @@ public class PushControl {
                     + PushData.toSendList.size() + "未发送";
             StringBuilder contentBuilder = new StringBuilder();
             contentBuilder.append("<h2>WePush推送结果</h2>");
-            contentBuilder.append("<p>消息类型：" + MessageTypeEnum.getName(App.config.getMsgType()) + "</p>");
-            contentBuilder.append("<p>消息名称：" + messageEditForm.getMsgNameField().getText() + "</p>");
+            contentBuilder.append("<p>消息类型：").append(MessageTypeEnum.getName(App.config.getMsgType())).append("</p>");
+            contentBuilder.append("<p>消息名称：").append(messageEditForm.getMsgNameField().getText()).append("</p>");
             contentBuilder.append("<br/>");
 
-            contentBuilder.append("<p style='color:green'><strong>成功数：" + PushData.sendSuccessList.size() + "</strong></p>");
-            contentBuilder.append("<p style='color:red'><strong>失败数：" + PushData.sendFailList.size() + "</strong></p>");
-            contentBuilder.append("<p>未推送数：" + PushData.toSendList.size() + "</p>");
+            contentBuilder.append("<p style='color:green'><strong>成功数：").append(PushData.sendSuccessList.size()).append("</strong></p>");
+            contentBuilder.append("<p style='color:red'><strong>失败数：").append(PushData.sendFailList.size()).append("</strong></p>");
+            contentBuilder.append("<p>未推送数：").append(PushData.toSendList.size()).append("</p>");
             contentBuilder.append("<br/>");
 
-            contentBuilder.append("<p>开始时间：" + DateFormatUtils.format(new Date(PushData.startTime), "yyyy-MM-dd HH:mm:ss") + "</p>");
-            contentBuilder.append("<p>完毕时间：" + DateFormatUtils.format(new Date(PushData.endTime), "yyyy-MM-dd HH:mm:ss") + "</p>");
-            contentBuilder.append("<p>总耗时：" + DateUtil.formatBetween(PushData.endTime - PushData.startTime, BetweenFormater.Level.SECOND) + "</p>");
+            contentBuilder.append("<p>开始时间：").append(DateFormatUtils.format(new Date(PushData.startTime), "yyyy-MM-dd HH:mm:ss")).append("</p>");
+            contentBuilder.append("<p>完毕时间：").append(DateFormatUtils.format(new Date(PushData.endTime), "yyyy-MM-dd HH:mm:ss")).append("</p>");
+            contentBuilder.append("<p>总耗时：").append(DateUtil.formatBetween(PushData.endTime - PushData.startTime, BetweenFormater.Level.SECOND)).append("</p>");
             contentBuilder.append("<br/>");
 
             contentBuilder.append("<p>详情请查看附件</p>");
@@ -413,9 +415,9 @@ public class PushControl {
     /**
      * 保存结果到DB
      *
-     * @param msgName
-     * @param resultInfo
-     * @param file
+     * @param msgName    消息名称
+     * @param resultInfo 结果信息
+     * @param file       文件
      */
     private static void savePushResult(String msgName, String resultInfo, File file) {
         TPushHistory tPushHistory = new TPushHistory();
@@ -436,7 +438,7 @@ public class PushControl {
     static void prepareMsgMaker() {
         if (App.config.getMsgType() == MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE) {
             new WxMpTemplateMsgMaker().prepare();
-            new WxMaTemplateMsgMaker().prepare();
+            new WxMaSubscribeMsgMaker().prepare();
         } else {
             MsgMakerFactory.getMsgMaker().prepare();
         }
@@ -447,7 +449,7 @@ public class PushControl {
      */
     public static void reimportMembers() {
         if (PushData.fixRateScheduling && ScheduleForm.getInstance().getReimportCheckBox().isSelected()) {
-            switch ((String) ScheduleForm.getInstance().getReimportComboBox().getSelectedItem()) {
+            switch ((String) Objects.requireNonNull(ScheduleForm.getInstance().getReimportComboBox().getSelectedItem())) {
                 case "通过SQL导入":
                     MemberListener.importFromSql();
                     break;

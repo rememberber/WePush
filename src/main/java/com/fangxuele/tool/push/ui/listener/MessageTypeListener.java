@@ -4,7 +4,6 @@ import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
-import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.MessageTypeForm;
 
 import javax.swing.*;
@@ -132,11 +131,6 @@ public class MessageTypeListener {
      * 保存消息类型
      */
     private static void saveType() {
-        String msgName = App.config.getMsgName();
-
-        MessageEditForm.getInstance().getMsgNameField().setText(msgName);
-        MessageEditForm.getInstance().getPreviewUserField().setText(App.config.getPreviewUser());
-        App.config.save();
         MessageTypeForm.init();
     }
 }

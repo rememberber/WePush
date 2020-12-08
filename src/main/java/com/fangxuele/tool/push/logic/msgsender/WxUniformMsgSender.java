@@ -1,15 +1,19 @@
 package com.fangxuele.tool.push.logic.msgsender;
 
-import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
+import cn.binarywang.wx.miniapp.bean.WxMaSubscribeMessage;
+import cn.binarywang.wx.miniapp.bean.WxMaTemplateData;
 import cn.binarywang.wx.miniapp.bean.WxMaUniformMessage;
 import cn.binarywang.wx.miniapp.bean.WxMaUniformMessage.MiniProgram;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.PushControl;
-import com.fangxuele.tool.push.logic.msgmaker.WxMaTemplateMsgMaker;
+import com.fangxuele.tool.push.logic.msgmaker.WxMaSubscribeMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
+import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+
+import java.util.List;
 
 /**
  * <pre>
@@ -24,11 +28,11 @@ public class WxUniformMsgSender implements IMsgSender {
 
     private WxMpTemplateMsgMaker wxMpTemplateMsgMaker;
 
-    private WxMaTemplateMsgMaker wxMaTemplateMsgMaker;
+    private WxMaSubscribeMsgMaker wxMaSubscribeMsgMaker;
 
     public WxUniformMsgSender() {
         wxMpTemplateMsgMaker = new WxMpTemplateMsgMaker();
-        wxMaTemplateMsgMaker = new WxMaTemplateMsgMaker();
+        wxMaSubscribeMsgMaker = new WxMaSubscribeMsgMaker();
     }
 
     @Override
@@ -37,7 +41,7 @@ public class WxUniformMsgSender implements IMsgSender {
 
         try {
             String openId = msgData[0];
-            WxMaTemplateMessage wxMaTemplateMessage = wxMaTemplateMsgMaker.makeMsg(msgData);
+            WxMaSubscribeMessage wxMaSubscribeMessage = wxMaSubscribeMsgMaker.makeMsg(msgData);
             WxMpTemplateMessage wxMpTemplateMessage = wxMpTemplateMsgMaker.makeMsg(msgData);
 
             WxMaUniformMessage wxMaUniformMessage = new WxMaUniformMessage();
@@ -46,21 +50,29 @@ public class WxUniformMsgSender implements IMsgSender {
             wxMaUniformMessage.setAppid(App.config.getMiniAppAppId());
             wxMaUniformMessage.setTemplateId(wxMpTemplateMessage.getTemplateId());
             wxMaUniformMessage.setUrl(wxMpTemplateMessage.getUrl());
-            wxMaUniformMessage.setPage(wxMaTemplateMessage.getPage());
+            wxMaUniformMessage.setPage(wxMaSubscribeMessage.getPage());
             wxMaUniformMessage.setFormId(msgData[1]);
             MiniProgram miniProgram = new MiniProgram();
             miniProgram.setAppid(App.config.getMiniAppAppId());
-            miniProgram.setPagePath(wxMaTemplateMessage.getPage());
+            miniProgram.setPagePath(wxMaSubscribeMessage.getPage());
 
             wxMaUniformMessage.setMiniProgram(miniProgram);
-            wxMaUniformMessage.setData(wxMaTemplateMessage.getData());
-            wxMaUniformMessage.setEmphasisKeyword(wxMaTemplateMessage.getEmphasisKeyword());
+            List<WxMaTemplateData> wxMaTemplateDataList = Lists.newArrayList();
+            List<WxMaSubscribeMessage.Data> data = wxMaSubscribeMessage.getData();
+            WxMaTemplateData wxMaTemplateData;
+            for (WxMaSubscribeMessage.Data datum : data) {
+                wxMaTemplateData = new WxMaTemplateData();
+                wxMaTemplateData.setName(datum.getName());
+                wxMaTemplateData.setValue(datum.getValue());
+                wxMaTemplateDataList.add(wxMaTemplateData);
+            }
+            wxMaUniformMessage.setData(wxMaTemplateDataList);
 
             if (PushControl.dryRun) {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
-                WxMaTemplateMsgSender.getWxMaService().getMsgService().sendUniformMsg(wxMaUniformMessage);
+                WxMaSubscribeMsgSender.getWxMaService().getMsgService().sendUniformMsg(wxMaUniformMessage);
             }
         } catch (Exception e) {
             sendResult.setSuccess(false);

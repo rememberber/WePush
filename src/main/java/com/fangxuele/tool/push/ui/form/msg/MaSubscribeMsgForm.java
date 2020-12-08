@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TMsgMaSubscribeMapper;
 import com.fangxuele.tool.push.dao.TTemplateDataMapper;
 import com.fangxuele.tool.push.domain.TMsgMaSubscribe;
@@ -17,12 +18,15 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.plaf.FontUIResource;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
+import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -105,6 +109,10 @@ public class MaSubscribeMsgForm implements IMsgForm {
             msgId = tMsgMaSubscribe.getId();
             getInstance().getMsgTemplateIdTextField().setText(tMsgMaSubscribe.getTemplateId());
             getInstance().getMsgTemplateUrlTextField().setText(tMsgMaSubscribe.getPage());
+
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            messageEditForm.getMsgNameField().setText(tMsgMaSubscribe.getMsgName());
+            messageEditForm.getPreviewUserField().setText(tMsgMaSubscribe.getPreviewUser());
         }
 
         initTemplateDataTable();
@@ -162,6 +170,10 @@ public class MaSubscribeMsgForm implements IMsgForm {
             tMsgMaSubscribe.setPage(templateUrl);
             tMsgMaSubscribe.setCreateTime(now);
             tMsgMaSubscribe.setModifiedTime(now);
+
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            tMsgMaSubscribe.setPreviewUser(messageEditForm.getPreviewUserField().getText());
+            tMsgMaSubscribe.setWxAccountId(App.config.getWxAccountId());
 
             if (existSameMsg) {
                 msgMaSubscribeMapper.updateByMsgTypeAndMsgName(tMsgMaSubscribe);
@@ -341,7 +353,10 @@ public class MaSubscribeMsgForm implements IMsgForm {
                 resultName = currentFont.getName();
             }
         }
-        return new Font(resultName, style >= 0 ? style : currentFont.getStyle(), size >= 0 ? size : currentFont.getSize());
+        Font font = new Font(resultName, style >= 0 ? style : currentFont.getStyle(), size >= 0 ? size : currentFont.getSize());
+        boolean isMac = System.getProperty("os.name", "").toLowerCase(Locale.ENGLISH).startsWith("mac");
+        Font fontWithFallback = isMac ? new Font(font.getFamily(), font.getStyle(), font.getSize()) : new StyleContext().getFont(font.getFamily(), font.getStyle(), font.getSize());
+        return fontWithFallback instanceof FontUIResource ? fontWithFallback : new FontUIResource(fontWithFallback);
     }
 
 }

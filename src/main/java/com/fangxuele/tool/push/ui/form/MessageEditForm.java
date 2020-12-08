@@ -1,16 +1,31 @@
 package com.fangxuele.tool.push.ui.form;
 
-import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
-import com.fangxuele.tool.push.ui.form.msg.*;
+import com.fangxuele.tool.push.ui.form.msg.AliYunMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.BdYunMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.DingMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.HttpMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.HwYunMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.KefuMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.MaSubscribeMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.MailMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.MpTemplateMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.MsgFormFactory;
+import com.fangxuele.tool.push.ui.form.msg.QiNiuYunMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.TxYunMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.UpYunMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.YunpianMsgForm;
 import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Getter;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
+import javax.swing.plaf.FontUIResource;
+import javax.swing.text.StyleContext;
 import java.awt.*;
+import java.util.Locale;
 
 /**
  * <pre>
@@ -56,17 +71,7 @@ public class MessageEditForm {
         messageEditForm.getMsgEditScrollPane().getVerticalScrollBar().setUnitIncrement(15);
         messageEditForm.getMsgEditScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
 
-        String msgName;
-        if (StringUtils.isEmpty(selectedMsgName)) {
-            msgName = App.config.getMsgName();
-        } else {
-            msgName = selectedMsgName;
-        }
-
-        messageEditForm.getMsgNameField().setText(msgName);
-        messageEditForm.getPreviewUserField().setText(App.config.getPreviewUser());
-
-        MsgFormFactory.getMsgForm().init(msgName);
+        MsgFormFactory.getMsgForm().init(selectedMsgName);
     }
 
     /**
@@ -86,8 +91,6 @@ public class MessageEditForm {
                 messageEditForm.getMsgEditorPanel().add(MpTemplateMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
                 break;
             case MessageTypeEnum.MA_TEMPLATE_CODE:
-                messageEditForm.getMsgEditorPanel().add(MaTemplateMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
-                break;
             case MessageTypeEnum.MA_SUBSCRIBE_CODE:
                 messageEditForm.getMsgEditorPanel().add(MaSubscribeMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
                 break;
@@ -101,7 +104,7 @@ public class MessageEditForm {
                 break;
             case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE:
                 messageEditForm.getMsgEditorPanel().setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
-                messageEditForm.getMsgEditorPanel().add(MaTemplateMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
+                messageEditForm.getMsgEditorPanel().add(MaSubscribeMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
                 messageEditForm.getMsgEditorPanel().add(MpTemplateMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow1);
                 break;
             case MessageTypeEnum.ALI_YUN_CODE:
@@ -233,7 +236,10 @@ public class MessageEditForm {
                 resultName = currentFont.getName();
             }
         }
-        return new Font(resultName, style >= 0 ? style : currentFont.getStyle(), size >= 0 ? size : currentFont.getSize());
+        Font font = new Font(resultName, style >= 0 ? style : currentFont.getStyle(), size >= 0 ? size : currentFont.getSize());
+        boolean isMac = System.getProperty("os.name", "").toLowerCase(Locale.ENGLISH).startsWith("mac");
+        Font fontWithFallback = isMac ? new Font(font.getFamily(), font.getStyle(), font.getSize()) : new StyleContext().getFont(font.getFamily(), font.getStyle(), font.getSize());
+        return fontWithFallback instanceof FontUIResource ? fontWithFallback : new FontUIResource(fontWithFallback);
     }
 
 }

@@ -33,7 +33,7 @@ import java.util.List;
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
  * @since 2017/6/18.
  */
-public class MsgEditListener {
+public class MessageEditListener {
     private static final Log logger = LogFactory.get();
 
     public static void addListeners() {
@@ -51,9 +51,6 @@ public class MsgEditListener {
 
             try {
                 MsgFormFactory.getMsgForm().save(msgName);
-
-                App.config.setPreviewUser(messageEditForm.getPreviewUserField().getText());
-                App.config.save();
                 MessageManageForm.init();
             } catch (Exception e1) {
                 JOptionPane.showMessageDialog(messagePanel, "保存失败！\n\n" + e1.getMessage(), "失败",

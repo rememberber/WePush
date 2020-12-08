@@ -2,7 +2,12 @@ package com.fangxuele.tool.push.util;
 
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
-import info.monitorenter.cpdetector.io.*;
+import info.monitorenter.cpdetector.io.ASCIIDetector;
+import info.monitorenter.cpdetector.io.ByteOrderMarkDetector;
+import info.monitorenter.cpdetector.io.CodepageDetectorProxy;
+import info.monitorenter.cpdetector.io.JChardetFacade;
+import info.monitorenter.cpdetector.io.ParsingDetector;
+import info.monitorenter.cpdetector.io.UnicodeDetector;
 
 import java.io.File;
 import java.io.IOException;

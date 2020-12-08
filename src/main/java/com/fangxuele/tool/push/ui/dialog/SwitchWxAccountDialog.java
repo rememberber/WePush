@@ -6,6 +6,8 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TWxAccountMapper;
 import com.fangxuele.tool.push.domain.TWxAccount;
+import com.fangxuele.tool.push.ui.UiConsts;
+import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.ui.listener.SettingListener;
 import com.fangxuele.tool.push.util.ComponentUtil;
@@ -56,9 +58,9 @@ public class SwitchWxAccountDialog extends JDialog {
     public SwitchWxAccountDialog() {
         super(App.mainFrame, "多账号管理");
         String title = "多账号管理";
-        if (SettingForm.WX_ACCOUNT_TYPE_MP.equals(SettingListener.wxAccountType)) {
+        if (UiConsts.WX_ACCOUNT_TYPE_MP.equals(SettingListener.wxAccountType)) {
             title = "多账号管理-公众号";
-        } else if (SettingForm.WX_ACCOUNT_TYPE_MA.equals(SettingListener.wxAccountType)) {
+        } else if (UiConsts.WX_ACCOUNT_TYPE_MA.equals(SettingListener.wxAccountType)) {
             title = "多账号管理-小程序";
         }
         setTitle(title);
@@ -114,6 +116,7 @@ public class SwitchWxAccountDialog extends JDialog {
             }
             renderTable();
             SettingForm.initSwitchMultiAccount();
+            MessageManageForm.initSwitchMultiAccount();
             JOptionPane.showMessageDialog(this, "保存成功！", "成功",
                     JOptionPane.INFORMATION_MESSAGE);
         });

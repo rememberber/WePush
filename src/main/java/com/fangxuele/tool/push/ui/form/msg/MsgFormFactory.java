@@ -25,8 +25,6 @@ public class MsgFormFactory {
                 iMsgForm = MpTemplateMsgForm.getInstance();
                 break;
             case MessageTypeEnum.MA_TEMPLATE_CODE:
-                iMsgForm = MaTemplateMsgForm.getInstance();
-                break;
             case MessageTypeEnum.MA_SUBSCRIBE_CODE:
                 iMsgForm = MaSubscribeMsgForm.getInstance();
                 break;
@@ -40,7 +38,7 @@ public class MsgFormFactory {
                 break;
             case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE:
                 iMsgForm = WxUniformMsgForm.getInstance();
-                UndoUtil.register(MaTemplateMsgForm.getInstance());
+                UndoUtil.register(MaSubscribeMsgForm.getInstance());
                 UndoUtil.register(MpTemplateMsgForm.getInstance());
                 break;
             case MessageTypeEnum.ALI_YUN_CODE:

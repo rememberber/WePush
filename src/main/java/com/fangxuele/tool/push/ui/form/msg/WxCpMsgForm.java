@@ -7,6 +7,7 @@ import com.fangxuele.tool.push.domain.TWxCpApp;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.dialog.WxCpAppDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.google.common.collect.Maps;
@@ -17,9 +18,12 @@ import lombok.Getter;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.plaf.FontUIResource;
+import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -92,6 +96,10 @@ public class WxCpMsgForm implements IMsgForm {
             getInstance().getUrlTextField().setText(tMsgWxCp.getUrl());
             getInstance().getBtnTxtTextField().setText(tMsgWxCp.getBtnTxt());
 
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            messageEditForm.getMsgNameField().setText(tMsgWxCp.getMsgName());
+            messageEditForm.getPreviewUserField().setText(tMsgWxCp.getPreviewUser());
+
             switchCpMsgType(cpMsgType);
         } else {
             switchCpMsgType("图文消息");
@@ -143,6 +151,9 @@ public class WxCpMsgForm implements IMsgForm {
             tMsgWxCp.setUrl(url);
             tMsgWxCp.setBtnTxt(btnTxt);
             tMsgWxCp.setModifiedTime(now);
+
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            tMsgWxCp.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             if (existSameMsg) {
                 msgWxCpMapper.updateByMsgTypeAndMsgName(tMsgWxCp);
@@ -339,7 +350,10 @@ public class WxCpMsgForm implements IMsgForm {
                 resultName = currentFont.getName();
             }
         }
-        return new Font(resultName, style >= 0 ? style : currentFont.getStyle(), size >= 0 ? size : currentFont.getSize());
+        Font font = new Font(resultName, style >= 0 ? style : currentFont.getStyle(), size >= 0 ? size : currentFont.getSize());
+        boolean isMac = System.getProperty("os.name", "").toLowerCase(Locale.ENGLISH).startsWith("mac");
+        Font fontWithFallback = isMac ? new Font(font.getFamily(), font.getStyle(), font.getSize()) : new StyleContext().getFont(font.getFamily(), font.getStyle(), font.getSize());
+        return fontWithFallback instanceof FontUIResource ? fontWithFallback : new FontUIResource(fontWithFallback);
     }
 
 }

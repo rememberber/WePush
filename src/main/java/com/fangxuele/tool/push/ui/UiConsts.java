@@ -16,7 +16,7 @@ public class UiConsts {
      * 软件名称,版本
      */
     public final static String APP_NAME = "WePush";
-    public final static String APP_VERSION = "v_4.2.1_200308";
+    public final static String APP_VERSION = "v_4.2.2_201208";
 
     /**
      * Logo-1024*1024
@@ -104,4 +104,18 @@ public class UiConsts {
      */
     public final static String INTRODUCE_QRCODE_URL = "http://download.zhoubochina.com/qrcode/introduce-wepush-qrcode.png";
 
+    /**
+     * 日志文件路径
+     */
+    public final static String LOG_DIR = "./logs/";
+
+    /**
+     * 多账号切换账号类型：公众号
+     */
+    public static final String WX_ACCOUNT_TYPE_MP = "mp";
+
+    /**
+     * 多账号切换账号类型：小程序
+     */
+    public static final String WX_ACCOUNT_TYPE_MA = "ma";
 }

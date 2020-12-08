@@ -3,6 +3,7 @@
 <details>
 <summary>Windows</summary>
 
+[WePush-v4.2.2_201208-x64-Setup.exe](http://download.zhoubochina.com/exe/WePush-v4.2.2_201208-x64-Setup.exe)  
 [WePush-v4.2.1_200308-x64-Setup.exe](http://download.zhoubochina.com/exe/WePush-v4.2.1_200308-x64-Setup.exe)  
 [WePush-v4.2.0_191129-x64-Setup.exe](http://download.zhoubochina.com/exe/WePush-v4.2.0_191129-x64-Setup.exe)  
 [WePush-v4.1.1_191027-x64-Setup.exe](http://download.zhoubochina.com/exe/WePush-v4.1.1_191027-x64-Setup.exe)  
@@ -127,6 +128,7 @@
 <details>
 <summary>Portable(各系统通用绿色便携版32/64位)</summary>
 
+[v4.2.2_201208](http://download.zhoubochina.com/linux/WePush-4.2.2.zip)  
 [v4.2.1_200308](http://download.zhoubochina.com/linux/WePush-4.2.1.zip)  
 [v4.2.0_191129](http://download.zhoubochina.com/linux/WePush-4.2.0.zip)  
 [v4.1.1_191027](http://download.zhoubochina.com/linux/WePush-4.1.1.zip)  

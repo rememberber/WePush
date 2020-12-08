@@ -24,8 +24,6 @@ public class ConfigUtil extends ConfigBaseUtil {
 
     private String msgName;
 
-    private String previewUser;
-
     private String memberSql;
 
     private String memberFilePath;
@@ -199,6 +197,11 @@ public class ConfigUtil extends ConfigBaseUtil {
 
     private int fontSize;
 
+    /**
+     * 当前所选的微信账户的id
+     */
+    private Integer wxAccountId;
+
     public int getMsgType() {
         return setting.getInt("msgType", "msg", 13);
     }
@@ -213,14 +216,6 @@ public class ConfigUtil extends ConfigBaseUtil {
 
     public void setMsgName(String msgName) {
         setting.put("msg", "msgName", msgName);
-    }
-
-    public String getPreviewUser() {
-        return setting.getStr("previewUser", "msg", "");
-    }
-
-    public void setPreviewUser(String previewUser) {
-        setting.put("msg", "previewUser", previewUser);
     }
 
     public String getMemberSql() {
@@ -949,5 +944,13 @@ public class ConfigUtil extends ConfigBaseUtil {
 
     public void setHttpProxyPassword(String httpProxyPassword) {
         setting.put("setting.http", "httpProxyPassword", httpProxyPassword);
+    }
+
+    public Integer getWxAccountId() {
+        return setting.getInt("wxAccountId", "setting.wechat");
+    }
+
+    public void setWxAccountId(Integer wxAccountId) {
+        setting.put("setting.wechat", "wxAccountId", String.valueOf(wxAccountId));
     }
 }

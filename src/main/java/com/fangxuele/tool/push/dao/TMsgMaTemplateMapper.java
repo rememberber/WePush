@@ -25,4 +25,6 @@ public interface TMsgMaTemplateMapper {
     List<TMsgMaTemplate> selectByMsgType(int msgType);
 
     int deleteByMsgTypeAndName(@Param("msgType") int msgType, @Param("msgName") String msgName);
+
+    List<TMsgMaTemplate> selectByMsgTypeAndWxAccountId(@Param("msgType") int msgType, @Param("wxAccountId") Integer wxAccountId);
 }

@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TMsgKefuPriorityMapper;
 import com.fangxuele.tool.push.dao.TTemplateDataMapper;
 import com.fangxuele.tool.push.domain.TMsgKefuPriority;
@@ -7,6 +8,7 @@ import com.fangxuele.tool.push.domain.TTemplateData;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 
@@ -42,6 +44,10 @@ public class KefuPriorityMsgForm implements IMsgForm {
             MpTemplateMsgForm.getInstance().getMsgTemplateUrlTextField().setText(tMsgKefuPriority.getUrl());
             MpTemplateMsgForm.getInstance().getMsgTemplateMiniAppidTextField().setText(tMsgKefuPriority.getMaAppid());
             MpTemplateMsgForm.getInstance().getMsgTemplateMiniPagePathTextField().setText(tMsgKefuPriority.getMaPagePath());
+
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            messageEditForm.getMsgNameField().setText(tMsgKefuPriority.getMsgName());
+            messageEditForm.getPreviewUserField().setText(tMsgKefuPriority.getPreviewUser());
 
             String kefuMsgType = tMsgKefuPriority.getKefuMsgType();
             KefuMsgForm.getInstance().getMsgKefuMsgTypeComboBox().setSelectedItem(kefuMsgType);
@@ -133,6 +139,9 @@ public class KefuPriorityMsgForm implements IMsgForm {
             tMsgKefuPriority.setKefuUrl(kefuUrl);
             tMsgKefuPriority.setCreateTime(now);
             tMsgKefuPriority.setModifiedTime(now);
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            tMsgKefuPriority.setPreviewUser(messageEditForm.getPreviewUserField().getText());
+            tMsgKefuPriority.setWxAccountId(App.config.getWxAccountId());
 
             if (existSameMsg) {
                 msgKefuPriorityMapper.updateByMsgTypeAndMsgName(tMsgKefuPriority);

@@ -5,11 +5,25 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TWxAccountMapper;
 import com.fangxuele.tool.push.domain.TWxAccount;
-import com.fangxuele.tool.push.logic.msgsender.*;
+import com.fangxuele.tool.push.logic.msgsender.AliYunMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.BdYunMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.HttpMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.HwYunMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.QiNiuYunMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.TxYunMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.WxMaSubscribeMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.YunPianMsgSender;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.UiConsts;
-import com.fangxuele.tool.push.ui.dialog.*;
+import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
+import com.fangxuele.tool.push.ui.dialog.DingAppDialog;
+import com.fangxuele.tool.push.ui.dialog.MailTestDialog;
+import com.fangxuele.tool.push.ui.dialog.SwitchWxAccountDialog;
+import com.fangxuele.tool.push.ui.dialog.WxCpAppDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.ui.form.msg.DingMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
@@ -24,6 +38,7 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.List;
 import java.util.Objects;
 
@@ -95,14 +110,14 @@ public class SettingListener {
                 App.config.save();
 
                 boolean update = false;
-                List<TWxAccount> tWxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(SettingForm.WX_ACCOUNT_TYPE_MP, accountName);
+                List<TWxAccount> tWxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(UiConsts.WX_ACCOUNT_TYPE_MP, accountName);
                 if (tWxAccountList.size() > 0) {
                     update = true;
                 }
 
                 TWxAccount tWxAccount = new TWxAccount();
                 String now = SqliteUtil.nowDateForSqlite();
-                tWxAccount.setAccountType(SettingForm.WX_ACCOUNT_TYPE_MP);
+                tWxAccount.setAccountType(UiConsts.WX_ACCOUNT_TYPE_MP);
                 tWxAccount.setAccountName(accountName);
                 tWxAccount.setAppId(App.config.getWechatAppId());
                 tWxAccount.setAppSecret(App.config.getWechatAppSecret());
@@ -118,6 +133,7 @@ public class SettingListener {
                 }
 
                 SettingForm.initSwitchMultiAccount();
+                MessageManageForm.initSwitchMultiAccount();
                 WxMpTemplateMsgSender.wxMpConfigStorage = null;
                 WxMpTemplateMsgSender.wxMpService = null;
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
@@ -132,7 +148,7 @@ public class SettingListener {
         // 设置-公众号-多账号管理
         settingForm.getMpAccountManageButton().addActionListener(e -> {
             SwitchWxAccountDialog dialog = new SwitchWxAccountDialog();
-            wxAccountType = SettingForm.WX_ACCOUNT_TYPE_MP;
+            wxAccountType = UiConsts.WX_ACCOUNT_TYPE_MP;
             dialog.renderTable();
             dialog.pack();
             dialog.setVisible(true);
@@ -142,7 +158,7 @@ public class SettingListener {
         settingForm.getMpAccountSwitchComboBox().addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 String accountName = e.getItem().toString();
-                List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(SettingForm.WX_ACCOUNT_TYPE_MP, accountName);
+                List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(UiConsts.WX_ACCOUNT_TYPE_MP, accountName);
                 if (wxAccountList.size() > 0) {
                     TWxAccount tWxAccount = wxAccountList.get(0);
                     settingForm.getMpAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
@@ -150,6 +166,31 @@ public class SettingListener {
                     settingForm.getWechatAppSecretPasswordField().setText(tWxAccount.getAppSecret());
                     settingForm.getWechatTokenPasswordField().setText(tWxAccount.getToken());
                     settingForm.getWechatAesKeyPasswordField().setText(tWxAccount.getAesKey());
+
+                    App.config.setWechatMpName(tWxAccount.getAccountName());
+                    App.config.setWechatAppId(settingForm.getWechatAppIdTextField().getText());
+                    App.config.setWechatAppSecret(new String(settingForm.getWechatAppSecretPasswordField().getPassword()));
+                    App.config.setWechatToken(new String(settingForm.getWechatTokenPasswordField().getPassword()));
+                    App.config.setWechatAesKey(new String(settingForm.getWechatAesKeyPasswordField().getPassword()));
+
+                    App.config.setMpUseProxy(settingForm.getMpUseProxyCheckBox().isSelected());
+                    App.config.setMpProxyHost(settingForm.getMpProxyHostTextField().getText());
+                    App.config.setMpProxyPort(settingForm.getMpProxyPortTextField().getText());
+                    App.config.setMpProxyUserName(settingForm.getMpProxyUserNameTextField().getText());
+                    App.config.setMpProxyPassword(settingForm.getMpProxyPasswordTextField().getText());
+
+                    App.config.setMpUseOutSideAt(settingForm.getUseOutSideAccessTokenCheckBox().isSelected());
+                    App.config.setMpManualAt(settingForm.getManualAtRadioButton().isSelected());
+                    App.config.setMpApiAt(settingForm.getApiAtRadioButton().isSelected());
+                    App.config.setMpAt(settingForm.getAccessTokenTextField().getText());
+                    App.config.setMpAtExpiresIn(settingForm.getAtExpiresInTextField().getText());
+                    App.config.setMpAtApiUrl(settingForm.getAtApiUrlTextField().getText());
+
+                    App.config.setWxAccountId(tWxAccount.getId());
+                    App.config.save();
+                    MessageManageForm.getInstance().getAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
+                    WxMpTemplateMsgSender.wxMpConfigStorage = null;
+                    WxMpTemplateMsgSender.wxMpService = null;
                 }
             }
         });
@@ -177,14 +218,14 @@ public class SettingListener {
                 App.config.save();
 
                 boolean update = false;
-                List<TWxAccount> tWxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(SettingForm.WX_ACCOUNT_TYPE_MA, accountName);
+                List<TWxAccount> tWxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(UiConsts.WX_ACCOUNT_TYPE_MA, accountName);
                 if (tWxAccountList.size() > 0) {
                     update = true;
                 }
 
                 TWxAccount tWxAccount = new TWxAccount();
                 String now = SqliteUtil.nowDateForSqlite();
-                tWxAccount.setAccountType(SettingForm.WX_ACCOUNT_TYPE_MA);
+                tWxAccount.setAccountType(UiConsts.WX_ACCOUNT_TYPE_MA);
                 tWxAccount.setAccountName(accountName);
                 tWxAccount.setAppId(App.config.getMiniAppAppId());
                 tWxAccount.setAppSecret(App.config.getMiniAppAppSecret());
@@ -200,8 +241,8 @@ public class SettingListener {
                 }
 
                 SettingForm.initSwitchMultiAccount();
-                WxMaTemplateMsgSender.wxMaConfigStorage = null;
-                WxMaTemplateMsgSender.wxMaService = null;
+                WxMaSubscribeMsgSender.wxMaConfigStorage = null;
+                WxMaSubscribeMsgSender.wxMaService = null;
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {
@@ -214,7 +255,7 @@ public class SettingListener {
         // 设置-小程序-多账号管理
         settingForm.getMaAccountManageButton().addActionListener(e -> {
             SwitchWxAccountDialog dialog = new SwitchWxAccountDialog();
-            wxAccountType = SettingForm.WX_ACCOUNT_TYPE_MA;
+            wxAccountType = UiConsts.WX_ACCOUNT_TYPE_MA;
             dialog.renderTable();
             dialog.pack();
             dialog.setVisible(true);
@@ -224,7 +265,7 @@ public class SettingListener {
         settingForm.getMaAccountSwitchComboBox().addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 String accountName = e.getItem().toString();
-                List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(SettingForm.WX_ACCOUNT_TYPE_MA, accountName);
+                List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(UiConsts.WX_ACCOUNT_TYPE_MA, accountName);
                 if (wxAccountList.size() > 0) {
                     TWxAccount tWxAccount = wxAccountList.get(0);
                     settingForm.getMaAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
@@ -232,6 +273,24 @@ public class SettingListener {
                     settingForm.getMiniAppAppSecretPasswordField().setText(tWxAccount.getAppSecret());
                     settingForm.getMiniAppTokenPasswordField().setText(tWxAccount.getToken());
                     settingForm.getMiniAppAesKeyPasswordField().setText(tWxAccount.getAesKey());
+
+                    App.config.setMiniAppName(accountName);
+                    App.config.setMiniAppAppId(settingForm.getMiniAppAppIdTextField().getText());
+                    App.config.setMiniAppAppSecret(new String(settingForm.getMiniAppAppSecretPasswordField().getPassword()));
+                    App.config.setMiniAppToken(new String(settingForm.getMiniAppTokenPasswordField().getPassword()));
+                    App.config.setMiniAppAesKey(new String(settingForm.getMiniAppAesKeyPasswordField().getPassword()));
+
+                    App.config.setMaUseProxy(settingForm.getMaUseProxyCheckBox().isSelected());
+                    App.config.setMaProxyHost(settingForm.getMaProxyHostTextField().getText());
+                    App.config.setMaProxyPort(settingForm.getMaProxyPortTextField().getText());
+                    App.config.setMaProxyUserName(settingForm.getMaProxyUserNameTextField().getText());
+                    App.config.setMaProxyPassword(settingForm.getMaProxyPasswordTextField().getText());
+
+                    App.config.setWxAccountId(tWxAccount.getId());
+                    App.config.save();
+                    MessageManageForm.getInstance().getAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
+                    WxMaSubscribeMsgSender.wxMaConfigStorage = null;
+                    WxMaSubscribeMsgSender.wxMaService = null;
                 }
             }
         });
@@ -541,6 +600,16 @@ public class SettingListener {
                 JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
+            }
+        });
+
+        // 调试-查看日志
+        settingForm.getShowLogButton().addActionListener(e -> {
+            try {
+                Desktop desktop = Desktop.getDesktop();
+                desktop.open(new File(UiConsts.LOG_DIR));
+            } catch (Exception e2) {
+                logger.error("查看日志打开失败", e2);
             }
         });
 

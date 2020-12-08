@@ -89,6 +89,10 @@ public class MailMsgForm implements IMsgForm {
             getInstance().getMailCcTextField().setText(tMsgMail.getCc());
             getInstance().getMailFilesTextField().setText(tMsgMail.getFiles());
             getInstance().getMailContentPane().setText(tMsgMail.getContent());
+
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            messageEditForm.getMsgNameField().setText(tMsgMail.getMsgName());
+            messageEditForm.getPreviewUserField().setText(tMsgMail.getPreviewUser());
         }
     }
 
@@ -124,6 +128,9 @@ public class MailMsgForm implements IMsgForm {
             tMsgMail.setContent(mailContent);
             tMsgMail.setCreateTime(now);
             tMsgMail.setModifiedTime(now);
+
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            tMsgMail.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             if (existSameMsg) {
                 msgMailMapper.updateByMsgTypeAndMsgName(tMsgMail);

@@ -11,8 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.util.http.apache.DefaultApacheHttpClientBuilder;
 import me.chanjar.weixin.cp.api.WxCpService;
 import me.chanjar.weixin.cp.api.impl.WxCpServiceApacheHttpClientImpl;
-import me.chanjar.weixin.cp.bean.WxCpMessage;
-import me.chanjar.weixin.cp.bean.WxCpMessageSendResult;
+import me.chanjar.weixin.cp.bean.message.WxCpMessage;
+import me.chanjar.weixin.cp.bean.message.WxCpMessageSendResult;
 import me.chanjar.weixin.cp.config.impl.WxCpDefaultConfigImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -31,9 +31,9 @@ import java.util.List;
 public class WxCpMsgSender implements IMsgSender {
     public volatile static WxCpDefaultConfigImpl wxCpConfigStorage;
     public volatile static WxCpService wxCpService;
-    private WxCpMsgMaker wxCpMsgMaker;
+    private final WxCpMsgMaker wxCpMsgMaker;
 
-    private static TWxCpAppMapper wxCpAppMapper = MybatisUtil.getSqlSession().getMapper(TWxCpAppMapper.class);
+    private final static TWxCpAppMapper WX_CP_APP_MAPPER = MybatisUtil.getSqlSession().getMapper(TWxCpAppMapper.class);
 
     public WxCpMsgSender() {
         wxCpMsgMaker = new WxCpMsgMaker();
@@ -52,7 +52,7 @@ public class WxCpMsgSender implements IMsgSender {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
-                WxCpMessageSendResult wxCpMessageSendResult = wxCpService.messageSend(wxCpMessage);
+                WxCpMessageSendResult wxCpMessageSendResult = wxCpService.getMessageService().send(wxCpMessage);
                 if (wxCpMessageSendResult.getErrCode() != 0 || StringUtils.isNoneEmpty(wxCpMessageSendResult.getInvalidUser())) {
                     sendResult.setSuccess(false);
                     sendResult.setInfo(wxCpMessageSendResult.toString());
@@ -87,7 +87,7 @@ public class WxCpMsgSender implements IMsgSender {
         String agentId = WxCpMsgForm.appNameToAgentIdMap.get(WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem());
         configStorage.setAgentId(Integer.valueOf(agentId));
 
-        List<TWxCpApp> wxCpAppList = wxCpAppMapper.selectByAgentId(agentId);
+        List<TWxCpApp> wxCpAppList = WX_CP_APP_MAPPER.selectByAgentId(agentId);
         if (wxCpAppList.size() > 0) {
             configStorage.setCorpSecret(wxCpAppList.get(0).getSecret());
         }

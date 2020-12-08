@@ -71,7 +71,7 @@ public class PushHisForm {
 
         pushHisForm.getSplitPane().setDividerLocation((int) (App.mainFrame.getWidth() * 0.38));
         initHisLeftTable();
-
+        pushHisForm.getPushHisTextArea().setText("");
     }
 
     private static void initHisLeftTable() {

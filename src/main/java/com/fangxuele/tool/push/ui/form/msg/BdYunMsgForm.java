@@ -17,12 +17,15 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.plaf.FontUIResource;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
+import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -94,6 +97,9 @@ public class BdYunMsgForm implements IMsgForm {
             TMsgSms tMsgSms = tMsgSmsList.get(0);
             msgId = tMsgSms.getId();
             getInstance().getMsgTemplateIdTextField().setText(tMsgSms.getTemplateId());
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            messageEditForm.getMsgNameField().setText(tMsgSms.getMsgName());
+            messageEditForm.getPreviewUserField().setText(tMsgSms.getPreviewUser());
         }
 
         initTemplateDataTable();
@@ -148,6 +154,8 @@ public class BdYunMsgForm implements IMsgForm {
             tMsgSms.setTemplateId(templateId);
             tMsgSms.setCreateTime(now);
             tMsgSms.setModifiedTime(now);
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            tMsgSms.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             if (existSameMsg) {
                 msgSmsMapper.updateByMsgTypeAndMsgName(tMsgSms);
@@ -309,7 +317,10 @@ public class BdYunMsgForm implements IMsgForm {
                 resultName = currentFont.getName();
             }
         }
-        return new Font(resultName, style >= 0 ? style : currentFont.getStyle(), size >= 0 ? size : currentFont.getSize());
+        Font font = new Font(resultName, style >= 0 ? style : currentFont.getStyle(), size >= 0 ? size : currentFont.getSize());
+        boolean isMac = System.getProperty("os.name", "").toLowerCase(Locale.ENGLISH).startsWith("mac");
+        Font fontWithFallback = isMac ? new Font(font.getFamily(), font.getStyle(), font.getSize()) : new StyleContext().getFont(font.getFamily(), font.getStyle(), font.getSize());
+        return fontWithFallback instanceof FontUIResource ? fontWithFallback : new FontUIResource(fontWithFallback);
     }
 
 }

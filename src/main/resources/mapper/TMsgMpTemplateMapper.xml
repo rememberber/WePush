@@ -11,9 +11,12 @@
         <result column="ma_page_path" jdbcType="VARCHAR" property="maPagePath"/>
         <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
         <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime"/>
+        <result column="preview_user" jdbcType="VARCHAR" property="previewUser"/>
+        <result column="wx_account_id" jdbcType="INTEGER" property="wxAccountId"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, msg_type, msg_name, template_id, url, ma_appid, ma_page_path, create_time, modified_time
+        id, msg_type, msg_name, template_id, url, ma_appid, ma_page_path, create_time, modified_time,
+    preview_user, wx_account_id
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -29,10 +32,12 @@
     <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TMsgMpTemplate">
         insert into t_msg_mp_template (id, msg_type, msg_name,
                                        template_id, url, ma_appid,
-                                       ma_page_path, create_time, modified_time)
+                                       ma_page_path, create_time, modified_time,
+                                       preview_user, wx_account_id)
         values (#{id,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER}, #{msgName,jdbcType=VARCHAR},
                 #{templateId,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, #{maAppid,jdbcType=VARCHAR},
-                #{maPagePath,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR})
+                #{maPagePath,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR},
+                #{previewUser,jdbcType=VARCHAR}, #{wxAccountId,jdbcType=INTEGER})
     </insert>
     <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TMsgMpTemplate" useGeneratedKeys="true"
             keyColumn="id" keyProperty="id">
@@ -65,6 +70,12 @@
             <if test="modifiedTime != null">
                 modified_time,
             </if>
+            <if test="previewUser != null">
+                preview_user,
+            </if>
+            <if test="wxAccountId != null">
+                wx_account_id,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -93,6 +104,12 @@
             </if>
             <if test="modifiedTime != null">
                 #{modifiedTime,jdbcType=VARCHAR},
+            </if>
+            <if test="previewUser != null">
+                #{previewUser,jdbcType=VARCHAR},
+            </if>
+            <if test="wxAccountId != null">
+                #{wxAccountId,jdbcType=INTEGER},
             </if>
         </trim>
     </insert>
@@ -123,6 +140,12 @@
             <if test="modifiedTime != null">
                 modified_time = #{modifiedTime,jdbcType=VARCHAR},
             </if>
+            <if test="previewUser != null">
+                preview_user = #{previewUser,jdbcType=VARCHAR},
+            </if>
+            <if test="wxAccountId != null">
+                wx_account_id = #{wxAccountId,jdbcType=INTEGER},
+            </if>
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>
@@ -134,7 +157,10 @@
             url           = #{url,jdbcType=VARCHAR},
             ma_appid      = #{maAppid,jdbcType=VARCHAR},
             ma_page_path  = #{maPagePath,jdbcType=VARCHAR},
-            modified_time = #{modifiedTime,jdbcType=VARCHAR}
+            create_time   = #{createTime,jdbcType=VARCHAR},
+            modified_time = #{modifiedTime,jdbcType=VARCHAR},
+            preview_user  = #{previewUser,jdbcType=VARCHAR},
+            wx_account_id = #{wxAccountId,jdbcType=INTEGER}
         where id = #{id,jdbcType=INTEGER}
     </update>
     <select id="selectByMsgTypeAndMsgName" resultMap="BaseResultMap">
@@ -150,7 +176,9 @@
             url           = #{url,jdbcType=VARCHAR},
             ma_appid      = #{maAppid,jdbcType=VARCHAR},
             ma_page_path  = #{maPagePath,jdbcType=VARCHAR},
-            modified_time = #{modifiedTime,jdbcType=VARCHAR}
+            modified_time = #{modifiedTime,jdbcType=VARCHAR},
+            preview_user  = #{previewUser,jdbcType=VARCHAR},
+            wx_account_id = #{wxAccountId,jdbcType=INTEGER}
         where msg_type = #{msgType,jdbcType=INTEGER}
           and msg_name = #{msgName,jdbcType=VARCHAR}
     </update>
@@ -167,4 +195,12 @@
         where msg_type = #{msgType,jdbcType=INTEGER}
           and msg_name = #{msgName,jdbcType=VARCHAR}
     </delete>
+    <select id="selectByMsgTypeAndWxAccountId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_msg_mp_template
+        where msg_type = #{msgType,jdbcType=INTEGER}
+        and (wx_account_id = #{wxAccountId,jdbcType=INTEGER} or wx_account_id is null)
+        order by create_time desc
+    </select>
 </mapper>

@@ -11,6 +11,7 @@ import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
 import com.fangxuele.tool.push.ui.dialog.DingAppDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.google.common.collect.Maps;
@@ -21,11 +22,14 @@ import lombok.Getter;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.plaf.FontUIResource;
+import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -153,6 +157,10 @@ public class DingMsgForm implements IMsgForm {
             switchDingMsgType(dingMsgType);
 
             switchRadio(tMsgDing.getRadioType());
+
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            messageEditForm.getMsgNameField().setText(tMsgDing.getMsgName());
+            messageEditForm.getPreviewUserField().setText(tMsgDing.getPreviewUser());
         } else {
             switchDingMsgType("文本消息");
         }
@@ -207,6 +215,8 @@ public class DingMsgForm implements IMsgForm {
 
             tMsgDing.setContent(JSONUtil.toJsonStr(dingMsg));
             tMsgDing.setModifiedTime(now);
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            tMsgDing.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             if (getInstance().getWorkRadioButton().isSelected()) {
                 tMsgDing.setRadioType("work");
@@ -449,7 +459,10 @@ public class DingMsgForm implements IMsgForm {
                 resultName = currentFont.getName();
             }
         }
-        return new Font(resultName, style >= 0 ? style : currentFont.getStyle(), size >= 0 ? size : currentFont.getSize());
+        Font font = new Font(resultName, style >= 0 ? style : currentFont.getStyle(), size >= 0 ? size : currentFont.getSize());
+        boolean isMac = System.getProperty("os.name", "").toLowerCase(Locale.ENGLISH).startsWith("mac");
+        Font fontWithFallback = isMac ? new Font(font.getFamily(), font.getStyle(), font.getSize()) : new StyleContext().getFont(font.getFamily(), font.getStyle(), font.getSize());
+        return fontWithFallback instanceof FontUIResource ? fontWithFallback : new FontUIResource(fontWithFallback);
     }
 
 }

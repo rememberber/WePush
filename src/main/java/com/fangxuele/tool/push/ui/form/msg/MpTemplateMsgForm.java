@@ -23,13 +23,16 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.plaf.FontUIResource;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
+import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -159,6 +162,7 @@ public class MpTemplateMsgForm implements IMsgForm {
         }
 
         clearAllField();
+        initTemplateList();
         Integer msgId = 0;
         List<TMsgMpTemplate> tMsgMpTemplateList = msgMpTemplateMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.MP_TEMPLATE_CODE, msgName);
         if (tMsgMpTemplateList.size() > 0) {
@@ -169,10 +173,13 @@ public class MpTemplateMsgForm implements IMsgForm {
             mpTemplateMsgForm.getMsgTemplateMiniAppidTextField().setText(tMsgMpTemplate.getMaAppid());
             mpTemplateMsgForm.getMsgTemplateMiniPagePathTextField().setText(tMsgMpTemplate.getMaPagePath());
 
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            messageEditForm.getMsgNameField().setText(tMsgMpTemplate.getMsgName());
+            messageEditForm.getPreviewUserField().setText(tMsgMpTemplate.getPreviewUser());
+
             selectedMsgTemplateId = tMsgMpTemplate.getTemplateId();
         }
 
-        initTemplateList();
         initTemplateDataTable();
         fillTemplateDataTable(msgId);
     }
@@ -212,6 +219,10 @@ public class MpTemplateMsgForm implements IMsgForm {
             tMsgMpTemplate.setMaPagePath(templateMiniPagePath);
             tMsgMpTemplate.setCreateTime(now);
             tMsgMpTemplate.setModifiedTime(now);
+
+            MessageEditForm messageEditForm = MessageEditForm.getInstance();
+            tMsgMpTemplate.setPreviewUser(messageEditForm.getPreviewUserField().getText());
+            tMsgMpTemplate.setWxAccountId(App.config.getWxAccountId());
 
             if (existSameMsg) {
                 msgMpTemplateMapper.updateByMsgTypeAndMsgName(tMsgMpTemplate);
@@ -313,9 +324,11 @@ public class MpTemplateMsgForm implements IMsgForm {
                 }
             }
 
-            getInstance().getTemplateListComboBox().setSelectedIndex(selectedIndex);
+            if (getInstance().getTemplateListComboBox().getItemCount() > 0) {
+                getInstance().getTemplateListComboBox().setSelectedIndex(selectedIndex);
+                fillWxTemplateContentToField();
+            }
 
-            fillWxTemplateContentToField();
         } catch (Exception e) {
             log.error(e.toString());
         }
@@ -411,6 +424,8 @@ public class MpTemplateMsgForm implements IMsgForm {
         getInstance().getTemplateDataNameTextField().setText("");
         getInstance().getTemplateDataValueTextField().setText("");
         getInstance().getTemplateDataColorTextField().setText("");
+        getInstance().getTemplateListComboBox().removeAllItems();
+        getInstance().getTemplateContentTextArea().setText("");
         selectedMsgTemplateId = null;
         initTemplateDataTable();
     }
@@ -538,7 +553,10 @@ public class MpTemplateMsgForm implements IMsgForm {
                 resultName = currentFont.getName();
             }
         }
-        return new Font(resultName, style >= 0 ? style : currentFont.getStyle(), size >= 0 ? size : currentFont.getSize());
+        Font font = new Font(resultName, style >= 0 ? style : currentFont.getStyle(), size >= 0 ? size : currentFont.getSize());
+        boolean isMac = System.getProperty("os.name", "").toLowerCase(Locale.ENGLISH).startsWith("mac");
+        Font fontWithFallback = isMac ? new Font(font.getFamily(), font.getStyle(), font.getSize()) : new StyleContext().getFont(font.getFamily(), font.getStyle(), font.getSize());
+        return fontWithFallback instanceof FontUIResource ? fontWithFallback : new FontUIResource(fontWithFallback);
     }
 
 }

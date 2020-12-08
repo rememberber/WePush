@@ -9,9 +9,10 @@
         <result column="content" jdbcType="VARCHAR" property="content"/>
         <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
         <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime"/>
+        <result column="preview_user" jdbcType="VARCHAR" property="previewUser"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, msg_type, msg_name, template_id, content, create_time, modified_time
+        id, msg_type, msg_name, template_id, content, create_time, modified_time, preview_user
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -27,10 +28,10 @@
     <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TMsgSms">
         insert into t_msg_sms (id, msg_type, msg_name,
                                template_id, content, create_time,
-                               modified_time)
+                               modified_time, preview_user)
         values (#{id,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER}, #{msgName,jdbcType=VARCHAR},
                 #{templateId,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR},
-                #{modifiedTime,jdbcType=VARCHAR})
+                #{modifiedTime,jdbcType=VARCHAR}, #{previewUser,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TMsgSms" useGeneratedKeys="true"
             keyColumn="id" keyProperty="id">
@@ -57,6 +58,9 @@
             <if test="modifiedTime != null">
                 modified_time,
             </if>
+            <if test="previewUser != null">
+                preview_user,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -79,6 +83,9 @@
             </if>
             <if test="modifiedTime != null">
                 #{modifiedTime,jdbcType=VARCHAR},
+            </if>
+            <if test="previewUser != null">
+                #{previewUser,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -103,6 +110,9 @@
             <if test="modifiedTime != null">
                 modified_time = #{modifiedTime,jdbcType=VARCHAR},
             </if>
+            <if test="previewUser != null">
+                preview_user = #{previewUser,jdbcType=VARCHAR},
+            </if>
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>
@@ -112,7 +122,9 @@
             msg_name      = #{msgName,jdbcType=VARCHAR},
             template_id   = #{templateId,jdbcType=VARCHAR},
             content       = #{content,jdbcType=VARCHAR},
-            modified_time = #{modifiedTime,jdbcType=VARCHAR}
+            create_time   = #{createTime,jdbcType=VARCHAR},
+            modified_time = #{modifiedTime,jdbcType=VARCHAR},
+            preview_user  = #{previewUser,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>
     <select id="selectByMsgTypeAndMsgName" resultMap="BaseResultMap">
@@ -126,7 +138,8 @@
         update t_msg_sms
         set template_id   = #{templateId,jdbcType=VARCHAR},
             content       = #{content,jdbcType=VARCHAR},
-            modified_time = #{modifiedTime,jdbcType=VARCHAR}
+            modified_time = #{modifiedTime,jdbcType=VARCHAR},
+            preview_user  = #{previewUser,jdbcType=VARCHAR}
         where msg_type = #{msgType,jdbcType=INTEGER}
           and msg_name = #{msgName,jdbcType=VARCHAR}
     </update>

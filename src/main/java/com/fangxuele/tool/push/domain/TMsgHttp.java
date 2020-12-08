@@ -21,11 +21,13 @@ public class TMsgHttp implements Serializable {
 
     private String body;
 
+    private String bodyType;
+
     private String createTime;
 
     private String modifiedTime;
 
-    private String bodyType;
+    private String previewUser;
 
     private static final long serialVersionUID = 1L;
 
@@ -101,6 +103,14 @@ public class TMsgHttp implements Serializable {
         this.body = body == null ? null : body.trim();
     }
 
+    public String getBodyType() {
+        return bodyType;
+    }
+
+    public void setBodyType(String bodyType) {
+        this.bodyType = bodyType == null ? null : bodyType.trim();
+    }
+
     public String getCreateTime() {
         return createTime;
     }
@@ -117,11 +127,11 @@ public class TMsgHttp implements Serializable {
         this.modifiedTime = modifiedTime == null ? null : modifiedTime.trim();
     }
 
-    public String getBodyType() {
-        return bodyType;
+    public String getPreviewUser() {
+        return previewUser;
     }
 
-    public void setBodyType(String bodyType) {
-        this.bodyType = bodyType == null ? null : bodyType.trim();
+    public void setPreviewUser(String previewUser) {
+        this.previewUser = previewUser == null ? null : previewUser.trim();
     }
 }

@@ -48,9 +48,9 @@ public class PushRunThread extends Thread {
         pushForm.getPushTotalProgressBar().setIndeterminate(false);
         ConsoleUtil.consoleWithLog("推送开始……");
         // 消息数据分片以及线程纷发
-        shardingAndMsgThread();
+        ThreadPoolExecutor threadPoolExecutor = shardingAndMsgThread();
         // 时间监控
-        timeMonitor();
+        timeMonitor(threadPoolExecutor);
     }
 
     /**
@@ -124,7 +124,7 @@ public class PushRunThread extends Thread {
     /**
      * 消息数据分片以及线程纷发
      */
-    private static void shardingAndMsgThread() {
+    private static ThreadPoolExecutor shardingAndMsgThread() {
         PushForm pushForm = PushForm.getInstance();
         Object[] data;
 
@@ -160,18 +160,22 @@ public class PushRunThread extends Thread {
 
             threadPoolExecutor.execute(msgSendThread);
         }
+        threadPoolExecutor.shutdown();
         ConsoleUtil.consoleWithLog("所有线程宝宝启动完毕……");
+        return threadPoolExecutor;
     }
 
     /**
      * 时间监控
+     *
+     * @param threadPoolExecutor
      */
-    private void timeMonitor() {
+    private void timeMonitor(ThreadPoolExecutor threadPoolExecutor) {
         PushForm pushForm = PushForm.getInstance();
         long startTimeMillis = System.currentTimeMillis();
         // 计时
         while (true) {
-            if (PushData.stoppedThreadCount.intValue() == PushData.threadCount) {
+            if (threadPoolExecutor.isTerminated()) {
                 if (!PushData.fixRateScheduling) {
                     pushForm.getPushStopButton().setEnabled(false);
                     pushForm.getPushStopButton().updateUI();

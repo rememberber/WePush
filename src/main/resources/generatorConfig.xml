@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
 
 <generatorConfiguration>
-    <classPathEntry location="D:\maven_repository\org\xerial\sqlite-jdbc\3.27.2.1\sqlite-jdbc-3.27.2.1.jar"/>
+    <classPathEntry location="D:\MVN-Repository\org\xerial\sqlite-jdbc\3.32.3.2\sqlite-jdbc-3.32.3.2.jar"/>
 
     <context id="SQLiteTables" targetRuntime="MyBatis3">
         <!-- JavaBean 实现 序列化 接口 -->
@@ -17,7 +17,7 @@
         </commentGenerator>
 
         <jdbcConnection driverClass="org.sqlite.JDBC"
-                        connectionURL="jdbc:sqlite:C:/Users/zhouy/.wepush/WePush.db">
+                        connectionURL="jdbc:sqlite:C:/Users/zhoubo9/.wepush/WePush.db">
         </jdbcConnection>
 
         <javaTypeResolver>
@@ -45,7 +45,7 @@
 
         <table schema="main" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false"
                enableSelectByExample="false" selectByExampleQueryId="false"
-               tableName="t_msg_ma_subscribe" domainObjectName="TMsgMaSubscribe">
+               tableName="t_msg_wx_uniform" domainObjectName="TMsgWxUniform">
             <property name="useActualColumnNames" value="false"/>
             <!--<generatedKey column="ID" sqlStatement="DB2" identity="true"/>-->
         </table>

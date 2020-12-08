@@ -428,10 +428,10 @@ public class PushListener {
         // 总记录数
         long totalCount = PushData.allUser.size();
         pushForm.getPushTotalCountLabel().setText("消息总数：" + totalCount);
-        // 每个线程平均分配
+        // 平均每个线程分配
         int threadCount = Integer.parseInt(pushForm.getThreadCountTextField().getText());
         int perThread = (int) (totalCount / threadCount) + 1;
-        pushForm.getCountPerThread().setText("每个线程平均分配：" + perThread);
+        pushForm.getCountPerThread().setText("平均每个线程分配：" + perThread);
         // 可用处理器核心
         pushForm.getAvailableProcessorLabel().setText("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
         // JVM内存占用

@@ -128,6 +128,7 @@ public class UpgradeUtil {
                     String sql = FileUtil.readString(sqlFileUrl, CharsetUtil.UTF_8);
                     try {
                         MybatisUtil.executeSql(sql);
+                        log.info("执行索引为{}的版本对应的sql完毕", i);
                     } catch (SQLException e) {
                         log.error("执行索引为{}的版本对应的sql时异常", i, e);
                         if (!e.getMessage().contains("duplicate column")) {
@@ -159,14 +160,14 @@ public class UpgradeUtil {
                 TWxAccountMapper wxAccountMapper = MybatisUtil.getSqlSession().getMapper(TWxAccountMapper.class);
                 if (StringUtils.isNotBlank(App.config.getWechatAppId())) {
                     boolean update = false;
-                    List<TWxAccount> tWxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(SettingForm.WX_ACCOUNT_TYPE_MP, accountName);
+                    List<TWxAccount> tWxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(UiConsts.WX_ACCOUNT_TYPE_MP, accountName);
                     if (tWxAccountList.size() > 0) {
                         update = true;
                     }
 
                     TWxAccount tWxAccount = new TWxAccount();
                     String now = SqliteUtil.nowDateForSqlite();
-                    tWxAccount.setAccountType(SettingForm.WX_ACCOUNT_TYPE_MP);
+                    tWxAccount.setAccountType(UiConsts.WX_ACCOUNT_TYPE_MP);
                     tWxAccount.setAccountName(accountName);
                     tWxAccount.setAppId(App.config.getWechatAppId());
                     tWxAccount.setAppSecret(App.config.getWechatAppSecret());
@@ -185,14 +186,14 @@ public class UpgradeUtil {
                 }
                 if (StringUtils.isNotBlank(App.config.getMiniAppAppId())) {
                     boolean update = false;
-                    List<TWxAccount> tWxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(SettingForm.WX_ACCOUNT_TYPE_MA, accountName);
+                    List<TWxAccount> tWxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(UiConsts.WX_ACCOUNT_TYPE_MA, accountName);
                     if (tWxAccountList.size() > 0) {
                         update = true;
                     }
 
                     TWxAccount tWxAccount = new TWxAccount();
                     String now = SqliteUtil.nowDateForSqlite();
-                    tWxAccount.setAccountType(SettingForm.WX_ACCOUNT_TYPE_MA);
+                    tWxAccount.setAccountType(UiConsts.WX_ACCOUNT_TYPE_MA);
                     tWxAccount.setAccountName(accountName);
                     tWxAccount.setAppId(App.config.getMiniAppAppId());
                     tWxAccount.setAppSecret(App.config.getMiniAppAppSecret());
