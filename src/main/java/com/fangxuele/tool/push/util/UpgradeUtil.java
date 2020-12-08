@@ -128,6 +128,7 @@ public class UpgradeUtil {
                     String sql = FileUtil.readString(sqlFileUrl, CharsetUtil.UTF_8);
                     try {
                         MybatisUtil.executeSql(sql);
+                        log.info("执行索引为{}的版本对应的sql完毕", i);
                     } catch (SQLException e) {
                         log.error("执行索引为{}的版本对应的sql时异常", i, e);
                         if (!e.getMessage().contains("duplicate column")) {

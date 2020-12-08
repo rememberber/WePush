@@ -116,6 +116,7 @@ public class MemberForm {
             Color foreColor = new Color(187, 187, 187);
             memberForm.getImportFromSqlTextArea().setForeground(foreColor);
         }
+        clearMember();
     }
 
     /**
