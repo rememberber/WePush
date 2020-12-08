@@ -172,6 +172,7 @@ public class MessageManageListener {
                             App.config.setWxAccountId(tWxAccount.getId());
                             App.config.save();
                         }
+                        MessageEditForm.getInstance().getMsgNameField().setText("");
                         MessageManageForm.initMessageList();
                         break;
 
@@ -190,6 +191,7 @@ public class MessageManageListener {
                             App.config.setWxAccountId(tWxAccount.getId());
                             App.config.save();
                         }
+                        MessageEditForm.getInstance().getMsgNameField().setText("");
                         MessageManageForm.initMessageList();
                         break;
                     default:

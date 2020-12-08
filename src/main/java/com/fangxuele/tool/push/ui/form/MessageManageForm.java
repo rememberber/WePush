@@ -90,6 +90,8 @@ public class MessageManageForm {
     public static void init() {
         messageManageForm = getInstance();
 
+        MessageEditForm.getInstance().getMsgNameField().setText("");
+
         initSwitchMultiAccount();
 
         initMessageList();

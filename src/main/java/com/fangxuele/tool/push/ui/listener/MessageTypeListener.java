@@ -132,11 +132,6 @@ public class MessageTypeListener {
      * 保存消息类型
      */
     private static void saveType() {
-// TODO       String msgName = App.config.getMsgName();
-
-// TODO      MessageEditForm.getInstance().getMsgNameField().setText(msgName);
-// TODO       MessageEditForm.getInstance().getPreviewUserField().setText(App.config.getPreviewUser());
-// TODO       App.config.save();
         MessageTypeForm.init();
     }
 }
