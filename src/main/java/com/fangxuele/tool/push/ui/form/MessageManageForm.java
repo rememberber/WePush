@@ -72,6 +72,8 @@ public class MessageManageForm {
     private static TMsgDingMapper msgDingMapper = MybatisUtil.getSqlSession().getMapper(TMsgDingMapper.class);
     private static TWxAccountMapper wxAccountMapper = MybatisUtil.getSqlSession().getMapper(TWxAccountMapper.class);
 
+    public static boolean accountSwitchComboBoxListenIgnore = false;
+
     private MessageManageForm() {
     }
 
@@ -212,9 +214,11 @@ public class MessageManageForm {
             case MessageTypeEnum.KEFU_PRIORITY_CODE:
                 // 多账号切换-公众号
                 List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountType(UiConsts.WX_ACCOUNT_TYPE_MP);
+                accountSwitchComboBoxListenIgnore = true;
                 for (TWxAccount tWxAccount : wxAccountList) {
                     messageManageForm.getAccountSwitchComboBox().addItem(tWxAccount.getAccountName());
                 }
+                accountSwitchComboBoxListenIgnore = false;
                 messageManageForm.getAccountSwitchComboBox().setSelectedItem(App.config.getWechatMpName());
                 break;
 

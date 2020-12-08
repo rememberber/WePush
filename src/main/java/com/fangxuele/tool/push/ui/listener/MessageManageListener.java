@@ -146,6 +146,9 @@ public class MessageManageListener {
 
         // 切换账号事件
         MessageManageForm.getInstance().getAccountSwitchComboBox().addItemListener(e -> {
+            if (MessageManageForm.accountSwitchComboBoxListenIgnore) {
+                return;
+            }
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 String accountName = e.getItem().toString();
 
@@ -165,6 +168,7 @@ public class MessageManageListener {
                         if (wxAccountList.size() > 0) {
                             TWxAccount tWxAccount = wxAccountList.get(0);
                             settingForm.getMpAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
+                            App.config.setWechatMpName(tWxAccount.getAccountName());
                             App.config.setWxAccountId(tWxAccount.getId());
                             App.config.save();
                         }
@@ -182,6 +186,7 @@ public class MessageManageListener {
                         if (wxAccountList.size() > 0) {
                             TWxAccount tWxAccount = wxAccountList.get(0);
                             settingForm.getMaAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
+                            App.config.setMiniAppName(tWxAccount.getAccountName());
                             App.config.setWxAccountId(tWxAccount.getId());
                             App.config.save();
                         }

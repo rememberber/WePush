@@ -153,7 +153,7 @@ public class SettingListener {
                     settingForm.getWechatTokenPasswordField().setText(tWxAccount.getToken());
                     settingForm.getWechatAesKeyPasswordField().setText(tWxAccount.getAesKey());
 
-                    App.config.setWechatMpName(accountName);
+                    App.config.setWechatMpName(tWxAccount.getAccountName());
                     App.config.setWechatAppId(settingForm.getWechatAppIdTextField().getText());
                     App.config.setWechatAppSecret(new String(settingForm.getWechatAppSecretPasswordField().getPassword()));
                     App.config.setWechatToken(new String(settingForm.getWechatTokenPasswordField().getPassword()));
