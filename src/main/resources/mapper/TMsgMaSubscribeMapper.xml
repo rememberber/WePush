@@ -164,7 +164,8 @@
             page          = #{page,jdbcType=VARCHAR},
             create_time   = #{createTime,jdbcType=VARCHAR},
             modified_time = #{modifiedTime,jdbcType=VARCHAR},
-            preview_user  = #{previewUser,jdbcType=VARCHAR}
+            preview_user  = #{previewUser,jdbcType=VARCHAR},
+            wx_account_id = #{wxAccountId,jdbcType=INTEGER}
         where msg_type = #{msgType,jdbcType=INTEGER}
           and msg_name = #{msgName,jdbcType=VARCHAR}
     </update>

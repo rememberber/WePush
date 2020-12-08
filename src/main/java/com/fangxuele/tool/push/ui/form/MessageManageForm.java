@@ -90,6 +90,10 @@ public class MessageManageForm {
 
         initSwitchMultiAccount();
 
+        initMessageList();
+    }
+
+    public static void initMessageList() {
         // 历史消息管理
         String[] headerNames = {"消息名称"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
@@ -193,7 +197,6 @@ public class MessageManageForm {
                 break;
         }
     }
-
 
     /**
      * 初始化多账号切换

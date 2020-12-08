@@ -168,6 +168,7 @@ public class MessageManageListener {
                             App.config.setWxAccountId(tWxAccount.getId());
                             App.config.save();
                         }
+                        MessageManageForm.initMessageList();
                         break;
 
                     case MessageTypeEnum.MA_SUBSCRIBE_CODE:
@@ -184,6 +185,7 @@ public class MessageManageListener {
                             App.config.setWxAccountId(tWxAccount.getId());
                             App.config.save();
                         }
+                        MessageManageForm.initMessageList();
                         break;
                     default:
                         break;
