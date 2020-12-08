@@ -76,6 +76,7 @@
 <details>
 <summary>Mac OS</summary>
 
+[v_4.2.2_201208.app](http://download.zhoubochina.com/mac/4.2.2.zip)  
 [v_4.2.1_200308.app](http://download.zhoubochina.com/mac/4.2.1.zip)  
 [v_4.1.1_191027.app](http://download.zhoubochina.com/mac/4.1.1.zip)  
 [v_3.9.0_190915.app](http://download.zhoubochina.com/mac/3.9.0.zip)  
