@@ -162,6 +162,7 @@ public class MpTemplateMsgForm implements IMsgForm {
         }
 
         clearAllField();
+        initTemplateList();
         Integer msgId = 0;
         List<TMsgMpTemplate> tMsgMpTemplateList = msgMpTemplateMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.MP_TEMPLATE_CODE, msgName);
         if (tMsgMpTemplateList.size() > 0) {
@@ -179,7 +180,6 @@ public class MpTemplateMsgForm implements IMsgForm {
             selectedMsgTemplateId = tMsgMpTemplate.getTemplateId();
         }
 
-        initTemplateList();
         initTemplateDataTable();
         fillTemplateDataTable(msgId);
     }
