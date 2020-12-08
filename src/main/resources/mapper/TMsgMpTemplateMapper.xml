@@ -194,4 +194,12 @@
         where msg_type = #{msgType,jdbcType=INTEGER}
           and msg_name = #{msgName,jdbcType=VARCHAR}
     </delete>
+    <select id="selectByMsgTypeAndWxAccountId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_msg_mp_template
+        where msg_type = #{msgType,jdbcType=INTEGER}
+        and (wx_account_id = #{wxAccountId,jdbcType=INTEGER} or wx_account_id is null)
+        order by create_time desc
+    </select>
 </mapper>

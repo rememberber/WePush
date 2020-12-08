@@ -98,12 +98,13 @@ public class MessageManageForm {
         JTableUtil.hideTableHeader(messageManageForm.getMsgHistable());
 
         int msgType = App.config.getMsgType();
+        Integer wxAccountId = App.config.getWxAccountId();
 
         Object[] data;
 
         switch (msgType) {
             case MessageTypeEnum.KEFU_CODE:
-                List<TMsgKefu> tMsgKefuList = msgKefuMapper.selectByMsgType(msgType);
+                List<TMsgKefu> tMsgKefuList = msgKefuMapper.selectByMsgTypeAndWxAccountId(msgType, wxAccountId);
                 for (TMsgKefu tMsgKefu : tMsgKefuList) {
                     data = new Object[1];
                     data[0] = tMsgKefu.getMsgName();
@@ -111,7 +112,7 @@ public class MessageManageForm {
                 }
                 break;
             case MessageTypeEnum.KEFU_PRIORITY_CODE:
-                List<TMsgKefuPriority> tMsgKefuPriorityList = msgKefuPriorityMapper.selectByMsgType(msgType);
+                List<TMsgKefuPriority> tMsgKefuPriorityList = msgKefuPriorityMapper.selectByMsgTypeAndWxAccountId(msgType, wxAccountId);
                 for (TMsgKefuPriority tMsgKefuPriority : tMsgKefuPriorityList) {
                     data = new Object[1];
                     data[0] = tMsgKefuPriority.getMsgName();
@@ -119,7 +120,7 @@ public class MessageManageForm {
                 }
                 break;
             case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE:
-                List<TMsgWxUniform> tMsgWxUniformList = wxUniformMapper.selectByMsgType(msgType);
+                List<TMsgWxUniform> tMsgWxUniformList = wxUniformMapper.selectByMsgTypeAndWxAccountId(msgType, wxAccountId);
                 for (TMsgWxUniform tMsgWxUniform : tMsgWxUniformList) {
                     data = new Object[1];
                     data[0] = tMsgWxUniform.getMsgName();
@@ -127,7 +128,7 @@ public class MessageManageForm {
                 }
                 break;
             case MessageTypeEnum.MA_TEMPLATE_CODE:
-                List<TMsgMaTemplate> tMsgMaTemplateList = msgMaTemplateMapper.selectByMsgType(msgType);
+                List<TMsgMaTemplate> tMsgMaTemplateList = msgMaTemplateMapper.selectByMsgTypeAndWxAccountId(msgType, wxAccountId);
                 for (TMsgMaTemplate tMsgMaTemplate : tMsgMaTemplateList) {
                     data = new Object[1];
                     data[0] = tMsgMaTemplate.getMsgName();
@@ -135,7 +136,7 @@ public class MessageManageForm {
                 }
                 break;
             case MessageTypeEnum.MA_SUBSCRIBE_CODE:
-                List<TMsgMaSubscribe> tMsgMaSubscribeList = msgMaSubscribeMapper.selectByMsgType(msgType);
+                List<TMsgMaSubscribe> tMsgMaSubscribeList = msgMaSubscribeMapper.selectByMsgTypeAndWxAccountId(msgType, wxAccountId);
                 for (TMsgMaSubscribe tMsgMaSubscribe : tMsgMaSubscribeList) {
                     data = new Object[1];
                     data[0] = tMsgMaSubscribe.getMsgName();
@@ -143,7 +144,7 @@ public class MessageManageForm {
                 }
                 break;
             case MessageTypeEnum.MP_TEMPLATE_CODE:
-                List<TMsgMpTemplate> tMsgMpTemplateList = msgMpTemplateMapper.selectByMsgType(msgType);
+                List<TMsgMpTemplate> tMsgMpTemplateList = msgMpTemplateMapper.selectByMsgTypeAndWxAccountId(msgType, wxAccountId);
                 for (TMsgMpTemplate tMsgMpTemplate : tMsgMpTemplateList) {
                     data = new Object[1];
                     data[0] = tMsgMpTemplate.getMsgName();
