@@ -55,6 +55,7 @@ public class MessageManageForm {
     private JButton msgHisTableDeleteButton;
     private JButton createMsgButton;
     private JComboBox accountSwitchComboBox;
+    private JPanel accountSwitchPanel;
 
     private static MessageManageForm messageManageForm;
 
@@ -272,10 +273,10 @@ public class MessageManageForm {
         createMsgButton.setIcon(new ImageIcon(getClass().getResource("/icon/add.png")));
         createMsgButton.setText("新建");
         panel2.add(createMsgButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(1, 1, new Insets(5, 0, 0, 0), -1, -1));
-        messageManagePanel.add(panel3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        accountSwitchPanel = new JPanel();
+        accountSwitchPanel.setLayout(new GridLayoutManager(1, 1, new Insets(5, 0, 0, 0), -1, -1));
+        messageManagePanel.add(accountSwitchPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         accountSwitchComboBox = new JComboBox();
-        panel3.add(accountSwitchComboBox, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        accountSwitchPanel.add(accountSwitchComboBox, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 }
