@@ -4,7 +4,6 @@ import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
-import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.MessageTypeForm;
 
 import javax.swing.*;

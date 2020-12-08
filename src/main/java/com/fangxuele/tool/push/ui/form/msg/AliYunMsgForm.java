@@ -1,6 +1,5 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
-import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TMsgSmsMapper;
 import com.fangxuele.tool.push.dao.TTemplateDataMapper;
 import com.fangxuele.tool.push.domain.TMsgSms;

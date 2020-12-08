@@ -1,14 +1,25 @@
 package com.fangxuele.tool.push.ui.form;
 
-import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
-import com.fangxuele.tool.push.ui.form.msg.*;
+import com.fangxuele.tool.push.ui.form.msg.AliYunMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.BdYunMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.DingMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.HttpMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.HwYunMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.KefuMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.MaSubscribeMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.MailMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.MpTemplateMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.MsgFormFactory;
+import com.fangxuele.tool.push.ui.form.msg.QiNiuYunMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.TxYunMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.UpYunMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.YunpianMsgForm;
 import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.sun.xml.internal.bind.v2.TODO;
 import lombok.Getter;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
