@@ -132,6 +132,7 @@ public class MessageTypeForm {
         MessageEditForm.switchMsgType(msgType);
         MessageEditForm.getInstance().getMsgTypeName().setText(MessageTypeEnum.getName(msgType));
         MessageManageForm.init();
+        MessageEditForm.getInstance().getMsgNameField().setText("");
         MemberForm.init();
         PushHisForm.init();
         ScheduleForm.init();
