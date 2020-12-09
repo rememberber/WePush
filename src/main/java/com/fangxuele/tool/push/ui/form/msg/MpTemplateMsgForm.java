@@ -140,7 +140,7 @@ public class MpTemplateMsgForm implements IMsgForm {
         });
         templateListComboBox.addItemListener(e -> {
             if (needListenTemplateListComboBox && e.getStateChange() == ItemEvent.SELECTED) {
-                clearAllField();
+                clearAllFieldExceptTemplateListAndContent();
                 fillWxTemplateContentToField();
             }
         });
@@ -417,6 +417,15 @@ public class MpTemplateMsgForm implements IMsgForm {
      * 清空所有界面字段
      */
     public static void clearAllField() {
+        clearAllFieldExceptTemplateListAndContent();
+        getInstance().getTemplateListComboBox().removeAllItems();
+        getInstance().getTemplateContentTextArea().setText("");
+    }
+
+    /**
+     * 清空所有界面字段
+     */
+    public static void clearAllFieldExceptTemplateListAndContent() {
         getInstance().getMsgTemplateIdTextField().setText("");
         getInstance().getMsgTemplateUrlTextField().setText("");
         getInstance().getMsgTemplateMiniAppidTextField().setText("");
@@ -424,8 +433,6 @@ public class MpTemplateMsgForm implements IMsgForm {
         getInstance().getTemplateDataNameTextField().setText("");
         getInstance().getTemplateDataValueTextField().setText("");
         getInstance().getTemplateDataColorTextField().setText("");
-        getInstance().getTemplateListComboBox().removeAllItems();
-        getInstance().getTemplateContentTextArea().setText("");
         selectedMsgTemplateId = null;
         initTemplateDataTable();
     }
