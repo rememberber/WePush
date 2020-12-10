@@ -131,6 +131,7 @@ public class MessageTypeListener {
      * 保存消息类型
      */
     private static void saveType() {
+        App.config.save();
         MessageTypeForm.init();
     }
 }
