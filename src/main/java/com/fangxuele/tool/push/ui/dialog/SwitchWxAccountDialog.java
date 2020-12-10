@@ -117,6 +117,7 @@ public class SwitchWxAccountDialog extends JDialog {
             renderTable();
             SettingForm.initSwitchMultiAccount();
             MessageManageForm.initSwitchMultiAccount();
+            MessageManageForm.init();
             JOptionPane.showMessageDialog(this, "保存成功！", "成功",
                     JOptionPane.INFORMATION_MESSAGE);
         });
