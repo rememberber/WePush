@@ -162,12 +162,15 @@ public class MpTemplateMsgForm implements IMsgForm {
         }
 
         clearAllField();
-        initTemplateList();
+
         Integer msgId = 0;
         List<TMsgMpTemplate> tMsgMpTemplateList = msgMpTemplateMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.MP_TEMPLATE_CODE, msgName);
         if (tMsgMpTemplateList.size() > 0) {
             TMsgMpTemplate tMsgMpTemplate = tMsgMpTemplateList.get(0);
             msgId = tMsgMpTemplate.getId();
+            selectedMsgTemplateId = tMsgMpTemplate.getTemplateId();
+            initTemplateList();
+
             mpTemplateMsgForm.getMsgTemplateIdTextField().setText(tMsgMpTemplate.getTemplateId());
             mpTemplateMsgForm.getMsgTemplateUrlTextField().setText(tMsgMpTemplate.getUrl());
             mpTemplateMsgForm.getMsgTemplateMiniAppidTextField().setText(tMsgMpTemplate.getMaAppid());
@@ -176,8 +179,8 @@ public class MpTemplateMsgForm implements IMsgForm {
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
             messageEditForm.getMsgNameField().setText(tMsgMpTemplate.getMsgName());
             messageEditForm.getPreviewUserField().setText(tMsgMpTemplate.getPreviewUser());
-
-            selectedMsgTemplateId = tMsgMpTemplate.getTemplateId();
+        } else {
+            initTemplateList();
         }
 
         initTemplateDataTable();
