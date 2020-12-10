@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.util;
 
+import cn.hutool.core.date.DateUtil;
 import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
 import me.chanjar.weixin.common.error.WxErrorException;
@@ -8,6 +9,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
 import java.io.StringWriter;
+import java.util.Date;
 
 /**
  * <pre>
@@ -40,6 +42,10 @@ public class TemplateUtil {
         }
 
         velocityContext.put("ENTER", "\n");
+        Date now = new Date();
+        velocityContext.put("DATE", DateUtil.today());
+        velocityContext.put("TIME", DateUtil.formatTime(now));
+        velocityContext.put("DATE_TIME", DateUtil.formatDateTime(now));
 
         StringWriter writer = new StringWriter();
         velocityEngine.evaluate(velocityContext, writer, "", content);
