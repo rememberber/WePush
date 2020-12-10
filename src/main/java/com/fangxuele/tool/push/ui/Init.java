@@ -32,6 +32,8 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Enumeration;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <pre>
@@ -134,7 +136,8 @@ public class Init {
 
         // 检查新版版
         if (App.config.isAutoCheckUpdate()) {
-            ThreadUtil.execute(() -> UpgradeUtil.checkUpdate(true));
+            ScheduledThreadPoolExecutor threadPoolExecutor = new ScheduledThreadPoolExecutor(1);
+            threadPoolExecutor.scheduleAtFixedRate(() -> UpgradeUtil.checkUpdate(true), 0, 24 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
         }
         // 更新二维码
         ThreadUtil.execute(AboutListener::initQrCode);
