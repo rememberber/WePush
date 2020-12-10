@@ -218,8 +218,8 @@ public class MessageManageForm {
                 for (TWxAccount tWxAccount : wxAccountList) {
                     messageManageForm.getAccountSwitchComboBox().addItem(tWxAccount.getAccountName());
                 }
-                accountSwitchComboBoxListenIgnore = false;
                 messageManageForm.getAccountSwitchComboBox().setSelectedItem(App.config.getWechatMpName());
+                accountSwitchComboBoxListenIgnore = false;
                 break;
 
             case MessageTypeEnum.MA_SUBSCRIBE_CODE:
@@ -227,10 +227,12 @@ public class MessageManageForm {
             case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE:
                 // 多账号切换-小程序
                 wxAccountList = wxAccountMapper.selectByAccountType(UiConsts.WX_ACCOUNT_TYPE_MA);
+                accountSwitchComboBoxListenIgnore = true;
                 for (TWxAccount tWxAccount : wxAccountList) {
                     messageManageForm.getAccountSwitchComboBox().addItem(tWxAccount.getAccountName());
                 }
                 messageManageForm.getAccountSwitchComboBox().setSelectedItem(App.config.getMiniAppName());
+                accountSwitchComboBoxListenIgnore = false;
                 break;
             default:
                 break;
