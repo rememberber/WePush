@@ -212,7 +212,7 @@ public class PushListener {
                         serviceStartPerDay = Executors.newSingleThreadScheduledExecutor();
                         long millisBetween = startPerDayMills - System.currentTimeMillis();
                         long delay = millisBetween < 0 ? millisBetween + 24 * 60 * 60 * 1000 : millisBetween;
-                        serviceStartPerDay.scheduleAtFixedRate(new PushRunThread(), delay, 24 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
+                        serviceStartPerDay.scheduleAtFixedRate(new PushRunThread(), delay, 24, TimeUnit.HOURS);
                     }
                     existScheduleTask = true;
                 }
@@ -251,7 +251,7 @@ public class PushListener {
                         serviceStartPerWeek = Executors.newSingleThreadScheduledExecutor();
                         long millisBetween = startPerWeekMills + todaySetMills - System.currentTimeMillis();
                         long delay = millisBetween < 0 ? millisBetween + 7 * 24 * 60 * 60 * 1000 : millisBetween;
-                        serviceStartPerWeek.scheduleAtFixedRate(new PushRunThread(), delay, 7 * 24 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
+                        serviceStartPerWeek.scheduleAtFixedRate(new PushRunThread(), delay, 7 * 24, TimeUnit.HOURS);
                     }
                     existScheduleTask = true;
                 }
