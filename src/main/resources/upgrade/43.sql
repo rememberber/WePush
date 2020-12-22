@@ -1,0 +1,12 @@
+alter table t_msg_kefu
+    add app_id text;
+alter table t_msg_kefu
+    add page_path text;
+alter table t_msg_kefu
+    add thumb_media_id text;
+alter table t_msg_kefu_priority
+    add app_id text;
+alter table t_msg_kefu_priority
+    add page_path text;
+alter table t_msg_kefu_priority
+    add thumb_media_id text;
