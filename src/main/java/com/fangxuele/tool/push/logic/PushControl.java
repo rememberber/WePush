@@ -8,6 +8,7 @@ import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPushHistoryMapper;
 import com.fangxuele.tool.push.domain.TPushHistory;
 import com.fangxuele.tool.push.logic.msgmaker.MsgMakerFactory;
+import com.fangxuele.tool.push.logic.msgmaker.WxKefuMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxMaSubscribeMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
 import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
@@ -439,6 +440,9 @@ public class PushControl {
         if (App.config.getMsgType() == MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE) {
             new WxMpTemplateMsgMaker().prepare();
             new WxMaSubscribeMsgMaker().prepare();
+        } else if (App.config.getMsgType() == MessageTypeEnum.KEFU_PRIORITY_CODE) {
+            new WxKefuMsgMaker().prepare();
+            new WxMpTemplateMsgMaker().prepare();
         } else {
             MsgMakerFactory.getMsgMaker().prepare();
         }
