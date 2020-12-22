@@ -3,12 +3,12 @@
   <grid id="27dc6" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="500" height="400"/>
+      <xy x="20" y="20" width="518" height="400"/>
     </constraints>
     <properties/>
     <border type="none"/>
     <children>
-      <grid id="eafc9" binding="kefuMsgPanel" layout-manager="GridLayoutManager" row-count="7" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="eafc9" binding="kefuMsgPanel" layout-manager="GridLayoutManager" row-count="10" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="10" left="15" bottom="0" right="0"/>
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -29,7 +29,7 @@
           </component>
           <vspacer id="ba599">
             <constraints>
-              <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+              <grid row="9" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
             </constraints>
           </vspacer>
           <component id="a26ee" class="javax.swing.JComboBox" binding="msgKefuMsgTypeComboBox">
@@ -40,6 +40,7 @@
               <model>
                 <item value="图文消息"/>
                 <item value="文本消息"/>
+                <item value="小程序卡片消息"/>
               </model>
             </properties>
           </component>
@@ -104,9 +105,61 @@
               <text value="跳转URL"/>
             </properties>
           </component>
+          <component id="652a9" class="javax.swing.JLabel" binding="kefuMsgAppidLabel">
+            <constraints>
+              <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <labelFor value="d074b"/>
+              <text value="小程序appid"/>
+            </properties>
+          </component>
+          <component id="18f21" class="javax.swing.JLabel" binding="kefuMsgPagepathLabel">
+            <constraints>
+              <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <labelFor value="1527b"/>
+              <text value="小程序页面路径"/>
+            </properties>
+          </component>
+          <component id="851f3" class="javax.swing.JLabel" binding="kefuMsgThumbMediaIdLabel">
+            <constraints>
+              <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <labelFor value="33032"/>
+              <text value="卡片图片的媒体ID"/>
+              <toolTipText value="thumb_media_id"/>
+            </properties>
+          </component>
           <component id="bf2d2" class="javax.swing.JTextField" binding="msgKefuUrlTextField">
             <constraints>
               <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+              </grid>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="d074b" class="javax.swing.JTextField" binding="msgKefuAppidTextField">
+            <constraints>
+              <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+              </grid>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="1527b" class="javax.swing.JTextField" binding="msgKefuPagepathTextField">
+            <constraints>
+              <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+              </grid>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="33032" class="javax.swing.JTextField" binding="msgKefuThumbMediaIdTextField">
+            <constraints>
+              <grid row="8" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
               </grid>
             </constraints>
