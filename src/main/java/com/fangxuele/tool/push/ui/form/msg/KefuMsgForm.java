@@ -78,6 +78,11 @@ public class KefuMsgForm implements IMsgForm {
                 getInstance().getContentTextArea().setText(tMsgKefu.getContent());
             } else if ("图文消息".equals(kefuMsgType)) {
                 getInstance().getMsgKefuMsgTitleTextField().setText(tMsgKefu.getTitle());
+            } else if ("小程序卡片消息".equals(kefuMsgType)) {
+                getInstance().getMsgKefuMsgTitleTextField().setText(tMsgKefu.getTitle());
+                getInstance().getMsgKefuAppidTextField().setText(tMsgKefu.getAppId());
+                getInstance().getMsgKefuPagepathTextField().setText(tMsgKefu.getPagePath());
+                getInstance().getMsgKefuThumbMediaIdTextField().setText(tMsgKefu.getThumbMediaId());
             }
             getInstance().getMsgKefuPicUrlTextField().setText(tMsgKefu.getImgUrl());
             getInstance().getMsgKefuDescTextField().setText(tMsgKefu.getDescribe());
@@ -116,6 +121,9 @@ public class KefuMsgForm implements IMsgForm {
             String kefuPicUrl = getInstance().getMsgKefuPicUrlTextField().getText();
             String kefuDesc = getInstance().getMsgKefuDescTextField().getText();
             String kefuUrl = getInstance().getMsgKefuUrlTextField().getText();
+            String kefuAppId = getInstance().getMsgKefuAppidTextField().getText();
+            String kefuPagePath = getInstance().getMsgKefuPagepathTextField().getText();
+            String kefuThumbMediaId = getInstance().getMsgKefuThumbMediaIdTextField().getText();
 
             String now = SqliteUtil.nowDateForSqlite();
 
@@ -129,6 +137,9 @@ public class KefuMsgForm implements IMsgForm {
             tMsgKefu.setDescribe(kefuDesc);
             tMsgKefu.setUrl(kefuUrl);
             tMsgKefu.setModifiedTime(now);
+            tMsgKefu.setAppId(kefuAppId);
+            tMsgKefu.setPagePath(kefuPagePath);
+            tMsgKefu.setThumbMediaId(kefuThumbMediaId);
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
             tMsgKefu.setPreviewUser(messageEditForm.getPreviewUserField().getText());
