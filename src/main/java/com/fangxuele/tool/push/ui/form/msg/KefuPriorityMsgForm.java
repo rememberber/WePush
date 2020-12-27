@@ -55,6 +55,11 @@ public class KefuPriorityMsgForm implements IMsgForm {
                 KefuMsgForm.getInstance().getContentTextArea().setText(tMsgKefuPriority.getContent());
             } else if ("图文消息".equals(kefuMsgType)) {
                 KefuMsgForm.getInstance().getMsgKefuMsgTitleTextField().setText(tMsgKefuPriority.getTitle());
+            } else if ("小程序卡片消息".equals(kefuMsgType)) {
+                KefuMsgForm.getInstance().getMsgKefuMsgTitleTextField().setText(tMsgKefuPriority.getTitle());
+                KefuMsgForm.getInstance().getMsgKefuAppidTextField().setText(tMsgKefuPriority.getAppId());
+                KefuMsgForm.getInstance().getMsgKefuPagepathTextField().setText(tMsgKefuPriority.getPagePath());
+                KefuMsgForm.getInstance().getMsgKefuThumbMediaIdTextField().setText(tMsgKefuPriority.getThumbMediaId());
             }
             KefuMsgForm.getInstance().getMsgKefuPicUrlTextField().setText(tMsgKefuPriority.getImgUrl());
             KefuMsgForm.getInstance().getMsgKefuDescTextField().setText(tMsgKefuPriority.getDescribe());
@@ -119,6 +124,9 @@ public class KefuPriorityMsgForm implements IMsgForm {
             String kefuPicUrl = KefuMsgForm.getInstance().getMsgKefuPicUrlTextField().getText();
             String kefuDesc = KefuMsgForm.getInstance().getMsgKefuDescTextField().getText();
             String kefuUrl = KefuMsgForm.getInstance().getMsgKefuUrlTextField().getText();
+            String kefuAppId = KefuMsgForm.getInstance().getMsgKefuAppidTextField().getText();
+            String kefuPagePath = KefuMsgForm.getInstance().getMsgKefuPagepathTextField().getText();
+            String kefuThumbMediaId = KefuMsgForm.getInstance().getMsgKefuThumbMediaIdTextField().getText();
             String templateMiniAppid = MpTemplateMsgForm.getInstance().getMsgTemplateMiniAppidTextField().getText();
             String templateMiniPagePath = MpTemplateMsgForm.getInstance().getMsgTemplateMiniPagePathTextField().getText();
 
@@ -142,6 +150,9 @@ public class KefuPriorityMsgForm implements IMsgForm {
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
             tMsgKefuPriority.setPreviewUser(messageEditForm.getPreviewUserField().getText());
             tMsgKefuPriority.setWxAccountId(App.config.getWxAccountId());
+            tMsgKefuPriority.setAppId(kefuAppId);
+            tMsgKefuPriority.setPagePath(kefuPagePath);
+            tMsgKefuPriority.setThumbMediaId(kefuThumbMediaId);
 
             if (existSameMsg) {
                 msgKefuPriorityMapper.updateByMsgTypeAndMsgName(tMsgKefuPriority);

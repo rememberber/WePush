@@ -37,6 +37,12 @@ public class TMsgKefuPriority implements Serializable {
 
     private Integer wxAccountId;
 
+    private String appId;
+
+    private String pagePath;
+
+    private String thumbMediaId;
+
     private static final long serialVersionUID = 1L;
 
     public Integer getId() {
@@ -173,5 +179,29 @@ public class TMsgKefuPriority implements Serializable {
 
     public void setWxAccountId(Integer wxAccountId) {
         this.wxAccountId = wxAccountId;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId == null ? null : appId.trim();
+    }
+
+    public String getPagePath() {
+        return pagePath;
+    }
+
+    public void setPagePath(String pagePath) {
+        this.pagePath = pagePath == null ? null : pagePath.trim();
+    }
+
+    public String getThumbMediaId() {
+        return thumbMediaId;
+    }
+
+    public void setThumbMediaId(String thumbMediaId) {
+        this.thumbMediaId = thumbMediaId == null ? null : thumbMediaId.trim();
     }
 }

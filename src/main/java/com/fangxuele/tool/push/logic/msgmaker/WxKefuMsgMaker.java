@@ -27,6 +27,12 @@ public class WxKefuMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
     private static String msgKefuUrl;
 
+    private static String msgKefuAppid;
+
+    private static String msgKefuPagepath;
+
+    private static String msgKefuThumbMediaId;
+
     /**
      * 准备(界面字段等)
      */
@@ -38,6 +44,9 @@ public class WxKefuMsgMaker extends BaseMsgMaker implements IMsgMaker {
         msgKefuDesc = KefuMsgForm.getInstance().getMsgKefuDescTextField().getText();
         msgKefuUrl = KefuMsgForm.getInstance().getMsgKefuUrlTextField().getText();
         msgKefuMsgContent = KefuMsgForm.getInstance().getContentTextArea().getText();
+        msgKefuAppid = KefuMsgForm.getInstance().getMsgKefuAppidTextField().getText();
+        msgKefuPagepath = KefuMsgForm.getInstance().getMsgKefuPagepathTextField().getText();
+        msgKefuThumbMediaId = KefuMsgForm.getInstance().getMsgKefuThumbMediaIdTextField().getText();
     }
 
     /**
@@ -73,6 +82,11 @@ public class WxKefuMsgMaker extends BaseMsgMaker implements IMsgMaker {
         } else if ("文本消息".equals(msgKefuMsgType)) {
             String content = TemplateUtil.evaluate(msgKefuMsgContent, velocityContext);
             kefuMessage = WxMpKefuMessage.TEXT().content(content).build();
+        } else if ("小程序卡片消息".equals(msgKefuMsgType)) {
+            String title = TemplateUtil.evaluate(msgKefuMsgTitle, velocityContext);
+            String pagePath = TemplateUtil.evaluate(msgKefuPagepath, velocityContext);
+            String thumbMediaId = TemplateUtil.evaluate(msgKefuThumbMediaId, velocityContext);
+            kefuMessage = WxMpKefuMessage.MINIPROGRAMPAGE().title(title).appId(msgKefuAppid).pagePath(pagePath).thumbMediaId(thumbMediaId).build();
         }
 
         return kefuMessage;
