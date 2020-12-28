@@ -8,6 +8,7 @@ import com.fangxuele.tool.push.ui.dialog.FontSizeAdjustDialog;
 import com.fangxuele.tool.push.ui.form.AboutForm;
 import com.fangxuele.tool.push.ui.form.BoostForm;
 import com.fangxuele.tool.push.ui.form.HelpForm;
+import com.fangxuele.tool.push.ui.form.InfinityForm;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
@@ -138,6 +139,7 @@ public class Init {
         ThreadUtil.execute(MemberForm::init);
         ThreadUtil.execute(PushForm::init);
         ThreadUtil.execute(BoostForm::init);
+        ThreadUtil.execute(InfinityForm::init);
         ThreadUtil.execute(ScheduleForm::init);
         ThreadUtil.execute(SettingForm::init);
         ThreadUtil.execute(PushHisForm::init);
