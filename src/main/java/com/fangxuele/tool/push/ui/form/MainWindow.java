@@ -130,6 +130,9 @@ public class MainWindow {
         pushPanel.setLayout(new GridLayoutManager(1, 1, new Insets(10, 10, 10, 10), -1, -1));
         pushPanel.setMinimumSize(new Dimension(-1, -1));
         tabbedPane.addTab("④开始推送", pushPanel);
+        infinityPanel = new JPanel();
+        infinityPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        tabbedPane.addTab("变速模式", infinityPanel);
         boostPanel = new JPanel();
         boostPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane.addTab("性能模式", boostPanel);
@@ -151,9 +154,6 @@ public class MainWindow {
         userCasePanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 10, 0), -1, -1));
         userCasePanel.setMinimumSize(new Dimension(-1, -1));
         tabbedPane.addTab("他们都在用", userCasePanel);
-        infinityPanel = new JPanel();
-        infinityPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        tabbedPane.addTab("变速模式", infinityPanel);
     }
 
     /**
