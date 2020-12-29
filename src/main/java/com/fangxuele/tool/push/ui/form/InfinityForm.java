@@ -102,7 +102,7 @@ public class InfinityForm {
         final Spacer spacer1 = new Spacer();
         infinityPanel.add(spacer1, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         pushUpPanel = new JPanel();
-        pushUpPanel.setLayout(new GridLayoutManager(7, 10, new Insets(0, 0, 0, 0), -1, -1));
+        pushUpPanel.setLayout(new GridLayoutManager(7, 10, new Insets(0, 5, 5, 5), -1, -1));
         infinityPanel.add(pushUpPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         pushSuccessCount = new JLabel();
         Font pushSuccessCountFont = this.$$$getFont$$$(null, -1, 72, pushSuccessCount.getFont());
@@ -184,7 +184,7 @@ public class InfinityForm {
         tpsLabel.setText("0");
         pushUpPanel.add(tpsLabel, new GridConstraints(6, 6, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         pushControlPanel = new JPanel();
-        pushControlPanel.setLayout(new GridLayoutManager(1, 13, new Insets(0, 0, 0, 0), -1, -1));
+        pushControlPanel.setLayout(new GridLayoutManager(1, 13, new Insets(0, 5, 5, 5), -1, -1));
         infinityPanel.add(pushControlPanel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label6 = new JLabel();
         label6.setText("最大线程池");
