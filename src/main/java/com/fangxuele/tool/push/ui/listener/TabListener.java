@@ -51,7 +51,7 @@ public class TabListener {
                         PushForm.getInstance().getPushMsgName().setText(MessageEditForm.getInstance().getMsgNameField().getText());
                         PushListener.refreshPushInfo();
                         break;
-                    case 5:
+                    case 6:
                         BoostForm.getInstance().getMsgNameLabel().setText(MessageEditForm.getInstance().getMsgNameField().getText());
                         BoostListener.refreshPushInfo();
                         break;
