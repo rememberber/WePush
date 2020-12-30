@@ -7,6 +7,7 @@ import com.fangxuele.tool.push.ui.listener.AboutListener;
 import com.fangxuele.tool.push.ui.listener.BoostListener;
 import com.fangxuele.tool.push.ui.listener.FrameListener;
 import com.fangxuele.tool.push.ui.listener.HelpListener;
+import com.fangxuele.tool.push.ui.listener.InfinityListener;
 import com.fangxuele.tool.push.ui.listener.MemberListener;
 import com.fangxuele.tool.push.ui.listener.MessageEditListener;
 import com.fangxuele.tool.push.ui.listener.MessageManageListener;
@@ -74,6 +75,7 @@ public class MainFrame extends JFrame {
         ThreadUtil.execute(MessageManageListener::addListeners);
         ThreadUtil.execute(MemberListener::addListeners);
         ThreadUtil.execute(PushListener::addListeners);
+        ThreadUtil.execute(InfinityListener::addListeners);
         ThreadUtil.execute(BoostListener::addListeners);
         ThreadUtil.execute(ScheduleListener::addListeners);
         ThreadUtil.execute(TabListener::addListeners);
