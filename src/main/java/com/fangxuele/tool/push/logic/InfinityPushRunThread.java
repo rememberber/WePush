@@ -11,7 +11,7 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
-import com.fangxuele.tool.push.logic.msgthread.MsgAsyncSendThread;
+import com.fangxuele.tool.push.logic.msgthread.MsgInfinitySendThread;
 import com.fangxuele.tool.push.ui.form.InfinityForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -94,12 +94,12 @@ public class InfinityPushRunThread extends Thread {
      */
     private static void shardingAndMsgThread() {
 
-        MsgAsyncSendThread msgAsyncSendThread;
+        MsgInfinitySendThread msgInfinitySendThread;
 
         IMsgSender msgSender = MsgSenderFactory.getMsgSender();
-        msgAsyncSendThread = new MsgAsyncSendThread(msgSender);
+        msgInfinitySendThread = new MsgInfinitySendThread(msgSender);
 
-        ThreadUtil.execute(msgAsyncSendThread);
+        ThreadUtil.execute(msgInfinitySendThread);
         ConsoleUtil.boostConsoleWithLog("线程启动完毕……");
     }
 
