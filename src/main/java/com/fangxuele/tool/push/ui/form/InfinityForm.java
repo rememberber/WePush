@@ -186,7 +186,7 @@ public class InfinityForm {
         pushControlPanel.setLayout(new GridLayoutManager(1, 10, new Insets(0, 5, 5, 5), -1, -1));
         infinityPanel.add(pushControlPanel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label6 = new JLabel();
-        label6.setText("最大线程池");
+        label6.setText("最大线程数");
         pushControlPanel.add(label6, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         maxThreadPoolTextField = new JTextField();
         maxThreadPoolTextField.setHorizontalAlignment(10);
@@ -239,6 +239,8 @@ public class InfinityForm {
         threadCountSlider.setPaintTrack(true);
         threadCountSlider.setRequestFocusEnabled(false);
         threadCountSlider.setSnapToTicks(false);
+        threadCountSlider.setToolTipText("线程数");
+        threadCountSlider.setValue(50);
         threadCountSlider.setValueIsAdjusting(false);
         pushControlPanel.add(threadCountSlider, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
