@@ -154,7 +154,7 @@ public class InfinityPushRunThread extends Thread {
 
             long currentTimeMillis = System.currentTimeMillis();
             long lastTimeMillis = currentTimeMillis - startTimeMillis;
-            long leftTimeMillis = (long) ((double) lastTimeMillis / (PushData.sendSuccessList.size() + PushData.sendFailList.size()) * (PushData.allUser.size() - PushData.sendSuccessList.size() - PushData.sendFailList.size()));
+            long leftTimeMillis = (long) ((double) lastTimeMillis / PushData.processedRecords.longValue() * (PushData.allUser.size() - PushData.processedRecords.longValue()));
 
             // 耗时
             String formatBetweenLast = DateUtil.formatBetween(lastTimeMillis, BetweenFormater.Level.SECOND);
