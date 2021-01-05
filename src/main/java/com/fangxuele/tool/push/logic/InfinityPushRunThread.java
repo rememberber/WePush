@@ -73,10 +73,10 @@ public class InfinityPushRunThread extends Thread {
         PushData.startTime = System.currentTimeMillis();
 
         // 拷贝准备的目标用户
-        PushData.toSendList.addAll(PushData.allUser);
+        PushData.toSendConcurrentLinkedQueue.addAll(PushData.allUser);
         PushData.TO_SEND_COUNT.set(PushData.allUser.size());
         // 总记录数
-        PushData.totalRecords = PushData.toSendList.size();
+        PushData.totalRecords = PushData.allUser.size();
 
         infinityForm.getPushTotalCountLabel().setText("消息总数：" + PushData.totalRecords);
         infinityForm.getPushTotalProgressBar().setMaximum((int) PushData.totalRecords);
