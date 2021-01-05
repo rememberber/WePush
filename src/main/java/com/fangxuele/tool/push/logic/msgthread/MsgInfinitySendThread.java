@@ -32,6 +32,7 @@ public class MsgInfinitySendThread extends Thread {
                 PushData.increaseSuccess();
             } catch (Exception e) {
                 PushData.increaseFail();
+                InfinityForm.getInstance().getPushFailCount().setText(String.valueOf(PushData.failRecords));
                 ConsoleUtil.infinityConsoleWithLog("发送异常：" + ExceptionUtils.getStackTrace(e));
             }
             // 已处理+1
