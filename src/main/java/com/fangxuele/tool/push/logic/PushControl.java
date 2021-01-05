@@ -273,6 +273,9 @@ public class PushControl {
      * 推送停止或结束后保存数据
      */
     static void savePushData() throws IOException {
+        if (!PushData.toSendConcurrentLinkedQueue.isEmpty()) {
+            PushData.toSendList = new ArrayList<>(PushData.toSendConcurrentLinkedQueue);
+        }
         MessageEditForm messageEditForm = MessageEditForm.getInstance();
         File pushHisDir = new File(SystemUtil.configHome + "data" + File.separator + "push_his");
         if (!pushHisDir.exists()) {

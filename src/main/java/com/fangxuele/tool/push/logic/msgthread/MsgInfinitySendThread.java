@@ -3,6 +3,8 @@ package com.fangxuele.tool.push.logic.msgthread;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
 import com.fangxuele.tool.push.ui.form.InfinityForm;
+import com.fangxuele.tool.push.util.ConsoleUtil;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 /**
  * <pre>
@@ -23,18 +25,14 @@ public class MsgInfinitySendThread extends Thread {
     @Override
     public void run() {
 
-        for (int i = 0; i < PushData.toSendList.size(); i++) {
-            if (!PushData.running) {
-                PushData.TO_SEND_COUNT.set(i);
-                return;
-            }
-            // 本条消息所需的数据
-            String[] msgData = PushData.toSendList.get(i);
+        while (!PushData.toSendConcurrentLinkedQueue.isEmpty()) {
             try {
+                String[] msgData = PushData.toSendConcurrentLinkedQueue.poll();
                 iMsgSender.send(msgData);
                 PushData.increaseSuccess();
             } catch (Exception e) {
                 PushData.increaseFail();
+                ConsoleUtil.infinityConsoleWithLog("发送异常：" + ExceptionUtils.getStackTrace(e));
             }
             // 已处理+1
             PushData.increaseProcessed();
