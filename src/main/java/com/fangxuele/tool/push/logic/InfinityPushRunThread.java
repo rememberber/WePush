@@ -102,10 +102,12 @@ public class InfinityPushRunThread extends Thread {
 
         IMsgSender msgSender = MsgSenderFactory.getMsgSender();
 
-        ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(9, 9);
-        msgInfinitySendThread = new MsgInfinitySendThread(msgSender);
+        ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(60, 60);
+        for (int i = 0; i < 60; i++) {
+            msgInfinitySendThread = new MsgInfinitySendThread(msgSender);
+            threadPoolExecutor.execute(msgInfinitySendThread);
+        }
 
-        threadPoolExecutor.execute(msgInfinitySendThread);
         threadPoolExecutor.shutdown();
         ConsoleUtil.infinityConsoleWithLog("线程启动完毕……");
 
