@@ -39,7 +39,7 @@ public class InfinityPushRunThread extends Thread {
         // 准备推送
         preparePushRun();
         infinityForm.getPushTotalProgressBar().setIndeterminate(false);
-        ConsoleUtil.boostConsoleWithLog("推送开始……");
+        ConsoleUtil.infinityConsoleWithLog("推送开始……");
         // 消息数据分片以及线程纷发
         shardingAndMsgThread();
         // 时间监控
@@ -80,10 +80,10 @@ public class InfinityPushRunThread extends Thread {
 
         infinityForm.getPushTotalCountLabel().setText("消息总数：" + PushData.totalRecords);
         infinityForm.getPushTotalProgressBar().setMaximum((int) PushData.totalRecords);
-        ConsoleUtil.boostConsoleWithLog("消息总数：" + PushData.totalRecords);
+        ConsoleUtil.infinityConsoleWithLog("消息总数：" + PushData.totalRecords);
         // 可用处理器核心数量
         infinityForm.getAvailableProcessorLabel().setText("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
-        ConsoleUtil.boostConsoleWithLog("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
+        ConsoleUtil.infinityConsoleWithLog("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
 
         // 准备消息构造器
         PushControl.prepareMsgMaker();
@@ -100,7 +100,7 @@ public class InfinityPushRunThread extends Thread {
         msgInfinitySendThread = new MsgInfinitySendThread(msgSender);
 
         ThreadUtil.execute(msgInfinitySendThread);
-        ConsoleUtil.boostConsoleWithLog("线程启动完毕……");
+        ConsoleUtil.infinityConsoleWithLog("线程启动完毕……");
     }
 
     /**
@@ -112,7 +112,7 @@ public class InfinityPushRunThread extends Thread {
         long startTimeMillis = System.currentTimeMillis();
         // 计时
         while (true) {
-            if (PushData.TO_SEND_COUNT.get() <= PushData.successRecords.longValue() + PushData.failRecords.longValue()) {
+            if (PushData.TO_SEND_COUNT.get() <= PushData.processedRecords.longValue()) {
                 if (!PushData.fixRateScheduling) {
                     infinityForm.getPushStopButton().setEnabled(false);
                     infinityForm.getPushStopButton().updateUI();
@@ -139,10 +139,10 @@ public class InfinityPushRunThread extends Thread {
                 try {
                     // 空跑控制
                     if (!infinityForm.getDryRunCheckBox().isSelected()) {
-                        ConsoleUtil.boostConsoleWithLog("正在保存结果数据……");
+                        ConsoleUtil.infinityConsoleWithLog("正在保存结果数据……");
                         infinityForm.getPushTotalProgressBar().setIndeterminate(true);
                         PushControl.savePushData();
-                        ConsoleUtil.boostConsoleWithLog("结果数据保存完毕！");
+                        ConsoleUtil.infinityConsoleWithLog("结果数据保存完毕！");
                     }
                 } catch (IOException e) {
                     logger.error(e);

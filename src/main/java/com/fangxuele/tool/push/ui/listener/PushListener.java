@@ -20,6 +20,7 @@ import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.ui.form.ScheduleForm;
 import org.apache.commons.compress.utils.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
@@ -60,8 +61,19 @@ public class PushListener {
 
         // 开始按钮事件
         pushForm.getPushStartButton().addActionListener((e) -> ThreadUtil.execute(() -> {
-            PushData.boostMode = false;
             if (PushControl.pushCheck()) {
+                if ("0".equals(pushForm.getMaxThreadPoolTextField().getText()) || StringUtils.isEmpty(pushForm.getMaxThreadPoolTextField().getText())) {
+                    JOptionPane.showMessageDialog(pushForm.getPushPanel(), "请设置每页分配用户数！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+
+                    return;
+                }
+                if ("0".equals(pushForm.getThreadCountTextField().getText()) || StringUtils.isEmpty(pushForm.getThreadCountTextField().getText())) {
+                    JOptionPane.showMessageDialog(pushForm.getPushPanel(), "请设置每个线程分配的页数！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+
+                    return;
+                }
                 int isPush = JOptionPane.showConfirmDialog(pushPanel,
                         "确定开始推送吗？\n\n推送消息：" +
                                 MessageEditForm.getInstance().getMsgNameField().getText() +
@@ -141,8 +153,20 @@ public class PushListener {
 
         // 按计划执行按钮事件
         pushForm.getScheduleRunButton().addActionListener((e -> ThreadUtil.execute(() -> {
-            PushData.boostMode = false;
             if (PushControl.pushCheck()) {
+                if ("0".equals(pushForm.getMaxThreadPoolTextField().getText()) || StringUtils.isEmpty(pushForm.getMaxThreadPoolTextField().getText())) {
+                    JOptionPane.showMessageDialog(pushForm.getPushPanel(), "请设置每页分配用户数！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+
+                    return;
+                }
+                if ("0".equals(pushForm.getThreadCountTextField().getText()) || StringUtils.isEmpty(pushForm.getThreadCountTextField().getText())) {
+                    JOptionPane.showMessageDialog(pushForm.getPushPanel(), "请设置每个线程分配的页数！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+
+                    return;
+                }
+
                 // 看是否存在设置的计划任务
                 boolean existScheduleTask = false;
 

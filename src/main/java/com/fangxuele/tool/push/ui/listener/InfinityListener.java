@@ -11,25 +11,20 @@ import cn.hutool.cron.task.Task;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.logic.BoostPushRunThread;
-import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.logic.InfinityPushRunThread;
 import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.PushData;
-import com.fangxuele.tool.push.ui.form.BoostForm;
 import com.fangxuele.tool.push.ui.form.InfinityForm;
-import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.ScheduleForm;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.apache.http.HttpResponse;
 
 import javax.swing.*;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -56,12 +51,6 @@ public class InfinityListener {
 
         // 开始按钮事件
         infinityForm.getPushStartButton().addActionListener((e) -> ThreadUtil.execute(() -> {
-            PushData.boostMode = true;
-            if (App.config.getMsgType() != MessageTypeEnum.MP_TEMPLATE_CODE) {
-                JOptionPane.showMessageDialog(MainWindow.getInstance().getMainPanel(), "性能模式目前仅支持微信模板消息，后续逐步增加对其他消息类型的支持！", "提示",
-                        JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
             if (PushControl.pushCheck()) {
                 int isPush = JOptionPane.showConfirmDialog(infinityForm.getInfinityPanel(),
                         "确定开始推送吗？\n\n推送消息：" +
@@ -71,19 +60,13 @@ public class InfinityListener {
                                 infinityForm.getDryRunCheckBox().isSelected() + "\n", "确认推送？",
                         JOptionPane.YES_NO_OPTION);
                 if (isPush == JOptionPane.YES_OPTION) {
-                    ThreadUtil.execute(new BoostPushRunThread());
+                    ThreadUtil.execute(new InfinityPushRunThread());
                 }
             }
         }));
 
         // 按计划执行按钮事件
         infinityForm.getScheduleRunButton().addActionListener((e -> ThreadUtil.execute(() -> {
-            PushData.boostMode = true;
-            if (App.config.getMsgType() != MessageTypeEnum.MP_TEMPLATE_CODE) {
-                JOptionPane.showMessageDialog(MainWindow.getInstance().getMainPanel(), "性能模式目前仅支持微信模板消息，后续逐步增加对其他消息类型的支持！", "提示",
-                        JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
             if (PushControl.pushCheck()) {
 
                 // 看是否存在设置的计划任务
@@ -121,7 +104,7 @@ public class InfinityListener {
                                 "开始推送");
 
                         serviceStartAt = Executors.newSingleThreadScheduledExecutor();
-                        serviceStartAt.schedule(new BoostPushRunThread(), startAtMills - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+                        serviceStartAt.schedule(new InfinityPushRunThread(), startAtMills - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
                     }
                     existScheduleTask = true;
                 }
@@ -155,7 +138,7 @@ public class InfinityListener {
                         serviceStartPerDay = Executors.newSingleThreadScheduledExecutor();
                         long millisBetween = startPerDayMills - System.currentTimeMillis();
                         long delay = millisBetween < 0 ? millisBetween + 24 * 60 * 60 * 1000 : millisBetween;
-                        serviceStartPerDay.scheduleAtFixedRate(new BoostPushRunThread(), delay, 24 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
+                        serviceStartPerDay.scheduleAtFixedRate(new InfinityPushRunThread(), delay, 24 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
                     }
                     existScheduleTask = true;
                 }
@@ -194,7 +177,7 @@ public class InfinityListener {
                         serviceStartPerWeek = Executors.newSingleThreadScheduledExecutor();
                         long millisBetween = startPerWeekMills + todaySetMills - System.currentTimeMillis();
                         long delay = millisBetween < 0 ? millisBetween + 7 * 24 * 60 * 60 * 1000 : millisBetween;
-                        serviceStartPerWeek.scheduleAtFixedRate(new BoostPushRunThread(), delay, 7 * 24 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
+                        serviceStartPerWeek.scheduleAtFixedRate(new InfinityPushRunThread(), delay, 7 * 24 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
                     }
                     existScheduleTask = true;
                 }
@@ -234,7 +217,7 @@ public class InfinityListener {
 
                         // 支持秒级别定时任务
                         CronUtil.setMatchSecond(true);
-                        CronUtil.schedule(App.config.getTextCron(), (Task) () -> new BoostPushRunThread().start());
+                        CronUtil.schedule(App.config.getTextCron(), (Task) () -> new InfinityPushRunThread().start());
                         CronUtil.start();
                     }
                     existScheduleTask = true;
@@ -308,21 +291,18 @@ public class InfinityListener {
                         infinityForm.getScheduleDetailLabel().setVisible(false);
                     }
                 }
-                for (Future<HttpResponse> httpResponseFuture : BoostPushRunThread.futureList) {
-                    httpResponseFuture.cancel(true);
-                }
             });
         });
     }
 
     static void refreshPushInfo() {
-        BoostForm boostForm = BoostForm.getInstance();
+        InfinityForm infinityForm = InfinityForm.getInstance();
         // 总记录数
         long totalCount = PushData.allUser.size();
-        boostForm.getMemberCountLabel().setText("消息总数：" + totalCount);
+        infinityForm.getPushTotalCountLabel().setText("消息总数：" + totalCount);
         // 可用处理器核心
-        boostForm.getProcessorCountLabel().setText("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
+        infinityForm.getAvailableProcessorLabel().setText("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
         // JVM内存占用
-        boostForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
+        infinityForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
     }
 }
