@@ -3,6 +3,7 @@ package com.fangxuele.tool.push.util;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.ui.form.BoostForm;
+import com.fangxuele.tool.push.ui.form.InfinityForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,6 +43,17 @@ public class ConsoleUtil {
     }
 
     /**
+     * 输出到变速模式控制台和log
+     *
+     * @param log
+     */
+    public static void infinityConsoleWithLog(String log) {
+        InfinityForm.getInstance().getConsoleTextArea().append(log + "\n");
+        InfinityForm.getInstance().getConsoleTextArea().setCaretPosition(InfinityForm.getInstance().getConsoleTextArea().getText().length());
+        logger.warn(log);
+    }
+
+    /**
      * 仅输出到控制台
      *
      * @param log
@@ -59,5 +71,15 @@ public class ConsoleUtil {
     public static void boostConsoleOnly(String log) {
         BoostForm.getInstance().getConsoleTextArea().append(log + "\n");
         BoostForm.getInstance().getConsoleTextArea().setCaretPosition(BoostForm.getInstance().getConsoleTextArea().getText().length());
+    }
+
+    /**
+     * 仅输出到变速模式控制台
+     *
+     * @param log
+     */
+    public static void infinityConsoleOnly(String log) {
+        InfinityForm.getInstance().getConsoleTextArea().append(log + "\n");
+        InfinityForm.getInstance().getConsoleTextArea().setCaretPosition(InfinityForm.getInstance().getConsoleTextArea().getText().length());
     }
 }
