@@ -13,12 +13,15 @@ import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.logic.msgthread.MsgInfinitySendThread;
 import com.fangxuele.tool.push.ui.form.InfinityForm;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 import java.util.Date;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * <pre>
@@ -41,9 +44,9 @@ public class InfinityPushRunThread extends Thread {
         infinityForm.getPushTotalProgressBar().setIndeterminate(false);
         ConsoleUtil.infinityConsoleWithLog("推送开始……");
         // 消息数据分片以及线程纷发
-        shardingAndMsgThread();
+        ThreadPoolExecutor threadPoolExecutor = shardingAndMsgThread();
         // 时间监控
-        timeMonitor();
+        timeMonitor(threadPoolExecutor);
     }
 
     /**
@@ -74,7 +77,6 @@ public class InfinityPushRunThread extends Thread {
 
         // 拷贝准备的目标用户
         PushData.toSendConcurrentLinkedQueue.addAll(PushData.allUser);
-        PushData.TO_SEND_COUNT.set(PushData.allUser.size());
         // 总记录数
         PushData.totalRecords = PushData.allUser.size();
 
@@ -91,28 +93,35 @@ public class InfinityPushRunThread extends Thread {
 
     /**
      * 消息数据分片以及线程纷发
+     *
+     * @return
      */
-    private static void shardingAndMsgThread() {
+    private static ThreadPoolExecutor shardingAndMsgThread() {
 
         MsgInfinitySendThread msgInfinitySendThread;
 
         IMsgSender msgSender = MsgSenderFactory.getMsgSender();
+
+        ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(9, 9);
         msgInfinitySendThread = new MsgInfinitySendThread(msgSender);
 
-        ThreadUtil.execute(msgInfinitySendThread);
+        threadPoolExecutor.execute(msgInfinitySendThread);
+        threadPoolExecutor.shutdown();
         ConsoleUtil.infinityConsoleWithLog("线程启动完毕……");
+
+        return threadPoolExecutor;
     }
 
     /**
      * 时间监控
      */
-    private void timeMonitor() {
+    private void timeMonitor(ThreadPoolExecutor threadPoolExecutor) {
         InfinityForm infinityForm = InfinityForm.getInstance();
 
         long startTimeMillis = System.currentTimeMillis();
         // 计时
         while (true) {
-            if (PushData.TO_SEND_COUNT.get() <= PushData.processedRecords.longValue()) {
+            if (threadPoolExecutor.isTerminated()) {
                 if (!PushData.fixRateScheduling) {
                     infinityForm.getPushStopButton().setEnabled(false);
                     infinityForm.getPushStopButton().updateUI();
@@ -121,6 +130,14 @@ public class InfinityPushRunThread extends Thread {
                     infinityForm.getScheduleRunButton().setEnabled(true);
                     infinityForm.getScheduleRunButton().updateUI();
                     infinityForm.getScheduleDetailLabel().setText("");
+
+
+                    if (App.trayIcon != null) {
+                        MessageEditForm messageEditForm = MessageEditForm.getInstance();
+                        String msgName = messageEditForm.getMsgNameField().getText();
+                        App.trayIcon.displayMessage("WePush", msgName + " 发送完毕！", TrayIcon.MessageType.INFO);
+                    }
+
                     String finishTip = "发送完毕！\n";
                     JOptionPane.showMessageDialog(infinityForm.getInfinityPanel(), finishTip, "提示",
                             JOptionPane.INFORMATION_MESSAGE);
@@ -165,6 +182,13 @@ public class InfinityPushRunThread extends Thread {
             infinityForm.getPushLeftTimeLabel().setText("".equals(formatBetweenLeft) ? "0s" : formatBetweenLeft);
 
             infinityForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
+
+            // TPS
+            if (lastTimeMillis == 0) {
+                lastTimeMillis = 1;
+            }
+            int tps = (int) (PushData.processedRecords.longValue() * 1000 / lastTimeMillis);
+            infinityForm.getTpsLabel().setText(String.valueOf(tps));
 
             ThreadUtil.safeSleep(100);
         }

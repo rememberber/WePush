@@ -25,7 +25,7 @@ public class MsgInfinitySendThread extends Thread {
     @Override
     public void run() {
 
-        while (!PushData.toSendConcurrentLinkedQueue.isEmpty()) {
+        while (PushData.running && !PushData.toSendConcurrentLinkedQueue.isEmpty()) {
             try {
                 String[] msgData = PushData.toSendConcurrentLinkedQueue.poll();
                 iMsgSender.send(msgData);
