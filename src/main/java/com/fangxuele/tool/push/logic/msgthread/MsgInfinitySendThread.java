@@ -1,7 +1,9 @@
 package com.fangxuele.tool.push.logic.msgthread;
 
+import cn.hutool.json.JSONUtil;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.SendResult;
 import com.fangxuele.tool.push.ui.form.InfinityForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -28,8 +30,14 @@ public class MsgInfinitySendThread extends Thread {
         while (PushData.running && !PushData.toSendConcurrentLinkedQueue.isEmpty()) {
             try {
                 String[] msgData = PushData.toSendConcurrentLinkedQueue.poll();
-                iMsgSender.send(msgData);
-                PushData.increaseSuccess();
+                SendResult sendResult = iMsgSender.send(msgData);
+                if (sendResult.isSuccess()) {
+                    PushData.increaseSuccess();
+                } else {
+                    PushData.increaseFail();
+                    InfinityForm.getInstance().getPushFailCount().setText(String.valueOf(PushData.failRecords));
+                    ConsoleUtil.infinityConsoleWithLog("发送失败:" + sendResult.getInfo() + ";msgData:" + JSONUtil.toJsonPrettyStr(msgData));
+                }
             } catch (Exception e) {
                 PushData.increaseFail();
                 InfinityForm.getInstance().getPushFailCount().setText(String.valueOf(PushData.failRecords));
