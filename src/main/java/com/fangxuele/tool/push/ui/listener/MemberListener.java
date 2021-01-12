@@ -834,6 +834,62 @@ public class MemberListener {
      * @param retain 是否取交集
      * @throws WxErrorException
      */
+    public static void getMpUserListByTag(Long tagId) throws WxErrorException {
+        JProgressBar progressBar = MemberForm.getInstance().getMemberTabImportProgressBar();
+        JLabel memberCountLabel = MemberForm.getInstance().getMemberTabCountLabel();
+
+        progressBar.setVisible(true);
+        progressBar.setIndeterminate(true);
+
+        WxMpService wxMpService = WxMpTemplateMsgSender.getWxMpService();
+        if (wxMpService.getWxMpConfigStorage() == null) {
+            return;
+        }
+
+        WxTagListUser wxTagListUser = wxMpService.getUserTagService().tagListUser(tagId, "");
+
+        ConsoleUtil.consoleWithLog("拉取的OPENID个数：" + wxTagListUser.getCount());
+
+        if (wxTagListUser.getCount() == 0) {
+            return;
+        }
+
+        List<String> openIds = wxTagListUser.getData().getOpenidList();
+
+        tagUserSet = Collections.synchronizedSet(new HashSet<>());
+        tagUserSet.addAll(openIds);
+
+        while (StringUtils.isNotEmpty(wxTagListUser.getNextOpenid())) {
+            wxTagListUser = wxMpService.getUserTagService().tagListUser(tagId, wxTagListUser.getNextOpenid());
+
+            ConsoleUtil.consoleWithLog("拉取的OPENID个数：" + wxTagListUser.getCount());
+
+            if (wxTagListUser.getCount() == 0) {
+                break;
+            }
+            openIds = wxTagListUser.getData().getOpenidList();
+
+            tagUserSet.addAll(openIds);
+        }
+
+        PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+        for (String openId : tagUserSet) {
+            PushData.allUser.add(new String[]{openId});
+        }
+
+        memberCountLabel.setText(String.valueOf(PushData.allUser.size()));
+        progressBar.setIndeterminate(false);
+        progressBar.setValue(progressBar.getMaximum());
+
+    }
+
+    /**
+     * 按标签拉取公众平台用户列表
+     *
+     * @param tagId
+     * @param retain 是否取交集
+     * @throws WxErrorException
+     */
     public static void getMpUserListByTag(Long tagId, boolean retain) throws WxErrorException {
         JProgressBar progressBar = MemberForm.getInstance().getMemberTabImportProgressBar();
         JLabel memberCountLabel = MemberForm.getInstance().getMemberTabCountLabel();

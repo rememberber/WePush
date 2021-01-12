@@ -468,8 +468,17 @@ public class PushControl {
                 case "导入所有关注公众号的用户":
                     MemberListener.importWxAll();
                     break;
-                case "导入选择的标签分组-取交集":
+                case "导入选择的标签分组":
                     long selectedTagId = MemberListener.userTagMap.get(MemberForm.getInstance().getMemberImportTagComboBox().getSelectedItem());
+                    try {
+                        MemberListener.getMpUserListByTag(selectedTagId);
+                    } catch (WxErrorException e) {
+                        logger.error(ExceptionUtils.getStackTrace(e));
+                    }
+                    MemberListener.renderMemberListTable();
+                    break;
+                case "导入选择的标签分组-取交集":
+                    selectedTagId = MemberListener.userTagMap.get(MemberForm.getInstance().getMemberImportTagComboBox().getSelectedItem());
                     try {
                         MemberListener.getMpUserListByTag(selectedTagId, true);
                     } catch (WxErrorException e) {
