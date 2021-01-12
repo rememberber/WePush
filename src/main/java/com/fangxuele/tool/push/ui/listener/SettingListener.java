@@ -709,7 +709,7 @@ public class SettingListener {
                 tipsBuilder.append("<p>向您所在企业的开发人员索取该接口；</p>");
                 tipsBuilder.append("<p>接口使用GET请求，返回格式：</p>");
                 tipsBuilder.append("<p>{\"access_token\":\"ACCESS_TOKEN\",\"expires_in\":7200}</p>");
-                tipsBuilder.append("<p>请一定注意接口安全性，AccessToken一旦被他人利用，后果不堪设想</p>");
+                tipsBuilder.append("<p>请一定注意接口安全性，且服务端应按照失效时间进行缓存</p>");
                 tipsBuilder.append("<p>例如在接口上添加密钥相关的参数：</p>");
                 tipsBuilder.append("<p>示例：http://mydomain.com/wechat/getAccessToken?secret=jad76^j2#SY</p>");
 
