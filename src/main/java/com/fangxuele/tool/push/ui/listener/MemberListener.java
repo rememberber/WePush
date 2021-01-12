@@ -92,7 +92,7 @@ import java.util.stream.Collectors;
 public class MemberListener {
     private static final Log logger = LogFactory.get();
 
-    private static Map<String, Long> userTagMap = new HashMap<>();
+    public static Map<String, Long> userTagMap = new HashMap<>();
 
     /**
      * 用于导入多个标签的用户时去重判断
@@ -231,7 +231,6 @@ public class MemberListener {
                 JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
-                e1.printStackTrace();
             } finally {
                 progressBar.setIndeterminate(false);
                 progressBar.setValue(progressBar.getMaximum());
@@ -905,7 +904,7 @@ public class MemberListener {
     /**
      * 获取导入数据信息列表
      */
-    private static void renderMemberListTable() {
+    public static void renderMemberListTable() {
         JTable memberListTable = MemberForm.getInstance().getMemberListTable();
         JProgressBar progressBar = MemberForm.getInstance().getMemberTabImportProgressBar();
         MemberForm memberForm = MemberForm.getInstance();
