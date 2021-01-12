@@ -97,6 +97,14 @@ public class Init {
      * 初始化look and feel
      */
     public static void initTheme() {
+        if (SystemUtil.isMacM1()) {
+            try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (Exception e) {
+                logger.error(ExceptionUtils.getStackTrace(e));
+            }
+            return;
+        }
 
         try {
             switch (App.config.getTheme()) {
