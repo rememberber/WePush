@@ -111,6 +111,13 @@ public class InfinityPushRunThread extends Thread {
 
         threadPoolExecutor.shutdown();
         ConsoleUtil.infinityConsoleWithLog("线程启动完毕……");
+        ConsoleUtil.infinityConsoleWithLog("核心线程数：" + threadPoolExecutor.getCorePoolSize());
+        ConsoleUtil.infinityConsoleWithLog("活跃线程数：" + threadPoolExecutor.getActiveCount());
+        ConsoleUtil.infinityConsoleWithLog("最大线程数：" + threadPoolExecutor.getMaximumPoolSize());
+        ConsoleUtil.infinityConsoleWithLog("任务完成数：" + threadPoolExecutor.getCompletedTaskCount());
+        ConsoleUtil.infinityConsoleWithLog("队列大小：" + (threadPoolExecutor.getQueue().size() + threadPoolExecutor.getQueue().remainingCapacity()));
+        ConsoleUtil.infinityConsoleWithLog("当前排队线程数：" + threadPoolExecutor.getQueue().size());
+        ConsoleUtil.infinityConsoleWithLog("队列剩余大小：" + threadPoolExecutor.getQueue().remainingCapacity());
 
         return threadPoolExecutor;
     }
