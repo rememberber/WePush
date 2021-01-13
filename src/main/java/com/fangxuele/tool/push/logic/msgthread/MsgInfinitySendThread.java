@@ -33,6 +33,7 @@ public class MsgInfinitySendThread extends Thread {
                 SendResult sendResult = iMsgSender.send(msgData);
                 if (sendResult.isSuccess()) {
                     PushData.increaseSuccess();
+//                    ConsoleUtil.infinityConsoleOnly(Thread.currentThread().getName() + "：发送成功：" + msgData[0]);
                 } else {
                     PushData.increaseFail();
                     InfinityForm.getInstance().getPushFailCount().setText(String.valueOf(PushData.failRecords));
