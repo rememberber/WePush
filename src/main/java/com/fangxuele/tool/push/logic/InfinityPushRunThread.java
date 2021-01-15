@@ -18,6 +18,8 @@ import com.fangxuele.tool.push.util.ConsoleUtil;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.io.IOException;
 import java.util.Date;
@@ -43,8 +45,11 @@ public class InfinityPushRunThread extends Thread {
         preparePushRun();
         infinityForm.getPushTotalProgressBar().setIndeterminate(false);
         ConsoleUtil.infinityConsoleWithLog("推送开始……");
-        // 消息数据分片以及线程纷发
-        ThreadPoolExecutor threadPoolExecutor = shardingAndMsgThread();
+        // 线程池初始化
+        int initCorePoolSize = infinityForm.getThreadCountSlider().getValue();
+        ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(initCorePoolSize, 100);
+        // 线程动态调整
+        threadMonitor(threadPoolExecutor);
         // 时间监控
         timeMonitor(threadPoolExecutor);
     }
@@ -92,24 +97,41 @@ public class InfinityPushRunThread extends Thread {
     }
 
     /**
-     * 消息数据分片以及线程纷发
+     * 线程动态调整
      *
      * @return
      */
-    private static ThreadPoolExecutor shardingAndMsgThread() {
+    private static void threadMonitor(ThreadPoolExecutor threadPoolExecutor) {
 
+        InfinityForm infinityForm = InfinityForm.getInstance();
         MsgInfinitySendThread msgInfinitySendThread;
 
         IMsgSender msgSender;
 
-        ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(60, 60);
-        for (int i = 0; i < 60; i++) {
+        int threadCount = infinityForm.getThreadCountSlider().getValue();
+        for (int i = 0; i < threadCount; i++) {
             msgSender = MsgSenderFactory.getMsgSender();
             msgInfinitySendThread = new MsgInfinitySendThread(msgSender);
             threadPoolExecutor.execute(msgInfinitySendThread);
         }
 
         threadPoolExecutor.shutdown();
+
+        infinityForm.getThreadCountSlider().addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                JSlider slider = (JSlider) e.getSource();
+                int value = slider.getValue();
+                System.err.println(value);
+                ConsoleUtil.infinityConsoleOnly(String.valueOf(value));
+                if (!slider.getValueIsAdjusting()) {
+                    // Get new value
+                     value = slider.getValue();
+                    System.err.println(value);
+                    ConsoleUtil.infinityConsoleOnly(String.valueOf(value));
+                }
+            }
+        });
         ConsoleUtil.infinityConsoleWithLog("线程启动完毕……");
         ConsoleUtil.infinityConsoleWithLog("核心线程数：" + threadPoolExecutor.getCorePoolSize());
         ConsoleUtil.infinityConsoleWithLog("活跃线程数：" + threadPoolExecutor.getActiveCount());
@@ -119,7 +141,6 @@ public class InfinityPushRunThread extends Thread {
         ConsoleUtil.infinityConsoleWithLog("当前排队线程数：" + threadPoolExecutor.getQueue().size());
         ConsoleUtil.infinityConsoleWithLog("队列剩余大小：" + threadPoolExecutor.getQueue().remainingCapacity());
 
-        return threadPoolExecutor;
     }
 
     /**
