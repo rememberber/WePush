@@ -4,6 +4,8 @@ import cn.hutool.core.date.BetweenFormater;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.json.JSONUtil;
+import cn.hutool.log.Log;
+import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPushHistoryMapper;
 import com.fangxuele.tool.push.domain.TPushHistory;
@@ -17,6 +19,7 @@ import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.logic.msgsender.SendResult;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
@@ -28,8 +31,10 @@ import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.opencsv.CSVWriter;
+import me.chanjar.weixin.common.error.WxErrorException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.util.CollectionUtils;
 
@@ -53,7 +58,7 @@ import java.util.stream.Collectors;
  * @since 2017/6/19.
  */
 public class PushControl {
-
+    private static final Log logger = LogFactory.get();
     /**
      * 是否空跑
      */
@@ -462,6 +467,33 @@ public class PushControl {
                     break;
                 case "导入所有关注公众号的用户":
                     MemberListener.importWxAll();
+                    break;
+                case "导入选择的标签分组":
+                    long selectedTagId = MemberListener.userTagMap.get(MemberForm.getInstance().getMemberImportTagComboBox().getSelectedItem());
+                    try {
+                        MemberListener.getMpUserListByTag(selectedTagId);
+                    } catch (WxErrorException e) {
+                        logger.error(ExceptionUtils.getStackTrace(e));
+                    }
+                    MemberListener.renderMemberListTable();
+                    break;
+                case "导入选择的标签分组-取交集":
+                    selectedTagId = MemberListener.userTagMap.get(MemberForm.getInstance().getMemberImportTagComboBox().getSelectedItem());
+                    try {
+                        MemberListener.getMpUserListByTag(selectedTagId, true);
+                    } catch (WxErrorException e) {
+                        logger.error(ExceptionUtils.getStackTrace(e));
+                    }
+                    MemberListener.renderMemberListTable();
+                    break;
+                case "导入选择的标签分组-取并集":
+                    selectedTagId = MemberListener.userTagMap.get(MemberForm.getInstance().getMemberImportTagComboBox().getSelectedItem());
+                    try {
+                        MemberListener.getMpUserListByTag(selectedTagId, false);
+                    } catch (WxErrorException e) {
+                        logger.error(ExceptionUtils.getStackTrace(e));
+                    }
+                    MemberListener.renderMemberListTable();
                     break;
                 case "导入企业通讯录中所有用户":
                     MemberListener.importWxCpAll();

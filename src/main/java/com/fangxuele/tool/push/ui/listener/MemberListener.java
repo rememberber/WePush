@@ -92,7 +92,7 @@ import java.util.stream.Collectors;
 public class MemberListener {
     private static final Log logger = LogFactory.get();
 
-    private static Map<String, Long> userTagMap = new HashMap<>();
+    public static Map<String, Long> userTagMap = new HashMap<>();
 
     /**
      * 用于导入多个标签的用户时去重判断
@@ -231,7 +231,6 @@ public class MemberListener {
                 JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
-                e1.printStackTrace();
             } finally {
                 progressBar.setIndeterminate(false);
                 progressBar.setValue(progressBar.getMaximum());
@@ -835,6 +834,62 @@ public class MemberListener {
      * @param retain 是否取交集
      * @throws WxErrorException
      */
+    public static void getMpUserListByTag(Long tagId) throws WxErrorException {
+        JProgressBar progressBar = MemberForm.getInstance().getMemberTabImportProgressBar();
+        JLabel memberCountLabel = MemberForm.getInstance().getMemberTabCountLabel();
+
+        progressBar.setVisible(true);
+        progressBar.setIndeterminate(true);
+
+        WxMpService wxMpService = WxMpTemplateMsgSender.getWxMpService();
+        if (wxMpService.getWxMpConfigStorage() == null) {
+            return;
+        }
+
+        WxTagListUser wxTagListUser = wxMpService.getUserTagService().tagListUser(tagId, "");
+
+        ConsoleUtil.consoleWithLog("拉取的OPENID个数：" + wxTagListUser.getCount());
+
+        if (wxTagListUser.getCount() == 0) {
+            return;
+        }
+
+        List<String> openIds = wxTagListUser.getData().getOpenidList();
+
+        tagUserSet = Collections.synchronizedSet(new HashSet<>());
+        tagUserSet.addAll(openIds);
+
+        while (StringUtils.isNotEmpty(wxTagListUser.getNextOpenid())) {
+            wxTagListUser = wxMpService.getUserTagService().tagListUser(tagId, wxTagListUser.getNextOpenid());
+
+            ConsoleUtil.consoleWithLog("拉取的OPENID个数：" + wxTagListUser.getCount());
+
+            if (wxTagListUser.getCount() == 0) {
+                break;
+            }
+            openIds = wxTagListUser.getData().getOpenidList();
+
+            tagUserSet.addAll(openIds);
+        }
+
+        PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+        for (String openId : tagUserSet) {
+            PushData.allUser.add(new String[]{openId});
+        }
+
+        memberCountLabel.setText(String.valueOf(PushData.allUser.size()));
+        progressBar.setIndeterminate(false);
+        progressBar.setValue(progressBar.getMaximum());
+
+    }
+
+    /**
+     * 按标签拉取公众平台用户列表
+     *
+     * @param tagId
+     * @param retain 是否取交集
+     * @throws WxErrorException
+     */
     public static void getMpUserListByTag(Long tagId, boolean retain) throws WxErrorException {
         JProgressBar progressBar = MemberForm.getInstance().getMemberTabImportProgressBar();
         JLabel memberCountLabel = MemberForm.getInstance().getMemberTabCountLabel();
@@ -905,7 +960,7 @@ public class MemberListener {
     /**
      * 获取导入数据信息列表
      */
-    private static void renderMemberListTable() {
+    public static void renderMemberListTable() {
         JTable memberListTable = MemberForm.getInstance().getMemberListTable();
         JProgressBar progressBar = MemberForm.getInstance().getMemberTabImportProgressBar();
         MemberForm memberForm = MemberForm.getInstance();

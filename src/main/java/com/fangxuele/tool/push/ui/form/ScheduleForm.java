@@ -94,6 +94,9 @@ public class ScheduleForm {
                 || msgType == MessageTypeEnum.KEFU_CODE || msgType == MessageTypeEnum.KEFU_PRIORITY_CODE
                 || msgType == MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE || msgType == MessageTypeEnum.MA_SUBSCRIBE_CODE) {
             scheduleForm.getReimportComboBox().addItem("导入所有关注公众号的用户");
+            scheduleForm.getReimportComboBox().addItem("导入选择的标签分组");
+            scheduleForm.getReimportComboBox().addItem("导入选择的标签分组-取并集");
+            scheduleForm.getReimportComboBox().addItem("导入选择的标签分组-取交集");
         } else if (msgType == MessageTypeEnum.WX_CP_CODE) {
             scheduleForm.getReimportComboBox().addItem("导入企业通讯录中所有用户");
         }
