@@ -158,6 +158,7 @@
 [Hutool](http://hutool.cn/)  
 [Darcula](https://github.com/bulenkov/Darcula)  
 [BeautyEye](https://gitee.com/jackjiang/beautyeye)  
+[FlatLaf](https://www.formdev.com/flatlaf/)  
 
 ### 特别说明
 WePush所使用的图标来源于https://github.com/JetBrains/intellij-community项目  
