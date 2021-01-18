@@ -1,7 +1,6 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
 import cn.hutool.json.JSONUtil;
-import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TMsgHttpMapper;
 import com.fangxuele.tool.push.domain.TMsgHttp;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
@@ -10,6 +9,7 @@ import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
+import com.fangxuele.tool.push.util.UIUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -166,7 +166,7 @@ public class HttpMsgForm implements IMsgForm {
             }
         });
 
-        if ("Darcula(推荐)".equals(App.config.getTheme())) {
+        if (UIUtil.isDarkLaf()) {
             Color bgColor = new Color(43, 43, 43);
             bodyTextArea.setBackground(bgColor);
             Color foreColor = new Color(187, 187, 187);

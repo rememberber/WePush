@@ -1,6 +1,7 @@
 package com.fangxuele.tool.push.ui.form;
 
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.util.UIUtil;
 import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -79,7 +80,7 @@ public class PushForm {
         pushForm.getThreadCountSlider().setValue(App.config.getThreadCount());
         pushForm.getDryRunCheckBox().setSelected(App.config.isDryRun());
 
-        if ("Darcula(推荐)".equals(App.config.getTheme())) {
+        if (UIUtil.isDarkLaf()) {
             Color bgColor = new Color(43, 43, 43);
             pushForm.getPushConsoleTextArea().setBackground(bgColor);
             Color foreColor = new Color(187, 187, 187);

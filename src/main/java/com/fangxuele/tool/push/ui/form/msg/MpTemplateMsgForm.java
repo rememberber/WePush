@@ -12,6 +12,7 @@ import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
+import com.fangxuele.tool.push.util.UIUtil;
 import com.google.common.collect.Maps;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -154,7 +155,7 @@ public class MpTemplateMsgForm implements IMsgForm {
     @Override
     public void init(String msgName) {
         MpTemplateMsgForm mpTemplateMsgForm = getInstance();
-        if ("Darcula(推荐)".equals(App.config.getTheme())) {
+        if (UIUtil.isDarkLaf()) {
             Color bgColor = new Color(43, 43, 43);
             mpTemplateMsgForm.getTemplateContentTextArea().setBackground(bgColor);
             Color foreColor = new Color(187, 187, 187);

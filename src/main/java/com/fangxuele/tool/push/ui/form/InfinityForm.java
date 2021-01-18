@@ -1,6 +1,6 @@
 package com.fangxuele.tool.push.ui.form;
 
-import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.util.UIUtil;
 import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -68,7 +68,7 @@ public class InfinityForm {
 //        boostForm.getDryRunCheckBox().setSelected(App.config.isDryRun());
 //        boostForm.getScheduledTaskLabel().setVisible(false);
 //
-        if ("Darcula(推荐)".equals(App.config.getTheme())) {
+        if (UIUtil.isDarkLaf()) {
             Color bgColor = new Color(43, 43, 43);
             infinityForm.getConsoleTextArea().setBackground(bgColor);
             Color foreColor = new Color(187, 187, 187);

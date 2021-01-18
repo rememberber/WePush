@@ -47,6 +47,7 @@
         <aliyun-java-sdk-dysmsapi.version>1.1.0</aliyun-java-sdk-dysmsapi.version>
         <bce-java-sdk.version>0.10.134</bce-java-sdk.version>
         <qiniu-java-sdk.version>7.3.0</qiniu-java-sdk.version>
+        <flatlaf.version>0.46</flatlaf.version>
     </properties>
 
     <dependencies>
@@ -393,6 +394,12 @@
             <groupId>com.qiniu</groupId>
             <artifactId>qiniu-java-sdk</artifactId>
             <version>${qiniu-java-sdk.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.formdev</groupId>
+            <artifactId>flatlaf</artifactId>
+            <version>${flatlaf.version}</version>
         </dependency>
 
     </dependencies>

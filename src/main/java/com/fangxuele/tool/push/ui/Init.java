@@ -23,6 +23,7 @@ import com.fangxuele.tool.push.ui.listener.AboutListener;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.fangxuele.tool.push.util.UIUtil;
 import com.fangxuele.tool.push.util.UpgradeUtil;
+import com.formdev.flatlaf.FlatLightLaf;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
@@ -118,8 +119,22 @@ public class Init {
                     break;
                 case "weblaf":
                 case "Darcula(推荐)":
-                default:
                     UIManager.setLookAndFeel("com.bulenkov.darcula.DarculaLaf");
+                    break;
+                case "Flat Light":
+                    FlatLightLaf.install();
+                    break;
+                case "Flat IntelliJ":
+                    UIManager.setLookAndFeel("com.formdev.flatlaf.FlatIntelliJLaf");
+                    break;
+                case "Flat Dark":
+                    UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarkLaf");
+                    break;
+                case "Flat Darcula":
+                    UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarculaLaf");
+                    break;
+                default:
+                    UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarculaLaf");
             }
         } catch (Exception e) {
             logger.error(e);
