@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.form;
 
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.util.UIUtil;
 import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -65,9 +66,9 @@ public class InfinityForm {
 
     public static void init() {
         infinityForm = getInstance();
-//        boostForm.getDryRunCheckBox().setSelected(App.config.isDryRun());
-//        boostForm.getScheduledTaskLabel().setVisible(false);
-//
+        infinityForm.getDryRunCheckBox().setSelected(App.config.isDryRun());
+        infinityForm.getScheduleDetailLabel().setVisible(false);
+
         if (UIUtil.isDarkLaf()) {
             Color bgColor = new Color(43, 43, 43);
             infinityForm.getConsoleTextArea().setBackground(bgColor);
