@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.LongAdder;
 
@@ -46,6 +47,8 @@ public class PushData {
      * 准备发送的列表
      */
     public static List<String[]> toSendList;
+
+    public static ConcurrentLinkedQueue<String[]> toSendConcurrentLinkedQueue = new ConcurrentLinkedQueue<>();
 
     /**
      * 准备发送的数量
@@ -114,11 +117,6 @@ public class PushData {
     public static long endTime = 0;
 
     /**
-     * 是否为性能模式
-     */
-    public static boolean boostMode = false;
-
-    /**
      * 重置推送数据
      */
     static void reset() {
@@ -128,6 +126,7 @@ public class PushData {
         failRecords.reset();
         threadCount = 0;
         toSendList = Collections.synchronizedList(new LinkedList<>());
+        toSendConcurrentLinkedQueue = new ConcurrentLinkedQueue<>();
         sendSuccessList = Collections.synchronizedList(new LinkedList<>());
         sendFailList = Collections.synchronizedList(new LinkedList<>());
         startTime = 0;

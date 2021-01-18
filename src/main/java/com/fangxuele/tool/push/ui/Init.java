@@ -8,6 +8,7 @@ import com.fangxuele.tool.push.ui.dialog.FontSizeAdjustDialog;
 import com.fangxuele.tool.push.ui.form.AboutForm;
 import com.fangxuele.tool.push.ui.form.BoostForm;
 import com.fangxuele.tool.push.ui.form.HelpForm;
+import com.fangxuele.tool.push.ui.form.InfinityForm;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
@@ -22,6 +23,8 @@ import com.fangxuele.tool.push.ui.listener.AboutListener;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.fangxuele.tool.push.util.UIUtil;
 import com.fangxuele.tool.push.util.UpgradeUtil;
+import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.IntelliJTheme;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
@@ -117,8 +120,35 @@ public class Init {
                     break;
                 case "weblaf":
                 case "Darcula(推荐)":
-                default:
                     UIManager.setLookAndFeel("com.bulenkov.darcula.DarculaLaf");
+                    break;
+                case "Flat Light":
+                    FlatLightLaf.install();
+                    break;
+                case "Flat IntelliJ":
+                    UIManager.setLookAndFeel("com.formdev.flatlaf.FlatIntelliJLaf");
+                    break;
+                case "Flat Dark":
+                    UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarkLaf");
+                    break;
+                case "Flat Darcula":
+                    UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarculaLaf");
+                    break;
+                case "Dark purple":
+                    IntelliJTheme.install( App.class.getResourceAsStream(
+                            "/theme/DarkPurple.theme.json" ) );
+                    break;
+                case "IntelliJ Cyan":
+                    IntelliJTheme.install( App.class.getResourceAsStream(
+                            "/theme/Cyan.theme.json" ) );
+                    break;
+                case "IntelliJ Light":
+                    IntelliJTheme.install( App.class.getResourceAsStream(
+                            "/theme/Light.theme.json" ) );
+                    break;
+
+                default:
+                    UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarculaLaf");
             }
         } catch (Exception e) {
             logger.error(e);
@@ -138,6 +168,7 @@ public class Init {
         ThreadUtil.execute(MemberForm::init);
         ThreadUtil.execute(PushForm::init);
         ThreadUtil.execute(BoostForm::init);
+        ThreadUtil.execute(InfinityForm::init);
         ThreadUtil.execute(ScheduleForm::init);
         ThreadUtil.execute(SettingForm::init);
         ThreadUtil.execute(PushHisForm::init);

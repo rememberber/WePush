@@ -16,75 +16,64 @@ import java.util.Locale;
 
 /**
  * <pre>
- * PushForm
+ * 类说明
  * </pre>
  *
- * @author <a href="https://github.com/rememberber">RememBerBer</a>
- * @since 2019/5/6.
+ * @author <a href="https://github.com/rememberber">Zhou Bo</a>
+ * @since 2020/12/25.
  */
 @Getter
-public class PushForm {
-    private JPanel pushPanel;
-    private JPanel pushUpPanel;
+public class InfinityForm {
+
+    private static InfinityForm infinityForm;
+    private JPanel infinityPanel;
+    private JTextArea consoleTextArea;
     private JLabel pushSuccessCount;
     private JLabel pushFailCount;
     private JLabel pushTotalProgressLabel;
     private JProgressBar pushTotalProgressBar;
     private JLabel pushLastTimeLabel;
-    private JLabel pushLeftTimeLabel;
     private JLabel jvmMemoryLabel;
     private JLabel availableProcessorLabel;
     private JLabel pushTotalCountLabel;
     private JLabel pushMsgName;
     private JLabel scheduleDetailLabel;
-    private JPanel pushDownPanel;
-    private JPanel pushControlPanel;
+    private JLabel countPerThread;
+    private JLabel pushLeftTimeLabel;
+    private JLabel tpsLabel;
+    private JPanel pushUpPanel;
     private JTextField maxThreadPoolTextField;
-    private JTextField threadCountTextField;
     private JButton ScheduleRunButton;
     private JButton pushStopButton;
     private JButton pushStartButton;
     private JCheckBox dryRunCheckBox;
-    private JPanel pushCenterPanel;
-    private JTextArea pushConsoleTextArea;
-    private JTable pushThreadTable;
-    private JLabel countPerThread;
     private JSlider threadCountSlider;
     private JLabel threadTipsLabel;
     private JLabel dryRunHelpLabel;
     private JCheckBox saveResponseBodyCheckBox;
-    private JLabel tpsLabel;
+    private JPanel pushControlPanel;
 
-    private static PushForm pushForm;
-
-    private PushForm() {
+    private InfinityForm() {
         UndoUtil.register(this);
     }
 
-    public static PushForm getInstance() {
-        if (pushForm == null) {
-            pushForm = new PushForm();
+    public static InfinityForm getInstance() {
+        if (infinityForm == null) {
+            infinityForm = new InfinityForm();
         }
-        return pushForm;
+        return infinityForm;
     }
 
-    /**
-     * 初始化推送tab
-     */
     public static void init() {
-        pushForm = getInstance();
-        pushForm.getPushMsgName().setText(App.config.getMsgName());
-        pushForm.getMaxThreadPoolTextField().setText(String.valueOf(App.config.getMaxThreadPool()));
-        pushForm.getThreadCountTextField().setText(String.valueOf(App.config.getThreadCount()));
-        pushForm.getThreadCountSlider().setMaximum(App.config.getMaxThreadPool());
-        pushForm.getThreadCountSlider().setValue(App.config.getThreadCount());
-        pushForm.getDryRunCheckBox().setSelected(App.config.isDryRun());
+        infinityForm = getInstance();
+        infinityForm.getDryRunCheckBox().setSelected(App.config.isDryRun());
+        infinityForm.getScheduleDetailLabel().setVisible(false);
 
         if (UIUtil.isDarkLaf()) {
             Color bgColor = new Color(43, 43, 43);
-            pushForm.getPushConsoleTextArea().setBackground(bgColor);
+            infinityForm.getConsoleTextArea().setBackground(bgColor);
             Color foreColor = new Color(187, 187, 187);
-            pushForm.getPushConsoleTextArea().setForeground(foreColor);
+            infinityForm.getConsoleTextArea().setForeground(foreColor);
         }
     }
 
@@ -103,14 +92,20 @@ public class PushForm {
      * @noinspection ALL
      */
     private void $$$setupUI$$$() {
+        infinityPanel = new JPanel();
+        infinityPanel.setLayout(new GridLayoutManager(3, 2, new Insets(0, 0, 0, 0), -1, -1));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        pushPanel = new JPanel();
-        pushPanel.setLayout(new GridLayoutManager(3, 1, new Insets(0, 2, 0, 2), -1, -1));
-        panel1.add(pushPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        infinityPanel.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        final JScrollPane scrollPane1 = new JScrollPane();
+        panel1.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        consoleTextArea = new JTextArea();
+        scrollPane1.setViewportView(consoleTextArea);
+        final Spacer spacer1 = new Spacer();
+        infinityPanel.add(spacer1, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         pushUpPanel = new JPanel();
-        pushUpPanel.setLayout(new GridLayoutManager(7, 10, new Insets(0, 0, 0, 0), -1, -1));
-        pushPanel.add(pushUpPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        pushUpPanel.setLayout(new GridLayoutManager(7, 10, new Insets(5, 5, 5, 5), -1, -1));
+        infinityPanel.add(pushUpPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         pushSuccessCount = new JLabel();
         Font pushSuccessCountFont = this.$$$getFont$$$(null, -1, 72, pushSuccessCount.getFont());
         if (pushSuccessCountFont != null) pushSuccessCount.setFont(pushSuccessCountFont);
@@ -190,50 +185,46 @@ public class PushForm {
         tpsLabel = new JLabel();
         tpsLabel.setText("0");
         pushUpPanel.add(tpsLabel, new GridConstraints(6, 6, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        pushDownPanel = new JPanel();
-        pushDownPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        pushPanel.add(pushDownPanel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         pushControlPanel = new JPanel();
-        pushControlPanel.setLayout(new GridLayoutManager(1, 13, new Insets(0, 0, 0, 0), -1, -1));
-        pushDownPanel.add(pushControlPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        pushControlPanel.setLayout(new GridLayoutManager(1, 10, new Insets(0, 5, 5, 5), -1, -1));
+        infinityPanel.add(pushControlPanel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label6 = new JLabel();
-        label6.setText("最大线程池");
-        pushControlPanel.add(label6, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        label6.setText("最大线程数");
+        pushControlPanel.add(label6, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         maxThreadPoolTextField = new JTextField();
         maxThreadPoolTextField.setHorizontalAlignment(10);
-        maxThreadPoolTextField.setMargin(new Insets(2, 5, 2, 5));
+        maxThreadPoolTextField.setMargin(new Insets(2, 6, 2, 6));
         maxThreadPoolTextField.setRequestFocusEnabled(true);
         maxThreadPoolTextField.setToolTipText("输入结束后请按回车键确认");
-        pushControlPanel.add(maxThreadPoolTextField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(60, -1), null, 0, false));
-        final JLabel label7 = new JLabel();
-        label7.setText("线程数");
-        label7.setToolTipText("当前版本受http连接池限制建议不要设置过多线程，推荐100以内");
-        pushControlPanel.add(label7, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        threadCountTextField = new JTextField();
-        threadCountTextField.setEditable(false);
-        threadCountTextField.setFocusable(false);
-        threadCountTextField.setRequestFocusEnabled(false);
-        threadCountTextField.setToolTipText("当前版本受http连接池限制建议不要设置过多线程，推荐100以内");
-        pushControlPanel.add(threadCountTextField, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(60, -1), null, 0, false));
+        pushControlPanel.add(maxThreadPoolTextField, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(60, -1), null, 0, false));
         ScheduleRunButton = new JButton();
         ScheduleRunButton.setIcon(new ImageIcon(getClass().getResource("/icon/clock.png")));
         ScheduleRunButton.setText("按计划执行");
-        pushControlPanel.add(ScheduleRunButton, new GridConstraints(0, 10, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushControlPanel.add(ScheduleRunButton, new GridConstraints(0, 7, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         pushStopButton = new JButton();
         pushStopButton.setEnabled(false);
         pushStopButton.setIcon(new ImageIcon(getClass().getResource("/icon/suspend.png")));
         pushStopButton.setText("停止");
-        pushControlPanel.add(pushStopButton, new GridConstraints(0, 11, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushControlPanel.add(pushStopButton, new GridConstraints(0, 8, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         pushStartButton = new JButton();
         pushStartButton.setIcon(new ImageIcon(getClass().getResource("/icon/run@2x.png")));
         pushStartButton.setText("开始");
-        pushControlPanel.add(pushStartButton, new GridConstraints(0, 12, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushControlPanel.add(pushStartButton, new GridConstraints(0, 9, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         dryRunCheckBox = new JCheckBox();
         dryRunCheckBox.setText("空跑");
         dryRunCheckBox.setToolTipText("空跑勾选时不会真实发送消息");
-        pushControlPanel.add(dryRunCheckBox, new GridConstraints(0, 8, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final Spacer spacer1 = new Spacer();
-        pushControlPanel.add(spacer1, new GridConstraints(0, 6, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        pushControlPanel.add(dryRunCheckBox, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        threadTipsLabel = new JLabel();
+        threadTipsLabel.setIcon(new ImageIcon(getClass().getResource("/icon/helpButton.png")));
+        threadTipsLabel.setText("");
+        pushControlPanel.add(threadTipsLabel, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        dryRunHelpLabel = new JLabel();
+        dryRunHelpLabel.setIcon(new ImageIcon(getClass().getResource("/icon/helpButton.png")));
+        dryRunHelpLabel.setText("");
+        pushControlPanel.add(dryRunHelpLabel, new GridConstraints(0, 6, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        saveResponseBodyCheckBox = new JCheckBox();
+        saveResponseBodyCheckBox.setText("保存请求返回的Body");
+        pushControlPanel.add(saveResponseBodyCheckBox, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         threadCountSlider = new JSlider();
         threadCountSlider.setDoubleBuffered(true);
         threadCountSlider.setExtent(0);
@@ -241,43 +232,20 @@ public class PushForm {
         threadCountSlider.setFocusTraversalPolicyProvider(false);
         threadCountSlider.setFocusable(false);
         threadCountSlider.setInverted(false);
-        threadCountSlider.setMajorTickSpacing(10);
-        threadCountSlider.setMinimum(1);
+        threadCountSlider.setMajorTickSpacing(5);
+        threadCountSlider.setMinimum(0);
         threadCountSlider.setMinorTickSpacing(5);
         threadCountSlider.setOpaque(false);
         threadCountSlider.setOrientation(0);
-        threadCountSlider.setPaintLabels(false);
+        threadCountSlider.setPaintLabels(true);
         threadCountSlider.setPaintTicks(true);
         threadCountSlider.setPaintTrack(true);
         threadCountSlider.setRequestFocusEnabled(false);
         threadCountSlider.setSnapToTicks(false);
+        threadCountSlider.setToolTipText("线程数");
+        threadCountSlider.setValue(50);
         threadCountSlider.setValueIsAdjusting(false);
-        pushControlPanel.add(threadCountSlider, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        threadTipsLabel = new JLabel();
-        threadTipsLabel.setIcon(new ImageIcon(getClass().getResource("/icon/helpButton.png")));
-        threadTipsLabel.setText("");
-        pushControlPanel.add(threadTipsLabel, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        dryRunHelpLabel = new JLabel();
-        dryRunHelpLabel.setIcon(new ImageIcon(getClass().getResource("/icon/helpButton.png")));
-        dryRunHelpLabel.setText("");
-        pushControlPanel.add(dryRunHelpLabel, new GridConstraints(0, 9, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        saveResponseBodyCheckBox = new JCheckBox();
-        saveResponseBodyCheckBox.setText("保存请求返回的Body");
-        pushControlPanel.add(saveResponseBodyCheckBox, new GridConstraints(0, 7, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        pushCenterPanel = new JPanel();
-        pushCenterPanel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
-        pushPanel.add(pushCenterPanel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        final JScrollPane scrollPane1 = new JScrollPane();
-        pushCenterPanel.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        pushConsoleTextArea = new JTextArea();
-        scrollPane1.setViewportView(pushConsoleTextArea);
-        final JScrollPane scrollPane2 = new JScrollPane();
-        pushCenterPanel.add(scrollPane2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        pushThreadTable = new JTable();
-        pushThreadTable.setGridColor(new Color(-12236470));
-        pushThreadTable.setRowHeight(36);
-        pushThreadTable.setShowVerticalLines(false);
-        scrollPane2.setViewportView(pushThreadTable);
+        pushControlPanel.add(threadCountSlider, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
@@ -300,6 +268,13 @@ public class PushForm {
         boolean isMac = System.getProperty("os.name", "").toLowerCase(Locale.ENGLISH).startsWith("mac");
         Font fontWithFallback = isMac ? new Font(font.getFamily(), font.getStyle(), font.getSize()) : new StyleContext().getFont(font.getFamily(), font.getStyle(), font.getSize());
         return fontWithFallback instanceof FontUIResource ? fontWithFallback : new FontUIResource(fontWithFallback);
+    }
+
+    /**
+     * @noinspection ALL
+     */
+    public JComponent $$$getRootComponent$$$() {
+        return infinityPanel;
     }
 
 }

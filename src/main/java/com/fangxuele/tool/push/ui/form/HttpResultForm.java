@@ -1,6 +1,6 @@
 package com.fangxuele.tool.push.ui.form;
 
-import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.util.UIUtil;
 import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -32,7 +32,7 @@ public class HttpResultForm {
         this.getHttpResultScrollPane().getVerticalScrollBar().setUnitIncrement(15);
         this.getHttpResultScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
 
-        if ("Darcula(推荐)".equals(App.config.getTheme())) {
+        if (UIUtil.isDarkLaf()) {
             Color bgColor = new Color(43, 43, 43);
             bodyTextArea.setBackground(bgColor);
             headersTextArea.setBackground(bgColor);
