@@ -24,6 +24,7 @@ import com.fangxuele.tool.push.util.SystemUtil;
 import com.fangxuele.tool.push.util.UIUtil;
 import com.fangxuele.tool.push.util.UpgradeUtil;
 import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.IntelliJTheme;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
@@ -133,6 +134,19 @@ public class Init {
                 case "Flat Darcula":
                     UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarculaLaf");
                     break;
+                case "Dark purple":
+                    IntelliJTheme.install( App.class.getResourceAsStream(
+                            "/theme/DarkPurple.theme.json" ) );
+                    break;
+                case "IntelliJ Cyan":
+                    IntelliJTheme.install( App.class.getResourceAsStream(
+                            "/theme/Cyan.theme.json" ) );
+                    break;
+                case "IntelliJ Light":
+                    IntelliJTheme.install( App.class.getResourceAsStream(
+                            "/theme/Light.theme.json" ) );
+                    break;
+
                 default:
                     UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarculaLaf");
             }

@@ -1600,6 +1600,9 @@
                                 <item value="Flat IntelliJ"/>
                                 <item value="Flat Dark"/>
                                 <item value="Flat Darcula"/>
+                                <item value="Dark purple"/>
+                                <item value="IntelliJ Cyan"/>
+                                <item value="IntelliJ Light"/>
                               </model>
                             </properties>
                           </component>
