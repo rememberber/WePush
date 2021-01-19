@@ -2,8 +2,10 @@ package com.fangxuele.tool.push.logic;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.LongAdder;
@@ -48,7 +50,20 @@ public class PushData {
      */
     public static List<String[]> toSendList;
 
+    /**
+     * 线程安全队列，非阻塞，用于存放待发送的消息，多线程消费该队列
+     */
     public static ConcurrentLinkedQueue<String[]> toSendConcurrentLinkedQueue = new ConcurrentLinkedQueue<>();
+
+    /**
+     * 线程安全队列，非阻塞，用于存放活跃的线程名称
+     */
+    public static ConcurrentLinkedQueue<String> activeThreadConcurrentLinkedQueue = new ConcurrentLinkedQueue<>();
+
+    /**
+     * 线程状态Map,key:线程名称，value:true运行，false停止
+     */
+    public static Map<String, Boolean> threadStatusMap = new HashMap<>(100);
 
     /**
      * 准备发送的数量
@@ -127,6 +142,8 @@ public class PushData {
         threadCount = 0;
         toSendList = Collections.synchronizedList(new LinkedList<>());
         toSendConcurrentLinkedQueue = new ConcurrentLinkedQueue<>();
+        activeThreadConcurrentLinkedQueue = new ConcurrentLinkedQueue<>();
+        threadStatusMap = new HashMap<>(100);
         sendSuccessList = Collections.synchronizedList(new LinkedList<>());
         sendFailList = Collections.synchronizedList(new LinkedList<>());
         startTime = 0;

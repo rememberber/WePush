@@ -22,12 +22,14 @@ public class MsgInfinitySendThread extends Thread {
 
     public MsgInfinitySendThread(IMsgSender msgSender) {
         this.iMsgSender = msgSender;
+        PushData.activeThreadConcurrentLinkedQueue.offer(this.getName());
+        PushData.threadStatusMap.put(this.getName(), true);
     }
 
     @Override
     public void run() {
 
-        while (PushData.running && !PushData.toSendConcurrentLinkedQueue.isEmpty()) {
+        while (PushData.running && PushData.threadStatusMap.get(this.getName()) && !PushData.toSendConcurrentLinkedQueue.isEmpty()) {
             try {
                 String[] msgData = PushData.toSendConcurrentLinkedQueue.poll();
                 SendResult sendResult = iMsgSender.send(msgData);

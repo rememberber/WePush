@@ -18,8 +18,6 @@ import com.fangxuele.tool.push.util.ConsoleUtil;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.io.IOException;
 import java.util.Date;
@@ -48,6 +46,7 @@ public class InfinityPushRunThread extends Thread {
         // 线程池初始化
         int initCorePoolSize = infinityForm.getThreadCountSlider().getValue();
         ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(initCorePoolSize, 100);
+        adjustThreadCount(threadPoolExecutor, initCorePoolSize);
         // 线程动态调整
         threadMonitor(threadPoolExecutor);
         // 时间监控
@@ -104,43 +103,53 @@ public class InfinityPushRunThread extends Thread {
     private static void threadMonitor(ThreadPoolExecutor threadPoolExecutor) {
 
         InfinityForm infinityForm = InfinityForm.getInstance();
-        MsgInfinitySendThread msgInfinitySendThread;
 
+//        threadPoolExecutor.shutdown();
+
+        infinityForm.getThreadCountSlider().addChangeListener(e -> {
+            JSlider slider = (JSlider) e.getSource();
+            int value = slider.getValue();
+//            System.err.println(value);
+//            ConsoleUtil.infinityConsoleOnly(String.valueOf(value));
+            if (!slider.getValueIsAdjusting()) {
+                // Get new value
+                value = slider.getValue();
+                ConsoleUtil.infinityConsoleOnly(String.valueOf(value));
+                int finalValue = value;
+                ThreadUtil.execute(() -> adjustThreadCount(threadPoolExecutor, finalValue));
+            }
+        });
+
+        ThreadUtil.execute(() -> {
+            while (true) {
+                ConsoleUtil.infinityConsoleWithLog("");
+                ConsoleUtil.infinityConsoleWithLog("核心线程数：" + threadPoolExecutor.getCorePoolSize());
+                ConsoleUtil.infinityConsoleWithLog("活跃线程数：" + threadPoolExecutor.getActiveCount());
+                ConsoleUtil.infinityConsoleWithLog("线程名队列大小：" + PushData.activeThreadConcurrentLinkedQueue.size());
+                ConsoleUtil.infinityConsoleWithLog("最大线程数：" + threadPoolExecutor.getMaximumPoolSize());
+                ConsoleUtil.infinityConsoleWithLog("任务完成数：" + threadPoolExecutor.getCompletedTaskCount());
+                ConsoleUtil.infinityConsoleWithLog("队列大小：" + (threadPoolExecutor.getQueue().size() + threadPoolExecutor.getQueue().remainingCapacity()));
+                ConsoleUtil.infinityConsoleWithLog("当前排队线程数：" + threadPoolExecutor.getQueue().size());
+                ConsoleUtil.infinityConsoleWithLog("队列剩余大小：" + threadPoolExecutor.getQueue().remainingCapacity());
+                ThreadUtil.safeSleep(500);
+            }
+        });
+
+    }
+
+    static synchronized private void adjustThreadCount(ThreadPoolExecutor threadPoolExecutor, int targetCount) {
         IMsgSender msgSender;
-
-        int threadCount = infinityForm.getThreadCountSlider().getValue();
-        for (int i = 0; i < threadCount; i++) {
+        MsgInfinitySendThread msgInfinitySendThread;
+        while (PushData.activeThreadConcurrentLinkedQueue.size() < targetCount) {
             msgSender = MsgSenderFactory.getMsgSender();
             msgInfinitySendThread = new MsgInfinitySendThread(msgSender);
             threadPoolExecutor.execute(msgInfinitySendThread);
         }
-
-        threadPoolExecutor.shutdown();
-
-        infinityForm.getThreadCountSlider().addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                JSlider slider = (JSlider) e.getSource();
-                int value = slider.getValue();
-                System.err.println(value);
-                ConsoleUtil.infinityConsoleOnly(String.valueOf(value));
-                if (!slider.getValueIsAdjusting()) {
-                    // Get new value
-                     value = slider.getValue();
-                    System.err.println(value);
-                    ConsoleUtil.infinityConsoleOnly(String.valueOf(value));
-                }
-            }
-        });
-        ConsoleUtil.infinityConsoleWithLog("线程启动完毕……");
-        ConsoleUtil.infinityConsoleWithLog("核心线程数：" + threadPoolExecutor.getCorePoolSize());
-        ConsoleUtil.infinityConsoleWithLog("活跃线程数：" + threadPoolExecutor.getActiveCount());
-        ConsoleUtil.infinityConsoleWithLog("最大线程数：" + threadPoolExecutor.getMaximumPoolSize());
-        ConsoleUtil.infinityConsoleWithLog("任务完成数：" + threadPoolExecutor.getCompletedTaskCount());
-        ConsoleUtil.infinityConsoleWithLog("队列大小：" + (threadPoolExecutor.getQueue().size() + threadPoolExecutor.getQueue().remainingCapacity()));
-        ConsoleUtil.infinityConsoleWithLog("当前排队线程数：" + threadPoolExecutor.getQueue().size());
-        ConsoleUtil.infinityConsoleWithLog("队列剩余大小：" + threadPoolExecutor.getQueue().remainingCapacity());
-
+        while (PushData.activeThreadConcurrentLinkedQueue.size() > targetCount) {
+            String threadName = PushData.activeThreadConcurrentLinkedQueue.poll();
+            PushData.threadStatusMap.put(threadName, false);
+        }
+        threadPoolExecutor.setCorePoolSize(targetCount);
     }
 
     /**
