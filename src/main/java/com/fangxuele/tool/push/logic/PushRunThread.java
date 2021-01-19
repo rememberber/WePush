@@ -173,6 +173,7 @@ public class PushRunThread extends Thread {
     private void timeMonitor(ThreadPoolExecutor threadPoolExecutor) {
         PushForm pushForm = PushForm.getInstance();
         long startTimeMillis = System.currentTimeMillis();
+        int totalSentCountBefore = 0;
         // 计时
         while (true) {
             if (threadPoolExecutor.isTerminated()) {
@@ -240,12 +241,10 @@ public class PushRunThread extends Thread {
             pushForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
 
             // TPS
-            if (lastTimeMillis == 0) {
-                lastTimeMillis = 1;
-            }
-            int tps = (int) (totalSentCount * 1000 / lastTimeMillis);
+            int tps = (totalSentCount - totalSentCountBefore) * 5;
+            totalSentCountBefore = totalSentCount;
             pushForm.getTpsLabel().setText(String.valueOf(tps));
-            ThreadUtil.safeSleep(100);
+            ThreadUtil.safeSleep(200);
         }
     }
 

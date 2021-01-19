@@ -137,6 +137,7 @@ public class InfinityPushRunThread extends Thread {
         InfinityForm infinityForm = InfinityForm.getInstance();
 
         long startTimeMillis = System.currentTimeMillis();
+        long processedRecordsBefore = 0;
         // 计时
         while (true) {
             ConsoleUtil.infinityConsoleWithLog("");
@@ -200,7 +201,8 @@ public class InfinityPushRunThread extends Thread {
 
             long currentTimeMillis = System.currentTimeMillis();
             long lastTimeMillis = currentTimeMillis - startTimeMillis;
-            long leftTimeMillis = (long) ((double) lastTimeMillis / PushData.processedRecords.longValue() * (PushData.allUser.size() - PushData.processedRecords.longValue()));
+            long processedRecords = PushData.processedRecords.longValue();
+            long leftTimeMillis = (long) ((double) lastTimeMillis / processedRecords * (PushData.allUser.size() - processedRecords));
 
             // 耗时
             String formatBetweenLast = DateUtil.formatBetween(lastTimeMillis, BetweenFormater.Level.SECOND);
@@ -213,13 +215,11 @@ public class InfinityPushRunThread extends Thread {
             infinityForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
 
             // TPS
-            if (lastTimeMillis == 0) {
-                lastTimeMillis = 1;
-            }
-            int tps = (int) (PushData.processedRecords.longValue() * 1000 / lastTimeMillis);
+            int tps = (int) (processedRecords - processedRecordsBefore) * 5;
+            processedRecordsBefore = processedRecords;
             infinityForm.getTpsLabel().setText(String.valueOf(tps));
 
-            ThreadUtil.safeSleep(100);
+            ThreadUtil.safeSleep(200);
         }
     }
 
