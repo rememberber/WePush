@@ -102,7 +102,8 @@ public class Init {
     public static void initTheme() {
         if (SystemUtil.isMacM1()) {
             try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarculaLaf");
+                logger.warn("FlatDarculaLaf theme set.");
             } catch (Exception e) {
                 logger.error(ExceptionUtils.getStackTrace(e));
             }
@@ -135,16 +136,16 @@ public class Init {
                     UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarculaLaf");
                     break;
                 case "Dark purple":
-                    IntelliJTheme.install( App.class.getResourceAsStream(
-                            "/theme/DarkPurple.theme.json" ) );
+                    IntelliJTheme.install(App.class.getResourceAsStream(
+                            "/theme/DarkPurple.theme.json"));
                     break;
                 case "IntelliJ Cyan":
-                    IntelliJTheme.install( App.class.getResourceAsStream(
-                            "/theme/Cyan.theme.json" ) );
+                    IntelliJTheme.install(App.class.getResourceAsStream(
+                            "/theme/Cyan.theme.json"));
                     break;
                 case "IntelliJ Light":
-                    IntelliJTheme.install( App.class.getResourceAsStream(
-                            "/theme/Light.theme.json" ) );
+                    IntelliJTheme.install(App.class.getResourceAsStream(
+                            "/theme/Light.theme.json"));
                     break;
 
                 default:

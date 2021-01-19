@@ -21,6 +21,7 @@ import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
 import com.fangxuele.tool.push.ui.dialog.DingAppDialog;
 import com.fangxuele.tool.push.ui.dialog.MailTestDialog;
 import com.fangxuele.tool.push.ui.dialog.SwitchWxAccountDialog;
+import com.fangxuele.tool.push.ui.dialog.SystemEnvResultDialog;
 import com.fangxuele.tool.push.ui.dialog.WxCpAppDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageManageForm;
@@ -40,7 +41,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Properties;
 
 /**
  * <pre>
@@ -610,6 +613,30 @@ public class SettingListener {
                 desktop.open(new File(UiConsts.LOG_DIR));
             } catch (Exception e2) {
                 logger.error("查看日志打开失败", e2);
+            }
+        });
+
+        // 调试-系统环境变量
+        settingForm.getSystemEnvButton().addActionListener(e -> {
+            try {
+                SystemEnvResultDialog dialog = new SystemEnvResultDialog();
+
+                dialog.appendTextArea("------------System.getenv---------------");
+                Map<String, String> map = System.getenv();
+                for (Map.Entry<String, String> envEntry : map.entrySet()) {
+                    dialog.appendTextArea(envEntry.getKey() + "=" + envEntry.getValue());
+                }
+
+                dialog.appendTextArea("------------System.getProperties---------------");
+                Properties properties = System.getProperties();
+                for (Map.Entry<Object, Object> objectObjectEntry : properties.entrySet()) {
+                    dialog.appendTextArea(objectObjectEntry.getKey() + "=" + objectObjectEntry.getValue());
+                }
+
+                dialog.pack();
+                dialog.setVisible(true);
+            } catch (Exception e2) {
+                logger.error("查看系统环境变量失败", e2);
             }
         });
 
