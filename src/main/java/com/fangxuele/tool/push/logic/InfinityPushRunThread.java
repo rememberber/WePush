@@ -156,7 +156,7 @@ public class InfinityPushRunThread extends Thread {
         long startTimeMillis = System.currentTimeMillis();
         // 计时
         while (true) {
-            if (threadPoolExecutor.isTerminated()) {
+            if (!PushData.running || PushData.toSendConcurrentLinkedQueue.isEmpty()) {
                 if (!PushData.fixRateScheduling) {
                     infinityForm.getPushStopButton().setEnabled(false);
                     infinityForm.getPushStopButton().updateUI();

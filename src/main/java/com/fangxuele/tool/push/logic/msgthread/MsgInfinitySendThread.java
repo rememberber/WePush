@@ -53,6 +53,8 @@ public class MsgInfinitySendThread extends Thread {
             // 总进度条
             InfinityForm.getInstance().getPushTotalProgressBar().setValue(PushData.processedRecords.intValue());
         }
+        PushData.activeThreadConcurrentLinkedQueue.remove(this.getName());
+        PushData.threadStatusMap.put(this.getName(), false);
 
     }
 }
