@@ -17,6 +17,7 @@ import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.ui.form.InfinityForm;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.ScheduleForm;
+import com.fangxuele.tool.push.util.ConsoleUtil;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -281,6 +282,8 @@ public class InfinityListener {
                             JOptionPane.YES_NO_OPTION);
                     if (isStop == JOptionPane.YES_OPTION) {
                         PushData.running = false;
+                        infinityForm.getPushTotalProgressBar().setIndeterminate(true);
+                        ConsoleUtil.infinityConsoleOnly("正在停止，请等待……");
                         infinityForm.getPushStartButton().setEnabled(true);
                         infinityForm.getScheduleRunButton().setEnabled(true);
                         infinityForm.getPushStopButton().setText("停止");

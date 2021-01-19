@@ -32,6 +32,9 @@ public class MsgInfinitySendThread extends Thread {
         while (PushData.running && PushData.threadStatusMap.get(this.getName()) && !PushData.toSendConcurrentLinkedQueue.isEmpty()) {
             try {
                 String[] msgData = PushData.toSendConcurrentLinkedQueue.poll();
+                if (msgData == null) {
+                    continue;
+                }
                 SendResult sendResult = iMsgSender.send(msgData);
                 if (sendResult.isSuccess()) {
                     PushData.increaseSuccess();
