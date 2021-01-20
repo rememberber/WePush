@@ -302,6 +302,40 @@ public class InfinityListener {
             });
         });
 
+        infinityForm.getThreadTipsLabel().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                CommonTipsDialog dialog = new CommonTipsDialog();
+
+                StringBuilder tipsBuilder = new StringBuilder();
+                tipsBuilder.append("<h1>什么是变速模式？</h1>");
+                tipsBuilder.append("<h2>推送过程中可随时拖拽下方滑动条调整线程数量，以达到最佳推送速度。</h2>");
+                tipsBuilder.append("<p>放心，滑一滑试试就知道了</p>");
+                tipsBuilder.append("<p>建议从小往大滑，滑动过程中关注TPS大小，如果在某个线程数后不再明显上升，就是最佳线程数");
+
+                dialog.setHtmlText(tipsBuilder.toString());
+                dialog.pack();
+                dialog.setVisible(true);
+
+                super.mousePressed(e);
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                JLabel label = (JLabel) e.getComponent();
+                label.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                label.setIcon(new ImageIcon(UiConsts.HELP_FOCUSED_ICON));
+                super.mouseEntered(e);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                JLabel label = (JLabel) e.getComponent();
+                label.setIcon(new ImageIcon(UiConsts.HELP_ICON));
+                super.mouseExited(e);
+            }
+        });
+
         infinityForm.getDryRunHelpLabel().addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
