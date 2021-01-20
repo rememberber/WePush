@@ -14,6 +14,8 @@ import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.InfinityPushRunThread;
 import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.PushData;
+import com.fangxuele.tool.push.ui.UiConsts;
+import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
 import com.fangxuele.tool.push.ui.form.InfinityForm;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.ScheduleForm;
@@ -23,6 +25,9 @@ import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -295,6 +300,40 @@ public class InfinityListener {
                     }
                 }
             });
+        });
+
+        infinityForm.getDryRunHelpLabel().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                CommonTipsDialog dialog = new CommonTipsDialog();
+
+                StringBuilder tipsBuilder = new StringBuilder();
+                tipsBuilder.append("<h1>什么是空跑？</h1>");
+                tipsBuilder.append("<h2>除了不会真实发送消息，其他与正常推送流程相同</h2>");
+                tipsBuilder.append("<p>空跑模式可以验证消息数据以及流程的准确性</p>");
+                tipsBuilder.append("<p>建议在执行真正推送之前先进行一遍空跑</p>");
+
+                dialog.setHtmlText(tipsBuilder.toString());
+                dialog.pack();
+                dialog.setVisible(true);
+
+                super.mousePressed(e);
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                JLabel label = (JLabel) e.getComponent();
+                label.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                label.setIcon(new ImageIcon(UiConsts.HELP_FOCUSED_ICON));
+                super.mouseEntered(e);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                JLabel label = (JLabel) e.getComponent();
+                label.setIcon(new ImageIcon(UiConsts.HELP_ICON));
+                super.mouseExited(e);
+            }
         });
     }
 

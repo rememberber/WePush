@@ -170,6 +170,8 @@ public class InfinityForm {
         scheduleDetailLabel.setText("");
         pushUpPanel.add(scheduleDetailLabel, new GridConstraints(7, 8, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         activeThreadCountLabel = new JLabel();
+        Font activeThreadCountLabelFont = this.$$$getFont$$$(null, Font.BOLD, -1, activeThreadCountLabel.getFont());
+        if (activeThreadCountLabelFont != null) activeThreadCountLabel.setFont(activeThreadCountLabelFont);
         activeThreadCountLabel.setText("活跃线程数：0");
         pushUpPanel.add(activeThreadCountLabel, new GridConstraints(2, 8, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         corePoolSizeLabel = new JLabel();
