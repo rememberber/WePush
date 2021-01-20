@@ -204,22 +204,30 @@ public class InfinityPushRunThread extends Thread {
             long currentTimeMillis = System.currentTimeMillis();
             long lastTimeMillis = currentTimeMillis - startTimeMillis;
             long processedRecords = PushData.processedRecords.longValue();
-            long leftTimeMillis = (long) ((double) lastTimeMillis / processedRecords * (PushData.allUser.size() - processedRecords));
-
-            // 耗时
-            String formatBetweenLast = DateUtil.formatBetween(lastTimeMillis, BetweenFormater.Level.SECOND);
-            infinityForm.getPushLastTimeLabel().setText("".equals(formatBetweenLast) ? "0s" : formatBetweenLast);
-
-            // 预计剩余
-            String formatBetweenLeft = DateUtil.formatBetween(leftTimeMillis, BetweenFormater.Level.SECOND);
-            infinityForm.getPushLeftTimeLabel().setText("".equals(formatBetweenLeft) ? "0s" : formatBetweenLeft);
-
-            infinityForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
 
             // TPS
             int tps = (int) (processedRecords - processedRecordsBefore) * 5;
             processedRecordsBefore = processedRecords;
             infinityForm.getTpsLabel().setText(String.valueOf(tps));
+
+            // 预计剩余
+            // 剩余数量/tps*1000
+            int totalCount = PushData.allUser.size();
+            if (tps == 0) {
+                infinityForm.getPushLeftTimeLabel().setText("-");
+            } else {
+                long leftTimeMillis = (totalCount - processedRecords) / tps * 1000;
+//            long leftTimeMillis = (long) ((double) lastTimeMillis / processedRecords * (totalCount - processedRecords));
+                String formatBetweenLeft = DateUtil.formatBetween(leftTimeMillis, BetweenFormater.Level.SECOND);
+                infinityForm.getPushLeftTimeLabel().setText("".equals(formatBetweenLeft) ? "0s" : formatBetweenLeft);
+            }
+
+
+            // 耗时
+            String formatBetweenLast = DateUtil.formatBetween(lastTimeMillis, BetweenFormater.Level.SECOND);
+            infinityForm.getPushLastTimeLabel().setText("".equals(formatBetweenLast) ? "0s" : formatBetweenLast);
+
+            infinityForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
 
             ThreadUtil.safeSleep(200);
         }
