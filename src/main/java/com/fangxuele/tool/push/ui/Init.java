@@ -105,6 +105,11 @@ public class Init {
                 UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarculaLaf");
                 logger.warn("FlatDarculaLaf theme set.");
             } catch (Exception e) {
+                try {
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                } catch (Exception e2) {
+                    logger.error(ExceptionUtils.getStackTrace(e2));
+                }
                 logger.error(ExceptionUtils.getStackTrace(e));
             }
             return;
