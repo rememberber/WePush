@@ -197,6 +197,7 @@ public class InfinityPushRunThread extends Thread {
                 } finally {
                     infinityForm.getPushTotalProgressBar().setIndeterminate(false);
                     threadPoolExecutor.shutdown();
+                    ConsoleUtil.infinityConsoleWithLog("推送结束！");
                 }
                 break;
             }
@@ -221,7 +222,6 @@ public class InfinityPushRunThread extends Thread {
                 String formatBetweenLeft = DateUtil.formatBetween(leftTimeMillis, BetweenFormater.Level.SECOND);
                 infinityForm.getPushLeftTimeLabel().setText("".equals(formatBetweenLeft) ? "0s" : formatBetweenLeft);
             }
-
 
             // 耗时
             String formatBetweenLast = DateUtil.formatBetween(lastTimeMillis, BetweenFormater.Level.SECOND);

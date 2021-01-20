@@ -61,6 +61,7 @@ public class PushRunThread extends Thread {
         // 按钮状态
         pushForm.getScheduleRunButton().setEnabled(false);
         pushForm.getPushStartButton().setEnabled(false);
+        pushForm.getThreadCountSlider().setEnabled(false);
         pushForm.getPushStopButton().setEnabled(true);
 
         pushForm.getPushStopButton().setText("停止");
@@ -181,6 +182,7 @@ public class PushRunThread extends Thread {
                     pushForm.getPushStopButton().setEnabled(false);
                     pushForm.getPushStopButton().updateUI();
                     pushForm.getPushStartButton().setEnabled(true);
+                    pushForm.getThreadCountSlider().setEnabled(true);
                     pushForm.getPushStartButton().updateUI();
                     pushForm.getScheduleRunButton().setEnabled(true);
                     pushForm.getScheduleRunButton().updateUI();

@@ -96,6 +96,7 @@ public class PushListener {
                         serviceStartAt.shutdownNow();
                     }
                     pushForm.getPushStartButton().setEnabled(true);
+                    pushForm.getThreadCountSlider().setEnabled(true);
                     pushForm.getScheduleRunButton().setEnabled(true);
                     pushForm.getPushStopButton().setText("停止");
                     pushForm.getPushStopButton().setEnabled(false);
@@ -121,6 +122,7 @@ public class PushListener {
                         logger.warn(e1.toString());
                     }
                     pushForm.getPushStartButton().setEnabled(true);
+                    pushForm.getThreadCountSlider().setEnabled(true);
                     pushForm.getScheduleRunButton().setEnabled(true);
                     pushForm.getPushStopButton().setText("停止");
                     pushForm.getPushStopButton().setEnabled(false);
@@ -139,6 +141,7 @@ public class PushListener {
                     if (isStop == JOptionPane.YES_OPTION) {
                         PushData.running = false;
                         pushForm.getPushStartButton().setEnabled(true);
+                        pushForm.getThreadCountSlider().setEnabled(true);
                         pushForm.getScheduleRunButton().setEnabled(true);
                         pushForm.getPushStopButton().setText("停止");
                         pushForm.getPushStopButton().setEnabled(false);
@@ -192,6 +195,7 @@ public class PushListener {
                         PushData.scheduling = true;
                         // 按钮状态
                         pushForm.getScheduleRunButton().setEnabled(false);
+                        pushForm.getPushStartButton().setEnabled(false);
                         pushForm.getPushStartButton().setEnabled(false);
                         pushForm.getPushStopButton().setText("停止计划任务");
                         pushForm.getPushStopButton().setEnabled(true);
