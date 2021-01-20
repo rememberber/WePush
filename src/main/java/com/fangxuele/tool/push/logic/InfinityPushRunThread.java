@@ -43,6 +43,7 @@ public class InfinityPushRunThread extends Thread {
         preparePushRun();
         infinityForm.getPushTotalProgressBar().setIndeterminate(false);
         ConsoleUtil.infinityConsoleWithLog("推送开始……");
+        ConsoleUtil.infinityConsoleWithLog("推送过程中可随时拖拽下方滑动条调整线程数量，以达到最佳推送速度。");
         // 线程池初始化
         int initCorePoolSize = infinityForm.getThreadCountSlider().getValue();
         ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(initCorePoolSize, 100);
@@ -108,7 +109,8 @@ public class InfinityPushRunThread extends Thread {
             JSlider slider = (JSlider) e.getSource();
             int value = slider.getValue();
 //            if (!slider.getValueIsAdjusting()) {
-            ConsoleUtil.infinityConsoleOnly(String.valueOf(value));
+//            ConsoleUtil.infinityConsoleOnly(String.valueOf(value));
+            infinityForm.getSliderValueTextField().setText(String.valueOf(value));
             int finalValue = value;
             adjustThreadCount(threadPoolExecutor, finalValue);
         });
@@ -140,15 +142,15 @@ public class InfinityPushRunThread extends Thread {
         long processedRecordsBefore = 0;
         // 计时
         while (true) {
-            ConsoleUtil.infinityConsoleWithLog("");
-            ConsoleUtil.infinityConsoleWithLog("核心线程数：" + threadPoolExecutor.getCorePoolSize());
-            ConsoleUtil.infinityConsoleWithLog("活跃线程数：" + threadPoolExecutor.getActiveCount());
-            ConsoleUtil.infinityConsoleWithLog("线程名队列大小：" + PushData.activeThreadConcurrentLinkedQueue.size());
-            ConsoleUtil.infinityConsoleWithLog("最大线程数：" + threadPoolExecutor.getMaximumPoolSize());
-            ConsoleUtil.infinityConsoleWithLog("任务完成数：" + threadPoolExecutor.getCompletedTaskCount());
-            ConsoleUtil.infinityConsoleWithLog("队列大小：" + (threadPoolExecutor.getQueue().size() + threadPoolExecutor.getQueue().remainingCapacity()));
-            ConsoleUtil.infinityConsoleWithLog("当前排队线程数：" + threadPoolExecutor.getQueue().size());
-            ConsoleUtil.infinityConsoleWithLog("队列剩余大小：" + threadPoolExecutor.getQueue().remainingCapacity());
+            infinityForm.getActiveThreadCountLabel().setText("活跃线程数：" + threadPoolExecutor.getActiveCount());
+            infinityForm.getCorePoolSizeLabel().setText("核心线程数：" + threadPoolExecutor.getCorePoolSize());
+            infinityForm.getMaxPoolSizeLabel().setText("最大线程数：" + threadPoolExecutor.getMaximumPoolSize());
+//            ConsoleUtil.infinityConsoleWithLog("");
+//            ConsoleUtil.infinityConsoleWithLog("线程名队列大小：" + PushData.activeThreadConcurrentLinkedQueue.size());
+//            ConsoleUtil.infinityConsoleWithLog("任务完成数：" + threadPoolExecutor.getCompletedTaskCount());
+//            ConsoleUtil.infinityConsoleWithLog("队列大小：" + (threadPoolExecutor.getQueue().size() + threadPoolExecutor.getQueue().remainingCapacity()));
+//            ConsoleUtil.infinityConsoleWithLog("当前排队线程数：" + threadPoolExecutor.getQueue().size());
+//            ConsoleUtil.infinityConsoleWithLog("队列剩余大小：" + threadPoolExecutor.getQueue().remainingCapacity());
 
             if ((!PushData.running && PushData.activeThreadConcurrentLinkedQueue.isEmpty()) || PushData.toSendConcurrentLinkedQueue.isEmpty()) {
                 if (!PushData.fixRateScheduling) {
