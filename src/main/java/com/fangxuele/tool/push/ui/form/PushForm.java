@@ -74,8 +74,7 @@ public class PushForm {
         pushForm = getInstance();
         pushForm.getPushMsgName().setText(App.config.getMsgName());
         pushForm.getThreadCountTextField().setText(String.valueOf(App.config.getThreadCount()));
-        pushForm.getThreadCountSlider().setMaximum(App.config.getMaxThreads());
-        pushForm.getThreadCountSlider().setValue(App.config.getThreadCount());
+        initSlider();
         pushForm.getDryRunCheckBox().setSelected(App.config.isDryRun());
 
         if (UIUtil.isDarkLaf()) {
@@ -84,6 +83,17 @@ public class PushForm {
             Color foreColor = new Color(187, 187, 187);
             pushForm.getPushConsoleTextArea().setForeground(foreColor);
         }
+    }
+
+    public static void initSlider() {
+        pushForm = getInstance();
+        Integer maxThreads = App.config.getMaxThreads();
+        pushForm.getThreadCountSlider().setMaximum(maxThreads);
+        int threadCount = App.config.getThreadCount();
+        if (threadCount > maxThreads) {
+            threadCount = maxThreads;
+        }
+        pushForm.getThreadCountSlider().setValue(threadCount);
     }
 
     {

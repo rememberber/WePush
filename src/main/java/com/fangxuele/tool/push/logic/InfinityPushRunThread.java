@@ -190,6 +190,7 @@ public class InfinityPushRunThread extends Thread {
                         ConsoleUtil.infinityConsoleWithLog("正在保存结果数据……");
                         infinityForm.getPushTotalProgressBar().setIndeterminate(true);
                         PushControl.savePushData();
+                        App.config.save();
                         ConsoleUtil.infinityConsoleWithLog("结果数据保存完毕！");
                     }
                 } catch (IOException e) {

@@ -70,7 +70,7 @@ public class InfinityForm {
         infinityForm = getInstance();
         infinityForm.getDryRunCheckBox().setSelected(App.config.isDryRun());
         infinityForm.getScheduleDetailLabel().setVisible(false);
-        infinityForm.getThreadCountSlider().setMaximum(App.config.getMaxThreads());
+        initSlider();
 
         if (UIUtil.isDarkLaf()) {
             Color bgColor = new Color(43, 43, 43);
@@ -78,6 +78,17 @@ public class InfinityForm {
             Color foreColor = new Color(187, 187, 187);
             infinityForm.getConsoleTextArea().setForeground(foreColor);
         }
+    }
+
+    public static void initSlider() {
+        infinityForm = getInstance();
+        Integer maxThreads = App.config.getMaxThreads();
+        infinityForm.getThreadCountSlider().setMaximum(maxThreads);
+        int threadCount = App.config.getInfinityThreadCount();
+        if (threadCount > maxThreads) {
+            threadCount = maxThreads;
+        }
+        infinityForm.getThreadCountSlider().setValue(threadCount);
     }
 
     {
