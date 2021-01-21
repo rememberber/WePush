@@ -375,6 +375,7 @@ public class InfinityListener {
             int slideValue = infinityForm.getThreadCountSlider().getValue();
             infinityForm.getSliderValueTextField().setText(String.valueOf(slideValue));
             App.config.setInfinityThreadCount(slideValue);
+            App.config.save();
         });
     }
 
