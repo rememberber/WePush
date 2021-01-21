@@ -60,6 +60,8 @@ public class ConfigUtil extends ConfigBaseUtil {
 
     private boolean useTray;
 
+    private Integer maxThreads;
+
     private long pushTotal;
 
     private String beforeVersion;
@@ -376,6 +378,14 @@ public class ConfigUtil extends ConfigBaseUtil {
 
     public void setUseTray(boolean useTray) {
         setting.put("setting.normal", "useTray", String.valueOf(useTray));
+    }
+
+    public Integer getMaxThreads() {
+        return setting.getInt("maxThreads", "setting.normal", 100);
+    }
+
+    public void setMaxThreads(Integer maxThreads) {
+        setting.put("setting.normal", "maxThreads", String.valueOf(maxThreads));
     }
 
     public long getPushTotal() {

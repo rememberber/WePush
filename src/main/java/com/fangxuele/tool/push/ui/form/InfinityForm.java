@@ -70,6 +70,7 @@ public class InfinityForm {
         infinityForm = getInstance();
         infinityForm.getDryRunCheckBox().setSelected(App.config.isDryRun());
         infinityForm.getScheduleDetailLabel().setVisible(false);
+        infinityForm.getThreadCountSlider().setMaximum(App.config.getMaxThreads());
 
         if (UIUtil.isDarkLaf()) {
             Color bgColor = new Color(43, 43, 43);

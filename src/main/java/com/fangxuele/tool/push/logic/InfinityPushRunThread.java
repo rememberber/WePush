@@ -46,7 +46,7 @@ public class InfinityPushRunThread extends Thread {
         ConsoleUtil.infinityConsoleWithLog("推送过程中可随时拖拽下方滑动条调整线程数量，以达到最佳推送速度。");
         // 线程池初始化
         int initCorePoolSize = infinityForm.getThreadCountSlider().getValue();
-        ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(initCorePoolSize, 100);
+        ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(initCorePoolSize, App.config.getMaxThreads());
         adjustThreadCount(threadPoolExecutor, initCorePoolSize);
         // 线程动态调整
         threadMonitor(threadPoolExecutor);

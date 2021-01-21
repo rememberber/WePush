@@ -82,6 +82,21 @@ public class SettingListener {
             }
         });
 
+        // 设置-常规-最大线程数
+        settingForm.getMaxThreadsSaveButton().addActionListener(e -> {
+            try {
+                App.config.setMaxThreads(Integer.valueOf(settingForm.getMaxThreadsTextField().getText()));
+                App.config.save();
+
+                JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        });
+
         // 设置-公众号-保存
         settingForm.getSettingMpInfoSaveButton().addActionListener(e -> {
             try {
