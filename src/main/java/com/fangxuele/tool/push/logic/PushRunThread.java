@@ -98,10 +98,7 @@ public class PushRunThread extends Thread {
         App.config.save();
         ConsoleUtil.consoleWithLog("线程数：" + pushForm.getThreadCountTextField().getText());
 
-        // 线程池大小
-        App.config.setMaxThreadPool(Integer.parseInt(pushForm.getMaxThreadPoolTextField().getText()));
-        App.config.save();
-        ConsoleUtil.consoleWithLog("线程池大小：" + pushForm.getMaxThreadPoolTextField().getText());
+        ConsoleUtil.consoleWithLog("线程池大小：" + App.config.getMaxThreads());
 
         // 准备消息构造器
         PushControl.prepareMsgMaker();
@@ -129,7 +126,7 @@ public class PushRunThread extends Thread {
         PushForm pushForm = PushForm.getInstance();
         Object[] data;
 
-        int maxThreadPoolSize = App.config.getMaxThreadPool();
+        int maxThreadPoolSize = App.config.getMaxThreads();
         ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(maxThreadPoolSize, maxThreadPoolSize);
         MsgSendThread msgSendThread;
         // 每个线程分配

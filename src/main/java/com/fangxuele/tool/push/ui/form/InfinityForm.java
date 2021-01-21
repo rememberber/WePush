@@ -255,7 +255,7 @@ public class InfinityForm {
         threadCountSlider.setRequestFocusEnabled(false);
         threadCountSlider.setSnapToTicks(false);
         threadCountSlider.setToolTipText("线程数");
-        threadCountSlider.setValue(50);
+        threadCountSlider.setValue(0);
         threadCountSlider.setValueIsAdjusting(false);
         pushControlPanel.add(threadCountSlider, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }

@@ -87,6 +87,7 @@ public class SettingListener {
             try {
                 App.config.setMaxThreads(Integer.valueOf(settingForm.getMaxThreadsTextField().getText()));
                 App.config.save();
+                PushListener.refreshPushInfo();
 
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);

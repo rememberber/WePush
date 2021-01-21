@@ -94,9 +94,9 @@ public class WxMaSubscribeMsgSender implements IMsgSender {
         //空闲链接的检测周期(单位ms)
         clientBuilder.setCheckWaitTime(60000);
         //每路最大连接数
-        clientBuilder.setMaxConnPerHost(App.config.getMaxThreadPool() * 2);
+        clientBuilder.setMaxConnPerHost(App.config.getMaxThreads());
         //连接池最大连接数
-        clientBuilder.setMaxTotalConn(App.config.getMaxThreadPool() * 2);
+        clientBuilder.setMaxTotalConn(App.config.getMaxThreads());
         //HttpClient请求时使用的User Agent
 //        clientBuilder.setUserAgent(..)
         configStorage.setApacheHttpClientBuilder(clientBuilder);

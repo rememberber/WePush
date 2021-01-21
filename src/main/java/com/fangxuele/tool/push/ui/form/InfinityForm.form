@@ -354,7 +354,7 @@
               <requestFocusEnabled value="false"/>
               <snapToTicks value="false"/>
               <toolTipText value="线程数"/>
-              <value value="50"/>
+              <value value="0"/>
               <valueIsAdjusting value="false"/>
             </properties>
           </component>

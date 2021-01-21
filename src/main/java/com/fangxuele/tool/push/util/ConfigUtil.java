@@ -28,7 +28,7 @@ public class ConfigUtil extends ConfigBaseUtil {
 
     private String memberFilePath;
 
-    private int maxThreadPool;
+    private int infinityThreadCount;
 
     private int threadCount;
 
@@ -236,12 +236,12 @@ public class ConfigUtil extends ConfigBaseUtil {
         setting.put("member", "filePath", memberFilePath);
     }
 
-    public int getMaxThreadPool() {
-        return setting.getInt("maxThreadPool", "push", 100);
+    public int getInfinityThreadCount() {
+        return setting.getInt("infinityThreadCount", "push", 20);
     }
 
-    public void setMaxThreadPool(int maxThreadPool) {
-        setting.put("push", "maxThreadPool", String.valueOf(maxThreadPool));
+    public void setInfinityThreadCount(int infinityThreadCount) {
+        setting.put("push", "infinityThreadCount", String.valueOf(infinityThreadCount));
     }
 
     public int getThreadCount() {

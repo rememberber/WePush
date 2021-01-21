@@ -26,10 +26,6 @@ import org.apache.commons.lang3.time.DateUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Date;
@@ -62,12 +58,6 @@ public class PushListener {
         // 开始按钮事件
         pushForm.getPushStartButton().addActionListener((e) -> ThreadUtil.execute(() -> {
             if (PushControl.pushCheck()) {
-                if ("0".equals(pushForm.getMaxThreadPoolTextField().getText()) || StringUtils.isEmpty(pushForm.getMaxThreadPoolTextField().getText())) {
-                    JOptionPane.showMessageDialog(pushForm.getPushPanel(), "请设置每页分配用户数！", "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
-
-                    return;
-                }
                 if ("0".equals(pushForm.getThreadCountTextField().getText()) || StringUtils.isEmpty(pushForm.getThreadCountTextField().getText())) {
                     JOptionPane.showMessageDialog(pushForm.getPushPanel(), "请设置每个线程分配的页数！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
@@ -157,12 +147,6 @@ public class PushListener {
         // 按计划执行按钮事件
         pushForm.getScheduleRunButton().addActionListener((e -> ThreadUtil.execute(() -> {
             if (PushControl.pushCheck()) {
-                if ("0".equals(pushForm.getMaxThreadPoolTextField().getText()) || StringUtils.isEmpty(pushForm.getMaxThreadPoolTextField().getText())) {
-                    JOptionPane.showMessageDialog(pushForm.getPushPanel(), "请设置每页分配用户数！", "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
-
-                    return;
-                }
                 if ("0".equals(pushForm.getThreadCountTextField().getText()) || StringUtils.isEmpty(pushForm.getThreadCountTextField().getText())) {
                     JOptionPane.showMessageDialog(pushForm.getPushPanel(), "请设置每个线程分配的页数！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
@@ -332,34 +316,6 @@ public class PushListener {
             }
         })));
 
-        // 线程池数失去焦点
-        pushForm.getMaxThreadPoolTextField().addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusLost(FocusEvent e) {
-                try {
-                    tEvent();
-                } catch (Exception e1) {
-                    logger.error(e1);
-                } finally {
-                    super.focusLost(e);
-                }
-            }
-        });
-
-        // 线程池数键入回车
-        pushForm.getMaxThreadPoolTextField().addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                try {
-                    tEvent();
-                } catch (Exception e1) {
-                    logger.error(e1);
-                } finally {
-                    super.keyPressed(e);
-                }
-            }
-        });
-
         // 线程数滑块
         pushForm.getThreadCountSlider().addChangeListener(e -> {
             int slideValue = pushForm.getThreadCountSlider().getValue();
@@ -436,18 +392,6 @@ public class PushListener {
                 super.mouseExited(e);
             }
         });
-    }
-
-    private static void tEvent() {
-        PushForm pushForm = PushForm.getInstance();
-
-        if (Integer.parseInt(pushForm.getMaxThreadPoolTextField().getText()) > 1000) {
-            JOptionPane.showMessageDialog(pushForm.getPushPanel(), "最大输入1000", "提示",
-                    JOptionPane.INFORMATION_MESSAGE);
-            pushForm.getMaxThreadPoolTextField().setText("1000");
-        }
-        pushForm.getThreadCountSlider().setMaximum(Integer.parseInt(pushForm.getMaxThreadPoolTextField().getText()));
-        refreshPushInfo();
     }
 
     static void refreshPushInfo() {
