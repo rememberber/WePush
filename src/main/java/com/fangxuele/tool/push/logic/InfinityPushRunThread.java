@@ -110,7 +110,7 @@ public class InfinityPushRunThread extends Thread {
             int value = slider.getValue();
 //            if (!slider.getValueIsAdjusting()) {
 //            ConsoleUtil.infinityConsoleOnly(String.valueOf(value));
-            infinityForm.getSliderValueTextField().setText(String.valueOf(value));
+//            infinityForm.getSliderValueTextField().setText(String.valueOf(value));
             int finalValue = value;
             adjustThreadCount(threadPoolExecutor, finalValue);
         });

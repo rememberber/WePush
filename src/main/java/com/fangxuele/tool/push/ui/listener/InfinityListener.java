@@ -369,6 +369,13 @@ public class InfinityListener {
                 super.mouseExited(e);
             }
         });
+
+        // 线程数滑块
+        infinityForm.getThreadCountSlider().addChangeListener(e -> {
+            int slideValue = infinityForm.getThreadCountSlider().getValue();
+            infinityForm.getSliderValueTextField().setText(String.valueOf(slideValue));
+            App.config.setInfinityThreadCount(slideValue);
+        });
     }
 
     static void refreshPushInfo() {
