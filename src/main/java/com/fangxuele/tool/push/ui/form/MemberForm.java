@@ -3,6 +3,7 @@ package com.fangxuele.tool.push.ui.form;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.ui.listener.MemberListener;
+import com.fangxuele.tool.push.util.UIUtil;
 import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -110,7 +111,7 @@ public class MemberForm {
         memberForm.getImportFromSqlTextArea().setText(App.config.getMemberSql());
         memberForm.getMemberFilePathField().setText(App.config.getMemberFilePath());
 
-        if ("Darcula(推荐)".equals(App.config.getTheme())) {
+        if (UIUtil.isDarkLaf()) {
             Color bgColor = new Color(43, 43, 43);
             memberForm.getImportFromSqlTextArea().setBackground(bgColor);
             Color foreColor = new Color(187, 187, 187);

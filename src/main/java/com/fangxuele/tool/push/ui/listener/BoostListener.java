@@ -97,7 +97,6 @@ public class BoostListener {
 
         // 开始按钮事件
         boostForm.getStartButton().addActionListener((e) -> ThreadUtil.execute(() -> {
-            PushData.boostMode = true;
             if (App.config.getMsgType() != MessageTypeEnum.MP_TEMPLATE_CODE) {
                 JOptionPane.showMessageDialog(MainWindow.getInstance().getMainPanel(), "性能模式目前仅支持微信模板消息，后续逐步增加对其他消息类型的支持！", "提示",
                         JOptionPane.INFORMATION_MESSAGE);
@@ -119,7 +118,6 @@ public class BoostListener {
 
         // 按计划执行按钮事件
         boostForm.getScheduledRunButton().addActionListener((e -> ThreadUtil.execute(() -> {
-            PushData.boostMode = true;
             if (App.config.getMsgType() != MessageTypeEnum.MP_TEMPLATE_CODE) {
                 JOptionPane.showMessageDialog(MainWindow.getInstance().getMainPanel(), "性能模式目前仅支持微信模板消息，后续逐步增加对其他消息类型的支持！", "提示",
                         JOptionPane.INFORMATION_MESSAGE);

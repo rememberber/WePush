@@ -64,6 +64,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
@@ -135,46 +136,27 @@ public class MemberListener {
 
         // 按数量导入按钮事件
         memberForm.getImportFromNumButton().addActionListener(e -> ThreadUtil.execute(() -> {
-            if (StringUtils.isBlank(memberForm.getImportNumTextField().getText())) {
-                JOptionPane.showMessageDialog(memberPanel, "请填写数量！", "提示",
-                        JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
-
-            int currentImported = 0;
-
-            try {
-                int importNum = Integer.parseInt(memberForm.getImportNumTextField().getText());
-                progressBar.setVisible(true);
-                progressBar.setMaximum(importNum);
-
-                PushData.allUser = Collections.synchronizedList(new ArrayList<>());
-
-                for (int i = 0; i < importNum; i++) {
-                    String[] array = new String[1];
-                    array[0] = String.valueOf(i);
-                    PushData.allUser.add(array);
-                    currentImported++;
-                    memberCountLabel.setText(String.valueOf(currentImported));
-                }
-
-                renderMemberListTable();
-
-                if (!PushData.fixRateScheduling) {
-                    JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
-                }
-            } catch (Exception e1) {
-                JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + e1.getMessage(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
-                logger.error(e1);
-                e1.printStackTrace();
-            } finally {
-                progressBar.setMaximum(100);
-                progressBar.setValue(100);
-                progressBar.setIndeterminate(false);
-                progressBar.setVisible(false);
-            }
+            importByNum(memberForm, progressBar, memberCountLabel, memberPanel);
         }));
+
+        memberForm.getImportNumTextField().addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent evt) {
+
+            }
+
+            @Override
+            public void keyReleased(KeyEvent evt) {
+                if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+                    importByNum(memberForm, progressBar, memberCountLabel, memberPanel);
+                }
+            }
+        });
 
         // 从文件导入按钮事件
         memberForm.getImportFromFileButton().addActionListener(e -> ThreadUtil.execute(MemberListener::importFromFile));
@@ -730,6 +712,56 @@ public class MemberListener {
             }
         });
 
+    }
+
+    /**
+     * 按数量导入
+     *
+     * @param memberForm
+     * @param progressBar
+     * @param memberCountLabel
+     * @param memberPanel
+     */
+    private static void importByNum(MemberForm memberForm, JProgressBar progressBar, JLabel memberCountLabel, JPanel memberPanel) {
+        if (StringUtils.isBlank(memberForm.getImportNumTextField().getText())) {
+            JOptionPane.showMessageDialog(memberPanel, "请填写数量！", "提示",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        int currentImported = 0;
+
+        try {
+            int importNum = Integer.parseInt(memberForm.getImportNumTextField().getText());
+            progressBar.setVisible(true);
+            progressBar.setMaximum(importNum);
+
+            PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+
+            for (int i = 0; i < importNum; i++) {
+                String[] array = new String[1];
+                array[0] = String.valueOf(i);
+                PushData.allUser.add(array);
+                currentImported++;
+                memberCountLabel.setText(String.valueOf(currentImported));
+            }
+
+            renderMemberListTable();
+
+            if (!PushData.fixRateScheduling) {
+                JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception e1) {
+            JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + e1.getMessage(), "失败",
+                    JOptionPane.ERROR_MESSAGE);
+            logger.error(e1);
+            e1.printStackTrace();
+        } finally {
+            progressBar.setMaximum(100);
+            progressBar.setValue(100);
+            progressBar.setIndeterminate(false);
+            progressBar.setVisible(false);
+        }
     }
 
     private static void searchEvent() {

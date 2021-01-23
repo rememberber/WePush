@@ -129,20 +129,6 @@ public class PushControl {
 
             return false;
         }
-        if (!PushData.boostMode) {
-            if ("0".equals(pushForm.getMaxThreadPoolTextField().getText()) || StringUtils.isEmpty(pushForm.getMaxThreadPoolTextField().getText())) {
-                JOptionPane.showMessageDialog(pushForm.getPushPanel(), "请设置每页分配用户数！", "提示",
-                        JOptionPane.INFORMATION_MESSAGE);
-
-                return false;
-            }
-            if ("0".equals(pushForm.getThreadCountTextField().getText()) || StringUtils.isEmpty(pushForm.getThreadCountTextField().getText())) {
-                JOptionPane.showMessageDialog(pushForm.getPushPanel(), "请设置每个线程分配的页数！", "提示",
-                        JOptionPane.INFORMATION_MESSAGE);
-
-                return false;
-            }
-        }
 
         return configCheck();
     }
@@ -292,6 +278,9 @@ public class PushControl {
      * 推送停止或结束后保存数据
      */
     static void savePushData() throws IOException {
+        if (!PushData.toSendConcurrentLinkedQueue.isEmpty()) {
+            PushData.toSendList = new ArrayList<>(PushData.toSendConcurrentLinkedQueue);
+        }
         MessageEditForm messageEditForm = MessageEditForm.getInstance();
         File pushHisDir = new File(SystemUtil.configHome + "data" + File.separator + "push_his");
         if (!pushHisDir.exists()) {

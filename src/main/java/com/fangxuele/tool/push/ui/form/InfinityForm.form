@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.fangxuele.tool.push.ui.form.InfinityForm">
+  <grid id="27dc6" binding="infinityPanel" layout-manager="GridLayoutManager" row-count="3" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="0" left="0" bottom="0" right="0"/>
+    <constraints>
+      <xy x="20" y="20" width="1081" height="400"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <grid id="af83f" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <scrollpane id="90d5b">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <component id="bacf" class="javax.swing.JTextArea" binding="consoleTextArea">
+                <constraints/>
+                <properties/>
+              </component>
+            </children>
+          </scrollpane>
+        </children>
+      </grid>
+      <vspacer id="cfa7d">
+        <constraints>
+          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <grid id="d6ff1" binding="pushUpPanel" layout-manager="GridLayoutManager" row-count="4" column-count="9" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="5" left="5" bottom="5" right="5"/>
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="6712e" class="javax.swing.JLabel" binding="pushSuccessCount">
+            <constraints>
+              <grid row="0" column="0" row-span="4" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <font size="72"/>
+              <foreground color="-13587376"/>
+              <text value="0"/>
+            </properties>
+          </component>
+          <component id="19523" class="javax.swing.JLabel" binding="pushFailCount">
+            <constraints>
+              <grid row="0" column="2" row-span="4" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <font size="72"/>
+              <foreground color="-2200483"/>
+              <text value="0"/>
+            </properties>
+          </component>
+          <component id="4df82" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="1" column="1" row-span="2" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="成功"/>
+            </properties>
+          </component>
+          <component id="dfc" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="1" column="3" row-span="2" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="失败"/>
+            </properties>
+          </component>
+          <component id="cc4b7" class="javax.swing.JSeparator">
+            <constraints>
+              <grid row="0" column="4" row-span="4" col-span="1" vsize-policy="6" hsize-policy="7" anchor="8" fill="2" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <orientation value="1"/>
+            </properties>
+          </component>
+          <component id="107ac" class="javax.swing.JLabel" binding="pushLastTimeLabel">
+            <constraints>
+              <grid row="0" column="6" row-span="2" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="2" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <enabled value="true"/>
+              <font name="Microsoft YaHei UI Light" size="36"/>
+              <foreground color="-6710887"/>
+              <text value="0s"/>
+            </properties>
+          </component>
+          <component id="445e4" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="0" column="5" row-span="2" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="2" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <horizontalAlignment value="0"/>
+              <horizontalTextPosition value="0"/>
+              <text value="耗时"/>
+            </properties>
+          </component>
+          <component id="597b1" class="javax.swing.JSeparator">
+            <constraints>
+              <grid row="0" column="7" row-span="4" col-span="1" vsize-policy="6" hsize-policy="0" anchor="8" fill="2" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <orientation value="1"/>
+            </properties>
+          </component>
+          <component id="132d3" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="2" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="2" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="预计剩余"/>
+            </properties>
+          </component>
+          <component id="a46d6" class="javax.swing.JLabel" binding="pushLeftTimeLabel">
+            <constraints>
+              <grid row="2" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="2" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <font name="Microsoft YaHei UI Light" size="36"/>
+              <foreground color="-6710887"/>
+              <text value="0s"/>
+            </properties>
+          </component>
+          <component id="3eb5b" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="3" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="TPS"/>
+            </properties>
+          </component>
+          <component id="a0249" class="javax.swing.JLabel" binding="tpsLabel">
+            <constraints>
+              <grid row="3" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="0"/>
+            </properties>
+          </component>
+          <grid id="5dffb" layout-manager="GridLayoutManager" row-count="9" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
+            <constraints>
+              <grid row="0" column="8" row-span="4" col-span="1" vsize-policy="3" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <component id="cd583" class="javax.swing.JLabel" binding="pushTotalProgressLabel">
+                <constraints>
+                  <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="总进度"/>
+                </properties>
+              </component>
+              <component id="c3034" class="javax.swing.JProgressBar" binding="pushTotalProgressBar">
+                <constraints>
+                  <grid row="8" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <stringPainted value="true"/>
+                </properties>
+              </component>
+              <component id="d6e15" class="javax.swing.JLabel" binding="jvmMemoryLabel">
+                <constraints>
+                  <grid row="6" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="JVM内存占用：--"/>
+                </properties>
+              </component>
+              <component id="2caef" class="javax.swing.JLabel" binding="availableProcessorLabel">
+                <constraints>
+                  <grid row="5" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="可用处理器核心：--"/>
+                </properties>
+              </component>
+              <component id="a36cb" class="javax.swing.JLabel" binding="pushTotalCountLabel">
+                <constraints>
+                  <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="消息总数：0"/>
+                </properties>
+              </component>
+              <component id="ec315" class="javax.swing.JLabel" binding="pushMsgName">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <font size="24"/>
+                  <foreground color="-276358"/>
+                  <text value="消息标题"/>
+                </properties>
+              </component>
+              <component id="3f6e5" class="javax.swing.JLabel" binding="scheduleDetailLabel">
+                <constraints>
+                  <grid row="7" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <foreground color="-276358"/>
+                  <text value=""/>
+                </properties>
+              </component>
+              <component id="8567e" class="javax.swing.JLabel" binding="activeThreadCountLabel">
+                <constraints>
+                  <grid row="2" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <font style="1"/>
+                  <text value="活跃线程数：0"/>
+                </properties>
+              </component>
+              <component id="b583d" class="javax.swing.JLabel" binding="corePoolSizeLabel">
+                <constraints>
+                  <grid row="3" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="核心线程数：0"/>
+                </properties>
+              </component>
+              <component id="94c22" class="javax.swing.JLabel" binding="maxPoolSizeLabel">
+                <constraints>
+                  <grid row="4" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="最大线程数：0"/>
+                </properties>
+              </component>
+            </children>
+          </grid>
+        </children>
+      </grid>
+      <grid id="bc5ab" binding="pushControlPanel" layout-manager="GridLayoutManager" row-count="1" column-count="9" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="5" bottom="5" right="5"/>
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="415de" class="javax.swing.JTextField" binding="sliderValueTextField">
+            <constraints>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="60" height="-1"/>
+              </grid>
+            </constraints>
+            <properties>
+              <editable value="false"/>
+              <horizontalAlignment value="10"/>
+              <margin top="2" left="6" bottom="2" right="6"/>
+              <requestFocusEnabled value="true"/>
+              <toolTipText value="输入结束后请按回车键确认"/>
+            </properties>
+          </component>
+          <component id="56a74" class="javax.swing.JButton" binding="ScheduleRunButton">
+            <constraints>
+              <grid row="0" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <icon value="icon/clock.png"/>
+              <text value="按计划执行"/>
+            </properties>
+          </component>
+          <component id="1c499" class="javax.swing.JButton" binding="pushStopButton">
+            <constraints>
+              <grid row="0" column="7" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <enabled value="false"/>
+              <icon value="icon/suspend.png"/>
+              <text value="停止"/>
+            </properties>
+          </component>
+          <component id="63cee" class="javax.swing.JButton" binding="pushStartButton">
+            <constraints>
+              <grid row="0" column="8" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <icon value="icon/run@2x.png"/>
+              <text value="开始"/>
+            </properties>
+          </component>
+          <component id="8959e" class="javax.swing.JCheckBox" binding="dryRunCheckBox">
+            <constraints>
+              <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="空跑"/>
+              <toolTipText value="空跑勾选时不会真实发送消息"/>
+            </properties>
+          </component>
+          <component id="75f76" class="javax.swing.JLabel" binding="threadTipsLabel">
+            <constraints>
+              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <icon value="icon/helpButton.png"/>
+              <text value=""/>
+            </properties>
+          </component>
+          <component id="80e8e" class="javax.swing.JLabel" binding="dryRunHelpLabel">
+            <constraints>
+              <grid row="0" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <icon value="icon/helpButton.png"/>
+              <text value=""/>
+            </properties>
+          </component>
+          <component id="56694" class="javax.swing.JCheckBox" binding="saveResponseBodyCheckBox">
+            <constraints>
+              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="保存请求返回的Body"/>
+            </properties>
+          </component>
+          <component id="512e9" class="javax.swing.JSlider" binding="threadCountSlider">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <doubleBuffered value="true"/>
+              <extent value="0"/>
+              <focusCycleRoot value="false"/>
+              <focusTraversalPolicyProvider value="false"/>
+              <focusable value="false"/>
+              <inverted value="false"/>
+              <majorTickSpacing value="10"/>
+              <minimum value="0"/>
+              <minorTickSpacing value="5"/>
+              <opaque value="false"/>
+              <orientation value="0"/>
+              <paintLabels value="true"/>
+              <paintTicks value="true"/>
+              <paintTrack value="true"/>
+              <requestFocusEnabled value="false"/>
+              <snapToTicks value="false"/>
+              <toolTipText value="线程数"/>
+              <value value="0"/>
+              <valueIsAdjusting value="false"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+    </children>
+  </grid>
+</form>

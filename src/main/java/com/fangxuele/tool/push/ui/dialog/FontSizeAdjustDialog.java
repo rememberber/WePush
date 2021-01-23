@@ -58,7 +58,7 @@ public class FontSizeAdjustDialog extends JDialog {
     }
 
     private void onOK() {
-        MainWindow.getInstance().getTabbedPane().setSelectedIndex(7);
+        MainWindow.getInstance().getTabbedPane().setSelectedIndex(8);
         Point p = new Point(0, Integer.MAX_VALUE);
         SettingForm.getInstance().getSettingScrollPane().getViewport().setViewPosition(p);
         ThreadUtil.execute(() -> {

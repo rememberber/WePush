@@ -28,7 +28,7 @@ public class ConfigUtil extends ConfigBaseUtil {
 
     private String memberFilePath;
 
-    private int maxThreadPool;
+    private int infinityThreadCount;
 
     private int threadCount;
 
@@ -59,6 +59,8 @@ public class ConfigUtil extends ConfigBaseUtil {
     private boolean autoCheckUpdate;
 
     private boolean useTray;
+
+    private Integer maxThreads;
 
     private long pushTotal;
 
@@ -234,12 +236,12 @@ public class ConfigUtil extends ConfigBaseUtil {
         setting.put("member", "filePath", memberFilePath);
     }
 
-    public int getMaxThreadPool() {
-        return setting.getInt("maxThreadPool", "push", 100);
+    public int getInfinityThreadCount() {
+        return setting.getInt("infinityThreadCount", "push", 20);
     }
 
-    public void setMaxThreadPool(int maxThreadPool) {
-        setting.put("push", "maxThreadPool", String.valueOf(maxThreadPool));
+    public void setInfinityThreadCount(int infinityThreadCount) {
+        setting.put("push", "infinityThreadCount", String.valueOf(infinityThreadCount));
     }
 
     public int getThreadCount() {
@@ -376,6 +378,14 @@ public class ConfigUtil extends ConfigBaseUtil {
 
     public void setUseTray(boolean useTray) {
         setting.put("setting.normal", "useTray", String.valueOf(useTray));
+    }
+
+    public Integer getMaxThreads() {
+        return setting.getInt("maxThreads", "setting.normal", 100);
+    }
+
+    public void setMaxThreads(Integer maxThreads) {
+        setting.put("setting.normal", "maxThreads", String.valueOf(maxThreads));
     }
 
     public long getPushTotal() {

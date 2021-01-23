@@ -86,7 +86,7 @@ public class AliYunMsgSender implements IMsgSender {
                     // 多个SDK client共享一个连接池，此处设置该连接池的参数，
                     // 比如每个host的最大连接数，超时时间等
                     HttpClientConfig clientConfig = HttpClientConfig.getDefault();
-                    clientConfig.setMaxRequestsPerHost(App.config.getMaxThreadPool());
+                    clientConfig.setMaxRequestsPerHost(App.config.getMaxThreads());
                     clientConfig.setConnectionTimeoutMillis(10000L);
 
                     profile.setHttpClientConfig(clientConfig);

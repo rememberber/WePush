@@ -21,6 +21,7 @@ import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
 import com.fangxuele.tool.push.ui.dialog.DingAppDialog;
 import com.fangxuele.tool.push.ui.dialog.MailTestDialog;
 import com.fangxuele.tool.push.ui.dialog.SwitchWxAccountDialog;
+import com.fangxuele.tool.push.ui.dialog.SystemEnvResultDialog;
 import com.fangxuele.tool.push.ui.dialog.WxCpAppDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageManageForm;
@@ -40,7 +41,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Properties;
 
 /**
  * <pre>
@@ -76,6 +79,22 @@ public class SettingListener {
                 App.tray.remove(App.trayIcon);
                 App.trayIcon = null;
                 App.tray = null;
+            }
+        });
+
+        // 设置-常规-最大线程数
+        settingForm.getMaxThreadsSaveButton().addActionListener(e -> {
+            try {
+                App.config.setMaxThreads(Integer.valueOf(settingForm.getMaxThreadsTextField().getText()));
+                App.config.save();
+                PushListener.refreshPushInfo();
+
+                JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
             }
         });
 
@@ -613,6 +632,30 @@ public class SettingListener {
             }
         });
 
+        // 调试-系统环境变量
+        settingForm.getSystemEnvButton().addActionListener(e -> {
+            try {
+                SystemEnvResultDialog dialog = new SystemEnvResultDialog();
+
+                dialog.appendTextArea("------------System.getenv---------------");
+                Map<String, String> map = System.getenv();
+                for (Map.Entry<String, String> envEntry : map.entrySet()) {
+                    dialog.appendTextArea(envEntry.getKey() + "=" + envEntry.getValue());
+                }
+
+                dialog.appendTextArea("------------System.getProperties---------------");
+                Properties properties = System.getProperties();
+                for (Map.Entry<Object, Object> objectObjectEntry : properties.entrySet()) {
+                    dialog.appendTextArea(objectObjectEntry.getKey() + "=" + objectObjectEntry.getValue());
+                }
+
+                dialog.pack();
+                dialog.setVisible(true);
+            } catch (Exception e2) {
+                logger.error("查看系统环境变量失败", e2);
+            }
+        });
+
         settingForm.getMpUseProxyCheckBox().addChangeListener(e -> SettingForm.toggleMpProxyPanel());
         settingForm.getMaUseProxyCheckBox().addChangeListener(e -> SettingForm.toggleMaProxyPanel());
         settingForm.getHttpUseProxyCheckBox().addChangeListener(e -> SettingForm.toggleHttpProxyPanel());
@@ -709,7 +752,7 @@ public class SettingListener {
                 tipsBuilder.append("<p>向您所在企业的开发人员索取该接口；</p>");
                 tipsBuilder.append("<p>接口使用GET请求，返回格式：</p>");
                 tipsBuilder.append("<p>{\"access_token\":\"ACCESS_TOKEN\",\"expires_in\":7200}</p>");
-                tipsBuilder.append("<p>请一定注意接口安全性，AccessToken一旦被他人利用，后果不堪设想</p>");
+                tipsBuilder.append("<p>请一定注意接口安全性，且服务端应按照失效时间进行缓存</p>");
                 tipsBuilder.append("<p>例如在接口上添加密钥相关的参数：</p>");
                 tipsBuilder.append("<p>示例：http://mydomain.com/wechat/getAccessToken?secret=jad76^j2#SY</p>");
 

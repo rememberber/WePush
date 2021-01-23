@@ -61,6 +61,7 @@ public class PushRunThread extends Thread {
         // 按钮状态
         pushForm.getScheduleRunButton().setEnabled(false);
         pushForm.getPushStartButton().setEnabled(false);
+        pushForm.getThreadCountSlider().setEnabled(false);
         pushForm.getPushStopButton().setEnabled(true);
 
         pushForm.getPushStopButton().setText("停止");
@@ -97,10 +98,7 @@ public class PushRunThread extends Thread {
         App.config.save();
         ConsoleUtil.consoleWithLog("线程数：" + pushForm.getThreadCountTextField().getText());
 
-        // 线程池大小
-        App.config.setMaxThreadPool(Integer.parseInt(pushForm.getMaxThreadPoolTextField().getText()));
-        App.config.save();
-        ConsoleUtil.consoleWithLog("线程池大小：" + pushForm.getMaxThreadPoolTextField().getText());
+        ConsoleUtil.consoleWithLog("线程池大小：" + App.config.getMaxThreads());
 
         // 准备消息构造器
         PushControl.prepareMsgMaker();
@@ -128,7 +126,7 @@ public class PushRunThread extends Thread {
         PushForm pushForm = PushForm.getInstance();
         Object[] data;
 
-        int maxThreadPoolSize = App.config.getMaxThreadPool();
+        int maxThreadPoolSize = App.config.getMaxThreads();
         ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(maxThreadPoolSize, maxThreadPoolSize);
         MsgSendThread msgSendThread;
         // 每个线程分配
@@ -173,6 +171,7 @@ public class PushRunThread extends Thread {
     private void timeMonitor(ThreadPoolExecutor threadPoolExecutor) {
         PushForm pushForm = PushForm.getInstance();
         long startTimeMillis = System.currentTimeMillis();
+        int totalSentCountBefore = 0;
         // 计时
         while (true) {
             if (threadPoolExecutor.isTerminated()) {
@@ -180,6 +179,7 @@ public class PushRunThread extends Thread {
                     pushForm.getPushStopButton().setEnabled(false);
                     pushForm.getPushStopButton().updateUI();
                     pushForm.getPushStartButton().setEnabled(true);
+                    pushForm.getThreadCountSlider().setEnabled(true);
                     pushForm.getPushStartButton().updateUI();
                     pushForm.getScheduleRunButton().setEnabled(true);
                     pushForm.getScheduleRunButton().updateUI();
@@ -240,12 +240,10 @@ public class PushRunThread extends Thread {
             pushForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
 
             // TPS
-            if (lastTimeMillis == 0) {
-                lastTimeMillis = 1;
-            }
-            int tps = (int) (totalSentCount * 1000 / lastTimeMillis);
+            int tps = (totalSentCount - totalSentCountBefore) * 5;
+            totalSentCountBefore = totalSentCount;
             pushForm.getTpsLabel().setText(String.valueOf(tps));
-            ThreadUtil.safeSleep(100);
+            ThreadUtil.safeSleep(200);
         }
     }
 

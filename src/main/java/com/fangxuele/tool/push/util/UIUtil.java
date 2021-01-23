@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.util;
 
+import com.fangxuele.tool.push.App;
 import lombok.extern.slf4j.Slf4j;
 
 import java.awt.*;
@@ -47,5 +48,16 @@ public class UIUtil {
         log.info("screen dpi:{},width:{},height:{}", dpi, screenSize.getWidth(), screenSize.getHeight());
 
         return scale;
+    }
+
+    /**
+     * 是否暗黑主题
+     *
+     * @return
+     */
+    public static boolean isDarkLaf() {
+        return "Darcula(推荐)".equals(App.config.getTheme())
+                || "Flat Dark".equals(App.config.getTheme())
+                || "Flat Darcula".equals(App.config.getTheme());
     }
 }
