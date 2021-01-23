@@ -277,7 +277,7 @@
     {
       "version": "v_4.3.0_210123",
       "title": "新增变速模式",
-      "log": "● feature：新增变速模式，可在发送过程中随时调整现场数\n● feature：新增了几套主题样式\n● optimization：优化了tps的计算逻辑\n"
+      "log": "● feature：新增变速模式，可在发送过程中随时调整线程数\n● feature：新增了几套主题样式\n● optimization：优化了tps的计算逻辑\n"
     }
   ]
 }
