@@ -106,6 +106,9 @@ public class InfinityPushRunThread extends Thread {
         InfinityForm infinityForm = InfinityForm.getInstance();
 
         infinityForm.getThreadCountSlider().addChangeListener(e -> {
+            if(!PushData.running){
+                return;
+            }
             JSlider slider = (JSlider) e.getSource();
             int value = slider.getValue();
 //            if (!slider.getValueIsAdjusting()) {
