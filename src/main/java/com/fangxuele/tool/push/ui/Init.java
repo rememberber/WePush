@@ -138,6 +138,8 @@ public class Init {
                     UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarkLaf");
                     break;
                 case "Flat Darcula":
+//                    JFrame.setDefaultLookAndFeelDecorated( true );
+//                    JDialog.setDefaultLookAndFeelDecorated( true );
                     UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarculaLaf");
                     break;
                 case "Dark purple":
