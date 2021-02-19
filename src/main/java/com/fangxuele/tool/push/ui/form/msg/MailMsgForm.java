@@ -64,7 +64,7 @@ public class MailMsgForm implements IMsgForm {
             public void mousePressed(MouseEvent e) {
                 Desktop desktop = Desktop.getDesktop();
                 try {
-                    desktop.browse(new URI("https://ueditor.baidu.com/website/onlinedemo.html"));
+                    desktop.browse(new URI("http://kindeditor.net/demo.php"));
                 } catch (IOException | URISyntaxException e1) {
                     e1.printStackTrace();
                 }
@@ -195,7 +195,7 @@ public class MailMsgForm implements IMsgForm {
         label3.setText("邮件正文(HTML)");
         mailPanel.add(label3, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         uEditorLabel = new JLabel();
-        uEditorLabel.setText("<html><a href=\"https://ueditor.baidu.com/website/onlinedemo.html\">使用UEditor编辑HTML</a></html>");
+        uEditorLabel.setText("<html><a href=\"http://kindeditor.net/demo.php\">使用KindEditor编辑HTML</a></html>");
         mailPanel.add(uEditorLabel, new GridConstraints(3, 1, 1, 2, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         fileExploreButton = new JButton();
         fileExploreButton.setHorizontalAlignment(0);
