@@ -4,7 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.File;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * <pre>
@@ -34,7 +36,7 @@ public class MailMsg implements Serializable {
     /**
      * 附件
      */
-    private String mailFiles;
+    private List<File> mailFiles;
 
     /**
      * 内容

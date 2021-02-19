@@ -68,16 +68,8 @@
         </constraints>
         <properties>
           <horizontalAlignment value="0"/>
-          <text value="浏览"/>
+          <text value="添加附件"/>
         </properties>
-      </component>
-      <component id="d6ec6" class="javax.swing.JTextField" binding="mailFilesTextField">
-        <constraints>
-          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="-1"/>
-          </grid>
-        </constraints>
-        <properties/>
       </component>
       <component id="693a5" class="javax.swing.JTextField" binding="mailCcTextField">
         <constraints>
@@ -95,6 +87,21 @@
           <text value="抄送"/>
         </properties>
       </component>
+      <scrollpane id="dc5df">
+        <constraints>
+          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <preferred-size width="-1" height="60"/>
+          </grid>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="c50ad" class="javax.swing.JTextArea" binding="mailFilesTextArea">
+            <constraints/>
+            <properties/>
+          </component>
+        </children>
+      </scrollpane>
     </children>
   </grid>
 </form>
