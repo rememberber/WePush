@@ -23,7 +23,6 @@ import com.fangxuele.tool.push.ui.dialog.MailTestDialog;
 import com.fangxuele.tool.push.ui.dialog.SwitchWxAccountDialog;
 import com.fangxuele.tool.push.ui.dialog.SystemEnvResultDialog;
 import com.fangxuele.tool.push.ui.dialog.WxCpAppDialog;
-import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.ui.form.msg.DingMsgForm;
@@ -603,15 +602,18 @@ public class SettingListener {
         // 外观-保存
         settingForm.getSettingAppearanceSaveButton().addActionListener(e -> {
             try {
-                App.config.setTheme(Objects.requireNonNull(settingForm.getSettingThemeComboBox().getSelectedItem()).toString());
+                if (!App.config.getTheme().equals(settingForm.getSettingThemeComboBox().getSelectedItem().toString())) {
+                    App.config.setTheme(Objects.requireNonNull(settingForm.getSettingThemeComboBox().getSelectedItem()).toString());
+                    Init.initTheme();
+                    for (Window window : Window.getWindows()) {
+                        SwingUtilities.updateComponentTreeUI(window);
+                    }
+                }
+                Init.initGlobalFont();
+
                 App.config.setFont(Objects.requireNonNull(settingForm.getSettingFontNameComboBox().getSelectedItem()).toString());
                 App.config.setFontSize(Integer.parseInt(Objects.requireNonNull(settingForm.getSettingFontSizeComboBox().getSelectedItem()).toString()));
                 App.config.save();
-
-                Init.initTheme();
-                Init.initGlobalFont();
-                SwingUtilities.updateComponentTreeUI(App.mainFrame);
-                SwingUtilities.updateComponentTreeUI(MainWindow.getInstance().getTabbedPane());
 
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！\n\n部分细节将在下次启动时生效！\n\n", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
