@@ -930,13 +930,13 @@ public class SettingForm {
         panel35.add(label51, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         settingThemeComboBox = new JComboBox();
         final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
-        defaultComboBoxModel1.addElement("Darcula(推荐)");
+        defaultComboBoxModel1.addElement("Darcula");
         defaultComboBoxModel1.addElement("BeautyEye");
         defaultComboBoxModel1.addElement("系统默认");
         defaultComboBoxModel1.addElement("Flat Light");
         defaultComboBoxModel1.addElement("Flat IntelliJ");
         defaultComboBoxModel1.addElement("Flat Dark");
-        defaultComboBoxModel1.addElement("Flat Darcula");
+        defaultComboBoxModel1.addElement("Flat Darcula(推荐)");
         defaultComboBoxModel1.addElement("Dark purple");
         defaultComboBoxModel1.addElement("IntelliJ Cyan");
         defaultComboBoxModel1.addElement("IntelliJ Light");

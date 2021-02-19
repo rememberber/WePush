@@ -124,7 +124,9 @@ public class Init {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                     break;
                 case "weblaf":
-                case "Darcula(推荐)":
+                case "Darcula":
+                    JFrame.setDefaultLookAndFeelDecorated(false);
+                    JDialog.setDefaultLookAndFeelDecorated(false);
                     UIManager.setLookAndFeel("com.bulenkov.darcula.DarculaLaf");
                     break;
                 case "Flat Light":
@@ -148,7 +150,7 @@ public class Init {
                     }
                     UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarkLaf");
                     break;
-                case "Flat Darcula":
+                case "Flat Darcula(推荐)":
                     if (SystemUtil.isJBR()) {
                         JFrame.setDefaultLookAndFeelDecorated(true);
                         JDialog.setDefaultLookAndFeelDecorated(true);
