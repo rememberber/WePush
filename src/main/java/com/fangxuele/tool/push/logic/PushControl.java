@@ -282,7 +282,7 @@ public class PushControl {
             PushData.toSendList = new ArrayList<>(PushData.toSendConcurrentLinkedQueue);
         }
         MessageEditForm messageEditForm = MessageEditForm.getInstance();
-        File pushHisDir = new File(SystemUtil.configHome + "data" + File.separator + "push_his");
+        File pushHisDir = new File(SystemUtil.CONFIG_HOME + "data" + File.separator + "push_his");
         if (!pushHisDir.exists()) {
             boolean mkdirs = pushHisDir.mkdirs();
         }
@@ -295,7 +295,7 @@ public class PushControl {
         List<File> fileList = new ArrayList<>();
         // 保存已发送
         if (PushData.sendSuccessList.size() > 0) {
-            File sendSuccessFile = new File(SystemUtil.configHome + "data" +
+            File sendSuccessFile = new File(SystemUtil.CONFIG_HOME + "data" +
                     File.separator + "push_his" + File.separator + MessageTypeEnum.getName(msgType) + "-" + msgName +
                     "-发送成功-" + nowTime + ".csv");
             FileUtil.touch(sendSuccessFile);
@@ -334,7 +334,7 @@ public class PushControl {
         }
 
         if (PushData.toSendList.size() > 0) {
-            File unSendFile = new File(SystemUtil.configHome + "data" + File.separator +
+            File unSendFile = new File(SystemUtil.CONFIG_HOME + "data" + File.separator +
                     "push_his" + File.separator + MessageTypeEnum.getName(msgType) + "-" + msgName + "-未发送-" + nowTime +
                     ".csv");
             FileUtil.touch(unSendFile);
@@ -350,7 +350,7 @@ public class PushControl {
 
         // 保存发送失败
         if (PushData.sendFailList.size() > 0) {
-            File failSendFile = new File(SystemUtil.configHome + "data" + File.separator +
+            File failSendFile = new File(SystemUtil.CONFIG_HOME + "data" + File.separator +
                     "push_his" + File.separator + MessageTypeEnum.getName(msgType) + "-" + msgName + "-发送失败-" + nowTime + ".csv");
             FileUtil.touch(failSendFile);
             writer = new CSVWriter(new FileWriter(failSendFile));
