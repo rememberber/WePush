@@ -56,7 +56,7 @@ public class PushListener {
         JPanel pushPanel = pushForm.getPushPanel();
 
         // 开始按钮事件
-        pushForm.getPushStartButton().addActionListener((e) -> ThreadUtil.execute(() -> {
+        pushForm.getPushStartButton().addActionListener((e) -> {
             if (PushControl.pushCheck()) {
                 if ("0".equals(pushForm.getThreadCountTextField().getText()) || StringUtils.isEmpty(pushForm.getThreadCountTextField().getText())) {
                     JOptionPane.showMessageDialog(pushForm.getPushPanel(), "请设置每个线程分配的页数！", "提示",
@@ -75,7 +75,7 @@ public class PushListener {
                     ThreadUtil.execute(new PushRunThread());
                 }
             }
-        }));
+        });
 
         // 停止按钮事件
         pushForm.getPushStopButton().addActionListener((e) -> {

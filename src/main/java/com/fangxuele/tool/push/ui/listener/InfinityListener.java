@@ -56,7 +56,7 @@ public class InfinityListener {
         InfinityForm infinityForm = InfinityForm.getInstance();
 
         // 开始按钮事件
-        infinityForm.getPushStartButton().addActionListener((e) -> ThreadUtil.execute(() -> {
+        infinityForm.getPushStartButton().addActionListener((e) -> {
             if (PushControl.pushCheck()) {
                 int isPush = JOptionPane.showConfirmDialog(infinityForm.getInfinityPanel(),
                         "确定开始推送吗？\n\n推送消息：" +
@@ -69,7 +69,7 @@ public class InfinityListener {
                     ThreadUtil.execute(new InfinityPushRunThread());
                 }
             }
-        }));
+        });
 
         // 按计划执行按钮事件
         infinityForm.getScheduleRunButton().addActionListener((e -> ThreadUtil.execute(() -> {
