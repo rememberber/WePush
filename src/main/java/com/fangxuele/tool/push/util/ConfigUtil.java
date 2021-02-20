@@ -671,7 +671,11 @@ public class ConfigUtil extends ConfigBaseUtil {
     }
 
     public String getFont() {
-        return setting.getStr("font", "setting.appearance", "微软雅黑");
+        if (SystemUtil.isLinuxOs()) {
+            return setting.getStr("font", "setting.appearance", "Noto Sans CJK HK");
+        } else {
+            return setting.getStr("font", "setting.appearance", "微软雅黑");
+        }
     }
 
     public void setFont(String font) {

@@ -25,6 +25,10 @@ public class SystemUtil {
         return OS_NAME.contains("Mac");
     }
 
+    public static boolean isLinuxOs() {
+        return OS_NAME.contains("Linux");
+    }
+
     public static boolean isMacM1() {
         return OS_NAME.contains("Mac") && "aarch64".equals(OS_ARCH);
     }

@@ -99,7 +99,7 @@ public class Init {
      * 初始化look and feel
      */
     public static void initTheme() {
-        if (SystemUtil.isMacM1()) {
+        if (SystemUtil.isMacM1() || SystemUtil.isLinuxOs()) {
             try {
                 UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarculaLaf");
                 logger.warn("FlatDarculaLaf theme set.");
