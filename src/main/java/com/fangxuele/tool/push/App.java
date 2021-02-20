@@ -42,7 +42,7 @@ public class App {
         mainFrame.pack();
         mainFrame.setVisible(true);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        if (screenSize.getWidth() <= 1366 || config.isDefaultMaxWindow()) {
+        if (config.isDefaultMaxWindow() || screenSize.getWidth() <= 1366) {
             // 低分辨率下自动最大化窗口
             mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         }
@@ -56,7 +56,7 @@ public class App {
         Init.initOthers();
         mainFrame.addListeners();
         mainFrame.remove(loadingPanel);
-        Init.initFontSize();
+        Init.fontSizeGuide();
         Init.initTray();
     }
 }
