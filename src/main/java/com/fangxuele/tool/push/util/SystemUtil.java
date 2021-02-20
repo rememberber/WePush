@@ -14,8 +14,12 @@ public class SystemUtil {
     private static final String OS_NAME = System.getProperty("os.name");
     private static final String OS_ARCH = System.getProperty("os.arch");
     private static final String VM_VENDOR = System.getProperty("java.vm.vendor");
-    public static final String CONFIG_HOME = System.getProperty("user.home") + File.separator + ".wepush"
-            + File.separator;
+    private static final String USER_HOME = System.getProperty("user.home");
+    public static final String CONFIG_HOME = USER_HOME + File.separator + ".wepush" + File.separator;
+    /**
+     * 日志文件路径
+     */
+    public final static String LOG_DIR = USER_HOME + File.separator + ".wepush" + File.separator + "logs" + File.separator;
 
     public static boolean isMacOs() {
         return OS_NAME.contains("Mac");

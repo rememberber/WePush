@@ -30,6 +30,7 @@ import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
 import com.fangxuele.tool.push.util.HikariUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
+import com.fangxuele.tool.push.util.SystemUtil;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.StringUtils;
 
@@ -628,7 +629,7 @@ public class SettingListener {
         settingForm.getShowLogButton().addActionListener(e -> {
             try {
                 Desktop desktop = Desktop.getDesktop();
-                desktop.open(new File(UiConsts.LOG_DIR));
+                desktop.open(new File(SystemUtil.LOG_DIR));
             } catch (Exception e2) {
                 logger.error("查看日志打开失败", e2);
             }
