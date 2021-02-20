@@ -39,13 +39,13 @@ public class App {
         mainFrame.init();
         JPanel loadingPanel = new LoadingForm().getLoadingPanel();
         mainFrame.add(loadingPanel);
+        mainFrame.pack();
+        mainFrame.setVisible(true);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         if (screenSize.getWidth() <= 1366) {
             // 低分辨率下自动最大化窗口
             mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         }
-        mainFrame.pack();
-        mainFrame.setVisible(true);
         UpgradeUtil.smoothUpgrade();
 
         mainFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
