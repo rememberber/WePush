@@ -81,6 +81,11 @@ public class SettingListener {
                 App.tray = null;
             }
         });
+        // 设置-常规-默认最大化窗口
+        settingForm.getDefaultMaxWindowCheckBox().addActionListener(e -> {
+            App.config.setDefaultMaxWindow(settingForm.getDefaultMaxWindowCheckBox().isSelected());
+            App.config.save();
+        });
 
         // 设置-常规-最大线程数
         settingForm.getMaxThreadsSaveButton().addActionListener(e -> {

@@ -60,6 +60,8 @@ public class ConfigUtil extends ConfigBaseUtil {
 
     private boolean useTray;
 
+    private boolean defaultMaxWindow;
+
     private Integer maxThreads;
 
     private long pushTotal;
@@ -378,6 +380,14 @@ public class ConfigUtil extends ConfigBaseUtil {
 
     public void setUseTray(boolean useTray) {
         setting.put("setting.normal", "useTray", String.valueOf(useTray));
+    }
+
+    public boolean isDefaultMaxWindow() {
+        return setting.getBool("defaultMaxWindow", "setting.normal", true);
+    }
+
+    public void setDefaultMaxWindow(boolean defaultMaxWindow) {
+        setting.put("setting.normal", "defaultMaxWindow", String.valueOf(defaultMaxWindow));
     }
 
     public Integer getMaxThreads() {

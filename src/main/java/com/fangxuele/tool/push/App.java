@@ -42,7 +42,7 @@ public class App {
         mainFrame.pack();
         mainFrame.setVisible(true);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        if (screenSize.getWidth() <= 1366) {
+        if (screenSize.getWidth() <= 1366 || config.isDefaultMaxWindow()) {
             // 低分辨率下自动最大化窗口
             mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         }
