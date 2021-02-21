@@ -18,7 +18,6 @@ import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.ui.form.PushHisForm;
 import com.fangxuele.tool.push.ui.form.ScheduleForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
-import com.fangxuele.tool.push.ui.form.UserCaseForm;
 import com.fangxuele.tool.push.ui.listener.AboutListener;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.fangxuele.tool.push.util.UIUtil;
@@ -53,7 +52,7 @@ public class Init {
     /**
      * 字号初始化KEY
      */
-    private static final String FONT_SIZE_INIT_PROP = "fontSizeInit";
+    public static final String FONT_SIZE_INIT_PROP = "fontSizeInit";
 
     /**
      * 设置全局字体
@@ -74,6 +73,7 @@ public class Init {
                 fontSize = (int) (UIUtil.getScreenScale() * fontSize);
             }
             App.config.setFontSize(fontSize);
+            App.config.save();
         }
 
         Font font = new Font(App.config.getFont(), Font.PLAIN, App.config.getFontSize());
@@ -100,7 +100,7 @@ public class Init {
      * 初始化look and feel
      */
     public static void initTheme() {
-        if (SystemUtil.isMacM1()) {
+        if (SystemUtil.isMacM1() || SystemUtil.isLinuxOs()) {
             try {
                 UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarculaLaf");
                 logger.warn("FlatDarculaLaf theme set.");
@@ -125,35 +125,69 @@ public class Init {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                     break;
                 case "weblaf":
-                case "Darcula(推荐)":
+                case "Darcula":
+                    JFrame.setDefaultLookAndFeelDecorated(false);
+                    JDialog.setDefaultLookAndFeelDecorated(false);
                     UIManager.setLookAndFeel("com.bulenkov.darcula.DarculaLaf");
                     break;
                 case "Flat Light":
+                    if (SystemUtil.isJBR()) {
+                        JFrame.setDefaultLookAndFeelDecorated(true);
+                        JDialog.setDefaultLookAndFeelDecorated(true);
+                    }
                     FlatLightLaf.install();
                     break;
                 case "Flat IntelliJ":
+                    if (SystemUtil.isJBR()) {
+                        JFrame.setDefaultLookAndFeelDecorated(true);
+                        JDialog.setDefaultLookAndFeelDecorated(true);
+                    }
                     UIManager.setLookAndFeel("com.formdev.flatlaf.FlatIntelliJLaf");
                     break;
                 case "Flat Dark":
+                    if (SystemUtil.isJBR()) {
+                        JFrame.setDefaultLookAndFeelDecorated(true);
+                        JDialog.setDefaultLookAndFeelDecorated(true);
+                    }
                     UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarkLaf");
                     break;
-                case "Flat Darcula":
+                case "Flat Darcula(推荐)":
+                    if (SystemUtil.isJBR()) {
+                        JFrame.setDefaultLookAndFeelDecorated(true);
+                        JDialog.setDefaultLookAndFeelDecorated(true);
+                    }
                     UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarculaLaf");
                     break;
                 case "Dark purple":
+                    if (SystemUtil.isJBR()) {
+                        JFrame.setDefaultLookAndFeelDecorated(true);
+                        JDialog.setDefaultLookAndFeelDecorated(true);
+                    }
                     IntelliJTheme.install(App.class.getResourceAsStream(
                             "/theme/DarkPurple.theme.json"));
                     break;
                 case "IntelliJ Cyan":
+                    if (SystemUtil.isJBR()) {
+                        JFrame.setDefaultLookAndFeelDecorated(true);
+                        JDialog.setDefaultLookAndFeelDecorated(true);
+                    }
                     IntelliJTheme.install(App.class.getResourceAsStream(
                             "/theme/Cyan.theme.json"));
                     break;
                 case "IntelliJ Light":
+                    if (SystemUtil.isJBR()) {
+                        JFrame.setDefaultLookAndFeelDecorated(true);
+                        JDialog.setDefaultLookAndFeelDecorated(true);
+                    }
                     IntelliJTheme.install(App.class.getResourceAsStream(
                             "/theme/Light.theme.json"));
                     break;
 
                 default:
+                    if (SystemUtil.isJBR()) {
+                        JFrame.setDefaultLookAndFeelDecorated(true);
+                        JDialog.setDefaultLookAndFeelDecorated(true);
+                    }
                     UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarculaLaf");
             }
         } catch (Exception e) {
@@ -168,7 +202,7 @@ public class Init {
         ThreadUtil.execute(AboutForm::init);
         MessageTypeForm.init();
         ThreadUtil.execute(HelpForm::init);
-        ThreadUtil.execute(UserCaseForm::init);
+//        ThreadUtil.execute(UserCaseForm::init);
         ThreadUtil.execute(() -> MessageEditForm.init(null));
         ThreadUtil.execute(MessageManageForm::init);
         ThreadUtil.execute(MemberForm::init);
@@ -191,7 +225,7 @@ public class Init {
     /**
      * 引导用户调整字号
      */
-    public static void initFontSize() {
+    public static void fontSizeGuide() {
         if (StringUtils.isEmpty(App.config.getProps(FONT_SIZE_INIT_PROP))) {
             FontSizeAdjustDialog fontSizeAdjustDialog = new FontSizeAdjustDialog();
             fontSizeAdjustDialog.pack();

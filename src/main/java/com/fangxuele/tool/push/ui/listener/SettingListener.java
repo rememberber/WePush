@@ -23,7 +23,6 @@ import com.fangxuele.tool.push.ui.dialog.MailTestDialog;
 import com.fangxuele.tool.push.ui.dialog.SwitchWxAccountDialog;
 import com.fangxuele.tool.push.ui.dialog.SystemEnvResultDialog;
 import com.fangxuele.tool.push.ui.dialog.WxCpAppDialog;
-import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.ui.form.msg.DingMsgForm;
@@ -31,6 +30,7 @@ import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
 import com.fangxuele.tool.push.util.HikariUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
+import com.fangxuele.tool.push.util.SystemUtil;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.StringUtils;
 
@@ -80,6 +80,11 @@ public class SettingListener {
                 App.trayIcon = null;
                 App.tray = null;
             }
+        });
+        // 设置-常规-默认最大化窗口
+        settingForm.getDefaultMaxWindowCheckBox().addActionListener(e -> {
+            App.config.setDefaultMaxWindow(settingForm.getDefaultMaxWindowCheckBox().isSelected());
+            App.config.save();
         });
 
         // 设置-常规-最大线程数
@@ -603,15 +608,18 @@ public class SettingListener {
         // 外观-保存
         settingForm.getSettingAppearanceSaveButton().addActionListener(e -> {
             try {
-                App.config.setTheme(Objects.requireNonNull(settingForm.getSettingThemeComboBox().getSelectedItem()).toString());
+                if (!App.config.getTheme().equals(settingForm.getSettingThemeComboBox().getSelectedItem().toString())) {
+                    App.config.setTheme(Objects.requireNonNull(settingForm.getSettingThemeComboBox().getSelectedItem()).toString());
+                    Init.initTheme();
+                    for (Window window : Window.getWindows()) {
+                        SwingUtilities.updateComponentTreeUI(window);
+                    }
+                }
+                Init.initGlobalFont();
+
                 App.config.setFont(Objects.requireNonNull(settingForm.getSettingFontNameComboBox().getSelectedItem()).toString());
                 App.config.setFontSize(Integer.parseInt(Objects.requireNonNull(settingForm.getSettingFontSizeComboBox().getSelectedItem()).toString()));
                 App.config.save();
-
-                Init.initTheme();
-                Init.initGlobalFont();
-                SwingUtilities.updateComponentTreeUI(App.mainFrame);
-                SwingUtilities.updateComponentTreeUI(MainWindow.getInstance().getTabbedPane());
 
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！\n\n部分细节将在下次启动时生效！\n\n", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
@@ -626,7 +634,7 @@ public class SettingListener {
         settingForm.getShowLogButton().addActionListener(e -> {
             try {
                 Desktop desktop = Desktop.getDesktop();
-                desktop.open(new File(UiConsts.LOG_DIR));
+                desktop.open(new File(SystemUtil.LOG_DIR));
             } catch (Exception e2) {
                 logger.error("查看日志打开失败", e2);
             }

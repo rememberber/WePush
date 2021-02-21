@@ -129,6 +129,7 @@ public class SettingForm {
     private JButton systemEnvButton;
     private JTextField maxThreadsTextField;
     private JButton maxThreadsSaveButton;
+    private JCheckBox defaultMaxWindowCheckBox;
 
     private static SettingForm settingForm;
     private static TWxAccountMapper wxAccountMapper = MybatisUtil.getSqlSession().getMapper(TWxAccountMapper.class);
@@ -156,6 +157,7 @@ public class SettingForm {
         // 常规
         settingForm.getAutoCheckUpdateCheckBox().setSelected(App.config.isAutoCheckUpdate());
         settingForm.getUseTrayCheckBox().setSelected(App.config.isUseTray());
+        settingForm.getDefaultMaxWindowCheckBox().setSelected(App.config.isDefaultMaxWindow());
         settingForm.getMaxThreadsTextField().setText(String.valueOf(App.config.getMaxThreads()));
 
         // 微信公众号
@@ -389,7 +391,7 @@ public class SettingForm {
         panel3.setLayout(new GridLayoutManager(17, 1, new Insets(40, 60, 0, 330), -1, -1));
         panel2.add(panel3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(600, -1), null, 0, false));
         final JPanel panel4 = new JPanel();
-        panel4.setLayout(new GridLayoutManager(3, 1, new Insets(15, 15, 10, 0), -1, -1));
+        panel4.setLayout(new GridLayoutManager(4, 1, new Insets(15, 15, 10, 0), -1, -1));
         panel3.add(panel4, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         panel4.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "常规", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, panel4.getFont()), null));
         autoCheckUpdateCheckBox = new JCheckBox();
@@ -398,9 +400,12 @@ public class SettingForm {
         useTrayCheckBox = new JCheckBox();
         useTrayCheckBox.setText("显示系统托盘图标");
         panel4.add(useTrayCheckBox, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        defaultMaxWindowCheckBox = new JCheckBox();
+        defaultMaxWindowCheckBox.setText("默认最大化窗口");
+        panel4.add(defaultMaxWindowCheckBox, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel5 = new JPanel();
         panel5.setLayout(new GridLayoutManager(1, 4, new Insets(0, 0, 0, 0), -1, -1));
-        panel4.add(panel5, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel4.add(panel5, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
         label1.setText("最大线程数");
         panel5.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -930,13 +935,13 @@ public class SettingForm {
         panel35.add(label51, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         settingThemeComboBox = new JComboBox();
         final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
-        defaultComboBoxModel1.addElement("Darcula(推荐)");
+        defaultComboBoxModel1.addElement("Darcula");
         defaultComboBoxModel1.addElement("BeautyEye");
         defaultComboBoxModel1.addElement("系统默认");
         defaultComboBoxModel1.addElement("Flat Light");
         defaultComboBoxModel1.addElement("Flat IntelliJ");
         defaultComboBoxModel1.addElement("Flat Dark");
-        defaultComboBoxModel1.addElement("Flat Darcula");
+        defaultComboBoxModel1.addElement("Flat Darcula(推荐)");
         defaultComboBoxModel1.addElement("Dark purple");
         defaultComboBoxModel1.addElement("IntelliJ Cyan");
         defaultComboBoxModel1.addElement("IntelliJ Light");

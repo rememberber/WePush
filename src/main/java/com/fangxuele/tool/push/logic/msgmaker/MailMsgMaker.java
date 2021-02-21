@@ -5,6 +5,9 @@ import com.fangxuele.tool.push.ui.form.msg.MailMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import org.apache.velocity.VelocityContext;
 
+import java.io.File;
+import java.util.List;
+
 /**
  * <pre>
  * E-Mail加工器
@@ -17,7 +20,7 @@ public class MailMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
     public static String mailTitle;
     public static String mailCc;
-    public static String mailFiles;
+    public static List<File> mailFiles;
     public static String mailContent;
 
     /**
@@ -27,7 +30,7 @@ public class MailMsgMaker extends BaseMsgMaker implements IMsgMaker {
     public void prepare() {
         mailTitle = MailMsgForm.getInstance().getMailTitleTextField().getText();
         mailCc = MailMsgForm.getInstance().getMailCcTextField().getText();
-        mailFiles = MailMsgForm.getInstance().getMailFilesTextField().getText();
+        mailFiles = MailMsgForm.getInstance().getAttachmentFiles();
         mailContent = MailMsgForm.getInstance().getMailContentPane().getText();
     }
 
@@ -43,11 +46,10 @@ public class MailMsgMaker extends BaseMsgMaker implements IMsgMaker {
         VelocityContext velocityContext = getVelocityContext(msgData);
         String title = TemplateUtil.evaluate(mailTitle, velocityContext);
         String cc = TemplateUtil.evaluate(mailCc, velocityContext);
-        String files = TemplateUtil.evaluate(mailFiles, velocityContext);
         String content = TemplateUtil.evaluate(mailContent, velocityContext);
         mailMsg.setMailTitle(title);
         mailMsg.setMailCc(cc);
-        mailMsg.setMailFiles(files);
+        mailMsg.setMailFiles(mailFiles);
         mailMsg.setMailContent(content);
         return mailMsg;
     }

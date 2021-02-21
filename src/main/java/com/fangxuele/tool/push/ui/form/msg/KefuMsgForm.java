@@ -1,9 +1,13 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
+import cn.binarywang.wx.miniapp.constant.WxMaConstants;
+import cn.hutool.log.Log;
+import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TMsgKefuMapper;
 import com.fangxuele.tool.push.domain.TMsgKefu;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
@@ -12,13 +16,17 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import lombok.Getter;
+import me.chanjar.weixin.common.bean.result.WxMediaUploadResult;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.awt.event.ItemEvent;
+import java.io.File;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -52,7 +60,10 @@ public class KefuMsgForm implements IMsgForm {
     private JLabel kefuMsgPagepathLabel;
     private JTextField msgKefuThumbMediaIdTextField;
     private JLabel kefuMsgThumbMediaIdLabel;
+    private JButton uploadImageButton;
+    private JPanel thumbMediaPanel;
 
+    private static final Log logger = LogFactory.get();
     private static KefuMsgForm kefuMsgForm;
 
     private static TMsgKefuMapper msgKefuMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuMapper.class);
@@ -62,6 +73,24 @@ public class KefuMsgForm implements IMsgForm {
         msgKefuMsgTypeComboBox.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 switchKefuMsgType(e.getItem().toString());
+            }
+        });
+        uploadImageButton.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            FileFilter filter = new FileNameExtensionFilter("*.bmp,*.gif,*.jpeg,*.jpg,*.png", "bmp", "gif", "jpeg", "jpg", "png", "BMP", "GIF", "JPEG", "JPG", "PNG");
+            fileChooser.setFileFilter(filter);
+
+            int approve = fileChooser.showOpenDialog(MessageEditForm.getInstance().getMsgEditorPanel());
+            if (approve == JFileChooser.APPROVE_OPTION) {
+                try {
+                    File selectedFile = fileChooser.getSelectedFile();
+                    WxMediaUploadResult wxMediaUploadResult = WxMpTemplateMsgSender.getWxMpService().getMaterialService().mediaUpload(WxMaConstants.MediaType.IMAGE, selectedFile);
+                    msgKefuThumbMediaIdTextField.setText(wxMediaUploadResult.getMediaId());
+                } catch (Exception e1) {
+                    JOptionPane.showMessageDialog(kefuMsgPanel, "上传失败！\n\n" + e1.getMessage(), "失败",
+                            JOptionPane.ERROR_MESSAGE);
+                    logger.error(e1);
+                }
             }
         });
     }
@@ -185,7 +214,7 @@ public class KefuMsgForm implements IMsgForm {
         getInstance().getKefuMsgPagepathLabel().setVisible(false);
         getInstance().getMsgKefuPagepathTextField().setVisible(false);
         getInstance().getKefuMsgThumbMediaIdLabel().setVisible(false);
-        getInstance().getMsgKefuThumbMediaIdTextField().setVisible(false);
+        getInstance().getThumbMediaPanel().setVisible(false);
         switch (msgType) {
             case "文本消息":
                 getInstance().getContentLabel().setVisible(true);
@@ -209,7 +238,7 @@ public class KefuMsgForm implements IMsgForm {
                 getInstance().getKefuMsgPagepathLabel().setVisible(true);
                 getInstance().getMsgKefuPagepathTextField().setVisible(true);
                 getInstance().getKefuMsgThumbMediaIdLabel().setVisible(true);
-                getInstance().getMsgKefuThumbMediaIdTextField().setVisible(true);
+                getInstance().getThumbMediaPanel().setVisible(true);
                 break;
             default:
                 break;
@@ -297,13 +326,19 @@ public class KefuMsgForm implements IMsgForm {
         kefuMsgPanel.add(msgKefuAppidTextField, new GridConstraints(6, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         msgKefuPagepathTextField = new JTextField();
         kefuMsgPanel.add(msgKefuPagepathTextField, new GridConstraints(7, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        msgKefuThumbMediaIdTextField = new JTextField();
-        kefuMsgPanel.add(msgKefuThumbMediaIdTextField, new GridConstraints(8, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         contentLabel = new JLabel();
         contentLabel.setText("内容");
         kefuMsgPanel.add(contentLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_NORTHWEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         contentTextArea = new JTextArea();
         kefuMsgPanel.add(contentTextArea, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+        thumbMediaPanel = new JPanel();
+        thumbMediaPanel.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
+        kefuMsgPanel.add(thumbMediaPanel, new GridConstraints(8, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        msgKefuThumbMediaIdTextField = new JTextField();
+        thumbMediaPanel.add(msgKefuThumbMediaIdTextField, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        uploadImageButton = new JButton();
+        uploadImageButton.setText("上传图片");
+        thumbMediaPanel.add(uploadImageButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         kefuMsgTypeLabel.setLabelFor(msgKefuMsgTypeComboBox);
         kefuMsgTitleLabel.setLabelFor(msgKefuMsgTitleTextField);
         kefuMsgPicUrlLabel.setLabelFor(msgKefuPicUrlTextField);

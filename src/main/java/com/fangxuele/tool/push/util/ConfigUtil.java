@@ -60,6 +60,8 @@ public class ConfigUtil extends ConfigBaseUtil {
 
     private boolean useTray;
 
+    private boolean defaultMaxWindow;
+
     private Integer maxThreads;
 
     private long pushTotal;
@@ -380,6 +382,14 @@ public class ConfigUtil extends ConfigBaseUtil {
         setting.put("setting.normal", "useTray", String.valueOf(useTray));
     }
 
+    public boolean isDefaultMaxWindow() {
+        return setting.getBool("defaultMaxWindow", "setting.normal", true);
+    }
+
+    public void setDefaultMaxWindow(boolean defaultMaxWindow) {
+        setting.put("setting.normal", "defaultMaxWindow", String.valueOf(defaultMaxWindow));
+    }
+
     public Integer getMaxThreads() {
         return setting.getInt("maxThreads", "setting.normal", 100);
     }
@@ -661,7 +671,11 @@ public class ConfigUtil extends ConfigBaseUtil {
     }
 
     public String getFont() {
-        return setting.getStr("font", "setting.appearance", "微软雅黑");
+        if (SystemUtil.isLinuxOs()) {
+            return setting.getStr("font", "setting.appearance", "Noto Sans CJK HK");
+        } else {
+            return setting.getStr("font", "setting.appearance", "微软雅黑");
+        }
     }
 
     public void setFont(String font) {

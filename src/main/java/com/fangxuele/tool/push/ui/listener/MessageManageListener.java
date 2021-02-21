@@ -69,15 +69,13 @@ public class MessageManageListener {
         msgHistable.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                ThreadUtil.execute(() -> {
-                    PushHisForm.getInstance().getPushHisTextArea().setText("");
+                PushHisForm.getInstance().getPushHisTextArea().setText("");
 
-                    int selectedRow = msgHistable.getSelectedRow();
-                    String selectedMsgName = msgHistable
-                            .getValueAt(selectedRow, 0).toString();
+                int selectedRow = msgHistable.getSelectedRow();
+                String selectedMsgName = msgHistable
+                        .getValueAt(selectedRow, 0).toString();
 
-                    MessageEditForm.init(selectedMsgName);
-                });
+                MessageEditForm.init(selectedMsgName);
                 super.mousePressed(e);
             }
         });

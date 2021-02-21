@@ -1,6 +1,5 @@
 package com.fangxuele.tool.push.logic.msgsender;
 
-import cn.hutool.core.io.FileUtil;
 import cn.hutool.extra.mail.MailAccount;
 import cn.hutool.extra.mail.MailUtil;
 import com.fangxuele.tool.push.App;
@@ -8,6 +7,7 @@ import com.fangxuele.tool.push.bean.MailMsg;
 import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.msgmaker.MailMsgMaker;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -52,10 +52,10 @@ public class MailMsgSender implements IMsgSender {
                     ccList = Lists.newArrayList();
                     ccList.add(mailMsg.getMailCc());
                 }
-                if (StringUtils.isEmpty(mailMsg.getMailFiles())) {
+                if (CollectionUtils.isEmpty(mailMsg.getMailFiles())) {
                     MailUtil.send(mailAccount, tos, ccList, null, mailMsg.getMailTitle(), mailMsg.getMailContent(), true);
                 } else {
-                    MailUtil.send(mailAccount, tos, ccList, null, mailMsg.getMailTitle(), mailMsg.getMailContent(), true, FileUtil.file(mailMsg.getMailFiles()));
+                    MailUtil.send(mailAccount, tos, ccList, null, mailMsg.getMailTitle(), mailMsg.getMailContent(), true, mailMsg.getMailFiles().toArray(new File[0]));
                 }
                 sendResult.setSuccess(true);
             }

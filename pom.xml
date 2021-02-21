@@ -47,7 +47,7 @@
         <aliyun-java-sdk-dysmsapi.version>1.1.0</aliyun-java-sdk-dysmsapi.version>
         <bce-java-sdk.version>0.10.134</bce-java-sdk.version>
         <qiniu-java-sdk.version>7.3.0</qiniu-java-sdk.version>
-        <flatlaf.version>1.0-rc1</flatlaf.version>
+        <flatlaf.version>1.0</flatlaf.version>
     </properties>
 
     <dependencies>
@@ -386,6 +386,10 @@
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
                     <groupId>org.slf4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>hbase-client</artifactId>
+                    <groupId>org.apache.hbase</groupId>
                 </exclusion>
             </exclusions>
         </dependency>

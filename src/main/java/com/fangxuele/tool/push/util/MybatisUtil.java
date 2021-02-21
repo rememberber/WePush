@@ -34,7 +34,7 @@ public class MybatisUtil {
      */
     private static boolean needInit = false;
 
-    private static File dbFile = new File(SystemUtil.configHome + "WePush.db");
+    private static File dbFile = new File(SystemUtil.CONFIG_HOME + "WePush.db");
 
     static {
         try {
@@ -67,7 +67,7 @@ public class MybatisUtil {
      * 初始化数据库文件
      */
     public static void initDbFile() throws SQLException {
-        File configHomeDir = new File(SystemUtil.configHome);
+        File configHomeDir = new File(SystemUtil.CONFIG_HOME);
         if (!configHomeDir.exists()) {
             configHomeDir.mkdirs();
         }

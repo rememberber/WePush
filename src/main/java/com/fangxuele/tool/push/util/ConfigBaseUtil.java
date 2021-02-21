@@ -18,7 +18,7 @@ public class ConfigBaseUtil {
     /**
      * 设置文件路径
      */
-    private String settingFilePath = SystemUtil.configHome + "config" + File.separator + "config.setting";
+    private String settingFilePath = SystemUtil.CONFIG_HOME + "config" + File.separator + "config.setting";
 
     Setting setting;
 

@@ -10,6 +10,7 @@ import com.fangxuele.tool.push.util.SqliteUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,29 +36,30 @@ public class MailMsgForm implements IMsgForm {
 
     private JPanel mailPanel;
     private JTextField mailTitleTextField;
-    private JTextField mailFilesTextField;
     private JEditorPane mailContentPane;
     private JButton fileExploreButton;
     private JLabel uEditorLabel;
     private JTextField mailCcTextField;
+    private JTextArea mailFilesTextArea;
 
     private static MailMsgForm mailMsgForm;
     private static TMsgMailMapper msgMailMapper = MybatisUtil.getSqlSession().getMapper(TMsgMailMapper.class);
 
     public MailMsgForm() {
         fileExploreButton.addActionListener(e -> {
-            File beforeFile = new File(mailFilesTextField.getText());
             JFileChooser fileChooser;
 
-            if (beforeFile.exists()) {
-                fileChooser = new JFileChooser(beforeFile);
+            if (getAttachmentFiles().size() > 0 && getAttachmentFiles().get(0).exists()) {
+                fileChooser = new JFileChooser(getAttachmentFiles().get(0));
             } else {
                 fileChooser = new JFileChooser();
             }
 
+            fileChooser.setMultiSelectionEnabled(true);
+
             int approve = fileChooser.showOpenDialog(MessageEditForm.getInstance().getMsgEditorPanel());
             if (approve == JFileChooser.APPROVE_OPTION) {
-                mailFilesTextField.setText(fileChooser.getSelectedFile().getAbsolutePath());
+                appendAttachmentFilePath(fileChooser);
             }
         });
         uEditorLabel.addMouseListener(new MouseAdapter() {
@@ -64,7 +67,7 @@ public class MailMsgForm implements IMsgForm {
             public void mousePressed(MouseEvent e) {
                 Desktop desktop = Desktop.getDesktop();
                 try {
-                    desktop.browse(new URI("https://ueditor.baidu.com/website/onlinedemo.html"));
+                    desktop.browse(new URI("http://kindeditor.net/demo.php"));
                 } catch (IOException | URISyntaxException e1) {
                     e1.printStackTrace();
                 }
@@ -87,7 +90,7 @@ public class MailMsgForm implements IMsgForm {
             TMsgMail tMsgMail = tMsgMailList.get(0);
             getInstance().getMailTitleTextField().setText(tMsgMail.getTitle());
             getInstance().getMailCcTextField().setText(tMsgMail.getCc());
-            getInstance().getMailFilesTextField().setText(tMsgMail.getFiles());
+            getInstance().getMailFilesTextArea().setText(tMsgMail.getFiles());
             getInstance().getMailContentPane().setText(tMsgMail.getContent());
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
@@ -114,7 +117,7 @@ public class MailMsgForm implements IMsgForm {
         if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
             String mailTitle = getInstance().getMailTitleTextField().getText();
             String mailCc = getInstance().getMailCcTextField().getText();
-            String mailFiles = getInstance().getMailFilesTextField().getText();
+            String mailFiles = getInstance().getMailFilesTextArea().getText();
             String mailContent = getInstance().getMailContentPane().getText();
 
             String now = SqliteUtil.nowDateForSqlite();
@@ -143,6 +146,39 @@ public class MailMsgForm implements IMsgForm {
         }
     }
 
+    /**
+     * 获取附件文件数组
+     *
+     * @return
+     */
+    public List<File> getAttachmentFiles() {
+        List<File> files = new ArrayList<>();
+        String text = mailFilesTextArea.getText();
+        String[] strings = text.split("\\n");
+        for (String string : strings) {
+            string = string.trim();
+            if (StringUtils.isNotEmpty(string)) {
+                files.add(new File(string));
+            }
+        }
+        return files;
+    }
+
+    /**
+     * 添加附件文件路径到附件文本域
+     *
+     * @param fileChooser
+     */
+    public void appendAttachmentFilePath(JFileChooser fileChooser) {
+        File[] selectedFiles = fileChooser.getSelectedFiles();
+        for (File selectedFile : selectedFiles) {
+            if (StringUtils.isNotBlank(mailFilesTextArea.getText())) {
+                mailFilesTextArea.append("\n");
+            }
+            mailFilesTextArea.append(selectedFile.getAbsolutePath());
+        }
+    }
+
     public static MailMsgForm getInstance() {
         if (mailMsgForm == null) {
             mailMsgForm = new MailMsgForm();
@@ -156,7 +192,7 @@ public class MailMsgForm implements IMsgForm {
     public static void clearAllField() {
         getInstance().getMailTitleTextField().setText("");
         getInstance().getMailCcTextField().setText("");
-        getInstance().getMailFilesTextField().setText("");
+        getInstance().getMailFilesTextArea().setText("");
         getInstance().getMailContentPane().setText("");
     }
 
@@ -195,19 +231,21 @@ public class MailMsgForm implements IMsgForm {
         label3.setText("邮件正文(HTML)");
         mailPanel.add(label3, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         uEditorLabel = new JLabel();
-        uEditorLabel.setText("<html><a href=\"https://ueditor.baidu.com/website/onlinedemo.html\">使用UEditor编辑HTML</a></html>");
+        uEditorLabel.setText("<html><a href=\"http://kindeditor.net/demo.php\">使用KindEditor编辑HTML</a></html>");
         mailPanel.add(uEditorLabel, new GridConstraints(3, 1, 1, 2, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         fileExploreButton = new JButton();
         fileExploreButton.setHorizontalAlignment(0);
-        fileExploreButton.setText("浏览");
+        fileExploreButton.setText("添加附件");
         mailPanel.add(fileExploreButton, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, 1, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        mailFilesTextField = new JTextField();
-        mailPanel.add(mailFilesTextField, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         mailCcTextField = new JTextField();
         mailPanel.add(mailCcTextField, new GridConstraints(1, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         final JLabel label4 = new JLabel();
         label4.setText("抄送");
         mailPanel.add(label4, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JScrollPane scrollPane1 = new JScrollPane();
+        mailPanel.add(scrollPane1, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(-1, 60), null, 0, false));
+        mailFilesTextArea = new JTextArea();
+        scrollPane1.setViewportView(mailFilesTextArea);
     }
 
     /**

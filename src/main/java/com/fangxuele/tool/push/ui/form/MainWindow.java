@@ -30,7 +30,6 @@ public class MainWindow {
     private JPanel settingPanel;
     private JPanel schedulePanel;
     private JPanel pushHisPanel;
-    private JPanel userCasePanel;
     private JPanel messageEditPanel;
     private JPanel messageManagePanel;
     private JPanel messageTypePanel;
@@ -49,23 +48,23 @@ public class MainWindow {
         return mainWindow;
     }
 
-    private static GridConstraints gridConstraints = new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false);
+    private static final GridConstraints GRID_CONSTRAINTS = new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false);
 
     public void init() {
         mainWindow = getInstance();
         mainWindow.getMainPanel().updateUI();
-        mainWindow.getAboutPanel().add(AboutForm.getInstance().getAboutPanel(), gridConstraints);
-        mainWindow.getUserCasePanel().add(UserCaseForm.getInstance().getUserCasePanel(), gridConstraints);
-        mainWindow.getSchedulePanel().add(ScheduleForm.getInstance().getSchedulePanel(), gridConstraints);
-        mainWindow.getPushHisPanel().add(PushHisForm.getInstance().getPushHisPanel(), gridConstraints);
-        mainWindow.getSettingPanel().add(SettingForm.getInstance().getSettingPanel(), gridConstraints);
-        mainWindow.getMessageEditPanel().add(MessageEditForm.getInstance().getMessageEditPanel(), gridConstraints);
-        mainWindow.getMessageManagePanel().add(MessageManageForm.getInstance().getMessageManagePanel(), gridConstraints);
-        mainWindow.getMemberPanel().add(MemberForm.getInstance().getMemberPanel(), gridConstraints);
-        mainWindow.getPushPanel().add(PushForm.getInstance().getPushPanel(), gridConstraints);
-        mainWindow.getMessageTypePanel().add(MessageTypeForm.getInstance().getMessageTypePanel(), gridConstraints);
-        mainWindow.getBoostPanel().add(BoostForm.getInstance().getBoostPanel(), gridConstraints);
-        mainWindow.getInfinityPanel().add(InfinityForm.getInstance().getInfinityPanel(), gridConstraints);
+        mainWindow.getAboutPanel().add(AboutForm.getInstance().getAboutPanel(), GRID_CONSTRAINTS);
+//        mainWindow.getUserCasePanel().add(UserCaseForm.getInstance().getUserCasePanel(), GRID_CONSTRAINTS);
+        mainWindow.getSchedulePanel().add(ScheduleForm.getInstance().getSchedulePanel(), GRID_CONSTRAINTS);
+        mainWindow.getPushHisPanel().add(PushHisForm.getInstance().getPushHisPanel(), GRID_CONSTRAINTS);
+        mainWindow.getSettingPanel().add(SettingForm.getInstance().getSettingPanel(), GRID_CONSTRAINTS);
+        mainWindow.getMessageEditPanel().add(MessageEditForm.getInstance().getMessageEditPanel(), GRID_CONSTRAINTS);
+        mainWindow.getMessageManagePanel().add(MessageManageForm.getInstance().getMessageManagePanel(), GRID_CONSTRAINTS);
+        mainWindow.getMemberPanel().add(MemberForm.getInstance().getMemberPanel(), GRID_CONSTRAINTS);
+        mainWindow.getPushPanel().add(PushForm.getInstance().getPushPanel(), GRID_CONSTRAINTS);
+        mainWindow.getMessageTypePanel().add(MessageTypeForm.getInstance().getMessageTypePanel(), GRID_CONSTRAINTS);
+        mainWindow.getBoostPanel().add(BoostForm.getInstance().getBoostPanel(), GRID_CONSTRAINTS);
+        mainWindow.getInfinityPanel().add(InfinityForm.getInstance().getInfinityPanel(), GRID_CONSTRAINTS);
         mainWindow.getMessagePanel().setDividerLocation((int) (App.mainFrame.getWidth() / 5.6));
         mainWindow.getMainPanel().updateUI();
     }
@@ -150,10 +149,6 @@ public class MainWindow {
         if (settingPanelFont != null) settingPanel.setFont(settingPanelFont);
         settingPanel.setMinimumSize(new Dimension(-1, -1));
         tabbedPane.addTab("设置", settingPanel);
-        userCasePanel = new JPanel();
-        userCasePanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 10, 0), -1, -1));
-        userCasePanel.setMinimumSize(new Dimension(-1, -1));
-        tabbedPane.addTab("他们都在用", userCasePanel);
     }
 
     /**
