@@ -8,6 +8,7 @@ import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.VersionSummary;
 import com.fangxuele.tool.push.dao.TWxAccountMapper;
 import com.fangxuele.tool.push.domain.TWxAccount;
+import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.UpdateInfoDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
@@ -216,6 +217,12 @@ public class UpgradeUtil {
                     App.config.save();
                 }
                 break;
+            case 46:
+            case 47:
+            case 48:
+                if(SystemUtil.isJBR()){
+                    App.config.setProps(Init.FONT_SIZE_INIT_PROP,"");
+                }
             default:
         }
         log.info("执行升级脚本结束，版本索引：{}", versionIndex);

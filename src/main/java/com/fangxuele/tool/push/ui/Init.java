@@ -52,7 +52,7 @@ public class Init {
     /**
      * 字号初始化KEY
      */
-    private static final String FONT_SIZE_INIT_PROP = "fontSizeInit";
+    public static final String FONT_SIZE_INIT_PROP = "fontSizeInit";
 
     /**
      * 设置全局字体
@@ -73,6 +73,7 @@ public class Init {
                 fontSize = (int) (UIUtil.getScreenScale() * fontSize);
             }
             App.config.setFontSize(fontSize);
+            App.config.save();
         }
 
         Font font = new Font(App.config.getFont(), Font.PLAIN, App.config.getFontSize());
