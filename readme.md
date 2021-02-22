@@ -179,7 +179,7 @@ https://gitee.com/zhoubochina/WePush/wikis/help
 QQ交流群：
 <p align="left">
   <a href="https://gitee.com/zhoubochina/WePush/wikis/help">
-   <img alt="WePush" src="http://download.zhoubochina.com/file/wepush-qq-group.png" height="200" >
+   <img alt="WePush" src="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/wepush-qq-group.png" height="200" >
   </a>
 </p>
 
@@ -189,6 +189,6 @@ QQ交流群：
 您的赞赏将会给我带来更多动力**
 <p align="left">
   <a href="https://gitee.com/zhoubochina/WePush">
-   <img alt="WePush" src="http://download.zhoubochina.com/file/wx-zanshang.jpg">
+   <img alt="WePush" src="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/wx-zanshang.jpg">
   </a>
 </p>
