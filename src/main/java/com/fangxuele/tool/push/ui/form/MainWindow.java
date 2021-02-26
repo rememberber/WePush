@@ -101,6 +101,9 @@ public class MainWindow {
         messageTypePanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         messageTypePanel.setMinimumSize(new Dimension(-1, -1));
         tabbedPane.addTab("①选择消息类型", messageTypePanel);
+        final JPanel panel1 = new JPanel();
+        panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        tabbedPane.addTab("设置账户", panel1);
         messagePanel = new JSplitPane();
         messagePanel.setContinuousLayout(true);
         messagePanel.setDividerLocation(250);
@@ -121,6 +124,9 @@ public class MainWindow {
         messageManagePanel.setMinimumSize(new Dimension(-1, -1));
         messageManagePanel.setPreferredSize(new Dimension(280, -1));
         messagePanel.setLeftComponent(messageManagePanel);
+        final JPanel panel2 = new JPanel();
+        panel2.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        tabbedPane.addTab("准备目标人群", panel2);
         memberPanel = new JPanel();
         memberPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         memberPanel.setMinimumSize(new Dimension(-1, -1));
