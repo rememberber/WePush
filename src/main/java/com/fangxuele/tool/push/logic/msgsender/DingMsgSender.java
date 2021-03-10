@@ -10,7 +10,7 @@ import com.dingtalk.api.request.OapiRobotSendRequest;
 import com.dingtalk.api.response.OapiGettokenResponse;
 import com.dingtalk.api.response.OapiMessageCorpconversationAsyncsendV2Response;
 import com.dingtalk.api.response.OapiRobotSendResponse;
-import com.fangxuele.tool.push.bean.DingMsg;
+import com.fangxuele.tool.push.bean.msg.DingMsg;
 import com.fangxuele.tool.push.dao.TDingAppMapper;
 import com.fangxuele.tool.push.domain.TDingApp;
 import com.fangxuele.tool.push.logic.PushControl;

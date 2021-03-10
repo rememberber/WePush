@@ -3,7 +3,7 @@ package com.fangxuele.tool.push.logic.msgsender;
 import cn.hutool.extra.mail.MailAccount;
 import cn.hutool.extra.mail.MailUtil;
 import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.bean.MailMsg;
+import com.fangxuele.tool.push.bean.msg.MailMsg;
 import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.msgmaker.MailMsgMaker;
 import lombok.extern.slf4j.Slf4j;

@@ -1,6 +1,6 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
-import com.fangxuele.tool.push.bean.MailMsg;
+import com.fangxuele.tool.push.bean.msg.MailMsg;
 import com.fangxuele.tool.push.ui.form.msg.MailMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import org.apache.velocity.VelocityContext;

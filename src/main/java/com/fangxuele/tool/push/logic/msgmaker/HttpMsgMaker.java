@@ -1,6 +1,6 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
-import com.fangxuele.tool.push.bean.HttpMsg;
+import com.fangxuele.tool.push.bean.msg.HttpMsg;
 import com.fangxuele.tool.push.ui.form.msg.HttpMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import com.google.common.collect.Lists;

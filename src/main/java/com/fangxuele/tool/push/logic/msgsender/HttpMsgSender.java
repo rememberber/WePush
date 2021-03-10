@@ -7,7 +7,7 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONUtil;
 import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.bean.HttpMsg;
+import com.fangxuele.tool.push.bean.msg.HttpMsg;
 import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.msgmaker.HttpMsgMaker;

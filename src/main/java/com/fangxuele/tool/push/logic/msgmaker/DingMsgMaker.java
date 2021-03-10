@@ -1,6 +1,6 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
-import com.fangxuele.tool.push.bean.DingMsg;
+import com.fangxuele.tool.push.bean.msg.DingMsg;
 import com.fangxuele.tool.push.logic.msgsender.DingMsgSender;
 import com.fangxuele.tool.push.ui.form.msg.DingMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;

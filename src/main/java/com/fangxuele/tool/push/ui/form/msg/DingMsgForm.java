@@ -1,7 +1,7 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
 import cn.hutool.json.JSONUtil;
-import com.fangxuele.tool.push.bean.DingMsg;
+import com.fangxuele.tool.push.bean.msg.DingMsg;
 import com.fangxuele.tool.push.dao.TDingAppMapper;
 import com.fangxuele.tool.push.dao.TMsgDingMapper;
 import com.fangxuele.tool.push.domain.TDingApp;

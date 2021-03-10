@@ -1,4 +1,4 @@
-package com.fangxuele.tool.push.bean;
+package com.fangxuele.tool.push.bean.msg;
 
 import lombok.Getter;
 import lombok.Setter;
