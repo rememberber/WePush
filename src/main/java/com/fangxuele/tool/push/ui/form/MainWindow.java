@@ -35,7 +35,12 @@ public class MainWindow {
     private JPanel messageTypePanel;
     private JPanel boostPanel;
     private JPanel infinityPanel;
-    private JPanel accountPanel;
+    private JSplitPane accountPanel;
+    private JPanel accountManagePanel;
+    private JPanel accountEditPanel;
+    private JSplitPane peoplePanel;
+    private JPanel peopleManagePanel;
+    private JPanel peopleEditPanel;
 
     private static MainWindow mainWindow;
 
@@ -55,7 +60,8 @@ public class MainWindow {
         mainWindow = getInstance();
         mainWindow.getMainPanel().updateUI();
         mainWindow.getAboutPanel().add(AboutForm.getInstance().getAboutPanel(), GRID_CONSTRAINTS);
-        mainWindow.getAccountPanel().add(AccountForm.getInstance().getAccountPanel(), GRID_CONSTRAINTS);
+        mainWindow.getAccountPanel().setDividerLocation((int) (App.mainFrame.getWidth() / 5.6));
+        mainWindow.getPeoplePanel().setDividerLocation((int) (App.mainFrame.getWidth() / 5.6));
 //        mainWindow.getUserCasePanel().add(UserCaseForm.getInstance().getUserCasePanel(), GRID_CONSTRAINTS);
         mainWindow.getSchedulePanel().add(ScheduleForm.getInstance().getSchedulePanel(), GRID_CONSTRAINTS);
         mainWindow.getPushHisPanel().add(PushHisForm.getInstance().getPushHisPanel(), GRID_CONSTRAINTS);
@@ -103,9 +109,16 @@ public class MainWindow {
         messageTypePanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         messageTypePanel.setMinimumSize(new Dimension(-1, -1));
         tabbedPane.addTab("①选择消息类型", messageTypePanel);
-        accountPanel = new JPanel();
-        accountPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        accountPanel = new JSplitPane();
+        accountPanel.setContinuousLayout(true);
+        accountPanel.setDividerLocation(250);
         tabbedPane.addTab("设置账号", accountPanel);
+        accountManagePanel = new JPanel();
+        accountManagePanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        accountPanel.setLeftComponent(accountManagePanel);
+        accountEditPanel = new JPanel();
+        accountEditPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        accountPanel.setRightComponent(accountEditPanel);
         messagePanel = new JSplitPane();
         messagePanel.setContinuousLayout(true);
         messagePanel.setDividerLocation(250);
@@ -126,9 +139,16 @@ public class MainWindow {
         messageManagePanel.setMinimumSize(new Dimension(-1, -1));
         messageManagePanel.setPreferredSize(new Dimension(280, -1));
         messagePanel.setLeftComponent(messageManagePanel);
-        final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        tabbedPane.addTab("准备目标人群", panel1);
+        peoplePanel = new JSplitPane();
+        peoplePanel.setContinuousLayout(true);
+        peoplePanel.setDividerLocation(250);
+        tabbedPane.addTab("准备目标人群", peoplePanel);
+        peopleManagePanel = new JPanel();
+        peopleManagePanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        peoplePanel.setLeftComponent(peopleManagePanel);
+        peopleEditPanel = new JPanel();
+        peopleEditPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        peoplePanel.setRightComponent(peopleEditPanel);
         memberPanel = new JPanel();
         memberPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         memberPanel.setMinimumSize(new Dimension(-1, -1));
