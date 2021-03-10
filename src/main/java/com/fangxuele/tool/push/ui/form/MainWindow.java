@@ -62,6 +62,8 @@ public class MainWindow {
         mainWindow.getAboutPanel().add(AboutForm.getInstance().getAboutPanel(), GRID_CONSTRAINTS);
         mainWindow.getAccountPanel().setDividerLocation((int) (App.mainFrame.getWidth() / 5.6));
         mainWindow.getPeoplePanel().setDividerLocation((int) (App.mainFrame.getWidth() / 5.6));
+        mainWindow.getAccountManagePanel().add(AccountManageForm.getInstance().getAccountManagePanel(), GRID_CONSTRAINTS);
+        mainWindow.getAccountEditPanel().add(AccountEditForm.getInstance().getAccountEditPanel(), GRID_CONSTRAINTS);
 //        mainWindow.getUserCasePanel().add(UserCaseForm.getInstance().getUserCasePanel(), GRID_CONSTRAINTS);
         mainWindow.getSchedulePanel().add(ScheduleForm.getInstance().getSchedulePanel(), GRID_CONSTRAINTS);
         mainWindow.getPushHisPanel().add(PushHisForm.getInstance().getPushHisPanel(), GRID_CONSTRAINTS);
