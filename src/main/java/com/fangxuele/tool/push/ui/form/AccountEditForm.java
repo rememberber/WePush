@@ -1,6 +1,7 @@
 package com.fangxuele.tool.push.ui.form;
 
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.ui.form.account.AccountFormFactory;
 import com.fangxuele.tool.push.ui.form.msg.*;
 import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -31,100 +32,37 @@ public class AccountEditForm {
     private JPanel accountEditorPanel;
     private JScrollPane accountEditScrollPane;
 
-    private static AccountEditForm messageEditForm;
+    private static AccountEditForm accountEditForm;
 
     private AccountEditForm() {
         UndoUtil.register(this);
     }
 
     public static AccountEditForm getInstance() {
-        if (messageEditForm == null) {
-            messageEditForm = new AccountEditForm();
+        if (accountEditForm == null) {
+            accountEditForm = new AccountEditForm();
         }
-        return messageEditForm;
+        return accountEditForm;
     }
 
     /**
      * 初始化消息tab
      */
     public static void init(String selectedMsgName) {
-        messageEditForm = getInstance();
+        accountEditForm = getInstance();
         // 设置滚动条速度
-        messageEditForm.getAccountEditScrollPane().getVerticalScrollBar().setUnitIncrement(15);
-        messageEditForm.getAccountEditScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
+        accountEditForm.getAccountEditScrollPane().getVerticalScrollBar().setUnitIncrement(15);
+        accountEditForm.getAccountEditScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
 
         MsgFormFactory.getMsgForm().init(selectedMsgName);
     }
 
-    /**
-     * 根据消息类型转换界面显示
-     *
-     * @param msgType
-     */
-    public static void switchMsgType(int msgType) {
-        messageEditForm = getInstance();
-        messageEditForm.getAccountEditorPanel().removeAll();
+    public static void switchMainPanel() {
+        accountEditForm = getInstance();
+        accountEditForm.getAccountEditorPanel().removeAll();
         GridConstraints gridConstraintsRow0 = new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false);
-        GridConstraints gridConstraintsRow1 = new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false);
+        accountEditForm.getAccountEditorPanel().add(AccountFormFactory.getAccountMainPanelAndInit(null), gridConstraintsRow0);
 
-        MsgFormFactory.getMsgForm().init(null);
-        switch (msgType) {
-            case MessageTypeEnum.MP_TEMPLATE_CODE:
-                messageEditForm.getAccountEditorPanel().add(MpTemplateMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
-                break;
-            case MessageTypeEnum.MA_TEMPLATE_CODE:
-            case MessageTypeEnum.MA_SUBSCRIBE_CODE:
-                messageEditForm.getAccountEditorPanel().add(MaSubscribeMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
-                break;
-            case MessageTypeEnum.KEFU_CODE:
-                messageEditForm.getAccountEditorPanel().add(KefuMsgForm.getInstance().getKefuMsgPanel(), gridConstraintsRow0);
-                break;
-            case MessageTypeEnum.KEFU_PRIORITY_CODE:
-                messageEditForm.getAccountEditorPanel().setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
-                messageEditForm.getAccountEditorPanel().add(KefuMsgForm.getInstance().getKefuMsgPanel(), gridConstraintsRow0);
-                messageEditForm.getAccountEditorPanel().add(MpTemplateMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow1);
-                break;
-            case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE:
-                messageEditForm.getAccountEditorPanel().setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
-                messageEditForm.getAccountEditorPanel().add(MaSubscribeMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
-                messageEditForm.getAccountEditorPanel().add(MpTemplateMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow1);
-                break;
-            case MessageTypeEnum.ALI_YUN_CODE:
-                messageEditForm.getAccountEditorPanel().add(AliYunMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
-                break;
-            case MessageTypeEnum.TX_YUN_CODE:
-                messageEditForm.getAccountEditorPanel().add(TxYunMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
-                break;
-            case MessageTypeEnum.QI_NIU_YUN_CODE:
-                messageEditForm.getAccountEditorPanel().add(QiNiuYunMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
-                break;
-            case MessageTypeEnum.UP_YUN_CODE:
-                messageEditForm.getAccountEditorPanel().add(UpYunMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
-                break;
-            case MessageTypeEnum.HW_YUN_CODE:
-                messageEditForm.getAccountEditorPanel().add(HwYunMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
-                break;
-            case MessageTypeEnum.YUN_PIAN_CODE:
-                messageEditForm.getAccountEditorPanel().add(YunpianMsgForm.getInstance().getYunpianMsgPanel(), gridConstraintsRow0);
-                break;
-            case MessageTypeEnum.EMAIL_CODE:
-                messageEditForm.getAccountEditorPanel().add(MailMsgForm.getInstance().getMailPanel(), gridConstraintsRow0);
-                break;
-            case MessageTypeEnum.WX_CP_CODE:
-                messageEditForm.getAccountEditorPanel().add(WxCpMsgForm.getInstance().getWxCpMsgPanel(), gridConstraintsRow0);
-                break;
-            case MessageTypeEnum.HTTP_CODE:
-                messageEditForm.getAccountEditorPanel().add(HttpMsgForm.getInstance().getHttpPanel(), gridConstraintsRow0);
-                break;
-            case MessageTypeEnum.DING_CODE:
-                messageEditForm.getAccountEditorPanel().add(DingMsgForm.getInstance().getDingMsgPanel(), gridConstraintsRow0);
-                break;
-            case MessageTypeEnum.BD_YUN_CODE:
-                messageEditForm.getAccountEditorPanel().add(BdYunMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
-                break;
-            default:
-                break;
-        }
     }
 
     {
@@ -174,7 +112,7 @@ public class AccountEditForm {
         accountEditScrollPane = new JScrollPane();
         accountEditPanel.add(accountEditScrollPane, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         accountEditorPanel = new JPanel();
-        accountEditorPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1, true, false));
+        accountEditorPanel.setLayout(new GridLayoutManager(1, 1, new Insets(5, 5, 0, 5), -1, -1, true, false));
         accountEditScrollPane.setViewportView(accountEditorPanel);
         accountNameLabel.setLabelFor(accountNameField);
     }

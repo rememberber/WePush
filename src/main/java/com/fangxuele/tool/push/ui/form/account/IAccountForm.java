@@ -1,5 +1,7 @@
 package com.fangxuele.tool.push.ui.form.account;
 
+import javax.swing.*;
+
 /**
  * <pre>
  * 账号编辑form界面接口
@@ -22,4 +24,12 @@ public interface IAccountForm {
      * @param accountName
      */
     void save(String accountName);
+
+    /**
+     * 获取主面板
+     *
+     * @return
+     */
+    JPanel getMainPanel();
+
 }

@@ -126,6 +126,7 @@ public class MessageTypeForm {
 
             default:
         }
+        AccountEditForm.switchMainPanel();
         initMessageManageFormLayOut(msgType);
         initMessageEditFormLayOut(msgType);
         initMemberFormLayOut(msgType);
