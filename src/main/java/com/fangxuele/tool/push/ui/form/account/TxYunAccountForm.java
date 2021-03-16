@@ -13,10 +13,6 @@ public class TxYunAccountForm implements IAccountForm {
     private JTextField txyunSignTextField;
     private JPasswordField txyunAppKeyTextField;
     private JTextField txyunAppIdTextField;
-    private JTextField appSecretTextField;
-    private JTextField appNameTextField;
-    private JTextField agentIdTextField;
-    private JTextField appKeyTextField;
 
     private static TxYunAccountForm wxMpAccountForm;
 

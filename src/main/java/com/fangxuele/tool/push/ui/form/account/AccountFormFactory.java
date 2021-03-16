@@ -26,34 +26,49 @@ public class AccountFormFactory {
                 iAccountForm = WxMpAccountForm.getInstance();
                 break;
             case MessageTypeEnum.MA_SUBSCRIBE_CODE:
+                iAccountForm = WxMaAccountForm.getInstance();
                 break;
             case MessageTypeEnum.KEFU_CODE:
+                iAccountForm = WxMpAccountForm.getInstance();
                 break;
             case MessageTypeEnum.KEFU_PRIORITY_CODE:
+                iAccountForm = WxMpAccountForm.getInstance();
                 break;
             case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE:
+                iAccountForm = WxMaAccountForm.getInstance();
                 break;
             case MessageTypeEnum.ALI_YUN_CODE:
+                iAccountForm = AliYunAccountForm.getInstance();
                 break;
             case MessageTypeEnum.TX_YUN_CODE:
+                iAccountForm = TxYunAccountForm.getInstance();
                 break;
             case MessageTypeEnum.HW_YUN_CODE:
+                iAccountForm = HwYunAccountForm.getInstance();
                 break;
             case MessageTypeEnum.YUN_PIAN_CODE:
+                iAccountForm = YunPianAccountForm.getInstance();
                 break;
             case MessageTypeEnum.EMAIL_CODE:
+                iAccountForm = EmailAccountForm.getInstance();
                 break;
             case MessageTypeEnum.WX_CP_CODE:
+                iAccountForm = WxCpAccountForm.getInstance();
                 break;
             case MessageTypeEnum.HTTP_CODE:
+                iAccountForm = HttpAccountForm.getInstance();
                 break;
             case MessageTypeEnum.DING_CODE:
+                iAccountForm = DingAccountForm.getInstance();
                 break;
             case MessageTypeEnum.BD_YUN_CODE:
+                iAccountForm = BdYunAccountForm.getInstance();
                 break;
             case MessageTypeEnum.UP_YUN_CODE:
+                iAccountForm = UpYunAccountForm.getInstance();
                 break;
             case MessageTypeEnum.QI_NIU_YUN_CODE:
+                iAccountForm = QiniuYunAccountForm.getInstance();
                 break;
             default:
                 break;
