@@ -57,7 +57,9 @@ public class UIUtil {
      */
     public static boolean isDarkLaf() {
         return "Darcula".equals(App.config.getTheme())
+                || "Darcula(推荐)".equals(App.config.getTheme())
                 || "Flat Dark".equals(App.config.getTheme())
+                || "Flat Darcula".equals(App.config.getTheme())
                 || "Flat Darcula(推荐)".equals(App.config.getTheme());
     }
 }
