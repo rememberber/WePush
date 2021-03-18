@@ -121,4 +121,11 @@
         from t_account
         where msg_type = #{msgType,jdbcType=INTEGER}
     </select>
+
+    <delete id="deleteByMsgTypeAndName">
+        delete
+        from t_account
+        where msg_type = #{msgType,jdbcType=INTEGER}
+        and account_name = #{accountName,jdbcType=VARCHAR}
+    </delete>
 </mapper>
