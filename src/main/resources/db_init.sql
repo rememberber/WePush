@@ -292,3 +292,15 @@ create table if not exists t_msg_ma_subscribe
 create unique index if not exists t_msg_ma_subscribe_msg_type_msg_name_uindex
     on t_msg_ma_subscribe (msg_type, msg_name);
 
+create table if not exists t_account
+(
+    id            integer
+        constraint t_account_pk
+            primary key autoincrement,
+    msg_type  text,
+    account_name  text,
+    account_config       text,
+    remark       text,
+    create_time   datetime,
+    modified_time datetime
+);

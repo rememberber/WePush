@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fangxuele.tool.push.dao.TAccountMapper">
+    <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TAccount">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="msg_type" jdbcType="VARCHAR" property="msgType"/>
+        <result column="account_name" jdbcType="VARCHAR" property="accountName"/>
+        <result column="account_config" jdbcType="VARCHAR" property="accountConfig"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
+        <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, msg_type, account_name, account_config, remark, create_time, modified_time
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_account
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from t_account
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TAccount">
+        insert into t_account (id, msg_type, account_name,
+        account_config, remark, create_time,
+        modified_time)
+        values (#{id,jdbcType=INTEGER}, #{msgType,jdbcType=VARCHAR}, #{accountName,jdbcType=VARCHAR},
+        #{accountConfig,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR},
+        #{modifiedTime,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TAccount">
+        insert into t_account
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="msgType != null">
+                msg_type,
+            </if>
+            <if test="accountName != null">
+                account_name,
+            </if>
+            <if test="accountConfig != null">
+                account_config,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="modifiedTime != null">
+                modified_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="msgType != null">
+                #{msgType,jdbcType=VARCHAR},
+            </if>
+            <if test="accountName != null">
+                #{accountName,jdbcType=VARCHAR},
+            </if>
+            <if test="accountConfig != null">
+                #{accountConfig,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=VARCHAR},
+            </if>
+            <if test="modifiedTime != null">
+                #{modifiedTime,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.fangxuele.tool.push.domain.TAccount">
+        update t_account
+        <set>
+            <if test="msgType != null">
+                msg_type = #{msgType,jdbcType=VARCHAR},
+            </if>
+            <if test="accountName != null">
+                account_name = #{accountName,jdbcType=VARCHAR},
+            </if>
+            <if test="accountConfig != null">
+                account_config = #{accountConfig,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=VARCHAR},
+            </if>
+            <if test="modifiedTime != null">
+                modified_time = #{modifiedTime,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TAccount">
+        update t_account
+        set msg_type = #{msgType,jdbcType=VARCHAR},
+        account_name = #{accountName,jdbcType=VARCHAR},
+        account_config = #{accountConfig,jdbcType=VARCHAR},
+        remark = #{remark,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=VARCHAR},
+        modified_time = #{modifiedTime,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <select id="selectByMsgType" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_account
+        where msg_type = #{msgType,jdbcType=INTEGER}
+    </select>
+</mapper>

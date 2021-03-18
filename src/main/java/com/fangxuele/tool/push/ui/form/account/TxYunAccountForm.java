@@ -27,6 +27,11 @@ public class TxYunAccountForm implements IAccountForm {
     }
 
     @Override
+    public void clear() {
+
+    }
+
+    @Override
     public JPanel getMainPanel() {
         return mainPanel;
     }

@@ -32,6 +32,11 @@ public class EmailAccountForm implements IAccountForm {
     }
 
     @Override
+    public void clear() {
+
+    }
+
+    @Override
     public JPanel getMainPanel() {
         return mainPanel;
     }

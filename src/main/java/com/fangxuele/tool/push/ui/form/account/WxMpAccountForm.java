@@ -28,6 +28,11 @@ public class WxMpAccountForm implements IAccountForm {
     }
 
     @Override
+    public void clear() {
+
+    }
+
+    @Override
     public JPanel getMainPanel() {
         return mainPanel;
     }

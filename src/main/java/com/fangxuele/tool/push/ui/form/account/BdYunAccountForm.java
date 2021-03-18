@@ -28,6 +28,11 @@ public class BdYunAccountForm implements IAccountForm {
     }
 
     @Override
+    public void clear() {
+
+    }
+
+    @Override
     public JPanel getMainPanel() {
         return mainPanel;
     }

@@ -26,6 +26,11 @@ public interface IAccountForm {
     void save(String accountName);
 
     /**
+     * 清空表单
+     */
+    void clear();
+
+    /**
      * 获取主面板
      *
      * @return
