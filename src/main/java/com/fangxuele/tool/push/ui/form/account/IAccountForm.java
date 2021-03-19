@@ -1,5 +1,8 @@
 package com.fangxuele.tool.push.ui.form.account;
 
+import com.fangxuele.tool.push.dao.TAccountMapper;
+import com.fangxuele.tool.push.util.MybatisUtil;
+
 import javax.swing.*;
 
 /**
@@ -11,6 +14,9 @@ import javax.swing.*;
  * @since 2021/3/10.
  */
 public interface IAccountForm {
+
+    TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
+
     /**
      * 初始化界面
      *

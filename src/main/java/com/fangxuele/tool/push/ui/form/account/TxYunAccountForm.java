@@ -1,10 +1,18 @@
 package com.fangxuele.tool.push.ui.form.account;
 
+import cn.hutool.json.JSONUtil;
+import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.bean.account.TxYunAccountConfig;
+import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.util.SqliteUtil;
+import com.fangxuele.tool.push.util.UIUtil;
 import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,25 +20,79 @@ import java.awt.*;
 @Getter
 public class TxYunAccountForm implements IAccountForm {
     private JPanel mainPanel;
-    private JTextField txyunSignTextField;
-    private JPasswordField txyunAppKeyTextField;
-    private JTextField txyunAppIdTextField;
+    private JTextField signTextField;
+    private JTextField appIdTextField;
+    private JTextField appKeyTextField;
 
     private static TxYunAccountForm wxMpAccountForm;
 
     @Override
     public void init(String accountName) {
+        if (StringUtils.isNotEmpty(accountName)) {
+            TAccount tAccount = accountMapper.selectByAccountName(accountName);
 
+            TxYunAccountForm instance = getInstance();
+            TxYunAccountConfig txYunAccountConfig = JSONUtil.toBean(tAccount.getAccountConfig(), TxYunAccountConfig.class);
+            instance.getSignTextField().setText(txYunAccountConfig.getSign());
+            instance.getAppIdTextField().setText(txYunAccountConfig.getAppId());
+            instance.getAppKeyTextField().setText(txYunAccountConfig.getAppKey());
+        }
     }
 
     @Override
     public void save(String accountName) {
+        if (StringUtils.isNotEmpty(accountName)) {
+            TAccount tAccount = accountMapper.selectByAccountName(accountName);
+            TxYunAccountForm instance = getInstance();
+            int msgType = App.config.getMsgType();
 
+            boolean existSameAccount = false;
+
+            if (tAccount != null) {
+                existSameAccount = true;
+            }
+
+            int isCover = JOptionPane.NO_OPTION;
+            if (existSameAccount) {
+                // 如果存在，是否覆盖
+                isCover = JOptionPane.showConfirmDialog(MainWindow.getInstance().getMessagePanel(), "已经存在同名的账号，\n是否覆盖？", "确认",
+                        JOptionPane.YES_NO_OPTION);
+            }
+
+            if (!existSameAccount || isCover == JOptionPane.YES_OPTION) {
+
+                String now = SqliteUtil.nowDateForSqlite();
+
+                TAccount tAccount1 = new TAccount();
+                tAccount1.setMsgType(String.valueOf(msgType));
+                tAccount1.setAccountName(accountName);
+
+                TxYunAccountConfig txYunAccountConfig = new TxYunAccountConfig();
+                txYunAccountConfig.setSign(instance.getSignTextField().getText());
+                txYunAccountConfig.setAppKey(instance.getAppKeyTextField().getText());
+                txYunAccountConfig.setAppId(instance.getAppIdTextField().getText());
+
+                tAccount1.setAccountConfig(JSONUtil.toJsonStr(txYunAccountConfig));
+
+                tAccount1.setModifiedTime(now);
+
+                if (existSameAccount) {
+                    accountMapper.updateByMsgTypeAndAccountName(tAccount1);
+                } else {
+                    tAccount1.setCreateTime(now);
+                    accountMapper.insertSelective(tAccount1);
+                }
+
+                JOptionPane.showMessageDialog(MainWindow.getInstance().getMainPanel(), "保存成功！", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+
+        }
     }
 
     @Override
     public void clear() {
-
+        UIUtil.clearForm(getInstance());
     }
 
     @Override
@@ -77,13 +139,12 @@ public class TxYunAccountForm implements IAccountForm {
         final JLabel label3 = new JLabel();
         label3.setText("短信签名");
         panel1.add(label3, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        txyunSignTextField = new JTextField();
-        panel1.add(txyunSignTextField, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        txyunAppKeyTextField = new JPasswordField();
-        txyunAppKeyTextField.setText("");
-        panel1.add(txyunAppKeyTextField, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        txyunAppIdTextField = new JTextField();
-        panel1.add(txyunAppIdTextField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, new Dimension(300, -1), new Dimension(300, -1), null, 0, false));
+        signTextField = new JTextField();
+        panel1.add(signTextField, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        appIdTextField = new JTextField();
+        panel1.add(appIdTextField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, new Dimension(300, -1), new Dimension(300, -1), null, 0, false));
+        appKeyTextField = new JTextField();
+        panel1.add(appKeyTextField, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
     }
 
     /**

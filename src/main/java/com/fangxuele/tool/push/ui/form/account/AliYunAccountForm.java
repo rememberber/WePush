@@ -3,10 +3,8 @@ package com.fangxuele.tool.push.ui.form.account;
 import cn.hutool.json.JSONUtil;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.account.AliYunAccountConfig;
-import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.ui.form.MainWindow;
-import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.UIUtil;
 import com.fangxuele.tool.push.util.UndoUtil;
@@ -27,8 +25,6 @@ public class AliYunAccountForm implements IAccountForm {
     private JTextField accessKeySecretTextField;
 
     private static AliYunAccountForm wxMpAccountForm;
-
-    private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
 
     @Override
     public void init(String accountName) {

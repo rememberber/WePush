@@ -1,10 +1,18 @@
 package com.fangxuele.tool.push.ui.form.account;
 
+import cn.hutool.json.JSONUtil;
+import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.bean.account.BdYunAccountConfig;
+import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.util.SqliteUtil;
+import com.fangxuele.tool.push.util.UIUtil;
 import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,24 +22,80 @@ public class BdYunAccountForm implements IAccountForm {
     private JPanel mainPanel;
     private JTextField bdEndPointTextField;
     private JTextField bdInvokeIdTextField;
-    private JPasswordField bdSecretAccessKeyPasswordField;
     private JTextField bdAccessKeyIdTextField;
+    private JTextField bdSecretAccessKeyTextField;
 
     private static BdYunAccountForm wxMpAccountForm;
 
     @Override
     public void init(String accountName) {
+        if (StringUtils.isNotEmpty(accountName)) {
+            TAccount tAccount = accountMapper.selectByAccountName(accountName);
 
+            BdYunAccountForm instance = getInstance();
+            BdYunAccountConfig bdYunAccountConfig = JSONUtil.toBean(tAccount.getAccountConfig(), BdYunAccountConfig.class);
+            instance.getBdEndPointTextField().setText(bdYunAccountConfig.getBdEndPoint());
+            instance.getBdInvokeIdTextField().setText(bdYunAccountConfig.getBdInvokeId());
+            instance.getBdSecretAccessKeyTextField().setText(bdYunAccountConfig.getBdSecretAccessKey());
+            instance.getBdAccessKeyIdTextField().setText(bdYunAccountConfig.getBdAccessKeyId());
+        }
     }
 
     @Override
     public void save(String accountName) {
+        if (StringUtils.isNotEmpty(accountName)) {
+            TAccount tAccount = accountMapper.selectByAccountName(accountName);
+            BdYunAccountForm instance = getInstance();
+            int msgType = App.config.getMsgType();
 
+            boolean existSameAccount = false;
+
+            if (tAccount != null) {
+                existSameAccount = true;
+            }
+
+            int isCover = JOptionPane.NO_OPTION;
+            if (existSameAccount) {
+                // 如果存在，是否覆盖
+                isCover = JOptionPane.showConfirmDialog(MainWindow.getInstance().getMessagePanel(), "已经存在同名的账号，\n是否覆盖？", "确认",
+                        JOptionPane.YES_NO_OPTION);
+            }
+
+            if (!existSameAccount || isCover == JOptionPane.YES_OPTION) {
+
+                String now = SqliteUtil.nowDateForSqlite();
+
+                TAccount tAccount1 = new TAccount();
+                tAccount1.setMsgType(String.valueOf(msgType));
+                tAccount1.setAccountName(accountName);
+
+                BdYunAccountConfig bdYunAccountConfig = new BdYunAccountConfig();
+                bdYunAccountConfig.setBdEndPoint(instance.getBdEndPointTextField().getText());
+                bdYunAccountConfig.setBdInvokeId(instance.getBdInvokeIdTextField().getText());
+                bdYunAccountConfig.setBdSecretAccessKey(instance.getBdSecretAccessKeyTextField().getText());
+                bdYunAccountConfig.setBdAccessKeyId(instance.getBdAccessKeyIdTextField().getText());
+
+                tAccount1.setAccountConfig(JSONUtil.toJsonStr(bdYunAccountConfig));
+
+                tAccount1.setModifiedTime(now);
+
+                if (existSameAccount) {
+                    accountMapper.updateByMsgTypeAndAccountName(tAccount1);
+                } else {
+                    tAccount1.setCreateTime(now);
+                    accountMapper.insertSelective(tAccount1);
+                }
+
+                JOptionPane.showMessageDialog(MainWindow.getInstance().getMainPanel(), "保存成功！", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+
+        }
     }
 
     @Override
     public void clear() {
-
+        UIUtil.clearForm(getInstance());
     }
 
     @Override
@@ -85,11 +149,10 @@ public class BdYunAccountForm implements IAccountForm {
         panel1.add(bdEndPointTextField, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         bdInvokeIdTextField = new JTextField();
         panel1.add(bdInvokeIdTextField, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        bdSecretAccessKeyPasswordField = new JPasswordField();
-        bdSecretAccessKeyPasswordField.setText("");
-        panel1.add(bdSecretAccessKeyPasswordField, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         bdAccessKeyIdTextField = new JTextField();
         panel1.add(bdAccessKeyIdTextField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, new Dimension(300, -1), new Dimension(300, -1), null, 0, false));
+        bdSecretAccessKeyTextField = new JTextField();
+        panel1.add(bdSecretAccessKeyTextField, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
     }
 
     /**

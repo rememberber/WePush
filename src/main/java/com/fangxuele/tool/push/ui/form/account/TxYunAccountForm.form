@@ -45,7 +45,7 @@
               <text value="短信签名"/>
             </properties>
           </component>
-          <component id="925e8" class="javax.swing.JTextField" binding="txyunSignTextField">
+          <component id="925e8" class="javax.swing.JTextField" binding="signTextField">
             <constraints>
               <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -53,21 +53,19 @@
             </constraints>
             <properties/>
           </component>
-          <component id="2afe4" class="javax.swing.JPasswordField" binding="txyunAppKeyTextField">
-            <constraints>
-              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                <preferred-size width="150" height="-1"/>
-              </grid>
-            </constraints>
-            <properties>
-              <text value=""/>
-            </properties>
-          </component>
-          <component id="ff609" class="javax.swing.JTextField" binding="txyunAppIdTextField">
+          <component id="ff609" class="javax.swing.JTextField" binding="appIdTextField">
             <constraints>
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <minimum-size width="300" height="-1"/>
                 <preferred-size width="300" height="-1"/>
+              </grid>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="bfe95" class="javax.swing.JTextField" binding="appKeyTextField">
+            <constraints>
+              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
               </grid>
             </constraints>
             <properties/>

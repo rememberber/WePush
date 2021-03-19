@@ -1,10 +1,18 @@
 package com.fangxuele.tool.push.ui.form.account;
 
+import cn.hutool.json.JSONUtil;
+import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.bean.account.EmailAccountConfig;
+import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.util.SqliteUtil;
+import com.fangxuele.tool.push.util.UIUtil;
 import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,24 +26,87 @@ public class EmailAccountForm implements IAccountForm {
     private JTextField mailPortTextField;
     private JTextField mailFromTextField;
     private JTextField mailUserTextField;
-    private JPasswordField mailPasswordField;
     private JButton testMailButton;
+    private JTextField mailPasswordField;
 
     private static EmailAccountForm wxMpAccountForm;
 
     @Override
     public void init(String accountName) {
+        if (StringUtils.isNotEmpty(accountName)) {
+            TAccount tAccount = accountMapper.selectByAccountName(accountName);
 
+            EmailAccountForm instance = getInstance();
+            EmailAccountConfig emailAccountConfig = JSONUtil.toBean(tAccount.getAccountConfig(), EmailAccountConfig.class);
+
+            instance.getMailStartTLSCheckBox().setSelected(emailAccountConfig.isMailStartTLS());
+            instance.getMailSSLCheckBox().setSelected(emailAccountConfig.isMailSSL());
+            instance.getMailHostTextField().setText(emailAccountConfig.getMailHost());
+            instance.getMailPortTextField().setText(emailAccountConfig.getMailPort());
+            instance.getMailFromTextField().setText(emailAccountConfig.getMailFrom());
+            instance.getMailUserTextField().setText(emailAccountConfig.getMailUser());
+            instance.getMailPasswordField().setText(emailAccountConfig.getMailPassword());
+        }
     }
 
     @Override
     public void save(String accountName) {
+        if (StringUtils.isNotEmpty(accountName)) {
+            TAccount tAccount = accountMapper.selectByAccountName(accountName);
+            EmailAccountForm instance = getInstance();
+            int msgType = App.config.getMsgType();
 
+            boolean existSameAccount = false;
+
+            if (tAccount != null) {
+                existSameAccount = true;
+            }
+
+            int isCover = JOptionPane.NO_OPTION;
+            if (existSameAccount) {
+                // 如果存在，是否覆盖
+                isCover = JOptionPane.showConfirmDialog(MainWindow.getInstance().getMessagePanel(), "已经存在同名的账号，\n是否覆盖？", "确认",
+                        JOptionPane.YES_NO_OPTION);
+            }
+
+            if (!existSameAccount || isCover == JOptionPane.YES_OPTION) {
+
+                String now = SqliteUtil.nowDateForSqlite();
+
+                TAccount tAccount1 = new TAccount();
+                tAccount1.setMsgType(String.valueOf(msgType));
+                tAccount1.setAccountName(accountName);
+
+                EmailAccountConfig emailAccountConfig = new EmailAccountConfig();
+                emailAccountConfig.setMailStartTLS(instance.getMailStartTLSCheckBox().isSelected());
+                emailAccountConfig.setMailSSL(instance.getMailSSLCheckBox().isSelected());
+                emailAccountConfig.setMailHost(instance.getMailHostTextField().getText());
+                emailAccountConfig.setMailPort(instance.getMailPortTextField().getText());
+                emailAccountConfig.setMailFrom(instance.getMailFromTextField().getText());
+                emailAccountConfig.setMailUser(instance.getMailUserTextField().getText());
+                emailAccountConfig.setMailPassword(instance.getMailPasswordField().getText());
+
+                tAccount1.setAccountConfig(JSONUtil.toJsonStr(emailAccountConfig));
+
+                tAccount1.setModifiedTime(now);
+
+                if (existSameAccount) {
+                    accountMapper.updateByMsgTypeAndAccountName(tAccount1);
+                } else {
+                    tAccount1.setCreateTime(now);
+                    accountMapper.insertSelective(tAccount1);
+                }
+
+                JOptionPane.showMessageDialog(MainWindow.getInstance().getMainPanel(), "保存成功！", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+
+        }
     }
 
     @Override
     public void clear() {
-
+        UIUtil.clearForm(getInstance());
     }
 
     @Override
@@ -112,7 +183,7 @@ public class EmailAccountForm implements IAccountForm {
         panel1.add(mailFromTextField, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         mailUserTextField = new JTextField();
         panel1.add(mailUserTextField, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        mailPasswordField = new JPasswordField();
+        mailPasswordField = new JTextField();
         panel1.add(mailPasswordField, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
     }
 

@@ -1,10 +1,18 @@
 package com.fangxuele.tool.push.ui.form.account;
 
+import cn.hutool.json.JSONUtil;
+import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.bean.account.DingAccountConfig;
+import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.util.SqliteUtil;
+import com.fangxuele.tool.push.util.UIUtil;
 import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,17 +29,73 @@ public class DingAccountForm implements IAccountForm {
 
     @Override
     public void init(String accountName) {
+        if (StringUtils.isNotEmpty(accountName)) {
+            TAccount tAccount = accountMapper.selectByAccountName(accountName);
 
+            DingAccountForm instance = getInstance();
+            DingAccountConfig dingAccountConfig = JSONUtil.toBean(tAccount.getAccountConfig(), DingAccountConfig.class);
+            instance.getAppSecretTextField().setText(dingAccountConfig.getAppSecret());
+            instance.getAppNameTextField().setText(dingAccountConfig.getAppName());
+            instance.getAgentIdTextField().setText(dingAccountConfig.getAgentId());
+            instance.getAppKeyTextField().setText(dingAccountConfig.getAppKey());
+        }
     }
 
     @Override
     public void save(String accountName) {
+        if (StringUtils.isNotEmpty(accountName)) {
+            TAccount tAccount = accountMapper.selectByAccountName(accountName);
+            DingAccountForm instance = getInstance();
+            int msgType = App.config.getMsgType();
 
+            boolean existSameAccount = false;
+
+            if (tAccount != null) {
+                existSameAccount = true;
+            }
+
+            int isCover = JOptionPane.NO_OPTION;
+            if (existSameAccount) {
+                // 如果存在，是否覆盖
+                isCover = JOptionPane.showConfirmDialog(MainWindow.getInstance().getMessagePanel(), "已经存在同名的账号，\n是否覆盖？", "确认",
+                        JOptionPane.YES_NO_OPTION);
+            }
+
+            if (!existSameAccount || isCover == JOptionPane.YES_OPTION) {
+
+                String now = SqliteUtil.nowDateForSqlite();
+
+                TAccount tAccount1 = new TAccount();
+                tAccount1.setMsgType(String.valueOf(msgType));
+                tAccount1.setAccountName(accountName);
+
+                DingAccountConfig dingAccountConfig = new DingAccountConfig();
+                dingAccountConfig.setAppSecret(instance.getAppSecretTextField().getText());
+                dingAccountConfig.setAppName(instance.getAppNameTextField().getText());
+                dingAccountConfig.setAgentId(instance.getAgentIdTextField().getText());
+                dingAccountConfig.setAppKey(instance.getAppKeyTextField().getText());
+
+                tAccount1.setAccountConfig(JSONUtil.toJsonStr(dingAccountConfig));
+
+                tAccount1.setModifiedTime(now);
+
+                if (existSameAccount) {
+                    accountMapper.updateByMsgTypeAndAccountName(tAccount1);
+                } else {
+                    tAccount1.setCreateTime(now);
+                    accountMapper.insertSelective(tAccount1);
+                }
+
+                JOptionPane.showMessageDialog(MainWindow.getInstance().getMainPanel(), "保存成功！", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+
+        }
     }
 
     @Override
     public void clear() {
-
+        UIUtil.clearForm(getInstance());
     }
 
     @Override
