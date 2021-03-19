@@ -22,4 +22,8 @@ public interface TAccountMapper {
     List<TAccount> selectByMsgType(int msgType);
 
     int deleteByMsgTypeAndName(@Param("msgType") int msgType, @Param("accountName") String accountName);
+
+    TAccount selectByAccountName(String accountName);
+
+    int updateByMsgTypeAndAccountName(TAccount tAccount1);
 }

@@ -3,7 +3,12 @@ package com.fangxuele.tool.push.util;
 import com.fangxuele.tool.push.App;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.swing.text.JTextComponent;
+import javax.swing.undo.UndoManager;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.lang.reflect.Field;
 
 /**
  * <pre>
@@ -61,5 +66,20 @@ public class UIUtil {
                 || "Flat Dark".equals(App.config.getTheme())
                 || "Flat Darcula".equals(App.config.getTheme())
                 || "Flat Darcula(推荐)".equals(App.config.getTheme());
+    }
+
+    public static void clearForm(Object object) {
+        Class strClass = object.getClass();
+        Field[] declaredFields = strClass.getDeclaredFields();
+        for (Field field : declaredFields) {
+            if (JTextComponent.class.isAssignableFrom(field.getType())) {
+                try {
+                    field.setAccessible(true);
+                    ((JTextComponent) field.get(object)).setText("");
+                } catch (IllegalAccessException e) {
+                    log.error(e.toString());
+                }
+            }
+        }
     }
 }

@@ -128,4 +128,21 @@
         where msg_type = #{msgType,jdbcType=INTEGER}
         and account_name = #{accountName,jdbcType=VARCHAR}
     </delete>
+    <select id="selectByAccountName" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_account
+        where account_name = #{accountName,jdbcType=VARCHAR}
+    </select>
+    <update id="updateByMsgTypeAndAccountName" parameterType="com.fangxuele.tool.push.domain.TAccount">
+        update t_account
+        set msg_type = #{msgType,jdbcType=VARCHAR},
+        account_name = #{accountName,jdbcType=VARCHAR},
+        account_config = #{accountConfig,jdbcType=VARCHAR},
+        remark = #{remark,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=VARCHAR},
+        modified_time = #{modifiedTime,jdbcType=VARCHAR}
+        where msg_type = #{msgType,jdbcType=VARCHAR}
+        and account_name = #{accountName,jdbcType=VARCHAR}
+    </update>
 </mapper>

@@ -45,7 +45,7 @@
               <text value="短信签名"/>
             </properties>
           </component>
-          <component id="4a11a" class="javax.swing.JTextField" binding="aliyunSignTextField">
+          <component id="4a11a" class="javax.swing.JTextField" binding="signTextField">
             <constraints>
               <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -53,19 +53,19 @@
             </constraints>
             <properties/>
           </component>
-          <component id="6199b" class="javax.swing.JPasswordField" binding="aliyunAccessKeySecretTextField">
-            <constraints>
-              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                <preferred-size width="150" height="-1"/>
-              </grid>
-            </constraints>
-            <properties/>
-          </component>
-          <component id="6450" class="javax.swing.JTextField" binding="aliyunAccessKeyIdTextField">
+          <component id="6450" class="javax.swing.JTextField" binding="accessKeyIdTextField">
             <constraints>
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <minimum-size width="300" height="-1"/>
                 <preferred-size width="300" height="-1"/>
+              </grid>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="de640" class="javax.swing.JTextField" binding="accessKeySecretTextField">
+            <constraints>
+              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
               </grid>
             </constraints>
             <properties/>
