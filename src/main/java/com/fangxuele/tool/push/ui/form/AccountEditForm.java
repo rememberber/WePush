@@ -1,8 +1,6 @@
 package com.fangxuele.tool.push.ui.form;
 
-import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.form.account.AccountFormFactory;
-import com.fangxuele.tool.push.ui.form.msg.*;
 import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -17,11 +15,11 @@ import java.util.Locale;
 
 /**
  * <pre>
- * MessageEditForm
+ * AccountEditForm
  * </pre>
  *
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
- * @since 2019/5/6.
+ * @since 2021/3/19.
  */
 @Getter
 public class AccountEditForm {
@@ -46,15 +44,24 @@ public class AccountEditForm {
     }
 
     /**
-     * 初始化消息tab
+     * 初始化tab
      */
-    public static void init(String selectedMsgName) {
+    public static void init(String selectedAccountName) {
         accountEditForm = getInstance();
         // 设置滚动条速度
         accountEditForm.getAccountEditScrollPane().getVerticalScrollBar().setUnitIncrement(15);
         accountEditForm.getAccountEditScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
 
-        MsgFormFactory.getMsgForm().init(selectedMsgName);
+        accountEditForm.getAccountNameField().setText(selectedAccountName);
+        AccountFormFactory.getAccountForm().init(selectedAccountName);
+    }
+
+    /**
+     * 清空表单
+     */
+    public static void clear() {
+        AccountEditForm.getInstance().getAccountNameField().setText("");
+        AccountFormFactory.getAccountForm().clear();
     }
 
     public static void switchMainPanel() {

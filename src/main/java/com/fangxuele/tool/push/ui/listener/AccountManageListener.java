@@ -4,8 +4,7 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.dao.*;
-import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.ui.form.*;
 import com.fangxuele.tool.push.util.MybatisUtil;
 
@@ -80,8 +79,9 @@ public class AccountManageListener {
 
         // 编辑账号-新建
         AccountManageForm.getInstance().getCreateAccountButton().addActionListener(e -> {
-            MessageTypeForm.init();
-            AccountEditForm.getInstance().getAccountNameField().setText("");
+//            MessageTypeForm.init();
+            AccountEditForm.clear();
+
             AccountEditForm.getInstance().getAccountNameField().grabFocus();
         });
     }

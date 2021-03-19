@@ -5,11 +5,7 @@ import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.account.AliYunAccountConfig;
 import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.domain.TAccount;
-import com.fangxuele.tool.push.domain.TMsgSms;
-import com.fangxuele.tool.push.domain.TTemplateData;
-import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.form.MainWindow;
-import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.UIUtil;
@@ -21,7 +17,6 @@ import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 @Getter
@@ -101,7 +96,7 @@ public class AliYunAccountForm implements IAccountForm {
 
     @Override
     public void clear() {
-        UIUtil.clearForm(getInstance().getMainPanel());
+        UIUtil.clearForm(getInstance());
     }
 
     @Override
