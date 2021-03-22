@@ -92,6 +92,7 @@ public class AccountFormFactory {
      */
     public static JPanel getAccountMainPanelAndInit(String accountName) {
         IAccountForm accountForm = getAccountForm();
+        accountForm.clear();
         accountForm.init(accountName);
         return accountForm.getMainPanel();
     }

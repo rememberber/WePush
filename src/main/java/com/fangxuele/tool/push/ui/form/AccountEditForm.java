@@ -1,6 +1,7 @@
 package com.fangxuele.tool.push.ui.form;
 
 import com.fangxuele.tool.push.ui.form.account.AccountFormFactory;
+import com.fangxuele.tool.push.ui.form.account.IAccountForm;
 import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -53,7 +54,9 @@ public class AccountEditForm {
         accountEditForm.getAccountEditScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
 
         accountEditForm.getAccountNameField().setText(selectedAccountName);
-        AccountFormFactory.getAccountForm().init(selectedAccountName);
+        IAccountForm accountForm = AccountFormFactory.getAccountForm();
+        accountForm.clear();
+        accountForm.init(selectedAccountName);
     }
 
     /**
