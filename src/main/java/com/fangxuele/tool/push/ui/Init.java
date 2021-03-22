@@ -191,10 +191,12 @@ public class Init {
         MessageTypeForm.init();
         ThreadUtil.execute(HelpForm::init);
 //        ThreadUtil.execute(UserCaseForm::init);
-        ThreadUtil.execute(() -> AccountEditForm.init(null));
         ThreadUtil.execute(AccountManageForm::init);
-        ThreadUtil.execute(() -> MessageEditForm.init(null));
+        ThreadUtil.execute(() -> AccountEditForm.init(null));
         ThreadUtil.execute(MessageManageForm::init);
+        ThreadUtil.execute(() -> MessageEditForm.init(null));
+        ThreadUtil.execute(PeopleManageForm::init);
+        ThreadUtil.execute(() -> PeopleEditForm.init(null));
         ThreadUtil.execute(MemberForm::init);
         ThreadUtil.execute(PushForm::init);
         ThreadUtil.execute(BoostForm::init);
