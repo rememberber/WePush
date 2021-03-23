@@ -18,7 +18,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import me.chanjar.weixin.mp.bean.template.WxMpTemplate;
+import me.chanjar.weixin.common.bean.subscribemsg.TemplateInfo;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 
@@ -79,12 +79,12 @@ public class MpSubscribeMsgForm implements IMsgForm {
     /**
      * 账号模板列表
      */
-    public static List<WxMpTemplate> templateList;
+    public static List<TemplateInfo> templateList;
 
     /**
      * 模板账号map，key:templateId
      */
-    public static Map<String, WxMpTemplate> templateMap;
+    public static Map<String, TemplateInfo> templateMap;
 
     /**
      * （左侧列表中）所选消息对应的模板ID
@@ -313,14 +313,14 @@ public class MpSubscribeMsgForm implements IMsgForm {
         needListenTemplateListComboBox = false;
         try {
             templateMap = Maps.newHashMap();
-            templateList = WxMpTemplateMsgSender.getWxMpService().getTemplateMsgService().getAllPrivateTemplate();
+            templateList = WxMpTemplateMsgSender.getWxMpService().getSubscribeMsgService().getTemplateList();
             getInstance().getTemplateListComboBox().removeAllItems();
             int selectedIndex = 0;
             for (int i = 0; i < templateList.size(); i++) {
-                WxMpTemplate wxMpTemplate = templateList.get(i);
-                getInstance().getTemplateListComboBox().addItem(wxMpTemplate.getTitle());
-                templateMap.put(wxMpTemplate.getTemplateId(), wxMpTemplate);
-                if (wxMpTemplate.getTemplateId().equals(selectedMsgTemplateId)) {
+                TemplateInfo templateInfo = templateList.get(i);
+                getInstance().getTemplateListComboBox().addItem(templateInfo.getTitle());
+                templateMap.put(templateInfo.getPriTmplId(), templateInfo);
+                if (templateInfo.getPriTmplId().equals(selectedMsgTemplateId)) {
                     selectedIndex = i;
                 }
             }
@@ -355,15 +355,23 @@ public class MpSubscribeMsgForm implements IMsgForm {
      * 根据模板id填充模板列表中对应的WxTemplate内容到表单
      */
     public static void fillWxTemplateContentToField() {
-        WxMpTemplate wxMpTemplate = templateList.get(getInstance().getTemplateListComboBox().getSelectedIndex());
-        if (wxMpTemplate != null) {
+        TemplateInfo templateInfo = templateList.get(getInstance().getTemplateListComboBox().getSelectedIndex());
+        if (templateInfo != null) {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("-----------模板ID-----------\n").append(wxMpTemplate.getTemplateId()).append("\n");
-            stringBuilder.append("\n----------所属行业----------\n").append(wxMpTemplate.getPrimaryIndustry()).append("-").append(wxMpTemplate.getDeputyIndustry()).append("\n");
-            stringBuilder.append("\n----------模板内容----------\n").append(wxMpTemplate.getContent()).append("\n");
-            stringBuilder.append("\n----------模板示例----------\n").append(wxMpTemplate.getExample());
+            stringBuilder.append("-----------模板ID-----------\n").append(templateInfo.getPriTmplId()).append("\n");
+            stringBuilder.append("\n----------模板标题----------\n").append(templateInfo.getTitle()).append("\n");
+            int type = templateInfo.getType();
+            String templateType = "未知";
+            if (type == 2) {
+                templateType = "一次性订阅";
+            } else if (type == 3) {
+                templateType = "长期订阅";
+            }
+            stringBuilder.append("\n----------模板类型----------\n").append(templateType).append("\n");
+            stringBuilder.append("\n----------模板内容----------\n").append(templateInfo.getContent()).append("\n");
+            stringBuilder.append("\n----------模板示例----------\n").append(templateInfo.getExample());
             getInstance().getTemplateContentTextArea().setText(stringBuilder.toString());
-            getInstance().getMsgTemplateIdTextField().setText(wxMpTemplate.getTemplateId());
+            getInstance().getMsgTemplateIdTextField().setText(templateInfo.getPriTmplId());
         }
     }
 
@@ -372,12 +380,12 @@ public class MpSubscribeMsgForm implements IMsgForm {
      */
     private static void autoFillTemplateDataTable() {
         if (templateList != null) {
-            WxMpTemplate wxMpTemplate = templateList.get(getInstance().getTemplateListComboBox().getSelectedIndex());
-            if (wxMpTemplate != null) {
+            TemplateInfo templateInfo = templateList.get(getInstance().getTemplateListComboBox().getSelectedIndex());
+            if (templateInfo != null) {
                 initTemplateDataTable();
                 DefaultTableModel tableModel = (DefaultTableModel) getInstance().getTemplateMsgDataTable()
                         .getModel();
-                List<String> params = getTemplateParams(wxMpTemplate.getContent());
+                List<String> params = getTemplateParams(templateInfo.getContent());
                 for (int i = 0; i < params.size(); i++) {
                     String param = params.get(i);
                     String[] data = new String[3];
