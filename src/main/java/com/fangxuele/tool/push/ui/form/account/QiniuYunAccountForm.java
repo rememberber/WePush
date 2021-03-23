@@ -28,7 +28,7 @@ public class QiniuYunAccountForm implements IAccountForm {
     @Override
     public void init(String accountName) {
         if (StringUtils.isNotEmpty(accountName)) {
-            TAccount tAccount = accountMapper.selectByAccountName(accountName);
+            TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
 
             QiniuYunAccountForm instance = getInstance();
             QiniuYunAccountConfig qiniuYunAccountConfig = JSONUtil.toBean(tAccount.getAccountConfig(), QiniuYunAccountConfig.class);
@@ -40,7 +40,7 @@ public class QiniuYunAccountForm implements IAccountForm {
     @Override
     public void save(String accountName) {
         if (StringUtils.isNotEmpty(accountName)) {
-            TAccount tAccount = accountMapper.selectByAccountName(accountName);
+            TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
             QiniuYunAccountForm instance = getInstance();
             int msgType = App.config.getMsgType();
 

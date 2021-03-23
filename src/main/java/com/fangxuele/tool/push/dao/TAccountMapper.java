@@ -1,7 +1,6 @@
 package com.fangxuele.tool.push.dao;
 
 import com.fangxuele.tool.push.domain.TAccount;
-import com.fangxuele.tool.push.domain.TMsgKefu;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -21,9 +20,9 @@ public interface TAccountMapper {
 
     List<TAccount> selectByMsgType(int msgType);
 
-    int deleteByMsgTypeAndName(@Param("msgType") int msgType, @Param("accountName") String accountName);
+    int deleteByMsgTypeAndAccountName(@Param("msgType") int msgType, @Param("accountName") String accountName);
 
-    TAccount selectByAccountName(String accountName);
+    TAccount selectByMsgTypeAndAccountName(@Param("msgType") int msgType, @Param("accountName") String accountName);
 
     int updateByMsgTypeAndAccountName(TAccount tAccount1);
 }

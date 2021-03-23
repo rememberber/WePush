@@ -31,7 +31,7 @@ public class HwYunAccountForm implements IAccountForm {
     @Override
     public void init(String accountName) {
         if (StringUtils.isNotEmpty(accountName)) {
-            TAccount tAccount = accountMapper.selectByAccountName(accountName);
+            TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
 
             HwYunAccountForm instance = getInstance();
             HwYunAccountConfig hwYunAccountConfig = JSONUtil.toBean(tAccount.getAccountConfig(), HwYunAccountConfig.class);
@@ -46,7 +46,7 @@ public class HwYunAccountForm implements IAccountForm {
     @Override
     public void save(String accountName) {
         if (StringUtils.isNotEmpty(accountName)) {
-            TAccount tAccount = accountMapper.selectByAccountName(accountName);
+            TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
             HwYunAccountForm instance = getInstance();
             int msgType = App.config.getMsgType();
 

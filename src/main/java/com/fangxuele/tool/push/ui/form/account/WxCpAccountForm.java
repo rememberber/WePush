@@ -30,7 +30,7 @@ public class WxCpAccountForm implements IAccountForm {
     @Override
     public void init(String accountName) {
         if (StringUtils.isNotEmpty(accountName)) {
-            TAccount tAccount = accountMapper.selectByAccountName(accountName);
+            TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
 
             WxCpAccountForm instance = getInstance();
             WxCpAccountConfig wxCpAccountConfig = JSONUtil.toBean(tAccount.getAccountConfig(), WxCpAccountConfig.class);
@@ -44,7 +44,7 @@ public class WxCpAccountForm implements IAccountForm {
     @Override
     public void save(String accountName) {
         if (StringUtils.isNotEmpty(accountName)) {
-            TAccount tAccount = accountMapper.selectByAccountName(accountName);
+            TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
             WxCpAccountForm instance = getInstance();
             int msgType = App.config.getMsgType();
 

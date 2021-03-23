@@ -34,7 +34,7 @@ public class EmailAccountForm implements IAccountForm {
     @Override
     public void init(String accountName) {
         if (StringUtils.isNotEmpty(accountName)) {
-            TAccount tAccount = accountMapper.selectByAccountName(accountName);
+            TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
 
             EmailAccountForm instance = getInstance();
             EmailAccountConfig emailAccountConfig = JSONUtil.toBean(tAccount.getAccountConfig(), EmailAccountConfig.class);
@@ -52,7 +52,7 @@ public class EmailAccountForm implements IAccountForm {
     @Override
     public void save(String accountName) {
         if (StringUtils.isNotEmpty(accountName)) {
-            TAccount tAccount = accountMapper.selectByAccountName(accountName);
+            TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
             EmailAccountForm instance = getInstance();
             int msgType = App.config.getMsgType();
 

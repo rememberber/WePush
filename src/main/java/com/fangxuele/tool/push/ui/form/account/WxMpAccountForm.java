@@ -1,9 +1,9 @@
 package com.fangxuele.tool.push.ui.form.account;
 
 import cn.hutool.json.JSONUtil;
-import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.account.WxMpAccountConfig;
 import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.UIUtil;
@@ -30,7 +30,7 @@ public class WxMpAccountForm implements IAccountForm {
     @Override
     public void init(String accountName) {
         if (StringUtils.isNotEmpty(accountName)) {
-            TAccount tAccount = accountMapper.selectByAccountName(accountName);
+            TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(MessageTypeEnum.WX_MP_CODE, accountName);
 
             WxMpAccountForm instance = getInstance();
             WxMpAccountConfig wxMpAccountConfig = JSONUtil.toBean(tAccount.getAccountConfig(), WxMpAccountConfig.class);
@@ -44,9 +44,9 @@ public class WxMpAccountForm implements IAccountForm {
     @Override
     public void save(String accountName) {
         if (StringUtils.isNotEmpty(accountName)) {
-            TAccount tAccount = accountMapper.selectByAccountName(accountName);
+
             WxMpAccountForm instance = getInstance();
-            int msgType = App.config.getMsgType();
+            TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(MessageTypeEnum.WX_MP_CODE, accountName);
 
             boolean existSameAccount = false;
 
@@ -66,7 +66,7 @@ public class WxMpAccountForm implements IAccountForm {
                 String now = SqliteUtil.nowDateForSqlite();
 
                 TAccount tAccount1 = new TAccount();
-                tAccount1.setMsgType(String.valueOf(msgType));
+                tAccount1.setMsgType(String.valueOf(MessageTypeEnum.WX_MP_CODE));
                 tAccount1.setAccountName(accountName);
 
                 WxMpAccountConfig wxMpAccountConfig = new WxMpAccountConfig();

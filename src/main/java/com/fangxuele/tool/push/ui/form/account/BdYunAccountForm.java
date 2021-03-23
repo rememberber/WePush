@@ -30,7 +30,7 @@ public class BdYunAccountForm implements IAccountForm {
     @Override
     public void init(String accountName) {
         if (StringUtils.isNotEmpty(accountName)) {
-            TAccount tAccount = accountMapper.selectByAccountName(accountName);
+            TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
 
             BdYunAccountForm instance = getInstance();
             BdYunAccountConfig bdYunAccountConfig = JSONUtil.toBean(tAccount.getAccountConfig(), BdYunAccountConfig.class);
@@ -44,7 +44,7 @@ public class BdYunAccountForm implements IAccountForm {
     @Override
     public void save(String accountName) {
         if (StringUtils.isNotEmpty(accountName)) {
-            TAccount tAccount = accountMapper.selectByAccountName(accountName);
+            TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
             BdYunAccountForm instance = getInstance();
             int msgType = App.config.getMsgType();
 

@@ -27,7 +27,7 @@ public class UpYunAccountForm implements IAccountForm {
     @Override
     public void init(String accountName) {
         if (StringUtils.isNotEmpty(accountName)) {
-            TAccount tAccount = accountMapper.selectByAccountName(accountName);
+            TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
 
             UpYunAccountForm instance = getInstance();
             UpYunAccountConfig upYunAccountConfig = JSONUtil.toBean(tAccount.getAccountConfig(), UpYunAccountConfig.class);
@@ -38,7 +38,7 @@ public class UpYunAccountForm implements IAccountForm {
     @Override
     public void save(String accountName) {
         if (StringUtils.isNotEmpty(accountName)) {
-            TAccount tAccount = accountMapper.selectByAccountName(accountName);
+            TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
             UpYunAccountForm instance = getInstance();
             int msgType = App.config.getMsgType();
 

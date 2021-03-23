@@ -27,7 +27,7 @@ public class YunPianAccountForm implements IAccountForm {
     @Override
     public void init(String accountName) {
         if (StringUtils.isNotEmpty(accountName)) {
-            TAccount tAccount = accountMapper.selectByAccountName(accountName);
+            TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
 
             YunPianAccountForm instance = getInstance();
             YunPianAccountConfig yunPianAccountConfig = JSONUtil.toBean(tAccount.getAccountConfig(), YunPianAccountConfig.class);
@@ -38,7 +38,7 @@ public class YunPianAccountForm implements IAccountForm {
     @Override
     public void save(String accountName) {
         if (StringUtils.isNotEmpty(accountName)) {
-            TAccount tAccount = accountMapper.selectByAccountName(accountName);
+            TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
             YunPianAccountForm instance = getInstance();
             int msgType = App.config.getMsgType();
 

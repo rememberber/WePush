@@ -29,7 +29,7 @@ public class TxYunAccountForm implements IAccountForm {
     @Override
     public void init(String accountName) {
         if (StringUtils.isNotEmpty(accountName)) {
-            TAccount tAccount = accountMapper.selectByAccountName(accountName);
+            TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
 
             TxYunAccountForm instance = getInstance();
             TxYunAccountConfig txYunAccountConfig = JSONUtil.toBean(tAccount.getAccountConfig(), TxYunAccountConfig.class);
@@ -42,7 +42,7 @@ public class TxYunAccountForm implements IAccountForm {
     @Override
     public void save(String accountName) {
         if (StringUtils.isNotEmpty(accountName)) {
-            TAccount tAccount = accountMapper.selectByAccountName(accountName);
+            TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
             TxYunAccountForm instance = getInstance();
             int msgType = App.config.getMsgType();
 

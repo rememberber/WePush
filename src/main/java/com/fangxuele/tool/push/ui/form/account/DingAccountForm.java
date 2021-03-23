@@ -30,7 +30,7 @@ public class DingAccountForm implements IAccountForm {
     @Override
     public void init(String accountName) {
         if (StringUtils.isNotEmpty(accountName)) {
-            TAccount tAccount = accountMapper.selectByAccountName(accountName);
+            TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
 
             DingAccountForm instance = getInstance();
             DingAccountConfig dingAccountConfig = JSONUtil.toBean(tAccount.getAccountConfig(), DingAccountConfig.class);
@@ -44,7 +44,7 @@ public class DingAccountForm implements IAccountForm {
     @Override
     public void save(String accountName) {
         if (StringUtils.isNotEmpty(accountName)) {
-            TAccount tAccount = accountMapper.selectByAccountName(accountName);
+            TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
             DingAccountForm instance = getInstance();
             int msgType = App.config.getMsgType();
 

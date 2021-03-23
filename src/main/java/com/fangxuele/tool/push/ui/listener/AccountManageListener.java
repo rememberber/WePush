@@ -64,7 +64,7 @@ public class AccountManageListener {
                         for (int i = selectedRows.length; i > 0; i--) {
                             int selectedRow = accountListTable.getSelectedRow();
                             String accountName = (String) tableModel.getValueAt(selectedRow, 0);
-                            accountMapper.deleteByMsgTypeAndName(msgType, accountName);
+                            accountMapper.deleteByMsgTypeAndAccountName(msgType, accountName);
                             tableModel.removeRow(selectedRow);
                         }
                         MessageEditForm.init(null);
