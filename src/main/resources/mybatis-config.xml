@@ -31,6 +31,7 @@
         <mapper resource="mapper/TDingAppMapper.xml"/>
         <mapper resource="mapper/TMsgWxUniformMapper.xml"/>
         <mapper resource="mapper/TMsgMaSubscribeMapper.xml"/>
+        <mapper resource="mapper/TMsgMpSubscribeMapper.xml"/>
         <mapper resource="mapper/TAccountMapper.xml"/>
     </mappers>
 </configuration>

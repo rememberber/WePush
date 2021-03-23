@@ -67,9 +67,9 @@ public class WxMaSubscribeMsgMaker extends BaseMsgMaker implements IMsgMaker {
         String templateUrlEvaluated = TemplateUtil.evaluate(templateUrl, velocityContext);
         wxMaSubscribeMessage.setPage(templateUrlEvaluated);
 
-        WxMaSubscribeMessage.Data wxMaSubscribeData;
+        WxMaSubscribeMessage.MsgData wxMaSubscribeData;
         for (TemplateData templateData : templateDataList) {
-            wxMaSubscribeData = new WxMaSubscribeMessage.Data();
+            wxMaSubscribeData = new WxMaSubscribeMessage.MsgData();
             wxMaSubscribeData.setName(templateData.getName());
             wxMaSubscribeData.setValue(TemplateUtil.evaluate(templateData.getValue(), velocityContext));
             wxMaSubscribeMessage.addData(wxMaSubscribeData);

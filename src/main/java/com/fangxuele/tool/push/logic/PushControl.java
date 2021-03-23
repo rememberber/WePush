@@ -144,6 +144,7 @@ public class PushControl {
         int msgType = App.config.getMsgType();
         switch (msgType) {
             case MessageTypeEnum.MP_TEMPLATE_CODE:
+            case MessageTypeEnum.MP_SUBSCRIBE_CODE:
             case MessageTypeEnum.KEFU_CODE:
             case MessageTypeEnum.KEFU_PRIORITY_CODE:
             case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE: {

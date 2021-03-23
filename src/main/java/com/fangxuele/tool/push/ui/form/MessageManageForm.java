@@ -1,30 +1,8 @@
 package com.fangxuele.tool.push.ui.form;
 
 import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.dao.TMsgDingMapper;
-import com.fangxuele.tool.push.dao.TMsgHttpMapper;
-import com.fangxuele.tool.push.dao.TMsgKefuMapper;
-import com.fangxuele.tool.push.dao.TMsgKefuPriorityMapper;
-import com.fangxuele.tool.push.dao.TMsgMaSubscribeMapper;
-import com.fangxuele.tool.push.dao.TMsgMaTemplateMapper;
-import com.fangxuele.tool.push.dao.TMsgMailMapper;
-import com.fangxuele.tool.push.dao.TMsgMpTemplateMapper;
-import com.fangxuele.tool.push.dao.TMsgSmsMapper;
-import com.fangxuele.tool.push.dao.TMsgWxCpMapper;
-import com.fangxuele.tool.push.dao.TMsgWxUniformMapper;
-import com.fangxuele.tool.push.dao.TWxAccountMapper;
-import com.fangxuele.tool.push.domain.TMsgDing;
-import com.fangxuele.tool.push.domain.TMsgHttp;
-import com.fangxuele.tool.push.domain.TMsgKefu;
-import com.fangxuele.tool.push.domain.TMsgKefuPriority;
-import com.fangxuele.tool.push.domain.TMsgMaSubscribe;
-import com.fangxuele.tool.push.domain.TMsgMaTemplate;
-import com.fangxuele.tool.push.domain.TMsgMail;
-import com.fangxuele.tool.push.domain.TMsgMpTemplate;
-import com.fangxuele.tool.push.domain.TMsgSms;
-import com.fangxuele.tool.push.domain.TMsgWxCp;
-import com.fangxuele.tool.push.domain.TMsgWxUniform;
-import com.fangxuele.tool.push.domain.TWxAccount;
+import com.fangxuele.tool.push.dao.*;
+import com.fangxuele.tool.push.domain.*;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.util.JTableUtil;
@@ -65,6 +43,7 @@ public class MessageManageForm {
     private static TMsgMaTemplateMapper msgMaTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMaTemplateMapper.class);
     private static TMsgMaSubscribeMapper msgMaSubscribeMapper = MybatisUtil.getSqlSession().getMapper(TMsgMaSubscribeMapper.class);
     private static TMsgMpTemplateMapper msgMpTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMpTemplateMapper.class);
+    private static TMsgMpSubscribeMapper msgMpSubscribeMapper = MybatisUtil.getSqlSession().getMapper(TMsgMpSubscribeMapper.class);
     private static TMsgSmsMapper msgSmsMapper = MybatisUtil.getSqlSession().getMapper(TMsgSmsMapper.class);
     private static TMsgMailMapper msgMailMapper = MybatisUtil.getSqlSession().getMapper(TMsgMailMapper.class);
     private static TMsgWxCpMapper msgWxCpMapper = MybatisUtil.getSqlSession().getMapper(TMsgWxCpMapper.class);
@@ -157,6 +136,14 @@ public class MessageManageForm {
                     model.addRow(data);
                 }
                 break;
+            case MessageTypeEnum.MP_SUBSCRIBE_CODE:
+                List<TMsgMpSubscribe> tMsgMpSubscribeList = msgMpSubscribeMapper.selectByMsgTypeAndWxAccountId(msgType, wxAccountId);
+                for (TMsgMpSubscribe tMsgMpSubscribe : tMsgMpSubscribeList) {
+                    data = new Object[1];
+                    data[0] = tMsgMpSubscribe.getMsgName();
+                    model.addRow(data);
+                }
+                break;
             case MessageTypeEnum.EMAIL_CODE:
                 List<TMsgMail> tMsgMailList = msgMailMapper.selectByMsgType(msgType);
                 for (TMsgMail tMsgMail : tMsgMailList) {
@@ -210,6 +197,7 @@ public class MessageManageForm {
 
         switch (msgType) {
             case MessageTypeEnum.MP_TEMPLATE_CODE:
+            case MessageTypeEnum.MP_SUBSCRIBE_CODE:
             case MessageTypeEnum.KEFU_CODE:
             case MessageTypeEnum.KEFU_PRIORITY_CODE:
                 // 多账号切换-公众号

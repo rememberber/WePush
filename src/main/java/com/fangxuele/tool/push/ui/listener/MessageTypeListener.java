@@ -27,6 +27,10 @@ public class MessageTypeListener {
             App.config.setMsgType(MessageTypeEnum.MP_TEMPLATE_CODE);
             saveType();
         });
+        messageTypeForm.getMpSubscribeRadioButton().addActionListener(e -> {
+            App.config.setMsgType(MessageTypeEnum.MP_SUBSCRIBE_CODE);
+            saveType();
+        });
         messageTypeForm.getMaTemplateRadioButton().addActionListener(e -> {
             App.config.setMsgType(MessageTypeEnum.MA_TEMPLATE_CODE);
             saveType();
