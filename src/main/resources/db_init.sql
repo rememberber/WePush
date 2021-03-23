@@ -116,7 +116,7 @@ create table if not exists t_wx_mp_user
             primary key,
     nickname        text,
     sex_desc        text,
-    sex             INTEGER,
+    sex             integer,
     language        text,
     city            text,
     province        text,
@@ -134,7 +134,7 @@ create table if not exists t_wx_mp_user
 );
 create table if not exists t_wx_account
 (
-    id            INTEGER
+    id            integer
         constraint t_wx_account_pk
             primary key autoincrement,
     account_type  text,
@@ -167,7 +167,7 @@ create unique index if not exists t_msg_mail_msg_type_msg_name_uindex
 
 create table if not exists t_wx_cp_app
 (
-    id            INTEGER
+    id            integer
         constraint t_wx_cp_app_pk
             primary key autoincrement,
     corpId        text,
@@ -244,7 +244,7 @@ create unique index if not exists t_msg_ding_msg_type_msg_name_uindex
 
 create table if not exists t_ding_app
 (
-    id            INTEGER
+    id            integer
         constraint t_ding_app_pk
             primary key autoincrement,
     app_name      text,
@@ -326,3 +326,38 @@ create table if not exists t_account
 
 create unique index if not exists t_account_msg_type_account_name_uindex
     on t_account (msg_type, account_name);
+
+create table if not exists t_people
+(
+    id            integer
+        constraint t_people_pk
+            primary key autoincrement,
+    msg_type  text,
+    account_id  integer,
+    people_name       text,
+    app_version       text,
+    remark       text,
+    create_time   datetime,
+    modified_time datetime
+);
+
+create unique index if not exists t_people_msg_type_account_id_people_name_uindex
+    on t_people (msg_type, account_id, people_name);
+
+
+create table if not exists t_people_data
+(
+    id            integer
+        constraint t_people_data_pk
+            primary key autoincrement,
+    people_id  integer,
+    pin       text,
+    var_data       text,
+    app_version       text,
+    remark       text,
+    create_time   datetime,
+    modified_time datetime
+);
+
+create index if not exists t_people_data_people_id_index
+    on t_people_data (people_id);

@@ -81,7 +81,7 @@ public class PeopleEditForm {
         memberListTable.setRowHeight(36);
         scrollPane1.setViewportView(memberListTable);
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(1, 5, new Insets(0, 5, 5, 0), -1, -1));
+        panel2.setLayout(new GridLayoutManager(1, 5, new Insets(0, 5, 5, 5), -1, -1));
         mainPanel.add(panel2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         selectAllButton = new JButton();
         selectAllButton.setIcon(new ImageIcon(getClass().getResource("/icon/selectall_dark.png")));
