@@ -23,17 +23,12 @@ public class AccountFormFactory {
         IAccountForm iAccountForm = null;
         switch (App.config.getMsgType()) {
             case MessageTypeEnum.MP_TEMPLATE_CODE:
-                iAccountForm = WxMpAccountForm.getInstance();
-                break;
-            case MessageTypeEnum.MA_SUBSCRIBE_CODE:
-                iAccountForm = WxMaAccountForm.getInstance();
-                break;
+            case MessageTypeEnum.MP_SUBSCRIBE_CODE:
             case MessageTypeEnum.KEFU_CODE:
-                iAccountForm = WxMpAccountForm.getInstance();
-                break;
             case MessageTypeEnum.KEFU_PRIORITY_CODE:
                 iAccountForm = WxMpAccountForm.getInstance();
                 break;
+            case MessageTypeEnum.MA_SUBSCRIBE_CODE:
             case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE:
                 iAccountForm = WxMaAccountForm.getInstance();
                 break;

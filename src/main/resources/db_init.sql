@@ -323,3 +323,6 @@ create table if not exists t_account
     create_time   datetime,
     modified_time datetime
 );
+
+create unique index if not exists t_account_msg_type_account_name_uindex
+    on t_account (msg_type, account_name);
