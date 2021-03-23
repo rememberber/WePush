@@ -26,26 +26,26 @@
 
         <!-- Model文件保存位置 -->
         <javaModelGenerator targetPackage="com.fangxuele.tool.push.domain"
-                            targetProject="D:\IdeaProjects\WePush\src\main\java">
+                            targetProject="D:\IdeaCProjects\WePush\src\main\java">
             <property name="enableSubPackages" value="false"/>
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
 
         <!-- 生成的mapper文件 -->
         <sqlMapGenerator targetPackage="mapper"
-                         targetProject="D:\IdeaProjects\WePush\src\main\resources">
+                         targetProject="D:\IdeaCProjects\WePush\src\main\resources">
             <property name="enableSubPackages" value="false"/>
         </sqlMapGenerator>
 
         <!-- 生成的查询条件的类 -->
         <javaClientGenerator type="XMLMAPPER" targetPackage="com.fangxuele.tool.push.dao"
-                             targetProject="D:\IdeaProjects\WePush\src\main\java">
+                             targetProject="D:\IdeaCProjects\WePush\src\main\java">
             <property name="enableSubPackages" value="false"/>
         </javaClientGenerator>
 
         <table schema="main" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false"
                enableSelectByExample="false" selectByExampleQueryId="false"
-               tableName="t_msg_kefu_priority" domainObjectName="TMsgKefuPriority">
+               tableName="t_msg_mp_subscribe" domainObjectName="TMsgMpSubscribe">
             <property name="useActualColumnNames" value="false"/>
             <!--<generatedKey column="ID" sqlStatement="DB2" identity="true"/>-->
         </table>
