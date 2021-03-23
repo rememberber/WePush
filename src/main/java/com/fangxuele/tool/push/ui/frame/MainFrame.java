@@ -64,6 +64,7 @@ public class MainFrame extends JFrame {
         ThreadUtil.execute(AccountEditListener::addListeners);
         ThreadUtil.execute(MessageManageListener::addListeners);
         ThreadUtil.execute(MessageEditListener::addListeners);
+        ThreadUtil.execute(PeopleManageListener::addListeners);
         ThreadUtil.execute(MemberListener::addListeners);
         ThreadUtil.execute(PushListener::addListeners);
         ThreadUtil.execute(InfinityListener::addListeners);
