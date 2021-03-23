@@ -145,6 +145,7 @@ public class Init {
                         JDialog.setDefaultLookAndFeelDecorated(true);
                     }
                     UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarculaLaf");
+//                    UIManager.put( "TitlePane.unifiedBackground", true );
                     break;
                 case "Dark purple":
                     if (SystemUtil.isJBR()) {
