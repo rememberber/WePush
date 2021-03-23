@@ -143,9 +143,7 @@ public class MessageTypeForm {
     }
 
     private static void initMessageManageFormLayOut(int msgType) {
-        if (msgType == MessageTypeEnum.KEFU_CODE || msgType == MessageTypeEnum.KEFU_PRIORITY_CODE || msgType == MessageTypeEnum.MP_TEMPLATE_CODE
-                || msgType == MessageTypeEnum.MA_TEMPLATE_CODE || msgType == MessageTypeEnum.MA_SUBSCRIBE_CODE
-                || msgType == MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE || msgType == MessageTypeEnum.MP_SUBSCRIBE_CODE) {
+        if (MessageTypeEnum.isWxMaOrMpType(msgType)) {
             MessageManageForm.getInstance().getAccountSwitchPanel().setVisible(true);
         } else {
             MessageManageForm.getInstance().getAccountSwitchPanel().setVisible(false);
@@ -171,10 +169,7 @@ public class MessageTypeForm {
         }
         MemberForm.getInstance().getMemberTabDownPanel().setVisible(true);
         MemberForm.getInstance().getMemberTabCenterPanel().setVisible(true);
-        if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE || msgType == MessageTypeEnum.MA_TEMPLATE_CODE
-                || msgType == MessageTypeEnum.KEFU_CODE || msgType == MessageTypeEnum.KEFU_PRIORITY_CODE
-                || msgType == MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE || msgType == MessageTypeEnum.MA_SUBSCRIBE_CODE
-                || msgType == MessageTypeEnum.MP_SUBSCRIBE_CODE) {
+        if (MessageTypeEnum.isWxMaOrMpType(msgType)) {
             MemberForm.getInstance().getImportFromWeixinPanel().setVisible(true);
             MemberForm.getInstance().getImportOptionPanel().setVisible(true);
         }
