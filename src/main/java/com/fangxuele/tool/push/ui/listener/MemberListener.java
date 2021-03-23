@@ -1005,18 +1005,10 @@ public class MemberListener {
 
         int msgType = App.config.getMsgType();
 
-        // 是否是微信平台类消息
-        boolean isWeixinTypeMsg = false;
-        if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE || msgType == MessageTypeEnum.MA_TEMPLATE_CODE
-                || msgType == MessageTypeEnum.KEFU_CODE || msgType == MessageTypeEnum.KEFU_PRIORITY_CODE
-                || msgType == MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE || msgType == MessageTypeEnum.MA_SUBSCRIBE_CODE
-                || msgType == MessageTypeEnum.MP_SUBSCRIBE_CODE) {
-            isWeixinTypeMsg = true;
-        }
         // 导入列表
         List<String> headerNameList = Lists.newArrayList();
         headerNameList.add("Data");
-        if (isWeixinTypeMsg) {
+        if (MessageTypeEnum.isWxMaOrMpType(msgType)) {
             if (memberForm.getImportOptionAvatarCheckBox().isSelected()) {
                 headerNameList.add("头像");
             }
@@ -1035,7 +1027,7 @@ public class MemberListener {
         headerNameList.toArray(headerNames);
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
         memberListTable.setModel(model);
-        if (isWeixinTypeMsg && memberForm.getImportOptionAvatarCheckBox().isSelected()) {
+        if (MessageTypeEnum.isWxMaOrMpType(msgType) && memberForm.getImportOptionAvatarCheckBox().isSelected()) {
             memberListTable.getColumn("头像").setCellRenderer(new TableInCellImageLabelRenderer());
         }
 
@@ -1048,7 +1040,7 @@ public class MemberListener {
         JTableUtil.hideColumn(memberListTable, 0);
 
         // 设置行高
-        if (isWeixinTypeMsg && memberForm.getImportOptionAvatarCheckBox().isSelected()) {
+        if (MessageTypeEnum.isWxMaOrMpType(msgType) && memberForm.getImportOptionAvatarCheckBox().isSelected()) {
             memberListTable.setRowHeight(66);
         } else {
             memberListTable.setRowHeight(36);
@@ -1057,7 +1049,7 @@ public class MemberListener {
         List<Object> rowDataList;
         WxMpService wxMpService = null;
         boolean needToGetInfoFromWeiXin = false;
-        if (isWeixinTypeMsg && (memberForm.getImportOptionBasicInfoCheckBox().isSelected() ||
+        if (MessageTypeEnum.isWxMaOrMpType(msgType) && (memberForm.getImportOptionBasicInfoCheckBox().isSelected() ||
                 memberForm.getImportOptionAvatarCheckBox().isSelected())) {
             needToGetInfoFromWeiXin = true;
         }

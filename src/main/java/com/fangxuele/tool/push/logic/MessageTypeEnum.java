@@ -121,4 +121,22 @@ public enum MessageTypeEnum {
         }
         return name;
     }
+
+    public static boolean isWxMpType(int msgType) {
+        return msgType == MessageTypeEnum.KEFU_CODE
+                || msgType == MessageTypeEnum.KEFU_PRIORITY_CODE
+                || msgType == MessageTypeEnum.MP_TEMPLATE_CODE
+                || msgType == MessageTypeEnum.MP_SUBSCRIBE_CODE;
+    }
+
+    public static boolean isWxMaType(int msgType) {
+        return msgType == MessageTypeEnum.MA_TEMPLATE_CODE
+                || msgType == MessageTypeEnum.MA_SUBSCRIBE_CODE
+                || msgType == MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE;
+    }
+
+    public static boolean isWxMaOrMpType(int msgType) {
+        return isWxMaType(msgType)
+                || isWxMpType(msgType);
+    }
 }

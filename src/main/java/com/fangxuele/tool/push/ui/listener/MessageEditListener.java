@@ -139,9 +139,7 @@ public class MessageEditListener {
                 int msgType = App.config.getMsgType();
                 String fillParaName = "";
                 String paraDemo = "";
-                if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE || msgType == MessageTypeEnum.KEFU_PRIORITY_CODE
-                        || msgType == MessageTypeEnum.KEFU_CODE || msgType == MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE
-                        || msgType == MessageTypeEnum.MA_SUBSCRIBE_CODE || msgType == MessageTypeEnum.MP_SUBSCRIBE_CODE) {
+                if (MessageTypeEnum.isWxMaOrMpType(msgType)) {
                     fillParaName = "预览消息用户的openId";
                     paraDemo = "ox_kxwS_gGt63adS-zemlETtuvw1;ox_kxwS_gGt63adS-zemlETtuvw2";
                 } else if (msgType == MessageTypeEnum.MA_TEMPLATE_CODE) {
