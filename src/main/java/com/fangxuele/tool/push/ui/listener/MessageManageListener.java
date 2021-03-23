@@ -4,18 +4,7 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.dao.TMsgDingMapper;
-import com.fangxuele.tool.push.dao.TMsgHttpMapper;
-import com.fangxuele.tool.push.dao.TMsgKefuMapper;
-import com.fangxuele.tool.push.dao.TMsgKefuPriorityMapper;
-import com.fangxuele.tool.push.dao.TMsgMaSubscribeMapper;
-import com.fangxuele.tool.push.dao.TMsgMaTemplateMapper;
-import com.fangxuele.tool.push.dao.TMsgMailMapper;
-import com.fangxuele.tool.push.dao.TMsgMpTemplateMapper;
-import com.fangxuele.tool.push.dao.TMsgSmsMapper;
-import com.fangxuele.tool.push.dao.TMsgWxCpMapper;
-import com.fangxuele.tool.push.dao.TMsgWxUniformMapper;
-import com.fangxuele.tool.push.dao.TWxAccountMapper;
+import com.fangxuele.tool.push.dao.*;
 import com.fangxuele.tool.push.domain.TWxAccount;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.UiConsts;
@@ -54,6 +43,7 @@ public class MessageManageListener {
     private static TMsgMaTemplateMapper msgMaTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMaTemplateMapper.class);
     private static TMsgMaSubscribeMapper msgMaSubscribeMapper = MybatisUtil.getSqlSession().getMapper(TMsgMaSubscribeMapper.class);
     private static TMsgMpTemplateMapper msgMpTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMpTemplateMapper.class);
+    private static TMsgMpSubscribeMapper msgMpSubscribeMapper = MybatisUtil.getSqlSession().getMapper(TMsgMpSubscribeMapper.class);
     private static TMsgSmsMapper msgSmsMapper = MybatisUtil.getSqlSession().getMapper(TMsgSmsMapper.class);
     private static TMsgMailMapper msgMailMapper = MybatisUtil.getSqlSession().getMapper(TMsgMailMapper.class);
     private static TMsgHttpMapper msgHttpMapper = MybatisUtil.getSqlSession().getMapper(TMsgHttpMapper.class);
@@ -111,6 +101,8 @@ public class MessageManageListener {
                                 msgMaSubscribeMapper.deleteByMsgTypeAndName(msgType, msgName);
                             } else if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE) {
                                 msgMpTemplateMapper.deleteByMsgTypeAndName(msgType, msgName);
+                            } else if (msgType == MessageTypeEnum.MP_SUBSCRIBE_CODE) {
+                                msgMpSubscribeMapper.deleteByMsgTypeAndName(msgType, msgName);
                             } else if (msgType == MessageTypeEnum.EMAIL_CODE) {
                                 msgMailMapper.deleteByMsgTypeAndName(msgType, msgName);
                             } else if (msgType == MessageTypeEnum.HTTP_CODE) {
@@ -155,6 +147,7 @@ public class MessageManageListener {
 
                 switch (msgType) {
                     case MessageTypeEnum.MP_TEMPLATE_CODE:
+                    case MessageTypeEnum.MP_SUBSCRIBE_CODE:
                         MpTemplateMsgForm.clearAllField();
                     case MessageTypeEnum.KEFU_CODE:
                         KefuMsgForm.clearAllField();
