@@ -33,5 +33,8 @@
         <mapper resource="mapper/TMsgMaSubscribeMapper.xml"/>
         <mapper resource="mapper/TMsgMpSubscribeMapper.xml"/>
         <mapper resource="mapper/TAccountMapper.xml"/>
+        <mapper resource="mapper/TPeopleMapper.xml"/>
+        <mapper resource="mapper/TPeopleDataMapper.xml"/>
+        <mapper resource="mapper/TPeopleImportConfigMapper.xml"/>
     </mappers>
 </configuration>

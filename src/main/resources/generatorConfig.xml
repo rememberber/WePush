@@ -45,7 +45,7 @@
 
         <table schema="main" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false"
                enableSelectByExample="false" selectByExampleQueryId="false"
-               tableName="t_account" domainObjectName="TAccount">
+               tableName="t_people_import_config" domainObjectName="TPeopleImportConfig">
             <property name="useActualColumnNames" value="false"/>
             <!--<generatedKey column="ID" sqlStatement="DB2" identity="true"/>-->
         </table>
