@@ -361,3 +361,21 @@ create table if not exists t_people_data
 
 create index if not exists t_people_data_people_id_index
     on t_people_data (people_id);
+
+create table if not exists t_people_import_config
+(
+    id            integer
+        constraint t_people_import_config_pk
+            primary key autoincrement,
+    people_id  integer,
+    last_way       text,
+    last_file_path       text,
+    last_sql       text,
+    app_version       text,
+    remark       text,
+    create_time   datetime,
+    modified_time datetime
+);
+
+create unique index if not exists t_people_import_config_people_id_uindex
+    on t_people_import_config (people_id);

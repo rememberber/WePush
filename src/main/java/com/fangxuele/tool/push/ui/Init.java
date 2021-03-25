@@ -146,6 +146,22 @@ public class Init {
                     }
                     UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarculaLaf");
 //                    UIManager.put( "TitlePane.unifiedBackground", true );
+/**
+ If you don't like/want it, you can disable it with:
+ UIManager.put( "TitlePane.useWindowDecorations", false );
+
+ It is also possible to disable only the embedded menu bar (and keep the dark title pane) with:
+ UIManager.put( "TitlePane.menuBarEmbedded", false );
+
+ It is also possible to disable this on command line with following VM options:
+ -Dflatlaf.useWindowDecorations=false
+ -Dflatlaf.menuBarEmbedded=false
+
+ If you have following code in your app, you can remove it (no longer necessary):
+ // enable window decorations
+ JFrame.setDefaultLookAndFeelDecorated( true );
+ JDialog.setDefaultLookAndFeelDecorated( true );
+ **/
                     break;
                 case "Dark purple":
                     if (SystemUtil.isJBR()) {
