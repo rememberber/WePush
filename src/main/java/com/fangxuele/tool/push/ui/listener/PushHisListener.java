@@ -20,13 +20,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -103,7 +97,8 @@ public class PushHisListener {
                             JOptionPane.YES_NO_OPTION);
                     if (isDelete == JOptionPane.YES_OPTION) {
                         DefaultTableModel tableModel = (DefaultTableModel) pushHisLeftTable.getModel();
-                        for (int i = selectedRows.length; i > 0; i--) {
+
+                        for (int i = 0; i < selectedRows.length; i++) {
                             int selectedRow = pushHisLeftTable.getSelectedRow();
                             Integer selectedId = (Integer) tableModel.getValueAt(selectedRow, 3);
                             TPushHistory tPushHistory = pushHistoryMapper.selectByPrimaryKey(selectedId);
@@ -113,10 +108,8 @@ public class PushHisListener {
                                 msgTemplateDataFile.delete();
                             }
                             pushHistoryMapper.deleteByPrimaryKey(selectedId);
-
-                            tableModel.removeRow(selectedRow);
                         }
-                        pushHisLeftTable.updateUI();
+
                         PushHisForm.init();
                     }
                 }

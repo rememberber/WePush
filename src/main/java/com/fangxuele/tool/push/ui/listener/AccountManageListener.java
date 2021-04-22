@@ -67,7 +67,7 @@ public class AccountManageListener {
                             accountMapper.deleteByMsgTypeAndAccountName(msgType, accountName);
                             tableModel.removeRow(selectedRow);
                         }
-                        MessageEditForm.init(null);
+                        AccountEditForm.init(null);
                     }
                 }
             } catch (Exception e1) {
