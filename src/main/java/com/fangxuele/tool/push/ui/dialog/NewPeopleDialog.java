@@ -3,9 +3,16 @@ package com.fangxuele.tool.push.ui.dialog;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.dao.TDingAppMapper;
+import com.fangxuele.tool.push.dao.TAccountMapper;
+import com.fangxuele.tool.push.dao.TPeopleMapper;
+import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.domain.TPeople;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.SqliteUtil;
+import com.google.common.collect.Maps;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -16,6 +23,8 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <pre>
@@ -30,29 +39,61 @@ public class NewPeopleDialog extends JDialog {
     private JButton buttonCancel;
     private JTextField peopleNameTextField;
     private JButton saveButton;
-    private JComboBox comboBox1;
+    private JComboBox accountComboBox;
+    private static Map<String, Integer> accountMap;
 
     private Log logger = LogFactory.get();
-    private static TDingAppMapper dingAppMapper = MybatisUtil.getSqlSession().getMapper(TDingAppMapper.class);
+    private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
+    private static TPeopleMapper peopleMapper = MybatisUtil.getSqlSession().getMapper(TPeopleMapper.class);
 
     public NewPeopleDialog() {
         super(App.mainFrame, "新建人群");
         setContentPane(contentPane);
         setModal(true);
 
+        int msgType = MessageTypeEnum.getMsgTypeForAccount();
+
+        initAccountComboBox(msgType);
+
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.5, 0.5);
 
         // 保存按钮事件
         saveButton.addActionListener(e -> {
-            String appName = peopleNameTextField.getText();
-            if (StringUtils.isBlank(appName)) {
-                JOptionPane.showMessageDialog(this, "请填写账号名称！", "提示",
+            try {
+                String peopleName = peopleNameTextField.getText();
+                if (StringUtils.isBlank(peopleName)) {
+                    JOptionPane.showMessageDialog(this, "请填写人群名称！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+                String selectedAccountName = (String) accountComboBox.getSelectedItem();
+                Integer selectedAccountId = accountMap.get(selectedAccountName);
+                // 校验是否有同名人群
+                TPeople tPeople = peopleMapper.selectByMsgTypeAndAccountIdAndName(String.valueOf(msgType), selectedAccountId, peopleName);
+                if (tPeople != null) {
+                    JOptionPane.showMessageDialog(this, "该人群名称已存在！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+
+                TPeople tPeopleToSave = new TPeople();
+                tPeopleToSave.setMsgType(String.valueOf(msgType));
+                tPeopleToSave.setAccountId(selectedAccountId);
+                tPeopleToSave.setPeopleName(peopleName);
+                tPeopleToSave.setAppVersion(UiConsts.APP_VERSION);
+                String now = SqliteUtil.nowDateForSqlite();
+                tPeopleToSave.setCreateTime(now);
+                tPeopleToSave.setModifiedTime(now);
+
+                peopleMapper.insert(tPeopleToSave);
+
+                JOptionPane.showMessageDialog(this, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
-                return;
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(this, "保存失败！\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
             }
 
-            JOptionPane.showMessageDialog(this, "保存成功！", "成功",
-                    JOptionPane.INFORMATION_MESSAGE);
         });
 
         buttonCancel.addActionListener(e -> onCancel());
@@ -68,6 +109,17 @@ public class NewPeopleDialog extends JDialog {
 
         // call onCancel() on ESCAPE
         contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+    }
+
+    private void initAccountComboBox(int msgType) {
+        accountMap = Maps.newHashMap();
+        List<TAccount> tAccountList = accountMapper.selectByMsgType(msgType);
+        for (TAccount tAccount : tAccountList) {
+            String accountName = tAccount.getAccountName();
+            Integer accountId = tAccount.getId();
+            accountComboBox.addItem(accountName);
+            accountMap.put(accountName, accountId);
+        }
     }
 
     private void onCancel() {
@@ -105,11 +157,8 @@ public class NewPeopleDialog extends JDialog {
         final Spacer spacer1 = new Spacer();
         panel1.add(spacer1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel2.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel2, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        buttonCancel = new JButton();
-        buttonCancel.setText("好了");
-        panel2.add(buttonCancel, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         saveButton = new JButton();
         saveButton.setText("保存");
         panel2.add(saveButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -124,8 +173,8 @@ public class NewPeopleDialog extends JDialog {
         final JLabel label2 = new JLabel();
         label2.setText("账号");
         panel3.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        comboBox1 = new JComboBox();
-        panel3.add(comboBox1, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        accountComboBox = new JComboBox();
+        panel3.add(accountComboBox, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
         contentPane.add(spacer2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
     }

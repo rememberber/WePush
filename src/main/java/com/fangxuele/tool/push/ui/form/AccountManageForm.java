@@ -1,6 +1,5 @@
 package com.fangxuele.tool.push.ui.form;
 
-import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
@@ -63,12 +62,7 @@ public class AccountManageForm {
         // 隐藏表头
         JTableUtil.hideTableHeader(accountManageForm.getAccountListTable());
 
-        int msgType = App.config.getMsgType();
-        if (MessageTypeEnum.isWxMaType(msgType)) {
-            msgType = MessageTypeEnum.WX_MA_CODE;
-        } else if (MessageTypeEnum.isWxMpType(msgType)) {
-            msgType = MessageTypeEnum.WX_MP_CODE;
-        }
+        int msgType = MessageTypeEnum.getMsgTypeForAccount();
 
         Object[] data;
 

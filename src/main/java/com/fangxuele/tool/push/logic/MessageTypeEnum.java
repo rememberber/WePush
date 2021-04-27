@@ -1,5 +1,7 @@
 package com.fangxuele.tool.push.logic;
 
+import com.fangxuele.tool.push.App;
+
 /**
  * <pre>
  * 消息类型常量
@@ -152,5 +154,15 @@ public enum MessageTypeEnum {
     public static boolean isWxMaOrMpType(int msgType) {
         return isWxMaType(msgType)
                 || isWxMpType(msgType);
+    }
+
+    public static int getMsgTypeForAccount() {
+        int msgType = App.config.getMsgType();
+        if (isWxMaType(msgType)) {
+            msgType = WX_MA_CODE;
+        } else if (isWxMpType(msgType)) {
+            msgType = WX_MP_CODE;
+        }
+        return msgType;
     }
 }

@@ -65,12 +65,12 @@ public class PeopleManageForm {
     public static void init() {
         messageManageForm = getInstance();
 
-        initMessageList();
+        initPeopleList();
     }
 
-    public static void initMessageList() {
-        // 历史消息管理
-        String[] headerNames = {"消息名称"};
+    public static void initPeopleList() {
+        // 人群列表
+        String[] headerNames = {"人群名称"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
         messageManageForm.getPeopleListTable().setModel(model);
         // 隐藏表头
