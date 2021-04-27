@@ -31,6 +31,7 @@ public class PeopleManageForm {
     private JTable peopleListTable;
     private JButton peopleListTableDeleteButton;
     private JButton createPeopleButton;
+    private JComboBox accountComboBox;
 
     private static PeopleManageForm messageManageForm;
 
@@ -191,13 +192,13 @@ public class PeopleManageForm {
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         peopleManagePanel = new JPanel();
-        peopleManagePanel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
+        peopleManagePanel.setLayout(new GridLayoutManager(3, 1, new Insets(5, 0, 0, 0), -1, -1));
         peopleManagePanel.setMaximumSize(new Dimension(-1, -1));
         peopleManagePanel.setMinimumSize(new Dimension(-1, -1));
         peopleManagePanel.setPreferredSize(new Dimension(280, -1));
         panel1.add(peopleManagePanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JScrollPane scrollPane1 = new JScrollPane();
-        peopleManagePanel.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        peopleManagePanel.add(scrollPane1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         peopleListTable = new JTable();
         peopleListTable.setGridColor(new Color(-12236470));
         peopleListTable.setRowHeight(36);
@@ -205,7 +206,7 @@ public class PeopleManageForm {
         scrollPane1.setViewportView(peopleListTable);
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 3, new Insets(0, 5, 5, 0), -1, -1));
-        peopleManagePanel.add(panel2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        peopleManagePanel.add(panel2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         peopleListTableDeleteButton = new JButton();
         peopleListTableDeleteButton.setIcon(new ImageIcon(getClass().getResource("/icon/remove.png")));
         peopleListTableDeleteButton.setText("删除");
@@ -217,5 +218,7 @@ public class PeopleManageForm {
         createPeopleButton.setIcon(new ImageIcon(getClass().getResource("/icon/add.png")));
         createPeopleButton.setText("新建");
         panel2.add(createPeopleButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        accountComboBox = new JComboBox();
+        peopleManagePanel.add(accountComboBox, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 }
