@@ -9,6 +9,7 @@ import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TPeople;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.UiConsts;
+import com.fangxuele.tool.push.ui.form.PeopleManageForm;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
@@ -36,7 +37,6 @@ import java.util.Map;
  */
 public class NewPeopleDialog extends JDialog {
     private JPanel contentPane;
-    private JButton buttonCancel;
     private JTextField peopleNameTextField;
     private JButton saveButton;
     private JComboBox accountComboBox;
@@ -87,16 +87,15 @@ public class NewPeopleDialog extends JDialog {
 
                 peopleMapper.insert(tPeopleToSave);
 
-                JOptionPane.showMessageDialog(this, "保存成功！", "成功",
-                        JOptionPane.INFORMATION_MESSAGE);
+                PeopleManageForm.initPeopleList();
+
+                dispose();
             } catch (Exception e1) {
                 JOptionPane.showMessageDialog(this, "保存失败！\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
             }
 
         });
-
-        buttonCancel.addActionListener(e -> onCancel());
 
         // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);

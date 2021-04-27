@@ -133,5 +133,15 @@
         where msg_type = #{msgType,jdbcType=VARCHAR}
         and account_id = #{accountId,jdbcType=INTEGER}
         and people_name = #{peopleName,jdbcType=VARCHAR}
+        order by modified_time desc
+    </select>
+
+    <select id="selectByMsgTypeAndAccountId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_people
+        where msg_type = #{msgType,jdbcType=VARCHAR}
+        and account_id = #{accountId,jdbcType=INTEGER}
+        order by modified_time desc
     </select>
 </mapper>

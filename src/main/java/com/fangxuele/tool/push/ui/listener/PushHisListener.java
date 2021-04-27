@@ -99,7 +99,7 @@ public class PushHisListener {
                         DefaultTableModel tableModel = (DefaultTableModel) pushHisLeftTable.getModel();
 
                         for (int i = 0; i < selectedRows.length; i++) {
-                            int selectedRow = pushHisLeftTable.getSelectedRow();
+                            int selectedRow = selectedRows[i];
                             Integer selectedId = (Integer) tableModel.getValueAt(selectedRow, 3);
                             TPushHistory tPushHistory = pushHistoryMapper.selectByPrimaryKey(selectedId);
 
