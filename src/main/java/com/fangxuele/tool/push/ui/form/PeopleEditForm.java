@@ -19,7 +19,7 @@ public class PeopleEditForm {
     private JButton searchButton;
     private JTable memberListTable;
     private JButton selectAllButton;
-    private JButton importSelectedButton;
+    private JButton importButton;
     private JButton exportButton;
     private JButton deleteButton;
 
@@ -87,10 +87,10 @@ public class PeopleEditForm {
         selectAllButton.setIcon(new ImageIcon(getClass().getResource("/icon/selectall_dark.png")));
         selectAllButton.setText("全选");
         panel2.add(selectAllButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        importSelectedButton = new JButton();
-        importSelectedButton.setIcon(new ImageIcon(getClass().getResource("/icon/import_dark.png")));
-        importSelectedButton.setText("导入");
-        panel2.add(importSelectedButton, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        importButton = new JButton();
+        importButton.setIcon(new ImageIcon(getClass().getResource("/icon/import_dark.png")));
+        importButton.setText("导入");
+        panel2.add(importButton, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         exportButton = new JButton();
         exportButton.setIcon(new ImageIcon(getClass().getResource("/icon/export_dark.png")));
         exportButton.setText("导出");
