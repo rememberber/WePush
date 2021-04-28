@@ -3,6 +3,7 @@ package com.fangxuele.tool.push.ui.listener;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.dao.TPeopleMapper;
+import com.fangxuele.tool.push.ui.dialog.importway.ImportByFile;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
@@ -34,17 +35,35 @@ public class PeopleEditListener {
             menuItem1.setText("通过文件导入");
             menuItem1.addActionListener(e1 -> {
                 String actionCommand = e1.getActionCommand();
-                System.err.println(actionCommand);
+                showImportDialog(actionCommand);
             });
             popupMenu.add(menuItem1);
             JMenuItem menuItem2 = new JMenuItem();
             menuItem2.setText("通过SQL导入");
+            menuItem2.addActionListener(e1 -> {
+                String actionCommand = e1.getActionCommand();
+                showImportDialog(actionCommand);
+            });
             popupMenu.add(menuItem2);
             JMenuItem menuItem3 = new JMenuItem();
             menuItem3.setText("通过微信公众平台导入");
+            menuItem3.addActionListener(e1 -> {
+                String actionCommand = e1.getActionCommand();
+                showImportDialog(actionCommand);
+            });
             popupMenu.add(menuItem3);
             peopleEditForm.getImportButton().setComponentPopupMenu(popupMenu);
             peopleEditForm.getImportButton().getComponentPopupMenu().show(peopleEditForm.getImportButton(), -peopleEditForm.getImportButton().getWidth(), -peopleEditForm.getImportButton().getHeight() * 3);
         });
+    }
+
+    private static void showImportDialog(String actionCommand) {
+        if ("通过文件导入".equals(actionCommand)) {
+            ImportByFile dialog = new ImportByFile();
+            dialog.pack();
+            dialog.setVisible(true);
+        } else {
+            System.err.println(actionCommand);
+        }
     }
 }
