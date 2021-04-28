@@ -5,6 +5,7 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.dao.TPeopleMapper;
 import com.fangxuele.tool.push.ui.dialog.importway.ImportByFile;
 import com.fangxuele.tool.push.ui.dialog.importway.ImportBySQL;
+import com.fangxuele.tool.push.ui.dialog.importway.ImportByWxCp;
 import com.fangxuele.tool.push.ui.dialog.importway.ImportByWxMp;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
@@ -54,8 +55,15 @@ public class PeopleEditListener {
                 showImportDialog(actionCommand);
             });
             popupMenu.add(menuItem3);
+            JMenuItem menuItem4 = new JMenuItem();
+            menuItem4.setText("通过微信企业通讯录导入");
+            menuItem4.addActionListener(e1 -> {
+                String actionCommand = e1.getActionCommand();
+                showImportDialog(actionCommand);
+            });
+            popupMenu.add(menuItem4);
             peopleEditForm.getImportButton().setComponentPopupMenu(popupMenu);
-            peopleEditForm.getImportButton().getComponentPopupMenu().show(peopleEditForm.getImportButton(), -peopleEditForm.getImportButton().getWidth(), -peopleEditForm.getImportButton().getHeight() * 3);
+            peopleEditForm.getImportButton().getComponentPopupMenu().show(peopleEditForm.getImportButton(), -peopleEditForm.getImportButton().getWidth(), -peopleEditForm.getImportButton().getHeight() * 4);
         });
     }
 
@@ -70,6 +78,10 @@ public class PeopleEditListener {
             dialog.setVisible(true);
         } else if ("通过微信公众平台导入".equals(actionCommand)) {
             ImportByWxMp dialog = new ImportByWxMp();
+            dialog.pack();
+            dialog.setVisible(true);
+        } else if ("通过微信企业通讯录导入".equals(actionCommand)) {
+            ImportByWxCp dialog = new ImportByWxCp();
             dialog.pack();
             dialog.setVisible(true);
         } else {
