@@ -1,14 +1,31 @@
 package com.fangxuele.tool.push.ui.dialog.importway;
 
+import cn.hutool.core.io.file.FileReader;
+import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.log.Log;
+import cn.hutool.log.LogFactory;
+import cn.hutool.poi.excel.ExcelReader;
+import cn.hutool.poi.excel.ExcelUtil;
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.logic.PushData;
+import com.fangxuele.tool.push.ui.form.PeopleEditForm;
 import com.fangxuele.tool.push.util.ComponentUtil;
+import com.fangxuele.tool.push.util.FileCharSetUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import com.opencsv.CSVReader;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class ImportByFile extends JDialog {
     private JPanel contentPane;
@@ -18,12 +35,37 @@ public class ImportByFile extends JDialog {
     private JButton memberImportExploreButton;
     private JButton importFromFileButton;
 
+    private static final Log logger = LogFactory.get();
+
+    public static final String TXT_FILE_DATA_SEPERATOR_REGEX = "\\|";
+
     public ImportByFile() {
         super(App.mainFrame, "通过文件导入人群");
         setContentPane(contentPane);
         setModal(true);
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.4, 0.2);
         getRootPane().setDefaultButton(importFromFileButton);
+
+        // 文件浏览按钮
+        memberImportExploreButton.addActionListener(e -> {
+            File beforeFile = new File(memberFilePathField.getText());
+            JFileChooser fileChooser;
+
+            if (beforeFile.exists()) {
+                fileChooser = new JFileChooser(beforeFile);
+            } else {
+                fileChooser = new JFileChooser();
+            }
+
+            FileFilter filter = new FileNameExtensionFilter("*.txt,*.csv,*.xlsx,*.xls", "txt", "csv", "TXT", "CSV", "xlsx", "xls");
+            fileChooser.setFileFilter(filter);
+
+            int approve = fileChooser.showOpenDialog(App.mainFrame);
+            if (approve == JFileChooser.APPROVE_OPTION) {
+                memberFilePathField.setText(fileChooser.getSelectedFile().getAbsolutePath());
+            }
+
+        });
 
         importFromFileButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -54,13 +96,120 @@ public class ImportByFile extends JDialog {
     }
 
     private void onOK() {
-        // add your code here
+        String filePath = memberFilePathField.getText();
+        if (StringUtils.isBlank(filePath)) {
+            JOptionPane.showMessageDialog(PeopleEditForm.getInstance().getMainPanel(), "请填写或点击浏览按钮选择要导入的文件的路径！", "提示",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        ThreadUtil.execute(() -> importFromFile(filePath));
         dispose();
     }
 
     private void onCancel() {
-        // add your code here if necessary
         dispose();
+    }
+
+    /**
+     * 通过文件导入
+     */
+    public static void importFromFile(String filePath) {
+        PeopleEditForm peopleEditForm = PeopleEditForm.getInstance();
+        peopleEditForm.getImportButton().setEnabled(false);
+        JPanel memberPanel = peopleEditForm.getMainPanel();
+        JProgressBar progressBar = peopleEditForm.getMemberTabImportProgressBar();
+        JLabel memberCountLabel = peopleEditForm.getMemberTabCountLabel();
+
+        File file = new File(filePath);
+        if (!file.exists()) {
+            JOptionPane.showMessageDialog(memberPanel, filePath + "\n该文件不存在！", "文件不存在",
+                    JOptionPane.ERROR_MESSAGE);
+            peopleEditForm.getImportButton().setEnabled(true);
+            return;
+        }
+        CSVReader reader = null;
+        FileReader fileReader;
+
+        int currentImported = 0;
+
+        try {
+            progressBar.setVisible(true);
+            progressBar.setIndeterminate(true);
+            String fileNameLowerCase = file.getName().toLowerCase();
+
+            if (fileNameLowerCase.endsWith(".csv")) {
+                // 可以解决中文乱码问题
+                DataInputStream in = new DataInputStream(new FileInputStream(file));
+                reader = new CSVReader(new InputStreamReader(in, FileCharSetUtil.getCharSet(file)));
+                String[] nextLine;
+                PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+
+                while ((nextLine = reader.readNext()) != null) {
+                    PushData.allUser.add(nextLine);
+                    currentImported++;
+                    memberCountLabel.setText(String.valueOf(currentImported));
+                }
+            } else if (fileNameLowerCase.endsWith(".xlsx") || fileNameLowerCase.endsWith(".xls")) {
+                ExcelReader excelReader = ExcelUtil.getReader(file);
+                List<List<Object>> readAll = excelReader.read(1, Integer.MAX_VALUE);
+                PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+
+                for (List<Object> objects : readAll) {
+                    if (objects != null && objects.size() > 0) {
+                        String[] nextLine = new String[objects.size()];
+                        for (int i = 0; i < objects.size(); i++) {
+                            nextLine[i] = objects.get(i).toString();
+                        }
+                        PushData.allUser.add(nextLine);
+                        currentImported++;
+                        memberCountLabel.setText(String.valueOf(currentImported));
+                    }
+                }
+            } else if (fileNameLowerCase.endsWith(".txt")) {
+                fileReader = new FileReader(file, FileCharSetUtil.getCharSetName(file));
+                PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+                BufferedReader br = fileReader.getReader();
+                String line;
+                while ((line = br.readLine()) != null) {
+                    PushData.allUser.add(line.split(TXT_FILE_DATA_SEPERATOR_REGEX));
+                    currentImported++;
+                    memberCountLabel.setText(String.valueOf(currentImported));
+                }
+            } else {
+                JOptionPane.showMessageDialog(memberPanel, "不支持该格式的文件！", "文件格式不支持",
+                        JOptionPane.ERROR_MESSAGE);
+                peopleEditForm.getImportButton().setEnabled(true);
+                return;
+            }
+
+//            renderMemberListTable();
+
+            if (!PushData.fixRateScheduling) {
+                JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+            }
+
+            App.config.setMemberFilePath(filePath);
+            App.config.save();
+        } catch (Exception e1) {
+            JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + e1.getMessage(), "失败",
+                    JOptionPane.ERROR_MESSAGE);
+            logger.error(e1);
+            e1.printStackTrace();
+        } finally {
+            progressBar.setMaximum(100);
+            progressBar.setValue(100);
+            progressBar.setIndeterminate(false);
+            progressBar.setVisible(false);
+            peopleEditForm.getImportButton().setEnabled(true);
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e1) {
+                    logger.error(e1);
+                    e1.printStackTrace();
+                }
+            }
+        }
     }
 
     {
