@@ -72,6 +72,14 @@ public class PeopleEditListener {
             });
             popupMenu.add(menuItem5);
 
+            JMenuItem menuItem6 = new JMenuItem();
+            menuItem6.setText("通过数量导入");
+            menuItem6.addActionListener(e1 -> {
+                String actionCommand = e1.getActionCommand();
+                showImportDialog(actionCommand);
+            });
+            popupMenu.add(menuItem6);
+
             peopleEditForm.getImportButton().setComponentPopupMenu(popupMenu);
             peopleEditForm.getImportButton().getComponentPopupMenu().show(peopleEditForm.getImportButton(), -peopleEditForm.getImportButton().getWidth(), -peopleEditForm.getImportButton().getHeight() * 5);
         });
@@ -96,6 +104,10 @@ public class PeopleEditListener {
             dialog.setVisible(true);
         } else if ("通过钉钉通讯录导入".equals(actionCommand)) {
             ImportByDing dialog = new ImportByDing();
+            dialog.pack();
+            dialog.setVisible(true);
+        } else if ("通过数量导入".equals(actionCommand)) {
+            ImportByNum dialog = new ImportByNum();
             dialog.pack();
             dialog.setVisible(true);
         } else {
