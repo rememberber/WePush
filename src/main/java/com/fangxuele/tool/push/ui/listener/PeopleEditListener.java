@@ -30,6 +30,13 @@ public class PeopleEditListener {
 
         // 导入按钮
         peopleEditForm.getImportButton().addActionListener(e -> {
+
+            if (PeopleManageListener.selectedPeopleId == null) {
+                JOptionPane.showMessageDialog(mainPanel, "请先选择一个人群!", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
             JPopupMenu popupMenu = new JPopupMenu();
 
             JMenuItem menuItem1 = new JMenuItem();
@@ -110,8 +117,6 @@ public class PeopleEditListener {
             ImportByNum dialog = new ImportByNum();
             dialog.pack();
             dialog.setVisible(true);
-        } else {
-            System.err.println(actionCommand);
         }
     }
 }
