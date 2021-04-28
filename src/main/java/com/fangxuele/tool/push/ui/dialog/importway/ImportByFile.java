@@ -2,6 +2,7 @@ package com.fangxuele.tool.push.ui.dialog.importway;
 
 import cn.hutool.core.io.file.FileReader;
 import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import cn.hutool.poi.excel.ExcelReader;
@@ -9,11 +10,15 @@ import cn.hutool.poi.excel.ExcelUtil;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPeopleDataMapper;
 import com.fangxuele.tool.push.dao.TPeopleMapper;
+import com.fangxuele.tool.push.domain.TPeopleData;
 import com.fangxuele.tool.push.logic.PushData;
+import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
+import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.FileCharSetUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.SqliteUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -142,16 +147,25 @@ public class ImportByFile extends JDialog {
             progressBar.setVisible(true);
             progressBar.setIndeterminate(true);
             String fileNameLowerCase = file.getName().toLowerCase();
+            TPeopleData tPeopleData;
+            String now = SqliteUtil.nowDateForSqlite();
 
             if (fileNameLowerCase.endsWith(".csv")) {
                 // 可以解决中文乱码问题
                 DataInputStream in = new DataInputStream(new FileInputStream(file));
                 reader = new CSVReader(new InputStreamReader(in, FileCharSetUtil.getCharSet(file)));
-                String[] nextLine;
-                PushData.allUser = Collections.synchronizedList(new ArrayList<>());
 
-                while ((nextLine = reader.readNext()) != null) {
-                    PushData.allUser.add(nextLine);
+                String[] nextLine;
+                while (PeopleManageListener.selectedPeopleId != null && (nextLine = reader.readNext()) != null) {
+                    tPeopleData = new TPeopleData();
+                    tPeopleData.setPeopleId(PeopleManageListener.selectedPeopleId);
+                    tPeopleData.setPin(nextLine[0]);
+                    tPeopleData.setVarData(JSONUtil.toJsonStr(nextLine));
+                    tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                    tPeopleData.setCreateTime(now);
+                    tPeopleData.setModifiedTime(now);
+
+                    tPeopleDataMapper.insert(tPeopleData);
                     currentImported++;
                     memberCountLabel.setText(String.valueOf(currentImported));
                 }
@@ -173,11 +187,21 @@ public class ImportByFile extends JDialog {
                 }
             } else if (fileNameLowerCase.endsWith(".txt")) {
                 fileReader = new FileReader(file, FileCharSetUtil.getCharSetName(file));
-                PushData.allUser = Collections.synchronizedList(new ArrayList<>());
                 BufferedReader br = fileReader.getReader();
+
                 String line;
-                while ((line = br.readLine()) != null) {
-                    PushData.allUser.add(line.split(TXT_FILE_DATA_SEPERATOR_REGEX));
+                while (PeopleManageListener.selectedPeopleId != null && (line = br.readLine()) != null) {
+                    String[] nextLine = line.split(TXT_FILE_DATA_SEPERATOR_REGEX);
+
+                    tPeopleData = new TPeopleData();
+                    tPeopleData.setPeopleId(PeopleManageListener.selectedPeopleId);
+                    tPeopleData.setPin(nextLine[0]);
+                    tPeopleData.setVarData(JSONUtil.toJsonStr(nextLine));
+                    tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                    tPeopleData.setCreateTime(now);
+                    tPeopleData.setModifiedTime(now);
+
+                    tPeopleDataMapper.insert(tPeopleData);
                     currentImported++;
                     memberCountLabel.setText(String.valueOf(currentImported));
                 }
@@ -188,7 +212,7 @@ public class ImportByFile extends JDialog {
                 return;
             }
 
-//            renderMemberListTable();
+            PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
 
             if (!PushData.fixRateScheduling) {
                 JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);

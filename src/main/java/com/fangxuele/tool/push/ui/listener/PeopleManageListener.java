@@ -28,6 +28,8 @@ public class PeopleManageListener {
 
     private static TPeopleMapper peopleMapper = MybatisUtil.getSqlSession().getMapper(TPeopleMapper.class);
 
+    public static Integer selectedPeopleId;
+
     public static void addListeners() {
         PeopleManageForm peopleManageForm = PeopleManageForm.getInstance();
 
@@ -86,9 +88,9 @@ public class PeopleManageListener {
             public void mousePressed(MouseEvent e) {
 
                 int selectedRow = peopleListTable.getSelectedRow();
-                Integer peopleId = (int) peopleListTable.getValueAt(selectedRow, 1);
+                selectedPeopleId = (int) peopleListTable.getValueAt(selectedRow, 1);
 
-                PeopleEditForm.initDataTable(peopleId);
+                PeopleEditForm.initDataTable(selectedPeopleId);
 
                 super.mousePressed(e);
             }
