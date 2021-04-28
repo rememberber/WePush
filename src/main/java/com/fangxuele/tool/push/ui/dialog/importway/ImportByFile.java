@@ -7,10 +7,13 @@ import cn.hutool.log.LogFactory;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.dao.TPeopleDataMapper;
+import com.fangxuele.tool.push.dao.TPeopleMapper;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.FileCharSetUtil;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -38,6 +41,9 @@ public class ImportByFile extends JDialog {
     private static final Log logger = LogFactory.get();
 
     public static final String TXT_FILE_DATA_SEPERATOR_REGEX = "\\|";
+
+    private static TPeopleMapper tPeopleMapper = MybatisUtil.getSqlSession().getMapper(TPeopleMapper.class);
+    private static TPeopleDataMapper tPeopleDataMapper = MybatisUtil.getSqlSession().getMapper(TPeopleDataMapper.class);
 
     public ImportByFile() {
         super(App.mainFrame, "通过文件导入人群");

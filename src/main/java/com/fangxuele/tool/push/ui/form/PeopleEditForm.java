@@ -1,5 +1,14 @@
 package com.fangxuele.tool.push.ui.form;
 
+import com.fangxuele.tool.push.dao.TAccountMapper;
+import com.fangxuele.tool.push.dao.TPeopleDataMapper;
+import com.fangxuele.tool.push.dao.TPeopleMapper;
+import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.domain.TPeople;
+import com.fangxuele.tool.push.domain.TPeopleData;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.util.JTableUtil;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -7,10 +16,9 @@ import com.intellij.uiDesigner.core.Spacer;
 import lombok.Getter;
 
 import javax.swing.*;
-import javax.swing.plaf.FontUIResource;
-import javax.swing.text.StyleContext;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.Locale;
+import java.util.List;
 
 /**
  * PeopleEditForm
@@ -28,8 +36,15 @@ public class PeopleEditForm {
     private JPanel memberTabUpPanel;
     private JProgressBar memberTabImportProgressBar;
     private JLabel memberTabCountLabel;
+    private JLabel peopleNameLabel;
+    private JLabel peopleAccountLabel;
+    private JLabel peopleMsgTypeLabel;
 
     private static PeopleEditForm peopleEditForm;
+
+    private static TPeopleMapper peopleMapper = MybatisUtil.getSqlSession().getMapper(TPeopleMapper.class);
+    private static TPeopleDataMapper peopleDataMapper = MybatisUtil.getSqlSession().getMapper(TPeopleDataMapper.class);
+    private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
 
     private PeopleEditForm() {
         UndoUtil.register(this);
@@ -47,10 +62,65 @@ public class PeopleEditForm {
      */
     public static void init(String selectedPeopleName) {
         peopleEditForm = getInstance();
+        peopleEditForm.getMemberTabImportProgressBar().setVisible(false);
         // 设置滚动条速度
 //        peopleEditForm.getAccountEditScrollPane().getVerticalScrollBar().setUnitIncrement(15);
 //        peopleEditForm.getAccountEditScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
 
+    }
+
+    /**
+     * 初始化人群数据列表
+     *
+     * @param peopleId
+     */
+    public static void initDataTable(int peopleId) {
+
+        // -----init Info
+
+        TPeople tPeople = peopleMapper.selectByPrimaryKey(peopleId);
+        if (tPeople != null) {
+            // peopleName
+            String peopleName = tPeople.getPeopleName();
+            peopleEditForm.getPeopleNameLabel().setText(peopleName);
+
+            // account
+            Integer accountId = tPeople.getAccountId();
+            TAccount tAccount = accountMapper.selectByPrimaryKey(accountId);
+            if (tAccount != null) {
+                peopleEditForm.getPeopleAccountLabel().setText(tAccount.getAccountName());
+            }
+
+            // msgType
+            String msgType = tPeople.getMsgType();
+            String msgTypeName = MessageTypeEnum.getName(Integer.parseInt(msgType));
+            peopleEditForm.getPeopleMsgTypeLabel().setText(msgTypeName);
+        }
+
+        // -----init Table
+
+        JTable memberListTable = peopleEditForm.getMemberListTable();
+
+        // 人群数据列表
+        String[] headerNames = {"PIN", "VarData", "id"};
+        DefaultTableModel model = new DefaultTableModel(null, headerNames);
+        memberListTable.setModel(model);
+        // 隐藏表头
+        JTableUtil.hideTableHeader(memberListTable);
+
+        Object[] data;
+
+        List<TPeopleData> peopleDataList = peopleDataMapper.selectByPeopleId(peopleId);
+        peopleEditForm.getMemberTabCountLabel().setText(String.valueOf(peopleDataList.size()));
+        for (TPeopleData peopleData : peopleDataList) {
+            data = new Object[3];
+            data[0] = peopleData.getPin();
+            data[1] = peopleData.getVarData();
+            data[2] = peopleData.getId();
+            model.addRow(data);
+        }
+        // 隐藏id列
+        JTableUtil.hideColumn(memberListTable, 2);
     }
 
     {
@@ -120,21 +190,21 @@ public class PeopleEditForm {
         final JLabel label2 = new JLabel();
         label2.setText("人群名称：");
         memberTabUpPanel.add(label2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        peopleNameLabel = new JLabel();
+        peopleNameLabel.setText("-");
+        memberTabUpPanel.add(peopleNameLabel, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label3 = new JLabel();
-        label3.setText("-");
-        memberTabUpPanel.add(label3, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        label3.setText("所属账号：");
+        memberTabUpPanel.add(label3, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        peopleAccountLabel = new JLabel();
+        peopleAccountLabel.setText("-");
+        memberTabUpPanel.add(peopleAccountLabel, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        peopleMsgTypeLabel = new JLabel();
+        peopleMsgTypeLabel.setText("-");
+        memberTabUpPanel.add(peopleMsgTypeLabel, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label4 = new JLabel();
-        label4.setText("所属账号：");
-        memberTabUpPanel.add(label4, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label5 = new JLabel();
-        label5.setText("-");
-        memberTabUpPanel.add(label5, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label6 = new JLabel();
-        label6.setText("-");
-        memberTabUpPanel.add(label6, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label7 = new JLabel();
-        label7.setText("所属消息类型：");
-        memberTabUpPanel.add(label7, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        label4.setText("所属消息类型：");
+        memberTabUpPanel.add(label4, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         memberTabCountLabel = new JLabel();
         memberTabCountLabel.setText("-");
         memberTabUpPanel.add(memberTabCountLabel, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));

@@ -5,12 +5,15 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.dao.TPeopleMapper;
 import com.fangxuele.tool.push.ui.dialog.NewPeopleDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.PeopleEditForm;
 import com.fangxuele.tool.push.ui.form.PeopleManageForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ItemEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * <pre>
@@ -74,6 +77,20 @@ public class PeopleManageListener {
                 JOptionPane.showMessageDialog(mainPanel, "删除失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
+            }
+        });
+
+        // 点击左侧表格事件
+        peopleListTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+                int selectedRow = peopleListTable.getSelectedRow();
+                Integer peopleId = (int) peopleListTable.getValueAt(selectedRow, 1);
+
+                PeopleEditForm.initDataTable(peopleId);
+
+                super.mousePressed(e);
             }
         });
     }

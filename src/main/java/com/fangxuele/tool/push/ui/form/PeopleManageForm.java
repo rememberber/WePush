@@ -38,7 +38,7 @@ public class PeopleManageForm {
 
     private static PeopleManageForm peopleManageForm;
 
-    private static Map<String, Integer> accountMap;
+    public static Map<String, Integer> accountMap;
 
     private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
     private static TPeopleMapper peopleMapper = MybatisUtil.getSqlSession().getMapper(TPeopleMapper.class);

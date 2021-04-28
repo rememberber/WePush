@@ -136,7 +136,7 @@
               <text value="人群名称："/>
             </properties>
           </component>
-          <component id="43a87" class="javax.swing.JLabel">
+          <component id="43a87" class="javax.swing.JLabel" binding="peopleNameLabel">
             <constraints>
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -152,7 +152,7 @@
               <text value="所属账号："/>
             </properties>
           </component>
-          <component id="4845e" class="javax.swing.JLabel">
+          <component id="4845e" class="javax.swing.JLabel" binding="peopleAccountLabel">
             <constraints>
               <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -160,7 +160,7 @@
               <text value="-"/>
             </properties>
           </component>
-          <component id="17713" class="javax.swing.JLabel">
+          <component id="17713" class="javax.swing.JLabel" binding="peopleMsgTypeLabel">
             <constraints>
               <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
