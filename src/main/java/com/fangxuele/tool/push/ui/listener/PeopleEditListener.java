@@ -4,6 +4,7 @@ import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.dao.TPeopleMapper;
 import com.fangxuele.tool.push.ui.dialog.importway.ImportByFile;
+import com.fangxuele.tool.push.ui.dialog.importway.ImportBySQL;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
@@ -60,6 +61,10 @@ public class PeopleEditListener {
     private static void showImportDialog(String actionCommand) {
         if ("通过文件导入".equals(actionCommand)) {
             ImportByFile dialog = new ImportByFile();
+            dialog.pack();
+            dialog.setVisible(true);
+        } else if ("通过SQL导入".equals(actionCommand)) {
+            ImportBySQL dialog = new ImportBySQL();
             dialog.pack();
             dialog.setVisible(true);
         } else {
