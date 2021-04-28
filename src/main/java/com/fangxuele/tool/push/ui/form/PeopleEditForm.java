@@ -106,7 +106,7 @@ public class PeopleEditForm {
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
         memberListTable.setModel(model);
         // 隐藏表头
-        JTableUtil.hideTableHeader(memberListTable);
+//        JTableUtil.hideTableHeader(memberListTable);
 
         Object[] data;
 
