@@ -9,8 +9,11 @@ import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPeopleDataMapper;
+import com.fangxuele.tool.push.dao.TPeopleImportConfigMapper;
 import com.fangxuele.tool.push.dao.TPeopleMapper;
 import com.fangxuele.tool.push.domain.TPeopleData;
+import com.fangxuele.tool.push.domain.TPeopleImportConfig;
+import com.fangxuele.tool.push.logic.PeopleImportWayEnum;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
@@ -47,8 +50,9 @@ public class ImportByFile extends JDialog {
 
     public static final String TXT_FILE_DATA_SEPERATOR_REGEX = "\\|";
 
-    private static TPeopleMapper tPeopleMapper = MybatisUtil.getSqlSession().getMapper(TPeopleMapper.class);
-    private static TPeopleDataMapper tPeopleDataMapper = MybatisUtil.getSqlSession().getMapper(TPeopleDataMapper.class);
+    private static TPeopleMapper peopleMapper = MybatisUtil.getSqlSession().getMapper(TPeopleMapper.class);
+    private static TPeopleDataMapper peopleDataMapper = MybatisUtil.getSqlSession().getMapper(TPeopleDataMapper.class);
+    private static TPeopleImportConfigMapper peopleImportConfigMapper = MybatisUtil.getSqlSession().getMapper(TPeopleImportConfigMapper.class);
 
     public ImportByFile() {
         super(App.mainFrame, "通过文件导入人群");
@@ -56,6 +60,12 @@ public class ImportByFile extends JDialog {
         setModal(true);
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.4, 0.2);
         getRootPane().setDefaultButton(importFromFileButton);
+
+        // 获取上一次导入的配置
+        TPeopleImportConfig tPeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
+        if (tPeopleImportConfig != null) {
+            memberFilePathField.setText(tPeopleImportConfig.getLastFilePath());
+        }
 
         // 文件浏览按钮
         memberImportExploreButton.addActionListener(e -> {
@@ -141,7 +151,11 @@ public class ImportByFile extends JDialog {
         CSVReader reader = null;
         FileReader fileReader;
 
+        String memberCount = memberCountLabel.getText();
         int currentImported = 0;
+        if (!"-".equals(memberCount)) {
+            currentImported = Integer.parseInt(memberCount);
+        }
 
         try {
             progressBar.setVisible(true);
@@ -149,6 +163,24 @@ public class ImportByFile extends JDialog {
             String fileNameLowerCase = file.getName().toLowerCase();
             TPeopleData tPeopleData;
             String now = SqliteUtil.nowDateForSqlite();
+
+            // 保存导入配置
+            TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
+
+            TPeopleImportConfig tPeopleImportConfig = new TPeopleImportConfig();
+            tPeopleImportConfig.setPeopleId(PeopleManageListener.selectedPeopleId);
+            tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_FILE_CODE));
+            tPeopleImportConfig.setLastFilePath(filePath);
+            tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
+            tPeopleImportConfig.setModifiedTime(now);
+
+            if (beforePeopleImportConfig != null) {
+                tPeopleImportConfig.setId(beforePeopleImportConfig.getId());
+                peopleImportConfigMapper.updateByPrimaryKeySelective(tPeopleImportConfig);
+            } else {
+                tPeopleImportConfig.setCreateTime(now);
+                peopleImportConfigMapper.insert(tPeopleImportConfig);
+            }
 
             if (fileNameLowerCase.endsWith(".csv")) {
                 // 可以解决中文乱码问题
@@ -165,7 +197,7 @@ public class ImportByFile extends JDialog {
                     tPeopleData.setCreateTime(now);
                     tPeopleData.setModifiedTime(now);
 
-                    tPeopleDataMapper.insert(tPeopleData);
+                    peopleDataMapper.insert(tPeopleData);
                     currentImported++;
                     memberCountLabel.setText(String.valueOf(currentImported));
                 }
@@ -180,7 +212,6 @@ public class ImportByFile extends JDialog {
                         for (int i = 0; i < objects.size(); i++) {
                             nextLine[i] = objects.get(i).toString();
                         }
-                        PushData.allUser.add(nextLine);
                         currentImported++;
                         memberCountLabel.setText(String.valueOf(currentImported));
                     }
@@ -201,7 +232,7 @@ public class ImportByFile extends JDialog {
                     tPeopleData.setCreateTime(now);
                     tPeopleData.setModifiedTime(now);
 
-                    tPeopleDataMapper.insert(tPeopleData);
+                    peopleDataMapper.insert(tPeopleData);
                     currentImported++;
                     memberCountLabel.setText(String.valueOf(currentImported));
                 }
@@ -215,6 +246,8 @@ public class ImportByFile extends JDialog {
             PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
 
             if (!PushData.fixRateScheduling) {
+                progressBar.setIndeterminate(false);
+                progressBar.setVisible(false);
                 JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
             }
 

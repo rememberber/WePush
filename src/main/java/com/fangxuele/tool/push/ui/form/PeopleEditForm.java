@@ -2,11 +2,14 @@ package com.fangxuele.tool.push.ui.form;
 
 import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.dao.TPeopleDataMapper;
+import com.fangxuele.tool.push.dao.TPeopleImportConfigMapper;
 import com.fangxuele.tool.push.dao.TPeopleMapper;
 import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TPeople;
 import com.fangxuele.tool.push.domain.TPeopleData;
+import com.fangxuele.tool.push.domain.TPeopleImportConfig;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.logic.PeopleImportWayEnum;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.UndoUtil;
@@ -39,12 +42,14 @@ public class PeopleEditForm {
     private JLabel peopleNameLabel;
     private JLabel peopleAccountLabel;
     private JLabel peopleMsgTypeLabel;
+    private JLabel lastImportWayLabel;
 
     private static PeopleEditForm peopleEditForm;
 
     private static TPeopleMapper peopleMapper = MybatisUtil.getSqlSession().getMapper(TPeopleMapper.class);
     private static TPeopleDataMapper peopleDataMapper = MybatisUtil.getSqlSession().getMapper(TPeopleDataMapper.class);
     private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
+    private static TPeopleImportConfigMapper peopleImportConfigMapper = MybatisUtil.getSqlSession().getMapper(TPeopleImportConfigMapper.class);
 
     private PeopleEditForm() {
         UndoUtil.register(this);
@@ -95,6 +100,12 @@ public class PeopleEditForm {
             String msgType = tPeople.getMsgType();
             String msgTypeName = MessageTypeEnum.getName(Integer.parseInt(msgType));
             peopleEditForm.getPeopleMsgTypeLabel().setText(msgTypeName);
+
+            // 上一次导入方式
+            TPeopleImportConfig tPeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(peopleId);
+            if (tPeopleImportConfig != null) {
+                peopleEditForm.getLastImportWayLabel().setText(PeopleImportWayEnum.getName(Integer.parseInt(tPeopleImportConfig.getLastWay())));
+            }
         }
 
         // -----init Table
@@ -178,10 +189,10 @@ public class PeopleEditForm {
         final Spacer spacer1 = new Spacer();
         panel2.add(spacer1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         memberTabUpPanel = new JPanel();
-        memberTabUpPanel.setLayout(new GridLayoutManager(5, 3, new Insets(0, 5, 5, 0), -1, -1));
+        memberTabUpPanel.setLayout(new GridLayoutManager(6, 3, new Insets(0, 5, 5, 0), -1, -1));
         mainPanel.add(memberTabUpPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         memberTabImportProgressBar = new JProgressBar();
-        memberTabUpPanel.add(memberTabImportProgressBar, new GridConstraints(4, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        memberTabUpPanel.add(memberTabImportProgressBar, new GridConstraints(5, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
         memberTabUpPanel.add(spacer2, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
@@ -202,9 +213,15 @@ public class PeopleEditForm {
         peopleMsgTypeLabel = new JLabel();
         peopleMsgTypeLabel.setText("-");
         memberTabUpPanel.add(peopleMsgTypeLabel, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        lastImportWayLabel = new JLabel();
+        lastImportWayLabel.setText("-");
+        memberTabUpPanel.add(lastImportWayLabel, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label4 = new JLabel();
         label4.setText("所属消息类型：");
         memberTabUpPanel.add(label4, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label5 = new JLabel();
+        label5.setText("上次导入方式：");
+        memberTabUpPanel.add(label5, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         memberTabCountLabel = new JLabel();
         memberTabCountLabel.setText("-");
         memberTabUpPanel.add(memberTabCountLabel, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));

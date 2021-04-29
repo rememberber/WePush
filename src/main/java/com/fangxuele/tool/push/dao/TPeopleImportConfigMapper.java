@@ -1,6 +1,7 @@
 package com.fangxuele.tool.push.dao;
 
 import com.fangxuele.tool.push.domain.TPeopleImportConfig;
+import org.apache.ibatis.annotations.Param;
 
 public interface TPeopleImportConfigMapper {
     int deleteByPrimaryKey(Integer id);
@@ -14,4 +15,6 @@ public interface TPeopleImportConfigMapper {
     int updateByPrimaryKeySelective(TPeopleImportConfig record);
 
     int updateByPrimaryKey(TPeopleImportConfig record);
+
+    TPeopleImportConfig selectByPeopleId(@Param("peopleId") Integer selectedPeopleId);
 }
