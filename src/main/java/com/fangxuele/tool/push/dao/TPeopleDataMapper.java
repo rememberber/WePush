@@ -18,4 +18,6 @@ public interface TPeopleDataMapper {
     int updateByPrimaryKey(TPeopleData record);
 
     List<TPeopleData> selectByPeopleId(Integer peopleId);
+
+    Long countByPeopleId(Integer peopleId);
 }

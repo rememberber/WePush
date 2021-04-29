@@ -151,10 +151,10 @@ public class ImportByFile extends JDialog {
         CSVReader reader = null;
         FileReader fileReader;
 
-        String memberCount = memberCountLabel.getText();
         int currentImported = 0;
-        if (!"-".equals(memberCount)) {
-            currentImported = Integer.parseInt(memberCount);
+        Long totalCount = peopleDataMapper.countByPeopleId(PeopleManageListener.selectedPeopleId);
+        if (totalCount != null) {
+            currentImported = Math.toIntExact(totalCount);
         }
 
         try {
