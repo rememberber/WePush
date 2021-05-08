@@ -202,12 +202,6 @@ public class ImportByDing extends JDialog {
         });
 
         // 钉钉-导入全部
-        dingImportAllButton.addActionListener(e -> {
-            ThreadUtil.execute(() -> {
-                importDingAll();
-            });
-        });
-
         dingImportAllButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 onOK();
@@ -231,7 +225,9 @@ public class ImportByDing extends JDialog {
     }
 
     private void onOK() {
-        // add your code here
+        ThreadUtil.execute(() -> {
+            importDingAll();
+        });
         dispose();
     }
 

@@ -1,16 +1,41 @@
 package com.fangxuele.tool.push.ui.dialog.importway;
 
+import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.json.JSONUtil;
+import cn.hutool.log.Log;
+import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.dao.TPeopleDataMapper;
+import com.fangxuele.tool.push.dao.TPeopleImportConfigMapper;
+import com.fangxuele.tool.push.domain.TPeopleData;
+import com.fangxuele.tool.push.domain.TPeopleImportConfig;
+import com.fangxuele.tool.push.logic.PeopleImportWayEnum;
+import com.fangxuele.tool.push.logic.PushData;
+import com.fangxuele.tool.push.logic.msgsender.WxCpMsgSender;
+import com.fangxuele.tool.push.ui.UiConsts;
+import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.PeopleEditForm;
+import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
+import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
 import com.fangxuele.tool.push.util.ComponentUtil;
+import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.SqliteUtil;
+import com.google.common.collect.Maps;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import me.chanjar.weixin.cp.bean.WxCpDepart;
+import me.chanjar.weixin.cp.bean.WxCpTag;
+import me.chanjar.weixin.cp.bean.WxCpUser;
+import org.apache.commons.compress.utils.Lists;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class ImportByWxCp extends JDialog {
     private JPanel contentPane;
@@ -22,6 +47,31 @@ public class ImportByWxCp extends JDialog {
     private JButton wxCpTagsImportButton;
     private JButton wxCpDeptsImportButton;
 
+    private static final Log logger = LogFactory.get();
+
+    private static TPeopleDataMapper peopleDataMapper = MybatisUtil.getSqlSession().getMapper(TPeopleDataMapper.class);
+    private static TPeopleImportConfigMapper peopleImportConfigMapper = MybatisUtil.getSqlSession().getMapper(TPeopleImportConfigMapper.class);
+
+    /**
+     * 企业号标签名称->标签ID
+     */
+    private static Map<String, String> wxCpTagNameToIdMap = Maps.newHashMap();
+
+    /**
+     * 企业号标签ID>标签名称
+     */
+    private static Map<String, String> wxCpIdToTagNameMap = Maps.newHashMap();
+
+    /**
+     * 企业号部门名称->部门ID
+     */
+    private static Map<String, Long> wxCpDeptNameToIdMap = Maps.newHashMap();
+
+    /**
+     * 企业号部门ID>部门名称
+     */
+    private static Map<Long, String> wxCpIdToDeptNameMap = Maps.newHashMap();
+
     public ImportByWxCp() {
         super(App.mainFrame, "通过微信企业通讯录导入");
         setContentPane(contentPane);
@@ -29,6 +79,222 @@ public class ImportByWxCp extends JDialog {
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.3, 0.2);
         getRootPane().setDefaultButton(wxCpImportAllButton);
 
+        // 企业号-按标签导入-刷新
+        wxCpTagsRefreshButton.addActionListener(e -> {
+            ThreadUtil.execute(() -> {
+                if (WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem() == null) {
+                    JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "请先在编辑消息tab中选择应用！", "提示",
+                            JOptionPane.ERROR_MESSAGE);
+                    MainWindow.getInstance().getTabbedPane().setSelectedIndex(2);
+                    return;
+                }
+                wxCpTagsComboBox.removeAllItems();
+
+                try {
+                    // 获取标签列表
+                    List<WxCpTag> wxCpTagList = WxCpMsgSender.getWxCpService().getTagService().listAll();
+                    for (WxCpTag wxCpTag : wxCpTagList) {
+                        wxCpTagsComboBox.addItem(wxCpTag.getName());
+                        wxCpTagNameToIdMap.put(wxCpTag.getName(), wxCpTag.getId());
+                        wxCpIdToTagNameMap.put(wxCpTag.getId(), wxCpTag.getName());
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(App.mainFrame, "刷新失败！\n\n" + ex, "失败",
+                            JOptionPane.ERROR_MESSAGE);
+                    logger.error(ex.toString());
+                }
+            });
+        });
+
+        // 企业号-按标签导入-导入
+        wxCpTagsImportButton.addActionListener(e -> {
+            ThreadUtil.execute(() -> {
+                PeopleEditForm peopleEditForm = PeopleEditForm.getInstance();
+                JProgressBar progressBar = peopleEditForm.getMemberTabImportProgressBar();
+                JLabel memberCountLabel = peopleEditForm.getMemberTabCountLabel();
+
+                if (wxCpTagsComboBox.getSelectedItem() == null) {
+                    return;
+                }
+                try {
+                    progressBar.setVisible(true);
+                    progressBar.setIndeterminate(true);
+                    int importedCount = 0;
+                    String now = SqliteUtil.nowDateForSqlite();
+
+                    // 保存导入配置
+                    TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
+
+                    TPeopleImportConfig tPeopleImportConfig = new TPeopleImportConfig();
+                    tPeopleImportConfig.setPeopleId(PeopleManageListener.selectedPeopleId);
+                    tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_DING_CODE));
+                    tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
+                    tPeopleImportConfig.setModifiedTime(now);
+
+                    if (beforePeopleImportConfig != null) {
+                        tPeopleImportConfig.setId(beforePeopleImportConfig.getId());
+                        peopleImportConfigMapper.updateByPrimaryKeySelective(tPeopleImportConfig);
+                    } else {
+                        tPeopleImportConfig.setCreateTime(now);
+                        peopleImportConfigMapper.insert(tPeopleImportConfig);
+                    }
+
+                    // 获取标签id
+                    String tagId = wxCpTagNameToIdMap.get(wxCpTagsComboBox.getSelectedItem());
+                    // 获取用户
+                    List<WxCpUser> wxCpUsers = WxCpMsgSender.getWxCpService().getTagService().listUsersByTagId(tagId);
+                    for (WxCpUser wxCpUser : wxCpUsers) {
+                        Long[] depIds = wxCpUser.getDepartIds();
+                        List<String> deptNameList = Lists.newArrayList();
+                        if (depIds != null) {
+                            for (Long depId : depIds) {
+                                deptNameList.add(wxCpIdToDeptNameMap.get(depId));
+                            }
+                        }
+                        String[] dataArray = new String[]{wxCpUser.getUserId(), wxCpUser.getName(), String.join("/", deptNameList)};
+
+                        TPeopleData tPeopleData = new TPeopleData();
+                        tPeopleData.setPeopleId(PeopleManageListener.selectedPeopleId);
+                        tPeopleData.setPin(dataArray[0]);
+                        tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
+                        tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                        tPeopleData.setCreateTime(now);
+                        tPeopleData.setModifiedTime(now);
+
+                        peopleDataMapper.insert(tPeopleData);
+
+                        importedCount++;
+                        memberCountLabel.setText(String.valueOf(importedCount));
+                    }
+                    PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
+                    if (!PushData.fixRateScheduling) {
+                        JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + ex, "失败",
+                            JOptionPane.ERROR_MESSAGE);
+                    logger.error(ex.toString());
+                } finally {
+                    progressBar.setIndeterminate(false);
+                    progressBar.setVisible(false);
+                }
+
+            });
+        });
+
+        // 企业号-按部门导入-刷新
+        wxCpDeptsRefreshButton.addActionListener(e -> {
+            ThreadUtil.execute(() -> {
+                if (WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem() == null) {
+                    JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "请先在编辑消息tab中选择应用！", "提示",
+                            JOptionPane.ERROR_MESSAGE);
+                    MainWindow.getInstance().getTabbedPane().setSelectedIndex(2);
+                    return;
+                }
+                wxCpDeptsComboBox.removeAllItems();
+
+                try {
+                    // 获取部门列表
+                    List<WxCpDepart> wxCpDepartList = WxCpMsgSender.getWxCpService().getDepartmentService().list(null);
+                    for (WxCpDepart wxCpDepart : wxCpDepartList) {
+                        wxCpDeptsComboBox.addItem(wxCpDepart.getName());
+                        wxCpDeptNameToIdMap.put(wxCpDepart.getName(), wxCpDepart.getId());
+                        wxCpIdToDeptNameMap.put(wxCpDepart.getId(), wxCpDepart.getName());
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(App.mainFrame, "刷新失败！\n\n" + ex, "失败",
+                            JOptionPane.ERROR_MESSAGE);
+                    logger.error(ex.toString());
+                }
+            });
+        });
+
+        // 企业号-按部门导入-导入
+        wxCpDeptsImportButton.addActionListener(e -> {
+            ThreadUtil.execute(() -> {
+                PeopleEditForm peopleEditForm = PeopleEditForm.getInstance();
+                JProgressBar progressBar = peopleEditForm.getMemberTabImportProgressBar();
+                JLabel memberCountLabel = peopleEditForm.getMemberTabCountLabel();
+
+                if (wxCpDeptsComboBox.getSelectedItem() == null) {
+                    return;
+                }
+                try {
+                    progressBar.setVisible(true);
+                    progressBar.setIndeterminate(true);
+                    int importedCount = 0;
+                    String now = SqliteUtil.nowDateForSqlite();
+
+                    // 保存导入配置
+                    TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
+
+                    TPeopleImportConfig tPeopleImportConfig = new TPeopleImportConfig();
+                    tPeopleImportConfig.setPeopleId(PeopleManageListener.selectedPeopleId);
+                    tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_DING_CODE));
+                    tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
+                    tPeopleImportConfig.setModifiedTime(now);
+
+                    if (beforePeopleImportConfig != null) {
+                        tPeopleImportConfig.setId(beforePeopleImportConfig.getId());
+                        peopleImportConfigMapper.updateByPrimaryKeySelective(tPeopleImportConfig);
+                    } else {
+                        tPeopleImportConfig.setCreateTime(now);
+                        peopleImportConfigMapper.insert(tPeopleImportConfig);
+                    }
+
+                    // 获取部门id
+                    Long deptId = wxCpDeptNameToIdMap.get(wxCpDeptsComboBox.getSelectedItem());
+                    // 获取用户
+                    List<WxCpUser> wxCpUsers = WxCpMsgSender.getWxCpService().getUserService().listByDepartment(deptId, true, 0);
+                    for (WxCpUser wxCpUser : wxCpUsers) {
+                        String statusStr = "";
+                        if (wxCpUser.getStatus() == 1) {
+                            statusStr = "已关注";
+                        } else if (wxCpUser.getStatus() == 2) {
+                            statusStr = "已冻结";
+                        } else if (wxCpUser.getStatus() == 4) {
+                            statusStr = "未关注";
+                        }
+                        Long[] depIds = wxCpUser.getDepartIds();
+                        List<String> deptNameList = Lists.newArrayList();
+                        if (depIds != null) {
+                            for (Long depId : depIds) {
+                                deptNameList.add(wxCpIdToDeptNameMap.get(depId));
+                            }
+                        }
+                        String[] dataArray = new String[]{wxCpUser.getUserId(), wxCpUser.getName(), wxCpUser.getGender().getGenderName(), wxCpUser.getEmail(), String.join("/", deptNameList), wxCpUser.getPosition(), statusStr};
+
+                        TPeopleData tPeopleData = new TPeopleData();
+                        tPeopleData.setPeopleId(PeopleManageListener.selectedPeopleId);
+                        tPeopleData.setPin(dataArray[0]);
+                        tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
+                        tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                        tPeopleData.setCreateTime(now);
+                        tPeopleData.setModifiedTime(now);
+
+                        peopleDataMapper.insert(tPeopleData);
+
+                        importedCount++;
+                        memberCountLabel.setText(String.valueOf(importedCount));
+                    }
+                    PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
+
+                    if (!PushData.fixRateScheduling) {
+                        JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + ex, "失败",
+                            JOptionPane.ERROR_MESSAGE);
+                    logger.error(ex.toString());
+                } finally {
+                    progressBar.setIndeterminate(false);
+                    progressBar.setVisible(false);
+                }
+
+            });
+        });
+
+        // 企业号-导入全部
         wxCpImportAllButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 onOK();
@@ -52,13 +318,111 @@ public class ImportByWxCp extends JDialog {
     }
 
     private void onOK() {
-        // add your code here
+        ThreadUtil.execute(() -> {
+            importWxCpAll();
+        });
+
         dispose();
     }
 
     private void onCancel() {
         // add your code here if necessary
         dispose();
+    }
+
+    /**
+     * 导入企业通讯录全员
+     */
+    public static void importWxCpAll() {
+        PeopleEditForm peopleEditForm = PeopleEditForm.getInstance();
+        JProgressBar progressBar = peopleEditForm.getMemberTabImportProgressBar();
+        JLabel memberCountLabel = peopleEditForm.getMemberTabCountLabel();
+
+        try {
+            if (WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem() == null) {
+                JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "请先在编辑消息tab中选择应用！", "提示",
+                        JOptionPane.ERROR_MESSAGE);
+                MainWindow.getInstance().getTabbedPane().setSelectedIndex(2);
+                return;
+            }
+
+            progressBar.setVisible(true);
+            progressBar.setIndeterminate(true);
+            int importedCount = 0;
+            String now = SqliteUtil.nowDateForSqlite();
+
+            // 保存导入配置
+            TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
+
+            TPeopleImportConfig tPeopleImportConfig = new TPeopleImportConfig();
+            tPeopleImportConfig.setPeopleId(PeopleManageListener.selectedPeopleId);
+            tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_DING_CODE));
+            tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
+            tPeopleImportConfig.setModifiedTime(now);
+
+            if (beforePeopleImportConfig != null) {
+                tPeopleImportConfig.setId(beforePeopleImportConfig.getId());
+                peopleImportConfigMapper.updateByPrimaryKeySelective(tPeopleImportConfig);
+            } else {
+                tPeopleImportConfig.setCreateTime(now);
+                peopleImportConfigMapper.insert(tPeopleImportConfig);
+            }
+
+            // 获取最小部门id
+            List<WxCpDepart> wxCpDepartList = WxCpMsgSender.getWxCpService().getDepartmentService().list(null);
+            long minDeptId = Long.MAX_VALUE;
+            for (WxCpDepart wxCpDepart : wxCpDepartList) {
+                if (wxCpDepart.getId() < minDeptId) {
+                    minDeptId = wxCpDepart.getId();
+                }
+            }
+            // 获取用户
+            List<WxCpUser> wxCpUsers = WxCpMsgSender.getWxCpService().getUserService().listByDepartment(minDeptId, true, 0);
+            for (WxCpUser wxCpUser : wxCpUsers) {
+                String statusStr = "";
+                if (wxCpUser.getStatus() == 1) {
+                    statusStr = "已关注";
+                } else if (wxCpUser.getStatus() == 2) {
+                    statusStr = "已冻结";
+                } else if (wxCpUser.getStatus() == 4) {
+                    statusStr = "未关注";
+                }
+                Long[] depIds = wxCpUser.getDepartIds();
+                List<String> deptNameList = Lists.newArrayList();
+                if (depIds != null) {
+                    for (Long depId : depIds) {
+                        deptNameList.add(wxCpIdToDeptNameMap.get(depId));
+                    }
+                }
+                String[] dataArray = new String[]{wxCpUser.getUserId(), wxCpUser.getName(), wxCpUser.getGender().getGenderName(), wxCpUser.getEmail(), String.join("/", deptNameList), wxCpUser.getPosition(), statusStr};
+
+                TPeopleData tPeopleData = new TPeopleData();
+                tPeopleData.setPeopleId(PeopleManageListener.selectedPeopleId);
+                tPeopleData.setPin(dataArray[0]);
+                tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
+                tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                tPeopleData.setCreateTime(now);
+                tPeopleData.setModifiedTime(now);
+
+                peopleDataMapper.insert(tPeopleData);
+
+                importedCount++;
+                memberCountLabel.setText(String.valueOf(importedCount));
+            }
+
+            PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
+
+            if (!PushData.fixRateScheduling) {
+                JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + ex, "失败",
+                    JOptionPane.ERROR_MESSAGE);
+            logger.error(ex.toString());
+        } finally {
+            progressBar.setIndeterminate(false);
+            progressBar.setVisible(false);
+        }
     }
 
     {
