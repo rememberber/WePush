@@ -1,14 +1,38 @@
 package com.fangxuele.tool.push.ui.dialog.importway;
 
+import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.db.DbUtil;
+import cn.hutool.db.Entity;
+import cn.hutool.db.handler.EntityListHandler;
+import cn.hutool.db.sql.SqlExecutor;
+import cn.hutool.json.JSONUtil;
+import cn.hutool.log.Log;
+import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.dao.TPeopleDataMapper;
+import com.fangxuele.tool.push.dao.TPeopleImportConfigMapper;
+import com.fangxuele.tool.push.domain.TPeopleData;
+import com.fangxuele.tool.push.domain.TPeopleImportConfig;
+import com.fangxuele.tool.push.logic.PeopleImportWayEnum;
+import com.fangxuele.tool.push.logic.PushData;
+import com.fangxuele.tool.push.ui.UiConsts;
+import com.fangxuele.tool.push.ui.form.PeopleEditForm;
+import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
 import com.fangxuele.tool.push.util.ComponentUtil;
+import com.fangxuele.tool.push.util.HikariUtil;
+import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.SqliteUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.Connection;
+import java.util.List;
+import java.util.Set;
 
 public class ImportBySQL extends JDialog {
     private JPanel contentPane;
@@ -16,12 +40,23 @@ public class ImportBySQL extends JDialog {
     private JButton importFromSqlButton;
     private JTextArea importFromSqlTextArea;
 
+    private static final Log logger = LogFactory.get();
+
+    private static TPeopleDataMapper peopleDataMapper = MybatisUtil.getSqlSession().getMapper(TPeopleDataMapper.class);
+    private static TPeopleImportConfigMapper peopleImportConfigMapper = MybatisUtil.getSqlSession().getMapper(TPeopleImportConfigMapper.class);
+
     public ImportBySQL() {
         super(App.mainFrame, "通过SQL导入人群");
         setContentPane(contentPane);
         setModal(true);
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.4, 0.4);
         getRootPane().setDefaultButton(importFromSqlButton);
+
+        // 获取上一次导入的配置
+        TPeopleImportConfig tPeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
+        if (tPeopleImportConfig != null) {
+            importFromSqlTextArea.setText(tPeopleImportConfig.getLastSql());
+        }
 
         importFromSqlButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -53,12 +88,123 @@ public class ImportBySQL extends JDialog {
 
     private void onOK() {
         // add your code here
+        String sql = importFromSqlTextArea.getText();
+
+        PeopleEditForm peopleEditForm = PeopleEditForm.getInstance();
+
+        if (StringUtils.isBlank(App.config.getMysqlUrl()) || StringUtils.isBlank(App.config.getMysqlUser())) {
+            JOptionPane.showMessageDialog(App.mainFrame, "请先在设置中填写并保存MySQL的配置信息！", "提示",
+                    JOptionPane.INFORMATION_MESSAGE);
+            peopleEditForm.getImportButton().setEnabled(true);
+            return;
+        }
+        if (StringUtils.isBlank(sql)) {
+            JOptionPane.showMessageDialog(App.mainFrame, "请先填写要执行导入的SQL！", "提示",
+                    JOptionPane.INFORMATION_MESSAGE);
+            peopleEditForm.getImportButton().setEnabled(true);
+            return;
+        }
+
+        ThreadUtil.execute(() -> importFromSql(sql));
+
         dispose();
     }
 
     private void onCancel() {
         // add your code here if necessary
         dispose();
+    }
+
+    /**
+     * 通过SQL导入
+     */
+    public static void importFromSql(String querySql) {
+        PeopleEditForm peopleEditForm = PeopleEditForm.getInstance();
+        peopleEditForm.getImportButton().setEnabled(false);
+        JProgressBar progressBar = peopleEditForm.getMemberTabImportProgressBar();
+        JLabel memberCountLabel = peopleEditForm.getMemberTabCountLabel();
+
+        if (StringUtils.isNotEmpty(querySql)) {
+            Connection conn = null;
+            try {
+                peopleEditForm.getImportButton().setEnabled(false);
+                peopleEditForm.getImportButton().updateUI();
+                progressBar.setVisible(true);
+                progressBar.setIndeterminate(true);
+
+                String now = SqliteUtil.nowDateForSqlite();
+
+                // 保存导入配置
+                TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
+
+                TPeopleImportConfig tPeopleImportConfig = new TPeopleImportConfig();
+                tPeopleImportConfig.setPeopleId(PeopleManageListener.selectedPeopleId);
+                tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_SQL_CODE));
+                tPeopleImportConfig.setLastSql(querySql);
+                tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
+                tPeopleImportConfig.setModifiedTime(now);
+
+                if (beforePeopleImportConfig != null) {
+                    tPeopleImportConfig.setId(beforePeopleImportConfig.getId());
+                    peopleImportConfigMapper.updateByPrimaryKeySelective(tPeopleImportConfig);
+                } else {
+                    tPeopleImportConfig.setCreateTime(now);
+                    peopleImportConfigMapper.insert(tPeopleImportConfig);
+                }
+
+                // 表查询
+                int currentImported = 0;
+
+                conn = HikariUtil.getConnection();
+                List<Entity> entityList = SqlExecutor.query(conn, querySql, new EntityListHandler());
+                for (Entity entity : entityList) {
+                    Set<String> fieldNames = entity.getFieldNames();
+                    String[] msgData = new String[fieldNames.size()];
+                    int i = 0;
+                    for (String fieldName : fieldNames) {
+                        msgData[i] = entity.getStr(fieldName);
+                        i++;
+                    }
+
+                    TPeopleData tPeopleData = new TPeopleData();
+                    tPeopleData.setPeopleId(PeopleManageListener.selectedPeopleId);
+                    tPeopleData.setPin(msgData[0]);
+                    tPeopleData.setVarData(JSONUtil.toJsonStr(msgData));
+                    tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                    tPeopleData.setCreateTime(now);
+                    tPeopleData.setModifiedTime(now);
+
+                    peopleDataMapper.insert(tPeopleData);
+
+                    currentImported++;
+                    memberCountLabel.setText(String.valueOf(currentImported));
+                }
+
+                PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
+
+                if (!PushData.fixRateScheduling) {
+                    progressBar.setIndeterminate(false);
+                    progressBar.setVisible(false);
+                    JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+                }
+
+                App.config.setMemberSql(querySql);
+                App.config.save();
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            } finally {
+                DbUtil.close(conn);
+                peopleEditForm.getImportButton().setEnabled(true);
+                peopleEditForm.getImportButton().updateUI();
+                progressBar.setMaximum(100);
+                progressBar.setValue(100);
+                progressBar.setIndeterminate(false);
+                progressBar.setVisible(false);
+                peopleEditForm.getImportButton().setEnabled(true);
+            }
+        }
     }
 
     {

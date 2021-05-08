@@ -10,7 +10,6 @@ import cn.hutool.poi.excel.ExcelUtil;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPeopleDataMapper;
 import com.fangxuele.tool.push.dao.TPeopleImportConfigMapper;
-import com.fangxuele.tool.push.dao.TPeopleMapper;
 import com.fangxuele.tool.push.domain.TPeopleData;
 import com.fangxuele.tool.push.domain.TPeopleImportConfig;
 import com.fangxuele.tool.push.logic.PeopleImportWayEnum;
@@ -48,7 +47,6 @@ public class ImportByFile extends JDialog {
 
     public static final String TXT_FILE_DATA_SEPERATOR_REGEX = "\\|";
 
-    private static TPeopleMapper peopleMapper = MybatisUtil.getSqlSession().getMapper(TPeopleMapper.class);
     private static TPeopleDataMapper peopleDataMapper = MybatisUtil.getSqlSession().getMapper(TPeopleDataMapper.class);
     private static TPeopleImportConfigMapper peopleImportConfigMapper = MybatisUtil.getSqlSession().getMapper(TPeopleImportConfigMapper.class);
 
