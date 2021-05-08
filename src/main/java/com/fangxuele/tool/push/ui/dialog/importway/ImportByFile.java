@@ -34,8 +34,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class ImportByFile extends JDialog {
@@ -204,7 +202,6 @@ public class ImportByFile extends JDialog {
             } else if (fileNameLowerCase.endsWith(".xlsx") || fileNameLowerCase.endsWith(".xls")) {
                 ExcelReader excelReader = ExcelUtil.getReader(file);
                 List<List<Object>> readAll = excelReader.read(1, Integer.MAX_VALUE);
-                PushData.allUser = Collections.synchronizedList(new ArrayList<>());
 
                 for (List<Object> objects : readAll) {
                     if (objects != null && objects.size() > 0) {
@@ -212,6 +209,16 @@ public class ImportByFile extends JDialog {
                         for (int i = 0; i < objects.size(); i++) {
                             nextLine[i] = objects.get(i).toString();
                         }
+
+                        tPeopleData = new TPeopleData();
+                        tPeopleData.setPeopleId(PeopleManageListener.selectedPeopleId);
+                        tPeopleData.setPin(nextLine[0]);
+                        tPeopleData.setVarData(JSONUtil.toJsonStr(nextLine));
+                        tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                        tPeopleData.setCreateTime(now);
+                        tPeopleData.setModifiedTime(now);
+
+                        peopleDataMapper.insert(tPeopleData);
                         currentImported++;
                         memberCountLabel.setText(String.valueOf(currentImported));
                     }
