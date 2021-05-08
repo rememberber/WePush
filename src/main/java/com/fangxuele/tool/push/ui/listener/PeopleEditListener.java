@@ -1,17 +1,35 @@
 package com.fangxuele.tool.push.ui.listener;
 
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
+import cn.hutool.poi.excel.BigExcelWriter;
+import cn.hutool.poi.excel.ExcelUtil;
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPeopleDataMapper;
 import com.fangxuele.tool.push.dao.TPeopleMapper;
+import com.fangxuele.tool.push.domain.TPeople;
+import com.fangxuele.tool.push.domain.TPeopleData;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.PeopleImportWayEnum;
+import com.fangxuele.tool.push.ui.dialog.ExportDialog;
 import com.fangxuele.tool.push.ui.dialog.importway.*;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.opencsv.CSVWriter;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.util.List;
 
 /**
  * <pre>
@@ -142,8 +160,93 @@ public class PeopleEditListener {
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
-
         });
+
+        // 导出按钮
+        peopleEditForm.getExportButton().addActionListener(e -> ThreadUtil.execute(() -> {
+            BigExcelWriter writer;
+            try {
+                List<TPeopleData> peopleDataList = peopleDataMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
+                if (peopleDataList.size() > 0) {
+                    ExportDialog.showDialog();
+                    if (ExportDialog.confirm) {
+                        JFileChooser fileChooser = new JFileChooser();
+                        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                        int approve = fileChooser.showOpenDialog(mainPanel);
+                        String exportPath;
+                        if (approve == JFileChooser.APPROVE_OPTION) {
+                            exportPath = fileChooser.getSelectedFile().getAbsolutePath();
+                        } else {
+                            return;
+                        }
+
+                        TPeople tPeople = peopleMapper.selectByPrimaryKey(PeopleManageListener.selectedPeopleId);
+
+                        String nowTime = DateUtil.now().replace(":", "_").replace(" ", "_");
+                        String fileName = "MemberExport_" + MessageTypeEnum.getName(App.config.getMsgType()) + "_" + tPeople.getPeopleName() + "_" + nowTime;
+                        String fileFullName = exportPath + File.separator + fileName;
+                        if (ExportDialog.fileType == ExportDialog.EXCEL) {
+                            fileFullName += ".xlsx";
+                            //通过工具类创建writer
+                            writer = ExcelUtil.getBigWriter(fileFullName);
+                            //合并单元格后的标题行，使用默认标题样式
+                            writer.merge(JSONUtil.toList(peopleDataList.get(0).getVarData(), String.class).size() - 1, "人群数据列表导出");
+                            //一次性写出内容，强制输出标题
+                            for (TPeopleData tPeopleData : peopleDataList) {
+                                String varData = tPeopleData.getVarData();
+                                writer.writeRow(JSONUtil.toList(varData, String.class));
+                            }
+                            writer.flush();
+                        } else if (ExportDialog.fileType == ExportDialog.CSV) {
+                            fileFullName += ".csv";
+                            CSVWriter csvWriter = new CSVWriter(new FileWriter(FileUtil.touch(fileFullName)));
+
+                            for (TPeopleData tPeopleData : peopleDataList) {
+                                String varData = tPeopleData.getVarData();
+                                JSONArray jsonArray = JSONUtil.parseArray(varData);
+                                String[] nextLine = new String[jsonArray.size()];
+                                nextLine = jsonArray.toArray(nextLine);
+                                csvWriter.writeNext(nextLine);
+                            }
+
+                            csvWriter.flush();
+                            csvWriter.close();
+                        } else if (ExportDialog.fileType == ExportDialog.TXT) {
+                            fileFullName += ".txt";
+                            FileWriter fileWriter = new FileWriter(fileFullName);
+
+                            int size = peopleDataList.size();
+                            for (int i = 0; i < size; i++) {
+                                String varData = peopleDataList.get(i).getVarData();
+                                List<String> row = JSONUtil.toList(varData, String.class);
+                                fileWriter.append(String.join("|", row));
+                                if (i < size - 1) {
+                                    fileWriter.append(StrUtil.CRLF);
+                                }
+                            }
+
+                            fileWriter.flush();
+                            fileWriter.close();
+                        }
+                        JOptionPane.showMessageDialog(mainPanel, "导出成功！", "提示",
+                                JOptionPane.INFORMATION_MESSAGE);
+                        try {
+                            Desktop desktop = Desktop.getDesktop();
+                            desktop.open(FileUtil.file(fileFullName));
+                        } catch (Exception e2) {
+                            logger.error(e2);
+                        }
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(mainPanel, "所选人群无数据", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(mainPanel, "导出失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        }));
     }
 
     /**

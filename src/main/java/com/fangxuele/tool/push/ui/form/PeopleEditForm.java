@@ -128,7 +128,7 @@ public class PeopleEditForm {
 
         Object[] data;
 
-        List<TPeopleData> peopleDataList = peopleDataMapper.selectByPeopleId(peopleId);
+        List<TPeopleData> peopleDataList = peopleDataMapper.selectByPeopleIdLimit20(peopleId);
         for (TPeopleData peopleData : peopleDataList) {
             data = new Object[3];
             data[0] = peopleData.getPin();

@@ -17,9 +17,11 @@ public interface TPeopleDataMapper {
 
     int updateByPrimaryKey(TPeopleData record);
 
-    List<TPeopleData> selectByPeopleId(Integer peopleId);
+    List<TPeopleData> selectByPeopleIdLimit20(Integer peopleId);
 
     Long countByPeopleId(Integer peopleId);
 
     int deleteByPeopleId(Integer peopleId);
+
+    List<TPeopleData> selectByPeopleId(Integer peopleId);
 }
