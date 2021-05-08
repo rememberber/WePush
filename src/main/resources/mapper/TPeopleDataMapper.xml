@@ -151,4 +151,13 @@
         where people_id = #{peopleId,jdbcType=INTEGER}
         order by modified_time desc
     </select>
+
+    <select id="selectByPeopleIdAndKeyword" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_people_data
+        where people_id = #{peopleId,jdbcType=INTEGER}
+        and var_data like #{keyWord,jdbcType=VARCHAR}
+        order by modified_time desc
+    </select>
 </mapper>

@@ -116,7 +116,11 @@ public class PeopleEditForm {
         }
 
         // -----init Table
+        List<TPeopleData> peopleDataList = peopleDataMapper.selectByPeopleIdLimit20(peopleId);
+        initPeopleDataTable(peopleDataList);
+    }
 
+    public static void initPeopleDataTable(List<TPeopleData> peopleDataList) {
         JTable memberListTable = peopleEditForm.getMemberListTable();
 
         // 人群数据列表
@@ -128,7 +132,6 @@ public class PeopleEditForm {
 
         Object[] data;
 
-        List<TPeopleData> peopleDataList = peopleDataMapper.selectByPeopleIdLimit20(peopleId);
         for (TPeopleData peopleData : peopleDataList) {
             data = new Object[3];
             data[0] = peopleData.getPin();

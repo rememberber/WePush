@@ -27,6 +27,8 @@ import com.opencsv.CSVWriter;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.List;
@@ -247,6 +249,24 @@ public class PeopleEditListener {
                 logger.error(e1);
             }
         }));
+
+        // 搜索按钮
+        peopleEditForm.getSearchButton().addActionListener(e -> searchEvent());
+
+        // 搜索框键入回车
+        peopleEditForm.getSearchTextField().addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                try {
+                    searchEvent();
+                } catch (Exception e1) {
+                    logger.error(e1);
+                } finally {
+                    super.keyPressed(e);
+                }
+            }
+        });
+
     }
 
     /**
@@ -279,6 +299,19 @@ public class PeopleEditListener {
             ImportByNum dialog = new ImportByNum();
             dialog.pack();
             dialog.setVisible(true);
+        }
+    }
+
+    /**
+     * 搜索
+     */
+    private static void searchEvent() {
+        try {
+            String keyWord = PeopleEditForm.getInstance().getSearchTextField().getText();
+            List<TPeopleData> peopleDataList = peopleDataMapper.selectByPeopleIdAndKeyword(PeopleManageListener.selectedPeopleId, "%" + keyWord + "%");
+            PeopleEditForm.initPeopleDataTable(peopleDataList);
+        } catch (Exception e1) {
+            logger.error(e1);
         }
     }
 }
