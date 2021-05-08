@@ -33,7 +33,7 @@ public class PeopleEditForm {
     private JTextField searchTextField;
     private JButton searchButton;
     private JTable memberListTable;
-    private JButton selectAllButton;
+    private JButton clearAllButton;
     private JButton importButton;
     private JButton exportButton;
     private JButton deleteButton;
@@ -180,10 +180,10 @@ public class PeopleEditForm {
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 6, new Insets(0, 5, 5, 5), -1, -1));
         mainPanel.add(panel2, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        selectAllButton = new JButton();
-        selectAllButton.setIcon(new ImageIcon(getClass().getResource("/icon/selectall_dark.png")));
-        selectAllButton.setText("清空");
-        panel2.add(selectAllButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        clearAllButton = new JButton();
+        clearAllButton.setIcon(new ImageIcon(getClass().getResource("/icon/selectall_dark.png")));
+        clearAllButton.setText("清空");
+        panel2.add(clearAllButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         importButton = new JButton();
         importButton.setIcon(new ImageIcon(getClass().getResource("/icon/import_dark.png")));
         importButton.setText("导入");

@@ -97,6 +97,7 @@ public class PeopleEditListener {
             peopleEditForm.getImportButton().getComponentPopupMenu().show(peopleEditForm.getImportButton(), -peopleEditForm.getImportButton().getWidth(), -peopleEditForm.getImportButton().getHeight() * 5);
         });
 
+        // 删除按钮
         peopleEditForm.getDeleteButton().addActionListener(e -> {
             try {
                 int[] selectedRows = memberListTable.getSelectedRows();
@@ -123,6 +124,25 @@ public class PeopleEditListener {
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
             }
+        });
+
+        // 清空按钮
+        peopleEditForm.getClearAllButton().addActionListener(e -> {
+
+            try {
+                int isDelete = JOptionPane.showConfirmDialog(mainPanel, "确认清空？", "确认",
+                        JOptionPane.YES_NO_OPTION);
+                if (isDelete == JOptionPane.YES_OPTION) {
+                    peopleDataMapper.deleteByPeopleId(PeopleManageListener.selectedPeopleId);
+
+                    PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
+                }
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(mainPanel, "清空失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+
         });
     }
 

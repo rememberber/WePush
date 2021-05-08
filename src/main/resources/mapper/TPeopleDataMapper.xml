@@ -139,4 +139,8 @@
         from t_people_data
         where people_id = #{peopleId,jdbcType=INTEGER}
     </select>
+    <delete id="deleteByPeopleId" parameterType="java.lang.Integer">
+        delete from t_people_data
+        where people_id = #{peopleId,jdbcType=INTEGER}
+    </delete>
 </mapper>

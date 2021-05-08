@@ -20,4 +20,6 @@ public interface TPeopleDataMapper {
     List<TPeopleData> selectByPeopleId(Integer peopleId);
 
     Long countByPeopleId(Integer peopleId);
+
+    int deleteByPeopleId(Integer peopleId);
 }
