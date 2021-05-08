@@ -2,6 +2,7 @@ package com.fangxuele.tool.push.ui.listener;
 
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
+import com.fangxuele.tool.push.dao.TPeopleDataMapper;
 import com.fangxuele.tool.push.dao.TPeopleMapper;
 import com.fangxuele.tool.push.logic.PeopleImportWayEnum;
 import com.fangxuele.tool.push.ui.dialog.importway.*;
@@ -10,6 +11,7 @@ import com.fangxuele.tool.push.ui.form.PeopleEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 /**
  * <pre>
@@ -23,11 +25,14 @@ public class PeopleEditListener {
     private static final Log logger = LogFactory.get();
 
     private static TPeopleMapper peopleMapper = MybatisUtil.getSqlSession().getMapper(TPeopleMapper.class);
+    private static TPeopleDataMapper peopleDataMapper = MybatisUtil.getSqlSession().getMapper(TPeopleDataMapper.class);
 
     public static void addListeners() {
         PeopleEditForm peopleEditForm = PeopleEditForm.getInstance();
 
         JPanel mainPanel = MainWindow.getInstance().getMainPanel();
+
+        JTable memberListTable = peopleEditForm.getMemberListTable();
 
         // 导入按钮
         peopleEditForm.getImportButton().addActionListener(e -> {
@@ -91,8 +96,41 @@ public class PeopleEditListener {
             peopleEditForm.getImportButton().setComponentPopupMenu(popupMenu);
             peopleEditForm.getImportButton().getComponentPopupMenu().show(peopleEditForm.getImportButton(), -peopleEditForm.getImportButton().getWidth(), -peopleEditForm.getImportButton().getHeight() * 5);
         });
+
+        peopleEditForm.getDeleteButton().addActionListener(e -> {
+            try {
+                int[] selectedRows = memberListTable.getSelectedRows();
+                if (selectedRows.length == 0) {
+                    JOptionPane.showMessageDialog(mainPanel, "请至少选择一个！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    int isDelete = JOptionPane.showConfirmDialog(mainPanel, "确认删除？", "确认",
+                            JOptionPane.YES_NO_OPTION);
+                    if (isDelete == JOptionPane.YES_OPTION) {
+                        DefaultTableModel tableModel = (DefaultTableModel) memberListTable.getModel();
+
+                        for (int i = 0; i < selectedRows.length; i++) {
+                            int selectedRow = selectedRows[i];
+                            Integer selectedId = (Integer) tableModel.getValueAt(selectedRow, 2);
+                            peopleDataMapper.deleteByPrimaryKey(selectedId);
+                        }
+
+                        PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
+                    }
+                }
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(mainPanel, "删除失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        });
     }
 
+    /**
+     * 弹出导入对话框
+     *
+     * @param actionCommand
+     */
     private static void showImportDialog(String actionCommand) {
         if (PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_FILE).equals(actionCommand)) {
             ImportByFile dialog = new ImportByFile();
