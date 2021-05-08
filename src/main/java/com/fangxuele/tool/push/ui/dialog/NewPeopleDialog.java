@@ -67,7 +67,17 @@ public class NewPeopleDialog extends JDialog {
                     return;
                 }
                 String selectedAccountName = (String) accountComboBox.getSelectedItem();
+                if (StringUtils.isBlank(selectedAccountName)) {
+                    JOptionPane.showMessageDialog(this, "请创建并选择账号！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
                 Integer selectedAccountId = accountMap.get(selectedAccountName);
+                if (selectedAccountId == null) {
+                    logger.error("创建人群失败:selectedAccountId为空");
+                    return;
+                }
+
                 // 校验是否有同名人群
                 TPeople tPeople = peopleMapper.selectByMsgTypeAndAccountIdAndName(String.valueOf(msgType), selectedAccountId, peopleName);
                 if (tPeople != null) {
