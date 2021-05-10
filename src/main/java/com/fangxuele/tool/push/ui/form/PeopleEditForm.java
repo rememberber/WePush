@@ -10,6 +10,7 @@ import com.fangxuele.tool.push.domain.TPeopleData;
 import com.fangxuele.tool.push.domain.TPeopleImportConfig;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.PeopleImportWayEnum;
+import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.UndoUtil;
@@ -72,7 +73,7 @@ public class PeopleEditForm {
         // 设置滚动条速度
 //        peopleEditForm.getAccountEditScrollPane().getVerticalScrollBar().setUnitIncrement(15);
 //        peopleEditForm.getAccountEditScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
-
+        clearAll();
     }
 
     /**
@@ -139,6 +140,29 @@ public class PeopleEditForm {
             data[2] = peopleData.getId();
             model.addRow(data);
         }
+        // 隐藏id列
+        JTableUtil.hideColumn(memberListTable, 2);
+        // 设置列宽
+        TableColumnModel tableColumnModel = memberListTable.getColumnModel();
+        tableColumnModel.getColumn(0).setPreferredWidth(peopleEditForm.getImportButton().getWidth() * 3);
+        tableColumnModel.getColumn(0).setMaxWidth(peopleEditForm.getImportButton().getWidth() * 3);
+    }
+
+    public static void clearAll() {
+        PeopleManageListener.selectedPeopleId = null;
+
+        peopleEditForm.getPeopleNameLabel().setText("-");
+        peopleEditForm.getMemberTabCountLabel().setText("-");
+        peopleEditForm.getPeopleAccountLabel().setText("-");
+        peopleEditForm.getPeopleMsgTypeLabel().setText("-");
+        peopleEditForm.getLastImportWayLabel().setText("-");
+
+        // 人群数据列表
+        JTable memberListTable = peopleEditForm.getMemberListTable();
+        String[] headerNames = {"PIN", "VarData", "id"};
+        DefaultTableModel model = new DefaultTableModel(null, headerNames);
+        memberListTable.setModel(model);
+
         // 隐藏id列
         JTableUtil.hideColumn(memberListTable, 2);
         // 设置列宽

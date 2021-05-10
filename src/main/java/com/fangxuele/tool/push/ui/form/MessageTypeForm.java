@@ -140,6 +140,8 @@ public class MessageTypeForm {
         MessageEditForm.getInstance().getMsgTypeName().setText(MessageTypeEnum.getName(msgType));
         MessageManageForm.init();
         MessageEditForm.getInstance().getMsgNameField().setText("");
+        PeopleManageForm.init();
+        PeopleEditForm.init(null);
         MemberForm.init();
         PushHisForm.init();
         ScheduleForm.init();

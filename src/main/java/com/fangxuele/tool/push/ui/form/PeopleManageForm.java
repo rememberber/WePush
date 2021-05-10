@@ -64,6 +64,7 @@ public class PeopleManageForm {
 
     private static void initAccountComboBox() {
         accountMap = Maps.newHashMap();
+        peopleManageForm.getAccountComboBox().removeAllItems();
         int msgType = MessageTypeEnum.getMsgTypeForAccount();
         List<TAccount> tAccountList = accountMapper.selectByMsgType(msgType);
         for (TAccount tAccount : tAccountList) {
@@ -97,6 +98,8 @@ public class PeopleManageForm {
         }
         // 隐藏id列
         JTableUtil.hideColumn(peopleManageForm.getPeopleListTable(), 1);
+
+        PeopleEditForm.clearAll();
     }
 
     {
