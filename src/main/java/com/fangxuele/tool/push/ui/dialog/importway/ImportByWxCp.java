@@ -127,7 +127,7 @@ public class ImportByWxCp extends JDialog {
 
                     TPeopleImportConfig tPeopleImportConfig = new TPeopleImportConfig();
                     tPeopleImportConfig.setPeopleId(PeopleManageListener.selectedPeopleId);
-                    tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_DING_CODE));
+                    tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_WX_CP_CODE));
                     tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
                     tPeopleImportConfig.setModifiedTime(now);
 
@@ -230,7 +230,7 @@ public class ImportByWxCp extends JDialog {
 
                     TPeopleImportConfig tPeopleImportConfig = new TPeopleImportConfig();
                     tPeopleImportConfig.setPeopleId(PeopleManageListener.selectedPeopleId);
-                    tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_DING_CODE));
+                    tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_WX_CP_CODE));
                     tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
                     tPeopleImportConfig.setModifiedTime(now);
 
@@ -356,7 +356,7 @@ public class ImportByWxCp extends JDialog {
 
             TPeopleImportConfig tPeopleImportConfig = new TPeopleImportConfig();
             tPeopleImportConfig.setPeopleId(PeopleManageListener.selectedPeopleId);
-            tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_DING_CODE));
+            tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_WX_CP_CODE));
             tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
             tPeopleImportConfig.setModifiedTime(now);
 
