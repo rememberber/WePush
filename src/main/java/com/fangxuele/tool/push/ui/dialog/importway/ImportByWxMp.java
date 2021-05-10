@@ -252,7 +252,7 @@ public class ImportByWxMp extends JDialog {
 
         TPeopleImportConfig tPeopleImportConfig = new TPeopleImportConfig();
         tPeopleImportConfig.setPeopleId(PeopleManageListener.selectedPeopleId);
-        tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_NUM_CODE));
+        tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_WX_MP_CODE));
         tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
         tPeopleImportConfig.setModifiedTime(now);
 
@@ -420,7 +420,7 @@ public class ImportByWxMp extends JDialog {
 
         TPeopleImportConfig tPeopleImportConfig = new TPeopleImportConfig();
         tPeopleImportConfig.setPeopleId(PeopleManageListener.selectedPeopleId);
-        tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_NUM_CODE));
+        tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_WX_MP_CODE));
         tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
         tPeopleImportConfig.setModifiedTime(now);
 
