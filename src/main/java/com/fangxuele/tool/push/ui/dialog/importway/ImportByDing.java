@@ -20,7 +20,6 @@ import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.msgsender.DingMsgSender;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.form.MainWindow;
-import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
 import com.fangxuele.tool.push.ui.form.msg.DingMsgForm;
 import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
@@ -241,8 +240,9 @@ public class ImportByDing extends JDialog {
      * 导入钉钉通讯录全员
      */
     public static void importDingAll() {
-        JProgressBar progressBar = MemberForm.getInstance().getMemberTabImportProgressBar();
-        JLabel memberCountLabel = MemberForm.getInstance().getMemberTabCountLabel();
+        PeopleEditForm instance = PeopleEditForm.getInstance();
+        JProgressBar progressBar = instance.getMemberTabImportProgressBar();
+        JLabel memberCountLabel = instance.getMemberTabCountLabel();
 
         try {
             if (DingMsgForm.getInstance().getAppNameComboBox().getSelectedItem() == null) {

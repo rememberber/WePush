@@ -14,7 +14,6 @@ import com.fangxuele.tool.push.logic.PeopleImportWayEnum;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
 import com.fangxuele.tool.push.ui.UiConsts;
-import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
 import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
 import com.fangxuele.tool.push.util.ComponentUtil;
@@ -73,7 +72,10 @@ public class ImportByWxMp extends JDialog {
 
 
         // 公众号-导入全员按钮事件
-        memberImportAllButton.addActionListener(e -> ThreadUtil.execute(ImportByWxMp::importWxAll));
+        memberImportAllButton.addActionListener(e -> {
+            ThreadUtil.execute(ImportByWxMp::importWxAll);
+            dispose();
+        });
 
         // 公众号-刷新可选的标签按钮事件
         memberImportTagFreshButton.addActionListener(e -> {
@@ -186,11 +188,6 @@ public class ImportByWxMp extends JDialog {
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
-    private void onOK() {
-        // add your code here
-        dispose();
-    }
-
     private void onCancel() {
         // add your code here if necessary
         dispose();
@@ -200,9 +197,9 @@ public class ImportByWxMp extends JDialog {
      * 导入微信全员
      */
     public static void importWxAll() {
-        JPanel memberPanel = MemberForm.getInstance().getMemberPanel();
-        JProgressBar progressBar = MemberForm.getInstance().getMemberTabImportProgressBar();
-        MemberForm.getInstance().getMemberImportAllButton().setEnabled(false);
+        PeopleEditForm instance = PeopleEditForm.getInstance();
+        JProgressBar progressBar = instance.getMemberTabImportProgressBar();
+        instance.getImportButton().setEnabled(false);
 
         try {
             getMpUserList();
@@ -218,7 +215,7 @@ public class ImportByWxMp extends JDialog {
         } finally {
             progressBar.setIndeterminate(false);
             progressBar.setVisible(false);
-            MemberForm.getInstance().getMemberImportAllButton().setEnabled(true);
+            instance.getImportButton().setEnabled(true);
         }
     }
 
@@ -226,8 +223,9 @@ public class ImportByWxMp extends JDialog {
      * 拉取公众平台用户列表
      */
     public static void getMpUserList() throws WxErrorException {
-        JProgressBar progressBar = MemberForm.getInstance().getMemberTabImportProgressBar();
-        JLabel memberCountLabel = MemberForm.getInstance().getMemberTabCountLabel();
+        PeopleEditForm instance = PeopleEditForm.getInstance();
+        JProgressBar progressBar = instance.getMemberTabImportProgressBar();
+        JLabel memberCountLabel = instance.getMemberTabCountLabel();
 
         progressBar.setVisible(true);
         progressBar.setIndeterminate(true);
@@ -328,8 +326,9 @@ public class ImportByWxMp extends JDialog {
      * @throws WxErrorException
      */
     public static void getMpUserListByTag(Long tagId) throws WxErrorException {
-        JProgressBar progressBar = MemberForm.getInstance().getMemberTabImportProgressBar();
-        JLabel memberCountLabel = MemberForm.getInstance().getMemberTabCountLabel();
+        PeopleEditForm instance = PeopleEditForm.getInstance();
+        JProgressBar progressBar = instance.getMemberTabImportProgressBar();
+        JLabel memberCountLabel = instance.getMemberTabCountLabel();
 
         progressBar.setVisible(true);
         progressBar.setIndeterminate(true);
@@ -394,8 +393,9 @@ public class ImportByWxMp extends JDialog {
      * @throws WxErrorException
      */
     public static void getMpUserListByTag(Long tagId, boolean retain) throws WxErrorException {
-        JProgressBar progressBar = MemberForm.getInstance().getMemberTabImportProgressBar();
-        JLabel memberCountLabel = MemberForm.getInstance().getMemberTabCountLabel();
+        PeopleEditForm instance = PeopleEditForm.getInstance();
+        JProgressBar progressBar = instance.getMemberTabImportProgressBar();
+        JLabel memberCountLabel = instance.getMemberTabCountLabel();
 
         progressBar.setVisible(true);
         progressBar.setIndeterminate(true);
