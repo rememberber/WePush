@@ -81,40 +81,49 @@ public class PeopleEditListener {
             });
             popupMenu.add(menuItem2);
 
-            JMenuItem menuItem3 = new JMenuItem();
-            menuItem3.setText(PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_WX_MP));
-            menuItem3.addActionListener(e1 -> {
-                String actionCommand = e1.getActionCommand();
-                showImportDialog(actionCommand);
-            });
-            popupMenu.add(menuItem3);
+            if (MessageTypeEnum.isWxMaOrMpType(App.config.getMsgType())) {
+                JMenuItem menuItem3 = new JMenuItem();
+                menuItem3.setText(PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_WX_MP));
+                menuItem3.addActionListener(e1 -> {
+                    String actionCommand = e1.getActionCommand();
+                    showImportDialog(actionCommand);
+                });
+                popupMenu.add(menuItem3);
+            }
 
-            JMenuItem menuItem4 = new JMenuItem();
-            menuItem4.setText(PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_WX_CP));
-            menuItem4.addActionListener(e1 -> {
-                String actionCommand = e1.getActionCommand();
-                showImportDialog(actionCommand);
-            });
-            popupMenu.add(menuItem4);
+            if (MessageTypeEnum.WX_CP_CODE == App.config.getMsgType()) {
+                JMenuItem menuItem4 = new JMenuItem();
+                menuItem4.setText(PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_WX_CP));
+                menuItem4.addActionListener(e1 -> {
+                    String actionCommand = e1.getActionCommand();
+                    showImportDialog(actionCommand);
+                });
+                popupMenu.add(menuItem4);
+            }
 
-            JMenuItem menuItem5 = new JMenuItem();
-            menuItem5.setText(PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_DING));
-            menuItem5.addActionListener(e1 -> {
-                String actionCommand = e1.getActionCommand();
-                showImportDialog(actionCommand);
-            });
-            popupMenu.add(menuItem5);
+            if (MessageTypeEnum.DING_CODE == App.config.getMsgType()) {
+                JMenuItem menuItem5 = new JMenuItem();
+                menuItem5.setText(PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_DING));
+                menuItem5.addActionListener(e1 -> {
+                    String actionCommand = e1.getActionCommand();
+                    showImportDialog(actionCommand);
+                });
+                popupMenu.add(menuItem5);
+            }
 
-            JMenuItem menuItem6 = new JMenuItem();
-            menuItem6.setText(PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_NUM));
-            menuItem6.addActionListener(e1 -> {
-                String actionCommand = e1.getActionCommand();
-                showImportDialog(actionCommand);
-            });
-            popupMenu.add(menuItem6);
+            if (MessageTypeEnum.HTTP_CODE == App.config.getMsgType()) {
+                JMenuItem menuItem6 = new JMenuItem();
+                menuItem6.setText(PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_NUM));
+                menuItem6.addActionListener(e1 -> {
+                    String actionCommand = e1.getActionCommand();
+                    showImportDialog(actionCommand);
+                });
+                popupMenu.add(menuItem6);
+            }
 
             peopleEditForm.getImportButton().setComponentPopupMenu(popupMenu);
-            peopleEditForm.getImportButton().getComponentPopupMenu().show(peopleEditForm.getImportButton(), -peopleEditForm.getImportButton().getWidth(), -peopleEditForm.getImportButton().getHeight() * 5);
+
+            peopleEditForm.getImportButton().getComponentPopupMenu().show(peopleEditForm.getImportButton(), -30, -peopleEditForm.getImportButton().getHeight() * popupMenu.getSubElements().length);
         });
 
         // 删除按钮
