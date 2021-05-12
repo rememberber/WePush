@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.dialog.importway;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
@@ -10,6 +11,7 @@ import com.fangxuele.tool.push.dao.TPeopleImportConfigMapper;
 import com.fangxuele.tool.push.dao.TWxMpUserMapper;
 import com.fangxuele.tool.push.domain.TPeopleData;
 import com.fangxuele.tool.push.domain.TPeopleImportConfig;
+import com.fangxuele.tool.push.domain.TWxMpUser;
 import com.fangxuele.tool.push.logic.PeopleImportWayEnum;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
@@ -23,12 +25,17 @@ import com.fangxuele.tool.push.util.SqliteUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import lombok.Getter;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
+import me.chanjar.weixin.mp.bean.result.WxMpUser;
 import me.chanjar.weixin.mp.bean.result.WxMpUserList;
 import me.chanjar.weixin.mp.bean.tag.WxTagListUser;
 import me.chanjar.weixin.mp.bean.tag.WxUserTag;
+import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
@@ -38,6 +45,7 @@ import java.awt.event.*;
 import java.util.List;
 import java.util.*;
 
+@Getter
 public class ImportByWxMp extends JDialog {
     private JPanel contentPane;
     private JComboBox memberImportTagComboBox;
@@ -73,7 +81,7 @@ public class ImportByWxMp extends JDialog {
 
         // 公众号-导入全员按钮事件
         memberImportAllButton.addActionListener(e -> {
-            ThreadUtil.execute(ImportByWxMp::importWxAll);
+            ThreadUtil.execute(() -> importWxAll(this));
             dispose();
         });
 
@@ -108,14 +116,13 @@ public class ImportByWxMp extends JDialog {
         memberImportTagButton.addActionListener(e -> ThreadUtil.execute(() -> {
             PeopleEditForm peopleEditForm = PeopleEditForm.getInstance();
             JProgressBar progressBar = peopleEditForm.getMemberTabImportProgressBar();
-            JLabel memberCountLabel = peopleEditForm.getMemberTabCountLabel();
 
             try {
                 if (memberImportTagComboBox.getSelectedItem() != null
                         && StringUtils.isNotEmpty(memberImportTagComboBox.getSelectedItem().toString())) {
 
                     long selectedTagId = userTagMap.get(memberImportTagComboBox.getSelectedItem());
-                    getMpUserListByTag(selectedTagId, false);
+                    getMpUserListByTag(this, selectedTagId, false);
                     PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
                     JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成",
                             JOptionPane.INFORMATION_MESSAGE);
@@ -138,14 +145,13 @@ public class ImportByWxMp extends JDialog {
         memberImportTagRetainButton.addActionListener(e -> ThreadUtil.execute(() -> {
             PeopleEditForm peopleEditForm = PeopleEditForm.getInstance();
             JProgressBar progressBar = peopleEditForm.getMemberTabImportProgressBar();
-            JLabel memberCountLabel = peopleEditForm.getMemberTabCountLabel();
 
             try {
                 if (memberImportTagComboBox.getSelectedItem() != null
                         && StringUtils.isNotEmpty(memberImportTagComboBox.getSelectedItem().toString())) {
 
                     long selectedTagId = userTagMap.get(memberImportTagComboBox.getSelectedItem());
-                    getMpUserListByTag(selectedTagId, true);
+                    getMpUserListByTag(this, selectedTagId, true);
                     PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
                     JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成",
                             JOptionPane.INFORMATION_MESSAGE);
@@ -196,15 +202,16 @@ public class ImportByWxMp extends JDialog {
     /**
      * 导入微信全员
      */
-    public static void importWxAll() {
+    public static void importWxAll(ImportByWxMp dialog) {
         PeopleEditForm instance = PeopleEditForm.getInstance();
         JProgressBar progressBar = instance.getMemberTabImportProgressBar();
         instance.getImportButton().setEnabled(false);
 
         try {
-            getMpUserList();
+            getMpUserList(dialog);
             PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
             if (!PushData.fixRateScheduling) {
+                progressBar.setVisible(false);
                 JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (WxErrorException e1) {
@@ -222,7 +229,7 @@ public class ImportByWxMp extends JDialog {
     /**
      * 拉取公众平台用户列表
      */
-    public static void getMpUserList() throws WxErrorException {
+    public static void getMpUserList(ImportByWxMp dialog) throws WxErrorException {
         PeopleEditForm instance = PeopleEditForm.getInstance();
         JProgressBar progressBar = instance.getMemberTabImportProgressBar();
         JLabel memberCountLabel = instance.getMemberTabCountLabel();
@@ -271,12 +278,12 @@ public class ImportByWxMp extends JDialog {
         List<String> openIds = wxMpUserList.getOpenids();
 
         for (String openId : openIds) {
-            String[] array = {openId};
+            List<String> varData = getVarDatas(dialog, openId);
 
             TPeopleData tPeopleData = new TPeopleData();
             tPeopleData.setPeopleId(PeopleManageListener.selectedPeopleId);
-            tPeopleData.setPin(array[0]);
-            tPeopleData.setVarData(JSONUtil.toJsonStr(array));
+            tPeopleData.setPin(openId);
+            tPeopleData.setVarData(JSONUtil.toJsonStr(varData));
             tPeopleData.setAppVersion(UiConsts.APP_VERSION);
             tPeopleData.setCreateTime(now);
             tPeopleData.setModifiedTime(now);
@@ -298,12 +305,12 @@ public class ImportByWxMp extends JDialog {
             }
             openIds = wxMpUserList.getOpenids();
             for (String openId : openIds) {
-                String[] array = {openId};
+                List<String> varData = getVarDatas(dialog, openId);
 
                 TPeopleData tPeopleData = new TPeopleData();
                 tPeopleData.setPeopleId(PeopleManageListener.selectedPeopleId);
-                tPeopleData.setPin(array[0]);
-                tPeopleData.setVarData(JSONUtil.toJsonStr(array));
+                tPeopleData.setPin(openId);
+                tPeopleData.setVarData(JSONUtil.toJsonStr(varData));
                 tPeopleData.setAppVersion(UiConsts.APP_VERSION);
                 tPeopleData.setCreateTime(now);
                 tPeopleData.setModifiedTime(now);
@@ -319,13 +326,71 @@ public class ImportByWxMp extends JDialog {
         progressBar.setValue((int) wxMpUserList.getTotal());
     }
 
+    @NotNull
+    private static List<String> getVarDatas(ImportByWxMp dialog, String openId) {
+        boolean needToGetInfoFromWeiXin = false;
+        WxMpService wxMpService = WxMpTemplateMsgSender.getWxMpService();
+
+        if (dialog.getImportOptionBasicInfoCheckBox().isSelected() ||
+                dialog.getImportOptionAvatarCheckBox().isSelected()) {
+            needToGetInfoFromWeiXin = true;
+        }
+
+        List<String> varData = Lists.newArrayList();
+        varData.add(openId);
+        if (needToGetInfoFromWeiXin) {
+            WxMpUser wxMpUser = null;
+            TWxMpUser tWxMpUser = tWxMpUserMapper.selectByPrimaryKey(openId);
+            if (tWxMpUser != null) {
+                wxMpUser = new WxMpUser();
+                BeanUtil.copyProperties(tWxMpUser, wxMpUser);
+            } else {
+                if (wxMpService != null) {
+                    try {
+                        wxMpUser = wxMpService.getUserService().userInfo(openId);
+                        if (wxMpUser != null) {
+                            tWxMpUser = new TWxMpUser();
+                            BeanUtil.copyProperties(wxMpUser, tWxMpUser);
+                            tWxMpUserMapper.insertSelective(tWxMpUser);
+                        }
+                    } catch (Exception e) {
+                        logger.error(e);
+                    }
+                }
+            }
+
+            if (wxMpUser != null) {
+                if (dialog.getImportOptionAvatarCheckBox().isSelected()) {
+                    varData.add(wxMpUser.getHeadImgUrl());
+                }
+                if (dialog.getImportOptionBasicInfoCheckBox().isSelected()) {
+                    varData.add(wxMpUser.getNickname());
+                    varData.add(wxMpUser.getSexDesc());
+                    varData.add(wxMpUser.getCountry() + "-" + wxMpUser.getProvince() + "-" + wxMpUser.getCity());
+                    varData.add(DateFormatUtils.format(wxMpUser.getSubscribeTime() * 1000, "yyyy-MM-dd HH:mm:ss"));
+                }
+            } else {
+                if (dialog.getImportOptionAvatarCheckBox().isSelected()) {
+                    varData.add("");
+                }
+                if (dialog.getImportOptionBasicInfoCheckBox().isSelected()) {
+                    varData.add("");
+                    varData.add("");
+                    varData.add("");
+                    varData.add("");
+                }
+            }
+        }
+        return varData;
+    }
+
     /**
      * 按标签拉取公众平台用户列表
      *
      * @param tagId
      * @throws WxErrorException
      */
-    public static void getMpUserListByTag(Long tagId) throws WxErrorException {
+    public static void getMpUserListByTag(ImportByWxMp dialog, Long tagId) throws WxErrorException {
         PeopleEditForm instance = PeopleEditForm.getInstance();
         JProgressBar progressBar = instance.getMemberTabImportProgressBar();
         JLabel memberCountLabel = instance.getMemberTabCountLabel();
@@ -367,12 +432,12 @@ public class ImportByWxMp extends JDialog {
         }
 
         for (String openId : tagUserSet) {
-            String[] array = {openId};
+            List<String> varData = getVarDatas(dialog, openId);
 
             TPeopleData tPeopleData = new TPeopleData();
             tPeopleData.setPeopleId(PeopleManageListener.selectedPeopleId);
-            tPeopleData.setPin(array[0]);
-            tPeopleData.setVarData(JSONUtil.toJsonStr(array));
+            tPeopleData.setPin(openId);
+            tPeopleData.setVarData(JSONUtil.toJsonStr(varData));
             tPeopleData.setAppVersion(UiConsts.APP_VERSION);
             tPeopleData.setCreateTime(now);
             tPeopleData.setModifiedTime(now);
@@ -392,10 +457,9 @@ public class ImportByWxMp extends JDialog {
      * @param retain 是否取交集
      * @throws WxErrorException
      */
-    public static void getMpUserListByTag(Long tagId, boolean retain) throws WxErrorException {
+    public static void getMpUserListByTag(ImportByWxMp dialog, Long tagId, boolean retain) throws WxErrorException {
         PeopleEditForm instance = PeopleEditForm.getInstance();
         JProgressBar progressBar = instance.getMemberTabImportProgressBar();
-        JLabel memberCountLabel = instance.getMemberTabCountLabel();
 
         progressBar.setVisible(true);
         progressBar.setIndeterminate(true);
@@ -469,12 +533,12 @@ public class ImportByWxMp extends JDialog {
         }
 
         for (String openId : tagUserSet) {
-            String[] array = {openId};
+            List<String> varData = getVarDatas(dialog, openId);
 
             TPeopleData tPeopleData = new TPeopleData();
             tPeopleData.setPeopleId(PeopleManageListener.selectedPeopleId);
-            tPeopleData.setPin(array[0]);
-            tPeopleData.setVarData(JSONUtil.toJsonStr(array));
+            tPeopleData.setPin(openId);
+            tPeopleData.setVarData(JSONUtil.toJsonStr(varData));
             tPeopleData.setAppVersion(UiConsts.APP_VERSION);
             tPeopleData.setCreateTime(now);
             tPeopleData.setModifiedTime(now);
