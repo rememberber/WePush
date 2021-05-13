@@ -14,9 +14,9 @@ import com.fangxuele.tool.push.domain.TPeopleImportConfig;
 import com.fangxuele.tool.push.domain.TWxMpUser;
 import com.fangxuele.tool.push.logic.PeopleImportWayEnum;
 import com.fangxuele.tool.push.logic.PushData;
-import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
+import com.fangxuele.tool.push.ui.form.account.WxMpAccountForm;
 import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.ConsoleUtil;
@@ -71,13 +71,16 @@ public class ImportByWxMp extends JDialog {
      */
     public static Set<String> tagUserSet;
 
-    public ImportByWxMp() {
+    private String selectedAccountName;
+
+    public ImportByWxMp(String selectedAccountName) {
         super(App.mainFrame, "通过微信公众平台导入人群");
         setContentPane(contentPane);
         setModal(true);
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.3, 0.3);
         getRootPane().setDefaultButton(memberImportAllButton);
 
+        this.selectedAccountName = selectedAccountName;
 
         // 公众号-导入全员按钮事件
         memberImportAllButton.addActionListener(e -> {
@@ -87,7 +90,7 @@ public class ImportByWxMp extends JDialog {
 
         // 公众号-刷新可选的标签按钮事件
         memberImportTagFreshButton.addActionListener(e -> {
-            WxMpService wxMpService = WxMpTemplateMsgSender.getWxMpService();
+            WxMpService wxMpService = WxMpAccountForm.getWxMpService(selectedAccountName);
             if (wxMpService.getWxMpConfigStorage() == null) {
                 return;
             }
@@ -202,7 +205,7 @@ public class ImportByWxMp extends JDialog {
     /**
      * 导入微信全员
      */
-    public static void importWxAll(ImportByWxMp dialog) {
+    public void importWxAll(ImportByWxMp dialog) {
         PeopleEditForm instance = PeopleEditForm.getInstance();
         JProgressBar progressBar = instance.getMemberTabImportProgressBar();
         instance.getImportButton().setEnabled(false);
@@ -229,7 +232,7 @@ public class ImportByWxMp extends JDialog {
     /**
      * 拉取公众平台用户列表
      */
-    public static void getMpUserList(ImportByWxMp dialog) throws WxErrorException {
+    public void getMpUserList(ImportByWxMp dialog) throws WxErrorException {
         PeopleEditForm instance = PeopleEditForm.getInstance();
         JProgressBar progressBar = instance.getMemberTabImportProgressBar();
         JLabel memberCountLabel = instance.getMemberTabCountLabel();
@@ -237,7 +240,7 @@ public class ImportByWxMp extends JDialog {
         progressBar.setVisible(true);
         progressBar.setIndeterminate(true);
 
-        WxMpService wxMpService = WxMpTemplateMsgSender.getWxMpService();
+        WxMpService wxMpService = WxMpAccountForm.getWxMpService(selectedAccountName);
         if (wxMpService.getWxMpConfigStorage() == null) {
             return;
         }
@@ -327,9 +330,9 @@ public class ImportByWxMp extends JDialog {
     }
 
     @NotNull
-    private static List<String> getVarDatas(ImportByWxMp dialog, String openId) {
+    private List<String> getVarDatas(ImportByWxMp dialog, String openId) {
         boolean needToGetInfoFromWeiXin = false;
-        WxMpService wxMpService = WxMpTemplateMsgSender.getWxMpService();
+        WxMpService wxMpService = WxMpAccountForm.getWxMpService(selectedAccountName);
 
         if (dialog.getImportOptionBasicInfoCheckBox().isSelected() ||
                 dialog.getImportOptionAvatarCheckBox().isSelected()) {
@@ -390,7 +393,7 @@ public class ImportByWxMp extends JDialog {
      * @param tagId
      * @throws WxErrorException
      */
-    public static void getMpUserListByTag(ImportByWxMp dialog, Long tagId) throws WxErrorException {
+    public void getMpUserListByTag(ImportByWxMp dialog, Long tagId) throws WxErrorException {
         PeopleEditForm instance = PeopleEditForm.getInstance();
         JProgressBar progressBar = instance.getMemberTabImportProgressBar();
         JLabel memberCountLabel = instance.getMemberTabCountLabel();
@@ -398,7 +401,7 @@ public class ImportByWxMp extends JDialog {
         progressBar.setVisible(true);
         progressBar.setIndeterminate(true);
 
-        WxMpService wxMpService = WxMpTemplateMsgSender.getWxMpService();
+        WxMpService wxMpService = WxMpAccountForm.getWxMpService(selectedAccountName);
         if (wxMpService.getWxMpConfigStorage() == null) {
             return;
         }
@@ -457,14 +460,14 @@ public class ImportByWxMp extends JDialog {
      * @param retain 是否取交集
      * @throws WxErrorException
      */
-    public static void getMpUserListByTag(ImportByWxMp dialog, Long tagId, boolean retain) throws WxErrorException {
+    public void getMpUserListByTag(ImportByWxMp dialog, Long tagId, boolean retain) throws WxErrorException {
         PeopleEditForm instance = PeopleEditForm.getInstance();
         JProgressBar progressBar = instance.getMemberTabImportProgressBar();
 
         progressBar.setVisible(true);
         progressBar.setIndeterminate(true);
 
-        WxMpService wxMpService = WxMpTemplateMsgSender.getWxMpService();
+        WxMpService wxMpService = WxMpAccountForm.getWxMpService(selectedAccountName);
         if (wxMpService.getWxMpConfigStorage() == null) {
             return;
         }

@@ -138,8 +138,8 @@ public class WxCpAccountForm implements IAccountForm {
         WxCpDefaultConfigImpl configStorage = new WxCpDefaultConfigImpl();
         configStorage.setCorpId(wxCpAccountConfig.getCorpId());
         configStorage.setAgentId(Integer.valueOf(wxCpAccountConfig.getAgentId()));
-
         configStorage.setCorpSecret(wxCpAccountConfig.getSecret());
+
         if (App.config.isMpUseProxy()) {
             configStorage.setHttpProxyHost(App.config.getMpProxyHost());
             configStorage.setHttpProxyPort(Integer.parseInt(App.config.getMpProxyPort()));

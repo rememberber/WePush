@@ -285,6 +285,8 @@ public class PeopleEditListener {
      * @param actionCommand
      */
     private static void showImportDialog(String actionCommand) {
+        String selectedAccountName = PeopleManageForm.getInstance().getAccountComboBox().getSelectedItem().toString();
+
         if (PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_FILE).equals(actionCommand)) {
             ImportByFile dialog = new ImportByFile();
             dialog.pack();
@@ -294,11 +296,11 @@ public class PeopleEditListener {
             dialog.pack();
             dialog.setVisible(true);
         } else if (PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_WX_MP).equals(actionCommand)) {
-            ImportByWxMp dialog = new ImportByWxMp();
+            ImportByWxMp dialog = new ImportByWxMp(selectedAccountName);
             dialog.pack();
             dialog.setVisible(true);
         } else if (PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_WX_CP).equals(actionCommand)) {
-            ImportByWxCp dialog = new ImportByWxCp(PeopleManageForm.getInstance().getAccountComboBox().getSelectedItem().toString());
+            ImportByWxCp dialog = new ImportByWxCp(selectedAccountName);
             dialog.pack();
             dialog.setVisible(true);
         } else if (PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_DING).equals(actionCommand)) {
