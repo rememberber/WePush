@@ -1,9 +1,14 @@
 package com.fangxuele.tool.push.ui.form.account;
 
 import cn.hutool.json.JSONUtil;
+import com.baidubce.auth.DefaultBceCredentials;
+import com.baidubce.services.sms.SmsClient;
+import com.baidubce.services.sms.SmsClientConfiguration;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.account.BdYunAccountConfig;
 import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.logic.msgsender.BdYunMsgSender;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.UIUtil;
@@ -12,12 +17,14 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
 
 @Getter
+@Slf4j
 public class BdYunAccountForm implements IAccountForm {
     private JPanel mainPanel;
     private JTextField bdEndPointTextField;
@@ -26,6 +33,11 @@ public class BdYunAccountForm implements IAccountForm {
     private JTextField bdSecretAccessKeyTextField;
 
     private static BdYunAccountForm wxMpAccountForm;
+
+    /**
+     * 百度云短信SmsClient
+     */
+    public volatile static SmsClient smsClient;
 
     @Override
     public void init(String accountName) {
@@ -109,6 +121,48 @@ public class BdYunAccountForm implements IAccountForm {
         }
         UndoUtil.register(wxMpAccountForm);
         return wxMpAccountForm;
+    }
+
+    /**
+     * 获取百度云短信发送客户端
+     *
+     * @return SmsClient
+     */
+    private static SmsClient getBdYunSmsClient(String accountName) {
+        invalidAccount();
+
+        if (smsClient == null) {
+            synchronized (BdYunMsgSender.class) {
+                if (smsClient == null) {
+                    TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(MessageTypeEnum.getMsgTypeForAccount(), accountName);
+                    if (tAccount == null) {
+                        log.error("未获取到对应的微信公众号账号配置:{}", accountName);
+                    }
+
+                    BdYunAccountConfig bdYunAccountConfig = JSONUtil.toBean(tAccount.getAccountConfig(), BdYunAccountConfig.class);
+
+                    // SMS服务域名，可根据环境选择具体域名
+                    String endPoint = bdYunAccountConfig.getBdEndPoint();
+                    // 发送账号安全认证的Access Key ID
+                    String accessKeyId = bdYunAccountConfig.getBdAccessKeyId();
+                    // 发送账号安全认证的Secret Access Key
+                    String secretAccessKy = bdYunAccountConfig.getBdSecretAccessKey();
+
+                    // ak、sk等config
+                    SmsClientConfiguration config = new SmsClientConfiguration();
+                    config.setCredentials(new DefaultBceCredentials(accessKeyId, secretAccessKy));
+                    config.setEndpoint(endPoint);
+
+                    // 实例化发送客户端
+                    smsClient = new SmsClient(config);
+                }
+            }
+        }
+        return smsClient;
+    }
+
+    public static void invalidAccount() {
+        smsClient = null;
     }
 
     {
