@@ -11,10 +11,10 @@ import com.fangxuele.tool.push.domain.TPeopleData;
 import com.fangxuele.tool.push.domain.TPeopleImportConfig;
 import com.fangxuele.tool.push.logic.PeopleImportWayEnum;
 import com.fangxuele.tool.push.logic.PushData;
-import com.fangxuele.tool.push.logic.msgsender.WxCpMsgSender;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
+import com.fangxuele.tool.push.ui.form.account.WxCpAccountForm;
 import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
 import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
 import com.fangxuele.tool.push.util.ComponentUtil;
@@ -23,6 +23,9 @@ import com.fangxuele.tool.push.util.SqliteUtil;
 import com.google.common.collect.Maps;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.cp.bean.WxCpDepart;
 import me.chanjar.weixin.cp.bean.WxCpTag;
 import me.chanjar.weixin.cp.bean.WxCpUser;
@@ -37,6 +40,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+@Getter
+@Setter
+@Slf4j
 public class ImportByWxCp extends JDialog {
     private JPanel contentPane;
     private JComboBox wxCpTagsComboBox;
@@ -51,6 +57,8 @@ public class ImportByWxCp extends JDialog {
 
     private static TPeopleDataMapper peopleDataMapper = MybatisUtil.getSqlSession().getMapper(TPeopleDataMapper.class);
     private static TPeopleImportConfigMapper peopleImportConfigMapper = MybatisUtil.getSqlSession().getMapper(TPeopleImportConfigMapper.class);
+
+    private String selectedAccountName;
 
     /**
      * 企业号标签名称->标签ID
@@ -72,12 +80,14 @@ public class ImportByWxCp extends JDialog {
      */
     private static Map<Long, String> wxCpIdToDeptNameMap = Maps.newHashMap();
 
-    public ImportByWxCp() {
+    public ImportByWxCp(String selectedAccountName) {
         super(App.mainFrame, "通过微信企业通讯录导入");
         setContentPane(contentPane);
         setModal(true);
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.3, 0.2);
         getRootPane().setDefaultButton(wxCpImportAllButton);
+
+        this.selectedAccountName = selectedAccountName;
 
         // 企业号-按标签导入-刷新
         wxCpTagsRefreshButton.addActionListener(e -> {
@@ -92,7 +102,7 @@ public class ImportByWxCp extends JDialog {
 
                 try {
                     // 获取标签列表
-                    List<WxCpTag> wxCpTagList = WxCpMsgSender.getWxCpService().getTagService().listAll();
+                    List<WxCpTag> wxCpTagList = WxCpAccountForm.getWxCpService(selectedAccountName).getTagService().listAll();
                     for (WxCpTag wxCpTag : wxCpTagList) {
                         wxCpTagsComboBox.addItem(wxCpTag.getName());
                         wxCpTagNameToIdMap.put(wxCpTag.getName(), wxCpTag.getId());
@@ -142,7 +152,7 @@ public class ImportByWxCp extends JDialog {
                     // 获取标签id
                     String tagId = wxCpTagNameToIdMap.get(wxCpTagsComboBox.getSelectedItem());
                     // 获取用户
-                    List<WxCpUser> wxCpUsers = WxCpMsgSender.getWxCpService().getTagService().listUsersByTagId(tagId);
+                    List<WxCpUser> wxCpUsers = WxCpAccountForm.getWxCpService(selectedAccountName).getTagService().listUsersByTagId(tagId);
                     for (WxCpUser wxCpUser : wxCpUsers) {
                         Long[] depIds = wxCpUser.getDepartIds();
                         List<String> deptNameList = Lists.newArrayList();
@@ -195,7 +205,7 @@ public class ImportByWxCp extends JDialog {
 
                 try {
                     // 获取部门列表
-                    List<WxCpDepart> wxCpDepartList = WxCpMsgSender.getWxCpService().getDepartmentService().list(null);
+                    List<WxCpDepart> wxCpDepartList = WxCpAccountForm.getWxCpService(selectedAccountName).getDepartmentService().list(null);
                     for (WxCpDepart wxCpDepart : wxCpDepartList) {
                         wxCpDeptsComboBox.addItem(wxCpDepart.getName());
                         wxCpDeptNameToIdMap.put(wxCpDepart.getName(), wxCpDepart.getId());
@@ -245,7 +255,7 @@ public class ImportByWxCp extends JDialog {
                     // 获取部门id
                     Long deptId = wxCpDeptNameToIdMap.get(wxCpDeptsComboBox.getSelectedItem());
                     // 获取用户
-                    List<WxCpUser> wxCpUsers = WxCpMsgSender.getWxCpService().getUserService().listByDepartment(deptId, true, 0);
+                    List<WxCpUser> wxCpUsers = WxCpAccountForm.getWxCpService(selectedAccountName).getUserService().listByDepartment(deptId, true, 0);
                     for (WxCpUser wxCpUser : wxCpUsers) {
                         String statusStr = "";
                         if (wxCpUser.getStatus() == 1) {
@@ -333,7 +343,7 @@ public class ImportByWxCp extends JDialog {
     /**
      * 导入企业通讯录全员
      */
-    public static void importWxCpAll() {
+    public void importWxCpAll() {
         PeopleEditForm peopleEditForm = PeopleEditForm.getInstance();
         JProgressBar progressBar = peopleEditForm.getMemberTabImportProgressBar();
         JLabel memberCountLabel = peopleEditForm.getMemberTabCountLabel();
@@ -369,7 +379,7 @@ public class ImportByWxCp extends JDialog {
             }
 
             // 获取最小部门id
-            List<WxCpDepart> wxCpDepartList = WxCpMsgSender.getWxCpService().getDepartmentService().list(null);
+            List<WxCpDepart> wxCpDepartList = WxCpAccountForm.getWxCpService(selectedAccountName).getDepartmentService().list(null);
             long minDeptId = Long.MAX_VALUE;
             for (WxCpDepart wxCpDepart : wxCpDepartList) {
                 if (wxCpDepart.getId() < minDeptId) {
@@ -377,7 +387,7 @@ public class ImportByWxCp extends JDialog {
                 }
             }
             // 获取用户
-            List<WxCpUser> wxCpUsers = WxCpMsgSender.getWxCpService().getUserService().listByDepartment(minDeptId, true, 0);
+            List<WxCpUser> wxCpUsers = WxCpAccountForm.getWxCpService(selectedAccountName).getUserService().listByDepartment(minDeptId, true, 0);
             for (WxCpUser wxCpUser : wxCpUsers) {
                 String statusStr = "";
                 if (wxCpUser.getStatus() == 1) {

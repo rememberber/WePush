@@ -21,6 +21,7 @@ import com.fangxuele.tool.push.ui.dialog.ExportDialog;
 import com.fangxuele.tool.push.ui.dialog.importway.*;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
+import com.fangxuele.tool.push.ui.form.PeopleManageForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.opencsv.CSVWriter;
 
@@ -297,7 +298,7 @@ public class PeopleEditListener {
             dialog.pack();
             dialog.setVisible(true);
         } else if (PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_WX_CP).equals(actionCommand)) {
-            ImportByWxCp dialog = new ImportByWxCp();
+            ImportByWxCp dialog = new ImportByWxCp(PeopleManageForm.getInstance().getAccountComboBox().getSelectedItem().toString());
             dialog.pack();
             dialog.setVisible(true);
         } else if (PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_DING).equals(actionCommand)) {
