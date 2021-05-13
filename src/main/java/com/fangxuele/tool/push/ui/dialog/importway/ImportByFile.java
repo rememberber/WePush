@@ -130,7 +130,7 @@ public class ImportByFile extends JDialog {
     /**
      * 通过文件导入
      */
-    public static void importFromFile(String filePath) {
+    public void importFromFile(String filePath) {
         PeopleEditForm peopleEditForm = PeopleEditForm.getInstance();
         peopleEditForm.getImportButton().setEnabled(false);
         JPanel memberPanel = peopleEditForm.getMainPanel();

@@ -118,7 +118,7 @@ public class ImportBySQL extends JDialog {
     /**
      * 通过SQL导入
      */
-    public static void importFromSql(String querySql) {
+    public void importFromSql(String querySql) {
         PeopleEditForm peopleEditForm = PeopleEditForm.getInstance();
         peopleEditForm.getImportButton().setEnabled(false);
         JProgressBar progressBar = peopleEditForm.getMemberTabImportProgressBar();
