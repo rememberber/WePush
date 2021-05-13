@@ -17,11 +17,9 @@ import com.fangxuele.tool.push.domain.TPeopleData;
 import com.fangxuele.tool.push.domain.TPeopleImportConfig;
 import com.fangxuele.tool.push.logic.PeopleImportWayEnum;
 import com.fangxuele.tool.push.logic.PushData;
-import com.fangxuele.tool.push.logic.msgsender.DingMsgSender;
 import com.fangxuele.tool.push.ui.UiConsts;
-import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
-import com.fangxuele.tool.push.ui.form.msg.DingMsgForm;
+import com.fangxuele.tool.push.ui.form.account.DingAccountForm;
 import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
@@ -29,6 +27,7 @@ import com.fangxuele.tool.push.util.SqliteUtil;
 import com.google.common.collect.Maps;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
@@ -48,6 +47,8 @@ public class ImportByDing extends JDialog {
 
     private static final Log logger = LogFactory.get();
 
+    private String selectedAccountName;
+
     private static TPeopleDataMapper peopleDataMapper = MybatisUtil.getSqlSession().getMapper(TPeopleDataMapper.class);
     private static TPeopleImportConfigMapper peopleImportConfigMapper = MybatisUtil.getSqlSession().getMapper(TPeopleImportConfigMapper.class);
 
@@ -61,22 +62,18 @@ public class ImportByDing extends JDialog {
      */
     private static Map<Long, String> wxCpIdToDeptNameMap = Maps.newHashMap();
 
-    public ImportByDing() {
+    public ImportByDing(String selectedAccountName) {
         super(App.mainFrame, "通过钉钉通讯录导入");
         setContentPane(contentPane);
         setModal(true);
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.3, 0.2);
         getRootPane().setDefaultButton(dingImportAllButton);
 
+        this.selectedAccountName = selectedAccountName;
+
         // 钉钉-按部门导入-刷新
         dingDeptsRefreshButton.addActionListener(e -> {
             ThreadUtil.execute(() -> {
-                if (DingMsgForm.getInstance().getAppNameComboBox().getSelectedItem() == null) {
-                    JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "请先在编辑消息tab中选择应用！", "提示",
-                            JOptionPane.ERROR_MESSAGE);
-                    MainWindow.getInstance().getTabbedPane().setSelectedIndex(2);
-                    return;
-                }
                 dingDeptsComboBox.removeAllItems();
 
                 try {
@@ -84,7 +81,7 @@ public class ImportByDing extends JDialog {
                     DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/department/list");
                     OapiDepartmentListRequest request = new OapiDepartmentListRequest();
                     request.setHttpMethod("GET");
-                    OapiDepartmentListResponse response = client.execute(request, DingMsgSender.getAccessTokenTimedCache().get("accessToken"));
+                    OapiDepartmentListResponse response = client.execute(request, DingAccountForm.getAccessTokenTimedCache(selectedAccountName).get("accessToken"));
                     if (response.getErrcode() != 0) {
                         JOptionPane.showMessageDialog(App.mainFrame, "刷新失败！\n\n" + response.getErrmsg(), "失败",
                                 JOptionPane.ERROR_MESSAGE);
@@ -99,7 +96,7 @@ public class ImportByDing extends JDialog {
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(App.mainFrame, "刷新失败！\n\n" + ex, "失败",
                             JOptionPane.ERROR_MESSAGE);
-                    logger.error(ex.toString());
+                    logger.error(ExceptionUtils.getStackTrace(ex));
                 }
             });
         });
@@ -150,7 +147,7 @@ public class ImportByDing extends JDialog {
                     long offset = 0;
                     OapiUserSimplelistResponse response = new OapiUserSimplelistResponse();
                     while (response.getErrcode() == null || response.getUserlist().size() > 0) {
-                        response = client.execute(request, DingMsgSender.getAccessTokenTimedCache().get("accessToken"));
+                        response = client.execute(request, DingAccountForm.getAccessTokenTimedCache(selectedAccountName).get("accessToken"));
                         if (response.getErrcode() != 0) {
                             if (response.getErrcode() == 60011) {
                                 JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + response.getErrmsg() + "\n\n进入开发者后台，在小程序或者微应用详情的「接口权限」模块，点击申请对应的通讯录接口读写权限", "失败",
@@ -239,19 +236,12 @@ public class ImportByDing extends JDialog {
     /**
      * 导入钉钉通讯录全员
      */
-    public static void importDingAll() {
+    public void importDingAll() {
         PeopleEditForm instance = PeopleEditForm.getInstance();
         JProgressBar progressBar = instance.getMemberTabImportProgressBar();
         JLabel memberCountLabel = instance.getMemberTabCountLabel();
 
         try {
-            if (DingMsgForm.getInstance().getAppNameComboBox().getSelectedItem() == null) {
-                JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "请先在编辑消息tab中选择应用！", "提示",
-                        JOptionPane.ERROR_MESSAGE);
-                MainWindow.getInstance().getTabbedPane().setSelectedIndex(2);
-                return;
-            }
-
             progressBar.setVisible(true);
             progressBar.setIndeterminate(true);
             int importedCount = 0;
@@ -286,7 +276,7 @@ public class ImportByDing extends JDialog {
             long offset = 0;
             OapiUserSimplelistResponse response = new OapiUserSimplelistResponse();
             while (response.getErrcode() == null || response.getUserlist().size() > 0) {
-                response = client.execute(request, DingMsgSender.getAccessTokenTimedCache().get("accessToken"));
+                response = client.execute(request, DingAccountForm.getAccessTokenTimedCache(selectedAccountName).get("accessToken"));
                 if (response.getErrcode() != 0) {
                     if (response.getErrcode() == 60011) {
                         JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + response.getErrmsg() + "\n\n进入开发者后台，在小程序或者微应用详情的「接口权限」模块，点击申请对应的通讯录接口读写权限", "失败",
@@ -327,7 +317,7 @@ public class ImportByDing extends JDialog {
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + ex, "失败",
                     JOptionPane.ERROR_MESSAGE);
-            logger.error(ex.toString());
+            logger.error(ExceptionUtils.getStackTrace(ex));
         } finally {
             progressBar.setIndeterminate(false);
             progressBar.setVisible(false);

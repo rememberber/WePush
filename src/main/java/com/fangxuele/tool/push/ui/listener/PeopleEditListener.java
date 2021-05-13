@@ -304,7 +304,7 @@ public class PeopleEditListener {
             dialog.pack();
             dialog.setVisible(true);
         } else if (PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_DING).equals(actionCommand)) {
-            ImportByDing dialog = new ImportByDing();
+            ImportByDing dialog = new ImportByDing(selectedAccountName);
             dialog.pack();
             dialog.setVisible(true);
         } else if (PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_NUM).equals(actionCommand)) {
