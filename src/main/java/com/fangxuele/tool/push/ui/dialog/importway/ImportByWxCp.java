@@ -12,10 +12,8 @@ import com.fangxuele.tool.push.domain.TPeopleImportConfig;
 import com.fangxuele.tool.push.logic.PeopleImportWayEnum;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.ui.UiConsts;
-import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
 import com.fangxuele.tool.push.ui.form.account.WxCpAccountForm;
-import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
 import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
@@ -23,13 +21,12 @@ import com.fangxuele.tool.push.util.SqliteUtil;
 import com.google.common.collect.Maps;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.cp.bean.WxCpDepart;
 import me.chanjar.weixin.cp.bean.WxCpTag;
 import me.chanjar.weixin.cp.bean.WxCpUser;
 import org.apache.commons.compress.utils.Lists;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
@@ -40,8 +37,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-@Getter
-@Setter
 @Slf4j
 public class ImportByWxCp extends JDialog {
     private JPanel contentPane;
@@ -92,12 +87,6 @@ public class ImportByWxCp extends JDialog {
         // 企业号-按标签导入-刷新
         wxCpTagsRefreshButton.addActionListener(e -> {
             ThreadUtil.execute(() -> {
-                if (WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem() == null) {
-                    JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "请先在编辑消息tab中选择应用！", "提示",
-                            JOptionPane.ERROR_MESSAGE);
-                    MainWindow.getInstance().getTabbedPane().setSelectedIndex(2);
-                    return;
-                }
                 wxCpTagsComboBox.removeAllItems();
 
                 try {
@@ -195,12 +184,6 @@ public class ImportByWxCp extends JDialog {
         // 企业号-按部门导入-刷新
         wxCpDeptsRefreshButton.addActionListener(e -> {
             ThreadUtil.execute(() -> {
-                if (WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem() == null) {
-                    JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "请先在编辑消息tab中选择应用！", "提示",
-                            JOptionPane.ERROR_MESSAGE);
-                    MainWindow.getInstance().getTabbedPane().setSelectedIndex(2);
-                    return;
-                }
                 wxCpDeptsComboBox.removeAllItems();
 
                 try {
@@ -349,13 +332,6 @@ public class ImportByWxCp extends JDialog {
         JLabel memberCountLabel = peopleEditForm.getMemberTabCountLabel();
 
         try {
-            if (WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem() == null) {
-                JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "请先在编辑消息tab中选择应用！", "提示",
-                        JOptionPane.ERROR_MESSAGE);
-                MainWindow.getInstance().getTabbedPane().setSelectedIndex(2);
-                return;
-            }
-
             progressBar.setVisible(true);
             progressBar.setIndeterminate(true);
             int importedCount = 0;
@@ -428,7 +404,7 @@ public class ImportByWxCp extends JDialog {
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + ex, "失败",
                     JOptionPane.ERROR_MESSAGE);
-            logger.error(ex.toString());
+            logger.error(ExceptionUtils.getStackTrace(ex));
         } finally {
             progressBar.setIndeterminate(false);
             progressBar.setVisible(false);
