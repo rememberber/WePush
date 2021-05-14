@@ -216,6 +216,7 @@ public class Init {
         ThreadUtil.execute(() -> PeopleEditForm.init(null));
         ThreadUtil.execute(MemberForm::init);
         ThreadUtil.execute(PushForm::init);
+        ThreadUtil.execute(TaskForm::init);
         ThreadUtil.execute(BoostForm::init);
         ThreadUtil.execute(InfinityForm::init);
         ThreadUtil.execute(ScheduleForm::init);
