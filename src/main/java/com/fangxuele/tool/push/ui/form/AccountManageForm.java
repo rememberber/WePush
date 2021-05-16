@@ -92,7 +92,7 @@ public class AccountManageForm {
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         accountManagePanel = new JPanel();
-        accountManagePanel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
+        accountManagePanel.setLayout(new GridLayoutManager(2, 1, new Insets(10, 10, 10, 0), -1, -1));
         accountManagePanel.setMaximumSize(new Dimension(-1, -1));
         accountManagePanel.setMinimumSize(new Dimension(-1, -1));
         accountManagePanel.setPreferredSize(new Dimension(280, -1));
@@ -105,7 +105,7 @@ public class AccountManageForm {
         accountListTable.setShowVerticalLines(false);
         scrollPane1.setViewportView(accountListTable);
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(1, 3, new Insets(0, 5, 5, 0), -1, -1));
+        panel2.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
         accountManagePanel.add(panel2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         accountListTableDeleteButton = new JButton();
         accountListTableDeleteButton.setIcon(new ImageIcon(getClass().getResource("/icon/remove.png")));

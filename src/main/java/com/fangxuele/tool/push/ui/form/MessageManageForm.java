@@ -245,7 +245,7 @@ public class MessageManageForm {
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         messageManagePanel = new JPanel();
-        messageManagePanel.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
+        messageManagePanel.setLayout(new GridLayoutManager(3, 1, new Insets(10, 10, 10, 0), -1, -1));
         messageManagePanel.setMaximumSize(new Dimension(-1, -1));
         messageManagePanel.setMinimumSize(new Dimension(-1, -1));
         messageManagePanel.setPreferredSize(new Dimension(280, -1));
@@ -258,7 +258,7 @@ public class MessageManageForm {
         msgHistable.setShowVerticalLines(false);
         scrollPane1.setViewportView(msgHistable);
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(1, 3, new Insets(0, 5, 5, 0), -1, -1));
+        panel2.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
         messageManagePanel.add(panel2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         msgHisTableDeleteButton = new JButton();
         msgHisTableDeleteButton.setIcon(new ImageIcon(getClass().getResource("/icon/remove.png")));
