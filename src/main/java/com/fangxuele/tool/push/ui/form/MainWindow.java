@@ -118,7 +118,7 @@ public class MainWindow {
         accountPanel = new JSplitPane();
         accountPanel.setContinuousLayout(true);
         accountPanel.setDividerLocation(250);
-        accountPanel.setDividerSize(4);
+        accountPanel.setDividerSize(10);
         tabbedPane.addTab("设置账号", accountPanel);
         accountManagePanel = new JPanel();
         accountManagePanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
@@ -129,7 +129,7 @@ public class MainWindow {
         messagePanel = new JSplitPane();
         messagePanel.setContinuousLayout(true);
         messagePanel.setDividerLocation(250);
-        messagePanel.setDividerSize(4);
+        messagePanel.setDividerSize(10);
         messagePanel.setDoubleBuffered(true);
         messagePanel.setLastDividerLocation(-1);
         messagePanel.setMinimumSize(new Dimension(-1, -1));
@@ -149,7 +149,7 @@ public class MainWindow {
         peoplePanel = new JSplitPane();
         peoplePanel.setContinuousLayout(true);
         peoplePanel.setDividerLocation(250);
-        peoplePanel.setDividerSize(4);
+        peoplePanel.setDividerSize(10);
         tabbedPane.addTab("准备目标人群", peoplePanel);
         peopleManagePanel = new JPanel();
         peopleManagePanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
