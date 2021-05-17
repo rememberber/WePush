@@ -1649,8 +1649,6 @@
                             </constraints>
                             <properties>
                               <model>
-                                <item value="Darcula"/>
-                                <item value="BeautyEye"/>
                                 <item value="系统默认"/>
                                 <item value="Flat Light"/>
                                 <item value="Flat IntelliJ"/>

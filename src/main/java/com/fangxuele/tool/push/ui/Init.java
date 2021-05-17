@@ -14,7 +14,6 @@ import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.IntelliJTheme;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
@@ -105,18 +104,8 @@ public class Init {
 
         try {
             switch (App.config.getTheme()) {
-                case "BeautyEye":
-                    BeautyEyeLNFHelper.launchBeautyEyeLNF();
-                    UIManager.put("RootPane.setupButtonVisible", false);
-                    break;
                 case "系统默认":
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                    break;
-                case "weblaf":
-                case "Darcula":
-                    JFrame.setDefaultLookAndFeelDecorated(false);
-                    JDialog.setDefaultLookAndFeelDecorated(false);
-                    UIManager.setLookAndFeel("com.bulenkov.darcula.DarculaLaf");
                     break;
                 case "Flat Light":
                     if (SystemUtil.isJBR()) {
@@ -188,6 +177,10 @@ public class Init {
                             "/theme/Light.theme.json"));
                     break;
 
+                case "BeautyEye":
+                case "weblaf":
+                case "Darcula":
+                case "Darcula(推荐)":
                 default:
                     if (SystemUtil.isJBR()) {
                         JFrame.setDefaultLookAndFeelDecorated(true);

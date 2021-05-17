@@ -221,18 +221,6 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>com.darcula</groupId>
-            <artifactId>darcula-lnf</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.beautyeye</groupId>
-            <artifactId>beautyeye-lnf</artifactId>
-            <version>1.0</version>
-        </dependency>
-
         <!--文件字符集格式检测-->
         <dependency>
             <groupId>net.sourceforge.cpdetector</groupId>
