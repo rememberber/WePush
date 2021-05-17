@@ -52,6 +52,7 @@
             <properties>
               <continuousLayout value="true"/>
               <dividerLocation value="250"/>
+              <dividerSize value="4"/>
             </properties>
             <border type="none"/>
             <children>
@@ -84,7 +85,7 @@
               <dividerLocation value="250"/>
               <dividerSize value="4"/>
               <doubleBuffered value="true"/>
-              <lastDividerLocation value="250"/>
+              <lastDividerLocation value="-1"/>
               <minimumSize width="-1" height="-1"/>
             </properties>
             <border type="none"/>
@@ -124,6 +125,7 @@
             <properties>
               <continuousLayout value="true"/>
               <dividerLocation value="250"/>
+              <dividerSize value="4"/>
             </properties>
             <border type="none"/>
             <children>
