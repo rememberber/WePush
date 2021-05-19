@@ -102,6 +102,10 @@ public class Init {
             return;
         }
 
+        if (App.config.isUnifiedBackground()) {
+            UIManager.put("TitlePane.unifiedBackground", true);
+        }
+
         try {
             switch (App.config.getTheme()) {
                 case "系统默认":
@@ -260,16 +264,7 @@ public class Init {
                     App.mainFrame.requestFocus();
                 });
                 exitItem.addActionListener(e -> {
-                    if (!PushForm.getInstance().getPushStartButton().isEnabled()) {
-                        JOptionPane.showMessageDialog(MainWindow.getInstance().getPushPanel(),
-                                "有推送任务正在进行！\n\n为避免数据丢失，请先停止!\n\n", "Sorry~",
-                                JOptionPane.WARNING_MESSAGE);
-                    } else {
-                        App.config.save();
-                        App.sqlSession.close();
-                        App.mainFrame.dispose();
-                        System.exit(0);
-                    }
+                    shutdown();
                 });
 
                 popupMenu.add(openItem);
@@ -319,6 +314,19 @@ public class Init {
 
         } catch (Exception e) {
             logger.error(ExceptionUtils.getStackTrace(e));
+        }
+    }
+
+    public static void shutdown() {
+        if (!PushForm.getInstance().getPushStartButton().isEnabled()) {
+            JOptionPane.showMessageDialog(MainWindow.getInstance().getPushPanel(),
+                    "有推送任务正在进行！\n\n为避免数据丢失，请先停止!\n\n", "Sorry~",
+                    JOptionPane.WARNING_MESSAGE);
+        } else {
+            App.config.save();
+            App.sqlSession.close();
+            App.mainFrame.dispose();
+            System.exit(0);
         }
     }
 }

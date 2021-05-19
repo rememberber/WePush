@@ -3,6 +3,7 @@ package com.fangxuele.tool.push.ui.frame;
 import cn.hutool.core.thread.ThreadUtil;
 import com.apple.eawt.Application;
 import com.fangxuele.tool.push.ui.UiConsts;
+import com.fangxuele.tool.push.ui.component.TopMenuBar;
 import com.fangxuele.tool.push.ui.listener.*;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
@@ -47,6 +48,10 @@ public class MainFrame extends JFrame {
                 application.setEnabledPreferencesMenu(false);
             }
         }
+
+        TopMenuBar topMenuBar = TopMenuBar.getInstance();
+        topMenuBar.init();
+        setJMenuBar(topMenuBar);
 
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.8, 0.88);
     }
