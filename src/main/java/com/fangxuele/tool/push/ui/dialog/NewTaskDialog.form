@@ -3,7 +3,7 @@
   <grid id="cbd77" binding="contentPane" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
-      <xy x="48" y="54" width="960" height="794"/>
+      <xy x="48" y="54" width="1047" height="794"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -49,159 +49,362 @@
           </grid>
         </children>
       </grid>
-      <grid id="e3588" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-        <margin top="0" left="0" bottom="0" right="0"/>
+      <scrollpane id="98666">
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
-        <border type="empty" title=""/>
+        <border type="empty"/>
         <children>
-          <vspacer id="5dbef">
-            <constraints>
-              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
-            </constraints>
-          </vspacer>
-          <grid id="6dc2d" layout-manager="GridLayoutManager" row-count="5" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-            <margin top="10" left="10" bottom="10" right="10"/>
-            <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-            </constraints>
+          <grid id="e3588" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
+            <constraints/>
             <properties/>
-            <border type="none" title="基本信息"/>
+            <border type="empty" title=""/>
             <children>
-              <component id="cfae3" class="javax.swing.JLabel">
+              <vspacer id="5dbef">
                 <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
                 </constraints>
-                <properties>
-                  <text value="任务名称"/>
-                </properties>
-              </component>
-              <component id="8cbd" class="javax.swing.JTextField" binding="textField1" default-binding="true">
+              </vspacer>
+              <grid id="6dc2d" layout-manager="GridLayoutManager" row-count="5" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="10" left="10" bottom="10" right="10"/>
                 <constraints>
-                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="-1"/>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+                <border type="none" title="基本信息"/>
+                <children>
+                  <component id="cfae3" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="任务名称"/>
+                    </properties>
+                  </component>
+                  <component id="8cbd" class="javax.swing.JTextField" binding="textField1" default-binding="true">
+                    <constraints>
+                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                        <preferred-size width="150" height="-1"/>
+                      </grid>
+                    </constraints>
+                    <properties/>
+                  </component>
+                  <component id="7f485" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="消息类型"/>
+                    </properties>
+                  </component>
+                  <component id="6859a" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="账号"/>
+                    </properties>
+                  </component>
+                  <component id="43ce4" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="消息"/>
+                    </properties>
+                  </component>
+                  <component id="e1d9c" class="javax.swing.JLabel">
+                    <constraints>
+                      <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="人群"/>
+                    </properties>
+                  </component>
+                  <component id="b373d" class="javax.swing.JComboBox" binding="comboBox1" default-binding="true">
+                    <constraints>
+                      <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties/>
+                  </component>
+                  <component id="19021" class="javax.swing.JComboBox" binding="comboBox2" default-binding="true">
+                    <constraints>
+                      <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties/>
+                  </component>
+                  <component id="8c27c" class="javax.swing.JComboBox" binding="comboBox3" default-binding="true">
+                    <constraints>
+                      <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties/>
+                  </component>
+                  <component id="7f4ad" class="javax.swing.JComboBox" binding="comboBox4" default-binding="true">
+                    <constraints>
+                      <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties/>
+                  </component>
+                </children>
+              </grid>
+              <grid id="50877" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="10" left="10" bottom="10" right="10"/>
+                <constraints>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+                <border type="none" title="运行规则"/>
+                <children>
+                  <grid id="442f9" binding="schedulePanel" layout-manager="GridLayoutManager" row-count="6" column-count="7" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="10" left="10" bottom="10" right="10"/>
+                    <constraints>
+                      <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <component id="2b54d" class="javax.swing.JRadioButton" binding="runAtThisTimeRadioButton">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="在此时间开始推送："/>
+                        </properties>
+                      </component>
+                      <component id="b55cb" class="javax.swing.JTextField" binding="startAtThisTimeTextField">
+                        <constraints>
+                          <grid row="0" column="2" row-span="1" col-span="4" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                            <preferred-size width="150" height="-1"/>
+                          </grid>
+                        </constraints>
+                        <properties>
+                          <text value=""/>
+                        </properties>
+                      </component>
+                      <component id="369c9" class="javax.swing.JRadioButton" binding="runPerDayRadioButton">
+                        <constraints>
+                          <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="每天固定时间开始推送："/>
+                        </properties>
+                      </component>
+                      <component id="a473e" class="javax.swing.JTextField" binding="startPerDayTextField">
+                        <constraints>
+                          <grid row="1" column="2" row-span="1" col-span="4" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                            <preferred-size width="150" height="-1"/>
+                          </grid>
+                        </constraints>
+                        <properties/>
+                      </component>
+                      <component id="24750" class="javax.swing.JRadioButton" binding="runPerWeekRadioButton">
+                        <constraints>
+                          <grid row="2" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="每周固定时间开始推送："/>
+                        </properties>
+                      </component>
+                      <component id="fe275" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="0" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="yyyy-MM-dd HH:mm:ss"/>
+                        </properties>
+                      </component>
+                      <component id="f4fdf" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="1" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="HH:mm:ss"/>
+                        </properties>
+                      </component>
+                      <component id="5b25c" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="2" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="HH:mm:ss"/>
+                        </properties>
+                      </component>
+                      <component id="6901b" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="每周"/>
+                        </properties>
+                      </component>
+                      <component id="a6092" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="2" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="的"/>
+                        </properties>
+                      </component>
+                      <component id="35579" class="javax.swing.JComboBox" binding="schedulePerWeekComboBox">
+                        <constraints>
+                          <grid row="2" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <model>
+                            <item value="一"/>
+                            <item value="二"/>
+                            <item value="三"/>
+                            <item value="四"/>
+                            <item value="五"/>
+                            <item value="六"/>
+                            <item value="日"/>
+                          </model>
+                        </properties>
+                      </component>
+                      <component id="3ebdd" class="javax.swing.JTextField" binding="startPerWeekTextField">
+                        <constraints>
+                          <grid row="2" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                            <preferred-size width="150" height="-1"/>
+                          </grid>
+                        </constraints>
+                        <properties/>
+                      </component>
+                      <component id="8be8a" class="javax.swing.JCheckBox" binding="reimportCheckBox">
+                        <constraints>
+                          <grid row="4" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="开始执行时重新导入目标用户"/>
+                        </properties>
+                      </component>
+                      <component id="d9403" class="javax.swing.JComboBox" binding="reimportComboBox">
+                        <constraints>
+                          <grid row="4" column="2" row-span="1" col-span="4" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties/>
+                      </component>
+                      <component id="660ee" class="javax.swing.JRadioButton" binding="cronRadioButton">
+                        <constraints>
+                          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="按Cron表达式触发推送："/>
+                        </properties>
+                      </component>
+                      <component id="fa02f" class="javax.swing.JTextField" binding="cronTextField">
+                        <constraints>
+                          <grid row="3" column="2" row-span="1" col-span="4" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                            <preferred-size width="150" height="-1"/>
+                          </grid>
+                        </constraints>
+                        <properties/>
+                      </component>
+                      <component id="f318c" class="javax.swing.JLabel" binding="cronOnlineLabel">
+                        <constraints>
+                          <grid row="3" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="&lt;html&gt;&lt;a href='http://cron.qqe2.com/'&gt;在线Cron表达式生成器&lt;/a&gt;&lt;/html&gt;"/>
+                        </properties>
+                      </component>
+                      <component id="9423a" class="javax.swing.JLabel" binding="cronHelpLabel">
+                        <constraints>
+                          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <icon value="icon/helpButton.png"/>
+                          <text value=""/>
+                        </properties>
+                      </component>
+                    </children>
                   </grid>
+                  <grid id="44fce" layout-manager="GridLayoutManager" row-count="1" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="0" left="0" bottom="0" right="0"/>
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <component id="168f8" class="javax.swing.JLabel">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="任务类型"/>
+                        </properties>
+                      </component>
+                      <hspacer id="b6e59">
+                        <constraints>
+                          <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                      </hspacer>
+                      <component id="4e7be" class="javax.swing.JRadioButton" binding="手动任务RadioButton" default-binding="true">
+                        <constraints>
+                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="手动任务"/>
+                        </properties>
+                      </component>
+                      <component id="7d57d" class="javax.swing.JRadioButton" binding="定时任务RadioButton" default-binding="true">
+                        <constraints>
+                          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="定时任务"/>
+                        </properties>
+                      </component>
+                      <component id="c0cd3" class="javax.swing.JRadioButton" binding="触发任务RadioButton" default-binding="true">
+                        <constraints>
+                          <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <enabled value="false"/>
+                          <text value="触发任务"/>
+                        </properties>
+                      </component>
+                    </children>
+                  </grid>
+                </children>
+              </grid>
+              <grid id="ddd5f" layout-manager="GridLayoutManager" row-count="2" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="10" left="10" bottom="10" right="10"/>
+                <constraints>
+                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties/>
-              </component>
-              <component id="7f485" class="javax.swing.JLabel">
-                <constraints>
-                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text value="消息类型"/>
-                </properties>
-              </component>
-              <component id="6859a" class="javax.swing.JLabel">
-                <constraints>
-                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text value="账号"/>
-                </properties>
-              </component>
-              <component id="43ce4" class="javax.swing.JLabel">
-                <constraints>
-                  <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text value="消息"/>
-                </properties>
-              </component>
-              <component id="e1d9c" class="javax.swing.JLabel">
-                <constraints>
-                  <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text value="人群"/>
-                </properties>
-              </component>
-              <component id="b373d" class="javax.swing.JComboBox" binding="comboBox1" default-binding="true">
-                <constraints>
-                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties/>
-              </component>
-              <component id="19021" class="javax.swing.JComboBox" binding="comboBox2" default-binding="true">
-                <constraints>
-                  <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties/>
-              </component>
-              <component id="8c27c" class="javax.swing.JComboBox" binding="comboBox3" default-binding="true">
-                <constraints>
-                  <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties/>
-              </component>
-              <component id="7f4ad" class="javax.swing.JComboBox" binding="comboBox4" default-binding="true">
-                <constraints>
-                  <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties/>
-              </component>
+                <border type="none" title="告警和通知"/>
+                <children>
+                  <component id="27786" class="javax.swing.JCheckBox" binding="sendPushResultCheckBox">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="将推送结果发送邮件给（多个以分号分隔）："/>
+                    </properties>
+                  </component>
+                  <hspacer id="b3c0c">
+                    <constraints>
+                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                  </hspacer>
+                  <component id="38573" class="javax.swing.JTextField" binding="mailResultToTextField">
+                    <constraints>
+                      <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                        <preferred-size width="150" height="-1"/>
+                      </grid>
+                    </constraints>
+                    <properties/>
+                  </component>
+                </children>
+              </grid>
             </children>
-          </grid>
-          <grid id="50877" layout-manager="GridLayoutManager" row-count="1" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-            <margin top="10" left="10" bottom="10" right="10"/>
-            <constraints>
-              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties/>
-            <border type="none" title="运行规则"/>
-            <children>
-              <component id="168f8" class="javax.swing.JLabel">
-                <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text value="任务类型"/>
-                </properties>
-              </component>
-              <hspacer id="b6e59">
-                <constraints>
-                  <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-              </hspacer>
-              <component id="4e7be" class="javax.swing.JRadioButton" binding="手动任务RadioButton" default-binding="true">
-                <constraints>
-                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text value="手动任务"/>
-                </properties>
-              </component>
-              <component id="7d57d" class="javax.swing.JRadioButton" binding="定时任务RadioButton" default-binding="true">
-                <constraints>
-                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text value="定时任务"/>
-                </properties>
-              </component>
-              <component id="c0cd3" class="javax.swing.JRadioButton" binding="触发任务RadioButton" default-binding="true">
-                <constraints>
-                  <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text value="触发任务"/>
-                </properties>
-              </component>
-            </children>
-          </grid>
-          <grid id="ddd5f" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-            <margin top="10" left="10" bottom="10" right="10"/>
-            <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties/>
-            <border type="none" title="告警和通知"/>
-            <children/>
           </grid>
         </children>
-      </grid>
+      </scrollpane>
     </children>
   </grid>
 </form>
