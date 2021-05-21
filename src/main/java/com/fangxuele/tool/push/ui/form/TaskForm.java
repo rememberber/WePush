@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.form;
 
+import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -7,6 +8,7 @@ import com.intellij.uiDesigner.core.Spacer;
 import lombok.Getter;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 /**
@@ -20,9 +22,10 @@ import java.awt.*;
 @Getter
 public class TaskForm {
     private JPanel mainPanel;
-    private JTable table1;
-    private JButton 新建任务Button;
+    private JTable taskListTable;
+    private JButton newTaskButton;
     private JSlider slider1;
+    private JScrollPane taskListScrollPane;
 
     private static TaskForm taskForm;
 
@@ -39,6 +42,32 @@ public class TaskForm {
 
     public static void init() {
         taskForm = getInstance();
+        initTaskListTable();
+    }
+
+    public static void initTaskListTable() {
+        JTable memberListTable = taskForm.getTaskListTable();
+
+        // 任务数据列表
+        String[] headerNames = {"id", "任务名称", "状态", "进度", "成功", "失败", "上次开始", "上次结束", "耗时(分)", "运行周期", "消息类型", "账号", "消息名称", "人群", "详情、修改、停止/开始"};
+        DefaultTableModel model = new DefaultTableModel(null, headerNames);
+        memberListTable.setModel(model);
+
+        Object[] data;
+
+        for (int i = 0; i < 10; i++) {
+            data = new Object[3];
+            data[0] = i;
+            data[1] = "peopleData.getVarData()peopleData.getVarData()peopleData.getVarData()";
+            data[2] = "peopleData.getId()";
+            model.addRow(data);
+        }
+        // 隐藏id列
+        JTableUtil.hideColumn(memberListTable, 0);
+        // 设置列宽
+//        TableColumnModel tableColumnModel = memberListTable.getColumnModel();
+//        tableColumnModel.getColumn(0).setPreferredWidth(peopleEditForm.getImportButton().getWidth() * 3);
+//        tableColumnModel.getColumn(0).setMaxWidth(peopleEditForm.getImportButton().getWidth() * 3);
     }
 
     {
@@ -61,17 +90,17 @@ public class TaskForm {
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
         mainPanel.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        新建任务Button = new JButton();
-        新建任务Button.setText("新建任务");
-        panel1.add(新建任务Button, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        newTaskButton = new JButton();
+        newTaskButton.setText("新建任务");
+        panel1.add(newTaskButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
         panel1.add(spacer1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         slider1 = new JSlider();
         panel1.add(slider1, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JScrollPane scrollPane1 = new JScrollPane();
-        mainPanel.add(scrollPane1, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        table1 = new JTable();
-        scrollPane1.setViewportView(table1);
+        taskListScrollPane = new JScrollPane();
+        mainPanel.add(taskListScrollPane, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        taskListTable = new JTable();
+        taskListScrollPane.setViewportView(taskListTable);
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
         mainPanel.add(panel2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
