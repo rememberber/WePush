@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.form;
 
+import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -27,13 +28,20 @@ public class TaskForm {
     private JPanel mainPanel;
     private JTable taskListTable;
     private JButton newTaskButton;
-    private JSlider slider1;
     private JScrollPane taskListScrollPane;
     private JLabel activeThreadCountLabel;
     private JLabel corePoolSizeLabel;
     private JLabel maxPoolSizeLabel;
     private JLabel availableProcessorLabel;
     private JLabel jvmMemoryLabel;
+    private JButton 删除Button;
+    private JPanel pushControlPanel;
+    private JTextField sliderValueTextField;
+    private JCheckBox dryRunCheckBox;
+    private JLabel threadTipsLabel;
+    private JLabel dryRunHelpLabel;
+    private JCheckBox saveResponseBodyCheckBox;
+    private JSlider threadCountSlider;
 
     private static TaskForm taskForm;
 
@@ -50,6 +58,8 @@ public class TaskForm {
 
     public static void init() {
         taskForm = getInstance();
+        taskForm.getTaskListTable().setRowHeight(UiConsts.TABLE_ROW_HEIGHT);
+        taskForm.getTaskListTable().setShowHorizontalLines(true);
         initTaskListTable();
     }
 
@@ -63,7 +73,7 @@ public class TaskForm {
 
         Object[] data;
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 28; i++) {
             data = new Object[3];
             data[0] = i;
             data[1] = "peopleData.getVarData()peopleData.getVarData()peopleData.getVarData()";
@@ -95,51 +105,95 @@ public class TaskForm {
     private void $$$setupUI$$$() {
         mainPanel = new JPanel();
         mainPanel.setLayout(new GridLayoutManager(3, 1, new Insets(10, 10, 10, 10), -1, -1));
-        final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
-        mainPanel.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        newTaskButton = new JButton();
-        newTaskButton.setText("新建任务");
-        panel1.add(newTaskButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final Spacer spacer1 = new Spacer();
-        panel1.add(spacer1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-        slider1 = new JSlider();
-        panel1.add(slider1, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         taskListScrollPane = new JScrollPane();
-        mainPanel.add(taskListScrollPane, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        mainPanel.add(taskListScrollPane, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         taskListTable = new JTable();
         taskListScrollPane.setViewportView(taskListTable);
-        final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(8, 2, new Insets(0, 0, 0, 0), -1, -1));
-        mainPanel.add(panel2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        final JPanel panel1 = new JPanel();
+        panel1.setLayout(new GridLayoutManager(8, 2, new Insets(0, 0, 0, 0), -1, -1));
+        mainPanel.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
         label1.setText("计划中任务：2");
-        panel2.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final Spacer spacer2 = new Spacer();
-        panel2.add(spacer2, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        panel1.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final Spacer spacer1 = new Spacer();
+        panel1.add(spacer1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
         label2.setText("当前任务");
-        panel2.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel1.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label3 = new JLabel();
         label3.setText("TPS");
-        panel2.add(label3, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel1.add(label3, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         activeThreadCountLabel = new JLabel();
         Font activeThreadCountLabelFont = this.$$$getFont$$$(null, Font.BOLD, -1, activeThreadCountLabel.getFont());
         if (activeThreadCountLabelFont != null) activeThreadCountLabel.setFont(activeThreadCountLabelFont);
         activeThreadCountLabel.setText("活跃线程数：0");
-        panel2.add(activeThreadCountLabel, new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel1.add(activeThreadCountLabel, new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         corePoolSizeLabel = new JLabel();
         corePoolSizeLabel.setText("核心线程数：0");
-        panel2.add(corePoolSizeLabel, new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel1.add(corePoolSizeLabel, new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         maxPoolSizeLabel = new JLabel();
         maxPoolSizeLabel.setText("最大线程数：0");
-        panel2.add(maxPoolSizeLabel, new GridConstraints(5, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel1.add(maxPoolSizeLabel, new GridConstraints(5, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         availableProcessorLabel = new JLabel();
         availableProcessorLabel.setText("可用处理器核心：--");
-        panel2.add(availableProcessorLabel, new GridConstraints(6, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel1.add(availableProcessorLabel, new GridConstraints(6, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         jvmMemoryLabel = new JLabel();
         jvmMemoryLabel.setText("JVM内存占用：--");
-        panel2.add(jvmMemoryLabel, new GridConstraints(7, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel1.add(jvmMemoryLabel, new GridConstraints(7, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushControlPanel = new JPanel();
+        pushControlPanel.setLayout(new GridLayoutManager(1, 8, new Insets(0, 0, 0, 0), -1, -1));
+        mainPanel.add(pushControlPanel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        sliderValueTextField = new JTextField();
+        sliderValueTextField.setEditable(false);
+        sliderValueTextField.setHorizontalAlignment(10);
+        sliderValueTextField.setMargin(new Insets(2, 6, 2, 6));
+        sliderValueTextField.setRequestFocusEnabled(true);
+        sliderValueTextField.setToolTipText("输入结束后请按回车键确认");
+        pushControlPanel.add(sliderValueTextField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(60, -1), null, 0, false));
+        dryRunCheckBox = new JCheckBox();
+        dryRunCheckBox.setText("空跑");
+        dryRunCheckBox.setToolTipText("空跑勾选时不会真实发送消息");
+        pushControlPanel.add(dryRunCheckBox, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        threadTipsLabel = new JLabel();
+        threadTipsLabel.setIcon(new ImageIcon(getClass().getResource("/icon/helpButton.png")));
+        threadTipsLabel.setText("");
+        pushControlPanel.add(threadTipsLabel, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        dryRunHelpLabel = new JLabel();
+        dryRunHelpLabel.setIcon(new ImageIcon(getClass().getResource("/icon/helpButton.png")));
+        dryRunHelpLabel.setText("");
+        pushControlPanel.add(dryRunHelpLabel, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        saveResponseBodyCheckBox = new JCheckBox();
+        saveResponseBodyCheckBox.setText("保存请求返回的Body");
+        pushControlPanel.add(saveResponseBodyCheckBox, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        threadCountSlider = new JSlider();
+        threadCountSlider.setDoubleBuffered(true);
+        threadCountSlider.setExtent(0);
+        threadCountSlider.setFocusCycleRoot(false);
+        threadCountSlider.setFocusTraversalPolicyProvider(false);
+        threadCountSlider.setFocusable(false);
+        threadCountSlider.setInverted(false);
+        threadCountSlider.setMajorTickSpacing(10);
+        threadCountSlider.setMinimum(0);
+        threadCountSlider.setMinorTickSpacing(5);
+        threadCountSlider.setOpaque(false);
+        threadCountSlider.setOrientation(0);
+        threadCountSlider.setPaintLabels(true);
+        threadCountSlider.setPaintTicks(true);
+        threadCountSlider.setPaintTrack(true);
+        threadCountSlider.setRequestFocusEnabled(false);
+        threadCountSlider.setSnapToTicks(false);
+        threadCountSlider.setToolTipText("线程数");
+        threadCountSlider.setValue(0);
+        threadCountSlider.setValueIsAdjusting(false);
+        pushControlPanel.add(threadCountSlider, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        newTaskButton = new JButton();
+        newTaskButton.setIcon(new ImageIcon(getClass().getResource("/icon/add.png")));
+        newTaskButton.setText("新建");
+        pushControlPanel.add(newTaskButton, new GridConstraints(0, 6, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        删除Button = new JButton();
+        删除Button.setIcon(new ImageIcon(getClass().getResource("/icon/remove.png")));
+        删除Button.setText("删除");
+        pushControlPanel.add(删除Button, new GridConstraints(0, 7, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

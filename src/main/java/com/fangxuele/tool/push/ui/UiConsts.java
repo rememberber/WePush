@@ -18,6 +18,8 @@ public class UiConsts {
     public final static String APP_NAME = "WePush";
     public final static String APP_VERSION = "v_4.4.1_210323";
 
+    public static final int TABLE_ROW_HEIGHT = 36;
+
     /**
      * Logo-1024*1024
      */
