@@ -33,7 +33,6 @@ public class MainWindow {
     private JPanel messageEditPanel;
     private JPanel messageManagePanel;
     private JPanel messageTypePanel;
-    private JPanel boostPanel;
     private JPanel infinityPanel;
     private JSplitPane accountPanel;
     private JPanel accountManagePanel;
@@ -77,7 +76,6 @@ public class MainWindow {
         mainWindow.getTaskPanel().add(TaskForm.getInstance().getMainPanel(), GRID_CONSTRAINTS);
         mainWindow.getPushPanel().add(PushForm.getInstance().getPushPanel(), GRID_CONSTRAINTS);
         mainWindow.getMessageTypePanel().add(MessageTypeForm.getInstance().getMessageTypePanel(), GRID_CONSTRAINTS);
-        mainWindow.getBoostPanel().add(BoostForm.getInstance().getBoostPanel(), GRID_CONSTRAINTS);
         mainWindow.getInfinityPanel().add(InfinityForm.getInstance().getInfinityPanel(), GRID_CONSTRAINTS);
         mainWindow.getMessagePanel().setDividerLocation((int) (App.mainFrame.getWidth() / 5.6));
         mainWindow.getMainPanel().updateUI();
@@ -171,9 +169,6 @@ public class MainWindow {
         infinityPanel = new JPanel();
         infinityPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane.addTab("变速模式", infinityPanel);
-        boostPanel = new JPanel();
-        boostPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        tabbedPane.addTab("性能模式", boostPanel);
         pushHisPanel = new JPanel();
         pushHisPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         pushHisPanel.setMinimumSize(new Dimension(-1, -1));
