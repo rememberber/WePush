@@ -1,6 +1,7 @@
 package com.fangxuele.tool.push.ui.form;
 
 import com.fangxuele.tool.push.ui.UiConsts;
+import com.fangxuele.tool.push.ui.component.TableInCellButtonGroupRenderer;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -70,6 +71,8 @@ public class TaskForm {
         String[] headerNames = {"id", "任务名称", "状态", "进度", "成功", "失败", "上次开始", "上次结束", "耗时(分)", "运行周期", "消息类型", "账号", "消息名称", "人群", "详情、修改、停止/开始"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
         memberListTable.setModel(model);
+
+        memberListTable.getColumn("详情、修改、停止/开始").setCellRenderer(new TableInCellButtonGroupRenderer());
 
         Object[] data;
 
