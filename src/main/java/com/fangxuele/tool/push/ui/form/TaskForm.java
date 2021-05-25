@@ -1,7 +1,9 @@
 package com.fangxuele.tool.push.ui.form;
 
 import com.fangxuele.tool.push.ui.UiConsts;
-import com.fangxuele.tool.push.ui.component.TableInCellButtonGroupRenderer;
+import com.fangxuele.tool.push.ui.component.TableInCellTaskDetailButtonColumn;
+import com.fangxuele.tool.push.ui.component.TableInCellTaskExecuteButtonColumn;
+import com.fangxuele.tool.push.ui.component.TableInCellTaskModifyButtonColumn;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -12,6 +14,7 @@ import lombok.Getter;
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.util.Locale;
@@ -65,14 +68,31 @@ public class TaskForm {
     }
 
     public static void initTaskListTable() {
-        JTable memberListTable = taskForm.getTaskListTable();
+        JTable taskListTable = taskForm.getTaskListTable();
 
         // 任务数据列表
-        String[] headerNames = {"id", "任务名称", "状态", "进度", "成功", "失败", "上次开始", "上次结束", "耗时(分)", "运行周期", "消息类型", "账号", "消息名称", "人群", "详情、修改、停止/开始"};
+        String[] headerNames = {"id", "任务名称", "状态", "进度", "成功", "失败", "上次开始", "上次结束", "耗时(分)", "运行周期", "消息类型", "账号", "消息名称", "人群", "详情", "修改", "执行"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
-        memberListTable.setModel(model);
+        taskListTable.setModel(model);
 
-        memberListTable.getColumn("详情、修改、停止/开始").setCellRenderer(new TableInCellButtonGroupRenderer());
+        // 执行按钮
+        TableColumnModel tableColumnModel = taskListTable.getColumnModel();
+        tableColumnModel.getColumn(headerNames.length - 1).
+                setCellRenderer(new TableInCellTaskExecuteButtonColumn(taskListTable, headerNames.length - 1));
+        tableColumnModel.getColumn(headerNames.length - 1).
+                setCellEditor(new TableInCellTaskExecuteButtonColumn(taskListTable, headerNames.length - 1));
+
+        // 修改按钮
+        tableColumnModel.getColumn(headerNames.length - 2).
+                setCellRenderer(new TableInCellTaskModifyButtonColumn(taskListTable, headerNames.length - 2));
+        tableColumnModel.getColumn(headerNames.length - 2).
+                setCellEditor(new TableInCellTaskModifyButtonColumn(taskListTable, headerNames.length - 2));
+
+        // 详情按钮
+        tableColumnModel.getColumn(headerNames.length - 3).
+                setCellRenderer(new TableInCellTaskDetailButtonColumn(taskListTable, headerNames.length - 3));
+        tableColumnModel.getColumn(headerNames.length - 3).
+                setCellEditor(new TableInCellTaskDetailButtonColumn(taskListTable, headerNames.length - 3));
 
         Object[] data;
 
@@ -84,9 +104,9 @@ public class TaskForm {
             model.addRow(data);
         }
         // 隐藏id列
-        JTableUtil.hideColumn(memberListTable, 0);
+        JTableUtil.hideColumn(taskListTable, 0);
         // 设置列宽
-//        TableColumnModel tableColumnModel = memberListTable.getColumnModel();
+//        TableColumnModel tableColumnModel = taskListTable.getColumnModel();
 //        tableColumnModel.getColumn(0).setPreferredWidth(peopleEditForm.getImportButton().getWidth() * 3);
 //        tableColumnModel.getColumn(0).setMaxWidth(peopleEditForm.getImportButton().getWidth() * 3);
     }
