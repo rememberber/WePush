@@ -379,3 +379,28 @@ create table if not exists t_people_import_config
 
 create unique index if not exists t_people_import_config_people_id_uindex
     on t_people_import_config (people_id);
+
+create table if not exists t_task
+(
+    id            integer
+        constraint t_task_pk
+            primary key autoincrement,
+    title  text,
+    msg_type  text,
+    account_id  integer,
+    message_id  integer,
+    people_id  integer,
+    task_type  integer,
+    cron       text,
+    reimport_people       integer,
+    result_alert       integer,
+    alert_emails       text,
+    remark       text,
+    create_time   datetime,
+    modified_time datetime
+);
+
+create unique index if not exists t_task_title_uindex
+    on t_task (title);
+
+commit ;
