@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fangxuele.tool.push.dao.TTaskExtMapper">
+    <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TTask">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="msg_type" jdbcType="VARCHAR" property="msgType"/>
+        <result column="account_id" jdbcType="INTEGER" property="accountId"/>
+        <result column="message_id" jdbcType="INTEGER" property="messageId"/>
+        <result column="people_id" jdbcType="INTEGER" property="peopleId"/>
+        <result column="task_type" jdbcType="INTEGER" property="taskType"/>
+        <result column="cron" jdbcType="VARCHAR" property="cron"/>
+        <result column="reimport_people" jdbcType="INTEGER" property="reimportPeople"/>
+        <result column="result_alert" jdbcType="INTEGER" property="resultAlert"/>
+        <result column="alert_emails" jdbcType="VARCHAR" property="alertEmails"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
+        <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, title, msg_type, account_id, message_id, people_id, task_type, cron, reimport_people,
+        result_alert, alert_emails, remark, create_time, modified_time
+    </sql>
+    <select id="selectByTitle" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_task
+        where title = #{title,jdbcType=VARCHAR}
+    </select>
+</mapper>

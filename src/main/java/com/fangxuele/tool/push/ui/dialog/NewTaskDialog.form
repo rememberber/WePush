@@ -83,7 +83,7 @@
                       <text value="任务名称"/>
                     </properties>
                   </component>
-                  <component id="8cbd" class="javax.swing.JTextField" binding="textField1" default-binding="true">
+                  <component id="8cbd" class="javax.swing.JTextField" binding="titleTextField">
                     <constraints>
                       <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                         <preferred-size width="150" height="-1"/>
@@ -123,25 +123,25 @@
                       <text value="人群"/>
                     </properties>
                   </component>
-                  <component id="b373d" class="javax.swing.JComboBox" binding="comboBox1" default-binding="true">
+                  <component id="b373d" class="javax.swing.JComboBox" binding="msgTypeComboBox">
                     <constraints>
                       <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties/>
                   </component>
-                  <component id="19021" class="javax.swing.JComboBox" binding="comboBox2" default-binding="true">
+                  <component id="19021" class="javax.swing.JComboBox" binding="accountComboBox">
                     <constraints>
                       <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties/>
                   </component>
-                  <component id="8c27c" class="javax.swing.JComboBox" binding="comboBox3" default-binding="true">
+                  <component id="8c27c" class="javax.swing.JComboBox" binding="msgComboBox">
                     <constraints>
                       <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties/>
                   </component>
-                  <component id="7f4ad" class="javax.swing.JComboBox" binding="comboBox4" default-binding="true">
+                  <component id="7f4ad" class="javax.swing.JComboBox" binding="peopleComboBox">
                     <constraints>
                       <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -335,7 +335,7 @@
                           <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
                       </hspacer>
-                      <component id="4e7be" class="javax.swing.JRadioButton" binding="手动任务RadioButton" default-binding="true">
+                      <component id="4e7be" class="javax.swing.JRadioButton" binding="manualTaskRadioButton">
                         <constraints>
                           <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
@@ -343,7 +343,7 @@
                           <text value="手动任务"/>
                         </properties>
                       </component>
-                      <component id="7d57d" class="javax.swing.JRadioButton" binding="定时任务RadioButton" default-binding="true">
+                      <component id="7d57d" class="javax.swing.JRadioButton" binding="scheduleRadioButton">
                         <constraints>
                           <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
@@ -351,7 +351,7 @@
                           <text value="定时任务"/>
                         </properties>
                       </component>
-                      <component id="c0cd3" class="javax.swing.JRadioButton" binding="触发任务RadioButton" default-binding="true">
+                      <component id="c0cd3" class="javax.swing.JRadioButton" binding="triggerRadioButton">
                         <constraints>
                           <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>

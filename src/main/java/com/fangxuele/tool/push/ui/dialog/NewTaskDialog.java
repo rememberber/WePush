@@ -1,8 +1,15 @@
 package com.fangxuele.tool.push.ui.dialog;
 
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.dao.TTaskExtMapper;
+import com.fangxuele.tool.push.dao.TTaskMapper;
+import com.fangxuele.tool.push.domain.TTask;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.util.ComponentUtil;
+import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.SqliteUtil;
+import com.google.common.collect.Maps;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -14,19 +21,20 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
 
 public class NewTaskDialog extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
-    private JTextField textField1;
-    private JComboBox comboBox1;
-    private JComboBox comboBox2;
-    private JComboBox comboBox3;
-    private JComboBox comboBox4;
-    private JRadioButton 手动任务RadioButton;
-    private JRadioButton 定时任务RadioButton;
-    private JRadioButton 触发任务RadioButton;
+    private JTextField titleTextField;
+    private JComboBox msgTypeComboBox;
+    private JComboBox accountComboBox;
+    private JComboBox msgComboBox;
+    private JComboBox peopleComboBox;
+    private JRadioButton manualTaskRadioButton;
+    private JRadioButton scheduleRadioButton;
+    private JRadioButton triggerRadioButton;
     private JPanel schedulePanel;
     private JRadioButton runAtThisTimeRadioButton;
     private JTextField startAtThisTimeTextField;
@@ -44,6 +52,11 @@ public class NewTaskDialog extends JDialog {
     private JLabel cronHelpLabel;
     private JScrollPane scrollPane;
 
+    private static TTaskMapper taskMapper = MybatisUtil.getSqlSession().getMapper(TTaskMapper.class);
+    private static TTaskExtMapper taskExtMapper = MybatisUtil.getSqlSession().getMapper(TTaskExtMapper.class);
+
+    private static Map<String, Integer> msgTypeMap = Maps.newHashMap();
+
     public NewTaskDialog() {
 
         super(App.mainFrame, "新建任务");
@@ -54,14 +67,9 @@ public class NewTaskDialog extends JDialog {
 
         getRootPane().setDefaultButton(buttonOK);
 
-        scrollPane.getVerticalScrollBar().setUnitIncrement(15);
-        scrollPane.getVerticalScrollBar().setDoubleBuffered(true);
+        init();
 
-        buttonOK.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onOK();
-            }
-        });
+        buttonOK.addActionListener(e -> onOK());
 
         buttonCancel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -161,8 +169,47 @@ public class NewTaskDialog extends JDialog {
         });
     }
 
+    private void init() {
+        initUI();
+        initData();
+    }
+
+    private void initUI() {
+        scrollPane.getVerticalScrollBar().setUnitIncrement(15);
+        scrollPane.getVerticalScrollBar().setDoubleBuffered(true);
+    }
+
+    private void initData() {
+        // 消息类型
+        msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.HTTP), MessageTypeEnum.HTTP_CODE);
+        this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.HTTP));
+    }
+
     private void onOK() {
-        // add your code here
+        String title = this.titleTextField.getText().trim();
+        TTask tTask = taskExtMapper.selectByTitle(title);
+        if (tTask != null) {
+            JOptionPane.showMessageDialog(this, "存在同名任务！", "提示",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
+        } else {
+            String now = SqliteUtil.nowDateForSqlite();
+            TTask task = new TTask();
+            task.setTitle(title);
+            task.setMsgType("");
+            task.setAccountId(0);
+            task.setMessageId(0);
+            task.setPeopleId(0);
+            task.setTaskType(0);
+            task.setCron("");
+            task.setReimportPeople(0);
+            task.setResultAlert(0);
+            task.setAlertEmails(this.mailResultToTextField.getText().trim());
+            task.setCreateTime(now);
+            task.setModifiedTime(now);
+
+            taskMapper.insert(task);
+        }
         dispose();
     }
 
@@ -218,8 +265,8 @@ public class NewTaskDialog extends JDialog {
         final JLabel label1 = new JLabel();
         label1.setText("任务名称");
         panel4.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        textField1 = new JTextField();
-        panel4.add(textField1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        titleTextField = new JTextField();
+        panel4.add(titleTextField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         final JLabel label2 = new JLabel();
         label2.setText("消息类型");
         panel4.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -232,14 +279,14 @@ public class NewTaskDialog extends JDialog {
         final JLabel label5 = new JLabel();
         label5.setText("人群");
         panel4.add(label5, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        comboBox1 = new JComboBox();
-        panel4.add(comboBox1, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        comboBox2 = new JComboBox();
-        panel4.add(comboBox2, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        comboBox3 = new JComboBox();
-        panel4.add(comboBox3, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        comboBox4 = new JComboBox();
-        panel4.add(comboBox4, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        msgTypeComboBox = new JComboBox();
+        panel4.add(msgTypeComboBox, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        accountComboBox = new JComboBox();
+        panel4.add(accountComboBox, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        msgComboBox = new JComboBox();
+        panel4.add(msgComboBox, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        peopleComboBox = new JComboBox();
+        panel4.add(peopleComboBox, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel5 = new JPanel();
         panel5.setLayout(new GridLayoutManager(2, 1, new Insets(10, 10, 10, 10), -1, -1));
         panel3.add(panel5, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -312,16 +359,16 @@ public class NewTaskDialog extends JDialog {
         panel6.add(label11, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer3 = new Spacer();
         panel6.add(spacer3, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-        手动任务RadioButton = new JRadioButton();
-        手动任务RadioButton.setText("手动任务");
-        panel6.add(手动任务RadioButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        定时任务RadioButton = new JRadioButton();
-        定时任务RadioButton.setText("定时任务");
-        panel6.add(定时任务RadioButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        触发任务RadioButton = new JRadioButton();
-        触发任务RadioButton.setEnabled(false);
-        触发任务RadioButton.setText("触发任务");
-        panel6.add(触发任务RadioButton, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        manualTaskRadioButton = new JRadioButton();
+        manualTaskRadioButton.setText("手动任务");
+        panel6.add(manualTaskRadioButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        scheduleRadioButton = new JRadioButton();
+        scheduleRadioButton.setText("定时任务");
+        panel6.add(scheduleRadioButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        triggerRadioButton = new JRadioButton();
+        triggerRadioButton.setEnabled(false);
+        triggerRadioButton.setText("触发任务");
+        panel6.add(triggerRadioButton, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel7 = new JPanel();
         panel7.setLayout(new GridLayoutManager(2, 2, new Insets(10, 10, 10, 10), -1, -1));
         panel3.add(panel7, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));

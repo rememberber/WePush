@@ -36,5 +36,7 @@
         <mapper resource="mapper/TPeopleMapper.xml"/>
         <mapper resource="mapper/TPeopleDataMapper.xml"/>
         <mapper resource="mapper/TPeopleImportConfigMapper.xml"/>
+        <mapper resource="mapper/TTaskMapper.xml"/>
+        <mapper resource="mapper/TTaskExtMapper.xml"/>
     </mappers>
 </configuration>
