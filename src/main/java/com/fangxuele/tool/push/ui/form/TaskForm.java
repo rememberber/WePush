@@ -33,11 +33,6 @@ public class TaskForm {
     private JTable taskListTable;
     private JButton newTaskButton;
     private JScrollPane taskListScrollPane;
-    private JLabel activeThreadCountLabel;
-    private JLabel corePoolSizeLabel;
-    private JLabel maxPoolSizeLabel;
-    private JLabel availableProcessorLabel;
-    private JLabel jvmMemoryLabel;
     private JButton 删除Button;
     private JPanel pushControlPanel;
     private JTextField sliderValueTextField;
@@ -46,6 +41,11 @@ public class TaskForm {
     private JLabel dryRunHelpLabel;
     private JCheckBox saveResponseBodyCheckBox;
     private JSlider threadCountSlider;
+    private JLabel JVM内存占用Label;
+    private JLabel 核心线程数0Label;
+    private JLabel 活跃线程数0Label;
+    private JLabel 最大线程数0Label;
+    private JLabel 可用处理器核心Label;
 
     private static TaskForm taskForm;
 
@@ -74,6 +74,8 @@ public class TaskForm {
         String[] headerNames = {"id", "任务名称", "状态", "进度", "成功", "失败", "上次开始", "上次结束", "耗时(分)", "运行周期", "消息类型", "账号", "消息名称", "人群", "详情", "修改", "执行"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
         taskListTable.setModel(model);
+
+        taskListTable.getTableHeader().setReorderingAllowed(false);
 
         // 执行按钮
         TableColumnModel tableColumnModel = taskListTable.getColumnModel();
@@ -131,38 +133,8 @@ public class TaskForm {
         taskListScrollPane = new JScrollPane();
         mainPanel.add(taskListScrollPane, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         taskListTable = new JTable();
+        taskListTable.setDragEnabled(false);
         taskListScrollPane.setViewportView(taskListTable);
-        final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(8, 2, new Insets(0, 0, 0, 0), -1, -1));
-        mainPanel.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        final JLabel label1 = new JLabel();
-        label1.setText("计划中任务：2");
-        panel1.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final Spacer spacer1 = new Spacer();
-        panel1.add(spacer1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-        final JLabel label2 = new JLabel();
-        label2.setText("当前任务");
-        panel1.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label3 = new JLabel();
-        label3.setText("TPS");
-        panel1.add(label3, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        activeThreadCountLabel = new JLabel();
-        Font activeThreadCountLabelFont = this.$$$getFont$$$(null, Font.BOLD, -1, activeThreadCountLabel.getFont());
-        if (activeThreadCountLabelFont != null) activeThreadCountLabel.setFont(activeThreadCountLabelFont);
-        activeThreadCountLabel.setText("活跃线程数：0");
-        panel1.add(activeThreadCountLabel, new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        corePoolSizeLabel = new JLabel();
-        corePoolSizeLabel.setText("核心线程数：0");
-        panel1.add(corePoolSizeLabel, new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        maxPoolSizeLabel = new JLabel();
-        maxPoolSizeLabel.setText("最大线程数：0");
-        panel1.add(maxPoolSizeLabel, new GridConstraints(5, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        availableProcessorLabel = new JLabel();
-        availableProcessorLabel.setText("可用处理器核心：--");
-        panel1.add(availableProcessorLabel, new GridConstraints(6, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        jvmMemoryLabel = new JLabel();
-        jvmMemoryLabel.setText("JVM内存占用：--");
-        panel1.add(jvmMemoryLabel, new GridConstraints(7, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         pushControlPanel = new JPanel();
         pushControlPanel.setLayout(new GridLayoutManager(1, 8, new Insets(0, 0, 0, 0), -1, -1));
         mainPanel.add(pushControlPanel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -217,6 +189,45 @@ public class TaskForm {
         删除Button.setIcon(new ImageIcon(getClass().getResource("/icon/remove.png")));
         删除Button.setText("删除");
         pushControlPanel.add(删除Button, new GridConstraints(0, 7, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JPanel panel1 = new JPanel();
+        panel1.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
+        mainPanel.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        final JPanel panel2 = new JPanel();
+        panel2.setLayout(new GridLayoutManager(3, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel1.add(panel2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        final JLabel label1 = new JLabel();
+        label1.setText("计划中任务：2");
+        panel2.add(label1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label2 = new JLabel();
+        label2.setText("TPS");
+        panel2.add(label2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label3 = new JLabel();
+        label3.setText("当前任务");
+        panel2.add(label3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final Spacer spacer1 = new Spacer();
+        panel2.add(spacer1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        final JPanel panel3 = new JPanel();
+        panel3.setLayout(new GridLayoutManager(5, 3, new Insets(0, 0, 0, 0), -1, -1));
+        panel1.add(panel3, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        活跃线程数0Label = new JLabel();
+        Font 活跃线程数0LabelFont = this.$$$getFont$$$(null, Font.BOLD, -1, 活跃线程数0Label.getFont());
+        if (活跃线程数0LabelFont != null) 活跃线程数0Label.setFont(活跃线程数0LabelFont);
+        活跃线程数0Label.setText("活跃线程数：0");
+        panel3.add(活跃线程数0Label, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        核心线程数0Label = new JLabel();
+        核心线程数0Label.setText("核心线程数：0");
+        panel3.add(核心线程数0Label, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        最大线程数0Label = new JLabel();
+        最大线程数0Label.setText("最大线程数：0");
+        panel3.add(最大线程数0Label, new GridConstraints(2, 0, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        可用处理器核心Label = new JLabel();
+        可用处理器核心Label.setText("可用处理器核心：--");
+        panel3.add(可用处理器核心Label, new GridConstraints(3, 0, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        JVM内存占用Label = new JLabel();
+        JVM内存占用Label.setText("JVM内存占用：--");
+        panel3.add(JVM内存占用Label, new GridConstraints(4, 0, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final Spacer spacer2 = new Spacer();
+        panel3.add(spacer2, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
     }
 
     /**
