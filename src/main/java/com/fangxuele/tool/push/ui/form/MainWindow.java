@@ -117,7 +117,7 @@ public class MainWindow {
         accountPanel.setContinuousLayout(true);
         accountPanel.setDividerLocation(250);
         accountPanel.setDividerSize(10);
-        tabbedPane.addTab("设置账号", accountPanel);
+        tabbedPane.addTab("②设置账号", accountPanel);
         accountManagePanel = new JPanel();
         accountManagePanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         accountPanel.setLeftComponent(accountManagePanel);
@@ -131,7 +131,7 @@ public class MainWindow {
         messagePanel.setDoubleBuffered(true);
         messagePanel.setLastDividerLocation(-1);
         messagePanel.setMinimumSize(new Dimension(-1, -1));
-        tabbedPane.addTab("②编辑消息", messagePanel);
+        tabbedPane.addTab("③编辑消息", messagePanel);
         messageEditPanel = new JPanel();
         messageEditPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         messageEditPanel.setMaximumSize(new Dimension(-1, -1));
@@ -148,7 +148,7 @@ public class MainWindow {
         peoplePanel.setContinuousLayout(true);
         peoplePanel.setDividerLocation(250);
         peoplePanel.setDividerSize(10);
-        tabbedPane.addTab("准备目标人群", peoplePanel);
+        tabbedPane.addTab("④准备目标人群", peoplePanel);
         peopleManagePanel = new JPanel();
         peopleManagePanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         peoplePanel.setLeftComponent(peopleManagePanel);
@@ -158,14 +158,14 @@ public class MainWindow {
         memberPanel = new JPanel();
         memberPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         memberPanel.setMinimumSize(new Dimension(-1, -1));
-        tabbedPane.addTab("③准备目标用户", memberPanel);
+        tabbedPane.addTab("准备目标用户", memberPanel);
         taskPanel = new JPanel();
         taskPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        tabbedPane.addTab("推送任务", taskPanel);
+        tabbedPane.addTab("⑤推送任务", taskPanel);
         pushPanel = new JPanel();
         pushPanel.setLayout(new GridLayoutManager(1, 1, new Insets(10, 10, 10, 10), -1, -1));
         pushPanel.setMinimumSize(new Dimension(-1, -1));
-        tabbedPane.addTab("④开始推送", pushPanel);
+        tabbedPane.addTab("开始推送", pushPanel);
         infinityPanel = new JPanel();
         infinityPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane.addTab("变速模式", infinityPanel);

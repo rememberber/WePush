@@ -33,7 +33,7 @@ public class TaskForm {
     private JTable taskListTable;
     private JButton newTaskButton;
     private JScrollPane taskListScrollPane;
-    private JButton 删除Button;
+    private JButton deleteButton;
     private JPanel pushControlPanel;
     private JTextField sliderValueTextField;
     private JCheckBox dryRunCheckBox;
@@ -108,9 +108,12 @@ public class TaskForm {
         // 隐藏id列
         JTableUtil.hideColumn(taskListTable, 0);
         // 设置列宽
-//        TableColumnModel tableColumnModel = taskListTable.getColumnModel();
-//        tableColumnModel.getColumn(0).setPreferredWidth(peopleEditForm.getImportButton().getWidth() * 3);
-//        tableColumnModel.getColumn(0).setMaxWidth(peopleEditForm.getImportButton().getWidth() * 3);
+        tableColumnModel.getColumn(headerNames.length - 1).setPreferredWidth(taskForm.getNewTaskButton().getWidth());
+        tableColumnModel.getColumn(headerNames.length - 1).setMaxWidth(taskForm.getNewTaskButton().getWidth());
+        tableColumnModel.getColumn(headerNames.length - 2).setPreferredWidth(taskForm.getNewTaskButton().getWidth());
+        tableColumnModel.getColumn(headerNames.length - 2).setMaxWidth(taskForm.getNewTaskButton().getWidth());
+        tableColumnModel.getColumn(headerNames.length - 3).setPreferredWidth(taskForm.getNewTaskButton().getWidth());
+        tableColumnModel.getColumn(headerNames.length - 3).setMaxWidth(taskForm.getNewTaskButton().getWidth());
     }
 
     {
@@ -185,10 +188,10 @@ public class TaskForm {
         newTaskButton.setIcon(new ImageIcon(getClass().getResource("/icon/add.png")));
         newTaskButton.setText("新建");
         pushControlPanel.add(newTaskButton, new GridConstraints(0, 6, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        删除Button = new JButton();
-        删除Button.setIcon(new ImageIcon(getClass().getResource("/icon/remove.png")));
-        删除Button.setText("删除");
-        pushControlPanel.add(删除Button, new GridConstraints(0, 7, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        deleteButton = new JButton();
+        deleteButton.setIcon(new ImageIcon(getClass().getResource("/icon/remove.png")));
+        deleteButton.setText("删除");
+        pushControlPanel.add(deleteButton, new GridConstraints(0, 7, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
         mainPanel.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));

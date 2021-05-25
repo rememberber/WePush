@@ -186,12 +186,12 @@ public class MessageTypeForm {
         }
 
         if (msgType == MessageTypeEnum.HTTP_CODE) {
-            MainWindow.getInstance().getTabbedPane().setTitleAt(4, "③准备请求变量");
+            MainWindow.getInstance().getTabbedPane().setTitleAt(4, "④准备请求变量");
             MemberForm.getInstance().getImportFromNumPanel().setVisible(true);
             PushForm.getInstance().getSaveResponseBodyCheckBox().setVisible(true);
             InfinityForm.getInstance().getSaveResponseBodyCheckBox().setVisible(true);
         } else {
-            MainWindow.getInstance().getTabbedPane().setTitleAt(4, "③准备目标人群");
+            MainWindow.getInstance().getTabbedPane().setTitleAt(4, "④准备目标人群");
             PushForm.getInstance().getSaveResponseBodyCheckBox().setVisible(false);
             InfinityForm.getInstance().getSaveResponseBodyCheckBox().setVisible(false);
         }

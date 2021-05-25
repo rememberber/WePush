@@ -47,7 +47,7 @@
           </grid>
           <splitpane id="3ab5e" binding="accountPanel">
             <constraints>
-              <tabbedpane title="设置账号"/>
+              <tabbedpane title="②设置账号"/>
             </constraints>
             <properties>
               <continuousLayout value="true"/>
@@ -78,7 +78,7 @@
           </splitpane>
           <splitpane id="3c3c5" binding="messagePanel">
             <constraints>
-              <tabbedpane title="②编辑消息"/>
+              <tabbedpane title="③编辑消息"/>
             </constraints>
             <properties>
               <continuousLayout value="true"/>
@@ -120,7 +120,7 @@
           </splitpane>
           <splitpane id="e0cd1" binding="peoplePanel">
             <constraints>
-              <tabbedpane title="准备目标人群"/>
+              <tabbedpane title="④准备目标人群"/>
             </constraints>
             <properties>
               <continuousLayout value="true"/>
@@ -152,7 +152,7 @@
           <grid id="77364" binding="memberPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
-              <tabbedpane title="③准备目标用户"/>
+              <tabbedpane title="准备目标用户"/>
             </constraints>
             <properties>
               <minimumSize width="-1" height="-1"/>
@@ -163,7 +163,7 @@
           <grid id="cc2f3" binding="taskPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
-              <tabbedpane title="推送任务"/>
+              <tabbedpane title="⑤推送任务"/>
             </constraints>
             <properties/>
             <border type="none"/>
@@ -172,7 +172,7 @@
           <grid id="e118c" binding="pushPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="10" left="10" bottom="10" right="10"/>
             <constraints>
-              <tabbedpane title="④开始推送"/>
+              <tabbedpane title="开始推送"/>
             </constraints>
             <properties>
               <minimumSize width="-1" height="-1"/>
