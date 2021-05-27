@@ -181,8 +181,63 @@ public class NewTaskDialog extends JDialog {
 
     private void initData() {
         // 消息类型
+        initMsgTypeComboBoxData();
+    }
+
+    /**
+     * 初始化消息类型下拉框数据
+     */
+    private void initMsgTypeComboBoxData() {
         msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.HTTP), MessageTypeEnum.HTTP_CODE);
         this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.HTTP));
+
+        msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.MP_TEMPLATE), MessageTypeEnum.MP_TEMPLATE_CODE);
+        this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.MP_TEMPLATE));
+
+        msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.MP_SUBSCRIBE), MessageTypeEnum.MP_SUBSCRIBE_CODE);
+        this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.MP_SUBSCRIBE));
+
+        msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.MA_SUBSCRIBE), MessageTypeEnum.MA_SUBSCRIBE_CODE);
+        this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.MA_SUBSCRIBE));
+
+        msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.KEFU), MessageTypeEnum.KEFU_CODE);
+        this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.KEFU));
+
+        msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.KEFU_PRIORITY), MessageTypeEnum.KEFU_PRIORITY_CODE);
+        this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.KEFU_PRIORITY));
+
+        msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.WX_UNIFORM_MESSAGE), MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE);
+        this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.WX_UNIFORM_MESSAGE));
+
+        msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.WX_CP), MessageTypeEnum.WX_CP_CODE);
+        this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.WX_CP));
+
+        msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.DING), MessageTypeEnum.DING_CODE);
+        this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.DING));
+
+        msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.ALI_YUN), MessageTypeEnum.ALI_YUN_CODE);
+        this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.ALI_YUN));
+
+        msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.TX_YUN), MessageTypeEnum.TX_YUN_CODE);
+        this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.TX_YUN));
+
+        msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.HW_YUN), MessageTypeEnum.HW_YUN_CODE);
+        this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.HW_YUN));
+
+        msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.BD_YUN), MessageTypeEnum.BD_YUN_CODE);
+        this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.BD_YUN));
+
+        msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.YUN_PIAN), MessageTypeEnum.YUN_PIAN_CODE);
+        this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.YUN_PIAN));
+
+        msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.UP_YUN), MessageTypeEnum.UP_YUN_CODE);
+        this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.UP_YUN));
+
+        msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.QI_NIU_YUN), MessageTypeEnum.QI_NIU_YUN_CODE);
+        this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.QI_NIU_YUN));
+
+        msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.EMAIL), MessageTypeEnum.EMAIL_CODE);
+        this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.EMAIL));
     }
 
     private void onOK() {
