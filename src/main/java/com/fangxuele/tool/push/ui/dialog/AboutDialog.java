@@ -68,7 +68,7 @@ public class AboutDialog extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 onCancel();
             }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_FOCUSED);
     }
 
     private void onOK() {

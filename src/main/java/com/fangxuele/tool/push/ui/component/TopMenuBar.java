@@ -5,6 +5,7 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.dialog.AboutDialog;
+import com.fangxuele.tool.push.ui.dialog.AppreciateDialog;
 import com.fangxuele.tool.push.ui.dialog.SettingDialog;
 import com.fangxuele.tool.push.ui.dialog.SystemEnvResultDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
@@ -16,6 +17,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Properties;
 
@@ -211,14 +215,26 @@ public class TopMenuBar extends JMenuBar {
      * 其他作品
      */
     private void otherWorksActionPerformed() {
-
+        Desktop desktop = Desktop.getDesktop();
+        try {
+            desktop.browse(new URI("http://www.luoboduner.com/post/works/"));
+        } catch (IOException | URISyntaxException e1) {
+            logger.error(e1);
+        }
     }
 
     /**
      * 鼓励一下
      */
     private void appreciateActionPerformed() {
+        try {
+            AppreciateDialog dialog = new AppreciateDialog();
 
+            dialog.pack();
+            dialog.setVisible(true);
+        } catch (Exception e2) {
+            logger.error(e2);
+        }
     }
 
     /**
@@ -235,8 +251,16 @@ public class TopMenuBar extends JMenuBar {
         }
     }
 
+    /**
+     * 帮助
+     */
     private void helpActionPerformed() {
-
+        Desktop desktop = Desktop.getDesktop();
+        try {
+            desktop.browse(new URI("https://gitee.com/zhoubochina/WePush/wikis"));
+        } catch (IOException | URISyntaxException e1) {
+            logger.error(e1);
+        }
     }
 
     private void initFontSizeMenu() {
