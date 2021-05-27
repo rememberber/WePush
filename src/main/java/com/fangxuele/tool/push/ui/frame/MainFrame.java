@@ -61,7 +61,6 @@ public class MainFrame extends JFrame {
      */
     public void addListeners() {
         ThreadUtil.execute(MessageTypeListener::addListeners);
-        ThreadUtil.execute(AboutListener::addListeners);
         ThreadUtil.execute(HelpListener::addListeners);
         ThreadUtil.execute(PushHisListener::addListeners);
         ThreadUtil.execute(SettingListener::addListeners);

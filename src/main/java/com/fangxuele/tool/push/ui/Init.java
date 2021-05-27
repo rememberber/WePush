@@ -6,7 +6,6 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.dialog.FontSizeAdjustDialog;
 import com.fangxuele.tool.push.ui.form.*;
-import com.fangxuele.tool.push.ui.listener.AboutListener;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.fangxuele.tool.push.util.UIUtil;
 import com.fangxuele.tool.push.util.UpgradeUtil;
@@ -79,8 +78,7 @@ public class Init {
      * 其他初始化
      */
     public static void initOthers() {
-        // 设置版本
-        AboutForm.getInstance().getVersionLabel().setText(UiConsts.APP_VERSION);
+
     }
 
     /**
@@ -201,7 +199,6 @@ public class Init {
      * 初始化所有tab
      */
     public static void initAllTab() {
-        ThreadUtil.execute(AboutForm::init);
         MessageTypeForm.init();
         ThreadUtil.execute(HelpForm::init);
 //        ThreadUtil.execute(UserCaseForm::init);
@@ -224,8 +221,6 @@ public class Init {
             ScheduledThreadPoolExecutor threadPoolExecutor = new ScheduledThreadPoolExecutor(1);
             threadPoolExecutor.scheduleAtFixedRate(() -> UpgradeUtil.checkUpdate(true), 0, 24, TimeUnit.HOURS);
         }
-        // 更新二维码
-        ThreadUtil.execute(AboutListener::initQrCode);
     }
 
     /**

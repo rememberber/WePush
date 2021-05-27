@@ -4,6 +4,7 @@ import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.Init;
+import com.fangxuele.tool.push.ui.dialog.AboutDialog;
 import com.fangxuele.tool.push.ui.dialog.SettingDialog;
 import com.fangxuele.tool.push.ui.dialog.SystemEnvResultDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
@@ -220,8 +221,18 @@ public class TopMenuBar extends JMenuBar {
 
     }
 
+    /**
+     * 关于
+     */
     private void aboutActionPerformed() {
+        try {
+            AboutDialog dialog = new AboutDialog();
 
+            dialog.pack();
+            dialog.setVisible(true);
+        } catch (Exception e2) {
+            logger.error(e2);
+        }
     }
 
     private void helpActionPerformed() {
