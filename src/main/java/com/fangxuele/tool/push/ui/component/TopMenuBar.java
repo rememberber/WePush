@@ -169,8 +169,63 @@ public class TopMenuBar extends JMenuBar {
         sysEnvMenuItem.addActionListener(e -> sysEnvActionPerformed());
 
         debugMenu.add(sysEnvMenuItem);
-
         topMenuBar.add(debugMenu);
+
+        // ---------帮助
+        JMenu helpMenu = new JMenu();
+        helpMenu.setText("帮助");
+        // 帮助
+        JMenuItem helpMenuItem = new JMenuItem();
+        helpMenuItem.setText("帮助");
+        helpMenuItem.addActionListener(e -> helpActionPerformed());
+
+        helpMenu.add(helpMenuItem);
+        // 关于
+        JMenuItem aboutMenuItem = new JMenuItem();
+        aboutMenuItem.setText("关于");
+        aboutMenuItem.addActionListener(e -> aboutActionPerformed());
+
+        helpMenu.add(aboutMenuItem);
+        topMenuBar.add(helpMenu);
+
+        // ---------鼓励一下
+        JMenu appreciateMenu = new JMenu();
+        appreciateMenu.setText("❤ 鼓励一下");
+        // 鼓励一下
+        JMenuItem appreciateMenuItem = new JMenuItem();
+        appreciateMenuItem.setText("❤ 鼓励一下");
+        appreciateMenuItem.addActionListener(e -> appreciateActionPerformed());
+
+        appreciateMenu.add(appreciateMenuItem);
+        // 其他作品
+        JMenuItem otherWorksMenuItem = new JMenuItem();
+        otherWorksMenuItem.setText("其他作品");
+        otherWorksMenuItem.addActionListener(e -> otherWorksActionPerformed());
+
+        appreciateMenu.add(otherWorksMenuItem);
+        topMenuBar.add(appreciateMenu);
+    }
+
+    /**
+     * 其他作品
+     */
+    private void otherWorksActionPerformed() {
+
+    }
+
+    /**
+     * 鼓励一下
+     */
+    private void appreciateActionPerformed() {
+
+    }
+
+    private void aboutActionPerformed() {
+
+    }
+
+    private void helpActionPerformed() {
+
     }
 
     private void initFontSizeMenu() {
