@@ -25,4 +25,6 @@ public interface TMsgMpSubscribeMapper {
     List<TMsgMpSubscribe> selectByMsgTypeAndMsgName(@Param("msgType") int msgType, @Param("msgName") String msgName);
 
     int updateByMsgTypeAndMsgName(TMsgMpSubscribe tMsgMpSubscribe);
+
+    List<TMsgMpSubscribe> selectByMsgTypeAndAccountId(@Param("msgType") int msgType, @Param("accountId") Integer selectedAccountId);
 }

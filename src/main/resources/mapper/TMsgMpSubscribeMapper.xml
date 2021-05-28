@@ -206,4 +206,13 @@
         and (wx_account_id = #{wxAccountId,jdbcType=INTEGER} or wx_account_id is null)
         order by create_time desc
     </select>
+
+    <select id="selectByMsgTypeAndAccountId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_msg_mp_subscribe
+        where msg_type = #{msgType,jdbcType=INTEGER}
+        and account_id = #{accountId,jdbcType=INTEGER}
+        order by create_time desc
+    </select>
 </mapper>

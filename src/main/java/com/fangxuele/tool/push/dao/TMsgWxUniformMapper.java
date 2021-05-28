@@ -27,4 +27,6 @@ public interface TMsgWxUniformMapper {
     int updateByMsgTypeAndMsgName(TMsgWxUniform tMsgWxUniform);
 
     List<TMsgWxUniform> selectByMsgTypeAndWxAccountId(@Param("msgType") int msgType, @Param("wxAccountId") Integer wxAccountId);
+
+    List<TMsgWxUniform> selectByMsgTypeAndAccountId(@Param("msgType") int msgType, @Param("accountId") Integer selectedAccountId);
 }

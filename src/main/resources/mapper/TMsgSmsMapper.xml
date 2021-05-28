@@ -167,4 +167,13 @@
         where msg_type = #{msgType,jdbcType=INTEGER}
           and msg_name = #{msgName,jdbcType=VARCHAR}
     </delete>
+
+    <select id="selectByMsgTypeAndAccountId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_msg_sms
+        where msg_type = #{msgType,jdbcType=INTEGER}
+        and account_id = #{accountId,jdbcType=INTEGER}
+        order by create_time desc
+    </select>
 </mapper>
