@@ -1,0 +1,24 @@
+alter table t_msg_ding
+    add account_id  integer;
+alter table t_msg_http
+    add account_id  integer;
+alter table t_msg_kefu
+    add account_id  integer;
+alter table t_msg_kefu_priority
+    add account_id  integer;
+alter table t_msg_ma_subscribe
+    add account_id  integer;
+alter table t_msg_ma_template
+    add account_id  integer;
+alter table t_msg_mail
+    add account_id  integer;
+alter table t_msg_mp_subscribe
+    add account_id  integer;
+alter table t_msg_mp_template
+    add account_id  integer;
+alter table t_msg_sms
+    add account_id  integer;
+alter table t_msg_wx_cp
+    add account_id  integer;
+alter table t_msg_wx_uniform
+    add account_id  integer;

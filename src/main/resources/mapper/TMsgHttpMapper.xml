@@ -3,6 +3,7 @@
 <mapper namespace="com.fangxuele.tool.push.dao.TMsgHttpMapper">
     <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TMsgHttp">
         <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="account_id" jdbcType="INTEGER" property="accountId"/>
         <result column="msg_type" jdbcType="INTEGER" property="msgType"/>
         <result column="msg_name" jdbcType="VARCHAR" property="msgName"/>
         <result column="method" jdbcType="VARCHAR" property="method"/>
@@ -17,8 +18,8 @@
         <result column="preview_user" jdbcType="VARCHAR" property="previewUser"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, msg_type, msg_name, method, url, params, headers, cookies, body, body_type, create_time,
-    modified_time, preview_user
+        id, account_id, msg_type, msg_name, method, url, params, headers, cookies, body, body_type, create_time,
+        modified_time, preview_user
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -35,19 +36,20 @@
         delete
         from t_msg_http
         where msg_type = #{msgType,jdbcType=INTEGER}
-          and msg_name = #{msgName,jdbcType=VARCHAR}
+        and msg_name = #{msgName,jdbcType=VARCHAR}
     </delete>
     <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TMsgHttp">
-        insert into t_msg_http (id, msg_type, msg_name,
-                                method, url, params,
-                                headers, cookies, body,
-                                body_type, create_time, modified_time,
-                                preview_user)
-        values (#{id,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER}, #{msgName,jdbcType=VARCHAR},
-                #{method,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, #{params,jdbcType=VARCHAR},
-                #{headers,jdbcType=VARCHAR}, #{cookies,jdbcType=VARCHAR}, #{body,jdbcType=VARCHAR},
-                #{bodyType,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR},
-                #{previewUser,jdbcType=VARCHAR})
+        insert into t_msg_http (id, account_id, msg_type, msg_name,
+        method, url, params,
+        headers, cookies, body,
+        body_type, create_time, modified_time,
+        preview_user)
+        values (#{id,jdbcType=INTEGER}, #{accountId,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER},
+        #{msgName,jdbcType=VARCHAR},
+        #{method,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, #{params,jdbcType=VARCHAR},
+        #{headers,jdbcType=VARCHAR}, #{cookies,jdbcType=VARCHAR}, #{body,jdbcType=VARCHAR},
+        #{bodyType,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR},
+        #{previewUser,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TMsgHttp" useGeneratedKeys="true"
             keyColumn="id" keyProperty="id">
@@ -55,6 +57,9 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
                 id,
+            </if>
+            <if test="accountId != null">
+                account_id,
             </if>
             <if test="msgType != null">
                 msg_type,
@@ -97,6 +102,9 @@
             <if test="id != null">
                 #{id,jdbcType=INTEGER},
             </if>
+            <if test="accountId != null">
+                #{accountId,jdbcType=INTEGER},
+            </if>
             <if test="msgType != null">
                 #{msgType,jdbcType=INTEGER},
             </if>
@@ -138,6 +146,9 @@
     <update id="updateByPrimaryKeySelective" parameterType="com.fangxuele.tool.push.domain.TMsgHttp">
         update t_msg_http
         <set>
+            <if test="accountId != null">
+                account_id = #{accountId,jdbcType=INTEGER},
+            </if>
             <if test="msgType != null">
                 msg_type = #{msgType,jdbcType=INTEGER},
             </if>
@@ -179,18 +190,19 @@
     </update>
     <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TMsgHttp">
         update t_msg_http
-        set msg_type      = #{msgType,jdbcType=INTEGER},
-            msg_name      = #{msgName,jdbcType=VARCHAR},
-            method        = #{method,jdbcType=VARCHAR},
-            url           = #{url,jdbcType=VARCHAR},
-            params        = #{params,jdbcType=VARCHAR},
-            headers       = #{headers,jdbcType=VARCHAR},
-            cookies       = #{cookies,jdbcType=VARCHAR},
-            body          = #{body,jdbcType=VARCHAR},
-            body_type     = #{bodyType,jdbcType=VARCHAR},
-            create_time   = #{createTime,jdbcType=VARCHAR},
-            modified_time = #{modifiedTime,jdbcType=VARCHAR},
-            preview_user  = #{previewUser,jdbcType=VARCHAR}
+        set msg_type = #{msgType,jdbcType=INTEGER},
+        account_id = #{accountId,jdbcType=INTEGER},
+        msg_name = #{msgName,jdbcType=VARCHAR},
+        method = #{method,jdbcType=VARCHAR},
+        url = #{url,jdbcType=VARCHAR},
+        params = #{params,jdbcType=VARCHAR},
+        headers = #{headers,jdbcType=VARCHAR},
+        cookies = #{cookies,jdbcType=VARCHAR},
+        body = #{body,jdbcType=VARCHAR},
+        body_type = #{bodyType,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=VARCHAR},
+        modified_time = #{modifiedTime,jdbcType=VARCHAR},
+        preview_user = #{previewUser,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>
     <select id="selectByMsgTypeAndMsgName" resultMap="BaseResultMap">
@@ -202,17 +214,17 @@
     </select>
     <update id="updateByMsgTypeAndMsgName" parameterType="com.fangxuele.tool.push.domain.TMsgHttp">
         update t_msg_http
-        set method        = #{method,jdbcType=VARCHAR},
-            url           = #{url,jdbcType=VARCHAR},
-            params        = #{params,jdbcType=VARCHAR},
-            headers       = #{headers,jdbcType=VARCHAR},
-            cookies       = #{cookies,jdbcType=VARCHAR},
-            body          = #{body,jdbcType=VARCHAR},
-            body_type     = #{bodyType,jdbcType=VARCHAR},
-            modified_time = #{modifiedTime,jdbcType=VARCHAR},
-            preview_user  = #{previewUser,jdbcType=VARCHAR}
+        set method = #{method,jdbcType=VARCHAR},
+        url = #{url,jdbcType=VARCHAR},
+        params = #{params,jdbcType=VARCHAR},
+        headers = #{headers,jdbcType=VARCHAR},
+        cookies = #{cookies,jdbcType=VARCHAR},
+        body = #{body,jdbcType=VARCHAR},
+        body_type = #{bodyType,jdbcType=VARCHAR},
+        modified_time = #{modifiedTime,jdbcType=VARCHAR},
+        preview_user = #{previewUser,jdbcType=VARCHAR}
         where msg_type = #{msgType,jdbcType=INTEGER}
-          and msg_name = #{msgName,jdbcType=VARCHAR}
+        and msg_name = #{msgName,jdbcType=VARCHAR}
     </update>
     <select id="selectByMsgType" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select

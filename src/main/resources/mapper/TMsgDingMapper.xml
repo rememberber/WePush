@@ -3,6 +3,7 @@
 <mapper namespace="com.fangxuele.tool.push.dao.TMsgDingMapper">
     <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TMsgDing">
         <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="account_id" jdbcType="INTEGER" property="accountId"/>
         <result column="msg_type" jdbcType="INTEGER" property="msgType"/>
         <result column="msg_name" jdbcType="VARCHAR" property="msgName"/>
         <result column="radio_type" jdbcType="VARCHAR" property="radioType"/>
@@ -15,8 +16,8 @@
         <result column="preview_user" jdbcType="VARCHAR" property="previewUser"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, msg_type, msg_name, radio_type, ding_msg_type, agent_id, web_hook, content, create_time,
-    modified_time, preview_user
+        id, account_id, msg_type, msg_name, radio_type, ding_msg_type, agent_id, web_hook, content, create_time,
+        modified_time, preview_user
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -30,14 +31,15 @@
         where id = #{id,jdbcType=INTEGER}
     </delete>
     <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TMsgDing">
-        insert into t_msg_ding (id, msg_type, msg_name,
-                                radio_type, ding_msg_type, agent_id,
-                                web_hook, content, create_time,
-                                modified_time, preview_user)
-        values (#{id,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER}, #{msgName,jdbcType=VARCHAR},
-                #{radioType,jdbcType=VARCHAR}, #{dingMsgType,jdbcType=VARCHAR}, #{agentId,jdbcType=VARCHAR},
-                #{webHook,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR},
-                #{modifiedTime,jdbcType=VARCHAR}, #{previewUser,jdbcType=VARCHAR})
+        insert into t_msg_ding (id, account_id, msg_type, msg_name,
+        radio_type, ding_msg_type, agent_id,
+        web_hook, content, create_time,
+        modified_time, preview_user)
+        values (#{id,jdbcType=INTEGER}, #{accountId,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER},
+        #{msgName,jdbcType=VARCHAR},
+        #{radioType,jdbcType=VARCHAR}, #{dingMsgType,jdbcType=VARCHAR}, #{agentId,jdbcType=VARCHAR},
+        #{webHook,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR},
+        #{modifiedTime,jdbcType=VARCHAR}, #{previewUser,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TMsgDing" useGeneratedKeys="true"
             keyColumn="id" keyProperty="id">
@@ -45,6 +47,9 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
                 id,
+            </if>
+            <if test="accountId != null">
+                account_id,
             </if>
             <if test="msgType != null">
                 msg_type,
@@ -81,6 +86,9 @@
             <if test="id != null">
                 #{id,jdbcType=INTEGER},
             </if>
+            <if test="accountId != null">
+                #{accountId,jdbcType=INTEGER},
+            </if>
             <if test="msgType != null">
                 #{msgType,jdbcType=INTEGER},
             </if>
@@ -116,6 +124,9 @@
     <update id="updateByPrimaryKeySelective" parameterType="com.fangxuele.tool.push.domain.TMsgDing">
         update t_msg_ding
         <set>
+            <if test="accountId != null">
+                account_id = #{accountId,jdbcType=INTEGER},
+            </if>
             <if test="msgType != null">
                 msg_type = #{msgType,jdbcType=INTEGER},
             </if>
@@ -151,16 +162,17 @@
     </update>
     <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TMsgDing">
         update t_msg_ding
-        set msg_type      = #{msgType,jdbcType=INTEGER},
-            msg_name      = #{msgName,jdbcType=VARCHAR},
-            radio_type    = #{radioType,jdbcType=VARCHAR},
-            ding_msg_type = #{dingMsgType,jdbcType=VARCHAR},
-            agent_id      = #{agentId,jdbcType=VARCHAR},
-            web_hook      = #{webHook,jdbcType=VARCHAR},
-            content       = #{content,jdbcType=VARCHAR},
-            create_time   = #{createTime,jdbcType=VARCHAR},
-            modified_time = #{modifiedTime,jdbcType=VARCHAR},
-            preview_user  = #{previewUser,jdbcType=VARCHAR}
+        set msg_type = #{msgType,jdbcType=INTEGER},
+        account_id = #{accountId,jdbcType=INTEGER},
+        msg_name = #{msgName,jdbcType=VARCHAR},
+        radio_type = #{radioType,jdbcType=VARCHAR},
+        ding_msg_type = #{dingMsgType,jdbcType=VARCHAR},
+        agent_id = #{agentId,jdbcType=VARCHAR},
+        web_hook = #{webHook,jdbcType=VARCHAR},
+        content = #{content,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=VARCHAR},
+        modified_time = #{modifiedTime,jdbcType=VARCHAR},
+        preview_user = #{previewUser,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>
     <select id="selectByMsgTypeAndMsgName" resultMap="BaseResultMap">
@@ -173,15 +185,15 @@
     <update id="updateByMsgTypeAndMsgName" parameterType="com.fangxuele.tool.push.domain.TMsgDing">
         update t_msg_ding
         set ding_msg_type = #{dingMsgType,jdbcType=VARCHAR},
-            agent_id      = #{agentId,jdbcType=VARCHAR},
-            web_hook      = #{webHook,jdbcType=VARCHAR},
-            content       = #{content,jdbcType=VARCHAR},
-            radio_type    = #{radioType,jdbcType=VARCHAR},
-            create_time   = #{createTime,jdbcType=VARCHAR},
-            modified_time = #{modifiedTime,jdbcType=VARCHAR},
-            preview_user  = #{previewUser,jdbcType=VARCHAR}
+        agent_id = #{agentId,jdbcType=VARCHAR},
+        web_hook = #{webHook,jdbcType=VARCHAR},
+        content = #{content,jdbcType=VARCHAR},
+        radio_type = #{radioType,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=VARCHAR},
+        modified_time = #{modifiedTime,jdbcType=VARCHAR},
+        preview_user = #{previewUser,jdbcType=VARCHAR}
         where msg_type = #{msgType,jdbcType=INTEGER}
-          and msg_name = #{msgName,jdbcType=VARCHAR}
+        and msg_name = #{msgName,jdbcType=VARCHAR}
     </update>
     <select id="selectByMsgType" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select

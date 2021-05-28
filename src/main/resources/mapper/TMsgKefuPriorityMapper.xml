@@ -3,6 +3,7 @@
 <mapper namespace="com.fangxuele.tool.push.dao.TMsgKefuPriorityMapper">
     <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TMsgKefuPriority">
         <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="account_id" jdbcType="INTEGER" property="accountId"/>
         <result column="msg_type" jdbcType="INTEGER" property="msgType"/>
         <result column="msg_name" jdbcType="VARCHAR" property="msgName"/>
         <result column="template_id" jdbcType="VARCHAR" property="templateId"/>
@@ -24,7 +25,7 @@
         <result column="thumb_media_id" jdbcType="VARCHAR" property="thumbMediaId"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, msg_type, msg_name, template_id, url, ma_appid, ma_page_path, kefu_msg_type,
+        id, account_id, msg_type, msg_name, template_id, url, ma_appid, ma_page_path, kefu_msg_type,
     content, title, img_url,
                 describe, kefu_url, create_time, modified_time, preview_user,
                         wx_account_id, app_id, page_path, thumb_media_id
@@ -41,14 +42,14 @@
         where id = #{id,jdbcType=INTEGER}
     </delete>
     <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TMsgKefuPriority">
-        insert into t_msg_kefu_priority (id, msg_type, msg_name,
+        insert into t_msg_kefu_priority (id, account_id, msg_type, msg_name,
                                          template_id, url, ma_appid,
                                          ma_page_path, kefu_msg_type, content,
                                          title, img_url, describe,
                                          kefu_url, create_time, modified_time,
                                          preview_user, wx_account_id, app_id,
                                          page_path, thumb_media_id)
-        values (#{id,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER}, #{msgName,jdbcType=VARCHAR},
+        values (#{id,jdbcType=INTEGER}, #{accountId,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER}, #{msgName,jdbcType=VARCHAR},
                 #{templateId,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, #{maAppid,jdbcType=VARCHAR},
                 #{maPagePath,jdbcType=VARCHAR}, #{kefuMsgType,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR},
                 #{title,jdbcType=VARCHAR}, #{imgUrl,jdbcType=VARCHAR}, #{describe,jdbcType=VARCHAR},
@@ -62,6 +63,9 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
                 id,
+            </if>
+            <if test="accountId != null">
+                account_id,
             </if>
             <if test="msgType != null">
                 msg_type,
@@ -125,6 +129,9 @@
             <if test="id != null">
                 #{id,jdbcType=INTEGER},
             </if>
+            <if test="accountId != null">
+                #{accountId,jdbcType=INTEGER},
+            </if>
             <if test="msgType != null">
                 #{msgType,jdbcType=INTEGER},
             </if>
@@ -187,6 +194,9 @@
     <update id="updateByPrimaryKeySelective" parameterType="com.fangxuele.tool.push.domain.TMsgKefuPriority">
         update t_msg_kefu_priority
         <set>
+            <if test="accountId != null">
+                account_id = #{accountId,jdbcType=INTEGER},
+            </if>
             <if test="msgType != null">
                 msg_type = #{msgType,jdbcType=INTEGER},
             </if>
@@ -250,6 +260,7 @@
     <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TMsgKefuPriority">
         update t_msg_kefu_priority
         set msg_type       = #{msgType,jdbcType=INTEGER},
+        account_id = #{accountId,jdbcType=INTEGER},
             msg_name       = #{msgName,jdbcType=VARCHAR},
             template_id    = #{templateId,jdbcType=VARCHAR},
             url            = #{url,jdbcType=VARCHAR},

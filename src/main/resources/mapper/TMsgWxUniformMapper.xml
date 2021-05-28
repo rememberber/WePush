@@ -3,6 +3,7 @@
 <mapper namespace="com.fangxuele.tool.push.dao.TMsgWxUniformMapper">
     <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TMsgWxUniform">
         <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="account_id" jdbcType="INTEGER" property="accountId"/>
         <result column="msg_type" jdbcType="INTEGER" property="msgType"/>
         <result column="msg_name" jdbcType="VARCHAR" property="msgName"/>
         <result column="mp_template_id" jdbcType="VARCHAR" property="mpTemplateId"/>
@@ -18,7 +19,7 @@
         <result column="wx_account_id" jdbcType="INTEGER" property="wxAccountId"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, msg_type, msg_name, mp_template_id, ma_template_id, mp_url, ma_appid, ma_page_path,
+        id, account_id, msg_type, msg_name, mp_template_id, ma_template_id, mp_url, ma_appid, ma_page_path,
     page, emphasis_keyword, create_time, modified_time, preview_user, wx_account_id
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -52,12 +53,12 @@
           and msg_name = #{msgName,jdbcType=VARCHAR}
     </delete>
     <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TMsgWxUniform">
-        insert into t_msg_wx_uniform (id, msg_type, msg_name,
+        insert into t_msg_wx_uniform (id, account_id, msg_type, msg_name,
                                       mp_template_id, ma_template_id, mp_url,
                                       ma_appid, ma_page_path, page,
                                       emphasis_keyword, create_time, modified_time,
                                       preview_user, wx_account_id)
-        values (#{id,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER}, #{msgName,jdbcType=VARCHAR},
+        values (#{id,jdbcType=INTEGER}, #{accountId,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER}, #{msgName,jdbcType=VARCHAR},
                 #{mpTemplateId,jdbcType=VARCHAR}, #{maTemplateId,jdbcType=VARCHAR}, #{mpUrl,jdbcType=VARCHAR},
                 #{maAppid,jdbcType=VARCHAR}, #{maPagePath,jdbcType=VARCHAR}, #{page,jdbcType=VARCHAR},
                 #{emphasisKeyword,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR},
@@ -69,6 +70,9 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
                 id,
+            </if>
+            <if test="accountId != null">
+                account_id,
             </if>
             <if test="msgType != null">
                 msg_type,
@@ -114,6 +118,9 @@
             <if test="id != null">
                 #{id,jdbcType=INTEGER},
             </if>
+            <if test="accountId != null">
+                #{accountId,jdbcType=INTEGER},
+            </if>
             <if test="msgType != null">
                 #{msgType,jdbcType=INTEGER},
             </if>
@@ -158,6 +165,9 @@
     <update id="updateByPrimaryKeySelective" parameterType="com.fangxuele.tool.push.domain.TMsgWxUniform">
         update t_msg_wx_uniform
         <set>
+            <if test="accountId != null">
+                account_id = #{accountId,jdbcType=INTEGER},
+            </if>
             <if test="msgType != null">
                 msg_type = #{msgType,jdbcType=INTEGER},
             </if>
@@ -203,6 +213,7 @@
     <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TMsgWxUniform">
         update t_msg_wx_uniform
         set msg_type         = #{msgType,jdbcType=INTEGER},
+        account_id = #{accountId,jdbcType=INTEGER},
             msg_name         = #{msgName,jdbcType=VARCHAR},
             mp_template_id   = #{mpTemplateId,jdbcType=VARCHAR},
             ma_template_id   = #{maTemplateId,jdbcType=VARCHAR},

@@ -1,9 +1,8 @@
 package com.fangxuele.tool.push.ui.dialog;
 
 import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.dao.TTaskExtMapper;
-import com.fangxuele.tool.push.dao.TTaskMapper;
-import com.fangxuele.tool.push.domain.TTask;
+import com.fangxuele.tool.push.dao.*;
+import com.fangxuele.tool.push.domain.*;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.util.ComponentUtil;
@@ -21,6 +20,7 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Map;
 
 public class NewTaskDialog extends JDialog {
@@ -54,8 +54,24 @@ public class NewTaskDialog extends JDialog {
 
     private static TTaskMapper taskMapper = MybatisUtil.getSqlSession().getMapper(TTaskMapper.class);
     private static TTaskExtMapper taskExtMapper = MybatisUtil.getSqlSession().getMapper(TTaskExtMapper.class);
+    private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
+
+    private static TMsgKefuMapper msgKefuMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuMapper.class);
+    private static TMsgKefuPriorityMapper msgKefuPriorityMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuPriorityMapper.class);
+    private static TMsgWxUniformMapper wxUniformMapper = MybatisUtil.getSqlSession().getMapper(TMsgWxUniformMapper.class);
+    private static TMsgMaTemplateMapper msgMaTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMaTemplateMapper.class);
+    private static TMsgMaSubscribeMapper msgMaSubscribeMapper = MybatisUtil.getSqlSession().getMapper(TMsgMaSubscribeMapper.class);
+    private static TMsgMpTemplateMapper msgMpTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMpTemplateMapper.class);
+    private static TMsgMpSubscribeMapper msgMpSubscribeMapper = MybatisUtil.getSqlSession().getMapper(TMsgMpSubscribeMapper.class);
+    private static TMsgSmsMapper msgSmsMapper = MybatisUtil.getSqlSession().getMapper(TMsgSmsMapper.class);
+    private static TMsgMailMapper msgMailMapper = MybatisUtil.getSqlSession().getMapper(TMsgMailMapper.class);
+    private static TMsgHttpMapper msgHttpMapper = MybatisUtil.getSqlSession().getMapper(TMsgHttpMapper.class);
+    private static TMsgWxCpMapper msgWxCpMapper = MybatisUtil.getSqlSession().getMapper(TMsgWxCpMapper.class);
+    private static TMsgDingMapper msgDingMapper = MybatisUtil.getSqlSession().getMapper(TMsgDingMapper.class);
+    private static TWxAccountMapper wxAccountMapper = MybatisUtil.getSqlSession().getMapper(TWxAccountMapper.class);
 
     private static Map<String, Integer> msgTypeMap = Maps.newHashMap();
+    private static Map<String, Integer> accountMap = Maps.newHashMap();
 
     public NewTaskDialog() {
 
@@ -182,6 +198,8 @@ public class NewTaskDialog extends JDialog {
     private void initData() {
         // 消息类型
         initMsgTypeComboBoxData();
+        // 账号
+        initAccountComboBoxData();
     }
 
     /**
@@ -238,6 +256,130 @@ public class NewTaskDialog extends JDialog {
 
         msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.EMAIL), MessageTypeEnum.EMAIL_CODE);
         this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.EMAIL));
+    }
+
+    /**
+     * 初始化账号下拉框数据
+     */
+    private void initAccountComboBoxData() {
+        String selectedMsgTypeStr = (String) msgTypeComboBox.getSelectedItem();
+        Integer selectedMsgType = msgTypeMap.get(selectedMsgTypeStr);
+        List<TAccount> tAccounts = accountMapper.selectByMsgType(selectedMsgType);
+
+        for (TAccount tAccount : tAccounts) {
+            accountMap.put(tAccount.getAccountName(), tAccount.getId());
+            accountComboBox.addItem(tAccount.getAccountName());
+        }
+    }
+
+    /**
+     * 初始化消息下拉框数据
+     */
+    private void initMessageComboBoxData() {
+        String selectedMsgTypeStr = (String) msgTypeComboBox.getSelectedItem();
+        Integer msgType = msgTypeMap.get(selectedMsgTypeStr);
+
+        String selectedAccountStr = (String) accountComboBox.getSelectedItem();
+        Integer selectedAccount = msgTypeMap.get(selectedAccountStr);
+
+//        switch (msgType) {
+//            case MessageTypeEnum.KEFU_CODE:
+//                List<TMsgKefu> tMsgKefuList = msgKefuMapper.selectByMsgTypeAndWxAccountId(msgType, wxAccountId);
+//                for (TMsgKefu tMsgKefu : tMsgKefuList) {
+//                    data = new Object[1];
+//                    data[0] = tMsgKefu.getMsgName();
+//                    model.addRow(data);
+//                }
+//                break;
+//            case MessageTypeEnum.KEFU_PRIORITY_CODE:
+//                List<TMsgKefuPriority> tMsgKefuPriorityList = msgKefuPriorityMapper.selectByMsgTypeAndWxAccountId(msgType, wxAccountId);
+//                for (TMsgKefuPriority tMsgKefuPriority : tMsgKefuPriorityList) {
+//                    data = new Object[1];
+//                    data[0] = tMsgKefuPriority.getMsgName();
+//                    model.addRow(data);
+//                }
+//                break;
+//            case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE:
+//                List<TMsgWxUniform> tMsgWxUniformList = wxUniformMapper.selectByMsgTypeAndWxAccountId(msgType, wxAccountId);
+//                for (TMsgWxUniform tMsgWxUniform : tMsgWxUniformList) {
+//                    data = new Object[1];
+//                    data[0] = tMsgWxUniform.getMsgName();
+//                    model.addRow(data);
+//                }
+//                break;
+//            case MessageTypeEnum.MA_TEMPLATE_CODE:
+//                List<TMsgMaTemplate> tMsgMaTemplateList = msgMaTemplateMapper.selectByMsgTypeAndWxAccountId(msgType, wxAccountId);
+//                for (TMsgMaTemplate tMsgMaTemplate : tMsgMaTemplateList) {
+//                    data = new Object[1];
+//                    data[0] = tMsgMaTemplate.getMsgName();
+//                    model.addRow(data);
+//                }
+//                break;
+//            case MessageTypeEnum.MA_SUBSCRIBE_CODE:
+//                List<TMsgMaSubscribe> tMsgMaSubscribeList = msgMaSubscribeMapper.selectByMsgTypeAndWxAccountId(msgType, wxAccountId);
+//                for (TMsgMaSubscribe tMsgMaSubscribe : tMsgMaSubscribeList) {
+//                    data = new Object[1];
+//                    data[0] = tMsgMaSubscribe.getMsgName();
+//                    model.addRow(data);
+//                }
+//                break;
+//            case MessageTypeEnum.MP_TEMPLATE_CODE:
+//                List<TMsgMpTemplate> tMsgMpTemplateList = msgMpTemplateMapper.selectByMsgTypeAndWxAccountId(msgType, wxAccountId);
+//                for (TMsgMpTemplate tMsgMpTemplate : tMsgMpTemplateList) {
+//                    data = new Object[1];
+//                    data[0] = tMsgMpTemplate.getMsgName();
+//                    model.addRow(data);
+//                }
+//                break;
+//            case MessageTypeEnum.MP_SUBSCRIBE_CODE:
+//                List<TMsgMpSubscribe> tMsgMpSubscribeList = msgMpSubscribeMapper.selectByMsgTypeAndWxAccountId(msgType, wxAccountId);
+//                for (TMsgMpSubscribe tMsgMpSubscribe : tMsgMpSubscribeList) {
+//                    data = new Object[1];
+//                    data[0] = tMsgMpSubscribe.getMsgName();
+//                    model.addRow(data);
+//                }
+//                break;
+//            case MessageTypeEnum.EMAIL_CODE:
+//                List<TMsgMail> tMsgMailList = msgMailMapper.selectByMsgType(msgType);
+//                for (TMsgMail tMsgMail : tMsgMailList) {
+//                    data = new Object[1];
+//                    data[0] = tMsgMail.getMsgName();
+//                    model.addRow(data);
+//                }
+//                break;
+//            case MessageTypeEnum.WX_CP_CODE:
+//                List<TMsgWxCp> tMsgWxCpList = msgWxCpMapper.selectByMsgType(msgType);
+//                for (TMsgWxCp tMsgWxCp : tMsgWxCpList) {
+//                    data = new Object[1];
+//                    data[0] = tMsgWxCp.getMsgName();
+//                    model.addRow(data);
+//                }
+//                break;
+//            case MessageTypeEnum.HTTP_CODE:
+//                List<TMsgHttp> tMsgHttpList = msgHttpMapper.selectByMsgType(msgType);
+//                for (TMsgHttp tMsgHttp : tMsgHttpList) {
+//                    data = new Object[1];
+//                    data[0] = tMsgHttp.getMsgName();
+//                    model.addRow(data);
+//                }
+//                break;
+//            case MessageTypeEnum.DING_CODE:
+//                List<TMsgDing> tMsgDingList = msgDingMapper.selectByMsgType(msgType);
+//                for (TMsgDing tMsgDing : tMsgDingList) {
+//                    data = new Object[1];
+//                    data[0] = tMsgDing.getMsgName();
+//                    model.addRow(data);
+//                }
+//                break;
+//            default:
+//                List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgType(msgType);
+//                for (TMsgSms tMsgSms : tMsgSmsList) {
+//                    data = new Object[1];
+//                    data[0] = tMsgSms.getMsgName();
+//                    model.addRow(data);
+//                }
+//                break;
+//        }
     }
 
     private void onOK() {
