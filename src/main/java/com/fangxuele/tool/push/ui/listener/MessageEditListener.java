@@ -39,9 +39,18 @@ public class MessageEditListener {
     public static void addListeners() {
         JSplitPane messagePanel = MainWindow.getInstance().getMessagePanel();
         MessageEditForm messageEditForm = MessageEditForm.getInstance();
+        MessageManageForm messageManageForm = MessageManageForm.getInstance();
 
         // 保存按钮事件
         messageEditForm.getMsgSaveButton().addActionListener(e -> {
+            String selectedAccountName = (String) messageManageForm.getAccountComboBox().getSelectedItem();
+            Integer selectedAccountId = MessageManageForm.accountMap.get(selectedAccountName);
+            if (StringUtils.isBlank(selectedAccountName)) {
+                JOptionPane.showMessageDialog(messagePanel, "请选择账号！\n\n", "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             String msgName = messageEditForm.getMsgNameField().getText();
             if (StringUtils.isBlank(msgName)) {
                 JOptionPane.showMessageDialog(messagePanel, "请填写消息名称！\n\n", "失败",
@@ -50,7 +59,7 @@ public class MessageEditListener {
             }
 
             try {
-                MsgFormFactory.getMsgForm().save(msgName);
+                MsgFormFactory.getMsgForm().save(selectedAccountId, msgName);
                 MessageManageForm.init();
             } catch (Exception e1) {
                 JOptionPane.showMessageDialog(messagePanel, "保存失败！\n\n" + e1.getMessage(), "失败",

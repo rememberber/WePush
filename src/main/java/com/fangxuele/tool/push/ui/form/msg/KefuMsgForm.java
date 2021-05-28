@@ -96,11 +96,10 @@ public class KefuMsgForm implements IMsgForm {
     }
 
     @Override
-    public void init(String msgName) {
+    public void init(Integer msgId) {
         clearAllField();
-        List<TMsgKefu> tMsgKefuList = msgKefuMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.KEFU_CODE, msgName);
-        if (tMsgKefuList.size() > 0) {
-            TMsgKefu tMsgKefu = tMsgKefuList.get(0);
+        TMsgKefu tMsgKefu = msgKefuMapper.selectByPrimaryKey(msgId);
+        if (tMsgKefu != null) {
             String kefuMsgType = tMsgKefu.getKefuMsgType();
             getInstance().getMsgKefuMsgTypeComboBox().setSelectedItem(kefuMsgType);
             if ("文本消息".equals(kefuMsgType)) {
@@ -128,10 +127,10 @@ public class KefuMsgForm implements IMsgForm {
     }
 
     @Override
-    public void save(String msgName) {
+    public void save(Integer accountId, String msgName) {
         boolean existSameMsg = false;
 
-        List<TMsgKefu> tMsgKefuList = msgKefuMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.KEFU_CODE, msgName);
+        List<TMsgKefu> tMsgKefuList = msgKefuMapper.selectByUnique(accountId, MessageTypeEnum.KEFU_CODE, msgName);
         if (tMsgKefuList.size() > 0) {
             existSameMsg = true;
         }

@@ -62,10 +62,9 @@ public class MessageManageListener {
                 PushHisForm.getInstance().getPushHisTextArea().setText("");
 
                 int selectedRow = msgHistable.getSelectedRow();
-                String selectedMsgName = msgHistable
-                        .getValueAt(selectedRow, 0).toString();
+                Integer selectedMsgId = (Integer) msgHistable.getValueAt(selectedRow, 1);
 
-                MessageEditForm.init(selectedMsgName);
+                MessageEditForm.init(selectedMsgId);
                 super.mousePressed(e);
             }
         });
@@ -88,31 +87,31 @@ public class MessageManageListener {
 
                         for (int i = selectedRows.length; i > 0; i--) {
                             int selectedRow = msgHistable.getSelectedRow();
-                            String msgName = (String) tableModel.getValueAt(selectedRow, 0);
+                            Integer msgId = (Integer) tableModel.getValueAt(selectedRow, 1);
                             if (msgType == MessageTypeEnum.KEFU_CODE) {
-                                msgKefuMapper.deleteByMsgTypeAndName(msgType, msgName);
+                                msgKefuMapper.deleteByPrimaryKey(msgId);
                             } else if (msgType == MessageTypeEnum.KEFU_PRIORITY_CODE) {
-                                msgKefuPriorityMapper.deleteByMsgTypeAndName(msgType, msgName);
+                                msgKefuPriorityMapper.deleteByPrimaryKey(msgId);
                             } else if (msgType == MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE) {
-                                wxUniformMapper.deleteByMsgTypeAndName(msgType, msgName);
+                                wxUniformMapper.deleteByPrimaryKey(msgId);
                             } else if (msgType == MessageTypeEnum.MA_TEMPLATE_CODE) {
-                                msgMaTemplateMapper.deleteByMsgTypeAndName(msgType, msgName);
+                                msgMaTemplateMapper.deleteByPrimaryKey(msgId);
                             } else if (msgType == MessageTypeEnum.MA_SUBSCRIBE_CODE) {
-                                msgMaSubscribeMapper.deleteByMsgTypeAndName(msgType, msgName);
+                                msgMaSubscribeMapper.deleteByPrimaryKey(msgId);
                             } else if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE) {
-                                msgMpTemplateMapper.deleteByMsgTypeAndName(msgType, msgName);
+                                msgMpTemplateMapper.deleteByPrimaryKey(msgId);
                             } else if (msgType == MessageTypeEnum.MP_SUBSCRIBE_CODE) {
-                                msgMpSubscribeMapper.deleteByMsgTypeAndName(msgType, msgName);
+                                msgMpSubscribeMapper.deleteByPrimaryKey(msgId);
                             } else if (msgType == MessageTypeEnum.EMAIL_CODE) {
-                                msgMailMapper.deleteByMsgTypeAndName(msgType, msgName);
+                                msgMailMapper.deleteByPrimaryKey(msgId);
                             } else if (msgType == MessageTypeEnum.HTTP_CODE) {
-                                msgHttpMapper.deleteByMsgTypeAndName(msgType, msgName);
+                                msgHttpMapper.deleteByPrimaryKey(msgId);
                             } else if (msgType == MessageTypeEnum.WX_CP_CODE) {
-                                msgWxCpMapper.deleteByMsgTypeAndName(msgType, msgName);
+                                msgWxCpMapper.deleteByPrimaryKey(msgId);
                             } else if (msgType == MessageTypeEnum.DING_CODE) {
-                                msgDingMapper.deleteByMsgTypeAndName(msgType, msgName);
+                                msgDingMapper.deleteByPrimaryKey(msgId);
                             } else {
-                                msgSmsMapper.deleteByMsgTypeAndName(msgType, msgName);
+                                msgSmsMapper.deleteByPrimaryKey(msgId);
                             }
 
                             tableModel.removeRow(selectedRow);

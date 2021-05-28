@@ -205,7 +205,7 @@
         preview_user = #{previewUser,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>
-    <select id="selectByMsgTypeAndMsgName" resultMap="BaseResultMap">
+    <select id="selectByUnique" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from t_msg_http

@@ -83,11 +83,10 @@ public class MailMsgForm implements IMsgForm {
     }
 
     @Override
-    public void init(String msgName) {
+    public void init(Integer msgId) {
         clearAllField();
-        List<TMsgMail> tMsgMailList = msgMailMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.EMAIL_CODE, msgName);
-        if (tMsgMailList.size() > 0) {
-            TMsgMail tMsgMail = tMsgMailList.get(0);
+        TMsgMail tMsgMail = msgMailMapper.selectByPrimaryKey(msgId);
+        if (tMsgMail != null) {
             getInstance().getMailTitleTextField().setText(tMsgMail.getTitle());
             getInstance().getMailCcTextField().setText(tMsgMail.getCc());
             getInstance().getMailFilesTextArea().setText(tMsgMail.getFiles());
@@ -100,10 +99,10 @@ public class MailMsgForm implements IMsgForm {
     }
 
     @Override
-    public void save(String msgName) {
+    public void save(Integer accountId, String msgName) {
         boolean existSameMsg = false;
 
-        List<TMsgMail> tMsgMailList = msgMailMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.EMAIL_CODE, msgName);
+        List<TMsgMail> tMsgMailList = msgMailMapper.selectByUnique(accountId, MessageTypeEnum.EMAIL_CODE, msgName);
         if (tMsgMailList.size() > 0) {
             existSameMsg = true;
         }

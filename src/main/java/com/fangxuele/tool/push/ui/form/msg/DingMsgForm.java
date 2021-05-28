@@ -137,12 +137,12 @@ public class DingMsgForm implements IMsgForm {
     }
 
     @Override
-    public void init(String msgName) {
+    public void init(Integer msgId) {
         clearAllField();
         initAppNameList();
-        List<TMsgDing> tMsgDingList = msgDingMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.DING_CODE, msgName);
-        if (tMsgDingList.size() > 0) {
-            TMsgDing tMsgDing = tMsgDingList.get(0);
+
+        TMsgDing tMsgDing = msgDingMapper.selectByPrimaryKey(msgId);
+        if (tMsgDing != null) {
             String dingMsgType = tMsgDing.getDingMsgType();
             getInstance().getAppNameComboBox().setSelectedItem(agentIdToAppNameMap.get(tMsgDing.getAgentId()));
             getInstance().getMsgTypeComboBox().setSelectedItem(dingMsgType);
@@ -167,7 +167,7 @@ public class DingMsgForm implements IMsgForm {
     }
 
     @Override
-    public void save(String msgName) {
+    public void save(Integer accountId, String msgName) {
         boolean existSameMsg = false;
 
         if (getInstance().getAppNameComboBox().getSelectedItem() == null) {
@@ -176,7 +176,7 @@ public class DingMsgForm implements IMsgForm {
             return;
         }
 
-        List<TMsgDing> tMsgDingList = msgDingMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.DING_CODE, msgName);
+        List<TMsgDing> tMsgDingList = msgDingMapper.selectByUnique(accountId, MessageTypeEnum.DING_CODE, msgName);
         if (tMsgDingList.size() > 0) {
             existSameMsg = true;
         }

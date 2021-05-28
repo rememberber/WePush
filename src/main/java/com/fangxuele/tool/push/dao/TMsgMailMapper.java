@@ -18,7 +18,7 @@ public interface TMsgMailMapper {
 
     int updateByPrimaryKey(TMsgMail record);
 
-    List<TMsgMail> selectByMsgTypeAndMsgName(@Param("msgType") int msgType, @Param("msgName") String msgName);
+    List<TMsgMail> selectByUnique(@Param("accountId") Integer selectedAccountId, @Param("msgType") int msgType, @Param("msgName") String msgName);
 
     int updateByMsgTypeAndMsgName(TMsgMail tMsgMail);
 

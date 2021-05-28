@@ -153,7 +153,7 @@ public class MpTemplateMsgForm implements IMsgForm {
     }
 
     @Override
-    public void init(String msgName) {
+    public void init(Integer msgId) {
         MpTemplateMsgForm mpTemplateMsgForm = getInstance();
         if (UIUtil.isDarkLaf()) {
             Color bgColor = new Color(43, 43, 43);
@@ -164,11 +164,8 @@ public class MpTemplateMsgForm implements IMsgForm {
 
         clearAllField();
 
-        Integer msgId = 0;
-        List<TMsgMpTemplate> tMsgMpTemplateList = msgMpTemplateMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.MP_TEMPLATE_CODE, msgName);
-        if (tMsgMpTemplateList.size() > 0) {
-            TMsgMpTemplate tMsgMpTemplate = tMsgMpTemplateList.get(0);
-            msgId = tMsgMpTemplate.getId();
+        TMsgMpTemplate tMsgMpTemplate = msgMpTemplateMapper.selectByPrimaryKey(msgId);
+        if (tMsgMpTemplate != null) {
             selectedMsgTemplateId = tMsgMpTemplate.getTemplateId();
             initTemplateList();
 
@@ -189,11 +186,11 @@ public class MpTemplateMsgForm implements IMsgForm {
     }
 
     @Override
-    public void save(String msgName) {
+    public void save(Integer accountId, String msgName) {
         int msgId = 0;
         boolean existSameMsg = false;
 
-        List<TMsgMpTemplate> tMsgMpTemplateList = msgMpTemplateMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.MP_TEMPLATE_CODE, msgName);
+        List<TMsgMpTemplate> tMsgMpTemplateList = msgMpTemplateMapper.selectByUnique(accountId, MessageTypeEnum.MP_TEMPLATE_CODE, msgName);
         if (tMsgMpTemplateList.size() > 0) {
             existSameMsg = true;
             msgId = tMsgMpTemplateList.get(0).getId();

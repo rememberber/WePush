@@ -51,13 +51,13 @@ public class MessageEditForm {
     /**
      * 初始化消息tab
      */
-    public static void init(String selectedMsgName) {
+    public static void init(Integer msgId) {
         messageEditForm = getInstance();
         // 设置滚动条速度
         messageEditForm.getMsgEditScrollPane().getVerticalScrollBar().setUnitIncrement(15);
         messageEditForm.getMsgEditScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
 
-        MsgFormFactory.getMsgForm().init(selectedMsgName);
+        MsgFormFactory.getMsgForm().init(msgId);
     }
 
     /**

@@ -37,11 +37,10 @@ public class YunpianMsgForm implements IMsgForm {
     private static TMsgSmsMapper msgSmsMapper = MybatisUtil.getSqlSession().getMapper(TMsgSmsMapper.class);
 
     @Override
-    public void init(String msgName) {
+    public void init(Integer msgId) {
         clearAllField();
-        List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.YUN_PIAN_CODE, msgName);
-        if (tMsgSmsList.size() > 0) {
-            TMsgSms tMsgSms = tMsgSmsList.get(0);
+        TMsgSms tMsgSms = msgSmsMapper.selectByPrimaryKey(msgId);
+        if (tMsgSms != null) {
             getInstance().getMsgYunpianMsgContentTextField().setText(tMsgSms.getContent());
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
@@ -51,10 +50,10 @@ public class YunpianMsgForm implements IMsgForm {
     }
 
     @Override
-    public void save(String msgName) {
+    public void save(Integer accountId, String msgName) {
         boolean existSameMsg = false;
 
-        List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.YUN_PIAN_CODE, msgName);
+        List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByUnique(accountId, MessageTypeEnum.YUN_PIAN_CODE, msgName);
         if (tMsgSmsList.size() > 0) {
             existSameMsg = true;
         }

@@ -175,12 +175,13 @@
         preview_user = #{previewUser,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>
-    <select id="selectByMsgTypeAndMsgName" resultMap="BaseResultMap">
+    <select id="selectByUnique" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from t_msg_ding
         where msg_type = #{msgType,jdbcType=INTEGER}
         and msg_name = #{msgName,jdbcType=VARCHAR}
+        and account_id = #{accountId,jdbcType=INTEGER}
     </select>
     <update id="updateByMsgTypeAndMsgName" parameterType="com.fangxuele.tool.push.domain.TMsgDing">
         update t_msg_ding

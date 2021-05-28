@@ -22,7 +22,7 @@ public interface TMsgMpSubscribeMapper {
 
     int deleteByMsgTypeAndName(int msgType, String msgName);
 
-    List<TMsgMpSubscribe> selectByMsgTypeAndMsgName(@Param("msgType") int msgType, @Param("msgName") String msgName);
+    List<TMsgMpSubscribe> selectByUnique(@Param("accountId") Integer selectedAccountId, @Param("msgType") int msgType, @Param("msgName") String msgName);
 
     int updateByMsgTypeAndMsgName(TMsgMpSubscribe tMsgMpSubscribe);
 

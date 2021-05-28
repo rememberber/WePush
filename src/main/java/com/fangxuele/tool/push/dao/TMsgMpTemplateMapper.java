@@ -18,7 +18,7 @@ public interface TMsgMpTemplateMapper {
 
     int updateByPrimaryKey(TMsgMpTemplate record);
 
-    List<TMsgMpTemplate> selectByMsgTypeAndMsgName(@Param("msgType") int msgType, @Param("msgName") String msgName);
+    List<TMsgMpTemplate> selectByUnique(@Param("accountId") Integer selectedAccountId, @Param("msgType") int msgType, @Param("msgName") String msgName);
 
     int updateByMsgTypeAndMsgName(TMsgMpTemplate tMsgMpTemplate);
 

@@ -34,12 +34,10 @@ public class KefuPriorityMsgForm implements IMsgForm {
     private static KefuPriorityMsgForm kefuPriorityMsgForm;
 
     @Override
-    public void init(String msgName) {
+    public void init(Integer msgId) {
         clearAllField();
-        List<TMsgKefuPriority> tMsgKefuPriorityList = msgKefuPriorityMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.KEFU_PRIORITY_CODE, msgName);
-        if (tMsgKefuPriorityList.size() > 0) {
-            TMsgKefuPriority tMsgKefuPriority = tMsgKefuPriorityList.get(0);
-            Integer msgId = tMsgKefuPriority.getId();
+        TMsgKefuPriority tMsgKefuPriority = msgKefuPriorityMapper.selectByPrimaryKey(msgId);
+        if (tMsgKefuPriority != null) {
             MpTemplateMsgForm.getInstance().getMsgTemplateIdTextField().setText(tMsgKefuPriority.getTemplateId());
             MpTemplateMsgForm.getInstance().getMsgTemplateUrlTextField().setText(tMsgKefuPriority.getUrl());
             MpTemplateMsgForm.getInstance().getMsgTemplateMiniAppidTextField().setText(tMsgKefuPriority.getMaAppid());
@@ -98,11 +96,11 @@ public class KefuPriorityMsgForm implements IMsgForm {
     }
 
     @Override
-    public void save(String msgName) {
+    public void save(Integer accountId, String msgName) {
         int msgId = 0;
         boolean existSameMsg = false;
 
-        List<TMsgKefuPriority> tMsgKefuPriorityList = msgKefuPriorityMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.KEFU_PRIORITY_CODE, msgName);
+        List<TMsgKefuPriority> tMsgKefuPriorityList = msgKefuPriorityMapper.selectByUnique(accountId, MessageTypeEnum.KEFU_PRIORITY_CODE, msgName);
         if (tMsgKefuPriorityList.size() > 0) {
             existSameMsg = true;
             msgId = tMsgKefuPriorityList.get(0).getId();

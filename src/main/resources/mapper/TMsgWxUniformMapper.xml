@@ -20,7 +20,7 @@
     </resultMap>
     <sql id="Base_Column_List">
         id, account_id, msg_type, msg_name, mp_template_id, ma_template_id, mp_url, ma_appid, ma_page_path,
-    page, emphasis_keyword, create_time, modified_time, preview_user, wx_account_id
+        page, emphasis_keyword, create_time, modified_time, preview_user, wx_account_id
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -34,12 +34,13 @@
         from t_msg_wx_uniform
         where msg_type = #{msgType,jdbcType=INTEGER}
     </select>
-    <select id="selectByMsgTypeAndMsgName" resultMap="BaseResultMap">
+    <select id="selectByUnique" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from t_msg_wx_uniform
         where msg_type = #{msgType,jdbcType=INTEGER}
         and msg_name = #{msgName,jdbcType=VARCHAR}
+        and account_id = #{accountId,jdbcType=INTEGER}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
         delete
@@ -50,19 +51,20 @@
         delete
         from t_msg_wx_uniform
         where msg_type = #{msgType,jdbcType=INTEGER}
-          and msg_name = #{msgName,jdbcType=VARCHAR}
+        and msg_name = #{msgName,jdbcType=VARCHAR}
     </delete>
     <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TMsgWxUniform">
         insert into t_msg_wx_uniform (id, account_id, msg_type, msg_name,
-                                      mp_template_id, ma_template_id, mp_url,
-                                      ma_appid, ma_page_path, page,
-                                      emphasis_keyword, create_time, modified_time,
-                                      preview_user, wx_account_id)
-        values (#{id,jdbcType=INTEGER}, #{accountId,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER}, #{msgName,jdbcType=VARCHAR},
-                #{mpTemplateId,jdbcType=VARCHAR}, #{maTemplateId,jdbcType=VARCHAR}, #{mpUrl,jdbcType=VARCHAR},
-                #{maAppid,jdbcType=VARCHAR}, #{maPagePath,jdbcType=VARCHAR}, #{page,jdbcType=VARCHAR},
-                #{emphasisKeyword,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR},
-                #{previewUser,jdbcType=VARCHAR}, #{wxAccountId,jdbcType=INTEGER})
+        mp_template_id, ma_template_id, mp_url,
+        ma_appid, ma_page_path, page,
+        emphasis_keyword, create_time, modified_time,
+        preview_user, wx_account_id)
+        values (#{id,jdbcType=INTEGER}, #{accountId,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER},
+        #{msgName,jdbcType=VARCHAR},
+        #{mpTemplateId,jdbcType=VARCHAR}, #{maTemplateId,jdbcType=VARCHAR}, #{mpUrl,jdbcType=VARCHAR},
+        #{maAppid,jdbcType=VARCHAR}, #{maPagePath,jdbcType=VARCHAR}, #{page,jdbcType=VARCHAR},
+        #{emphasisKeyword,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR},
+        #{previewUser,jdbcType=VARCHAR}, #{wxAccountId,jdbcType=INTEGER})
     </insert>
     <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TMsgWxUniform" useGeneratedKeys="true"
             keyColumn="id" keyProperty="id">
@@ -212,37 +214,37 @@
     </update>
     <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TMsgWxUniform">
         update t_msg_wx_uniform
-        set msg_type         = #{msgType,jdbcType=INTEGER},
+        set msg_type = #{msgType,jdbcType=INTEGER},
         account_id = #{accountId,jdbcType=INTEGER},
-            msg_name         = #{msgName,jdbcType=VARCHAR},
-            mp_template_id   = #{mpTemplateId,jdbcType=VARCHAR},
-            ma_template_id   = #{maTemplateId,jdbcType=VARCHAR},
-            mp_url           = #{mpUrl,jdbcType=VARCHAR},
-            ma_appid         = #{maAppid,jdbcType=VARCHAR},
-            ma_page_path     = #{maPagePath,jdbcType=VARCHAR},
-            page             = #{page,jdbcType=VARCHAR},
-            emphasis_keyword = #{emphasisKeyword,jdbcType=VARCHAR},
-            create_time      = #{createTime,jdbcType=VARCHAR},
-            modified_time    = #{modifiedTime,jdbcType=VARCHAR},
-            preview_user     = #{previewUser,jdbcType=VARCHAR},
-            wx_account_id    = #{wxAccountId,jdbcType=INTEGER}
+        msg_name = #{msgName,jdbcType=VARCHAR},
+        mp_template_id = #{mpTemplateId,jdbcType=VARCHAR},
+        ma_template_id = #{maTemplateId,jdbcType=VARCHAR},
+        mp_url = #{mpUrl,jdbcType=VARCHAR},
+        ma_appid = #{maAppid,jdbcType=VARCHAR},
+        ma_page_path = #{maPagePath,jdbcType=VARCHAR},
+        page = #{page,jdbcType=VARCHAR},
+        emphasis_keyword = #{emphasisKeyword,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=VARCHAR},
+        modified_time = #{modifiedTime,jdbcType=VARCHAR},
+        preview_user = #{previewUser,jdbcType=VARCHAR},
+        wx_account_id = #{wxAccountId,jdbcType=INTEGER}
         where id = #{id,jdbcType=INTEGER}
     </update>
     <update id="updateByMsgTypeAndMsgName">
         update t_msg_wx_uniform
-        set mp_template_id   = #{mpTemplateId,jdbcType=VARCHAR},
-            ma_template_id   = #{maTemplateId,jdbcType=VARCHAR},
-            mp_url           = #{mpUrl,jdbcType=VARCHAR},
-            ma_appid         = #{maAppid,jdbcType=VARCHAR},
-            ma_page_path     = #{maPagePath,jdbcType=VARCHAR},
-            page             = #{page,jdbcType=VARCHAR},
-            emphasis_keyword = #{emphasisKeyword,jdbcType=VARCHAR},
-            create_time      = #{createTime,jdbcType=VARCHAR},
-            modified_time    = #{modifiedTime,jdbcType=VARCHAR},
-            preview_user     = #{previewUser,jdbcType=VARCHAR},
-            wx_account_id    = #{wxAccountId,jdbcType=INTEGER}
+        set mp_template_id = #{mpTemplateId,jdbcType=VARCHAR},
+        ma_template_id = #{maTemplateId,jdbcType=VARCHAR},
+        mp_url = #{mpUrl,jdbcType=VARCHAR},
+        ma_appid = #{maAppid,jdbcType=VARCHAR},
+        ma_page_path = #{maPagePath,jdbcType=VARCHAR},
+        page = #{page,jdbcType=VARCHAR},
+        emphasis_keyword = #{emphasisKeyword,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=VARCHAR},
+        modified_time = #{modifiedTime,jdbcType=VARCHAR},
+        preview_user = #{previewUser,jdbcType=VARCHAR},
+        wx_account_id = #{wxAccountId,jdbcType=INTEGER}
         where msg_type = #{msgType,jdbcType=INTEGER}
-          and msg_name = #{msgName,jdbcType=VARCHAR}
+        and msg_name = #{msgName,jdbcType=VARCHAR}
     </update>
     <select id="selectByMsgTypeAndWxAccountId" resultMap="BaseResultMap">
         select

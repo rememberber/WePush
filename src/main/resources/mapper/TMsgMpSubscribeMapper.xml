@@ -34,7 +34,8 @@
         template_id, url, ma_appid,
         ma_page_path, preview_user, wx_account_id,
         create_time, modified_time)
-        values (#{id,jdbcType=INTEGER}, #{accountId,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER}, #{msgName,jdbcType=VARCHAR},
+        values (#{id,jdbcType=INTEGER}, #{accountId,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER},
+        #{msgName,jdbcType=VARCHAR},
         #{templateId,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, #{maAppid,jdbcType=VARCHAR},
         #{maPagePath,jdbcType=VARCHAR}, #{previewUser,jdbcType=VARCHAR}, #{wxAccountId,jdbcType=INTEGER},
         #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR})
@@ -173,12 +174,13 @@
         modified_time = #{modifiedTime,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>
-    <select id="selectByMsgTypeAndMsgName" resultMap="BaseResultMap">
+    <select id="selectByUnique" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from t_msg_mp_subscribe
         where msg_type = #{msgType,jdbcType=INTEGER}
         and msg_name = #{msgName,jdbcType=VARCHAR}
+        and account_id = #{accountId,jdbcType=INTEGER}
     </select>
     <update id="updateByMsgTypeAndMsgName" parameterType="com.fangxuele.tool.push.domain.TMsgMpSubscribe">
         update t_msg_mp_subscribe

@@ -162,7 +162,6 @@ public class SettingListener {
                 }
 
                 SettingForm.initSwitchMultiAccount();
-                MessageManageForm.initSwitchMultiAccount();
                 WxMpTemplateMsgSender.wxMpConfigStorage = null;
                 WxMpTemplateMsgSender.wxMpService = null;
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",

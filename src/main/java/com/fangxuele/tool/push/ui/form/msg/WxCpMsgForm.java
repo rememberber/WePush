@@ -80,12 +80,11 @@ public class WxCpMsgForm implements IMsgForm {
     }
 
     @Override
-    public void init(String msgName) {
+    public void init(Integer msgId) {
         clearAllField();
         initAppNameList();
-        List<TMsgWxCp> tMsgWxCpList = msgWxCpMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.WX_CP_CODE, msgName);
-        if (tMsgWxCpList.size() > 0) {
-            TMsgWxCp tMsgWxCp = tMsgWxCpList.get(0);
+        TMsgWxCp tMsgWxCp = msgWxCpMapper.selectByPrimaryKey(msgId);
+        if (tMsgWxCp != null) {
             String cpMsgType = tMsgWxCp.getCpMsgType();
             getInstance().getAppNameComboBox().setSelectedItem(agentIdToAppNameMap.get(tMsgWxCp.getAgentId()));
             getInstance().getMsgTypeComboBox().setSelectedItem(cpMsgType);
@@ -107,7 +106,7 @@ public class WxCpMsgForm implements IMsgForm {
     }
 
     @Override
-    public void save(String msgName) {
+    public void save(Integer accountId, String msgName) {
         boolean existSameMsg = false;
 
         if (getInstance().getAppNameComboBox().getSelectedItem() == null) {
@@ -116,7 +115,7 @@ public class WxCpMsgForm implements IMsgForm {
             return;
         }
 
-        List<TMsgWxCp> tMsgWxCpList = msgWxCpMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.WX_CP_CODE, msgName);
+        List<TMsgWxCp> tMsgWxCpList = msgWxCpMapper.selectByUnique(accountId, MessageTypeEnum.WX_CP_CODE, msgName);
         if (tMsgWxCpList.size() > 0) {
             existSameMsg = true;
         }
