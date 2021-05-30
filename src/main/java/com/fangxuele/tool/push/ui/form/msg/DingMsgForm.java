@@ -202,6 +202,7 @@ public class DingMsgForm implements IMsgForm {
 
             TMsgDing tMsgDing = new TMsgDing();
             tMsgDing.setMsgType(MessageTypeEnum.DING_CODE);
+            tMsgDing.setAccountId(accountId);
             tMsgDing.setMsgName(msgName);
             tMsgDing.setAgentId(appNameToAgentIdMap.get(getInstance().getAppNameComboBox().getSelectedItem()));
             tMsgDing.setDingMsgType(dingMsgType);

@@ -148,6 +148,7 @@ public class TxYunMsgForm implements IMsgForm {
 
             TMsgSms tMsgSms = new TMsgSms();
             tMsgSms.setMsgType(MessageTypeEnum.TX_YUN_CODE);
+            tMsgSms.setAccountId(accountId);
             tMsgSms.setMsgName(msgName);
             tMsgSms.setTemplateId(templateId);
             tMsgSms.setCreateTime(now);

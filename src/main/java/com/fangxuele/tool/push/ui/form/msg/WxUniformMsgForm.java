@@ -134,6 +134,7 @@ public class WxUniformMsgForm implements IMsgForm {
 
             TMsgWxUniform tMsgWxUniform = new TMsgWxUniform();
             tMsgWxUniform.setMsgType(MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE);
+            tMsgWxUniform.setAccountId(accountId);
             tMsgWxUniform.setMsgName(msgName);
             tMsgWxUniform.setMpTemplateId(mpTemplateId);
             tMsgWxUniform.setMaTemplateId(maTemplateId);

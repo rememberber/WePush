@@ -286,6 +286,7 @@ public class HttpMsgForm implements IMsgForm {
 
             TMsgHttp tMsgHttp = new TMsgHttp();
             tMsgHttp.setMsgType(MessageTypeEnum.HTTP_CODE);
+            tMsgHttp.setAccountId(accountId);
             tMsgHttp.setMsgName(msgName);
             tMsgHttp.setMethod(method);
             tMsgHttp.setUrl(url);

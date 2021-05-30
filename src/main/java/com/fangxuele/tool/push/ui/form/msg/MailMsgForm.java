@@ -123,6 +123,7 @@ public class MailMsgForm implements IMsgForm {
 
             TMsgMail tMsgMail = new TMsgMail();
             tMsgMail.setMsgType(MessageTypeEnum.EMAIL_CODE);
+            tMsgMail.setAccountId(accountId);
             tMsgMail.setMsgName(msgName);
             tMsgMail.setTitle(mailTitle);
             tMsgMail.setCc(mailCc);

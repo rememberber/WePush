@@ -140,6 +140,7 @@ public class WxCpMsgForm implements IMsgForm {
 
             TMsgWxCp tMsgWxCp = new TMsgWxCp();
             tMsgWxCp.setMsgType(MessageTypeEnum.WX_CP_CODE);
+            tMsgWxCp.setAccountId(accountId);
             tMsgWxCp.setMsgName(msgName);
             tMsgWxCp.setAgentId(appNameToAgentIdMap.get(getInstance().getAppNameComboBox().getSelectedItem()));
             tMsgWxCp.setCpMsgType(cpMsgType);

@@ -132,6 +132,7 @@ public class KefuPriorityMsgForm implements IMsgForm {
 
             TMsgKefuPriority tMsgKefuPriority = new TMsgKefuPriority();
             tMsgKefuPriority.setMsgType(MessageTypeEnum.KEFU_PRIORITY_CODE);
+            tMsgKefuPriority.setAccountId(accountId);
             tMsgKefuPriority.setMsgName(msgName);
             tMsgKefuPriority.setTemplateId(templateId);
             tMsgKefuPriority.setUrl(templateUrl);

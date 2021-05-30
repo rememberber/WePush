@@ -148,6 +148,7 @@ public class UpYunMsgForm implements IMsgForm {
 
             TMsgSms tMsgSms = new TMsgSms();
             tMsgSms.setMsgType(MessageTypeEnum.UP_YUN_CODE);
+            tMsgSms.setAccountId(accountId);
             tMsgSms.setMsgName(msgName);
             tMsgSms.setTemplateId(templateId);
             tMsgSms.setCreateTime(now);

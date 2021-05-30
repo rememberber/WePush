@@ -210,6 +210,7 @@ public class MpSubscribeMsgForm implements IMsgForm {
 
             TMsgMpSubscribe tMsgMpSubscribe = new TMsgMpSubscribe();
             tMsgMpSubscribe.setMsgType(MessageTypeEnum.MP_SUBSCRIBE_CODE);
+            tMsgMpSubscribe.setAccountId(accountId);
             tMsgMpSubscribe.setMsgName(msgName);
             tMsgMpSubscribe.setTemplateId(templateId);
             tMsgMpSubscribe.setUrl(templateUrl);

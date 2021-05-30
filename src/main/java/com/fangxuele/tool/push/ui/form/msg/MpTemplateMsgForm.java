@@ -213,6 +213,7 @@ public class MpTemplateMsgForm implements IMsgForm {
 
             TMsgMpTemplate tMsgMpTemplate = new TMsgMpTemplate();
             tMsgMpTemplate.setMsgType(MessageTypeEnum.MP_TEMPLATE_CODE);
+            tMsgMpTemplate.setAccountId(accountId);
             tMsgMpTemplate.setMsgName(msgName);
             tMsgMpTemplate.setTemplateId(templateId);
             tMsgMpTemplate.setUrl(templateUrl);

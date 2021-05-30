@@ -163,6 +163,7 @@ public class MaSubscribeMsgForm implements IMsgForm {
 
             TMsgMaSubscribe tMsgMaSubscribe = new TMsgMaSubscribe();
             tMsgMaSubscribe.setMsgType(MessageTypeEnum.MA_SUBSCRIBE_CODE);
+            tMsgMaSubscribe.setAccountId(accountId);
             tMsgMaSubscribe.setMsgName(msgName);
             tMsgMaSubscribe.setTemplateId(templateId);
             tMsgMaSubscribe.setPage(templateUrl);

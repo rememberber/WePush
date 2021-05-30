@@ -157,6 +157,7 @@ public class KefuMsgForm implements IMsgForm {
 
             TMsgKefu tMsgKefu = new TMsgKefu();
             tMsgKefu.setMsgType(MessageTypeEnum.KEFU_CODE);
+            tMsgKefu.setAccountId(accountId);
             tMsgKefu.setMsgName(msgName);
             tMsgKefu.setKefuMsgType(kefuMsgType);
             tMsgKefu.setContent(kefuMsgContent);

@@ -71,6 +71,7 @@ public class YunpianMsgForm implements IMsgForm {
 
             TMsgSms tMsgSms = new TMsgSms();
             tMsgSms.setMsgType(MessageTypeEnum.YUN_PIAN_CODE);
+            tMsgSms.setAccountId(accountId);
             tMsgSms.setMsgName(msgName);
             tMsgSms.setContent(yunpianMsgContent);
             tMsgSms.setCreateTime(now);
