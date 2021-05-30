@@ -190,10 +190,10 @@ public class MpTemplateMsgForm implements IMsgForm {
         int msgId = 0;
         boolean existSameMsg = false;
 
-        List<TMsgMpTemplate> tMsgMpTemplateList = msgMpTemplateMapper.selectByUnique(accountId, MessageTypeEnum.MP_TEMPLATE_CODE, msgName);
-        if (tMsgMpTemplateList.size() > 0) {
+        TMsgMpTemplate msgMpTemplate = msgMpTemplateMapper.selectByUnique(accountId, MessageTypeEnum.MP_TEMPLATE_CODE, msgName);
+        if (msgMpTemplate != null) {
             existSameMsg = true;
-            msgId = tMsgMpTemplateList.get(0).getId();
+            msgId = msgMpTemplate.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -227,7 +227,8 @@ public class MpTemplateMsgForm implements IMsgForm {
             tMsgMpTemplate.setWxAccountId(App.config.getWxAccountId());
 
             if (existSameMsg) {
-                msgMpTemplateMapper.updateByMsgTypeAndMsgName(tMsgMpTemplate);
+                tMsgMpTemplate.setId(msgId);
+                msgMpTemplateMapper.updateByPrimaryKeySelective(tMsgMpTemplate);
             } else {
                 msgMpTemplateMapper.insertSelective(tMsgMpTemplate);
                 msgId = tMsgMpTemplate.getId();

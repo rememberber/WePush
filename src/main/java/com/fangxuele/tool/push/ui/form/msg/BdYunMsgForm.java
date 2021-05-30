@@ -128,10 +128,10 @@ public class BdYunMsgForm implements IMsgForm {
         int msgId = 0;
         boolean existSameMsg = false;
 
-        List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByUnique(accountId, MessageTypeEnum.BD_YUN_CODE, msgName);
-        if (tMsgSmsList.size() > 0) {
+        TMsgSms msgSms = msgSmsMapper.selectByUnique(accountId, MessageTypeEnum.BD_YUN_CODE, msgName);
+        if (msgSms != null) {
             existSameMsg = true;
-            msgId = tMsgSmsList.get(0).getId();
+            msgId = msgSms.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -157,7 +157,8 @@ public class BdYunMsgForm implements IMsgForm {
             tMsgSms.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             if (existSameMsg) {
-                msgSmsMapper.updateByMsgTypeAndMsgName(tMsgSms);
+                tMsgSms.setId(msgId);
+                msgSmsMapper.updateByPrimaryKeySelective(tMsgSms);
             } else {
                 msgSmsMapper.insertSelective(tMsgSms);
                 msgId = tMsgSms.getId();

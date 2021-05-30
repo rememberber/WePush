@@ -264,10 +264,11 @@ public class HttpMsgForm implements IMsgForm {
     @Override
     public void save(Integer accountId, String msgName) {
         boolean existSameMsg = false;
-
-        List<TMsgHttp> tMsgHttpList = msgHttpMapper.selectByUnique(accountId, MessageTypeEnum.HTTP_CODE, msgName);
-        if (tMsgHttpList.size() > 0) {
+        Integer msgId = null;
+        TMsgHttp msgHttp = msgHttpMapper.selectByUnique(accountId, MessageTypeEnum.HTTP_CODE, msgName);
+        if (msgHttp != null) {
             existSameMsg = true;
+            msgId = msgHttp.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -361,7 +362,8 @@ public class HttpMsgForm implements IMsgForm {
             tMsgHttp.setCookies(JSONUtil.toJsonStr(cookies));
 
             if (existSameMsg) {
-                msgHttpMapper.updateByMsgTypeAndMsgName(tMsgHttp);
+                tMsgHttp.setId(msgId);
+                msgHttpMapper.updateByPrimaryKeySelective(tMsgHttp);
             } else {
                 msgHttpMapper.insertSelective(tMsgHttp);
             }

@@ -96,7 +96,7 @@ public class MessageManageForm {
 
     public static void initMessageList() {
         // 历史消息管理
-        String[] headerNames = {"消息名称"};
+        String[] headerNames = {"消息名称", "ID"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
         messageManageForm.getMsgHistable().setModel(model);
         // 隐藏表头

@@ -187,10 +187,10 @@ public class MpSubscribeMsgForm implements IMsgForm {
         int msgId = 0;
         boolean existSameMsg = false;
 
-        List<TMsgMpSubscribe> tMsgMpSubscribeList = tMsgMpSubscribeMapper.selectByUnique(accountId, MessageTypeEnum.MP_SUBSCRIBE_CODE, msgName);
-        if (tMsgMpSubscribeList.size() > 0) {
+        TMsgMpSubscribe msgMpSubscribe = tMsgMpSubscribeMapper.selectByUnique(accountId, MessageTypeEnum.MP_SUBSCRIBE_CODE, msgName);
+        if (msgMpSubscribe != null) {
             existSameMsg = true;
-            msgId = tMsgMpSubscribeList.get(0).getId();
+            msgId = msgMpSubscribe.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -224,7 +224,8 @@ public class MpSubscribeMsgForm implements IMsgForm {
             tMsgMpSubscribe.setWxAccountId(App.config.getWxAccountId());
 
             if (existSameMsg) {
-                tMsgMpSubscribeMapper.updateByMsgTypeAndMsgName(tMsgMpSubscribe);
+                tMsgMpSubscribe.setId(msgId);
+                tMsgMpSubscribeMapper.updateByPrimaryKeySelective(tMsgMpSubscribe);
             } else {
                 tMsgMpSubscribeMapper.insertSelective(tMsgMpSubscribe);
                 msgId = tMsgMpSubscribe.getId();

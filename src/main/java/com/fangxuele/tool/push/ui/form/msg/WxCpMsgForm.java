@@ -114,10 +114,11 @@ public class WxCpMsgForm implements IMsgForm {
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
-
-        List<TMsgWxCp> tMsgWxCpList = msgWxCpMapper.selectByUnique(accountId, MessageTypeEnum.WX_CP_CODE, msgName);
-        if (tMsgWxCpList.size() > 0) {
+        Integer msgId = null;
+        TMsgWxCp msgWxCp = msgWxCpMapper.selectByUnique(accountId, MessageTypeEnum.WX_CP_CODE, msgName);
+        if (msgWxCp != null) {
             existSameMsg = true;
+            msgId = msgWxCp.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -156,7 +157,8 @@ public class WxCpMsgForm implements IMsgForm {
             tMsgWxCp.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             if (existSameMsg) {
-                msgWxCpMapper.updateByMsgTypeAndMsgName(tMsgWxCp);
+                tMsgWxCp.setId(msgId);
+                msgWxCpMapper.updateByPrimaryKeySelective(tMsgWxCp);
             } else {
                 tMsgWxCp.setCreateTime(now);
                 msgWxCpMapper.insertSelective(tMsgWxCp);

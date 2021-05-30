@@ -100,10 +100,10 @@ public class KefuPriorityMsgForm implements IMsgForm {
         int msgId = 0;
         boolean existSameMsg = false;
 
-        List<TMsgKefuPriority> tMsgKefuPriorityList = msgKefuPriorityMapper.selectByUnique(accountId, MessageTypeEnum.KEFU_PRIORITY_CODE, msgName);
-        if (tMsgKefuPriorityList.size() > 0) {
+        TMsgKefuPriority msgKefuPriority = msgKefuPriorityMapper.selectByUnique(accountId, MessageTypeEnum.KEFU_PRIORITY_CODE, msgName);
+        if (msgKefuPriority != null) {
             existSameMsg = true;
-            msgId = tMsgKefuPriorityList.get(0).getId();
+            msgId = msgKefuPriority.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -154,7 +154,8 @@ public class KefuPriorityMsgForm implements IMsgForm {
             tMsgKefuPriority.setThumbMediaId(kefuThumbMediaId);
 
             if (existSameMsg) {
-                msgKefuPriorityMapper.updateByMsgTypeAndMsgName(tMsgKefuPriority);
+                tMsgKefuPriority.setId(msgId);
+                msgKefuPriorityMapper.updateByPrimaryKeySelective(tMsgKefuPriority);
             } else {
                 msgKefuPriorityMapper.insertSelective(tMsgKefuPriority);
                 msgId = tMsgKefuPriority.getId();

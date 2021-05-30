@@ -101,10 +101,11 @@ public class MailMsgForm implements IMsgForm {
     @Override
     public void save(Integer accountId, String msgName) {
         boolean existSameMsg = false;
-
-        List<TMsgMail> tMsgMailList = msgMailMapper.selectByUnique(accountId, MessageTypeEnum.EMAIL_CODE, msgName);
-        if (tMsgMailList.size() > 0) {
+        Integer msgId = null;
+        TMsgMail msgMail = msgMailMapper.selectByUnique(accountId, MessageTypeEnum.EMAIL_CODE, msgName);
+        if (msgMail != null) {
             existSameMsg = true;
+            msgId = msgMail.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -136,7 +137,8 @@ public class MailMsgForm implements IMsgForm {
             tMsgMail.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             if (existSameMsg) {
-                msgMailMapper.updateByMsgTypeAndMsgName(tMsgMail);
+                tMsgMail.setId(msgId);
+                msgMailMapper.updateByPrimaryKeySelective(tMsgMail);
             } else {
                 msgMailMapper.insertSelective(tMsgMail);
             }

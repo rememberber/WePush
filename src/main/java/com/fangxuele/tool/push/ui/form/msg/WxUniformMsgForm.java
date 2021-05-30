@@ -108,10 +108,10 @@ public class WxUniformMsgForm implements IMsgForm {
         int msgId = 0;
         boolean existSameMsg = false;
 
-        List<TMsgWxUniform> tMsgWxUniformList = msgWxUniformMapper.selectByUnique(accountId, MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE, msgName);
-        if (tMsgWxUniformList.size() > 0) {
+        TMsgWxUniform msgWxUniform = msgWxUniformMapper.selectByUnique(accountId, MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE, msgName);
+        if (msgWxUniform != null) {
             existSameMsg = true;
-            msgId = tMsgWxUniformList.get(0).getId();
+            msgId = msgWxUniform.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -150,7 +150,8 @@ public class WxUniformMsgForm implements IMsgForm {
             tMsgWxUniform.setWxAccountId(App.config.getWxAccountId());
 
             if (existSameMsg) {
-                msgWxUniformMapper.updateByMsgTypeAndMsgName(tMsgWxUniform);
+                tMsgWxUniform.setId(msgId);
+                msgWxUniformMapper.updateByPrimaryKeySelective(tMsgWxUniform);
             } else {
                 msgWxUniformMapper.insertSelective(tMsgWxUniform);
                 msgId = tMsgWxUniform.getId();

@@ -18,7 +18,7 @@ public interface TMsgKefuPriorityMapper {
 
     int updateByPrimaryKey(TMsgKefuPriority record);
 
-    List<TMsgKefuPriority> selectByUnique(@Param("accountId") Integer selectedAccountId, @Param("msgType") int msgType, @Param("msgName") String msgName);
+    TMsgKefuPriority selectByUnique(@Param("accountId") Integer selectedAccountId, @Param("msgType") int msgType, @Param("msgName") String msgName);
 
     int updateByMsgTypeAndMsgName(TMsgKefuPriority tMsgKefuPriority);
 

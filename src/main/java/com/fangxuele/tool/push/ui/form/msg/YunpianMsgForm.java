@@ -16,7 +16,6 @@ import javax.swing.border.TitledBorder;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.text.StyleContext;
 import java.awt.*;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -52,10 +51,11 @@ public class YunpianMsgForm implements IMsgForm {
     @Override
     public void save(Integer accountId, String msgName) {
         boolean existSameMsg = false;
-
-        List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByUnique(accountId, MessageTypeEnum.YUN_PIAN_CODE, msgName);
-        if (tMsgSmsList.size() > 0) {
+        Integer msgId = null;
+        TMsgSms msgSms = msgSmsMapper.selectByUnique(accountId, MessageTypeEnum.YUN_PIAN_CODE, msgName);
+        if (msgSms != null) {
             existSameMsg = true;
+            msgId = msgSms.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -81,7 +81,8 @@ public class YunpianMsgForm implements IMsgForm {
             tMsgSms.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             if (existSameMsg) {
-                msgSmsMapper.updateByMsgTypeAndMsgName(tMsgSms);
+                tMsgSms.setId(msgId);
+                msgSmsMapper.updateByPrimaryKeySelective(tMsgSms);
             } else {
                 msgSmsMapper.insertSelective(tMsgSms);
             }

@@ -175,10 +175,11 @@ public class DingMsgForm implements IMsgForm {
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
-
-        List<TMsgDing> tMsgDingList = msgDingMapper.selectByUnique(accountId, MessageTypeEnum.DING_CODE, msgName);
-        if (tMsgDingList.size() > 0) {
+        Integer msgId = null;
+        TMsgDing msgDing = msgDingMapper.selectByUnique(accountId, MessageTypeEnum.DING_CODE, msgName);
+        if (msgDing != null) {
             existSameMsg = true;
+            msgId = msgDing.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -227,7 +228,8 @@ public class DingMsgForm implements IMsgForm {
             tMsgDing.setWebHook(webHook);
 
             if (existSameMsg) {
-                msgDingMapper.updateByMsgTypeAndMsgName(tMsgDing);
+                tMsgDing.setId(msgId);
+                msgDingMapper.updateByPrimaryKeySelective(tMsgDing);
             } else {
                 tMsgDing.setCreateTime(now);
                 msgDingMapper.insertSelective(tMsgDing);

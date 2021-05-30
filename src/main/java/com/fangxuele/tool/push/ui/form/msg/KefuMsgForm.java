@@ -27,7 +27,6 @@ import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.io.File;
-import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -129,10 +128,11 @@ public class KefuMsgForm implements IMsgForm {
     @Override
     public void save(Integer accountId, String msgName) {
         boolean existSameMsg = false;
-
-        List<TMsgKefu> tMsgKefuList = msgKefuMapper.selectByUnique(accountId, MessageTypeEnum.KEFU_CODE, msgName);
-        if (tMsgKefuList.size() > 0) {
+        Integer msgId = null;
+        TMsgKefu msgKefu = msgKefuMapper.selectByUnique(accountId, MessageTypeEnum.KEFU_CODE, msgName);
+        if (msgKefu != null) {
             existSameMsg = true;
+            msgId = msgKefu.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -175,7 +175,8 @@ public class KefuMsgForm implements IMsgForm {
             tMsgKefu.setWxAccountId(App.config.getWxAccountId());
 
             if (existSameMsg) {
-                msgKefuMapper.updateByMsgTypeAndMsgName(tMsgKefu);
+                tMsgKefu.setId(msgId);
+                msgKefuMapper.updateByPrimaryKeySelective(tMsgKefu);
             } else {
                 tMsgKefu.setCreateTime(now);
                 msgKefuMapper.insertSelective(tMsgKefu);

@@ -18,7 +18,7 @@ public interface TMsgWxCpMapper {
 
     int updateByPrimaryKey(TMsgWxCp record);
 
-    List<TMsgWxCp> selectByUnique(@Param("accountId") Integer selectedAccountId, @Param("msgType") int msgType, @Param("msgName") String msgName);
+    TMsgWxCp selectByUnique(@Param("accountId") Integer selectedAccountId, @Param("msgType") int msgType, @Param("msgName") String msgName);
 
     int updateByMsgTypeAndMsgName(TMsgWxCp tMsgWxCp);
 

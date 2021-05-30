@@ -402,5 +402,3 @@ create table if not exists t_task
 
 create unique index if not exists t_task_title_uindex
     on t_task (title);
-
-commit ;

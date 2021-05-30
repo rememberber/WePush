@@ -18,7 +18,7 @@ public interface TMsgDingMapper {
 
     int updateByPrimaryKey(TMsgDing record);
 
-    List<TMsgDing> selectByUnique(@Param("accountId") Integer selectedAccountId, @Param("msgType") int msgType, @Param("msgName") String msgName);
+    TMsgDing selectByUnique(@Param("accountId") Integer selectedAccountId, @Param("msgType") int msgType, @Param("msgName") String msgName);
 
     int updateByMsgTypeAndMsgName(TMsgDing tMsgDing);
 
