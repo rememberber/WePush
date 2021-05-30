@@ -2,10 +2,7 @@ package com.fangxuele.tool.push.ui.listener;
 
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
-import com.fangxuele.tool.push.ui.form.AccountEditForm;
-import com.fangxuele.tool.push.ui.form.AccountManageForm;
-import com.fangxuele.tool.push.ui.form.MainWindow;
-import com.fangxuele.tool.push.ui.form.PeopleManageForm;
+import com.fangxuele.tool.push.ui.form.*;
 import com.fangxuele.tool.push.ui.form.account.AccountFormFactory;
 import org.apache.commons.lang3.StringUtils;
 
@@ -37,6 +34,7 @@ public class AccountEditListener {
             try {
                 AccountFormFactory.getAccountForm().save(accountName);
                 AccountManageForm.init();
+                MessageManageForm.init();
                 PeopleManageForm.init();
             } catch (Exception e1) {
                 JOptionPane.showMessageDialog(MainWindow.getInstance().getMainPanel(), "保存失败！\n\n" + e1.getMessage(), "失败",
