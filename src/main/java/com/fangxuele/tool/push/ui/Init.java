@@ -205,7 +205,6 @@ public class Init {
         ThreadUtil.execute(AccountManageForm::init);
         ThreadUtil.execute(() -> AccountEditForm.init(null));
         ThreadUtil.execute(MessageManageForm::init);
-        ThreadUtil.execute(() -> MessageEditForm.init(null));
         ThreadUtil.execute(PeopleManageForm::init);
         ThreadUtil.execute(() -> PeopleEditForm.init(null));
         ThreadUtil.execute(MemberForm::init);

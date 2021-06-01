@@ -191,7 +191,8 @@ public class MailMsgForm implements IMsgForm {
     /**
      * 清空所有界面字段
      */
-    public static void clearAllField() {
+    @Override
+    public void clearAllField() {
         getInstance().getMailTitleTextField().setText("");
         getInstance().getMailCcTextField().setText("");
         getInstance().getMailFilesTextArea().setText("");

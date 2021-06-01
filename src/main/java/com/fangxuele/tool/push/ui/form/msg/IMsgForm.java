@@ -22,4 +22,6 @@ public interface IMsgForm {
      * @param msgName
      */
     void save(Integer accountId, String msgName);
+
+    void clearAllField();
 }

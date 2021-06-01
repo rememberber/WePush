@@ -5,18 +5,8 @@ import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.*;
-import com.fangxuele.tool.push.domain.TWxAccount;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
-import com.fangxuele.tool.push.ui.UiConsts;
-import com.fangxuele.tool.push.ui.form.MainWindow;
-import com.fangxuele.tool.push.ui.form.MessageEditForm;
-import com.fangxuele.tool.push.ui.form.MessageManageForm;
-import com.fangxuele.tool.push.ui.form.MessageTypeForm;
-import com.fangxuele.tool.push.ui.form.PushHisForm;
-import com.fangxuele.tool.push.ui.form.SettingForm;
-import com.fangxuele.tool.push.ui.form.msg.KefuMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.MaSubscribeMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.MpTemplateMsgForm;
+import com.fangxuele.tool.push.ui.form.*;
 import com.fangxuele.tool.push.util.MybatisUtil;
 
 import javax.swing.*;
@@ -24,7 +14,6 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.List;
 
 /**
  * <pre>
@@ -116,7 +105,6 @@ public class MessageManageListener {
 
                             tableModel.removeRow(selectedRow);
                         }
-                        MessageEditForm.init(null);
                     }
                 }
             } catch (Exception e1) {
@@ -134,59 +122,11 @@ public class MessageManageListener {
         });
 
         // 切换账号事件
-        MessageManageForm.getInstance().getAccountSwitchComboBox().addItemListener(e -> {
-            if (MessageManageForm.accountSwitchComboBoxListenIgnore) {
-                return;
-            }
+        MessageManageForm.getInstance().getAccountComboBox().addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 String accountName = e.getItem().toString();
 
-                int msgType = App.config.getMsgType();
-                SettingForm settingForm = SettingForm.getInstance();
-
-                switch (msgType) {
-                    case MessageTypeEnum.MP_TEMPLATE_CODE:
-                    case MessageTypeEnum.MP_SUBSCRIBE_CODE:
-                        MpTemplateMsgForm.clearAllField();
-                    case MessageTypeEnum.KEFU_CODE:
-                        KefuMsgForm.clearAllField();
-                    case MessageTypeEnum.KEFU_PRIORITY_CODE:
-                        KefuMsgForm.clearAllField();
-                        MpTemplateMsgForm.clearAllField();
-                        // 多账号切换-公众号
-                        List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(UiConsts.WX_ACCOUNT_TYPE_MP, accountName);
-                        if (wxAccountList.size() > 0) {
-                            TWxAccount tWxAccount = wxAccountList.get(0);
-                            settingForm.getMpAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
-                            App.config.setWechatMpName(tWxAccount.getAccountName());
-                            App.config.setWxAccountId(tWxAccount.getId());
-                            App.config.save();
-                        }
-                        MessageEditForm.getInstance().getMsgNameField().setText("");
-                        MessageManageForm.initMessageList();
-                        break;
-
-                    case MessageTypeEnum.MA_SUBSCRIBE_CODE:
-                        MaSubscribeMsgForm.clearAllField();
-                    case MessageTypeEnum.MA_TEMPLATE_CODE:
-                    case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE:
-                        MaSubscribeMsgForm.clearAllField();
-                        MpTemplateMsgForm.clearAllField();
-                        // 多账号切换-小程序
-                        wxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(UiConsts.WX_ACCOUNT_TYPE_MA, accountName);
-                        if (wxAccountList.size() > 0) {
-                            TWxAccount tWxAccount = wxAccountList.get(0);
-                            settingForm.getMaAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
-                            App.config.setMiniAppName(tWxAccount.getAccountName());
-                            App.config.setWxAccountId(tWxAccount.getId());
-                            App.config.save();
-                        }
-                        MessageEditForm.getInstance().getMsgNameField().setText("");
-                        MessageManageForm.initMessageList();
-                        break;
-                    default:
-                        break;
-                }
+                MessageManageForm.initMessageList();
             }
         });
     }

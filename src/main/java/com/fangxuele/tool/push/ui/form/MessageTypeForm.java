@@ -134,7 +134,6 @@ public class MessageTypeForm {
         AccountEditForm.switchMainPanel();
         AccountManageForm.init();
         AccountEditForm.init(null);
-        initMessageManageFormLayOut(msgType);
         initMessageEditFormLayOut(msgType);
         initMemberFormLayOut(msgType);
         MessageEditForm.switchMsgType(msgType);
@@ -146,14 +145,6 @@ public class MessageTypeForm {
         MemberForm.init();
         PushHisForm.init();
         ScheduleForm.init();
-    }
-
-    private static void initMessageManageFormLayOut(int msgType) {
-        if (MessageTypeEnum.isWxMaOrMpType(msgType)) {
-            MessageManageForm.getInstance().getAccountSwitchPanel().setVisible(true);
-        } else {
-            MessageManageForm.getInstance().getAccountSwitchPanel().setVisible(false);
-        }
     }
 
     private static void initMessageEditFormLayOut(int msgType) {

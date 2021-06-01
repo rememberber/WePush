@@ -208,8 +208,9 @@ public class KefuPriorityMsgForm implements IMsgForm {
     /**
      * 清空所有界面字段
      */
-    public static void clearAllField() {
-        KefuMsgForm.clearAllField();
-        MpTemplateMsgForm.clearAllField();
+    @Override
+    public void clearAllField() {
+        KefuMsgForm.getInstance().clearAllField();
+        MpTemplateMsgForm.getInstance().clearAllField();
     }
 }

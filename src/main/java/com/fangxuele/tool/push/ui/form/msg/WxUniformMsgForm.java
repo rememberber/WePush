@@ -234,8 +234,9 @@ public class WxUniformMsgForm implements IMsgForm {
     /**
      * 清空所有界面字段
      */
-    public static void clearAllField() {
-        MaSubscribeMsgForm.clearAllField();
-        MpTemplateMsgForm.clearAllField();
+    @Override
+    public void clearAllField() {
+        MaSubscribeMsgForm.getInstance().clearAllField();
+        MpTemplateMsgForm.getInstance().clearAllField();
     }
 }

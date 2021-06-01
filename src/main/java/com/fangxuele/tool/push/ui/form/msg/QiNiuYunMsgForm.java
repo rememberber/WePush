@@ -234,7 +234,8 @@ public class QiNiuYunMsgForm implements IMsgForm {
     /**
      * 清空所有界面字段
      */
-    public static void clearAllField() {
+    @Override
+    public void clearAllField() {
         getInstance().getMsgTemplateIdTextField().setText("");
         getInstance().getTemplateDataNameTextField().setText("");
         getInstance().getTemplateDataValueTextField().setText("");

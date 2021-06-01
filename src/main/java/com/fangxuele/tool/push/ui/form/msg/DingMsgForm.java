@@ -340,7 +340,8 @@ public class DingMsgForm implements IMsgForm {
     /**
      * 清空所有界面字段
      */
-    public static void clearAllField() {
+    @Override
+    public void clearAllField() {
         getInstance().getContentTextArea().setText("");
         getInstance().getTitleTextField().setText("");
         getInstance().getPicUrlTextField().setText("");

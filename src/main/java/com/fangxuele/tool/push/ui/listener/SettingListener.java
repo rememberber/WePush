@@ -5,25 +5,10 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TWxAccountMapper;
 import com.fangxuele.tool.push.domain.TWxAccount;
-import com.fangxuele.tool.push.logic.msgsender.AliYunMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.BdYunMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.HttpMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.HwYunMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.QiNiuYunMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.TxYunMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.WxMaSubscribeMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
-import com.fangxuele.tool.push.logic.msgsender.YunPianMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.*;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.UiConsts;
-import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
-import com.fangxuele.tool.push.ui.dialog.DingAppDialog;
-import com.fangxuele.tool.push.ui.dialog.MailTestDialog;
-import com.fangxuele.tool.push.ui.dialog.SwitchWxAccountDialog;
-import com.fangxuele.tool.push.ui.dialog.SystemEnvResultDialog;
-import com.fangxuele.tool.push.ui.dialog.WxCpAppDialog;
-import com.fangxuele.tool.push.ui.form.MessageManageForm;
+import com.fangxuele.tool.push.ui.dialog.*;
 import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.ui.form.msg.DingMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
@@ -36,7 +21,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -182,47 +166,6 @@ public class SettingListener {
             dialog.setVisible(true);
         });
 
-        // 公众号切换账号事件
-        settingForm.getMpAccountSwitchComboBox().addItemListener(e -> {
-            if (e.getStateChange() == ItemEvent.SELECTED) {
-                String accountName = e.getItem().toString();
-                List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(UiConsts.WX_ACCOUNT_TYPE_MP, accountName);
-                if (wxAccountList.size() > 0) {
-                    TWxAccount tWxAccount = wxAccountList.get(0);
-                    settingForm.getMpAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
-                    settingForm.getWechatAppIdTextField().setText(tWxAccount.getAppId());
-                    settingForm.getWechatAppSecretPasswordField().setText(tWxAccount.getAppSecret());
-                    settingForm.getWechatTokenPasswordField().setText(tWxAccount.getToken());
-                    settingForm.getWechatAesKeyPasswordField().setText(tWxAccount.getAesKey());
-
-                    App.config.setWechatMpName(tWxAccount.getAccountName());
-                    App.config.setWechatAppId(settingForm.getWechatAppIdTextField().getText());
-                    App.config.setWechatAppSecret(new String(settingForm.getWechatAppSecretPasswordField().getPassword()));
-                    App.config.setWechatToken(new String(settingForm.getWechatTokenPasswordField().getPassword()));
-                    App.config.setWechatAesKey(new String(settingForm.getWechatAesKeyPasswordField().getPassword()));
-
-                    App.config.setMpUseProxy(settingForm.getMpUseProxyCheckBox().isSelected());
-                    App.config.setMpProxyHost(settingForm.getMpProxyHostTextField().getText());
-                    App.config.setMpProxyPort(settingForm.getMpProxyPortTextField().getText());
-                    App.config.setMpProxyUserName(settingForm.getMpProxyUserNameTextField().getText());
-                    App.config.setMpProxyPassword(settingForm.getMpProxyPasswordTextField().getText());
-
-                    App.config.setMpUseOutSideAt(settingForm.getUseOutSideAccessTokenCheckBox().isSelected());
-                    App.config.setMpManualAt(settingForm.getManualAtRadioButton().isSelected());
-                    App.config.setMpApiAt(settingForm.getApiAtRadioButton().isSelected());
-                    App.config.setMpAt(settingForm.getAccessTokenTextField().getText());
-                    App.config.setMpAtExpiresIn(settingForm.getAtExpiresInTextField().getText());
-                    App.config.setMpAtApiUrl(settingForm.getAtApiUrlTextField().getText());
-
-                    App.config.setWxAccountId(tWxAccount.getId());
-                    App.config.save();
-                    MessageManageForm.getInstance().getAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
-                    WxMpTemplateMsgSender.wxMpConfigStorage = null;
-                    WxMpTemplateMsgSender.wxMpService = null;
-                }
-            }
-        });
-
         // 设置-小程序-保存
         settingForm.getSettingMaInfoSaveButton().addActionListener(e -> {
             try {
@@ -287,40 +230,6 @@ public class SettingListener {
             dialog.renderTable();
             dialog.pack();
             dialog.setVisible(true);
-        });
-
-        // 小程序切换账号事件
-        settingForm.getMaAccountSwitchComboBox().addItemListener(e -> {
-            if (e.getStateChange() == ItemEvent.SELECTED) {
-                String accountName = e.getItem().toString();
-                List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(UiConsts.WX_ACCOUNT_TYPE_MA, accountName);
-                if (wxAccountList.size() > 0) {
-                    TWxAccount tWxAccount = wxAccountList.get(0);
-                    settingForm.getMaAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
-                    settingForm.getMiniAppAppIdTextField().setText(tWxAccount.getAppId());
-                    settingForm.getMiniAppAppSecretPasswordField().setText(tWxAccount.getAppSecret());
-                    settingForm.getMiniAppTokenPasswordField().setText(tWxAccount.getToken());
-                    settingForm.getMiniAppAesKeyPasswordField().setText(tWxAccount.getAesKey());
-
-                    App.config.setMiniAppName(accountName);
-                    App.config.setMiniAppAppId(settingForm.getMiniAppAppIdTextField().getText());
-                    App.config.setMiniAppAppSecret(new String(settingForm.getMiniAppAppSecretPasswordField().getPassword()));
-                    App.config.setMiniAppToken(new String(settingForm.getMiniAppTokenPasswordField().getPassword()));
-                    App.config.setMiniAppAesKey(new String(settingForm.getMiniAppAesKeyPasswordField().getPassword()));
-
-                    App.config.setMaUseProxy(settingForm.getMaUseProxyCheckBox().isSelected());
-                    App.config.setMaProxyHost(settingForm.getMaProxyHostTextField().getText());
-                    App.config.setMaProxyPort(settingForm.getMaProxyPortTextField().getText());
-                    App.config.setMaProxyUserName(settingForm.getMaProxyUserNameTextField().getText());
-                    App.config.setMaProxyPassword(settingForm.getMaProxyPasswordTextField().getText());
-
-                    App.config.setWxAccountId(tWxAccount.getId());
-                    App.config.save();
-                    MessageManageForm.getInstance().getAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
-                    WxMaSubscribeMsgSender.wxMaConfigStorage = null;
-                    WxMaSubscribeMsgSender.wxMaService = null;
-                }
-            }
         });
 
         // 企业号-保存

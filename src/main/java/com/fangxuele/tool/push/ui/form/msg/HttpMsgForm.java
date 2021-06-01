@@ -383,7 +383,8 @@ public class HttpMsgForm implements IMsgForm {
     /**
      * 清空所有界面字段
      */
-    public static void clearAllField() {
+    @Override
+    public void clearAllField() {
         getInstance().getMethodComboBox().setSelectedIndex(0);
         getInstance().getUrlTextField().setText("");
         getInstance().getParamNameTextField().setText("");
