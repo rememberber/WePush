@@ -72,6 +72,7 @@ public class NewTaskDialog extends JDialog {
 
     private static Map<String, Integer> msgTypeMap = Maps.newHashMap();
     private static Map<String, Integer> accountMap = Maps.newHashMap();
+    private static Map<String, Integer> messageMap = Maps.newHashMap();
 
     public NewTaskDialog() {
 
@@ -200,12 +201,17 @@ public class NewTaskDialog extends JDialog {
         initMsgTypeComboBoxData();
         // 账号
         initAccountComboBoxData();
+        // 消息
+        initMessageComboBoxData();
     }
 
     /**
      * 初始化消息类型下拉框数据
      */
     private void initMsgTypeComboBoxData() {
+        msgTypeMap.clear();
+        this.msgTypeComboBox.removeAllItems();
+
         msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.HTTP), MessageTypeEnum.HTTP_CODE);
         this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.HTTP));
 
@@ -266,6 +272,8 @@ public class NewTaskDialog extends JDialog {
         Integer selectedMsgType = msgTypeMap.get(selectedMsgTypeStr);
         List<TAccount> tAccounts = accountMapper.selectByMsgType(selectedMsgType);
 
+        accountMap.clear();
+        accountComboBox.removeAllItems();
         for (TAccount tAccount : tAccounts) {
             accountMap.put(tAccount.getAccountName(), tAccount.getId());
             accountComboBox.addItem(tAccount.getAccountName());
@@ -280,106 +288,97 @@ public class NewTaskDialog extends JDialog {
         Integer msgType = msgTypeMap.get(selectedMsgTypeStr);
 
         String selectedAccountStr = (String) accountComboBox.getSelectedItem();
-        Integer selectedAccount = msgTypeMap.get(selectedAccountStr);
+        Integer selectedAccount = accountMap.get(selectedAccountStr);
 
-//        switch (msgType) {
-//            case MessageTypeEnum.KEFU_CODE:
-//                List<TMsgKefu> tMsgKefuList = msgKefuMapper.selectByMsgTypeAndWxAccountId(msgType, wxAccountId);
-//                for (TMsgKefu tMsgKefu : tMsgKefuList) {
-//                    data = new Object[1];
-//                    data[0] = tMsgKefu.getMsgName();
-//                    model.addRow(data);
-//                }
-//                break;
-//            case MessageTypeEnum.KEFU_PRIORITY_CODE:
-//                List<TMsgKefuPriority> tMsgKefuPriorityList = msgKefuPriorityMapper.selectByMsgTypeAndWxAccountId(msgType, wxAccountId);
-//                for (TMsgKefuPriority tMsgKefuPriority : tMsgKefuPriorityList) {
-//                    data = new Object[1];
-//                    data[0] = tMsgKefuPriority.getMsgName();
-//                    model.addRow(data);
-//                }
-//                break;
-//            case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE:
-//                List<TMsgWxUniform> tMsgWxUniformList = wxUniformMapper.selectByMsgTypeAndWxAccountId(msgType, wxAccountId);
-//                for (TMsgWxUniform tMsgWxUniform : tMsgWxUniformList) {
-//                    data = new Object[1];
-//                    data[0] = tMsgWxUniform.getMsgName();
-//                    model.addRow(data);
-//                }
-//                break;
-//            case MessageTypeEnum.MA_TEMPLATE_CODE:
-//                List<TMsgMaTemplate> tMsgMaTemplateList = msgMaTemplateMapper.selectByMsgTypeAndWxAccountId(msgType, wxAccountId);
-//                for (TMsgMaTemplate tMsgMaTemplate : tMsgMaTemplateList) {
-//                    data = new Object[1];
-//                    data[0] = tMsgMaTemplate.getMsgName();
-//                    model.addRow(data);
-//                }
-//                break;
-//            case MessageTypeEnum.MA_SUBSCRIBE_CODE:
-//                List<TMsgMaSubscribe> tMsgMaSubscribeList = msgMaSubscribeMapper.selectByMsgTypeAndWxAccountId(msgType, wxAccountId);
-//                for (TMsgMaSubscribe tMsgMaSubscribe : tMsgMaSubscribeList) {
-//                    data = new Object[1];
-//                    data[0] = tMsgMaSubscribe.getMsgName();
-//                    model.addRow(data);
-//                }
-//                break;
-//            case MessageTypeEnum.MP_TEMPLATE_CODE:
-//                List<TMsgMpTemplate> tMsgMpTemplateList = msgMpTemplateMapper.selectByMsgTypeAndWxAccountId(msgType, wxAccountId);
-//                for (TMsgMpTemplate tMsgMpTemplate : tMsgMpTemplateList) {
-//                    data = new Object[1];
-//                    data[0] = tMsgMpTemplate.getMsgName();
-//                    model.addRow(data);
-//                }
-//                break;
-//            case MessageTypeEnum.MP_SUBSCRIBE_CODE:
-//                List<TMsgMpSubscribe> tMsgMpSubscribeList = msgMpSubscribeMapper.selectByMsgTypeAndWxAccountId(msgType, wxAccountId);
-//                for (TMsgMpSubscribe tMsgMpSubscribe : tMsgMpSubscribeList) {
-//                    data = new Object[1];
-//                    data[0] = tMsgMpSubscribe.getMsgName();
-//                    model.addRow(data);
-//                }
-//                break;
-//            case MessageTypeEnum.EMAIL_CODE:
-//                List<TMsgMail> tMsgMailList = msgMailMapper.selectByMsgType(msgType);
-//                for (TMsgMail tMsgMail : tMsgMailList) {
-//                    data = new Object[1];
-//                    data[0] = tMsgMail.getMsgName();
-//                    model.addRow(data);
-//                }
-//                break;
-//            case MessageTypeEnum.WX_CP_CODE:
-//                List<TMsgWxCp> tMsgWxCpList = msgWxCpMapper.selectByMsgType(msgType);
-//                for (TMsgWxCp tMsgWxCp : tMsgWxCpList) {
-//                    data = new Object[1];
-//                    data[0] = tMsgWxCp.getMsgName();
-//                    model.addRow(data);
-//                }
-//                break;
-//            case MessageTypeEnum.HTTP_CODE:
-//                List<TMsgHttp> tMsgHttpList = msgHttpMapper.selectByMsgType(msgType);
-//                for (TMsgHttp tMsgHttp : tMsgHttpList) {
-//                    data = new Object[1];
-//                    data[0] = tMsgHttp.getMsgName();
-//                    model.addRow(data);
-//                }
-//                break;
-//            case MessageTypeEnum.DING_CODE:
-//                List<TMsgDing> tMsgDingList = msgDingMapper.selectByMsgType(msgType);
-//                for (TMsgDing tMsgDing : tMsgDingList) {
-//                    data = new Object[1];
-//                    data[0] = tMsgDing.getMsgName();
-//                    model.addRow(data);
-//                }
-//                break;
-//            default:
-//                List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgType(msgType);
-//                for (TMsgSms tMsgSms : tMsgSmsList) {
-//                    data = new Object[1];
-//                    data[0] = tMsgSms.getMsgName();
-//                    model.addRow(data);
-//                }
-//                break;
-//        }
+        messageMap.clear();
+        msgComboBox.removeAllItems();
+
+        switch (msgType) {
+            case MessageTypeEnum.KEFU_CODE:
+                List<TMsgKefu> tMsgKefuList = msgKefuMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
+                for (TMsgKefu tMsgKefu : tMsgKefuList) {
+                    messageMap.put(tMsgKefu.getMsgName(), tMsgKefu.getId());
+                    msgComboBox.addItem(tMsgKefu.getMsgName());
+                }
+                break;
+            case MessageTypeEnum.KEFU_PRIORITY_CODE:
+                List<TMsgKefuPriority> tMsgKefuPriorityList = msgKefuPriorityMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
+                for (TMsgKefuPriority tMsgKefuPriority : tMsgKefuPriorityList) {
+                    messageMap.put(tMsgKefuPriority.getMsgName(), tMsgKefuPriority.getId());
+                    msgComboBox.addItem(tMsgKefuPriority.getMsgName());
+                }
+                break;
+            case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE:
+                List<TMsgWxUniform> tMsgWxUniformList = wxUniformMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
+                for (TMsgWxUniform tMsgWxUniform : tMsgWxUniformList) {
+                    messageMap.put(tMsgWxUniform.getMsgName(), tMsgWxUniform.getId());
+                    msgComboBox.addItem(tMsgWxUniform.getMsgName());
+                }
+                break;
+            case MessageTypeEnum.MA_TEMPLATE_CODE:
+                List<TMsgMaTemplate> tMsgMaTemplateList = msgMaTemplateMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
+                for (TMsgMaTemplate tMsgMaTemplate : tMsgMaTemplateList) {
+                    messageMap.put(tMsgMaTemplate.getMsgName(), tMsgMaTemplate.getId());
+                    msgComboBox.addItem(tMsgMaTemplate.getMsgName());
+                }
+                break;
+            case MessageTypeEnum.MA_SUBSCRIBE_CODE:
+                List<TMsgMaSubscribe> tMsgMaSubscribeList = msgMaSubscribeMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
+                for (TMsgMaSubscribe tMsgMaSubscribe : tMsgMaSubscribeList) {
+                    messageMap.put(tMsgMaSubscribe.getMsgName(), tMsgMaSubscribe.getId());
+                    msgComboBox.addItem(tMsgMaSubscribe.getMsgName());
+                }
+                break;
+            case MessageTypeEnum.MP_TEMPLATE_CODE:
+                List<TMsgMpTemplate> tMsgMpTemplateList = msgMpTemplateMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
+                for (TMsgMpTemplate tMsgMpTemplate : tMsgMpTemplateList) {
+                    messageMap.put(tMsgMpTemplate.getMsgName(), tMsgMpTemplate.getId());
+                    msgComboBox.addItem(tMsgMpTemplate.getMsgName());
+                }
+                break;
+            case MessageTypeEnum.MP_SUBSCRIBE_CODE:
+                List<TMsgMpSubscribe> tMsgMpSubscribeList = msgMpSubscribeMapper.selectByMsgTypeAndWxAccountId(msgType, selectedAccount);
+                for (TMsgMpSubscribe tMsgMpSubscribe : tMsgMpSubscribeList) {
+                    messageMap.put(tMsgMpSubscribe.getMsgName(), tMsgMpSubscribe.getId());
+                    msgComboBox.addItem(tMsgMpSubscribe.getMsgName());
+                }
+                break;
+            case MessageTypeEnum.EMAIL_CODE:
+                List<TMsgMail> tMsgMailList = msgMailMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
+                for (TMsgMail tMsgMail : tMsgMailList) {
+                    messageMap.put(tMsgMail.getMsgName(), tMsgMail.getId());
+                    msgComboBox.addItem(tMsgMail.getMsgName());
+                }
+                break;
+            case MessageTypeEnum.WX_CP_CODE:
+                List<TMsgWxCp> tMsgWxCpList = msgWxCpMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
+                for (TMsgWxCp tMsgWxCp : tMsgWxCpList) {
+                    messageMap.put(tMsgWxCp.getMsgName(), tMsgWxCp.getId());
+                    msgComboBox.addItem(tMsgWxCp.getMsgName());
+                }
+                break;
+            case MessageTypeEnum.HTTP_CODE:
+                List<TMsgHttp> tMsgHttpList = msgHttpMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
+                for (TMsgHttp tMsgHttp : tMsgHttpList) {
+                    messageMap.put(tMsgHttp.getMsgName(), tMsgHttp.getId());
+                    msgComboBox.addItem(tMsgHttp.getMsgName());
+                }
+                break;
+            case MessageTypeEnum.DING_CODE:
+                List<TMsgDing> tMsgDingList = msgDingMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
+                for (TMsgDing tMsgDing : tMsgDingList) {
+                    messageMap.put(tMsgDing.getMsgName(), tMsgDing.getId());
+                    msgComboBox.addItem(tMsgDing.getMsgName());
+                }
+                break;
+            default:
+                List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
+                for (TMsgSms tMsgSms : tMsgSmsList) {
+                    messageMap.put(tMsgSms.getMsgName(), tMsgSms.getId());
+                    msgComboBox.addItem(tMsgSms.getMsgName());
+                }
+                break;
+        }
     }
 
     private void onOK() {
