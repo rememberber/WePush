@@ -186,6 +186,19 @@ public class NewTaskDialog extends JDialog {
             }
 
         });
+        msgTypeComboBox.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                initAccountComboBoxData();
+                initMessageComboBoxData();
+                initPeopleComboBoxData();
+            }
+        });
+        accountComboBox.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                initMessageComboBoxData();
+                initPeopleComboBoxData();
+            }
+        });
     }
 
     private void init() {
