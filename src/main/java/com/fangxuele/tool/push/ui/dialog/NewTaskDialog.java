@@ -199,6 +199,14 @@ public class NewTaskDialog extends JDialog {
                 initPeopleComboBoxData();
             }
         });
+        manualTaskRadioButton.addActionListener(e -> {
+            resetTaskType();
+            manualTaskRadioButton.setSelected(true);
+        });
+        scheduleRadioButton.addActionListener(e -> {
+            resetTaskType();
+            scheduleRadioButton.setSelected(true);
+        });
     }
 
     private void init() {
@@ -418,6 +426,24 @@ public class NewTaskDialog extends JDialog {
         }
     }
 
+    private void resetTaskType() {
+        manualTaskRadioButton.setSelected(false);
+        scheduleRadioButton.setSelected(false);
+        triggerRadioButton.setSelected(false);
+    }
+
+    private Integer getTaskType() {
+        if (manualTaskRadioButton.isSelected()) {
+            return 1;
+        } else if (scheduleRadioButton.isSelected()) {
+            return 2;
+        } else if (triggerRadioButton.isSelected()) {
+            return 3;
+        } else {
+            return null;
+        }
+    }
+
     private void onOK() {
         String title = this.titleTextField.getText().trim();
         TTask tTask = taskExtMapper.selectByTitle(title);
@@ -593,6 +619,7 @@ public class NewTaskDialog extends JDialog {
         final Spacer spacer3 = new Spacer();
         panel6.add(spacer3, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         manualTaskRadioButton = new JRadioButton();
+        manualTaskRadioButton.setSelected(true);
         manualTaskRadioButton.setText("手动任务");
         panel6.add(manualTaskRadioButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         scheduleRadioButton = new JRadioButton();
