@@ -55,6 +55,7 @@ public class NewTaskDialog extends JDialog {
     private static TTaskMapper taskMapper = MybatisUtil.getSqlSession().getMapper(TTaskMapper.class);
     private static TTaskExtMapper taskExtMapper = MybatisUtil.getSqlSession().getMapper(TTaskExtMapper.class);
     private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
+    private static TPeopleMapper peopleMapper = MybatisUtil.getSqlSession().getMapper(TPeopleMapper.class);
 
     private static TMsgKefuMapper msgKefuMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuMapper.class);
     private static TMsgKefuPriorityMapper msgKefuPriorityMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuPriorityMapper.class);
@@ -73,6 +74,7 @@ public class NewTaskDialog extends JDialog {
     private static Map<String, Integer> msgTypeMap = Maps.newHashMap();
     private static Map<String, Integer> accountMap = Maps.newHashMap();
     private static Map<String, Integer> messageMap = Maps.newHashMap();
+    private static Map<String, Integer> peopleMap = Maps.newHashMap();
 
     public NewTaskDialog() {
 
@@ -203,6 +205,8 @@ public class NewTaskDialog extends JDialog {
         initAccountComboBoxData();
         // 消息
         initMessageComboBoxData();
+        // 人群
+        initPeopleComboBoxData();
     }
 
     /**
@@ -378,6 +382,26 @@ public class NewTaskDialog extends JDialog {
                     msgComboBox.addItem(tMsgSms.getMsgName());
                 }
                 break;
+        }
+    }
+
+    /**
+     * 初始化人群下拉框数据
+     */
+    private void initPeopleComboBoxData() {
+        String selectedMsgTypeStr = (String) msgTypeComboBox.getSelectedItem();
+        Integer msgType = msgTypeMap.get(selectedMsgTypeStr);
+
+        String selectedAccountStr = (String) accountComboBox.getSelectedItem();
+        Integer selectedAccount = accountMap.get(selectedAccountStr);
+
+        peopleMap.clear();
+        peopleComboBox.removeAllItems();
+
+        List<TPeople> tPeopleList = peopleMapper.selectByMsgTypeAndAccountId(String.valueOf(msgType), selectedAccount);
+        for (TPeople tPeople : tPeopleList) {
+            peopleMap.put(tPeople.getPeopleName(), tPeople.getId());
+            peopleComboBox.addItem(tPeople.getPeopleName());
         }
     }
 
