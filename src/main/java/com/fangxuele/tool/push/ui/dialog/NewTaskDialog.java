@@ -4,6 +4,7 @@ import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.*;
 import com.fangxuele.tool.push.domain.*;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.logic.TaskTypeEnum;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
@@ -33,8 +34,8 @@ public class NewTaskDialog extends JDialog {
     private JComboBox msgComboBox;
     private JComboBox peopleComboBox;
     private JRadioButton manualTaskRadioButton;
-    private JRadioButton scheduleRadioButton;
-    private JRadioButton triggerRadioButton;
+    private JRadioButton scheduleTaskRadioButton;
+    private JRadioButton triggerTaskRadioButton;
     private JPanel schedulePanel;
     private JRadioButton runAtThisTimeRadioButton;
     private JTextField startAtThisTimeTextField;
@@ -202,10 +203,12 @@ public class NewTaskDialog extends JDialog {
         manualTaskRadioButton.addActionListener(e -> {
             resetTaskType();
             manualTaskRadioButton.setSelected(true);
+            schedulePanel.setVisible(false);
         });
-        scheduleRadioButton.addActionListener(e -> {
+        scheduleTaskRadioButton.addActionListener(e -> {
             resetTaskType();
-            scheduleRadioButton.setSelected(true);
+            scheduleTaskRadioButton.setSelected(true);
+            schedulePanel.setVisible(true);
         });
     }
 
@@ -217,6 +220,7 @@ public class NewTaskDialog extends JDialog {
     private void initUI() {
         scrollPane.getVerticalScrollBar().setUnitIncrement(15);
         scrollPane.getVerticalScrollBar().setDoubleBuffered(true);
+        schedulePanel.setVisible(false);
     }
 
     private void initData() {
@@ -428,17 +432,17 @@ public class NewTaskDialog extends JDialog {
 
     private void resetTaskType() {
         manualTaskRadioButton.setSelected(false);
-        scheduleRadioButton.setSelected(false);
-        triggerRadioButton.setSelected(false);
+        scheduleTaskRadioButton.setSelected(false);
+        triggerTaskRadioButton.setSelected(false);
     }
 
     private Integer getTaskType() {
         if (manualTaskRadioButton.isSelected()) {
-            return 1;
-        } else if (scheduleRadioButton.isSelected()) {
-            return 2;
-        } else if (triggerRadioButton.isSelected()) {
-            return 3;
+            return TaskTypeEnum.MANUAL_TASK_CODE;
+        } else if (scheduleTaskRadioButton.isSelected()) {
+            return TaskTypeEnum.SCHEDULE_TASK_CODE;
+        } else if (triggerTaskRadioButton.isSelected()) {
+            return TaskTypeEnum.TRIGGER_TASK_CODE;
         } else {
             return null;
         }
@@ -622,13 +626,13 @@ public class NewTaskDialog extends JDialog {
         manualTaskRadioButton.setSelected(true);
         manualTaskRadioButton.setText("手动任务");
         panel6.add(manualTaskRadioButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        scheduleRadioButton = new JRadioButton();
-        scheduleRadioButton.setText("定时任务");
-        panel6.add(scheduleRadioButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        triggerRadioButton = new JRadioButton();
-        triggerRadioButton.setEnabled(false);
-        triggerRadioButton.setText("触发任务");
-        panel6.add(triggerRadioButton, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        scheduleTaskRadioButton = new JRadioButton();
+        scheduleTaskRadioButton.setText("定时任务");
+        panel6.add(scheduleTaskRadioButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        triggerTaskRadioButton = new JRadioButton();
+        triggerTaskRadioButton.setEnabled(false);
+        triggerTaskRadioButton.setText("触发任务");
+        panel6.add(triggerTaskRadioButton, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel7 = new JPanel();
         panel7.setLayout(new GridLayoutManager(2, 2, new Insets(10, 10, 10, 10), -1, -1));
         panel3.add(panel7, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
