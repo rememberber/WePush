@@ -448,6 +448,13 @@ public class NewTaskDialog extends JDialog {
         }
     }
 
+    private void resetScheduleRadio() {
+        runAtThisTimeRadioButton.setSelected(false);
+        runPerDayRadioButton.setSelected(false);
+        runPerWeekRadioButton.setSelected(false);
+        cronRadioButton.setSelected(false);
+    }
+
     private void onOK() {
         String title = this.titleTextField.getText().trim();
         TTask tTask = taskExtMapper.selectByTitle(title);
