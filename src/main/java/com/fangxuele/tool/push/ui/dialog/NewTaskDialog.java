@@ -13,6 +13,8 @@ import com.google.common.collect.Maps;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -21,6 +23,8 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -76,6 +80,8 @@ public class NewTaskDialog extends JDialog {
     private static Map<String, Integer> accountMap = Maps.newHashMap();
     private static Map<String, Integer> messageMap = Maps.newHashMap();
     private static Map<String, Integer> peopleMap = Maps.newHashMap();
+
+    private static final String CRON_DATE_FORMAT = "ss mm HH dd MM ? yyyy";
 
     public NewTaskDialog() {
 
@@ -209,6 +215,22 @@ public class NewTaskDialog extends JDialog {
             resetTaskType();
             scheduleTaskRadioButton.setSelected(true);
             schedulePanel.setVisible(true);
+        });
+        runAtThisTimeRadioButton.addActionListener(e -> {
+            resetScheduleRadio();
+            runAtThisTimeRadioButton.setSelected(true);
+        });
+        runPerDayRadioButton.addActionListener(e -> {
+            resetScheduleRadio();
+            runPerDayRadioButton.setSelected(true);
+        });
+        runPerWeekRadioButton.addActionListener(e -> {
+            resetScheduleRadio();
+            runPerWeekRadioButton.setSelected(true);
+        });
+        cronRadioButton.addActionListener(e -> {
+            resetScheduleRadio();
+            cronRadioButton.setSelected(true);
         });
     }
 
@@ -453,6 +475,60 @@ public class NewTaskDialog extends JDialog {
         runPerDayRadioButton.setSelected(false);
         runPerWeekRadioButton.setSelected(false);
         cronRadioButton.setSelected(false);
+    }
+
+    private String getCron() throws ParseException {
+        String cron = null;
+        if (runAtThisTimeRadioButton.isSelected()) {
+            String startAtThisTime = startAtThisTimeTextField.getText().trim();
+            Date date = DateUtils.parseDate(startAtThisTime, "yyyy-MM-dd HH:mm:ss");
+            cron = DateFormatUtils.format(date, CRON_DATE_FORMAT);
+        } else if (runPerDayRadioButton.isSelected()) {
+            String startPerDay = startPerDayTextField.getText().replace("；", ";");
+            String[] split = startPerDay.split(":");
+            cron = split[2] + " " + split[1] + " " + split[0] + " * * ? ";
+        } else if (runPerWeekRadioButton.isSelected()) {
+            String startPerWeek = startPerWeekTextField.getText().replace("；", ";");
+            String[] split = startPerWeek.split(":");
+
+            String selectedWeek = (String) schedulePerWeekComboBox.getSelectedItem();
+
+            cron = split[2] + " " + split[1] + " " + split[0] + " ? * " + getWeekEn(selectedWeek);
+        } else if (cronRadioButton.isSelected()) {
+            cron = cronTextField.getText().trim();
+        }
+        return cron;
+    }
+
+    private String getWeekEn(String week) {
+        String weekEn;
+        // MON TUE WED THU FRI SAT SUN
+        switch (week) {
+            case "一":
+                weekEn = "MON";
+                break;
+            case "二":
+                weekEn = "TUE";
+                break;
+            case "三":
+                weekEn = "WED";
+                break;
+            case "四":
+                weekEn = "THU";
+                break;
+            case "五":
+                weekEn = "FRI";
+                break;
+            case "六":
+                weekEn = "SAT";
+                break;
+            case "日":
+                weekEn = "SUN";
+                break;
+            default:
+                weekEn = null;
+        }
+        return weekEn;
     }
 
     private void onOK() {
