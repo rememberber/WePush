@@ -13,6 +13,8 @@ import com.google.common.collect.Maps;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
@@ -28,6 +30,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 public class NewTaskDialog extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
@@ -539,22 +542,32 @@ public class NewTaskDialog extends JDialog {
                     JOptionPane.INFORMATION_MESSAGE);
             return;
         } else {
-            String now = SqliteUtil.nowDateForSqlite();
-            TTask task = new TTask();
-            task.setTitle(title);
-            task.setMsgType("");
-            task.setAccountId(0);
-            task.setMessageId(0);
-            task.setPeopleId(0);
-            task.setTaskType(0);
-            task.setCron("");
-            task.setReimportPeople(0);
-            task.setResultAlert(0);
-            task.setAlertEmails(this.mailResultToTextField.getText().trim());
-            task.setCreateTime(now);
-            task.setModifiedTime(now);
+            try {
+                // TODO 校验
+                String now = SqliteUtil.nowDateForSqlite();
+                TTask task = new TTask();
+                task.setTitle(title);
+                task.setMsgType(String.valueOf(msgTypeMap.get((String) msgTypeComboBox.getSelectedItem())));
+                task.setAccountId(accountMap.get((String) accountComboBox.getSelectedItem()));
+                task.setMessageId(messageMap.get((String) msgComboBox.getSelectedItem()));
+                task.setPeopleId(peopleMap.get((String) peopleComboBox.getSelectedItem()));
+                task.setTaskType(getTaskType());
+                task.setCron(getCron());
+                task.setReimportPeople(reimportCheckBox.isSelected() ? 1 : 0);
+                task.setResultAlert(sendPushResultCheckBox.isSelected() ? 1 : 0);
+                task.setAlertEmails(this.mailResultToTextField.getText().trim());
+                task.setCreateTime(now);
+                task.setModifiedTime(now);
 
-            taskMapper.insert(task);
+                taskMapper.insert(task);
+
+                JOptionPane.showMessageDialog(this, "保存成功！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e) {
+                log.error("新建任务异常:{}", ExceptionUtils.getStackTrace(e));
+                JOptionPane.showMessageDialog(this, "新建任务失败！\n" + e.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+            }
         }
         dispose();
     }
