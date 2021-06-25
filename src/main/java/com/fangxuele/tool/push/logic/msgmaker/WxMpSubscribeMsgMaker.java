@@ -77,7 +77,7 @@ public class WxMpSubscribeMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
         VelocityContext velocityContext = getVelocityContext(msgData);
         String templateUrlEvaluated = TemplateUtil.evaluate(templateUrl, velocityContext);
-        wxMessageTemplate.setUrl(templateUrlEvaluated);
+        wxMessageTemplate.setPage(templateUrlEvaluated);
         String miniAppPagePathEvaluated = TemplateUtil.evaluate(miniAppPagePath, velocityContext);
         WxMpSubscribeMessage.MiniProgram miniProgram = new WxMpSubscribeMessage.MiniProgram(miniAppId, miniAppPagePathEvaluated, false);
         wxMessageTemplate.setMiniProgram(miniProgram);
