@@ -287,7 +287,7 @@
                               </component>
                             </children>
                           </grid>
-                          <grid id="b86d2" binding="importFromWeixinPanel" layout-manager="GridLayoutManager" row-count="4" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                          <grid id="b86d2" binding="importFromWeixinPanel" layout-manager="GridLayoutManager" row-count="5" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                             <margin top="0" left="15" bottom="0" right="5"/>
                             <constraints>
                               <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -307,7 +307,7 @@
                               </component>
                               <component id="2341f" class="javax.swing.JButton" binding="memberImportAllButton">
                                 <constraints>
-                                  <grid row="3" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                  <grid row="4" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                                 </constraints>
                                 <properties>
                                   <font style="0"/>
@@ -343,6 +343,16 @@
                                   <font style="0"/>
                                   <icon value="icon/import_dark.png"/>
                                   <text value="导入选择的标签分组-取交集"/>
+                                </properties>
+                              </component>
+                              <component id="464e2" class="javax.swing.JButton" binding="memberImportTagExceptButton">
+                                <constraints>
+                                  <grid row="3" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                                <properties>
+                                  <font style="0"/>
+                                  <icon value="icon/remove_dark.png"/>
+                                  <text value="排除选择的标签分组"/>
                                 </properties>
                               </component>
                               <component id="bf25b" class="javax.swing.JLabel">

@@ -247,6 +247,33 @@ public class MemberListener {
             }
         }));
 
+        // 公众号-排除选择的标签分组用户按钮事件
+        memberForm.getMemberImportTagExceptButton().addActionListener(e -> ThreadUtil.execute(() -> {
+            try {
+                if (memberForm.getMemberImportTagComboBox().getSelectedItem() != null
+                        && StringUtils.isNotEmpty(memberForm.getMemberImportTagComboBox().getSelectedItem().toString())) {
+
+                    long selectedTagId = userTagMap.get(memberForm.getMemberImportTagComboBox().getSelectedItem());
+                    removeMpUserListByTag(selectedTagId);
+                    renderMemberListTable();
+                    JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(memberPanel, "请先选择需要导入的标签！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+            } catch (WxErrorException e1) {
+                JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+                e1.printStackTrace();
+            } finally {
+                progressBar.setIndeterminate(false);
+                progressBar.setValue(progressBar.getMaximum());
+                progressBar.setVisible(false);
+            }
+        }));
+
         // 公众号-清空本地缓存按钮事件
         memberForm.getClearDbCacheButton().addActionListener(e -> {
             int count = tWxMpUserMapper.deleteAll();
@@ -976,6 +1003,63 @@ public class MemberListener {
                 openIds.removeAll(tagUserSet);
                 tagUserSet.addAll(openIds);
             }
+        }
+
+        PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+        for (String openId : tagUserSet) {
+            PushData.allUser.add(new String[]{openId});
+        }
+
+        memberCountLabel.setText(String.valueOf(PushData.allUser.size()));
+        progressBar.setIndeterminate(false);
+        progressBar.setValue(progressBar.getMaximum());
+
+    }
+
+    /**
+     * 排除所选标签
+     *
+     * @param tagId
+     * @throws WxErrorException
+     */
+    private static void removeMpUserListByTag(long tagId) throws WxErrorException {
+        JProgressBar progressBar = MemberForm.getInstance().getMemberTabImportProgressBar();
+        JLabel memberCountLabel = MemberForm.getInstance().getMemberTabCountLabel();
+
+        progressBar.setVisible(true);
+        progressBar.setIndeterminate(true);
+
+        WxMpService wxMpService = WxMpTemplateMsgSender.getWxMpService();
+        if (wxMpService.getWxMpConfigStorage() == null) {
+            return;
+        }
+
+        WxTagListUser wxTagListUser = wxMpService.getUserTagService().tagListUser(tagId, "");
+
+        ConsoleUtil.consoleWithLog("拉取的OPENID个数：" + wxTagListUser.getCount());
+
+        if (wxTagListUser.getCount() == 0) {
+            return;
+        }
+
+        List<String> openIds = wxTagListUser.getData().getOpenidList();
+
+        if (tagUserSet == null) {
+            tagUserSet = Collections.synchronizedSet(new HashSet<>());
+            openIds.forEach(tagUserSet::remove);
+        }
+
+        while (StringUtils.isNotEmpty(wxTagListUser.getNextOpenid())) {
+            wxTagListUser = wxMpService.getUserTagService().tagListUser(tagId, wxTagListUser.getNextOpenid());
+
+            ConsoleUtil.consoleWithLog("拉取的OPENID个数：" + wxTagListUser.getCount());
+
+            if (wxTagListUser.getCount() == 0) {
+                break;
+            }
+            openIds = wxTagListUser.getData().getOpenidList();
+
+            openIds.forEach(tagUserSet::remove);
         }
 
         PushData.allUser = Collections.synchronizedList(new ArrayList<>());
