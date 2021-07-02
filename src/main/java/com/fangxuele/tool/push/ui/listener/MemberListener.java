@@ -35,11 +35,7 @@ import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.ui.form.msg.DingMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
-import com.fangxuele.tool.push.util.ConsoleUtil;
-import com.fangxuele.tool.push.util.FileCharSetUtil;
-import com.fangxuele.tool.push.util.HikariUtil;
-import com.fangxuele.tool.push.util.JTableUtil;
-import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.*;
 import com.google.common.collect.Maps;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
@@ -65,21 +61,10 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -890,7 +875,6 @@ public class MemberListener {
      * 按标签拉取公众平台用户列表
      *
      * @param tagId
-     * @param retain 是否取交集
      * @throws WxErrorException
      */
     public static void getMpUserListByTag(Long tagId) throws WxErrorException {
@@ -1044,10 +1028,8 @@ public class MemberListener {
 
         List<String> openIds = wxTagListUser.getData().getOpenidList();
 
-        if (tagUserSet == null) {
-            tagUserSet = Collections.synchronizedSet(new HashSet<>());
-            openIds.forEach(tagUserSet::remove);
-        }
+        tagUserSet = PushData.allUser.stream().map(e -> e[0]).collect(Collectors.toSet());
+        openIds.forEach(tagUserSet::remove);
 
         while (StringUtils.isNotEmpty(wxTagListUser.getNextOpenid())) {
             wxTagListUser = wxMpService.getUserTagService().tagListUser(tagId, wxTagListUser.getNextOpenid());
