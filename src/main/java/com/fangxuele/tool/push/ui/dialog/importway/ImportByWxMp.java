@@ -368,8 +368,8 @@ public class ImportByWxMp extends JDialog {
                 }
                 if (dialog.getImportOptionBasicInfoCheckBox().isSelected()) {
                     varData.add(wxMpUser.getNickname());
-                    varData.add(wxMpUser.getSexDesc());
-                    varData.add(wxMpUser.getCountry() + "-" + wxMpUser.getProvince() + "-" + wxMpUser.getCity());
+                    varData.add("");
+                    varData.add("");
                     varData.add(DateFormatUtils.format(wxMpUser.getSubscribeTime() * 1000, "yyyy-MM-dd HH:mm:ss"));
                 }
             } else {

@@ -1,6 +1,6 @@
 package com.fangxuele.tool.push.logic;
 
-import cn.hutool.core.date.BetweenFormater;
+import cn.hutool.core.date.BetweenFormatter;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.json.JSONUtil;
@@ -18,13 +18,7 @@ import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.logic.msgsender.SendResult;
 import com.fangxuele.tool.push.ui.UiConsts;
-import com.fangxuele.tool.push.ui.form.MainWindow;
-import com.fangxuele.tool.push.ui.form.MemberForm;
-import com.fangxuele.tool.push.ui.form.MessageEditForm;
-import com.fangxuele.tool.push.ui.form.PushForm;
-import com.fangxuele.tool.push.ui.form.PushHisForm;
-import com.fangxuele.tool.push.ui.form.ScheduleForm;
-import com.fangxuele.tool.push.ui.form.SettingForm;
+import com.fangxuele.tool.push.ui.form.*;
 import com.fangxuele.tool.push.ui.listener.MemberListener;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
@@ -42,11 +36,7 @@ import javax.swing.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -391,7 +381,7 @@ public class PushControl {
 
             contentBuilder.append("<p>开始时间：").append(DateFormatUtils.format(new Date(PushData.startTime), "yyyy-MM-dd HH:mm:ss")).append("</p>");
             contentBuilder.append("<p>完毕时间：").append(DateFormatUtils.format(new Date(PushData.endTime), "yyyy-MM-dd HH:mm:ss")).append("</p>");
-            contentBuilder.append("<p>总耗时：").append(DateUtil.formatBetween(PushData.endTime - PushData.startTime, BetweenFormater.Level.SECOND)).append("</p>");
+            contentBuilder.append("<p>总耗时：").append(DateUtil.formatBetween(PushData.endTime - PushData.startTime, BetweenFormatter.Level.SECOND)).append("</p>");
             contentBuilder.append("<br/>");
 
             contentBuilder.append("<p>详情请查看附件</p>");

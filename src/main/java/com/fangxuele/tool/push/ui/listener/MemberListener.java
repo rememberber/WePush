@@ -1089,8 +1089,8 @@ public class MemberListener {
                         }
                         if (memberForm.getImportOptionBasicInfoCheckBox().isSelected()) {
                             rowDataList.add(wxMpUser.getNickname());
-                            rowDataList.add(wxMpUser.getSexDesc());
-                            rowDataList.add(wxMpUser.getCountry() + "-" + wxMpUser.getProvince() + "-" + wxMpUser.getCity());
+                            rowDataList.add("");
+                            rowDataList.add("");
                             rowDataList.add(DateFormatUtils.format(wxMpUser.getSubscribeTime() * 1000, "yyyy-MM-dd HH:mm:ss"));
                         }
                     } else {
