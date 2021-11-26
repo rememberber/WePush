@@ -1,10 +1,14 @@
 package com.fangxuele.tool.push.ui.form;
 
+import com.fangxuele.tool.push.dao.TTaskExtMapper;
+import com.fangxuele.tool.push.dao.TTaskMapper;
+import com.fangxuele.tool.push.domain.TTask;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.component.TableInCellTaskDetailButtonColumn;
 import com.fangxuele.tool.push.ui.component.TableInCellTaskExecuteButtonColumn;
 import com.fangxuele.tool.push.ui.component.TableInCellTaskModifyButtonColumn;
 import com.fangxuele.tool.push.util.JTableUtil;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -17,6 +21,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.text.StyleContext;
 import java.awt.*;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -49,6 +54,9 @@ public class TaskForm {
 
     private static TaskForm taskForm;
 
+    private static TTaskMapper taskMapper = MybatisUtil.getSqlSession().getMapper(TTaskMapper.class);
+    private static TTaskExtMapper taskExtMapper = MybatisUtil.getSqlSession().getMapper(TTaskExtMapper.class);
+
     private TaskForm() {
         UndoUtil.register(this);
     }
@@ -71,7 +79,7 @@ public class TaskForm {
         JTable taskListTable = taskForm.getTaskListTable();
 
         // 任务数据列表
-        String[] headerNames = {"id", "任务名称", "状态", "进度", "成功", "失败", "上次开始", "上次结束", "耗时(分)", "运行周期", "消息类型", "账号", "消息名称", "人群", "详情", "修改", "执行"};
+        String[] headerNames = {"id", "任务名称", "状态", "上次开始", "上次结束", "运行周期", "消息类型", "消息名称", "人群", "详情", "修改", "执行"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
         taskListTable.setModel(model);
 
@@ -98,11 +106,18 @@ public class TaskForm {
 
         Object[] data;
 
-        for (int i = 0; i < 28; i++) {
-            data = new Object[3];
-            data[0] = i;
-            data[1] = "peopleData.getVarData()peopleData.getVarData()peopleData.getVarData()";
-            data[2] = "peopleData.getId()";
+        List<TTask> taskList = taskExtMapper.selectAll();
+        for (TTask task : taskList) {
+            data = new Object[9];
+            data[0] = task.getId();
+            data[1] = task.getTitle();
+            data[2] = "";
+            data[3] = "";
+            data[4] = "";
+            data[5] = "";
+            data[6] = task.getMsgType();
+            data[7] = task.getMessageId();
+            data[8] = task.getPeopleId();
             model.addRow(data);
         }
         // 隐藏id列

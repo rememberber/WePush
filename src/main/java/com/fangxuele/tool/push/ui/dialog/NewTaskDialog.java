@@ -6,6 +6,7 @@ import com.fangxuele.tool.push.domain.*;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.TaskTypeEnum;
 import com.fangxuele.tool.push.ui.UiConsts;
+import com.fangxuele.tool.push.ui.form.TaskForm;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
@@ -92,7 +93,7 @@ public class NewTaskDialog extends JDialog {
         setContentPane(contentPane);
         setModal(true);
 
-        ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.4, 0.8);
+        ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.5, 0.8);
 
         getRootPane().setDefaultButton(buttonOK);
 
@@ -560,6 +561,8 @@ public class NewTaskDialog extends JDialog {
                 task.setModifiedTime(now);
 
                 taskMapper.insert(task);
+
+                TaskForm.initTaskListTable();
 
                 JOptionPane.showMessageDialog(this, "保存成功！", "提示",
                         JOptionPane.INFORMATION_MESSAGE);

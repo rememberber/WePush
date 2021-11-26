@@ -27,4 +27,10 @@
         from t_task
         where title = #{title,jdbcType=VARCHAR}
     </select>
+    <select id="selectAll" resultType="com.fangxuele.tool.push.domain.TTask">
+        select
+        <include refid="Base_Column_List"/>
+        from t_task
+        order by modified_time desc
+    </select>
 </mapper>
