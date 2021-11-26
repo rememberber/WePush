@@ -36,7 +36,7 @@
         <qcloudsms.version>1.0.6</qcloudsms.version>
         <yunpian-java-sdk.version>1.2.7</yunpian-java-sdk.version>
         <velocity-engine-core.version>2.2</velocity-engine-core.version>
-        <lombok.version>1.18.14</lombok.version>
+        <lombok.version>1.18.22</lombok.version>
         <mybatis.version>3.5.6</mybatis.version>
         <sqlite-jdbc.version>3.34.0</sqlite-jdbc.version>
         <junit.version>4.13.1</junit.version>
@@ -47,7 +47,7 @@
         <aliyun-java-sdk-dysmsapi.version>1.1.0</aliyun-java-sdk-dysmsapi.version>
         <bce-java-sdk.version>0.10.134</bce-java-sdk.version>
         <qiniu-java-sdk.version>7.3.0</qiniu-java-sdk.version>
-        <flatlaf.version>1.0</flatlaf.version>
+        <flatlaf.version>1.6.4</flatlaf.version>
     </properties>
 
     <dependencies>
@@ -410,52 +410,70 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
 
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.1.0</version>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.2</version>
+                <groupId>io.github.fvarrui</groupId>
+                <artifactId>javapackager</artifactId>
+                <version>1.6.2</version>
                 <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>com.fangxuele.tool.push.App</mainClass>
-                        </manifest>
-                    </archive>
+                    <bundleJre>true</bundleJre>
+                    <mainClass>com.fangxuele.tool.push.App</mainClass>
+                    <generateInstaller>true</generateInstaller>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.1.1</version>
                 <executions>
                     <execution>
-                        <id>copy-dependencies</id>
+                        <id>bundling-for-windows</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>copy-dependencies</goal>
+                            <goal>package</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <platform>windows</platform>
+                            <createZipball>true</createZipball>
+                            <!--                            <administratorRequired>true</administratorRequired>-->
+                            <winConfig>
+
+                                <!-- general properties -->
+                                <generateSetup>true</generateSetup>
+                                <generateMsi>true</generateMsi>
+                                <generateMsm>true</generateMsm>
+
+                                <!-- setup generation properties -->
+                                <setupMode>installForAllUsers</setupMode>
+                                <createDesktopIconTask>true</createDesktopIconTask>
+                                <disableDirPage>false</disableDirPage>
+                                <disableFinishedPage>false</disableFinishedPage>
+                                <setupLanguages>
+                                    <english>compiler:Default.isl</english>
+                                    <!--                                    <spanish>compiler:Languages\Chinese.isl</spanish>-->
+                                </setupLanguages>
+                            </winConfig>
                         </configuration>
                     </execution>
+                    <!--                    <execution>-->
+                    <!--                        <id>bundling-for-linux</id>-->
+                    <!--                        <phase>package</phase>-->
+                    <!--                        <goals>-->
+                    <!--                            <goal>package</goal>-->
+                    <!--                        </goals>-->
+                    <!--                        <configuration>-->
+                    <!--                            <platform>linux</platform>-->
+                    <!--                            <createTarball>true</createTarball>-->
+                    <!--                            <jdkPath>X:\\path\to\linux\jdk</jdkPath>-->
+                    <!--                        </configuration>-->
+                    <!--                    </execution>-->
+                    <!--                                        <execution>-->
+                    <!--                                            <id>bundling-for-mac</id>-->
+                    <!--                                            <phase>package</phase>-->
+                    <!--                                            <goals>-->
+                    <!--                                                <goal>package</goal>-->
+                    <!--                                            </goals>-->
+                    <!--                                            <configuration>-->
+                    <!--                                                <platform>mac</platform>-->
+                    <!--                                                <createTarball>true</createTarball>-->
+                    <!--&lt;!&ndash;                                                <jdkPath>X:\\path\to\mac\jdk</jdkPath>&ndash;&gt;-->
+                    <!--                                            </configuration>-->
+                    <!--                                        </execution>-->
                 </executions>
             </plugin>
 
