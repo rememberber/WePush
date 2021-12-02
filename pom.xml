@@ -6,7 +6,7 @@
 
     <groupId>com.fangxuele.tool</groupId>
     <artifactId>WePush</artifactId>
-    <version>1.0</version>
+    <version>4.4.0</version>
     <packaging>jar</packaging>
 
     <name>WePush</name>
@@ -285,11 +285,11 @@
             <artifactId>httpasyncclient</artifactId>
             <version>${httpasyncclient.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>${HikariCP.version}</version>
-        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>com.zaxxer</groupId>-->
+        <!--            <artifactId>HikariCP</artifactId>-->
+        <!--            <version>${HikariCP.version}</version>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
@@ -391,6 +391,10 @@
                     <artifactId>hbase-client</artifactId>
                     <groupId>org.apache.hbase</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>bcprov-jdk15on</artifactId>
+                    <groupId>org.bouncycastle</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
 
@@ -421,35 +425,35 @@
                     <generateInstaller>true</generateInstaller>
                 </configuration>
                 <executions>
-<!--                    <execution>-->
-<!--                        <id>bundling-for-windows</id>-->
-<!--                        <phase>package</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>package</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <platform>windows</platform>-->
-<!--                            <createZipball>true</createZipball>-->
-<!--                            &lt;!&ndash;                            <administratorRequired>true</administratorRequired>&ndash;&gt;-->
-<!--                            <winConfig>-->
+                    <execution>
+                        <id>bundling-for-windows</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                        <configuration>
+                            <platform>windows</platform>
+                            <createZipball>true</createZipball>
+                            <!--                            <administratorRequired>true</administratorRequired>-->
+                            <winConfig>
 
-<!--                                &lt;!&ndash; general properties &ndash;&gt;-->
-<!--                                <generateSetup>true</generateSetup>-->
-<!--                                <generateMsi>true</generateMsi>-->
-<!--                                <generateMsm>true</generateMsm>-->
+                                <!-- general properties -->
+                                <generateSetup>true</generateSetup>
+                                <generateMsi>true</generateMsi>
+                                <generateMsm>true</generateMsm>
 
-<!--                                &lt;!&ndash; setup generation properties &ndash;&gt;-->
-<!--                                <setupMode>installForAllUsers</setupMode>-->
-<!--                                <createDesktopIconTask>true</createDesktopIconTask>-->
-<!--                                <disableDirPage>false</disableDirPage>-->
-<!--                                <disableFinishedPage>false</disableFinishedPage>-->
-<!--                                <setupLanguages>-->
-<!--                                    <english>compiler:Default.isl</english>-->
-<!--                                    &lt;!&ndash;                                    <spanish>compiler:Languages\Chinese.isl</spanish>&ndash;&gt;-->
-<!--                                </setupLanguages>-->
-<!--                            </winConfig>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
+                                <!-- setup generation properties -->
+                                <setupMode>installForAllUsers</setupMode>
+                                <createDesktopIconTask>true</createDesktopIconTask>
+                                <disableDirPage>false</disableDirPage>
+                                <disableFinishedPage>false</disableFinishedPage>
+                                <setupLanguages>
+                                    <english>compiler:Default.isl</english>
+                                    <!--                                    <spanish>compiler:Languages\Chinese.isl</spanish>-->
+                                </setupLanguages>
+                            </winConfig>
+                        </configuration>
+                    </execution>
                     <!--                    <execution>-->
                     <!--                        <id>bundling-for-linux</id>-->
                     <!--                        <phase>package</phase>-->
@@ -462,19 +466,19 @@
                     <!--                            <jdkPath>X:\\path\to\linux\jdk</jdkPath>-->
                     <!--                        </configuration>-->
                     <!--                    </execution>-->
-                                                            <execution>
-                                                                <id>bundling-for-mac</id>
-                                                                <phase>package</phase>
-                                                                <goals>
-                                                                    <goal>package</goal>
-                                                                </goals>
-                                                                <configuration>
-                                                                    <platform>mac</platform>
-                                                                    <createTarball>true</createTarball>
-                                                                    <customizedJre>false</customizedJre>
-                    <!--                                                <jdkPath>X:\\path\to\mac\jdk</jdkPath>-->
-                                                                </configuration>
-                                                            </execution>
+                    <!--                                                            <execution>-->
+                    <!--                                                                <id>bundling-for-mac</id>-->
+                    <!--                                                                <phase>package</phase>-->
+                    <!--                                                                <goals>-->
+                    <!--                                                                    <goal>package</goal>-->
+                    <!--                                                                </goals>-->
+                    <!--                                                                <configuration>-->
+                    <!--                                                                    <platform>mac</platform>-->
+                    <!--                                                                    <createTarball>true</createTarball>-->
+                    <!--                                                                    <customizedJre>false</customizedJre>-->
+                    <!--                    &lt;!&ndash;                                                <jdkPath>X:\\path\to\mac\jdk</jdkPath>&ndash;&gt;-->
+                    <!--                                                                </configuration>-->
+                    <!--                                                            </execution>-->
                 </executions>
             </plugin>
 
