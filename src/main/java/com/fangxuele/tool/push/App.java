@@ -42,6 +42,7 @@ public class App {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
             System.setProperty("apple.awt.application.name", UiConsts.APP_NAME);
             System.setProperty("com.apple.mrj.application.apple.menu.about.name", UiConsts.APP_NAME);
+            System.setProperty("apple.awt.application.appearance", "system");
         }
 
         Init.initTheme();
