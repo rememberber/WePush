@@ -221,18 +221,6 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>com.darcula</groupId>
-            <artifactId>darcula-lnf</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.beautyeye</groupId>
-            <artifactId>beautyeye-lnf</artifactId>
-            <version>1.0</version>
-        </dependency>
-
         <!--文件字符集格式检测-->
         <dependency>
             <groupId>net.sourceforge.cpdetector</groupId>
@@ -487,36 +475,6 @@
                 <artifactId>maven-install-plugin</artifactId>
                 <version>2.5.2</version>
                 <executions>
-                    <execution>
-                        <id>install-beautyeye</id>
-                        <phase>clean</phase>
-                        <configuration>
-                            <file>lib/beautyeye_lnf.jar</file>
-                            <groupId>com.beautyeye</groupId>
-                            <artifactId>beautyeye-lnf</artifactId>
-                            <version>1.0</version>
-                            <packaging>jar</packaging>
-                            <generatePom>true</generatePom>
-                        </configuration>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>install-darcula</id>
-                        <phase>clean</phase>
-                        <configuration>
-                            <file>lib/darcula.jar</file>
-                            <groupId>com.darcula</groupId>
-                            <artifactId>darcula-lnf</artifactId>
-                            <version>1.0</version>
-                            <packaging>jar</packaging>
-                            <generatePom>true</generatePom>
-                        </configuration>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                    </execution>
                     <execution>
                         <id>install-taobao-sdk-auto</id>
                         <phase>clean</phase>

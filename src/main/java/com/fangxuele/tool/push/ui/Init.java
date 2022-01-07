@@ -5,19 +5,7 @@ import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.dialog.FontSizeAdjustDialog;
-import com.fangxuele.tool.push.ui.form.AboutForm;
-import com.fangxuele.tool.push.ui.form.BoostForm;
-import com.fangxuele.tool.push.ui.form.HelpForm;
-import com.fangxuele.tool.push.ui.form.InfinityForm;
-import com.fangxuele.tool.push.ui.form.MainWindow;
-import com.fangxuele.tool.push.ui.form.MemberForm;
-import com.fangxuele.tool.push.ui.form.MessageEditForm;
-import com.fangxuele.tool.push.ui.form.MessageManageForm;
-import com.fangxuele.tool.push.ui.form.MessageTypeForm;
-import com.fangxuele.tool.push.ui.form.PushForm;
-import com.fangxuele.tool.push.ui.form.PushHisForm;
-import com.fangxuele.tool.push.ui.form.ScheduleForm;
-import com.fangxuele.tool.push.ui.form.SettingForm;
+import com.fangxuele.tool.push.ui.form.*;
 import com.fangxuele.tool.push.ui.listener.AboutListener;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.fangxuele.tool.push.util.UIUtil;
@@ -26,7 +14,6 @@ import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.IntelliJTheme;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
@@ -115,20 +102,12 @@ public class Init {
             return;
         }
 
+        UIManager.put("TitlePane.unifiedBackground", true);
+
         try {
             switch (App.config.getTheme()) {
-                case "BeautyEye":
-                    BeautyEyeLNFHelper.launchBeautyEyeLNF();
-                    UIManager.put("RootPane.setupButtonVisible", false);
-                    break;
                 case "系统默认":
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                    break;
-                case "weblaf":
-                case "Darcula":
-                    JFrame.setDefaultLookAndFeelDecorated(false);
-                    JDialog.setDefaultLookAndFeelDecorated(false);
-                    UIManager.setLookAndFeel("com.bulenkov.darcula.DarculaLaf");
                     break;
                 case "Flat Light":
                     if (SystemUtil.isJBR()) {
@@ -157,6 +136,23 @@ public class Init {
                         JDialog.setDefaultLookAndFeelDecorated(true);
                     }
                     UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarculaLaf");
+//                    UIManager.put( "TitlePane.unifiedBackground", true );
+/**
+ If you don't like/want it, you can disable it with:
+ UIManager.put( "TitlePane.useWindowDecorations", false );
+
+ It is also possible to disable only the embedded menu bar (and keep the dark title pane) with:
+ UIManager.put( "TitlePane.menuBarEmbedded", false );
+
+ It is also possible to disable this on command line with following VM options:
+ -Dflatlaf.useWindowDecorations=false
+ -Dflatlaf.menuBarEmbedded=false
+
+ If you have following code in your app, you can remove it (no longer necessary):
+ // enable window decorations
+ JFrame.setDefaultLookAndFeelDecorated( true );
+ JDialog.setDefaultLookAndFeelDecorated( true );
+ **/
                     break;
                 case "Dark purple":
                     if (SystemUtil.isJBR()) {
@@ -183,6 +179,10 @@ public class Init {
                             "/theme/Light.theme.json"));
                     break;
 
+                case "BeautyEye":
+                case "weblaf":
+                case "Darcula":
+                case "Darcula(推荐)":
                 default:
                     if (SystemUtil.isJBR()) {
                         JFrame.setDefaultLookAndFeelDecorated(true);
