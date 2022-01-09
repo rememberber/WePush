@@ -71,6 +71,9 @@ public class MsgFormFactory {
             case MessageTypeEnum.BD_YUN_CODE:
                 iMsgForm = BdYunMsgForm.getInstance();
                 break;
+            case MessageTypeEnum.MP_SUBSCRIBE_CODE:
+                iMsgForm = MpSubscribeMsgForm.getInstance();
+                break;
             case MessageTypeEnum.HTTP_CODE:
             default:
                 iMsgForm = HttpMsgForm.getInstance();

@@ -60,6 +60,8 @@ public class ConfigUtil extends ConfigBaseUtil {
 
     private boolean useTray;
 
+    private boolean closeToTray;
+
     private boolean defaultMaxWindow;
 
     private Integer maxThreads;
@@ -380,6 +382,14 @@ public class ConfigUtil extends ConfigBaseUtil {
 
     public void setUseTray(boolean useTray) {
         setting.put("setting.normal", "useTray", String.valueOf(useTray));
+    }
+
+    public boolean isCloseToTray() {
+        return setting.getBool("closeToTray", "setting.normal", true);
+    }
+
+    public void setCloseToTray(boolean closeToTray) {
+        setting.put("setting.normal", "closeToTray", String.valueOf(closeToTray));
     }
 
     public boolean isDefaultMaxWindow() {

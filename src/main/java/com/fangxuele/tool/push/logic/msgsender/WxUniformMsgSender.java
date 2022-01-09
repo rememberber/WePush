@@ -58,9 +58,9 @@ public class WxUniformMsgSender implements IMsgSender {
 
             wxMaUniformMessage.setMiniProgram(miniProgram);
             List<WxMaTemplateData> wxMaTemplateDataList = Lists.newArrayList();
-            List<WxMaSubscribeMessage.Data> data = wxMaSubscribeMessage.getData();
+            List<WxMaSubscribeMessage.MsgData> data = wxMaSubscribeMessage.getData();
             WxMaTemplateData wxMaTemplateData;
-            for (WxMaSubscribeMessage.Data datum : data) {
+            for (WxMaSubscribeMessage.MsgData datum : data) {
                 wxMaTemplateData = new WxMaTemplateData();
                 wxMaTemplateData.setName(datum.getName());
                 wxMaTemplateData.setValue(datum.getValue());

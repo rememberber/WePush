@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fangxuele.tool.push.dao.TMsgMpSubscribeMapper">
+    <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TMsgMpSubscribe">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="msg_type" jdbcType="INTEGER" property="msgType"/>
+        <result column="msg_name" jdbcType="VARCHAR" property="msgName"/>
+        <result column="template_id" jdbcType="VARCHAR" property="templateId"/>
+        <result column="url" jdbcType="VARCHAR" property="url"/>
+        <result column="ma_appid" jdbcType="VARCHAR" property="maAppid"/>
+        <result column="ma_page_path" jdbcType="VARCHAR" property="maPagePath"/>
+        <result column="preview_user" jdbcType="VARCHAR" property="previewUser"/>
+        <result column="wx_account_id" jdbcType="INTEGER" property="wxAccountId"/>
+        <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
+        <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, msg_type, msg_name, template_id, url, ma_appid, ma_page_path, preview_user, wx_account_id,
+        create_time, modified_time
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_msg_mp_subscribe
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from t_msg_mp_subscribe
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TMsgMpSubscribe">
+        insert into t_msg_mp_subscribe (id, msg_type, msg_name,
+        template_id, url, ma_appid,
+        ma_page_path, preview_user, wx_account_id,
+        create_time, modified_time)
+        values (#{id,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER}, #{msgName,jdbcType=VARCHAR},
+        #{templateId,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, #{maAppid,jdbcType=VARCHAR},
+        #{maPagePath,jdbcType=VARCHAR}, #{previewUser,jdbcType=VARCHAR}, #{wxAccountId,jdbcType=INTEGER},
+        #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TMsgMpSubscribe" useGeneratedKeys="true"
+            keyColumn="id" keyProperty="id">
+        insert into t_msg_mp_subscribe
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="msgType != null">
+                msg_type,
+            </if>
+            <if test="msgName != null">
+                msg_name,
+            </if>
+            <if test="templateId != null">
+                template_id,
+            </if>
+            <if test="url != null">
+                url,
+            </if>
+            <if test="maAppid != null">
+                ma_appid,
+            </if>
+            <if test="maPagePath != null">
+                ma_page_path,
+            </if>
+            <if test="previewUser != null">
+                preview_user,
+            </if>
+            <if test="wxAccountId != null">
+                wx_account_id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="modifiedTime != null">
+                modified_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="msgType != null">
+                #{msgType,jdbcType=INTEGER},
+            </if>
+            <if test="msgName != null">
+                #{msgName,jdbcType=VARCHAR},
+            </if>
+            <if test="templateId != null">
+                #{templateId,jdbcType=VARCHAR},
+            </if>
+            <if test="url != null">
+                #{url,jdbcType=VARCHAR},
+            </if>
+            <if test="maAppid != null">
+                #{maAppid,jdbcType=VARCHAR},
+            </if>
+            <if test="maPagePath != null">
+                #{maPagePath,jdbcType=VARCHAR},
+            </if>
+            <if test="previewUser != null">
+                #{previewUser,jdbcType=VARCHAR},
+            </if>
+            <if test="wxAccountId != null">
+                #{wxAccountId,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=VARCHAR},
+            </if>
+            <if test="modifiedTime != null">
+                #{modifiedTime,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.fangxuele.tool.push.domain.TMsgMpSubscribe">
+        update t_msg_mp_subscribe
+        <set>
+            <if test="msgType != null">
+                msg_type = #{msgType,jdbcType=INTEGER},
+            </if>
+            <if test="msgName != null">
+                msg_name = #{msgName,jdbcType=VARCHAR},
+            </if>
+            <if test="templateId != null">
+                template_id = #{templateId,jdbcType=VARCHAR},
+            </if>
+            <if test="url != null">
+                url = #{url,jdbcType=VARCHAR},
+            </if>
+            <if test="maAppid != null">
+                ma_appid = #{maAppid,jdbcType=VARCHAR},
+            </if>
+            <if test="maPagePath != null">
+                ma_page_path = #{maPagePath,jdbcType=VARCHAR},
+            </if>
+            <if test="previewUser != null">
+                preview_user = #{previewUser,jdbcType=VARCHAR},
+            </if>
+            <if test="wxAccountId != null">
+                wx_account_id = #{wxAccountId,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=VARCHAR},
+            </if>
+            <if test="modifiedTime != null">
+                modified_time = #{modifiedTime,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TMsgMpSubscribe">
+        update t_msg_mp_subscribe
+        set msg_type = #{msgType,jdbcType=INTEGER},
+        msg_name = #{msgName,jdbcType=VARCHAR},
+        template_id = #{templateId,jdbcType=VARCHAR},
+        url = #{url,jdbcType=VARCHAR},
+        ma_appid = #{maAppid,jdbcType=VARCHAR},
+        ma_page_path = #{maPagePath,jdbcType=VARCHAR},
+        preview_user = #{previewUser,jdbcType=VARCHAR},
+        wx_account_id = #{wxAccountId,jdbcType=INTEGER},
+        create_time = #{createTime,jdbcType=VARCHAR},
+        modified_time = #{modifiedTime,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <select id="selectByMsgTypeAndMsgName" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_msg_mp_subscribe
+        where msg_type = #{msgType,jdbcType=INTEGER}
+        and msg_name = #{msgName,jdbcType=VARCHAR}
+    </select>
+    <update id="updateByMsgTypeAndMsgName" parameterType="com.fangxuele.tool.push.domain.TMsgMpSubscribe">
+        update t_msg_mp_subscribe
+        set template_id = #{templateId,jdbcType=VARCHAR},
+        url = #{url,jdbcType=VARCHAR},
+        ma_appid = #{maAppid,jdbcType=VARCHAR},
+        ma_page_path = #{maPagePath,jdbcType=VARCHAR},
+        modified_time = #{modifiedTime,jdbcType=VARCHAR},
+        preview_user = #{previewUser,jdbcType=VARCHAR},
+        wx_account_id = #{wxAccountId,jdbcType=INTEGER}
+        where msg_type = #{msgType,jdbcType=INTEGER}
+        and msg_name = #{msgName,jdbcType=VARCHAR}
+    </update>
+    <delete id="deleteByMsgTypeAndName">
+        delete
+        from t_msg_mp_subscribe
+        where msg_type = #{msgType,jdbcType=INTEGER}
+        and msg_name = #{msgName,jdbcType=VARCHAR}
+    </delete>
+    <select id="selectByMsgTypeAndWxAccountId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_msg_mp_subscribe
+        where msg_type = #{msgType,jdbcType=INTEGER}
+        and (wx_account_id = #{wxAccountId,jdbcType=INTEGER} or wx_account_id is null)
+        order by create_time desc
+    </select>
+</mapper>

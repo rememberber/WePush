@@ -6,7 +6,7 @@
 
     <groupId>com.fangxuele.tool</groupId>
     <artifactId>WePush</artifactId>
-    <version>1.0</version>
+    <version>4.5.0</version>
     <packaging>jar</packaging>
 
     <name>WePush</name>
@@ -20,9 +20,9 @@
 
         <java.version>1.8</java.version>
         <logback.version>1.2.3</logback.version>
-        <weixin-java-mp.version>4.0.0</weixin-java-mp.version>
-        <weixin-java-cp.version>4.0.0</weixin-java-cp.version>
-        <weixin-java-miniapp.version>4.0.0</weixin-java-miniapp.version>
+        <weixin-java-mp.version>4.1.0</weixin-java-mp.version>
+        <weixin-java-cp.version>4.1.0</weixin-java-cp.version>
+        <weixin-java-miniapp.version>4.1.0</weixin-java-miniapp.version>
         <emoji-java.version>5.1.1</emoji-java.version>
         <hutool-all.version>5.4.4</hutool-all.version>
         <opencsv.version>5.2</opencsv.version>
@@ -43,11 +43,11 @@
         <httpasyncclient.version>4.1.4</httpasyncclient.version>
         <HikariCP.version>3.4.5</HikariCP.version>
         <quartz.version>2.3.2</quartz.version>
-        <okhttp.version>4.9.0</okhttp.version>
+        <okhttp.version>4.9.1</okhttp.version>
         <aliyun-java-sdk-dysmsapi.version>1.1.0</aliyun-java-sdk-dysmsapi.version>
         <bce-java-sdk.version>0.10.134</bce-java-sdk.version>
         <qiniu-java-sdk.version>7.3.0</qiniu-java-sdk.version>
-        <flatlaf.version>1.6.4</flatlaf.version>
+        <flatlaf.version>2.0-rc1</flatlaf.version>
     </properties>
 
     <dependencies>
@@ -221,18 +221,6 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>com.darcula</groupId>
-            <artifactId>darcula-lnf</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.beautyeye</groupId>
-            <artifactId>beautyeye-lnf</artifactId>
-            <version>1.0</version>
-        </dependency>
-
         <!--文件字符集格式检测-->
         <dependency>
             <groupId>net.sourceforge.cpdetector</groupId>
@@ -285,11 +273,11 @@
             <artifactId>httpasyncclient</artifactId>
             <version>${httpasyncclient.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>${HikariCP.version}</version>
-        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>com.zaxxer</groupId>-->
+        <!--            <artifactId>HikariCP</artifactId>-->
+        <!--            <version>${HikariCP.version}</version>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
@@ -391,6 +379,10 @@
                     <artifactId>hbase-client</artifactId>
                     <groupId>org.apache.hbase</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>bcprov-jdk15on</artifactId>
+                    <groupId>org.bouncycastle</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
 
@@ -421,35 +413,35 @@
                     <generateInstaller>true</generateInstaller>
                 </configuration>
                 <executions>
-<!--                    <execution>-->
-<!--                        <id>bundling-for-windows</id>-->
-<!--                        <phase>package</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>package</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <platform>windows</platform>-->
-<!--                            <createZipball>true</createZipball>-->
-<!--                            &lt;!&ndash;                            <administratorRequired>true</administratorRequired>&ndash;&gt;-->
-<!--                            <winConfig>-->
+                    <!--                    <execution>-->
+                    <!--                        <id>bundling-for-windows</id>-->
+                    <!--                        <phase>package</phase>-->
+                    <!--                        <goals>-->
+                    <!--                            <goal>package</goal>-->
+                    <!--                        </goals>-->
+                    <!--                        <configuration>-->
+                    <!--                            <platform>windows</platform>-->
+                    <!--                            <createZipball>true</createZipball>-->
+                    <!--                            &lt;!&ndash;                            <administratorRequired>true</administratorRequired>&ndash;&gt;-->
+                    <!--                            <winConfig>-->
 
-<!--                                &lt;!&ndash; general properties &ndash;&gt;-->
-<!--                                <generateSetup>true</generateSetup>-->
-<!--                                <generateMsi>true</generateMsi>-->
-<!--                                <generateMsm>true</generateMsm>-->
+                    <!--                                &lt;!&ndash; general properties &ndash;&gt;-->
+                    <!--                                <generateSetup>true</generateSetup>-->
+                    <!--                                <generateMsi>true</generateMsi>-->
+                    <!--                                <generateMsm>true</generateMsm>-->
 
-<!--                                &lt;!&ndash; setup generation properties &ndash;&gt;-->
-<!--                                <setupMode>installForAllUsers</setupMode>-->
-<!--                                <createDesktopIconTask>true</createDesktopIconTask>-->
-<!--                                <disableDirPage>false</disableDirPage>-->
-<!--                                <disableFinishedPage>false</disableFinishedPage>-->
-<!--                                <setupLanguages>-->
-<!--                                    <english>compiler:Default.isl</english>-->
-<!--                                    &lt;!&ndash;                                    <spanish>compiler:Languages\Chinese.isl</spanish>&ndash;&gt;-->
-<!--                                </setupLanguages>-->
-<!--                            </winConfig>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
+                    <!--                                &lt;!&ndash; setup generation properties &ndash;&gt;-->
+                    <!--                                <setupMode>installForAllUsers</setupMode>-->
+                    <!--                                <createDesktopIconTask>true</createDesktopIconTask>-->
+                    <!--                                <disableDirPage>false</disableDirPage>-->
+                    <!--                                <disableFinishedPage>false</disableFinishedPage>-->
+                    <!--                                <setupLanguages>-->
+                    <!--                                    <english>compiler:Default.isl</english>-->
+                    <!--                                    &lt;!&ndash;                                    <spanish>compiler:Languages\Chinese.isl</spanish>&ndash;&gt;-->
+                    <!--                                </setupLanguages>-->
+                    <!--                            </winConfig>-->
+                    <!--                        </configuration>-->
+                    <!--                    </execution>-->
                     <!--                    <execution>-->
                     <!--                        <id>bundling-for-linux</id>-->
                     <!--                        <phase>package</phase>-->
@@ -462,19 +454,19 @@
                     <!--                            <jdkPath>X:\\path\to\linux\jdk</jdkPath>-->
                     <!--                        </configuration>-->
                     <!--                    </execution>-->
-                                                            <execution>
-                                                                <id>bundling-for-mac</id>
-                                                                <phase>package</phase>
-                                                                <goals>
-                                                                    <goal>package</goal>
-                                                                </goals>
-                                                                <configuration>
-                                                                    <platform>mac</platform>
-                                                                    <createTarball>true</createTarball>
-                                                                    <customizedJre>false</customizedJre>
-                    <!--                                                <jdkPath>X:\\path\to\mac\jdk</jdkPath>-->
-                                                                </configuration>
-                                                            </execution>
+                    <execution>
+                        <id>bundling-for-mac</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                        <configuration>
+                            <platform>mac</platform>
+                            <createTarball>true</createTarball>
+                            <!--                                                                                        <customizedJre>false</customizedJre>-->
+                            <!--                                                <jdkPath>X:\\path\to\mac\jdk</jdkPath>-->
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
 
@@ -483,36 +475,6 @@
                 <artifactId>maven-install-plugin</artifactId>
                 <version>2.5.2</version>
                 <executions>
-                    <execution>
-                        <id>install-beautyeye</id>
-                        <phase>clean</phase>
-                        <configuration>
-                            <file>lib/beautyeye_lnf.jar</file>
-                            <groupId>com.beautyeye</groupId>
-                            <artifactId>beautyeye-lnf</artifactId>
-                            <version>1.0</version>
-                            <packaging>jar</packaging>
-                            <generatePom>true</generatePom>
-                        </configuration>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>install-darcula</id>
-                        <phase>clean</phase>
-                        <configuration>
-                            <file>lib/darcula.jar</file>
-                            <groupId>com.darcula</groupId>
-                            <artifactId>darcula-lnf</artifactId>
-                            <version>1.0</version>
-                            <packaging>jar</packaging>
-                            <generatePom>true</generatePom>
-                        </configuration>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                    </execution>
                     <execution>
                         <id>install-taobao-sdk-auto</id>
                         <phase>clean</phase>

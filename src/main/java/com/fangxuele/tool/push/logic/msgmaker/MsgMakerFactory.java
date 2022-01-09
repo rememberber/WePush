@@ -63,6 +63,9 @@ public class MsgMakerFactory {
             case MessageTypeEnum.QI_NIU_YUN_CODE:
                 iMsgMaker = new QiNiuYunMsgMaker();
                 break;
+            case MessageTypeEnum.MP_SUBSCRIBE_CODE:
+                iMsgMaker = new WxMpSubscribeMsgMaker();
+                break;
             default:
         }
         return iMsgMaker;
