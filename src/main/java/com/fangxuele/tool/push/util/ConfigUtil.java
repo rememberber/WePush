@@ -60,6 +60,8 @@ public class ConfigUtil extends ConfigBaseUtil {
 
     private boolean useTray;
 
+    private boolean closeToTray;
+
     private boolean defaultMaxWindow;
 
     private Integer maxThreads;
@@ -382,6 +384,14 @@ public class ConfigUtil extends ConfigBaseUtil {
         setting.put("setting.normal", "useTray", String.valueOf(useTray));
     }
 
+    public boolean isCloseToTray() {
+        return setting.getBool("closeToTray", "setting.normal", true);
+    }
+
+    public void setCloseToTray(boolean closeToTray) {
+        setting.put("setting.normal", "closeToTray", String.valueOf(closeToTray));
+    }
+
     public boolean isDefaultMaxWindow() {
         return setting.getBool("defaultMaxWindow", "setting.normal", true);
     }
@@ -663,7 +673,7 @@ public class ConfigUtil extends ConfigBaseUtil {
     }
 
     public String getTheme() {
-        return setting.getStr("theme", "setting.appearance", "Darcula(推荐)");
+        return setting.getStr("theme", "setting.appearance", "Flat Dark");
     }
 
     public void setTheme(String theme) {

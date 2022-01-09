@@ -81,6 +81,11 @@ public class SettingListener {
                 App.tray = null;
             }
         });
+        // 设置-常规-关闭窗口时最小化到系统托盘
+        settingForm.getCloseToTrayCheckBox().addActionListener(e -> {
+            App.config.setCloseToTray(settingForm.getCloseToTrayCheckBox().isSelected());
+            App.config.save();
+        });
         // 设置-常规-默认最大化窗口
         settingForm.getDefaultMaxWindowCheckBox().addActionListener(e -> {
             App.config.setDefaultMaxWindow(settingForm.getDefaultMaxWindowCheckBox().isSelected());

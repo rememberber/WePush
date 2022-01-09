@@ -1,21 +1,7 @@
 package com.fangxuele.tool.push.ui.form;
 
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
-import com.fangxuele.tool.push.ui.form.msg.AliYunMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.BdYunMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.DingMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.HttpMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.HwYunMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.KefuMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.MaSubscribeMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.MailMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.MpTemplateMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.MsgFormFactory;
-import com.fangxuele.tool.push.ui.form.msg.QiNiuYunMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.TxYunMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.UpYunMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.YunpianMsgForm;
+import com.fangxuele.tool.push.ui.form.msg.*;
 import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -89,6 +75,9 @@ public class MessageEditForm {
         switch (msgType) {
             case MessageTypeEnum.MP_TEMPLATE_CODE:
                 messageEditForm.getMsgEditorPanel().add(MpTemplateMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
+                break;
+            case MessageTypeEnum.MP_SUBSCRIBE_CODE:
+                messageEditForm.getMsgEditorPanel().add(MpSubscribeMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
                 break;
             case MessageTypeEnum.MA_TEMPLATE_CODE:
             case MessageTypeEnum.MA_SUBSCRIBE_CODE:
