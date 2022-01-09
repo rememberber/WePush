@@ -4,6 +4,8 @@ import cn.hutool.json.JSONUtil;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.account.WxCpAccountConfig;
 import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.logic.PushControl;
+import com.fangxuele.tool.push.logic.msgsender.WxCpMsgSender;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.UIUtil;
@@ -12,12 +14,18 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import me.chanjar.weixin.common.util.http.apache.DefaultApacheHttpClientBuilder;
+import me.chanjar.weixin.cp.api.WxCpService;
+import me.chanjar.weixin.cp.api.impl.WxCpServiceApacheHttpClientImpl;
+import me.chanjar.weixin.cp.config.impl.WxCpDefaultConfigImpl;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
 
 @Getter
+@Slf4j
 public class WxCpAccountForm implements IAccountForm {
     private JPanel mainPanel;
     private JTextField corpIdTextField;
@@ -26,6 +34,9 @@ public class WxCpAccountForm implements IAccountForm {
     private JTextField secretTextField;
 
     private static WxCpAccountForm wxMpAccountForm;
+
+    public volatile static WxCpDefaultConfigImpl wxCpConfigStorage;
+    public volatile static WxCpService wxCpService;
 
     @Override
     public void init(String accountName) {
@@ -109,6 +120,82 @@ public class WxCpAccountForm implements IAccountForm {
         }
         UndoUtil.register(wxMpAccountForm);
         return wxMpAccountForm;
+    }
+
+    /**
+     * 微信企业号配置
+     *
+     * @return WxCpConfigStorage
+     */
+    private static WxCpDefaultConfigImpl wxCpConfigStorage(String accountName) {
+        TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
+        if (tAccount == null) {
+            log.error("未获取到对应的微信企业号账号配置:{}", accountName);
+        }
+
+        WxCpAccountConfig wxCpAccountConfig = JSONUtil.toBean(tAccount.getAccountConfig(), WxCpAccountConfig.class);
+
+        WxCpDefaultConfigImpl configStorage = new WxCpDefaultConfigImpl();
+        configStorage.setCorpId(wxCpAccountConfig.getCorpId());
+        configStorage.setAgentId(Integer.valueOf(wxCpAccountConfig.getAgentId()));
+        configStorage.setCorpSecret(wxCpAccountConfig.getSecret());
+
+        if (App.config.isMpUseProxy()) {
+            configStorage.setHttpProxyHost(App.config.getMpProxyHost());
+            configStorage.setHttpProxyPort(Integer.parseInt(App.config.getMpProxyPort()));
+            configStorage.setHttpProxyUsername(App.config.getMpProxyUserName());
+            configStorage.setHttpProxyPassword(App.config.getMpProxyPassword());
+        }
+        DefaultApacheHttpClientBuilder clientBuilder = DefaultApacheHttpClientBuilder.get();
+        //从连接池获取链接的超时时间(单位ms)
+        clientBuilder.setConnectionRequestTimeout(10000);
+        //建立链接的超时时间(单位ms)
+        clientBuilder.setConnectionTimeout(5000);
+        //连接池socket超时时间(单位ms)
+        clientBuilder.setSoTimeout(5000);
+        //空闲链接的超时时间(单位ms)
+        clientBuilder.setIdleConnTimeout(60000);
+        //空闲链接的检测周期(单位ms)
+        clientBuilder.setCheckWaitTime(60000);
+        //每路最大连接数
+        clientBuilder.setMaxConnPerHost(App.config.getMaxThreads());
+        //连接池最大连接数
+        clientBuilder.setMaxTotalConn(App.config.getMaxThreads());
+        //HttpClient请求时使用的User Agent
+//        clientBuilder.setUserAgent(..)
+        configStorage.setApacheHttpClientBuilder(clientBuilder);
+        return configStorage;
+    }
+
+    /**
+     * 获取微信企业号工具服务
+     *
+     * @return WxCpService
+     */
+    public static WxCpService getWxCpService(String accountName) {
+        invalidAccount();
+
+        if (wxCpConfigStorage == null) {
+            synchronized (WxCpMsgSender.class) {
+                if (wxCpConfigStorage == null) {
+                    wxCpConfigStorage = wxCpConfigStorage(accountName);
+                }
+            }
+        }
+        if (wxCpService == null && wxCpConfigStorage != null) {
+            synchronized (PushControl.class) {
+                if (wxCpService == null && wxCpConfigStorage != null) {
+                    wxCpService = new WxCpServiceApacheHttpClientImpl();
+                    wxCpService.setWxCpConfigStorage(wxCpConfigStorage);
+                }
+            }
+        }
+        return wxCpService;
+    }
+
+    public static void invalidAccount() {
+        wxCpConfigStorage = null;
+        wxCpService = null;
     }
 
     {

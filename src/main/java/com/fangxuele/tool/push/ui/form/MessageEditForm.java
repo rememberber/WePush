@@ -51,13 +51,13 @@ public class MessageEditForm {
     /**
      * 初始化消息tab
      */
-    public static void init(String selectedMsgName) {
+    public static void init(Integer msgId) {
         messageEditForm = getInstance();
         // 设置滚动条速度
         messageEditForm.getMsgEditScrollPane().getVerticalScrollBar().setUnitIncrement(15);
         messageEditForm.getMsgEditScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
 
-        MsgFormFactory.getMsgForm().init(selectedMsgName);
+        MsgFormFactory.getMsgForm().init(msgId);
     }
 
     /**
@@ -71,7 +71,6 @@ public class MessageEditForm {
         GridConstraints gridConstraintsRow0 = new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false);
         GridConstraints gridConstraintsRow1 = new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false);
 
-        MsgFormFactory.getMsgForm().init(null);
         switch (msgType) {
             case MessageTypeEnum.MP_TEMPLATE_CODE:
                 messageEditForm.getMsgEditorPanel().add(MpTemplateMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
@@ -152,16 +151,16 @@ public class MessageEditForm {
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         messageEditPanel = new JPanel();
-        messageEditPanel.setLayout(new GridLayoutManager(3, 1, new Insets(6, 2, 0, 5), -1, -1));
+        messageEditPanel.setLayout(new GridLayoutManager(3, 1, new Insets(10, 0, 10, 10), -1, -1));
         messageEditPanel.setMaximumSize(new Dimension(-1, -1));
         messageEditPanel.setMinimumSize(new Dimension(-1, -1));
         messageEditPanel.setPreferredSize(new Dimension(-1, -1));
         panel1.add(messageEditPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(2, 2, new Insets(0, 5, 10, 5), -1, -1));
+        panel2.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
         messageEditPanel.add(panel2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 10, 0), -1, -1));
+        panel3.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel2.add(panel3, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         msgTypeName = new JLabel();
         Font msgTypeNameFont = this.$$$getFont$$$(null, -1, 28, msgTypeName.getFont());
@@ -179,7 +178,7 @@ public class MessageEditForm {
         msgNameField.setToolTipText("给本次推送任务起个名字");
         panel2.add(msgNameField, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         final JPanel panel4 = new JPanel();
-        panel4.setLayout(new GridLayoutManager(1, 5, new Insets(0, 5, 5, 5), -1, -1));
+        panel4.setLayout(new GridLayoutManager(1, 5, new Insets(0, 0, 0, 0), -1, -1));
         messageEditPanel.add(panel4, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         previewMemberLabel = new JLabel();
         previewMemberLabel.setText("预览用户");

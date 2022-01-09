@@ -1,23 +1,31 @@
 package com.fangxuele.tool.push.ui.form.account;
 
 import cn.hutool.json.JSONUtil;
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.account.WxMpAccountConfig;
 import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.UIUtil;
 import com.fangxuele.tool.push.util.UndoUtil;
+import com.fangxuele.tool.push.util.WeWxMpServiceImpl;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import me.chanjar.weixin.common.util.http.apache.DefaultApacheHttpClientBuilder;
+import me.chanjar.weixin.mp.api.WxMpService;
+import me.chanjar.weixin.mp.config.impl.WxMpDefaultConfigImpl;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
 
 @Getter
+@Slf4j
 public class WxMpAccountForm implements IAccountForm {
     private JPanel mainPanel;
     private JTextField appIdTextField;
@@ -26,6 +34,9 @@ public class WxMpAccountForm implements IAccountForm {
     private JTextField aesKeyTextField;
 
     private static WxMpAccountForm wxMpAccountForm;
+
+    public volatile static WxMpDefaultConfigImpl wxMpConfigStorage;
+    public volatile static WxMpService wxMpService;
 
     @Override
     public void init(String accountName) {
@@ -109,6 +120,82 @@ public class WxMpAccountForm implements IAccountForm {
         }
         UndoUtil.register(wxMpAccountForm);
         return wxMpAccountForm;
+    }
+
+    /**
+     * 微信公众号配置
+     *
+     * @return WxMpConfigStorage
+     */
+    private static WxMpDefaultConfigImpl wxMpConfigStorage(String accountName) {
+        TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(MessageTypeEnum.getMsgTypeForAccount(), accountName);
+        if (tAccount == null) {
+            log.error("未获取到对应的微信公众号账号配置:{}", accountName);
+        }
+
+        WxMpAccountConfig wxMpAccountConfig = JSONUtil.toBean(tAccount.getAccountConfig(), WxMpAccountConfig.class);
+
+        WxMpDefaultConfigImpl configStorage = new WxMpDefaultConfigImpl();
+        configStorage.setAppId(wxMpAccountConfig.getAppId());
+        configStorage.setSecret(wxMpAccountConfig.getAppSecret());
+        configStorage.setToken(wxMpAccountConfig.getToken());
+        configStorage.setAesKey(wxMpAccountConfig.getAesKey());
+        if (App.config.isMpUseProxy()) {
+            configStorage.setHttpProxyHost(App.config.getMpProxyHost());
+            configStorage.setHttpProxyPort(Integer.parseInt(App.config.getMpProxyPort()));
+            configStorage.setHttpProxyUsername(App.config.getMpProxyUserName());
+            configStorage.setHttpProxyPassword(App.config.getMpProxyPassword());
+        }
+        DefaultApacheHttpClientBuilder clientBuilder = DefaultApacheHttpClientBuilder.get();
+        //从连接池获取链接的超时时间(单位ms)
+        clientBuilder.setConnectionRequestTimeout(10000);
+        //建立链接的超时时间(单位ms)
+        clientBuilder.setConnectionTimeout(5000);
+        //连接池socket超时时间(单位ms)
+        clientBuilder.setSoTimeout(5000);
+        //空闲链接的超时时间(单位ms)
+        clientBuilder.setIdleConnTimeout(60000);
+        //空闲链接的检测周期(单位ms)
+        clientBuilder.setCheckWaitTime(3000);
+        //每路最大连接数
+        clientBuilder.setMaxConnPerHost(App.config.getMaxThreads());
+        //连接池最大连接数
+        clientBuilder.setMaxTotalConn(App.config.getMaxThreads());
+        //HttpClient请求时使用的User Agent
+//        clientBuilder.setUserAgent(..)
+        configStorage.setApacheHttpClientBuilder(clientBuilder);
+        return configStorage;
+    }
+
+    /**
+     * 获取微信公众号工具服务
+     *
+     * @return WxMpService
+     */
+    public static WxMpService getWxMpService(String accountName) {
+        invalidAccount();
+
+        if (wxMpConfigStorage == null) {
+            synchronized (WxMpTemplateMsgSender.class) {
+                if (wxMpConfigStorage == null) {
+                    wxMpConfigStorage = wxMpConfigStorage(accountName);
+                }
+            }
+        }
+        if (wxMpService == null && wxMpConfigStorage != null) {
+            synchronized (WxMpTemplateMsgSender.class) {
+                if (wxMpService == null && wxMpConfigStorage != null) {
+                    wxMpService = new WeWxMpServiceImpl();
+                    wxMpService.setWxMpConfigStorage(wxMpConfigStorage);
+                }
+            }
+        }
+        return wxMpService;
+    }
+
+    public static void invalidAccount() {
+        wxMpConfigStorage = null;
+        wxMpService = null;
     }
 
     {

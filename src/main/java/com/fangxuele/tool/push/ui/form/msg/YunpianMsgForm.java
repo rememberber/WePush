@@ -16,7 +16,6 @@ import javax.swing.border.TitledBorder;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.text.StyleContext;
 import java.awt.*;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -37,11 +36,10 @@ public class YunpianMsgForm implements IMsgForm {
     private static TMsgSmsMapper msgSmsMapper = MybatisUtil.getSqlSession().getMapper(TMsgSmsMapper.class);
 
     @Override
-    public void init(String msgName) {
+    public void init(Integer msgId) {
         clearAllField();
-        List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.YUN_PIAN_CODE, msgName);
-        if (tMsgSmsList.size() > 0) {
-            TMsgSms tMsgSms = tMsgSmsList.get(0);
+        TMsgSms tMsgSms = msgSmsMapper.selectByPrimaryKey(msgId);
+        if (tMsgSms != null) {
             getInstance().getMsgYunpianMsgContentTextField().setText(tMsgSms.getContent());
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
@@ -51,12 +49,13 @@ public class YunpianMsgForm implements IMsgForm {
     }
 
     @Override
-    public void save(String msgName) {
+    public void save(Integer accountId, String msgName) {
         boolean existSameMsg = false;
-
-        List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.YUN_PIAN_CODE, msgName);
-        if (tMsgSmsList.size() > 0) {
+        Integer msgId = null;
+        TMsgSms msgSms = msgSmsMapper.selectByUnique(accountId, MessageTypeEnum.YUN_PIAN_CODE, msgName);
+        if (msgSms != null) {
             existSameMsg = true;
+            msgId = msgSms.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -72,6 +71,7 @@ public class YunpianMsgForm implements IMsgForm {
 
             TMsgSms tMsgSms = new TMsgSms();
             tMsgSms.setMsgType(MessageTypeEnum.YUN_PIAN_CODE);
+            tMsgSms.setAccountId(accountId);
             tMsgSms.setMsgName(msgName);
             tMsgSms.setContent(yunpianMsgContent);
             tMsgSms.setCreateTime(now);
@@ -81,7 +81,8 @@ public class YunpianMsgForm implements IMsgForm {
             tMsgSms.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             if (existSameMsg) {
-                msgSmsMapper.updateByMsgTypeAndMsgName(tMsgSms);
+                tMsgSms.setId(msgId);
+                msgSmsMapper.updateByPrimaryKeySelective(tMsgSms);
             } else {
                 msgSmsMapper.insertSelective(tMsgSms);
             }
@@ -101,7 +102,8 @@ public class YunpianMsgForm implements IMsgForm {
     /**
      * 清空所有界面字段
      */
-    public static void clearAllField() {
+    @Override
+    public void clearAllField() {
         getInstance().getMsgYunpianMsgContentTextField().setText("");
     }
 

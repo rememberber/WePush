@@ -6,7 +6,6 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.dialog.FontSizeAdjustDialog;
 import com.fangxuele.tool.push.ui.form.*;
-import com.fangxuele.tool.push.ui.listener.AboutListener;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.fangxuele.tool.push.util.UIUtil;
 import com.fangxuele.tool.push.util.UpgradeUtil;
@@ -14,7 +13,6 @@ import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.IntelliJTheme;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
@@ -80,8 +78,7 @@ public class Init {
      * 其他初始化
      */
     public static void initOthers() {
-        // 设置版本
-        AboutForm.getInstance().getVersionLabel().setText(UiConsts.APP_VERSION);
+
     }
 
     /**
@@ -103,20 +100,14 @@ public class Init {
             return;
         }
 
+        if (App.config.isUnifiedBackground()) {
+            UIManager.put("TitlePane.unifiedBackground", true);
+        }
+
         try {
             switch (App.config.getTheme()) {
-                case "BeautyEye":
-                    BeautyEyeLNFHelper.launchBeautyEyeLNF();
-                    UIManager.put("RootPane.setupButtonVisible", false);
-                    break;
                 case "系统默认":
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                    break;
-                case "weblaf":
-                case "Darcula":
-                    JFrame.setDefaultLookAndFeelDecorated(false);
-                    JDialog.setDefaultLookAndFeelDecorated(false);
-                    UIManager.setLookAndFeel("com.bulenkov.darcula.DarculaLaf");
                     break;
                 case "Flat Light":
                     if (SystemUtil.isJBR()) {
@@ -188,6 +179,10 @@ public class Init {
                             "/theme/Light.theme.json"));
                     break;
 
+                case "BeautyEye":
+                case "weblaf":
+                case "Darcula":
+                case "Darcula(推荐)":
                 default:
                     if (SystemUtil.isJBR()) {
                         JFrame.setDefaultLookAndFeelDecorated(true);
@@ -204,19 +199,17 @@ public class Init {
      * 初始化所有tab
      */
     public static void initAllTab() {
-        ThreadUtil.execute(AboutForm::init);
         MessageTypeForm.init();
         ThreadUtil.execute(HelpForm::init);
 //        ThreadUtil.execute(UserCaseForm::init);
         ThreadUtil.execute(AccountManageForm::init);
         ThreadUtil.execute(() -> AccountEditForm.init(null));
         ThreadUtil.execute(MessageManageForm::init);
-        ThreadUtil.execute(() -> MessageEditForm.init(null));
         ThreadUtil.execute(PeopleManageForm::init);
         ThreadUtil.execute(() -> PeopleEditForm.init(null));
         ThreadUtil.execute(MemberForm::init);
         ThreadUtil.execute(PushForm::init);
-        ThreadUtil.execute(BoostForm::init);
+        ThreadUtil.execute(TaskForm::init);
         ThreadUtil.execute(InfinityForm::init);
         ThreadUtil.execute(ScheduleForm::init);
         ThreadUtil.execute(SettingForm::init);
@@ -227,8 +220,6 @@ public class Init {
             ScheduledThreadPoolExecutor threadPoolExecutor = new ScheduledThreadPoolExecutor(1);
             threadPoolExecutor.scheduleAtFixedRate(() -> UpgradeUtil.checkUpdate(true), 0, 24, TimeUnit.HOURS);
         }
-        // 更新二维码
-        ThreadUtil.execute(AboutListener::initQrCode);
     }
 
     /**
@@ -266,16 +257,7 @@ public class Init {
                     App.mainFrame.requestFocus();
                 });
                 exitItem.addActionListener(e -> {
-                    if (!PushForm.getInstance().getPushStartButton().isEnabled()) {
-                        JOptionPane.showMessageDialog(MainWindow.getInstance().getPushPanel(),
-                                "有推送任务正在进行！\n\n为避免数据丢失，请先停止!\n\n", "Sorry~",
-                                JOptionPane.WARNING_MESSAGE);
-                    } else {
-                        App.config.save();
-                        App.sqlSession.close();
-                        App.mainFrame.dispose();
-                        System.exit(0);
-                    }
+                    shutdown();
                 });
 
                 popupMenu.add(openItem);
@@ -325,6 +307,19 @@ public class Init {
 
         } catch (Exception e) {
             logger.error(ExceptionUtils.getStackTrace(e));
+        }
+    }
+
+    public static void shutdown() {
+        if (!PushForm.getInstance().getPushStartButton().isEnabled()) {
+            JOptionPane.showMessageDialog(MainWindow.getInstance().getPushPanel(),
+                    "有推送任务正在进行！\n\n为避免数据丢失，请先停止!\n\n", "Sorry~",
+                    JOptionPane.WARNING_MESSAGE);
+        } else {
+            App.config.save();
+            App.sqlSession.close();
+            App.mainFrame.dispose();
+            System.exit(0);
         }
     }
 }

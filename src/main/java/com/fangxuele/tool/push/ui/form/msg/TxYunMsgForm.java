@@ -89,13 +89,10 @@ public class TxYunMsgForm implements IMsgForm {
     }
 
     @Override
-    public void init(String msgName) {
+    public void init(Integer msgId) {
         clearAllField();
-        List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.TX_YUN_CODE, msgName);
-        Integer msgId = 0;
-        if (tMsgSmsList.size() > 0) {
-            TMsgSms tMsgSms = tMsgSmsList.get(0);
-            msgId = tMsgSms.getId();
+        TMsgSms tMsgSms = msgSmsMapper.selectByPrimaryKey(msgId);
+        if (tMsgSms != null) {
             getInstance().getMsgTemplateIdTextField().setText(tMsgSms.getTemplateId());
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
@@ -127,14 +124,14 @@ public class TxYunMsgForm implements IMsgForm {
     }
 
     @Override
-    public void save(String msgName) {
+    public void save(Integer accountId, String msgName) {
         int msgId = 0;
         boolean existSameMsg = false;
 
-        List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.TX_YUN_CODE, msgName);
-        if (tMsgSmsList.size() > 0) {
+        TMsgSms msgSms = msgSmsMapper.selectByUnique(accountId, MessageTypeEnum.TX_YUN_CODE, msgName);
+        if (msgSms != null) {
             existSameMsg = true;
-            msgId = tMsgSmsList.get(0).getId();
+            msgId = msgSms.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -151,6 +148,7 @@ public class TxYunMsgForm implements IMsgForm {
 
             TMsgSms tMsgSms = new TMsgSms();
             tMsgSms.setMsgType(MessageTypeEnum.TX_YUN_CODE);
+            tMsgSms.setAccountId(accountId);
             tMsgSms.setMsgName(msgName);
             tMsgSms.setTemplateId(templateId);
             tMsgSms.setCreateTime(now);
@@ -160,7 +158,8 @@ public class TxYunMsgForm implements IMsgForm {
             tMsgSms.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             if (existSameMsg) {
-                msgSmsMapper.updateByMsgTypeAndMsgName(tMsgSms);
+                tMsgSms.setId(msgId);
+                msgSmsMapper.updateByPrimaryKeySelective(tMsgSms);
             } else {
                 msgSmsMapper.insertSelective(tMsgSms);
                 msgId = tMsgSms.getId();
@@ -236,7 +235,8 @@ public class TxYunMsgForm implements IMsgForm {
     /**
      * 清空所有界面字段
      */
-    public static void clearAllField() {
+    @Override
+    public void clearAllField() {
         getInstance().getMsgTemplateIdTextField().setText("");
         getInstance().getTemplateDataNameTextField().setText("");
         getInstance().getTemplateDataValueTextField().setText("");

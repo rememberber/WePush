@@ -65,6 +65,10 @@ public enum MessageTypeEnum {
         this.name = name;
     }
 
+    public static String getName(MessageTypeEnum messageTypeEnum) {
+        return messageTypeEnum.name;
+    }
+
     public static String getName(int code) {
         String name = "";
         switch (code) {

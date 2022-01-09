@@ -33,12 +33,10 @@ public class WxUniformMsgForm implements IMsgForm {
     private static WxUniformMsgForm wxUniformMsgForm;
 
     @Override
-    public void init(String msgName) {
+    public void init(Integer msgId) {
         clearAllField();
-        List<TMsgWxUniform> tMsgWxUniformList = msgWxUniformMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE, msgName);
-        if (tMsgWxUniformList.size() > 0) {
-            TMsgWxUniform tMsgWxUniform = tMsgWxUniformList.get(0);
-            Integer msgId = tMsgWxUniform.getId();
+        TMsgWxUniform tMsgWxUniform = msgWxUniformMapper.selectByPrimaryKey(msgId);
+        if (tMsgWxUniform != null) {
             MpTemplateMsgForm.getInstance().getMsgTemplateIdTextField().setText(tMsgWxUniform.getMpTemplateId());
             MpTemplateMsgForm.getInstance().getMsgTemplateUrlTextField().setText(tMsgWxUniform.getMpUrl());
             MpTemplateMsgForm.getInstance().getMsgTemplateMiniAppidTextField().setText(tMsgWxUniform.getMaAppid());
@@ -106,14 +104,14 @@ public class WxUniformMsgForm implements IMsgForm {
     }
 
     @Override
-    public void save(String msgName) {
+    public void save(Integer accountId, String msgName) {
         int msgId = 0;
         boolean existSameMsg = false;
 
-        List<TMsgWxUniform> tMsgWxUniformList = msgWxUniformMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE, msgName);
-        if (tMsgWxUniformList.size() > 0) {
+        TMsgWxUniform msgWxUniform = msgWxUniformMapper.selectByUnique(accountId, MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE, msgName);
+        if (msgWxUniform != null) {
             existSameMsg = true;
-            msgId = tMsgWxUniformList.get(0).getId();
+            msgId = msgWxUniform.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -136,6 +134,7 @@ public class WxUniformMsgForm implements IMsgForm {
 
             TMsgWxUniform tMsgWxUniform = new TMsgWxUniform();
             tMsgWxUniform.setMsgType(MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE);
+            tMsgWxUniform.setAccountId(accountId);
             tMsgWxUniform.setMsgName(msgName);
             tMsgWxUniform.setMpTemplateId(mpTemplateId);
             tMsgWxUniform.setMaTemplateId(maTemplateId);
@@ -151,7 +150,8 @@ public class WxUniformMsgForm implements IMsgForm {
             tMsgWxUniform.setWxAccountId(App.config.getWxAccountId());
 
             if (existSameMsg) {
-                msgWxUniformMapper.updateByMsgTypeAndMsgName(tMsgWxUniform);
+                tMsgWxUniform.setId(msgId);
+                msgWxUniformMapper.updateByPrimaryKeySelective(tMsgWxUniform);
             } else {
                 msgWxUniformMapper.insertSelective(tMsgWxUniform);
                 msgId = tMsgWxUniform.getId();
@@ -234,8 +234,9 @@ public class WxUniformMsgForm implements IMsgForm {
     /**
      * 清空所有界面字段
      */
-    public static void clearAllField() {
-        MaSubscribeMsgForm.clearAllField();
-        MpTemplateMsgForm.clearAllField();
+    @Override
+    public void clearAllField() {
+        MaSubscribeMsgForm.getInstance().clearAllField();
+        MpTemplateMsgForm.getInstance().clearAllField();
     }
 }

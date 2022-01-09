@@ -64,6 +64,7 @@ public class PeopleManageForm {
 
     private static void initAccountComboBox() {
         accountMap = Maps.newHashMap();
+        peopleManageForm.getAccountComboBox().removeAllItems();
         int msgType = MessageTypeEnum.getMsgTypeForAccount();
         List<TAccount> tAccountList = accountMapper.selectByMsgType(msgType);
         for (TAccount tAccount : tAccountList) {
@@ -97,6 +98,8 @@ public class PeopleManageForm {
         }
         // 隐藏id列
         JTableUtil.hideColumn(peopleManageForm.getPeopleListTable(), 1);
+
+        PeopleEditForm.clearAll();
     }
 
     {
@@ -117,7 +120,7 @@ public class PeopleManageForm {
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         peopleManagePanel = new JPanel();
-        peopleManagePanel.setLayout(new GridLayoutManager(3, 1, new Insets(5, 0, 0, 0), -1, -1));
+        peopleManagePanel.setLayout(new GridLayoutManager(3, 1, new Insets(10, 10, 10, 0), -1, -1));
         peopleManagePanel.setMaximumSize(new Dimension(-1, -1));
         peopleManagePanel.setMinimumSize(new Dimension(-1, -1));
         peopleManagePanel.setPreferredSize(new Dimension(280, -1));
@@ -130,7 +133,7 @@ public class PeopleManageForm {
         peopleListTable.setShowVerticalLines(false);
         scrollPane1.setViewportView(peopleListTable);
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(1, 3, new Insets(0, 5, 5, 0), -1, -1));
+        panel2.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
         peopleManagePanel.add(panel2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         deleteButton = new JButton();
         deleteButton.setIcon(new ImageIcon(getClass().getResource("/icon/remove.png")));

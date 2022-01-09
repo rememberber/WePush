@@ -83,11 +83,10 @@ public class MailMsgForm implements IMsgForm {
     }
 
     @Override
-    public void init(String msgName) {
+    public void init(Integer msgId) {
         clearAllField();
-        List<TMsgMail> tMsgMailList = msgMailMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.EMAIL_CODE, msgName);
-        if (tMsgMailList.size() > 0) {
-            TMsgMail tMsgMail = tMsgMailList.get(0);
+        TMsgMail tMsgMail = msgMailMapper.selectByPrimaryKey(msgId);
+        if (tMsgMail != null) {
             getInstance().getMailTitleTextField().setText(tMsgMail.getTitle());
             getInstance().getMailCcTextField().setText(tMsgMail.getCc());
             getInstance().getMailFilesTextArea().setText(tMsgMail.getFiles());
@@ -100,12 +99,13 @@ public class MailMsgForm implements IMsgForm {
     }
 
     @Override
-    public void save(String msgName) {
+    public void save(Integer accountId, String msgName) {
         boolean existSameMsg = false;
-
-        List<TMsgMail> tMsgMailList = msgMailMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.EMAIL_CODE, msgName);
-        if (tMsgMailList.size() > 0) {
+        Integer msgId = null;
+        TMsgMail msgMail = msgMailMapper.selectByUnique(accountId, MessageTypeEnum.EMAIL_CODE, msgName);
+        if (msgMail != null) {
             existSameMsg = true;
+            msgId = msgMail.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -124,6 +124,7 @@ public class MailMsgForm implements IMsgForm {
 
             TMsgMail tMsgMail = new TMsgMail();
             tMsgMail.setMsgType(MessageTypeEnum.EMAIL_CODE);
+            tMsgMail.setAccountId(accountId);
             tMsgMail.setMsgName(msgName);
             tMsgMail.setTitle(mailTitle);
             tMsgMail.setCc(mailCc);
@@ -136,7 +137,8 @@ public class MailMsgForm implements IMsgForm {
             tMsgMail.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             if (existSameMsg) {
-                msgMailMapper.updateByMsgTypeAndMsgName(tMsgMail);
+                tMsgMail.setId(msgId);
+                msgMailMapper.updateByPrimaryKeySelective(tMsgMail);
             } else {
                 msgMailMapper.insertSelective(tMsgMail);
             }
@@ -189,7 +191,8 @@ public class MailMsgForm implements IMsgForm {
     /**
      * 清空所有界面字段
      */
-    public static void clearAllField() {
+    @Override
+    public void clearAllField() {
         getInstance().getMailTitleTextField().setText("");
         getInstance().getMailCcTextField().setText("");
         getInstance().getMailFilesTextArea().setText("");

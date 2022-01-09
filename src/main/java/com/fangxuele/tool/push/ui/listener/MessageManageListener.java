@@ -5,18 +5,8 @@ import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.*;
-import com.fangxuele.tool.push.domain.TWxAccount;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
-import com.fangxuele.tool.push.ui.UiConsts;
-import com.fangxuele.tool.push.ui.form.MainWindow;
-import com.fangxuele.tool.push.ui.form.MessageEditForm;
-import com.fangxuele.tool.push.ui.form.MessageManageForm;
-import com.fangxuele.tool.push.ui.form.MessageTypeForm;
-import com.fangxuele.tool.push.ui.form.PushHisForm;
-import com.fangxuele.tool.push.ui.form.SettingForm;
-import com.fangxuele.tool.push.ui.form.msg.KefuMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.MaSubscribeMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.MpTemplateMsgForm;
+import com.fangxuele.tool.push.ui.form.*;
 import com.fangxuele.tool.push.util.MybatisUtil;
 
 import javax.swing.*;
@@ -24,7 +14,6 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.List;
 
 /**
  * <pre>
@@ -62,10 +51,9 @@ public class MessageManageListener {
                 PushHisForm.getInstance().getPushHisTextArea().setText("");
 
                 int selectedRow = msgHistable.getSelectedRow();
-                String selectedMsgName = msgHistable
-                        .getValueAt(selectedRow, 0).toString();
+                Integer selectedMsgId = (Integer) msgHistable.getValueAt(selectedRow, 1);
 
-                MessageEditForm.init(selectedMsgName);
+                MessageEditForm.init(selectedMsgId);
                 super.mousePressed(e);
             }
         });
@@ -88,36 +76,35 @@ public class MessageManageListener {
 
                         for (int i = selectedRows.length; i > 0; i--) {
                             int selectedRow = msgHistable.getSelectedRow();
-                            String msgName = (String) tableModel.getValueAt(selectedRow, 0);
+                            Integer msgId = (Integer) tableModel.getValueAt(selectedRow, 1);
                             if (msgType == MessageTypeEnum.KEFU_CODE) {
-                                msgKefuMapper.deleteByMsgTypeAndName(msgType, msgName);
+                                msgKefuMapper.deleteByPrimaryKey(msgId);
                             } else if (msgType == MessageTypeEnum.KEFU_PRIORITY_CODE) {
-                                msgKefuPriorityMapper.deleteByMsgTypeAndName(msgType, msgName);
+                                msgKefuPriorityMapper.deleteByPrimaryKey(msgId);
                             } else if (msgType == MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE) {
-                                wxUniformMapper.deleteByMsgTypeAndName(msgType, msgName);
+                                wxUniformMapper.deleteByPrimaryKey(msgId);
                             } else if (msgType == MessageTypeEnum.MA_TEMPLATE_CODE) {
-                                msgMaTemplateMapper.deleteByMsgTypeAndName(msgType, msgName);
+                                msgMaTemplateMapper.deleteByPrimaryKey(msgId);
                             } else if (msgType == MessageTypeEnum.MA_SUBSCRIBE_CODE) {
-                                msgMaSubscribeMapper.deleteByMsgTypeAndName(msgType, msgName);
+                                msgMaSubscribeMapper.deleteByPrimaryKey(msgId);
                             } else if (msgType == MessageTypeEnum.MP_TEMPLATE_CODE) {
-                                msgMpTemplateMapper.deleteByMsgTypeAndName(msgType, msgName);
+                                msgMpTemplateMapper.deleteByPrimaryKey(msgId);
                             } else if (msgType == MessageTypeEnum.MP_SUBSCRIBE_CODE) {
-                                msgMpSubscribeMapper.deleteByMsgTypeAndName(msgType, msgName);
+                                msgMpSubscribeMapper.deleteByPrimaryKey(msgId);
                             } else if (msgType == MessageTypeEnum.EMAIL_CODE) {
-                                msgMailMapper.deleteByMsgTypeAndName(msgType, msgName);
+                                msgMailMapper.deleteByPrimaryKey(msgId);
                             } else if (msgType == MessageTypeEnum.HTTP_CODE) {
-                                msgHttpMapper.deleteByMsgTypeAndName(msgType, msgName);
+                                msgHttpMapper.deleteByPrimaryKey(msgId);
                             } else if (msgType == MessageTypeEnum.WX_CP_CODE) {
-                                msgWxCpMapper.deleteByMsgTypeAndName(msgType, msgName);
+                                msgWxCpMapper.deleteByPrimaryKey(msgId);
                             } else if (msgType == MessageTypeEnum.DING_CODE) {
-                                msgDingMapper.deleteByMsgTypeAndName(msgType, msgName);
+                                msgDingMapper.deleteByPrimaryKey(msgId);
                             } else {
-                                msgSmsMapper.deleteByMsgTypeAndName(msgType, msgName);
+                                msgSmsMapper.deleteByPrimaryKey(msgId);
                             }
 
                             tableModel.removeRow(selectedRow);
                         }
-                        MessageEditForm.init(null);
                     }
                 }
             } catch (Exception e1) {
@@ -135,59 +122,11 @@ public class MessageManageListener {
         });
 
         // 切换账号事件
-        MessageManageForm.getInstance().getAccountSwitchComboBox().addItemListener(e -> {
-            if (MessageManageForm.accountSwitchComboBoxListenIgnore) {
-                return;
-            }
+        MessageManageForm.getInstance().getAccountComboBox().addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 String accountName = e.getItem().toString();
 
-                int msgType = App.config.getMsgType();
-                SettingForm settingForm = SettingForm.getInstance();
-
-                switch (msgType) {
-                    case MessageTypeEnum.MP_TEMPLATE_CODE:
-                    case MessageTypeEnum.MP_SUBSCRIBE_CODE:
-                        MpTemplateMsgForm.clearAllField();
-                    case MessageTypeEnum.KEFU_CODE:
-                        KefuMsgForm.clearAllField();
-                    case MessageTypeEnum.KEFU_PRIORITY_CODE:
-                        KefuMsgForm.clearAllField();
-                        MpTemplateMsgForm.clearAllField();
-                        // 多账号切换-公众号
-                        List<TWxAccount> wxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(UiConsts.WX_ACCOUNT_TYPE_MP, accountName);
-                        if (wxAccountList.size() > 0) {
-                            TWxAccount tWxAccount = wxAccountList.get(0);
-                            settingForm.getMpAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
-                            App.config.setWechatMpName(tWxAccount.getAccountName());
-                            App.config.setWxAccountId(tWxAccount.getId());
-                            App.config.save();
-                        }
-                        MessageEditForm.getInstance().getMsgNameField().setText("");
-                        MessageManageForm.initMessageList();
-                        break;
-
-                    case MessageTypeEnum.MA_SUBSCRIBE_CODE:
-                        MaSubscribeMsgForm.clearAllField();
-                    case MessageTypeEnum.MA_TEMPLATE_CODE:
-                    case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE:
-                        MaSubscribeMsgForm.clearAllField();
-                        MpTemplateMsgForm.clearAllField();
-                        // 多账号切换-小程序
-                        wxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(UiConsts.WX_ACCOUNT_TYPE_MA, accountName);
-                        if (wxAccountList.size() > 0) {
-                            TWxAccount tWxAccount = wxAccountList.get(0);
-                            settingForm.getMaAccountSwitchComboBox().setSelectedItem(tWxAccount.getAccountName());
-                            App.config.setMiniAppName(tWxAccount.getAccountName());
-                            App.config.setWxAccountId(tWxAccount.getId());
-                            App.config.save();
-                        }
-                        MessageEditForm.getInstance().getMsgNameField().setText("");
-                        MessageManageForm.initMessageList();
-                        break;
-                    default:
-                        break;
-                }
+                MessageManageForm.initMessageList();
             }
         });
     }

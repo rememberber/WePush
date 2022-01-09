@@ -10,6 +10,7 @@ import com.fangxuele.tool.push.domain.TPeopleData;
 import com.fangxuele.tool.push.domain.TPeopleImportConfig;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.PeopleImportWayEnum;
+import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.UndoUtil;
@@ -33,7 +34,7 @@ public class PeopleEditForm {
     private JTextField searchTextField;
     private JButton searchButton;
     private JTable memberListTable;
-    private JButton selectAllButton;
+    private JButton clearAllButton;
     private JButton importButton;
     private JButton exportButton;
     private JButton deleteButton;
@@ -72,7 +73,7 @@ public class PeopleEditForm {
         // 设置滚动条速度
 //        peopleEditForm.getAccountEditScrollPane().getVerticalScrollBar().setUnitIncrement(15);
 //        peopleEditForm.getAccountEditScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
-
+        clearAll();
     }
 
     /**
@@ -116,7 +117,11 @@ public class PeopleEditForm {
         }
 
         // -----init Table
+        List<TPeopleData> peopleDataList = peopleDataMapper.selectByPeopleIdLimit20(peopleId);
+        initPeopleDataTable(peopleDataList);
+    }
 
+    public static void initPeopleDataTable(List<TPeopleData> peopleDataList) {
         JTable memberListTable = peopleEditForm.getMemberListTable();
 
         // 人群数据列表
@@ -128,7 +133,6 @@ public class PeopleEditForm {
 
         Object[] data;
 
-        List<TPeopleData> peopleDataList = peopleDataMapper.selectByPeopleId(peopleId);
         for (TPeopleData peopleData : peopleDataList) {
             data = new Object[3];
             data[0] = peopleData.getPin();
@@ -136,6 +140,29 @@ public class PeopleEditForm {
             data[2] = peopleData.getId();
             model.addRow(data);
         }
+        // 隐藏id列
+        JTableUtil.hideColumn(memberListTable, 2);
+        // 设置列宽
+        TableColumnModel tableColumnModel = memberListTable.getColumnModel();
+        tableColumnModel.getColumn(0).setPreferredWidth(peopleEditForm.getImportButton().getWidth() * 3);
+        tableColumnModel.getColumn(0).setMaxWidth(peopleEditForm.getImportButton().getWidth() * 3);
+    }
+
+    public static void clearAll() {
+        PeopleManageListener.selectedPeopleId = null;
+
+        peopleEditForm.getPeopleNameLabel().setText("-");
+        peopleEditForm.getMemberTabCountLabel().setText("-");
+        peopleEditForm.getPeopleAccountLabel().setText("-");
+        peopleEditForm.getPeopleMsgTypeLabel().setText("-");
+        peopleEditForm.getLastImportWayLabel().setText("-");
+
+        // 人群数据列表
+        JTable memberListTable = peopleEditForm.getMemberListTable();
+        String[] headerNames = {"PIN", "VarData", "id"};
+        DefaultTableModel model = new DefaultTableModel(null, headerNames);
+        memberListTable.setModel(model);
+
         // 隐藏id列
         JTableUtil.hideColumn(memberListTable, 2);
         // 设置列宽
@@ -160,9 +187,9 @@ public class PeopleEditForm {
      */
     private void $$$setupUI$$$() {
         mainPanel = new JPanel();
-        mainPanel.setLayout(new GridLayoutManager(4, 1, new Insets(10, 0, 0, 0), -1, -1));
+        mainPanel.setLayout(new GridLayoutManager(4, 1, new Insets(10, 0, 10, 10), -1, -1));
         final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(1, 2, new Insets(5, 0, 0, 5), -1, -1));
+        panel1.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         mainPanel.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         searchTextField = new JTextField();
         panel1.add(searchTextField, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -178,12 +205,12 @@ public class PeopleEditForm {
         memberListTable.setRowHeight(36);
         scrollPane1.setViewportView(memberListTable);
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(1, 6, new Insets(0, 5, 5, 5), -1, -1));
+        panel2.setLayout(new GridLayoutManager(1, 6, new Insets(0, 0, 0, 0), -1, -1));
         mainPanel.add(panel2, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        selectAllButton = new JButton();
-        selectAllButton.setIcon(new ImageIcon(getClass().getResource("/icon/selectall_dark.png")));
-        selectAllButton.setText("清空");
-        panel2.add(selectAllButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        clearAllButton = new JButton();
+        clearAllButton.setIcon(new ImageIcon(getClass().getResource("/icon/selectall_dark.png")));
+        clearAllButton.setText("清空");
+        panel2.add(clearAllButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         importButton = new JButton();
         importButton.setIcon(new ImageIcon(getClass().getResource("/icon/import_dark.png")));
         importButton.setText("导入");
@@ -202,7 +229,7 @@ public class PeopleEditForm {
         label1.setText("注：列表仅展示20条数据，查看更多请导出");
         panel2.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         memberTabUpPanel = new JPanel();
-        memberTabUpPanel.setLayout(new GridLayoutManager(6, 3, new Insets(0, 5, 5, 0), -1, -1));
+        memberTabUpPanel.setLayout(new GridLayoutManager(6, 3, new Insets(0, 0, 0, 0), -1, -1));
         mainPanel.add(memberTabUpPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         memberTabImportProgressBar = new JProgressBar();
         memberTabUpPanel.add(memberTabImportProgressBar, new GridConstraints(5, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));

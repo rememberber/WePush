@@ -1,6 +1,6 @@
 package com.fangxuele.tool.push.logic;
 
-import cn.hutool.core.date.BetweenFormater;
+import cn.hutool.core.date.BetweenFormatter;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.thread.ThreadUtil;
@@ -230,11 +230,11 @@ public class PushRunThread extends Thread {
             long leftTimeMillis = (long) ((double) lastTimeMillis / (totalSentCount) * (PushData.allUser.size() - totalSentCount));
 
             // 耗时
-            String formatBetweenLast = DateUtil.formatBetween(lastTimeMillis, BetweenFormater.Level.SECOND);
+            String formatBetweenLast = DateUtil.formatBetween(lastTimeMillis, BetweenFormatter.Level.SECOND);
             pushForm.getPushLastTimeLabel().setText("".equals(formatBetweenLast) ? "0s" : formatBetweenLast);
 
             // 预计剩余
-            String formatBetweenLeft = DateUtil.formatBetween(leftTimeMillis, BetweenFormater.Level.SECOND);
+            String formatBetweenLeft = DateUtil.formatBetween(leftTimeMillis, BetweenFormatter.Level.SECOND);
             pushForm.getPushLeftTimeLabel().setText("".equals(formatBetweenLeft) ? "0s" : formatBetweenLeft);
 
             pushForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));

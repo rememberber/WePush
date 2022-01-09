@@ -80,12 +80,11 @@ public class WxCpMsgForm implements IMsgForm {
     }
 
     @Override
-    public void init(String msgName) {
+    public void init(Integer msgId) {
         clearAllField();
         initAppNameList();
-        List<TMsgWxCp> tMsgWxCpList = msgWxCpMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.WX_CP_CODE, msgName);
-        if (tMsgWxCpList.size() > 0) {
-            TMsgWxCp tMsgWxCp = tMsgWxCpList.get(0);
+        TMsgWxCp tMsgWxCp = msgWxCpMapper.selectByPrimaryKey(msgId);
+        if (tMsgWxCp != null) {
             String cpMsgType = tMsgWxCp.getCpMsgType();
             getInstance().getAppNameComboBox().setSelectedItem(agentIdToAppNameMap.get(tMsgWxCp.getAgentId()));
             getInstance().getMsgTypeComboBox().setSelectedItem(cpMsgType);
@@ -107,7 +106,7 @@ public class WxCpMsgForm implements IMsgForm {
     }
 
     @Override
-    public void save(String msgName) {
+    public void save(Integer accountId, String msgName) {
         boolean existSameMsg = false;
 
         if (getInstance().getAppNameComboBox().getSelectedItem() == null) {
@@ -115,10 +114,11 @@ public class WxCpMsgForm implements IMsgForm {
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
-
-        List<TMsgWxCp> tMsgWxCpList = msgWxCpMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.WX_CP_CODE, msgName);
-        if (tMsgWxCpList.size() > 0) {
+        Integer msgId = null;
+        TMsgWxCp msgWxCp = msgWxCpMapper.selectByUnique(accountId, MessageTypeEnum.WX_CP_CODE, msgName);
+        if (msgWxCp != null) {
             existSameMsg = true;
+            msgId = msgWxCp.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -141,6 +141,7 @@ public class WxCpMsgForm implements IMsgForm {
 
             TMsgWxCp tMsgWxCp = new TMsgWxCp();
             tMsgWxCp.setMsgType(MessageTypeEnum.WX_CP_CODE);
+            tMsgWxCp.setAccountId(accountId);
             tMsgWxCp.setMsgName(msgName);
             tMsgWxCp.setAgentId(appNameToAgentIdMap.get(getInstance().getAppNameComboBox().getSelectedItem()));
             tMsgWxCp.setCpMsgType(cpMsgType);
@@ -156,7 +157,8 @@ public class WxCpMsgForm implements IMsgForm {
             tMsgWxCp.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             if (existSameMsg) {
-                msgWxCpMapper.updateByMsgTypeAndMsgName(tMsgWxCp);
+                tMsgWxCp.setId(msgId);
+                msgWxCpMapper.updateByPrimaryKeySelective(tMsgWxCp);
             } else {
                 tMsgWxCp.setCreateTime(now);
                 msgWxCpMapper.insertSelective(tMsgWxCp);
@@ -244,7 +246,8 @@ public class WxCpMsgForm implements IMsgForm {
     /**
      * 清空所有界面字段
      */
-    public static void clearAllField() {
+    @Override
+    public void clearAllField() {
         getInstance().getContentTextArea().setText("");
         getInstance().getTitleTextField().setText("");
         getInstance().getPicUrlTextField().setText("");

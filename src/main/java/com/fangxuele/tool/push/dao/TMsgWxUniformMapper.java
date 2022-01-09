@@ -22,9 +22,11 @@ public interface TMsgWxUniformMapper {
 
     int deleteByMsgTypeAndName(@Param("msgType") int msgType, @Param("msgName") String msgName);
 
-    List<TMsgWxUniform> selectByMsgTypeAndMsgName(@Param("msgType") int msgType, @Param("msgName") String msgName);
+    TMsgWxUniform selectByUnique(@Param("accountId") Integer selectedAccountId, @Param("msgType") int msgType, @Param("msgName") String msgName);
 
     int updateByMsgTypeAndMsgName(TMsgWxUniform tMsgWxUniform);
 
     List<TMsgWxUniform> selectByMsgTypeAndWxAccountId(@Param("msgType") int msgType, @Param("wxAccountId") Integer wxAccountId);
+
+    List<TMsgWxUniform> selectByMsgTypeAndAccountId(@Param("msgType") int msgType, @Param("accountId") Integer selectedAccountId);
 }

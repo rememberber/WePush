@@ -125,7 +125,8 @@
         modified_time = #{modifiedTime,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>
-    <select id="selectByPeopleId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+
+    <select id="selectByPeopleIdLimit20" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from t_people_data
@@ -138,5 +139,25 @@
         count(*)
         from t_people_data
         where people_id = #{peopleId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPeopleId" parameterType="java.lang.Integer">
+        delete from t_people_data
+        where people_id = #{peopleId,jdbcType=INTEGER}
+    </delete>
+    <select id="selectByPeopleId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_people_data
+        where people_id = #{peopleId,jdbcType=INTEGER}
+        order by modified_time desc
+    </select>
+
+    <select id="selectByPeopleIdAndKeyword" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_people_data
+        where people_id = #{peopleId,jdbcType=INTEGER}
+        and var_data like #{keyWord,jdbcType=VARCHAR}
+        order by modified_time desc
     </select>
 </mapper>

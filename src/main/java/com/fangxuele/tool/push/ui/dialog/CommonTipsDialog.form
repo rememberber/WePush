@@ -59,13 +59,14 @@
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties/>
-            <border type="none"/>
+            <border type="empty"/>
             <children>
               <component id="4a2b" class="javax.swing.JTextPane" binding="textPane1" default-binding="true">
                 <constraints/>
                 <properties>
                   <editable value="false"/>
                   <margin top="80" left="28" bottom="3" right="28"/>
+                  <requestFocusEnabled value="false"/>
                 </properties>
               </component>
             </children>

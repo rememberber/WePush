@@ -150,7 +150,7 @@ public class MpSubscribeMsgForm implements IMsgForm {
     }
 
     @Override
-    public void init(String msgName) {
+    public void init(Integer msgId) {
         MpSubscribeMsgForm mpTemplateMsgForm = getInstance();
         if (UIUtil.isDarkLaf()) {
             Color bgColor = new Color(43, 43, 43);
@@ -161,11 +161,8 @@ public class MpSubscribeMsgForm implements IMsgForm {
 
         clearAllField();
 
-        Integer msgId = 0;
-        List<TMsgMpSubscribe> tMsgMpSubscribeList = tMsgMpSubscribeMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.MP_SUBSCRIBE_CODE, msgName);
-        if (tMsgMpSubscribeList.size() > 0) {
-            TMsgMpSubscribe tMsgMpSubscribe = tMsgMpSubscribeList.get(0);
-            msgId = tMsgMpSubscribe.getId();
+        TMsgMpSubscribe tMsgMpSubscribe = tMsgMpSubscribeMapper.selectByPrimaryKey(msgId);
+        if (tMsgMpSubscribe != null) {
             selectedMsgTemplateId = tMsgMpSubscribe.getTemplateId();
             initTemplateList();
 
@@ -186,14 +183,14 @@ public class MpSubscribeMsgForm implements IMsgForm {
     }
 
     @Override
-    public void save(String msgName) {
+    public void save(Integer accountId, String msgName) {
         int msgId = 0;
         boolean existSameMsg = false;
 
-        List<TMsgMpSubscribe> tMsgMpSubscribeList = tMsgMpSubscribeMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.MP_SUBSCRIBE_CODE, msgName);
-        if (tMsgMpSubscribeList.size() > 0) {
+        TMsgMpSubscribe msgMpSubscribe = tMsgMpSubscribeMapper.selectByUnique(accountId, MessageTypeEnum.MP_SUBSCRIBE_CODE, msgName);
+        if (msgMpSubscribe != null) {
             existSameMsg = true;
-            msgId = tMsgMpSubscribeList.get(0).getId();
+            msgId = msgMpSubscribe.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -213,6 +210,7 @@ public class MpSubscribeMsgForm implements IMsgForm {
 
             TMsgMpSubscribe tMsgMpSubscribe = new TMsgMpSubscribe();
             tMsgMpSubscribe.setMsgType(MessageTypeEnum.MP_SUBSCRIBE_CODE);
+            tMsgMpSubscribe.setAccountId(accountId);
             tMsgMpSubscribe.setMsgName(msgName);
             tMsgMpSubscribe.setTemplateId(templateId);
             tMsgMpSubscribe.setUrl(templateUrl);
@@ -226,7 +224,8 @@ public class MpSubscribeMsgForm implements IMsgForm {
             tMsgMpSubscribe.setWxAccountId(App.config.getWxAccountId());
 
             if (existSameMsg) {
-                tMsgMpSubscribeMapper.updateByMsgTypeAndMsgName(tMsgMpSubscribe);
+                tMsgMpSubscribe.setId(msgId);
+                tMsgMpSubscribeMapper.updateByPrimaryKeySelective(tMsgMpSubscribe);
             } else {
                 tMsgMpSubscribeMapper.insertSelective(tMsgMpSubscribe);
                 msgId = tMsgMpSubscribe.getId();
@@ -425,7 +424,8 @@ public class MpSubscribeMsgForm implements IMsgForm {
     /**
      * 清空所有界面字段
      */
-    public static void clearAllField() {
+    @Override
+    public void clearAllField() {
         clearAllFieldExceptTemplateListAndContent();
         getInstance().getTemplateListComboBox().removeAllItems();
         getInstance().getTemplateContentTextArea().setText("");

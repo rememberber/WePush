@@ -18,11 +18,13 @@ public interface TMsgMailMapper {
 
     int updateByPrimaryKey(TMsgMail record);
 
-    List<TMsgMail> selectByMsgTypeAndMsgName(@Param("msgType") int msgType, @Param("msgName") String msgName);
+    TMsgMail selectByUnique(@Param("accountId") Integer selectedAccountId, @Param("msgType") int msgType, @Param("msgName") String msgName);
 
     int updateByMsgTypeAndMsgName(TMsgMail tMsgMail);
 
     List<TMsgMail> selectByMsgType(int msgType);
 
     int deleteByMsgTypeAndName(@Param("msgType") int msgType, @Param("msgName") String msgName);
+
+    List<TMsgMail> selectByMsgTypeAndAccountId(@Param("msgType") int msgType, @Param("accountId") Integer selectedAccountId);
 }

@@ -18,11 +18,13 @@ public interface TMsgHttpMapper {
 
     int updateByPrimaryKey(TMsgHttp record);
 
-    List<TMsgHttp> selectByMsgTypeAndMsgName(@Param("msgType") int msgType, @Param("msgName") String msgName);
+    TMsgHttp selectByUnique(@Param("accountId") Integer selectedAccountId, @Param("msgType") int msgType, @Param("msgName") String msgName);
 
     int updateByMsgTypeAndMsgName(TMsgHttp tMsgHttp);
 
     List<TMsgHttp> selectByMsgType(int msgType);
 
     int deleteByMsgTypeAndName(@Param("msgType") int msgType, @Param("msgName") String msgName);
+
+    List<TMsgHttp> selectByMsgTypeAndAccountId(@Param("msgType") int msgType, @Param("accountId") Integer selectedAccountId);
 }

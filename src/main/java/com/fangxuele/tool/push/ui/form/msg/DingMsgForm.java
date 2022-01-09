@@ -137,12 +137,12 @@ public class DingMsgForm implements IMsgForm {
     }
 
     @Override
-    public void init(String msgName) {
+    public void init(Integer msgId) {
         clearAllField();
         initAppNameList();
-        List<TMsgDing> tMsgDingList = msgDingMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.DING_CODE, msgName);
-        if (tMsgDingList.size() > 0) {
-            TMsgDing tMsgDing = tMsgDingList.get(0);
+
+        TMsgDing tMsgDing = msgDingMapper.selectByPrimaryKey(msgId);
+        if (tMsgDing != null) {
             String dingMsgType = tMsgDing.getDingMsgType();
             getInstance().getAppNameComboBox().setSelectedItem(agentIdToAppNameMap.get(tMsgDing.getAgentId()));
             getInstance().getMsgTypeComboBox().setSelectedItem(dingMsgType);
@@ -167,7 +167,7 @@ public class DingMsgForm implements IMsgForm {
     }
 
     @Override
-    public void save(String msgName) {
+    public void save(Integer accountId, String msgName) {
         boolean existSameMsg = false;
 
         if (getInstance().getAppNameComboBox().getSelectedItem() == null) {
@@ -175,10 +175,11 @@ public class DingMsgForm implements IMsgForm {
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
-
-        List<TMsgDing> tMsgDingList = msgDingMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.DING_CODE, msgName);
-        if (tMsgDingList.size() > 0) {
+        Integer msgId = null;
+        TMsgDing msgDing = msgDingMapper.selectByUnique(accountId, MessageTypeEnum.DING_CODE, msgName);
+        if (msgDing != null) {
             existSameMsg = true;
+            msgId = msgDing.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -202,6 +203,7 @@ public class DingMsgForm implements IMsgForm {
 
             TMsgDing tMsgDing = new TMsgDing();
             tMsgDing.setMsgType(MessageTypeEnum.DING_CODE);
+            tMsgDing.setAccountId(accountId);
             tMsgDing.setMsgName(msgName);
             tMsgDing.setAgentId(appNameToAgentIdMap.get(getInstance().getAppNameComboBox().getSelectedItem()));
             tMsgDing.setDingMsgType(dingMsgType);
@@ -226,7 +228,8 @@ public class DingMsgForm implements IMsgForm {
             tMsgDing.setWebHook(webHook);
 
             if (existSameMsg) {
-                msgDingMapper.updateByMsgTypeAndMsgName(tMsgDing);
+                tMsgDing.setId(msgId);
+                msgDingMapper.updateByPrimaryKeySelective(tMsgDing);
             } else {
                 tMsgDing.setCreateTime(now);
                 msgDingMapper.insertSelective(tMsgDing);
@@ -337,7 +340,8 @@ public class DingMsgForm implements IMsgForm {
     /**
      * 清空所有界面字段
      */
-    public static void clearAllField() {
+    @Override
+    public void clearAllField() {
         getInstance().getContentTextArea().setText("");
         getInstance().getTitleTextField().setText("");
         getInstance().getPicUrlTextField().setText("");

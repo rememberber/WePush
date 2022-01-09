@@ -100,12 +100,10 @@ public class MaSubscribeMsgForm implements IMsgForm {
     }
 
     @Override
-    public void init(String msgName) {
+    public void init(Integer msgId) {
         clearAllField();
-        List<TMsgMaSubscribe> tMsgMaSubscribeList = msgMaSubscribeMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.MA_SUBSCRIBE_CODE, msgName);
-        Integer msgId = 0;
-        if (tMsgMaSubscribeList.size() > 0) {
-            TMsgMaSubscribe tMsgMaSubscribe = tMsgMaSubscribeList.get(0);
+        TMsgMaSubscribe tMsgMaSubscribe = msgMaSubscribeMapper.selectByPrimaryKey(msgId);
+        if (tMsgMaSubscribe != null) {
             msgId = tMsgMaSubscribe.getId();
             getInstance().getMsgTemplateIdTextField().setText(tMsgMaSubscribe.getTemplateId());
             getInstance().getMsgTemplateUrlTextField().setText(tMsgMaSubscribe.getPage());
@@ -140,14 +138,14 @@ public class MaSubscribeMsgForm implements IMsgForm {
     }
 
     @Override
-    public void save(String msgName) {
+    public void save(Integer accountId, String msgName) {
         int msgId = 0;
         boolean existSameMsg = false;
 
-        List<TMsgMaSubscribe> tMsgMaSubscribeList = msgMaSubscribeMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.MA_SUBSCRIBE_CODE, msgName);
-        if (tMsgMaSubscribeList.size() > 0) {
+        TMsgMaSubscribe msgMaSubscribe = msgMaSubscribeMapper.selectByUnique(accountId, MessageTypeEnum.MA_SUBSCRIBE_CODE, msgName);
+        if (msgMaSubscribe != null) {
             existSameMsg = true;
-            msgId = tMsgMaSubscribeList.get(0).getId();
+            msgId = msgMaSubscribe.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -165,6 +163,7 @@ public class MaSubscribeMsgForm implements IMsgForm {
 
             TMsgMaSubscribe tMsgMaSubscribe = new TMsgMaSubscribe();
             tMsgMaSubscribe.setMsgType(MessageTypeEnum.MA_SUBSCRIBE_CODE);
+            tMsgMaSubscribe.setAccountId(accountId);
             tMsgMaSubscribe.setMsgName(msgName);
             tMsgMaSubscribe.setTemplateId(templateId);
             tMsgMaSubscribe.setPage(templateUrl);
@@ -176,7 +175,8 @@ public class MaSubscribeMsgForm implements IMsgForm {
             tMsgMaSubscribe.setWxAccountId(App.config.getWxAccountId());
 
             if (existSameMsg) {
-                msgMaSubscribeMapper.updateByMsgTypeAndMsgName(tMsgMaSubscribe);
+                tMsgMaSubscribe.setId(msgId);
+                msgMaSubscribeMapper.updateByPrimaryKeySelective(tMsgMaSubscribe);
             } else {
                 msgMaSubscribeMapper.insertSelective(tMsgMaSubscribe);
                 msgId = tMsgMaSubscribe.getId();
@@ -254,7 +254,8 @@ public class MaSubscribeMsgForm implements IMsgForm {
     /**
      * 清空所有界面字段
      */
-    public static void clearAllField() {
+    @Override
+    public void clearAllField() {
         getInstance().getMsgTemplateIdTextField().setText("");
         getInstance().getMsgTemplateUrlTextField().setText("");
         getInstance().getTemplateDataNameTextField().setText("");

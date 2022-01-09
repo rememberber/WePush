@@ -10,7 +10,6 @@ import cn.hutool.poi.excel.ExcelUtil;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPeopleDataMapper;
 import com.fangxuele.tool.push.dao.TPeopleImportConfigMapper;
-import com.fangxuele.tool.push.dao.TPeopleMapper;
 import com.fangxuele.tool.push.domain.TPeopleData;
 import com.fangxuele.tool.push.domain.TPeopleImportConfig;
 import com.fangxuele.tool.push.logic.PeopleImportWayEnum;
@@ -34,8 +33,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class ImportByFile extends JDialog {
@@ -50,7 +47,6 @@ public class ImportByFile extends JDialog {
 
     public static final String TXT_FILE_DATA_SEPERATOR_REGEX = "\\|";
 
-    private static TPeopleMapper peopleMapper = MybatisUtil.getSqlSession().getMapper(TPeopleMapper.class);
     private static TPeopleDataMapper peopleDataMapper = MybatisUtil.getSqlSession().getMapper(TPeopleDataMapper.class);
     private static TPeopleImportConfigMapper peopleImportConfigMapper = MybatisUtil.getSqlSession().getMapper(TPeopleImportConfigMapper.class);
 
@@ -134,7 +130,7 @@ public class ImportByFile extends JDialog {
     /**
      * 通过文件导入
      */
-    public static void importFromFile(String filePath) {
+    public void importFromFile(String filePath) {
         PeopleEditForm peopleEditForm = PeopleEditForm.getInstance();
         peopleEditForm.getImportButton().setEnabled(false);
         JPanel memberPanel = peopleEditForm.getMainPanel();
@@ -204,7 +200,6 @@ public class ImportByFile extends JDialog {
             } else if (fileNameLowerCase.endsWith(".xlsx") || fileNameLowerCase.endsWith(".xls")) {
                 ExcelReader excelReader = ExcelUtil.getReader(file);
                 List<List<Object>> readAll = excelReader.read(1, Integer.MAX_VALUE);
-                PushData.allUser = Collections.synchronizedList(new ArrayList<>());
 
                 for (List<Object> objects : readAll) {
                     if (objects != null && objects.size() > 0) {
@@ -212,6 +207,16 @@ public class ImportByFile extends JDialog {
                         for (int i = 0; i < objects.size(); i++) {
                             nextLine[i] = objects.get(i).toString();
                         }
+
+                        tPeopleData = new TPeopleData();
+                        tPeopleData.setPeopleId(PeopleManageListener.selectedPeopleId);
+                        tPeopleData.setPin(nextLine[0]);
+                        tPeopleData.setVarData(JSONUtil.toJsonStr(nextLine));
+                        tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                        tPeopleData.setCreateTime(now);
+                        tPeopleData.setModifiedTime(now);
+
+                        peopleDataMapper.insert(tPeopleData);
                         currentImported++;
                         memberCountLabel.setText(String.valueOf(currentImported));
                     }

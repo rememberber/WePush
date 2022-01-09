@@ -68,6 +68,7 @@ public class AccountManageListener {
                             tableModel.removeRow(selectedRow);
                         }
                         AccountEditForm.init(null);
+                        PeopleManageForm.init();
                     }
                 }
             } catch (Exception e1) {

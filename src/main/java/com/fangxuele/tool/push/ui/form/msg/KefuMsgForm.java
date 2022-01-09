@@ -27,7 +27,6 @@ import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.io.File;
-import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -96,11 +95,10 @@ public class KefuMsgForm implements IMsgForm {
     }
 
     @Override
-    public void init(String msgName) {
+    public void init(Integer msgId) {
         clearAllField();
-        List<TMsgKefu> tMsgKefuList = msgKefuMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.KEFU_CODE, msgName);
-        if (tMsgKefuList.size() > 0) {
-            TMsgKefu tMsgKefu = tMsgKefuList.get(0);
+        TMsgKefu tMsgKefu = msgKefuMapper.selectByPrimaryKey(msgId);
+        if (tMsgKefu != null) {
             String kefuMsgType = tMsgKefu.getKefuMsgType();
             getInstance().getMsgKefuMsgTypeComboBox().setSelectedItem(kefuMsgType);
             if ("文本消息".equals(kefuMsgType)) {
@@ -128,12 +126,13 @@ public class KefuMsgForm implements IMsgForm {
     }
 
     @Override
-    public void save(String msgName) {
+    public void save(Integer accountId, String msgName) {
         boolean existSameMsg = false;
-
-        List<TMsgKefu> tMsgKefuList = msgKefuMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.KEFU_CODE, msgName);
-        if (tMsgKefuList.size() > 0) {
+        Integer msgId = null;
+        TMsgKefu msgKefu = msgKefuMapper.selectByUnique(accountId, MessageTypeEnum.KEFU_CODE, msgName);
+        if (msgKefu != null) {
             existSameMsg = true;
+            msgId = msgKefu.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -158,6 +157,7 @@ public class KefuMsgForm implements IMsgForm {
 
             TMsgKefu tMsgKefu = new TMsgKefu();
             tMsgKefu.setMsgType(MessageTypeEnum.KEFU_CODE);
+            tMsgKefu.setAccountId(accountId);
             tMsgKefu.setMsgName(msgName);
             tMsgKefu.setKefuMsgType(kefuMsgType);
             tMsgKefu.setContent(kefuMsgContent);
@@ -175,7 +175,8 @@ public class KefuMsgForm implements IMsgForm {
             tMsgKefu.setWxAccountId(App.config.getWxAccountId());
 
             if (existSameMsg) {
-                msgKefuMapper.updateByMsgTypeAndMsgName(tMsgKefu);
+                tMsgKefu.setId(msgId);
+                msgKefuMapper.updateByPrimaryKeySelective(tMsgKefu);
             } else {
                 tMsgKefu.setCreateTime(now);
                 msgKefuMapper.insertSelective(tMsgKefu);
@@ -248,7 +249,8 @@ public class KefuMsgForm implements IMsgForm {
     /**
      * 清空所有界面字段
      */
-    public static void clearAllField() {
+    @Override
+    public void clearAllField() {
         getInstance().getContentTextArea().setText("");
         getInstance().getMsgKefuMsgTitleTextField().setText("");
         getInstance().getMsgKefuPicUrlTextField().setText("");

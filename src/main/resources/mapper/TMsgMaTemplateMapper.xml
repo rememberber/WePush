@@ -3,6 +3,7 @@
 <mapper namespace="com.fangxuele.tool.push.dao.TMsgMaTemplateMapper">
     <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TMsgMaTemplate">
         <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="account_id" jdbcType="INTEGER" property="accountId"/>
         <result column="msg_type" jdbcType="INTEGER" property="msgType"/>
         <result column="msg_name" jdbcType="VARCHAR" property="msgName"/>
         <result column="template_id" jdbcType="VARCHAR" property="templateId"/>
@@ -14,7 +15,7 @@
         <result column="wx_account_id" jdbcType="INTEGER" property="wxAccountId"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, msg_type, msg_name, template_id, page, emphasis_keyword, create_time, modified_time,
+        id, account_id, msg_type, msg_name, template_id, page, emphasis_keyword, create_time, modified_time,
     preview_user, wx_account_id
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -29,11 +30,11 @@
         where id = #{id,jdbcType=INTEGER}
     </delete>
     <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TMsgMaTemplate">
-        insert into t_msg_ma_template (id, msg_type, msg_name,
+        insert into t_msg_ma_template (id, account_id, msg_type, msg_name,
                                        template_id, page, emphasis_keyword,
                                        create_time, modified_time, preview_user,
                                        wx_account_id)
-        values (#{id,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER}, #{msgName,jdbcType=VARCHAR},
+        values (#{id,jdbcType=INTEGER}, #{accountId,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER}, #{msgName,jdbcType=VARCHAR},
                 #{templateId,jdbcType=VARCHAR}, #{page,jdbcType=VARCHAR}, #{emphasisKeyword,jdbcType=VARCHAR},
                 #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR}, #{previewUser,jdbcType=VARCHAR},
                 #{wxAccountId,jdbcType=INTEGER})
@@ -44,6 +45,9 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
                 id,
+            </if>
+            <if test="accountId != null">
+                account_id,
             </if>
             <if test="msgType != null">
                 msg_type,
@@ -77,6 +81,9 @@
             <if test="id != null">
                 #{id,jdbcType=INTEGER},
             </if>
+            <if test="accountId != null">
+                #{accountId,jdbcType=INTEGER},
+            </if>
             <if test="msgType != null">
                 #{msgType,jdbcType=INTEGER},
             </if>
@@ -109,6 +116,9 @@
     <update id="updateByPrimaryKeySelective" parameterType="com.fangxuele.tool.push.domain.TMsgMaTemplate">
         update t_msg_ma_template
         <set>
+            <if test="accountId != null">
+                account_id = #{accountId,jdbcType=INTEGER},
+            </if>
             <if test="msgType != null">
                 msg_type = #{msgType,jdbcType=INTEGER},
             </if>
@@ -142,6 +152,7 @@
     <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TMsgMaTemplate">
         update t_msg_ma_template
         set msg_type         = #{msgType,jdbcType=INTEGER},
+        account_id = #{accountId,jdbcType=INTEGER},
             msg_name         = #{msgName,jdbcType=VARCHAR},
             template_id      = #{templateId,jdbcType=VARCHAR},
             page             = #{page,jdbcType=VARCHAR},
@@ -189,6 +200,15 @@
         from t_msg_ma_template
         where msg_type = #{msgType,jdbcType=INTEGER}
         and (wx_account_id = #{wxAccountId,jdbcType=INTEGER} or wx_account_id is null)
+        order by create_time desc
+    </select>
+
+    <select id="selectByMsgTypeAndAccountId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_msg_ma_template
+        where msg_type = #{msgType,jdbcType=INTEGER}
+        and account_id = #{accountId,jdbcType=INTEGER}
         order by create_time desc
     </select>
 </mapper>

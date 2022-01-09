@@ -18,7 +18,7 @@ public interface TMsgKefuPriorityMapper {
 
     int updateByPrimaryKey(TMsgKefuPriority record);
 
-    List<TMsgKefuPriority> selectByMsgTypeAndMsgName(@Param("msgType") int msgType, @Param("msgName") String msgName);
+    TMsgKefuPriority selectByUnique(@Param("accountId") Integer selectedAccountId, @Param("msgType") int msgType, @Param("msgName") String msgName);
 
     int updateByMsgTypeAndMsgName(TMsgKefuPriority tMsgKefuPriority);
 
@@ -27,4 +27,6 @@ public interface TMsgKefuPriorityMapper {
     int deleteByMsgTypeAndName(@Param("msgType") int msgType, @Param("msgName") String msgName);
 
     List<TMsgKefuPriority> selectByMsgTypeAndWxAccountId(@Param("msgType") int msgType, @Param("wxAccountId") Integer wxAccountId);
+
+    List<TMsgKefuPriority> selectByMsgTypeAndAccountId(@Param("msgType") int msgType, @Param("accountId") Integer selectedAccountId);
 }

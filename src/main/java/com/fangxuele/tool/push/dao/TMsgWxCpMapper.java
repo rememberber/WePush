@@ -18,11 +18,13 @@ public interface TMsgWxCpMapper {
 
     int updateByPrimaryKey(TMsgWxCp record);
 
-    List<TMsgWxCp> selectByMsgTypeAndMsgName(@Param("msgType") int msgType, @Param("msgName") String msgName);
+    TMsgWxCp selectByUnique(@Param("accountId") Integer selectedAccountId, @Param("msgType") int msgType, @Param("msgName") String msgName);
 
     int updateByMsgTypeAndMsgName(TMsgWxCp tMsgWxCp);
 
     List<TMsgWxCp> selectByMsgType(int msgType);
 
     int deleteByMsgTypeAndName(@Param("msgType") int msgType, @Param("msgName") String msgName);
+
+    List<TMsgWxCp> selectByMsgTypeAndAccountId(@Param("msgType") int msgType, @Param("accountId") Integer selectedAccountId);
 }

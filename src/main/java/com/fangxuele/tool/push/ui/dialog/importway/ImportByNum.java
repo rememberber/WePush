@@ -1,10 +1,25 @@
 package com.fangxuele.tool.push.ui.dialog.importway;
 
+import cn.hutool.json.JSONUtil;
+import cn.hutool.log.Log;
+import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.dao.TPeopleDataMapper;
+import com.fangxuele.tool.push.dao.TPeopleImportConfigMapper;
+import com.fangxuele.tool.push.domain.TPeopleData;
+import com.fangxuele.tool.push.domain.TPeopleImportConfig;
+import com.fangxuele.tool.push.logic.PeopleImportWayEnum;
+import com.fangxuele.tool.push.logic.PushData;
+import com.fangxuele.tool.push.ui.UiConsts;
+import com.fangxuele.tool.push.ui.form.PeopleEditForm;
+import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
 import com.fangxuele.tool.push.util.ComponentUtil;
+import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.SqliteUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,6 +30,11 @@ public class ImportByNum extends JDialog {
     private JLabel 数量Label;
     private JTextField importNumTextField;
     private JButton importFromNumButton;
+
+    private static final Log logger = LogFactory.get();
+
+    private static TPeopleDataMapper peopleDataMapper = MybatisUtil.getSqlSession().getMapper(TPeopleDataMapper.class);
+    private static TPeopleImportConfigMapper peopleImportConfigMapper = MybatisUtil.getSqlSession().getMapper(TPeopleImportConfigMapper.class);
 
     public ImportByNum() {
         super(App.mainFrame, "没有变量，直接按数量发送");
@@ -46,8 +66,77 @@ public class ImportByNum extends JDialog {
     }
 
     private void onOK() {
-        // add your code here
-        dispose();
+        PeopleEditForm peopleEditForm = PeopleEditForm.getInstance();
+        JProgressBar progressBar = peopleEditForm.getMemberTabImportProgressBar();
+        JLabel memberCountLabel = peopleEditForm.getMemberTabCountLabel();
+
+        if (StringUtils.isBlank(importNumTextField.getText())) {
+            JOptionPane.showMessageDialog(App.mainFrame, "请填写数量！", "提示",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        int currentImported = 0;
+        String now = SqliteUtil.nowDateForSqlite();
+
+        // 保存导入配置
+        TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
+
+        TPeopleImportConfig tPeopleImportConfig = new TPeopleImportConfig();
+        tPeopleImportConfig.setPeopleId(PeopleManageListener.selectedPeopleId);
+        tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_NUM_CODE));
+        tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
+        tPeopleImportConfig.setModifiedTime(now);
+
+        if (beforePeopleImportConfig != null) {
+            tPeopleImportConfig.setId(beforePeopleImportConfig.getId());
+            peopleImportConfigMapper.updateByPrimaryKeySelective(tPeopleImportConfig);
+        } else {
+            tPeopleImportConfig.setCreateTime(now);
+            peopleImportConfigMapper.insert(tPeopleImportConfig);
+        }
+
+        try {
+            int importNum = Integer.parseInt(importNumTextField.getText());
+            progressBar.setVisible(true);
+            progressBar.setMaximum(importNum);
+
+
+            for (int i = 0; i < importNum; i++) {
+                String[] array = new String[1];
+                array[0] = String.valueOf(i);
+
+                TPeopleData tPeopleData = new TPeopleData();
+                tPeopleData.setPeopleId(PeopleManageListener.selectedPeopleId);
+                tPeopleData.setPin(array[0]);
+                tPeopleData.setVarData(JSONUtil.toJsonStr(array));
+                tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                tPeopleData.setCreateTime(now);
+                tPeopleData.setModifiedTime(now);
+
+                peopleDataMapper.insert(tPeopleData);
+
+                currentImported++;
+                memberCountLabel.setText(String.valueOf(currentImported));
+            }
+
+            PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
+
+            if (!PushData.fixRateScheduling) {
+                JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+                dispose();
+            }
+        } catch (Exception e1) {
+            JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + e1.getMessage(), "失败",
+                    JOptionPane.ERROR_MESSAGE);
+            logger.error(e1);
+            e1.printStackTrace();
+        } finally {
+            progressBar.setMaximum(100);
+            progressBar.setValue(100);
+            progressBar.setIndeterminate(false);
+            progressBar.setVisible(false);
+        }
     }
 
     private void onCancel() {

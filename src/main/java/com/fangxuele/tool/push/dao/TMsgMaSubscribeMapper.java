@@ -18,7 +18,7 @@ public interface TMsgMaSubscribeMapper {
 
     int updateByPrimaryKey(TMsgMaSubscribe record);
 
-    List<TMsgMaSubscribe> selectByMsgTypeAndMsgName(@Param("msgType") int msgType, @Param("msgName") String msgName);
+    TMsgMaSubscribe selectByUnique(@Param("accountId") Integer selectedAccountId, @Param("msgType") int msgType, @Param("msgName") String msgName);
 
     int updateByMsgTypeAndMsgName(TMsgMaSubscribe tMsgMaSubscribe);
 
@@ -27,4 +27,6 @@ public interface TMsgMaSubscribeMapper {
     int deleteByMsgTypeAndName(@Param("msgType") int msgType, @Param("msgName") String msgName);
 
     List<TMsgMaSubscribe> selectByMsgTypeAndWxAccountId(@Param("msgType") int msgType, @Param("wxAccountId") Integer wxAccountId);
+
+    List<TMsgMaSubscribe> selectByMsgTypeAndAccountId(@Param("msgType") int msgType, @Param("accountId") Integer selectedAccountId);
 }

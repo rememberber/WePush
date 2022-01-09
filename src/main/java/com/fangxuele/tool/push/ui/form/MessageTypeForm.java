@@ -8,6 +8,7 @@ import com.intellij.uiDesigner.core.Spacer;
 import lombok.Getter;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 
 /**
@@ -133,24 +134,17 @@ public class MessageTypeForm {
         AccountEditForm.switchMainPanel();
         AccountManageForm.init();
         AccountEditForm.init(null);
-        initMessageManageFormLayOut(msgType);
         initMessageEditFormLayOut(msgType);
         initMemberFormLayOut(msgType);
         MessageEditForm.switchMsgType(msgType);
         MessageEditForm.getInstance().getMsgTypeName().setText(MessageTypeEnum.getName(msgType));
         MessageManageForm.init();
         MessageEditForm.getInstance().getMsgNameField().setText("");
+        PeopleManageForm.init();
+        PeopleEditForm.init(null);
         MemberForm.init();
         PushHisForm.init();
         ScheduleForm.init();
-    }
-
-    private static void initMessageManageFormLayOut(int msgType) {
-        if (MessageTypeEnum.isWxMaOrMpType(msgType)) {
-            MessageManageForm.getInstance().getAccountSwitchPanel().setVisible(true);
-        } else {
-            MessageManageForm.getInstance().getAccountSwitchPanel().setVisible(false);
-        }
     }
 
     private static void initMessageEditFormLayOut(int msgType) {
@@ -184,12 +178,12 @@ public class MessageTypeForm {
         }
 
         if (msgType == MessageTypeEnum.HTTP_CODE) {
-            MainWindow.getInstance().getTabbedPane().setTitleAt(4, "③准备请求变量");
+            MainWindow.getInstance().getTabbedPane().setTitleAt(4, "④准备请求变量");
             MemberForm.getInstance().getImportFromNumPanel().setVisible(true);
             PushForm.getInstance().getSaveResponseBodyCheckBox().setVisible(true);
             InfinityForm.getInstance().getSaveResponseBodyCheckBox().setVisible(true);
         } else {
-            MainWindow.getInstance().getTabbedPane().setTitleAt(4, "③准备目标人群");
+            MainWindow.getInstance().getTabbedPane().setTitleAt(4, "④准备目标人群");
             PushForm.getInstance().getSaveResponseBodyCheckBox().setVisible(false);
             InfinityForm.getInstance().getSaveResponseBodyCheckBox().setVisible(false);
         }
@@ -225,13 +219,14 @@ public class MessageTypeForm {
      */
     private void $$$setupUI$$$() {
         messageTypePanel = new JPanel();
-        messageTypePanel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
+        messageTypePanel.setLayout(new GridLayoutManager(2, 2, new Insets(10, 10, 10, 10), -1, -1));
         messageTypePanel.setAutoscrolls(false);
         messageTypeScrollPane = new JScrollPane();
         messageTypeScrollPane.setAutoscrolls(true);
         messageTypePanel.add(messageTypeScrollPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        messageTypeScrollPane.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), null, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
         msgTypeListPanel = new JPanel();
-        msgTypeListPanel.setLayout(new GridLayoutManager(23, 3, new Insets(20, 20, 0, 0), -1, -1));
+        msgTypeListPanel.setLayout(new GridLayoutManager(23, 3, new Insets(10, 0, 0, 0), -1, -1));
         msgTypeListPanel.setAutoscrolls(true);
         messageTypeScrollPane.setViewportView(msgTypeListPanel);
         mpTemplateRadioButton = new JRadioButton();
@@ -327,14 +322,18 @@ public class MessageTypeForm {
         wxUniformMessageRadioButton.setText("小程序-统一服务消息（BETA）");
         msgTypeListPanel.add(wxUniformMessageRadioButton, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(2, 1, new Insets(8, 8, 8, 0), -1, -1));
+        panel1.setLayout(new GridLayoutManager(3, 1, new Insets(10, 0, 0, 0), -1, -1));
         messageTypePanel.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
         label1.setText("WePush目前仅是各类消息官方SDK的一种实现，");
-        panel1.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel1.add(label1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
         label2.setText("使用前请仔细查看该消息平台官网的使用规则和开发文档，尤其是发送频率限制等，避免造成不必要的麻烦");
-        panel1.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel1.add(label2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JSeparator separator1 = new JSeparator();
+        panel1.add(separator1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        final Spacer spacer2 = new Spacer();
+        messageTypePanel.add(spacer2, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
     }
 
     /**

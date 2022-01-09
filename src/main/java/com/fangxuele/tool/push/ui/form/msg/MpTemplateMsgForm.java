@@ -153,7 +153,7 @@ public class MpTemplateMsgForm implements IMsgForm {
     }
 
     @Override
-    public void init(String msgName) {
+    public void init(Integer msgId) {
         MpTemplateMsgForm mpTemplateMsgForm = getInstance();
         if (UIUtil.isDarkLaf()) {
             Color bgColor = new Color(43, 43, 43);
@@ -164,11 +164,8 @@ public class MpTemplateMsgForm implements IMsgForm {
 
         clearAllField();
 
-        Integer msgId = 0;
-        List<TMsgMpTemplate> tMsgMpTemplateList = msgMpTemplateMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.MP_TEMPLATE_CODE, msgName);
-        if (tMsgMpTemplateList.size() > 0) {
-            TMsgMpTemplate tMsgMpTemplate = tMsgMpTemplateList.get(0);
-            msgId = tMsgMpTemplate.getId();
+        TMsgMpTemplate tMsgMpTemplate = msgMpTemplateMapper.selectByPrimaryKey(msgId);
+        if (tMsgMpTemplate != null) {
             selectedMsgTemplateId = tMsgMpTemplate.getTemplateId();
             initTemplateList();
 
@@ -189,14 +186,14 @@ public class MpTemplateMsgForm implements IMsgForm {
     }
 
     @Override
-    public void save(String msgName) {
+    public void save(Integer accountId, String msgName) {
         int msgId = 0;
         boolean existSameMsg = false;
 
-        List<TMsgMpTemplate> tMsgMpTemplateList = msgMpTemplateMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.MP_TEMPLATE_CODE, msgName);
-        if (tMsgMpTemplateList.size() > 0) {
+        TMsgMpTemplate msgMpTemplate = msgMpTemplateMapper.selectByUnique(accountId, MessageTypeEnum.MP_TEMPLATE_CODE, msgName);
+        if (msgMpTemplate != null) {
             existSameMsg = true;
-            msgId = tMsgMpTemplateList.get(0).getId();
+            msgId = msgMpTemplate.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -216,6 +213,7 @@ public class MpTemplateMsgForm implements IMsgForm {
 
             TMsgMpTemplate tMsgMpTemplate = new TMsgMpTemplate();
             tMsgMpTemplate.setMsgType(MessageTypeEnum.MP_TEMPLATE_CODE);
+            tMsgMpTemplate.setAccountId(accountId);
             tMsgMpTemplate.setMsgName(msgName);
             tMsgMpTemplate.setTemplateId(templateId);
             tMsgMpTemplate.setUrl(templateUrl);
@@ -229,7 +227,8 @@ public class MpTemplateMsgForm implements IMsgForm {
             tMsgMpTemplate.setWxAccountId(App.config.getWxAccountId());
 
             if (existSameMsg) {
-                msgMpTemplateMapper.updateByMsgTypeAndMsgName(tMsgMpTemplate);
+                tMsgMpTemplate.setId(msgId);
+                msgMpTemplateMapper.updateByPrimaryKeySelective(tMsgMpTemplate);
             } else {
                 msgMpTemplateMapper.insertSelective(tMsgMpTemplate);
                 msgId = tMsgMpTemplate.getId();
@@ -420,7 +419,8 @@ public class MpTemplateMsgForm implements IMsgForm {
     /**
      * 清空所有界面字段
      */
-    public static void clearAllField() {
+    @Override
+    public void clearAllField() {
         clearAllFieldExceptTemplateListAndContent();
         getInstance().getTemplateListComboBox().removeAllItems();
         getInstance().getTemplateContentTextArea().setText("");

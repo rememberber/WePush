@@ -3,6 +3,7 @@
 <mapper namespace="com.fangxuele.tool.push.dao.TMsgMpSubscribeMapper">
     <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TMsgMpSubscribe">
         <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="account_id" jdbcType="INTEGER" property="accountId"/>
         <result column="msg_type" jdbcType="INTEGER" property="msgType"/>
         <result column="msg_name" jdbcType="VARCHAR" property="msgName"/>
         <result column="template_id" jdbcType="VARCHAR" property="templateId"/>
@@ -15,7 +16,7 @@
         <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, msg_type, msg_name, template_id, url, ma_appid, ma_page_path, preview_user, wx_account_id,
+        id, account_id, msg_type, msg_name, template_id, url, ma_appid, ma_page_path, preview_user, wx_account_id,
         create_time, modified_time
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -29,11 +30,12 @@
         where id = #{id,jdbcType=INTEGER}
     </delete>
     <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TMsgMpSubscribe">
-        insert into t_msg_mp_subscribe (id, msg_type, msg_name,
+        insert into t_msg_mp_subscribe (id, account_id, msg_type, msg_name,
         template_id, url, ma_appid,
         ma_page_path, preview_user, wx_account_id,
         create_time, modified_time)
-        values (#{id,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER}, #{msgName,jdbcType=VARCHAR},
+        values (#{id,jdbcType=INTEGER}, #{accountId,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER},
+        #{msgName,jdbcType=VARCHAR},
         #{templateId,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, #{maAppid,jdbcType=VARCHAR},
         #{maPagePath,jdbcType=VARCHAR}, #{previewUser,jdbcType=VARCHAR}, #{wxAccountId,jdbcType=INTEGER},
         #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR})
@@ -44,6 +46,9 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
                 id,
+            </if>
+            <if test="accountId != null">
+                account_id,
             </if>
             <if test="msgType != null">
                 msg_type,
@@ -80,6 +85,9 @@
             <if test="id != null">
                 #{id,jdbcType=INTEGER},
             </if>
+            <if test="accountId != null">
+                #{accountId,jdbcType=INTEGER},
+            </if>
             <if test="msgType != null">
                 #{msgType,jdbcType=INTEGER},
             </if>
@@ -115,6 +123,9 @@
     <update id="updateByPrimaryKeySelective" parameterType="com.fangxuele.tool.push.domain.TMsgMpSubscribe">
         update t_msg_mp_subscribe
         <set>
+            <if test="accountId != null">
+                account_id = #{accountId,jdbcType=INTEGER},
+            </if>
             <if test="msgType != null">
                 msg_type = #{msgType,jdbcType=INTEGER},
             </if>
@@ -151,6 +162,7 @@
     <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TMsgMpSubscribe">
         update t_msg_mp_subscribe
         set msg_type = #{msgType,jdbcType=INTEGER},
+        account_id = #{accountId,jdbcType=INTEGER},
         msg_name = #{msgName,jdbcType=VARCHAR},
         template_id = #{templateId,jdbcType=VARCHAR},
         url = #{url,jdbcType=VARCHAR},
@@ -162,12 +174,13 @@
         modified_time = #{modifiedTime,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>
-    <select id="selectByMsgTypeAndMsgName" resultMap="BaseResultMap">
+    <select id="selectByUnique" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from t_msg_mp_subscribe
         where msg_type = #{msgType,jdbcType=INTEGER}
         and msg_name = #{msgName,jdbcType=VARCHAR}
+        and account_id = #{accountId,jdbcType=INTEGER}
     </select>
     <update id="updateByMsgTypeAndMsgName" parameterType="com.fangxuele.tool.push.domain.TMsgMpSubscribe">
         update t_msg_mp_subscribe
@@ -193,6 +206,15 @@
         from t_msg_mp_subscribe
         where msg_type = #{msgType,jdbcType=INTEGER}
         and (wx_account_id = #{wxAccountId,jdbcType=INTEGER} or wx_account_id is null)
+        order by create_time desc
+    </select>
+
+    <select id="selectByMsgTypeAndAccountId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_msg_mp_subscribe
+        where msg_type = #{msgType,jdbcType=INTEGER}
+        and account_id = #{accountId,jdbcType=INTEGER}
         order by create_time desc
     </select>
 </mapper>

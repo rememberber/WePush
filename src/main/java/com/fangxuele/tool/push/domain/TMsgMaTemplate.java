@@ -5,6 +5,8 @@ import java.io.Serializable;
 public class TMsgMaTemplate implements Serializable {
     private Integer id;
 
+    private Integer accountId;
+
     private Integer msgType;
 
     private String msgName;
@@ -31,6 +33,14 @@ public class TMsgMaTemplate implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(Integer accountId) {
+        this.accountId = accountId;
     }
 
     public Integer getMsgType() {
