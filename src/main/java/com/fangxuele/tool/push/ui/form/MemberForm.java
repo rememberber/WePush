@@ -82,6 +82,7 @@ public class MemberForm {
     private JButton dingDeptsImportButton;
     private JComboBox dingDeptsComboBox;
     private JButton dingDeptsRefreshButton;
+    private JButton memberImportTagExceptButton;
 
     private static MemberForm memberForm;
 
@@ -269,7 +270,7 @@ public class MemberForm {
         importFromSqlTextArea = new JTextArea();
         memberTabCenterPanel.add(importFromSqlTextArea, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(40, 50), null, 0, false));
         importFromWeixinPanel = new JPanel();
-        importFromWeixinPanel.setLayout(new GridLayoutManager(4, 3, new Insets(0, 15, 0, 5), -1, -1));
+        importFromWeixinPanel.setLayout(new GridLayoutManager(5, 3, new Insets(0, 15, 0, 5), -1, -1));
         importWayPanel.add(importFromWeixinPanel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         importFromWeixinPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "通过微信公众平台导入", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, importFromWeixinPanel.getFont()), null));
         memberImportTagComboBox = new JComboBox();
@@ -281,7 +282,7 @@ public class MemberForm {
         if (memberImportAllButtonFont != null) memberImportAllButton.setFont(memberImportAllButtonFont);
         memberImportAllButton.setIcon(new ImageIcon(getClass().getResource("/icon/import_dark.png")));
         memberImportAllButton.setText("导入所有关注公众号的用户");
-        importFromWeixinPanel.add(memberImportAllButton, new GridConstraints(3, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        importFromWeixinPanel.add(memberImportAllButton, new GridConstraints(4, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         memberImportTagFreshButton = new JButton();
         Font memberImportTagFreshButtonFont = this.$$$getFont$$$(null, Font.PLAIN, -1, memberImportTagFreshButton.getFont());
         if (memberImportTagFreshButtonFont != null) memberImportTagFreshButton.setFont(memberImportTagFreshButtonFont);
@@ -301,6 +302,13 @@ public class MemberForm {
         memberImportTagRetainButton.setIcon(new ImageIcon(getClass().getResource("/icon/import_dark.png")));
         memberImportTagRetainButton.setText("导入选择的标签分组-取交集");
         importFromWeixinPanel.add(memberImportTagRetainButton, new GridConstraints(2, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        memberImportTagExceptButton = new JButton();
+        Font memberImportTagExceptButtonFont = this.$$$getFont$$$(null, Font.PLAIN, -1, memberImportTagExceptButton.getFont());
+        if (memberImportTagExceptButtonFont != null)
+            memberImportTagExceptButton.setFont(memberImportTagExceptButtonFont);
+        memberImportTagExceptButton.setIcon(new ImageIcon(getClass().getResource("/icon/remove_dark.png")));
+        memberImportTagExceptButton.setText("排除选择的标签分组");
+        importFromWeixinPanel.add(memberImportTagExceptButton, new GridConstraints(3, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
         label2.setText("标签分组");
         importFromWeixinPanel.add(label2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));

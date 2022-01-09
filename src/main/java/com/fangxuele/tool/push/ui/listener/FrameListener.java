@@ -52,9 +52,11 @@ public class FrameListener {
                             "有推送任务正在进行！\n\n为避免数据丢失，请先停止!\n\n", "Sorry~",
                             JOptionPane.WARNING_MESSAGE);
                 } else {
-                    App.sqlSession.close();
                     mainFrame.dispose();
-                    mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    if (!App.config.isCloseToTray()) {
+                        App.sqlSession.close();
+                        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    }
                 }
             }
 
