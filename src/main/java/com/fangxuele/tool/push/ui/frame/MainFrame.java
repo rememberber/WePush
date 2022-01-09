@@ -1,24 +1,9 @@
 package com.fangxuele.tool.push.ui.frame;
 
 import cn.hutool.core.thread.ThreadUtil;
-import com.apple.eawt.Application;
 import com.fangxuele.tool.push.ui.UiConsts;
-import com.fangxuele.tool.push.ui.listener.AboutListener;
-import com.fangxuele.tool.push.ui.listener.BoostListener;
-import com.fangxuele.tool.push.ui.listener.FrameListener;
-import com.fangxuele.tool.push.ui.listener.HelpListener;
-import com.fangxuele.tool.push.ui.listener.InfinityListener;
-import com.fangxuele.tool.push.ui.listener.MemberListener;
-import com.fangxuele.tool.push.ui.listener.MessageEditListener;
-import com.fangxuele.tool.push.ui.listener.MessageManageListener;
-import com.fangxuele.tool.push.ui.listener.MessageTypeListener;
-import com.fangxuele.tool.push.ui.listener.PushHisListener;
-import com.fangxuele.tool.push.ui.listener.PushListener;
-import com.fangxuele.tool.push.ui.listener.ScheduleListener;
-import com.fangxuele.tool.push.ui.listener.SettingListener;
-import com.fangxuele.tool.push.ui.listener.TabListener;
+import com.fangxuele.tool.push.ui.listener.*;
 import com.fangxuele.tool.push.util.ComponentUtil;
-import com.fangxuele.tool.push.util.SystemUtil;
 import org.apache.commons.compress.utils.Lists;
 
 import javax.swing.*;
@@ -52,14 +37,14 @@ public class MainFrame extends JFrame {
         images.add(UiConsts.IMAGE_LOGO_16);
         this.setIconImages(images);
         // Mac系统Dock图标
-        if (SystemUtil.isMacOs()) {
-            Application application = Application.getApplication();
-            application.setDockIconImage(UiConsts.IMAGE_LOGO_1024);
-            if (!SystemUtil.isMacM1()) {
-                application.setEnabledAboutMenu(false);
-                application.setEnabledPreferencesMenu(false);
-            }
-        }
+//        if (SystemUtil.isMacOs()) {
+//            Application application = Application.getApplication();
+//            application.setDockIconImage(UiConsts.IMAGE_LOGO_1024);
+//            if (!SystemUtil.isMacM1()) {
+//                application.setEnabledAboutMenu(false);
+//                application.setEnabledPreferencesMenu(false);
+//            }
+//        }
 
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.8, 0.88);
     }

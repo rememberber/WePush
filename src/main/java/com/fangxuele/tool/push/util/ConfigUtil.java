@@ -663,7 +663,7 @@ public class ConfigUtil extends ConfigBaseUtil {
     }
 
     public String getTheme() {
-        return setting.getStr("theme", "setting.appearance", "Darcula(推荐)");
+        return setting.getStr("theme", "setting.appearance", "Flat Dark");
     }
 
     public void setTheme(String theme) {
