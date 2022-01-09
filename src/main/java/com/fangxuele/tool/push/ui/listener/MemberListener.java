@@ -35,11 +35,7 @@ import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MemberForm;
 import com.fangxuele.tool.push.ui.form.msg.DingMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
-import com.fangxuele.tool.push.util.ConsoleUtil;
-import com.fangxuele.tool.push.util.FileCharSetUtil;
-import com.fangxuele.tool.push.util.HikariUtil;
-import com.fangxuele.tool.push.util.JTableUtil;
-import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.*;
 import com.google.common.collect.Maps;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
@@ -65,21 +61,10 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -228,6 +213,33 @@ public class MemberListener {
 
                     long selectedTagId = userTagMap.get(memberForm.getMemberImportTagComboBox().getSelectedItem());
                     getMpUserListByTag(selectedTagId, true);
+                    renderMemberListTable();
+                    JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(memberPanel, "请先选择需要导入的标签！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+            } catch (WxErrorException e1) {
+                JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+                e1.printStackTrace();
+            } finally {
+                progressBar.setIndeterminate(false);
+                progressBar.setValue(progressBar.getMaximum());
+                progressBar.setVisible(false);
+            }
+        }));
+
+        // 公众号-排除选择的标签分组用户按钮事件
+        memberForm.getMemberImportTagExceptButton().addActionListener(e -> ThreadUtil.execute(() -> {
+            try {
+                if (memberForm.getMemberImportTagComboBox().getSelectedItem() != null
+                        && StringUtils.isNotEmpty(memberForm.getMemberImportTagComboBox().getSelectedItem().toString())) {
+
+                    long selectedTagId = userTagMap.get(memberForm.getMemberImportTagComboBox().getSelectedItem());
+                    removeMpUserListByTag(selectedTagId);
                     renderMemberListTable();
                     JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成",
                             JOptionPane.INFORMATION_MESSAGE);
@@ -863,7 +875,6 @@ public class MemberListener {
      * 按标签拉取公众平台用户列表
      *
      * @param tagId
-     * @param retain 是否取交集
      * @throws WxErrorException
      */
     public static void getMpUserListByTag(Long tagId) throws WxErrorException {
@@ -976,6 +987,61 @@ public class MemberListener {
                 openIds.removeAll(tagUserSet);
                 tagUserSet.addAll(openIds);
             }
+        }
+
+        PushData.allUser = Collections.synchronizedList(new ArrayList<>());
+        for (String openId : tagUserSet) {
+            PushData.allUser.add(new String[]{openId});
+        }
+
+        memberCountLabel.setText(String.valueOf(PushData.allUser.size()));
+        progressBar.setIndeterminate(false);
+        progressBar.setValue(progressBar.getMaximum());
+
+    }
+
+    /**
+     * 排除所选标签
+     *
+     * @param tagId
+     * @throws WxErrorException
+     */
+    private static void removeMpUserListByTag(long tagId) throws WxErrorException {
+        JProgressBar progressBar = MemberForm.getInstance().getMemberTabImportProgressBar();
+        JLabel memberCountLabel = MemberForm.getInstance().getMemberTabCountLabel();
+
+        progressBar.setVisible(true);
+        progressBar.setIndeterminate(true);
+
+        WxMpService wxMpService = WxMpTemplateMsgSender.getWxMpService();
+        if (wxMpService.getWxMpConfigStorage() == null) {
+            return;
+        }
+
+        WxTagListUser wxTagListUser = wxMpService.getUserTagService().tagListUser(tagId, "");
+
+        ConsoleUtil.consoleWithLog("拉取的OPENID个数：" + wxTagListUser.getCount());
+
+        if (wxTagListUser.getCount() == 0) {
+            return;
+        }
+
+        List<String> openIds = wxTagListUser.getData().getOpenidList();
+
+        tagUserSet = PushData.allUser.stream().map(e -> e[0]).collect(Collectors.toSet());
+        openIds.forEach(tagUserSet::remove);
+
+        while (StringUtils.isNotEmpty(wxTagListUser.getNextOpenid())) {
+            wxTagListUser = wxMpService.getUserTagService().tagListUser(tagId, wxTagListUser.getNextOpenid());
+
+            ConsoleUtil.consoleWithLog("拉取的OPENID个数：" + wxTagListUser.getCount());
+
+            if (wxTagListUser.getCount() == 0) {
+                break;
+            }
+            openIds = wxTagListUser.getData().getOpenidList();
+
+            openIds.forEach(tagUserSet::remove);
         }
 
         PushData.allUser = Collections.synchronizedList(new ArrayList<>());
