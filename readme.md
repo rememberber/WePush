@@ -11,6 +11,9 @@
 [![GitHub release](https://img.shields.io/github/release/rememberber/WePush.svg)](https://github.com/rememberber/WePush/releases)
 [![GitHub license](https://img.shields.io/github/license/rememberber/WePush.svg)](https://github.com/rememberber/WePush/blob/master/LICENSE.txt)
 
+## 支持的平台
+Windows • Linux • macOS
+
 ### 目前已经支持的消息类型
 + 模板消息-公众号  
 + 模板消息-小程序  
