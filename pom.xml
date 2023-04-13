@@ -413,36 +413,36 @@
                     <generateInstaller>true</generateInstaller>
                 </configuration>
                 <executions>
-                    <execution>
-                        <id>bundling-for-windows</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>package</goal>
-                        </goals>
-                        <configuration>
-                            <platform>windows</platform>
-                            <createZipball>true</createZipball>
-                            <additionalModules>jdk.crypto.ec</additionalModules>
-                            <!--                            <administratorRequired>true</administratorRequired>-->
-                            <winConfig>
+<!--                    <execution>-->
+<!--                        <id>bundling-for-windows</id>-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>package</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <platform>windows</platform>-->
+<!--                            <createZipball>true</createZipball>-->
+<!--                            <additionalModules>jdk.crypto.ec</additionalModules>-->
+<!--                            &lt;!&ndash;                            <administratorRequired>true</administratorRequired>&ndash;&gt;-->
+<!--                            <winConfig>-->
 
-                                <!-- general properties -->
-                                <generateSetup>true</generateSetup>
-                                <generateMsi>true</generateMsi>
-                                <generateMsm>true</generateMsm>
+<!--                                &lt;!&ndash; general properties &ndash;&gt;-->
+<!--                                <generateSetup>true</generateSetup>-->
+<!--                                <generateMsi>true</generateMsi>-->
+<!--                                <generateMsm>true</generateMsm>-->
 
-                                <!-- setup generation properties -->
-                                <setupMode>installForAllUsers</setupMode>
-                                <createDesktopIconTask>true</createDesktopIconTask>
-                                <disableDirPage>false</disableDirPage>
-                                <disableFinishedPage>false</disableFinishedPage>
-                                <setupLanguages>
-                                    <english>compiler:Default.isl</english>
-                                    <!--                                    <spanish>compiler:Languages\Chinese.isl</spanish>-->
-                                </setupLanguages>
-                            </winConfig>
-                        </configuration>
-                    </execution>
+<!--                                &lt;!&ndash; setup generation properties &ndash;&gt;-->
+<!--                                <setupMode>installForAllUsers</setupMode>-->
+<!--                                <createDesktopIconTask>true</createDesktopIconTask>-->
+<!--                                <disableDirPage>false</disableDirPage>-->
+<!--                                <disableFinishedPage>false</disableFinishedPage>-->
+<!--                                <setupLanguages>-->
+<!--                                    <english>compiler:Default.isl</english>-->
+<!--                                    &lt;!&ndash;                                    <spanish>compiler:Languages\Chinese.isl</spanish>&ndash;&gt;-->
+<!--                                </setupLanguages>-->
+<!--                            </winConfig>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
                     <!--                    <execution>-->
                     <!--                        <id>bundling-for-linux</id>-->
                     <!--                        <phase>package</phase>-->
@@ -455,19 +455,20 @@
                     <!--                            <jdkPath>X:\\path\to\linux\jdk</jdkPath>-->
                     <!--                        </configuration>-->
                     <!--                    </execution>-->
-                    <!--                    <execution>-->
-                    <!--                        <id>bundling-for-mac</id>-->
-                    <!--                        <phase>package</phase>-->
-                    <!--                        <goals>-->
-                    <!--                            <goal>package</goal>-->
-                    <!--                        </goals>-->
-                    <!--                        <configuration>-->
-                    <!--                            <platform>mac</platform>-->
-                    <!--                            <createTarball>true</createTarball>-->
-                    <!--                            &lt;!&ndash;                                                                                        <customizedJre>false</customizedJre>&ndash;&gt;-->
-                    <!--                            &lt;!&ndash;                                                <jdkPath>X:\\path\to\mac\jdk</jdkPath>&ndash;&gt;-->
-                    <!--                        </configuration>-->
-                    <!--                    </execution>-->
+                                        <execution>
+                                            <id>bundling-for-mac</id>
+                                            <phase>package</phase>
+                                            <goals>
+                                                <goal>package</goal>
+                                            </goals>
+                                            <configuration>
+                                                <platform>mac</platform>
+                                                <createTarball>true</createTarball>
+                                                <additionalModules>jdk.crypto.ec</additionalModules>
+                                                <!--                                                                                        <customizedJre>false</customizedJre>-->
+                                                <!--                                                <jdkPath>X:\\path\to\mac\jdk</jdkPath>-->
+                                            </configuration>
+                                        </execution>
                 </executions>
             </plugin>
 
