@@ -20,9 +20,9 @@
 
         <java.version>1.8</java.version>
         <logback.version>1.2.3</logback.version>
-        <weixin-java-mp.version>4.1.0</weixin-java-mp.version>
-        <weixin-java-cp.version>4.1.0</weixin-java-cp.version>
-        <weixin-java-miniapp.version>4.1.0</weixin-java-miniapp.version>
+        <weixin-java-mp.version>4.4.0</weixin-java-mp.version>
+        <weixin-java-cp.version>4.4.0</weixin-java-cp.version>
+        <weixin-java-miniapp.version>4.4.0</weixin-java-miniapp.version>
         <emoji-java.version>5.1.1</emoji-java.version>
         <hutool-all.version>5.4.4</hutool-all.version>
         <opencsv.version>5.2</opencsv.version>
@@ -413,35 +413,36 @@
                     <generateInstaller>true</generateInstaller>
                 </configuration>
                 <executions>
-                    <!--                    <execution>-->
-                    <!--                        <id>bundling-for-windows</id>-->
-                    <!--                        <phase>package</phase>-->
-                    <!--                        <goals>-->
-                    <!--                            <goal>package</goal>-->
-                    <!--                        </goals>-->
-                    <!--                        <configuration>-->
-                    <!--                            <platform>windows</platform>-->
-                    <!--                            <createZipball>true</createZipball>-->
-                    <!--                            &lt;!&ndash;                            <administratorRequired>true</administratorRequired>&ndash;&gt;-->
-                    <!--                            <winConfig>-->
+                    <execution>
+                        <id>bundling-for-windows</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                        <configuration>
+                            <platform>windows</platform>
+                            <createZipball>true</createZipball>
+                            <additionalModules>jdk.crypto.ec</additionalModules>
+                            <!--                            <administratorRequired>true</administratorRequired>-->
+                            <winConfig>
 
-                    <!--                                &lt;!&ndash; general properties &ndash;&gt;-->
-                    <!--                                <generateSetup>true</generateSetup>-->
-                    <!--                                <generateMsi>true</generateMsi>-->
-                    <!--                                <generateMsm>true</generateMsm>-->
+                                <!-- general properties -->
+                                <generateSetup>true</generateSetup>
+                                <generateMsi>true</generateMsi>
+                                <generateMsm>true</generateMsm>
 
-                    <!--                                &lt;!&ndash; setup generation properties &ndash;&gt;-->
-                    <!--                                <setupMode>installForAllUsers</setupMode>-->
-                    <!--                                <createDesktopIconTask>true</createDesktopIconTask>-->
-                    <!--                                <disableDirPage>false</disableDirPage>-->
-                    <!--                                <disableFinishedPage>false</disableFinishedPage>-->
-                    <!--                                <setupLanguages>-->
-                    <!--                                    <english>compiler:Default.isl</english>-->
-                    <!--                                    &lt;!&ndash;                                    <spanish>compiler:Languages\Chinese.isl</spanish>&ndash;&gt;-->
-                    <!--                                </setupLanguages>-->
-                    <!--                            </winConfig>-->
-                    <!--                        </configuration>-->
-                    <!--                    </execution>-->
+                                <!-- setup generation properties -->
+                                <setupMode>installForAllUsers</setupMode>
+                                <createDesktopIconTask>true</createDesktopIconTask>
+                                <disableDirPage>false</disableDirPage>
+                                <disableFinishedPage>false</disableFinishedPage>
+                                <setupLanguages>
+                                    <english>compiler:Default.isl</english>
+                                    <!--                                    <spanish>compiler:Languages\Chinese.isl</spanish>-->
+                                </setupLanguages>
+                            </winConfig>
+                        </configuration>
+                    </execution>
                     <!--                    <execution>-->
                     <!--                        <id>bundling-for-linux</id>-->
                     <!--                        <phase>package</phase>-->
@@ -454,19 +455,19 @@
                     <!--                            <jdkPath>X:\\path\to\linux\jdk</jdkPath>-->
                     <!--                        </configuration>-->
                     <!--                    </execution>-->
-                    <execution>
-                        <id>bundling-for-mac</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>package</goal>
-                        </goals>
-                        <configuration>
-                            <platform>mac</platform>
-                            <createTarball>true</createTarball>
-                            <!--                                                                                        <customizedJre>false</customizedJre>-->
-                            <!--                                                <jdkPath>X:\\path\to\mac\jdk</jdkPath>-->
-                        </configuration>
-                    </execution>
+                    <!--                    <execution>-->
+                    <!--                        <id>bundling-for-mac</id>-->
+                    <!--                        <phase>package</phase>-->
+                    <!--                        <goals>-->
+                    <!--                            <goal>package</goal>-->
+                    <!--                        </goals>-->
+                    <!--                        <configuration>-->
+                    <!--                            <platform>mac</platform>-->
+                    <!--                            <createTarball>true</createTarball>-->
+                    <!--                            &lt;!&ndash;                                                                                        <customizedJre>false</customizedJre>&ndash;&gt;-->
+                    <!--                            &lt;!&ndash;                                                <jdkPath>X:\\path\to\mac\jdk</jdkPath>&ndash;&gt;-->
+                    <!--                        </configuration>-->
+                    <!--                    </execution>-->
                 </executions>
             </plugin>
 
