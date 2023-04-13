@@ -16,7 +16,7 @@ public class UiConsts {
      * 软件名称,版本
      */
     public final static String APP_NAME = "WePush";
-    public final static String APP_VERSION = "v_4.5.0_220107";
+    public final static String APP_VERSION = "v_4.5.1_230413";
 
     /**
      * Logo-1024*1024

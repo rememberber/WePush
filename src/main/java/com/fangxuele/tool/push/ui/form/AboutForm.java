@@ -75,7 +75,7 @@ public class AboutForm {
         label1.setText("WePush");
         aboutPanel.add(label1, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         qrCodeLabel = new JLabel();
-        qrCodeLabel.setIcon(new ImageIcon(getClass().getResource("/icon/weixin-qrcode.png")));
+        qrCodeLabel.setIcon(new ImageIcon(getClass().getResource("/icon/wx-zanshang.jpg")));
         qrCodeLabel.setText("");
         qrCodeLabel.setToolTipText("感谢您的鼓励和支持！");
         aboutPanel.add(qrCodeLabel, new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
