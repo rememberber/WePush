@@ -16,7 +16,7 @@ public class UiConsts {
      * 软件名称,版本
      */
     public final static String APP_NAME = "WePush";
-    public final static String APP_VERSION = "v_4.4.2_210628";
+    public final static String APP_VERSION = "v_4.5.1_230413";
 
     public static final int TABLE_ROW_HEIGHT = 36;
 

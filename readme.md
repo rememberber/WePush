@@ -11,6 +11,9 @@
 [![GitHub release](https://img.shields.io/github/release/rememberber/WePush.svg)](https://github.com/rememberber/WePush/releases)
 [![GitHub license](https://img.shields.io/github/license/rememberber/WePush.svg)](https://github.com/rememberber/WePush/blob/master/LICENSE.txt)
 
+## 支持的平台
+Windows • Linux • macOS
+
 ### 目前已经支持的消息类型
 + 模板消息-公众号  
 + 模板消息-小程序  
@@ -125,14 +128,7 @@
 
 ### 安装文件下载
 
-[WePush下载地址](https://gitee.com/zhoubochina/WePush/wikis/download)  
-
-安装之前请确认已经安装了jre1.8或者以上版本   
-[jre下载地址](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)  
-
-### 环境依赖
-+ Java 8
-+ lombok
+[WePush下载地址](https://gitee.com/zhoubochina/WePush/releases)  
 
 ### 使用到的一些小技术点
 + Java  
