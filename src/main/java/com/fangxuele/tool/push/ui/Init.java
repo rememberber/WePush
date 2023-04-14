@@ -6,8 +6,6 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.dialog.FontSizeAdjustDialog;
 import com.fangxuele.tool.push.ui.form.*;
-import com.fangxuele.tool.push.ui.form.*;
-import com.fangxuele.tool.push.ui.listener.AboutListener;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.fangxuele.tool.push.util.UIUtil;
 import com.fangxuele.tool.push.util.UpgradeUtil;
