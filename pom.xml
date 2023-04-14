@@ -452,6 +452,7 @@
                     <!--                        <configuration>-->
                     <!--                            <platform>linux</platform>-->
                     <!--                            <createTarball>true</createTarball>-->
+<!--                    <additionalModules>jdk.crypto.ec</additionalModules>-->
                     <!--                            <jdkPath>X:\\path\to\linux\jdk</jdkPath>-->
                     <!--                        </configuration>-->
                     <!--                    </execution>-->
