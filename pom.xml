@@ -47,8 +47,8 @@
         <aliyun-java-sdk-dysmsapi.version>1.1.0</aliyun-java-sdk-dysmsapi.version>
         <bce-java-sdk.version>0.10.134</bce-java-sdk.version>
         <qiniu-java-sdk.version>7.3.0</qiniu-java-sdk.version>
-        <flatlaf.version>3.1</flatlaf.version>
-        <flatlaf-extras.version>3.1</flatlaf-extras.version>
+        <flatlaf.version>3.1.1</flatlaf.version>
+        <flatlaf-extras.version>3.1.1</flatlaf-extras.version>
     </properties>
 
     <dependencies>
@@ -413,7 +413,7 @@
             <plugin>
                 <groupId>io.github.fvarrui</groupId>
                 <artifactId>javapackager</artifactId>
-                <version>1.6.2</version>
+                <version>1.7.2</version>
                 <configuration>
                     <bundleJre>true</bundleJre>
                     <mainClass>com.fangxuele.tool.push.App</mainClass>
