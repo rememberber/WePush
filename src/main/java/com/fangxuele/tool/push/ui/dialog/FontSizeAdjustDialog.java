@@ -28,14 +28,13 @@ import java.util.Locale;
 public class FontSizeAdjustDialog extends JDialog {
     private static final long serialVersionUID = -5644281737118296595L;
     private JPanel contentPane;
-    private JButton buttonOK;
     private JButton buttonCancel;
 
     public FontSizeAdjustDialog() {
         super(App.mainFrame, "字号初始化设置");
         setContentPane(contentPane);
         setModal(true);
-        getRootPane().setDefaultButton(buttonOK);
+        getRootPane().setDefaultButton(buttonCancel);
 
         if (SystemUtil.isMacOs() && SystemInfo.isMacFullWindowContentSupported) {
             this.getRootPane().putClientProperty("apple.awt.fullWindowContent", true);
@@ -47,8 +46,6 @@ public class FontSizeAdjustDialog extends JDialog {
         }
 
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 420, 200);
-
-        buttonOK.addActionListener(e -> onOK());
 
         buttonCancel.addActionListener(e -> onCancel());
 
