@@ -63,11 +63,7 @@ public class TopMenuBar extends JMenuBar {
             "Xcode-Dark",
             "Vuesion"};
 
-    private static String[] fontNames = {
-            "Microsoft YaHei",
-            "Microsoft YaHei Light",
-            "Microsoft YaHei UI",
-            "Microsoft YaHei UI Light"};
+    private static String[] fontNames = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
 
     private static String[] fontSizes = {
             "5",

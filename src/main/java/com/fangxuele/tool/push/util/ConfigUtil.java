@@ -693,6 +693,8 @@ public class ConfigUtil extends ConfigBaseUtil {
     public String getFont() {
         if (SystemUtil.isLinuxOs()) {
             return setting.getStr("font", "setting.appearance", "Noto Sans CJK HK");
+        } else if (SystemUtil.isMacOs()) {
+            return setting.getStr("font", "setting.appearance", "PingFang SC");
         } else {
             return setting.getStr("font", "setting.appearance", "微软雅黑");
         }
