@@ -703,7 +703,7 @@ public class ConfigUtil extends ConfigBaseUtil {
     }
 
     public int getFontSize() {
-        return setting.getInt("fontSize", "setting.appearance", 13);
+        return setting.getInt("fontSize", "setting.appearance", 12);
     }
 
     public void setFontSize(int fontSize) {
