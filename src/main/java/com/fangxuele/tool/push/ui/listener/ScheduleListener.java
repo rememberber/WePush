@@ -49,7 +49,7 @@ public class ScheduleListener {
                 boolean isStartAt = scheduleForm.getRunAtThisTimeRadioButton().isSelected();
                 if (StringUtils.isNotEmpty(textStartAt)) {
                     if (DateUtil.parse(textStartAt).getTime() <= System.currentTimeMillis() && isStartAt) {
-                        JOptionPane.showMessageDialog(mainWindow.getSchedulePanel(),
+                        JOptionPane.showMessageDialog(mainWindow.getTaskPanel(),
                                 "保存失败！\n\n开始推送时间不能小于系统当前时间！", "失败",
                                 JOptionPane.ERROR_MESSAGE);
                         return;
@@ -57,7 +57,7 @@ public class ScheduleListener {
                     App.config.setRadioStartAt(isStartAt);
                     App.config.setTextStartAt(textStartAt);
                 } else if (isStartAt) {
-                    JOptionPane.showMessageDialog(mainWindow.getSchedulePanel(),
+                    JOptionPane.showMessageDialog(mainWindow.getTaskPanel(),
                             "保存失败！\n\n开始推送时间不能为空！", "失败",
                             JOptionPane.ERROR_MESSAGE);
                     return;
@@ -73,7 +73,7 @@ public class ScheduleListener {
                     App.config.setRadioPerDay(isPerDay);
                     App.config.setTextPerDay(textPerDay);
                 } else if (isPerDay) {
-                    JOptionPane.showMessageDialog(mainWindow.getSchedulePanel(),
+                    JOptionPane.showMessageDialog(mainWindow.getTaskPanel(),
                             "保存失败！\n\n每天固定推送时间不能为空！", "失败",
                             JOptionPane.ERROR_MESSAGE);
                     return;
@@ -90,7 +90,7 @@ public class ScheduleListener {
                     App.config.setTextPerWeekWeek(Objects.requireNonNull(scheduleForm.getSchedulePerWeekComboBox().getSelectedItem()).toString());
                     App.config.setTextPerWeekTime(textPerWeekTime);
                 } else if (isPerWeek) {
-                    JOptionPane.showMessageDialog(mainWindow.getSchedulePanel(),
+                    JOptionPane.showMessageDialog(mainWindow.getTaskPanel(),
                             "保存失败！\n\n每周固定推送时间不能为空！", "失败",
                             JOptionPane.ERROR_MESSAGE);
                     return;
@@ -106,7 +106,7 @@ public class ScheduleListener {
                     try {
                         CronExpression.validateExpression(textCron);
                     } catch (Exception e1) {
-                        JOptionPane.showMessageDialog(mainWindow.getSchedulePanel(),
+                        JOptionPane.showMessageDialog(mainWindow.getTaskPanel(),
                                 "保存失败！\n\n无效的Cron表达式！\n" + e1.toString(), "失败",
                                 JOptionPane.ERROR_MESSAGE);
                         return;
@@ -118,14 +118,14 @@ public class ScheduleListener {
                             Date date = CronPatternUtil.nextDateAfter(new CronPattern(textCron), DateUtils.addDays(now, i), true);
                             latest5RunTimeList.add(DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss"));
                         }
-                        JOptionPane.showMessageDialog(mainWindow.getSchedulePanel(),
+                        JOptionPane.showMessageDialog(mainWindow.getTaskPanel(),
                                 "最近5次运行时间:\n" + String.join("\n", latest5RunTimeList), "提示",
                                 JOptionPane.INFORMATION_MESSAGE);
                     }
                     App.config.setRadioCron(isCron);
                     App.config.setTextCron(textCron);
                 } else if (isCron) {
-                    JOptionPane.showMessageDialog(mainWindow.getSchedulePanel(),
+                    JOptionPane.showMessageDialog(mainWindow.getTaskPanel(),
                             "保存失败！\n\nCron表达式不能为空！", "失败",
                             JOptionPane.ERROR_MESSAGE);
                     return;
@@ -137,7 +137,7 @@ public class ScheduleListener {
                 if (scheduleForm.getSendPushResultCheckBox().isSelected() &&
                         (StringUtils.isBlank(SettingForm.getInstance().getMailHostTextField().getText())
                                 || StringUtils.isBlank(SettingForm.getInstance().getMailFromTextField().getText()))) {
-                    JOptionPane.showMessageDialog(mainWindow.getSchedulePanel(),
+                    JOptionPane.showMessageDialog(mainWindow.getTaskPanel(),
                             "保存失败！\n\n请先在设置中设置E-Mail服务器！", "失败",
                             JOptionPane.ERROR_MESSAGE);
                     return;
@@ -149,10 +149,10 @@ public class ScheduleListener {
                 App.config.setReimportWay((String) scheduleForm.getReimportComboBox().getSelectedItem());
 
                 App.config.save();
-                JOptionPane.showMessageDialog(mainWindow.getSchedulePanel(), "保存成功！\n\n将在下一次按计划执行时生效！\n\n", "成功",
+                JOptionPane.showMessageDialog(mainWindow.getTaskPanel(), "保存成功！\n\n将在下一次按计划执行时生效！\n\n", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {
-                JOptionPane.showMessageDialog(mainWindow.getSchedulePanel(), "保存失败！\n\n时间格式错误：" + e1.getMessage(), "失败",
+                JOptionPane.showMessageDialog(mainWindow.getTaskPanel(), "保存失败！\n\n时间格式错误：" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
             }
         });
