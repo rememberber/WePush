@@ -26,7 +26,6 @@ public class MainWindow {
     private JPanel mainPanel;
     private JTabbedPane tabbedPane;
     private JSplitPane messagePanel;
-    private JPanel memberPanel;
     private JPanel pushPanel;
     private JPanel settingPanel;
     private JPanel schedulePanel;
@@ -78,7 +77,6 @@ public class MainWindow {
         mainWindow.getMessageManagePanel().add(MessageManageForm.getInstance().getMessageManagePanel(), GRID_CONSTRAINTS);
         mainWindow.getPeopleManagePanel().add(PeopleManageForm.getInstance().getPeopleManagePanel(), GRID_CONSTRAINTS);
         mainWindow.getPeopleEditPanel().add(PeopleEditForm.getInstance().getMainPanel(), GRID_CONSTRAINTS);
-        mainWindow.getMemberPanel().add(MemberForm.getInstance().getMemberPanel(), GRID_CONSTRAINTS);
         mainWindow.getTaskPanel().add(TaskForm.getInstance().getMainPanel(), GRID_CONSTRAINTS);
         mainWindow.getPushPanel().add(PushForm.getInstance().getPushPanel(), GRID_CONSTRAINTS);
         mainWindow.getMessageTypePanel().add(MessageTypeForm.getInstance().getMessageTypePanel(), GRID_CONSTRAINTS);
@@ -157,10 +155,6 @@ public class MainWindow {
         peopleEditPanel = new JPanel();
         peopleEditPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         peoplePanel.setRightComponent(peopleEditPanel);
-        memberPanel = new JPanel();
-        memberPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        memberPanel.setMinimumSize(new Dimension(-1, -1));
-        tabbedPane.addTab("准备目标用户", memberPanel);
         taskPanel = new JPanel();
         taskPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane.addTab("⑤推送任务", taskPanel);
