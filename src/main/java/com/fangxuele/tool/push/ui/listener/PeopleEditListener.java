@@ -160,6 +160,12 @@ public class PeopleEditListener {
         peopleEditForm.getClearAllButton().addActionListener(e -> {
 
             try {
+                if (PeopleManageListener.selectedPeopleId == null) {
+                    JOptionPane.showMessageDialog(mainPanel, "请先选择一个人群!", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+
                 int isDelete = JOptionPane.showConfirmDialog(mainPanel, "确认清空？", "确认",
                         JOptionPane.YES_NO_OPTION);
                 if (isDelete == JOptionPane.YES_OPTION) {
@@ -178,6 +184,12 @@ public class PeopleEditListener {
         peopleEditForm.getExportButton().addActionListener(e -> ThreadUtil.execute(() -> {
             BigExcelWriter writer;
             try {
+                if (PeopleManageListener.selectedPeopleId == null) {
+                    JOptionPane.showMessageDialog(mainPanel, "请先选择一个人群!", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+
                 List<TPeopleData> peopleDataList = peopleDataMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
                 if (peopleDataList.size() > 0) {
                     ExportDialog.showDialog();
