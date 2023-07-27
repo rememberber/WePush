@@ -1,13 +1,11 @@
 package com.fangxuele.tool.push.ui.listener;
 
 import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.form.InfinityForm;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
 
-import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -36,12 +34,12 @@ public class TabListener {
                 int msgType = App.config.getMsgType();
                 switch (index) {
                     case 3:
-                        if (warnFlag && msgType != MessageTypeEnum.EMAIL_CODE && msgType != MessageTypeEnum.HTTP_CODE) {
-                            JOptionPane.showMessageDialog(MainWindow.getInstance().getSettingPanel(), "\n请确认您了解所要发送消息类型的使用频率、使用规范和限制规则，\n" +
-                                            "以免账号相关功能被封禁等给您带来麻烦\n", "提示",
-                                    JOptionPane.INFORMATION_MESSAGE);
-                            warnFlag = false;
-                        }
+//                        if (warnFlag && msgType != MessageTypeEnum.EMAIL_CODE && msgType != MessageTypeEnum.HTTP_CODE) {
+//                            JOptionPane.showMessageDialog(MainWindow.getInstance().getSettingPanel(), "\n请确认您了解所要发送消息类型的使用频率、使用规范和限制规则，\n" +
+//                                            "以免账号相关功能被封禁等给您带来麻烦\n", "提示",
+//                                    JOptionPane.INFORMATION_MESSAGE);
+//                            warnFlag = false;
+//                        }
                         break;
                     case 4:
                         PushForm.getInstance().getPushMsgName().setText(MessageEditForm.getInstance().getMsgNameField().getText());
