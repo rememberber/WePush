@@ -1,6 +1,8 @@
 package com.fangxuele.tool.push.ui.form;
 
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.util.SystemUtil;
+import com.formdev.flatlaf.util.SystemInfo;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Getter;
@@ -58,6 +60,12 @@ public class MainWindow {
     public void init() {
         mainWindow = getInstance();
         mainWindow.getMainPanel().updateUI();
+
+        if (SystemUtil.isMacOs() && SystemInfo.isMacFullWindowContentSupported) {
+            GridLayoutManager gridLayoutManager = (GridLayoutManager) mainPanel.getLayout();
+            gridLayoutManager.setMargin(new Insets(20, 0, 0, 0));
+        }
+
         mainWindow.getAccountPanel().setDividerLocation((int) (App.mainFrame.getWidth() / 5.6));
         mainWindow.getPeoplePanel().setDividerLocation((int) (App.mainFrame.getWidth() / 5.6));
         mainWindow.getAccountManagePanel().add(AccountManageForm.getInstance().getAccountManagePanel(), GRID_CONSTRAINTS);
