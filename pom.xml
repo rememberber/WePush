@@ -49,6 +49,7 @@
         <qiniu-java-sdk.version>7.3.0</qiniu-java-sdk.version>
         <flatlaf.version>3.1.1</flatlaf.version>
         <flatlaf-extras.version>3.1.1</flatlaf-extras.version>
+        <flatlaf-intellij-themes.version>3.1.1</flatlaf-intellij-themes.version>
     </properties>
 
     <dependencies>
@@ -403,6 +404,12 @@
             <groupId>com.formdev</groupId>
             <artifactId>flatlaf-extras</artifactId>
             <version>${flatlaf-extras.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.formdev</groupId>
+            <artifactId>flatlaf-intellij-themes</artifactId>
+            <version>${flatlaf-intellij-themes.version}</version>
         </dependency>
 
     </dependencies>

@@ -46,12 +46,22 @@ public class TopMenuBar extends JMenuBar {
     private static String[] themeNames = {
             "系统默认",
             "Flat Light",
-            "Flat IntelliJ",
             "Flat Dark",
+            "Flat IntelliJ",
             "Flat Darcula(推荐)",
+            "Flat macOS Light",
+            "Flat macOS Dark",
             "Dark purple",
             "IntelliJ Cyan",
-            "IntelliJ Light"};
+            "IntelliJ Light",
+            "Monocai",
+            "Monokai Pro",
+            "One Dark",
+            "Gray",
+            "High contrast",
+            "GitHub Dark",
+            "Xcode-Dark",
+            "Vuesion"};
 
     private static String[] fontNames = {
             "Microsoft YaHei",

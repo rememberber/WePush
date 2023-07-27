@@ -9,8 +9,12 @@ import com.fangxuele.tool.push.ui.form.*;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.fangxuele.tool.push.util.UIUtil;
 import com.fangxuele.tool.push.util.UpgradeUtil;
-import com.formdev.flatlaf.FlatLightLaf;
-import com.formdev.flatlaf.IntelliJTheme;
+import com.formdev.flatlaf.*;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+import com.formdev.flatlaf.intellijthemes.*;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatGitHubDarkIJTheme;
+import com.formdev.flatlaf.themes.FlatMacDarkLaf;
+import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
@@ -85,114 +89,91 @@ public class Init {
      * 初始化look and feel
      */
     public static void initTheme() {
-        if (SystemUtil.isMacM1() || SystemUtil.isLinuxOs()) {
-            try {
-                UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarculaLaf");
-                logger.warn("FlatDarculaLaf theme set.");
-            } catch (Exception e) {
-                try {
-                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                } catch (Exception e2) {
-                    logger.error(ExceptionUtils.getStackTrace(e2));
-                }
-                logger.error(ExceptionUtils.getStackTrace(e));
-            }
-            return;
-        }
-
-        if (App.config.isUnifiedBackground()) {
-            UIManager.put("TitlePane.unifiedBackground", true);
-        }
-
         try {
+
+
             switch (App.config.getTheme()) {
                 case "系统默认":
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                     break;
                 case "Flat Light":
-                    if (SystemUtil.isJBR()) {
-                        JFrame.setDefaultLookAndFeelDecorated(true);
-                        JDialog.setDefaultLookAndFeelDecorated(true);
-                    }
-                    FlatLightLaf.install();
+                    setAccentColor();
+                    FlatLightLaf.setup();
                     break;
                 case "Flat IntelliJ":
-                    if (SystemUtil.isJBR()) {
-                        JFrame.setDefaultLookAndFeelDecorated(true);
-                        JDialog.setDefaultLookAndFeelDecorated(true);
-                    }
-                    UIManager.setLookAndFeel("com.formdev.flatlaf.FlatIntelliJLaf");
+                    setAccentColor();
+                    FlatIntelliJLaf.setup();
                     break;
                 case "Flat Dark":
-                    if (SystemUtil.isJBR()) {
-                        JFrame.setDefaultLookAndFeelDecorated(true);
-                        JDialog.setDefaultLookAndFeelDecorated(true);
-                    }
-                    UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarkLaf");
-                    break;
-                case "Flat Darcula(推荐)":
-                    if (SystemUtil.isJBR()) {
-                        JFrame.setDefaultLookAndFeelDecorated(true);
-                        JDialog.setDefaultLookAndFeelDecorated(true);
-                    }
-                    UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarculaLaf");
-//                    UIManager.put( "TitlePane.unifiedBackground", true );
-/**
- If you don't like/want it, you can disable it with:
- UIManager.put( "TitlePane.useWindowDecorations", false );
-
- It is also possible to disable only the embedded menu bar (and keep the dark title pane) with:
- UIManager.put( "TitlePane.menuBarEmbedded", false );
-
- It is also possible to disable this on command line with following VM options:
- -Dflatlaf.useWindowDecorations=false
- -Dflatlaf.menuBarEmbedded=false
-
- If you have following code in your app, you can remove it (no longer necessary):
- // enable window decorations
- JFrame.setDefaultLookAndFeelDecorated( true );
- JDialog.setDefaultLookAndFeelDecorated( true );
- **/
+                    setAccentColor();
+                    FlatDarkLaf.setup();
                     break;
                 case "Dark purple":
-                    if (SystemUtil.isJBR()) {
-                        JFrame.setDefaultLookAndFeelDecorated(true);
-                        JDialog.setDefaultLookAndFeelDecorated(true);
-                    }
-                    IntelliJTheme.install(App.class.getResourceAsStream(
-                            "/theme/DarkPurple.theme.json"));
+                    FlatDarkPurpleIJTheme.setup();
                     break;
                 case "IntelliJ Cyan":
-                    if (SystemUtil.isJBR()) {
-                        JFrame.setDefaultLookAndFeelDecorated(true);
-                        JDialog.setDefaultLookAndFeelDecorated(true);
-                    }
-                    IntelliJTheme.install(App.class.getResourceAsStream(
-                            "/theme/Cyan.theme.json"));
+                    FlatCyanLightIJTheme.setup();
                     break;
                 case "IntelliJ Light":
-                    if (SystemUtil.isJBR()) {
-                        JFrame.setDefaultLookAndFeelDecorated(true);
-                        JDialog.setDefaultLookAndFeelDecorated(true);
-                    }
-                    IntelliJTheme.install(App.class.getResourceAsStream(
-                            "/theme/Light.theme.json"));
+                    FlatLightFlatIJTheme.setup();
                     break;
-
-                case "BeautyEye":
-                case "weblaf":
-                case "Darcula":
-                case "Darcula(推荐)":
+                case "Monocai":
+                    FlatMonocaiIJTheme.setup();
+                    break;
+                case "Monokai Pro":
+                    FlatMonokaiProIJTheme.setup();
+                    UIManager.put("Button.arc", 5);
+                    break;
+                case "One Dark":
+                    FlatOneDarkIJTheme.setup();
+                    break;
+                case "Gray":
+                    FlatGrayIJTheme.setup();
+                    break;
+                case "High contrast":
+                    FlatHighContrastIJTheme.setup();
+                    break;
+                case "GitHub Dark":
+                    FlatGitHubDarkIJTheme.setup();
+                    break;
+                case "Xcode-Dark":
+                    FlatXcodeDarkIJTheme.setup();
+                    break;
+                case "Vuesion":
+                    FlatVuesionIJTheme.setup();
+                    break;
+                case "Flat macOS Light":
+                    FlatMacLightLaf.setup();
+                    break;
+                case "Flat macOS Dark":
+                    FlatMacDarkLaf.setup();
+                    break;
                 default:
-                    if (SystemUtil.isJBR()) {
-                        JFrame.setDefaultLookAndFeelDecorated(true);
-                        JDialog.setDefaultLookAndFeelDecorated(true);
-                    }
-                    UIManager.setLookAndFeel("com.formdev.flatlaf.FlatDarculaLaf");
+                    setAccentColor();
+                    FlatDarculaLaf.setup();
             }
+
+            if (FlatLaf.isLafDark()) {
+//                FlatSVGIcon.ColorFilter.getInstance().setMapper(color -> color.brighter().brighter());
+            } else {
+                FlatSVGIcon.ColorFilter.getInstance().setMapper(color -> color.darker().darker());
+//                SwingUtilities.windowForComponent(App.mainFrame).repaint();
+            }
+
+            if (App.config.isUnifiedBackground()) {
+                UIManager.put("TitlePane.unifiedBackground", true);
+            }
+
         } catch (Exception e) {
             logger.error(e);
         }
+    }
+
+    private static void setAccentColor() {
+//        String accentColor = App.config.getAccentColor();
+//        FlatLaf.setGlobalExtraDefaults((!accentColor.equals(SettingDialog.accentColorKeys[0]))
+//                ? Collections.singletonMap("@accentColor", "$" + accentColor)
+//                : null);
     }
 
     /**
