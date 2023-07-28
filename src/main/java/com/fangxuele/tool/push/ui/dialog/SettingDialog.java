@@ -87,7 +87,7 @@ public class SettingDialog extends JDialog {
 
     public SettingDialog() {
         super(App.mainFrame, "设置");
-        ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.4, 0.64);
+        ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.5, 0.64);
         setContentPane(contentPane);
         setModal(true);
 
