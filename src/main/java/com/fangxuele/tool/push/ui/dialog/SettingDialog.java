@@ -1,22 +1,31 @@
 package com.fangxuele.tool.push.ui.dialog;
 
+import cn.hutool.log.Log;
+import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.logic.msgsender.HttpMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.WxMaSubscribeMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
+import com.fangxuele.tool.push.ui.Init;
+import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.util.ComponentUtil;
+import com.fangxuele.tool.push.util.HikariUtil;
 import com.fangxuele.tool.push.util.ScrollUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.formdev.flatlaf.util.SystemInfo;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import com.zaxxer.hikari.HikariDataSource;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.text.StyleContext;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.util.Locale;
 
 public class SettingDialog extends JDialog {
@@ -73,6 +82,8 @@ public class SettingDialog extends JDialog {
     private JTextField httpProxyPortTextField;
     private JTextField httpProxyUserTextField;
     private JTextField httpProxyPasswordTextField;
+
+    private static final Log logger = LogFactory.get();
 
     public SettingDialog() {
         super(App.mainFrame, "设置");
@@ -156,6 +167,348 @@ public class SettingDialog extends JDialog {
         toggleMpOutSideAccessTokenPanel();
         toggleMaProxyPanel();
         toggleHttpProxyPanel();
+
+        // 监听事件
+        // 设置-常规-启动时自动检查更新
+        autoCheckUpdateCheckBox.addActionListener(e -> {
+            App.config.setAutoCheckUpdate(autoCheckUpdateCheckBox.isSelected());
+            App.config.save();
+        });
+        // 设置-常规-显示系统托盘图标
+        useTrayCheckBox.addActionListener(e -> {
+            App.config.setUseTray(useTrayCheckBox.isSelected());
+            App.config.save();
+            if (App.tray == null && App.config.isUseTray()) {
+                Init.initTray();
+            } else if (App.tray != null && !App.config.isUseTray()) {
+                App.tray.remove(App.trayIcon);
+                App.trayIcon = null;
+                App.tray = null;
+            }
+        });
+        // 设置-常规-关闭窗口时最小化到系统托盘
+        closeToTrayCheckBox.addActionListener(e -> {
+            App.config.setCloseToTray(closeToTrayCheckBox.isSelected());
+            App.config.save();
+        });
+        // 设置-常规-默认最大化窗口
+        defaultMaxWindowCheckBox.addActionListener(e -> {
+            App.config.setDefaultMaxWindow(defaultMaxWindowCheckBox.isSelected());
+            App.config.save();
+        });
+
+        // 设置-常规-最大线程数
+        maxThreadsSaveButton.addActionListener(e -> {
+            try {
+                App.config.setMaxThreads(Integer.valueOf(maxThreadsTextField.getText()));
+                App.config.save();
+//                PushListener.refreshPushInfo();
+
+                JOptionPane.showMessageDialog(this, "保存成功！", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(this, "保存失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        });
+
+        // 设置-公众号-保存
+        settingMpInfoSaveButton.addActionListener(e -> {
+            try {
+                App.config.setMpUseProxy(mpUseProxyCheckBox.isSelected());
+                App.config.setMpProxyHost(mpProxyHostTextField.getText());
+                App.config.setMpProxyPort(mpProxyPortTextField.getText());
+                App.config.setMpProxyUserName(mpProxyUserNameTextField.getText());
+                App.config.setMpProxyPassword(mpProxyPasswordTextField.getText());
+
+                App.config.setMpUseOutSideAt(useOutSideAccessTokenCheckBox.isSelected());
+                App.config.setMpManualAt(manualAtRadioButton.isSelected());
+                App.config.setMpApiAt(apiAtRadioButton.isSelected());
+                App.config.setMpAt(accessTokenTextField.getText());
+                App.config.setMpAtExpiresIn(atExpiresInTextField.getText());
+                App.config.setMpAtApiUrl(atApiUrlTextField.getText());
+
+                App.config.save();
+
+                WxMpTemplateMsgSender.wxMpConfigStorage = null;
+                WxMpTemplateMsgSender.wxMpService = null;
+                JOptionPane.showMessageDialog(this, "保存成功！", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(this, "保存失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        });
+
+        // 设置-小程序-保存
+        settingMaInfoSaveButton.addActionListener(e -> {
+            try {
+                App.config.setMaUseProxy(maUseProxyCheckBox.isSelected());
+                App.config.setMaProxyHost(maProxyHostTextField.getText());
+                App.config.setMaProxyPort(maProxyPortTextField.getText());
+                App.config.setMaProxyUserName(maProxyUserNameTextField.getText());
+                App.config.setMaProxyPassword(maProxyPasswordTextField.getText());
+                App.config.save();
+
+                WxMaSubscribeMsgSender.wxMaConfigStorage = null;
+                WxMaSubscribeMsgSender.wxMaService = null;
+                JOptionPane.showMessageDialog(this, "保存成功！", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(this, "保存失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        });
+
+        httpSaveButton.addActionListener(e -> {
+            try {
+                App.config.setHttpUseProxy(httpUseProxyCheckBox.isSelected());
+                App.config.setHttpProxyHost(httpProxyHostTextField.getText());
+                App.config.setHttpProxyPort(httpProxyPortTextField.getText());
+                App.config.setHttpProxyUserName(httpProxyUserTextField.getText());
+                App.config.setHttpProxyPassword(httpProxyPasswordTextField.getText());
+                App.config.save();
+
+                HttpMsgSender.proxy = null;
+                JOptionPane.showMessageDialog(this, "保存成功！", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(this, "保存失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        });
+
+        // E-Mail测试
+        testMailButton.addActionListener(e -> {
+            App.config.setMailHost(mailHostTextField.getText());
+            App.config.setMailPort(mailPortTextField.getText());
+            App.config.setMailFrom(mailFromTextField.getText());
+            App.config.setMailUser(mailUserTextField.getText());
+            App.config.setMailPassword(new String(mailPasswordField.getPassword()));
+            App.config.setMailUseStartTLS(mailStartTLSCheckBox.isSelected());
+            App.config.setMailUseSSL(mailSSLCheckBox.isSelected());
+            MailMsgSender.mailAccount = null;
+
+            MailTestDialog mailTestDialog = new MailTestDialog();
+            mailTestDialog.pack();
+            mailTestDialog.setVisible(true);
+        });
+
+        // E-Mail保存
+        saveMailButton.addActionListener(e -> {
+            try {
+                App.config.setMailHost(mailHostTextField.getText());
+                App.config.setMailPort(mailPortTextField.getText());
+                App.config.setMailFrom(mailFromTextField.getText());
+                App.config.setMailUser(mailUserTextField.getText());
+                App.config.setMailPassword(new String(mailPasswordField.getPassword()));
+                App.config.setMailUseStartTLS(mailStartTLSCheckBox.isSelected());
+                App.config.setMailUseSSL(mailSSLCheckBox.isSelected());
+                App.config.save();
+
+                MailMsgSender.mailAccount = null;
+
+                JOptionPane.showMessageDialog(this, "保存成功！", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(this, "保存失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        });
+
+        // mysql数据库-测试链接
+        settingTestDbLinkButton.addActionListener(e -> {
+            HikariDataSource hikariDataSource = null;
+            try {
+                String dbUrl = mysqlUrlTextField.getText();
+                String dbUser = mysqlUserTextField.getText();
+                String dbPassword = new String(mysqlPasswordField.getPassword());
+                if (StringUtils.isBlank(dbUrl)) {
+                    mysqlUrlTextField.grabFocus();
+                    return;
+                }
+                if (StringUtils.isBlank(dbUser)) {
+                    mysqlUserTextField.grabFocus();
+                    return;
+                }
+                if (StringUtils.isBlank(dbPassword)) {
+                    mysqlPasswordField.grabFocus();
+                    return;
+                }
+                hikariDataSource = new HikariDataSource();
+                hikariDataSource.setJdbcUrl("jdbc:mysql://" + dbUrl);
+                hikariDataSource.setUsername(dbUser);
+                hikariDataSource.setPassword(dbPassword);
+                if (hikariDataSource.getConnection() == null) {
+                    JOptionPane.showMessageDialog(this, "连接失败", "失败",
+                            JOptionPane.ERROR_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "连接成功！", "成功",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(this, "连接失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            } finally {
+                if (hikariDataSource != null) {
+                    try {
+                        hikariDataSource.close();
+                    } catch (Exception e2) {
+                        logger.error(e2);
+                    }
+                }
+            }
+        });
+
+        // mysql数据库-保存
+        settingDbInfoSaveButton.addActionListener(e -> {
+            try {
+                App.config.setMysqlUrl(mysqlUrlTextField.getText());
+                App.config.setMysqlUser(mysqlUserTextField.getText());
+                App.config.setMysqlPassword(new String(mysqlPasswordField.getPassword()));
+                App.config.save();
+
+                if (HikariUtil.getHikariDataSource() != null) {
+                    HikariUtil.getHikariDataSource().close();
+                }
+
+                JOptionPane.showMessageDialog(this, "保存成功！", "成功",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(this, "保存失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        });
+
+        mpUseProxyCheckBox.addChangeListener(e -> toggleMpProxyPanel());
+        maUseProxyCheckBox.addChangeListener(e -> toggleMaProxyPanel());
+        httpUseProxyCheckBox.addChangeListener(e -> toggleHttpProxyPanel());
+        useOutSideAccessTokenCheckBox.addChangeListener(e -> toggleMpOutSideAccessTokenPanel());
+        manualAtRadioButton.addChangeListener(e -> {
+            boolean isSelected = manualAtRadioButton.isSelected();
+            if (isSelected) {
+                apiAtRadioButton.setSelected(false);
+            }
+        });
+        apiAtRadioButton.addChangeListener(e -> {
+            boolean isSelected = apiAtRadioButton.isSelected();
+            if (isSelected) {
+                manualAtRadioButton.setSelected(false);
+            }
+        });
+
+        outSideAtTipsLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                CommonTipsDialog dialog = new CommonTipsDialog();
+
+                StringBuilder tipsBuilder = new StringBuilder();
+                tipsBuilder.append("<h1>什么场景下需要使用外部AccessToken？</h1>");
+                tipsBuilder.append("<p>调用腾讯公众号接口需要AccessToken，上面配置的AppID、AppSecret等正是为了获得AccessToken；</p>");
+                tipsBuilder.append("<p>由于有些企业已经开发了微信公众号相关的服务，不必再次通过上面的AppID等配置再次获取；</p>");
+                tipsBuilder.append("<p>而且每次获取都会使之前的失效，加上每个公众号每天获取的次数有限；</p>");
+                tipsBuilder.append("<h2>建议每天使用WePush频率很高的时候可以使用此功能</h2>");
+                tipsBuilder.append("<h2>反之，可不用设置</h2>");
+
+                dialog.setHtmlText(tipsBuilder.toString());
+                dialog.pack();
+                dialog.setVisible(true);
+
+                super.mousePressed(e);
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                JLabel label = (JLabel) e.getComponent();
+                label.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                label.setIcon(new ImageIcon(UiConsts.HELP_FOCUSED_ICON));
+                super.mouseEntered(e);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                JLabel label = (JLabel) e.getComponent();
+                label.setIcon(new ImageIcon(UiConsts.HELP_ICON));
+                super.mouseExited(e);
+            }
+        });
+        manualAtTipsLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                CommonTipsDialog dialog = new CommonTipsDialog();
+
+                StringBuilder tipsBuilder = new StringBuilder();
+                tipsBuilder.append("<h1>这是什么？</h1>");
+                tipsBuilder.append("<h2>手动填写AccessToken和过期时间</h2>");
+                tipsBuilder.append("<h2>建议仅在临时使用一次WePush且使用时间不会很长的时候才使用</h2>");
+                tipsBuilder.append("<p>请向您所在企业的开发人员索取，注意保密</p>");
+
+                dialog.setHtmlText(tipsBuilder.toString());
+                dialog.pack();
+                dialog.setVisible(true);
+
+                super.mousePressed(e);
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                JLabel label = (JLabel) e.getComponent();
+                label.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                label.setIcon(new ImageIcon(UiConsts.HELP_FOCUSED_ICON));
+                super.mouseEntered(e);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                JLabel label = (JLabel) e.getComponent();
+                label.setIcon(new ImageIcon(UiConsts.HELP_ICON));
+                super.mouseExited(e);
+            }
+        });
+        apiAtTipsLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                CommonTipsDialog dialog = new CommonTipsDialog();
+
+                StringBuilder tipsBuilder = new StringBuilder();
+                tipsBuilder.append("<h1>这是什么？</h1>");
+                tipsBuilder.append("<h2>如果企业已经开发了微信公众号相关的服务，建议使用此项；</h2>");
+                tipsBuilder.append("<p>向您所在企业的开发人员索取该接口；</p>");
+                tipsBuilder.append("<p>接口使用GET请求，返回格式：</p>");
+                tipsBuilder.append("<p>{\"access_token\":\"ACCESS_TOKEN\",\"expires_in\":7200}</p>");
+                tipsBuilder.append("<p>请一定注意接口安全性，且服务端应按照失效时间进行缓存</p>");
+                tipsBuilder.append("<p>例如在接口上添加密钥相关的参数：</p>");
+                tipsBuilder.append("<p>示例：http://mydomain.com/wechat/getAccessToken?secret=jad76^j2#SY</p>");
+
+                dialog.setHtmlText(tipsBuilder.toString());
+                dialog.pack();
+                dialog.setVisible(true);
+
+                super.mousePressed(e);
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                JLabel label = (JLabel) e.getComponent();
+                label.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                label.setIcon(new ImageIcon(UiConsts.HELP_FOCUSED_ICON));
+                super.mouseEntered(e);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                JLabel label = (JLabel) e.getComponent();
+                label.setIcon(new ImageIcon(UiConsts.HELP_ICON));
+                super.mouseExited(e);
+            }
+        });
 
     }
 

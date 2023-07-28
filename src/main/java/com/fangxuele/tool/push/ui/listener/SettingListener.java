@@ -32,8 +32,6 @@ import java.awt.event.MouseEvent;
 public class SettingListener {
     private static final Log logger = LogFactory.get();
 
-    public static String wxAccountType;
-
     public static void addListeners() {
         SettingForm settingForm = SettingForm.getInstance();
         JPanel settingPanel = settingForm.getSettingPanel();
