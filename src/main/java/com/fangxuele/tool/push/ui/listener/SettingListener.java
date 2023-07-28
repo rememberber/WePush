@@ -4,16 +4,17 @@ import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TWxAccountMapper;
-import com.fangxuele.tool.push.logic.msgsender.*;
+import com.fangxuele.tool.push.logic.msgsender.HttpMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.WxMaSubscribeMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.UiConsts;
-import com.fangxuele.tool.push.ui.dialog.*;
+import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
+import com.fangxuele.tool.push.ui.dialog.MailTestDialog;
 import com.fangxuele.tool.push.ui.form.SettingForm;
-import com.fangxuele.tool.push.ui.form.msg.DingMsgForm;
-import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
 import com.fangxuele.tool.push.util.HikariUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
-import com.fangxuele.tool.push.util.SystemUtil;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.StringUtils;
 
@@ -21,10 +22,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
 
 /**
  * <pre>
@@ -131,168 +128,6 @@ public class SettingListener {
 
                 WxMaSubscribeMsgSender.wxMaConfigStorage = null;
                 WxMaSubscribeMsgSender.wxMaService = null;
-                JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
-                        JOptionPane.INFORMATION_MESSAGE);
-            } catch (Exception e1) {
-                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
-                logger.error(e1);
-            }
-        });
-
-        // 企业号-保存
-        settingForm.getWxCpSaveButton().addActionListener(e -> {
-            try {
-                App.config.setWxCpCorpId(settingForm.getWxCpCorpIdTextField().getText());
-                App.config.save();
-
-                JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
-                        JOptionPane.INFORMATION_MESSAGE);
-            } catch (Exception e1) {
-                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
-                logger.error(e1);
-            }
-        });
-
-        // 设置-企业号-应用管理
-        settingForm.getWxCpAppManageButton().addActionListener(e -> {
-            WxCpAppDialog dialog = new WxCpAppDialog();
-            dialog.renderTable();
-            dialog.pack();
-            dialog.setVisible(true);
-            WxCpMsgForm.initAppNameList();
-        });
-
-        // 设置-钉钉-应用管理
-        settingForm.getDingAppManageButton().addActionListener(e -> {
-            DingAppDialog dialog = new DingAppDialog();
-            dialog.renderTable();
-            dialog.pack();
-            dialog.setVisible(true);
-            DingMsgForm.initAppNameList();
-        });
-
-        // 设置-阿里云短信-保存
-        settingForm.getSettingAliyunSaveButton().addActionListener(e -> {
-            try {
-                App.config.setAliyunAccessKeyId(settingForm.getAliyunAccessKeyIdTextField().getText());
-                App.config.setAliyunAccessKeySecret(new String(settingForm.getAliyunAccessKeySecretTextField().getPassword()));
-                App.config.setAliyunSign(settingForm.getAliyunSignTextField().getText());
-                App.config.save();
-                AliYunMsgSender.iAcsClient = null;
-
-                JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
-                        JOptionPane.INFORMATION_MESSAGE);
-            } catch (Exception e1) {
-                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
-                logger.error(e1);
-            }
-        });
-
-        // 设置-腾讯云短信-保存
-        settingForm.getSettingTxyunSaveButton().addActionListener(e -> {
-            try {
-                App.config.setTxyunAppId(settingForm.getTxyunAppIdTextField().getText());
-                App.config.setTxyunAppKey(new String(settingForm.getTxyunAppKeyTextField().getPassword()));
-                App.config.setTxyunSign(settingForm.getTxyunSignTextField().getText());
-                App.config.save();
-
-                TxYunMsgSender.smsSingleSender = null;
-
-                JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
-                        JOptionPane.INFORMATION_MESSAGE);
-            } catch (Exception e1) {
-                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
-                logger.error(e1);
-            }
-        });
-
-        // 设置-华为云短信-保存
-        settingForm.getHwSaveButton().addActionListener(e -> {
-            try {
-                App.config.setHwAppKey(settingForm.getHwAppKeyTextField().getText());
-                App.config.setHwAppSecretPassword(new String(settingForm.getHwAppSecretPasswordField().getPassword()));
-                App.config.setHwAccessUrl(settingForm.getHwAccessUrlTextField().getText());
-                App.config.setHwSenderCode(settingForm.getHwSenderCodeTextField().getText());
-                App.config.setHwSignature(settingForm.getHwSignatureTextField().getText());
-                App.config.save();
-
-                HwYunMsgSender.closeableHttpClient = null;
-
-                JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
-                        JOptionPane.INFORMATION_MESSAGE);
-            } catch (Exception e1) {
-                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
-                logger.error(e1);
-            }
-        });
-
-        // 设置-百度云短信-保存
-        settingForm.getBdSaveButton().addActionListener(e -> {
-            try {
-                App.config.setBdAccessKeyId(settingForm.getBdAccessKeyIdTextField().getText());
-                App.config.setBdSecretAccessKey(new String(settingForm.getBdSecretAccessKeyPasswordField().getPassword()));
-                App.config.setBdEndPoint(settingForm.getBdEndPointTextField().getText());
-                App.config.setBdInvokeId(settingForm.getBdInvokeIdTextField().getText());
-                App.config.save();
-
-                BdYunMsgSender.smsClient = null;
-
-                JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
-                        JOptionPane.INFORMATION_MESSAGE);
-            } catch (Exception e1) {
-                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
-                logger.error(e1);
-            }
-        });
-
-        // 设置-又拍云短信-保存
-        settingForm.getUpSaveButton().addActionListener(e -> {
-            try {
-                App.config.setUpAuthorizationToken(settingForm.getUpAuthorizationTokenTextField().getText());
-                App.config.save();
-
-                HttpMsgSender.okHttpClient = null;
-
-                JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
-                        JOptionPane.INFORMATION_MESSAGE);
-            } catch (Exception e1) {
-                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
-                logger.error(e1);
-            }
-        });
-
-        // 设置-七牛云短信-保存
-        settingForm.getQiniuSaveButton().addActionListener(e -> {
-            try {
-                App.config.setQiniuAccessKey(settingForm.getQiniuAccessKeyTextField().getText());
-                App.config.setQiniuSecretKey(settingForm.getQiniuSecretKeyTextField().getText());
-                App.config.save();
-
-                QiNiuYunMsgSender.smsManager = null;
-
-                JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
-                        JOptionPane.INFORMATION_MESSAGE);
-            } catch (Exception e1) {
-                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
-                logger.error(e1);
-            }
-        });
-
-        // 设置-云片网短信-保存
-        settingForm.getSettingYunpianSaveButton().addActionListener(e -> {
-            try {
-                App.config.setYunpianApiKey(new String(settingForm.getYunpianApiKeyTextField().getPassword()));
-                App.config.save();
-                YunPianMsgSender.yunpianClient = null;
-
                 JOptionPane.showMessageDialog(settingPanel, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {
@@ -423,65 +258,6 @@ public class SettingListener {
                 JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
                 logger.error(e1);
-            }
-        });
-
-        // 外观-保存
-        settingForm.getSettingAppearanceSaveButton().addActionListener(e -> {
-            try {
-                if (!App.config.getTheme().equals(settingForm.getSettingThemeComboBox().getSelectedItem().toString())) {
-                    App.config.setTheme(Objects.requireNonNull(settingForm.getSettingThemeComboBox().getSelectedItem()).toString());
-                    Init.initTheme();
-                    for (Window window : Window.getWindows()) {
-                        SwingUtilities.updateComponentTreeUI(window);
-                    }
-                }
-                Init.initGlobalFont();
-
-                App.config.setFont(Objects.requireNonNull(settingForm.getSettingFontNameComboBox().getSelectedItem()).toString());
-                App.config.setFontSize(Integer.parseInt(Objects.requireNonNull(settingForm.getSettingFontSizeComboBox().getSelectedItem()).toString()));
-                App.config.save();
-
-                JOptionPane.showMessageDialog(settingPanel, "保存成功！\n\n部分细节将在下次启动时生效！\n\n", "成功",
-                        JOptionPane.INFORMATION_MESSAGE);
-            } catch (Exception e1) {
-                JOptionPane.showMessageDialog(settingPanel, "保存失败！\n\n" + e1.getMessage(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
-                logger.error(e1);
-            }
-        });
-
-        // 调试-查看日志
-        settingForm.getShowLogButton().addActionListener(e -> {
-            try {
-                Desktop desktop = Desktop.getDesktop();
-                desktop.open(new File(SystemUtil.LOG_DIR));
-            } catch (Exception e2) {
-                logger.error("查看日志打开失败", e2);
-            }
-        });
-
-        // 调试-系统环境变量
-        settingForm.getSystemEnvButton().addActionListener(e -> {
-            try {
-                SystemEnvResultDialog dialog = new SystemEnvResultDialog();
-
-                dialog.appendTextArea("------------System.getenv---------------");
-                Map<String, String> map = System.getenv();
-                for (Map.Entry<String, String> envEntry : map.entrySet()) {
-                    dialog.appendTextArea(envEntry.getKey() + "=" + envEntry.getValue());
-                }
-
-                dialog.appendTextArea("------------System.getProperties---------------");
-                Properties properties = System.getProperties();
-                for (Map.Entry<Object, Object> objectObjectEntry : properties.entrySet()) {
-                    dialog.appendTextArea(objectObjectEntry.getKey() + "=" + objectObjectEntry.getValue());
-                }
-
-                dialog.pack();
-                dialog.setVisible(true);
-            } catch (Exception e2) {
-                logger.error("查看系统环境变量失败", e2);
             }
         });
 

@@ -6,8 +6,10 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TWxCpAppMapper;
 import com.fangxuele.tool.push.domain.TWxCpApp;
-import com.fangxuele.tool.push.ui.form.SettingForm;
-import com.fangxuele.tool.push.util.*;
+import com.fangxuele.tool.push.util.ComponentUtil;
+import com.fangxuele.tool.push.util.JTableUtil;
+import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.SystemUtil;
 import com.formdev.flatlaf.util.SystemInfo;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -81,21 +83,6 @@ public class WxCpAppDialog extends JDialog {
                 update = true;
             }
 
-            TWxCpApp tWxCpApp = new TWxCpApp();
-            String now = SqliteUtil.nowDateForSqlite();
-            tWxCpApp.setAppName(appName);
-            tWxCpApp.setCorpid(SettingForm.getInstance().getWxCpCorpIdTextField().getText());
-            tWxCpApp.setAgentId(agentIdTextField.getText());
-            tWxCpApp.setSecret(secretTextField.getText());
-            tWxCpApp.setModifiedTime(now);
-
-            if (update) {
-                tWxCpApp.setId(tWxCpAppList.get(0).getId());
-                wxCpAppMapper.updateByPrimaryKeySelective(tWxCpApp);
-            } else {
-                tWxCpApp.setCreateTime(now);
-                wxCpAppMapper.insert(tWxCpApp);
-            }
             renderTable();
             JOptionPane.showMessageDialog(this, "保存成功！", "成功",
                     JOptionPane.INFORMATION_MESSAGE);
