@@ -3,7 +3,6 @@ package com.fangxuele.tool.push.ui.listener;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.dao.TWxAccountMapper;
 import com.fangxuele.tool.push.logic.msgsender.HttpMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.WxMaSubscribeMsgSender;
@@ -14,7 +13,6 @@ import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
 import com.fangxuele.tool.push.ui.dialog.MailTestDialog;
 import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.util.HikariUtil;
-import com.fangxuele.tool.push.util.MybatisUtil;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.StringUtils;
 
@@ -35,8 +33,6 @@ public class SettingListener {
     private static final Log logger = LogFactory.get();
 
     public static String wxAccountType;
-
-    private static TWxAccountMapper wxAccountMapper = MybatisUtil.getSqlSession().getMapper(TWxAccountMapper.class);
 
     public static void addListeners() {
         SettingForm settingForm = SettingForm.getInstance();
