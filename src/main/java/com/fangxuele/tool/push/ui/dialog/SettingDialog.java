@@ -103,6 +103,108 @@ public class SettingDialog extends JDialog {
         // 设置滚动条速度
         ScrollUtil.smoothPane(settingScrollPane);
 
+        // 常规
+        autoCheckUpdateCheckBox.setSelected(App.config.isAutoCheckUpdate());
+        useTrayCheckBox.setSelected(App.config.isUseTray());
+        closeToTrayCheckBox.setSelected(App.config.isCloseToTray());
+        defaultMaxWindowCheckBox.setSelected(App.config.isDefaultMaxWindow());
+        maxThreadsTextField.setText(String.valueOf(App.config.getMaxThreads()));
+
+        // 微信公众号
+        mpUseProxyCheckBox.setSelected(App.config.isMpUseProxy());
+        mpProxyHostTextField.setText(App.config.getMpProxyHost());
+        mpProxyPortTextField.setText(App.config.getMpProxyPort());
+        mpProxyUserNameTextField.setText(App.config.getMpProxyUserName());
+        mpProxyPasswordTextField.setText(App.config.getMpProxyPassword());
+
+        useOutSideAccessTokenCheckBox.setSelected(App.config.isMpUseOutSideAt());
+        manualAtRadioButton.setSelected(App.config.isMpManualAt());
+        apiAtRadioButton.setSelected(App.config.isMpApiAt());
+        accessTokenTextField.setText(App.config.getMpAt());
+        atExpiresInTextField.setText(App.config.getMpAtExpiresIn());
+        atApiUrlTextField.setText(App.config.getMpAtApiUrl());
+
+        // 微信小程序
+        maUseProxyCheckBox.setSelected(App.config.isMaUseProxy());
+        maProxyHostTextField.setText(App.config.getMaProxyHost());
+        maProxyPortTextField.setText(App.config.getMaProxyPort());
+        maProxyUserNameTextField.setText(App.config.getMaProxyUserName());
+        maProxyPasswordTextField.setText(App.config.getMaProxyPassword());
+
+        // HTTP请求
+        httpUseProxyCheckBox.setSelected(App.config.isHttpUseProxy());
+        httpProxyHostTextField.setText(App.config.getHttpProxyHost());
+        httpProxyPortTextField.setText(App.config.getHttpProxyPort());
+        httpProxyUserTextField.setText(App.config.getHttpProxyUserName());
+        httpProxyPasswordTextField.setText(App.config.getHttpProxyPassword());
+
+        // E-Mail
+        mailHostTextField.setText(App.config.getMailHost());
+        mailPortTextField.setText(App.config.getMailPort());
+        mailFromTextField.setText(App.config.getMailFrom());
+        mailUserTextField.setText(App.config.getMailUser());
+        mailPasswordField.setText(App.config.getMailPassword());
+        mailStartTLSCheckBox.setSelected(App.config.isMailUseStartTLS());
+        mailSSLCheckBox.setSelected(App.config.isMailUseSSL());
+
+        // MySQL
+        mysqlUrlTextField.setText(App.config.getMysqlUrl());
+        mysqlUserTextField.setText(App.config.getMysqlUser());
+        mysqlPasswordField.setText(App.config.getMysqlPassword());
+
+        toggleMpProxyPanel();
+        toggleMpOutSideAccessTokenPanel();
+        toggleMaProxyPanel();
+        toggleHttpProxyPanel();
+
+    }
+
+    /**
+     * 切换公众号代理设置面板显示/隐藏
+     */
+    public void toggleMpProxyPanel() {
+        boolean mpUseProxy = mpUseProxyCheckBox.isSelected();
+        if (mpUseProxy) {
+            mpProxyPanel.setVisible(true);
+        } else {
+            mpProxyPanel.setVisible(false);
+        }
+    }
+
+    /**
+     * 切换小程序代理设置面板显示/隐藏
+     */
+    public void toggleMaProxyPanel() {
+        boolean maUseProxy = maUseProxyCheckBox.isSelected();
+        if (maUseProxy) {
+            maProxyPanel.setVisible(true);
+        } else {
+            maProxyPanel.setVisible(false);
+        }
+    }
+
+    /**
+     * 切换HTTP代理设置面板显示/隐藏
+     */
+    public void toggleHttpProxyPanel() {
+        boolean httpUseProxy = httpUseProxyCheckBox.isSelected();
+        if (httpUseProxy) {
+            httpProxyPanel.setVisible(true);
+        } else {
+            httpProxyPanel.setVisible(false);
+        }
+    }
+
+    /**
+     * 切换使用外部AccessToken面板显示/隐藏
+     */
+    public void toggleMpOutSideAccessTokenPanel() {
+        boolean useOutSideAccessToken = useOutSideAccessTokenCheckBox.isSelected();
+        if (useOutSideAccessToken) {
+            mpOutSideAccessTokenPanel.setVisible(true);
+        } else {
+            mpOutSideAccessTokenPanel.setVisible(false);
+        }
     }
 
     {
