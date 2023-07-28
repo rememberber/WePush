@@ -119,7 +119,6 @@ public class WxCpAppDialog extends JDialog {
                             wxCpAppMapper.deleteByPrimaryKey(selectedId);
                             tableModel.removeRow(selectedRow);
                         }
-                        SettingForm.initSwitchMultiAccount();
                     }
                 }
             } catch (Exception e1) {

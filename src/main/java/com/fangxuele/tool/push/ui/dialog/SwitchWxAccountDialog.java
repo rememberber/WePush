@@ -8,7 +8,6 @@ import com.fangxuele.tool.push.dao.TWxAccountMapper;
 import com.fangxuele.tool.push.domain.TWxAccount;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.form.MessageManageForm;
-import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.ui.listener.SettingListener;
 import com.fangxuele.tool.push.util.*;
 import com.formdev.flatlaf.util.SystemInfo;
@@ -118,7 +117,6 @@ public class SwitchWxAccountDialog extends JDialog {
                 wxAccountMapper.insert(tWxAccount);
             }
             renderTable();
-            SettingForm.initSwitchMultiAccount();
             MessageManageForm.init();
             JOptionPane.showMessageDialog(this, "保存成功！", "成功",
                     JOptionPane.INFORMATION_MESSAGE);
@@ -142,7 +140,6 @@ public class SwitchWxAccountDialog extends JDialog {
                             wxAccountMapper.deleteByPrimaryKey(selectedId);
                             tableModel.removeRow(selectedRow);
                         }
-                        SettingForm.initSwitchMultiAccount();
                     }
                 }
             } catch (Exception e1) {

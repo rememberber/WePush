@@ -6,7 +6,6 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TDingAppMapper;
 import com.fangxuele.tool.push.domain.TDingApp;
-import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.util.*;
 import com.formdev.flatlaf.util.SystemInfo;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -119,7 +118,6 @@ public class DingAppDialog extends JDialog {
                             dingAppMapper.deleteByPrimaryKey(selectedId);
                             tableModel.removeRow(selectedRow);
                         }
-                        SettingForm.initSwitchMultiAccount();
                     }
                 }
             } catch (Exception e1) {

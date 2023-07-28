@@ -12,7 +12,6 @@ import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.UpdateInfoDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
-import com.fangxuele.tool.push.ui.form.SettingForm;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -183,7 +182,6 @@ public class UpgradeUtil {
                         wxAccountMapper.insert(tWxAccount);
                     }
 
-                    SettingForm.initSwitchMultiAccount();
                 }
                 if (StringUtils.isNotBlank(App.config.getMiniAppAppId())) {
                     boolean update = false;
@@ -208,7 +206,6 @@ public class UpgradeUtil {
                         tWxAccount.setCreateTime(now);
                         wxAccountMapper.insert(tWxAccount);
                     }
-                    SettingForm.initSwitchMultiAccount();
                 }
                 break;
             case 26:
