@@ -3,7 +3,6 @@ package com.fangxuele.tool.push.ui.dialog;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.SendResult;
-import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.formdev.flatlaf.util.SystemInfo;
@@ -75,10 +74,10 @@ public class MailTestDialog extends JDialog {
             SendResult sendResult = mailMsgSender.sendTestMail(mailToTextField.getText());
             dispose();
             if (sendResult.isSuccess()) {
-                JOptionPane.showMessageDialog(SettingForm.getInstance().getSettingPanel(), "发送成功！", "成功",
+                JOptionPane.showMessageDialog(App.mainFrame, "发送成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(SettingForm.getInstance().getSettingPanel(), "发送失败！\n\n" + sendResult.getInfo(), "失败",
+                JOptionPane.showMessageDialog(App.mainFrame, "发送失败！\n\n" + sendResult.getInfo(), "失败",
                         JOptionPane.ERROR_MESSAGE);
             }
         }

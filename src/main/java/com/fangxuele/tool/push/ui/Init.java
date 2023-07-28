@@ -193,7 +193,6 @@ public class Init {
         ThreadUtil.execute(TaskForm::init);
         ThreadUtil.execute(InfinityForm::init);
         ThreadUtil.execute(ScheduleForm::init);
-        ThreadUtil.execute(SettingForm::init);
         ThreadUtil.execute(PushHisForm::init);
 
         // 检查新版版

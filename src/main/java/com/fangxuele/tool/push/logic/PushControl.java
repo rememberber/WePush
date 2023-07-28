@@ -129,8 +129,6 @@ public class PushControl {
      * @return isConfig
      */
     public static boolean configCheck() {
-        SettingForm settingForm = SettingForm.getInstance();
-
         int msgType = App.config.getMsgType();
         switch (msgType) {
             case MessageTypeEnum.MP_TEMPLATE_CODE:
@@ -141,19 +139,19 @@ public class PushControl {
                 if (App.config.isMpUseOutSideAt()) {
                     if (App.config.isMpManualAt() &&
                             (StringUtils.isEmpty(App.config.getMpAt()) || StringUtils.isEmpty(App.config.getMpAtExpiresIn()))) {
-                        JOptionPane.showMessageDialog(settingForm.getSettingPanel(), "请先在设置中填写并保存手动输入的外部accessToken信息！", "提示",
+                        JOptionPane.showMessageDialog(App.mainFrame, "请先在设置中填写并保存手动输入的外部accessToken信息！", "提示",
                                 JOptionPane.INFORMATION_MESSAGE);
                         return false;
                     }
                     if (App.config.isMpApiAt() && StringUtils.isEmpty(App.config.getMpAtApiUrl())) {
-                        JOptionPane.showMessageDialog(settingForm.getSettingPanel(), "请先在设置中填写并保存用于获取外部accessToken的URL！", "提示",
+                        JOptionPane.showMessageDialog(App.mainFrame, "请先在设置中填写并保存用于获取外部accessToken的URL！", "提示",
                                 JOptionPane.INFORMATION_MESSAGE);
                         return false;
                     }
                     return true;
                 }
                 if (StringUtils.isEmpty(App.config.getWechatAppId()) || StringUtils.isEmpty(App.config.getWechatAppSecret())) {
-                    JOptionPane.showMessageDialog(settingForm.getSettingPanel(), "请先在设置中填写并保存公众号相关配置！", "提示",
+                    JOptionPane.showMessageDialog(App.mainFrame, "请先在设置中填写并保存公众号相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return false;
                 }
@@ -162,7 +160,7 @@ public class PushControl {
             case MessageTypeEnum.MA_TEMPLATE_CODE:
             case MessageTypeEnum.MA_SUBSCRIBE_CODE:
                 if (StringUtils.isEmpty(App.config.getMiniAppAppId()) || StringUtils.isEmpty(App.config.getMiniAppAppSecret())) {
-                    JOptionPane.showMessageDialog(settingForm.getSettingPanel(), "请先在设置中填写并保存小程序相关配置！", "提示",
+                    JOptionPane.showMessageDialog(App.mainFrame, "请先在设置中填写并保存小程序相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return false;
                 }
@@ -172,7 +170,7 @@ public class PushControl {
                 String aliyunAccessKeySecret = App.config.getAliyunAccessKeySecret();
 
                 if (StringUtils.isEmpty(aliyunAccessKeyId) || StringUtils.isEmpty(aliyunAccessKeySecret)) {
-                    JOptionPane.showMessageDialog(settingForm.getSettingPanel(),
+                    JOptionPane.showMessageDialog(App.mainFrame,
                             "请先在设置中填写并保存阿里云短信相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return false;
@@ -183,7 +181,7 @@ public class PushControl {
                 String txyunAppKey = App.config.getTxyunAppKey();
 
                 if (StringUtils.isEmpty(txyunAppId) || StringUtils.isEmpty(txyunAppKey)) {
-                    JOptionPane.showMessageDialog(settingForm.getSettingPanel(),
+                    JOptionPane.showMessageDialog(App.mainFrame,
                             "请先在设置中填写并保存腾讯云短信相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return false;
@@ -194,7 +192,7 @@ public class PushControl {
                 String qiniuSecretKey = App.config.getQiniuSecretKey();
 
                 if (StringUtils.isEmpty(qiniuAccessKey) || StringUtils.isEmpty(qiniuSecretKey)) {
-                    JOptionPane.showMessageDialog(settingForm.getSettingPanel(),
+                    JOptionPane.showMessageDialog(App.mainFrame,
                             "请先在设置中填写并保存七牛云短信相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return false;
@@ -204,7 +202,7 @@ public class PushControl {
                 String upAuthorizationToken = App.config.getUpAuthorizationToken();
 
                 if (StringUtils.isEmpty(upAuthorizationToken)) {
-                    JOptionPane.showMessageDialog(settingForm.getSettingPanel(),
+                    JOptionPane.showMessageDialog(App.mainFrame,
                             "请先在设置中填写并保存又拍云短信相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return false;
@@ -215,7 +213,7 @@ public class PushControl {
                 String bdSecretAccessKey = App.config.getBdSecretAccessKey();
 
                 if (StringUtils.isEmpty(bdAccessKeyId) || StringUtils.isEmpty(bdSecretAccessKey)) {
-                    JOptionPane.showMessageDialog(settingForm.getSettingPanel(),
+                    JOptionPane.showMessageDialog(App.mainFrame,
                             "请先在设置中填写并保存百度云短信相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return false;
@@ -226,7 +224,7 @@ public class PushControl {
                 String hwAppSecretPassword = App.config.getHwAppSecretPassword();
 
                 if (StringUtils.isEmpty(hwAppKey) || StringUtils.isEmpty(hwAppSecretPassword)) {
-                    JOptionPane.showMessageDialog(settingForm.getSettingPanel(),
+                    JOptionPane.showMessageDialog(App.mainFrame,
                             "请先在设置中填写并保存华为云短信相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return false;
@@ -235,7 +233,7 @@ public class PushControl {
             case MessageTypeEnum.YUN_PIAN_CODE:
                 String yunpianApiKey = App.config.getYunpianApiKey();
                 if (StringUtils.isEmpty(yunpianApiKey)) {
-                    JOptionPane.showMessageDialog(settingForm.getSettingPanel(),
+                    JOptionPane.showMessageDialog(App.mainFrame,
                             "请先在设置中填写并保存云片网短信相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return false;
@@ -245,7 +243,7 @@ public class PushControl {
                 String mailHost = App.config.getMailHost();
                 String mailFrom = App.config.getMailFrom();
                 if (StringUtils.isBlank(mailHost) || StringUtils.isBlank(mailFrom)) {
-                    JOptionPane.showMessageDialog(settingForm.getSettingPanel(),
+                    JOptionPane.showMessageDialog(App.mainFrame,
                             "请先在设置中填写并保存E-Mail相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return false;
@@ -254,7 +252,7 @@ public class PushControl {
             case MessageTypeEnum.WX_CP_CODE:
                 String wxCpCorpId = App.config.getWxCpCorpId();
                 if (StringUtils.isBlank(wxCpCorpId)) {
-                    JOptionPane.showMessageDialog(settingForm.getSettingPanel(),
+                    JOptionPane.showMessageDialog(App.mainFrame,
                             "请先在设置中填写并保存微信企业号/企业微信相关配置！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                     return false;

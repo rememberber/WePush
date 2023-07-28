@@ -11,7 +11,6 @@ import com.fangxuele.tool.push.domain.TWxAccount;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.UpdateInfoDialog;
-import com.fangxuele.tool.push.ui.form.MainWindow;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -39,7 +38,7 @@ public class UpgradeUtil {
         // 从github获取最新版本相关信息
         String versionSummaryJsonContent = HttpUtil.get(UiConsts.CHECK_VERSION_URL);
         if (StringUtils.isEmpty(versionSummaryJsonContent) && !initCheck) {
-            JOptionPane.showMessageDialog(MainWindow.getInstance().getSettingPanel(),
+            JOptionPane.showMessageDialog(App.mainFrame,
                     "检查超时，请关注GitHub Release！", "网络错误",
                     JOptionPane.INFORMATION_MESSAGE);
             return;
@@ -76,7 +75,7 @@ public class UpgradeUtil {
             updateInfoDialog.setVisible(true);
         } else {
             if (!initCheck) {
-                JOptionPane.showMessageDialog(MainWindow.getInstance().getSettingPanel(),
+                JOptionPane.showMessageDialog(App.mainFrame,
                         "当前已经是最新版本！", "恭喜",
                         JOptionPane.INFORMATION_MESSAGE);
             }

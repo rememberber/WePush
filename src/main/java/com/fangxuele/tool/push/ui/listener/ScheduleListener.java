@@ -10,7 +10,7 @@ import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.ScheduleForm;
-import com.fangxuele.tool.push.ui.form.SettingForm;
+import com.fangxuele.tool.push.util.ConfigUtil;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -135,8 +135,8 @@ public class ScheduleListener {
                 }
 
                 if (scheduleForm.getSendPushResultCheckBox().isSelected() &&
-                        (StringUtils.isBlank(SettingForm.getInstance().getMailHostTextField().getText())
-                                || StringUtils.isBlank(SettingForm.getInstance().getMailFromTextField().getText()))) {
+                        (StringUtils.isBlank(ConfigUtil.getInstance().getMailHost())
+                                || StringUtils.isBlank(ConfigUtil.getInstance().getMailFrom()))) {
                     JOptionPane.showMessageDialog(mainWindow.getTaskPanel(),
                             "保存失败！\n\n请先在设置中设置E-Mail服务器！", "失败",
                             JOptionPane.ERROR_MESSAGE);

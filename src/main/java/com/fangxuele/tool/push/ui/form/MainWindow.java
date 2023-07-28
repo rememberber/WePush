@@ -27,7 +27,6 @@ public class MainWindow {
     private JTabbedPane tabbedPane;
     private JSplitPane messagePanel;
     private JPanel pushPanel;
-    private JPanel settingPanel;
     private JPanel pushHisPanel;
     private JPanel messageEditPanel;
     private JPanel messageManagePanel;
@@ -69,7 +68,6 @@ public class MainWindow {
         mainWindow.getAccountManagePanel().add(AccountManageForm.getInstance().getAccountManagePanel(), GRID_CONSTRAINTS);
         mainWindow.getAccountEditPanel().add(AccountEditForm.getInstance().getAccountEditPanel(), GRID_CONSTRAINTS);
         mainWindow.getPushHisPanel().add(PushHisForm.getInstance().getPushHisPanel(), GRID_CONSTRAINTS);
-        mainWindow.getSettingPanel().add(SettingForm.getInstance().getSettingPanel(), GRID_CONSTRAINTS);
         mainWindow.getMessageEditPanel().add(MessageEditForm.getInstance().getMessageEditPanel(), GRID_CONSTRAINTS);
         mainWindow.getMessageManagePanel().add(MessageManageForm.getInstance().getMessageManagePanel(), GRID_CONSTRAINTS);
         mainWindow.getPeopleManagePanel().add(PeopleManageForm.getInstance().getPeopleManagePanel(), GRID_CONSTRAINTS);
@@ -166,12 +164,6 @@ public class MainWindow {
         pushHisPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         pushHisPanel.setMinimumSize(new Dimension(-1, -1));
         tabbedPane.addTab("推送历史", pushHisPanel);
-        settingPanel = new JPanel();
-        settingPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        Font settingPanelFont = this.$$$getFont$$$("Microsoft YaHei UI", -1, -1, settingPanel.getFont());
-        if (settingPanelFont != null) settingPanel.setFont(settingPanelFont);
-        settingPanel.setMinimumSize(new Dimension(-1, -1));
-        tabbedPane.addTab("设置", settingPanel);
     }
 
     /**
