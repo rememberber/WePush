@@ -130,6 +130,8 @@ public class SettingDialog extends JDialog {
         settingScrollPane.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), null, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(2, 1, new Insets(10, 10, 10, 10), -1, -1));
+        panel2.setMaximumSize(new Dimension(-1, -1));
+        panel2.setMinimumSize(new Dimension(-1, -1));
         settingScrollPane.setViewportView(panel2);
         final Spacer spacer1 = new Spacer();
         panel2.add(spacer1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
