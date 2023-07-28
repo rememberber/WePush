@@ -4,9 +4,6 @@ import com.fangxuele.tool.push.dao.TTaskExtMapper;
 import com.fangxuele.tool.push.dao.TTaskMapper;
 import com.fangxuele.tool.push.domain.TTask;
 import com.fangxuele.tool.push.ui.UiConsts;
-import com.fangxuele.tool.push.ui.component.TableInCellTaskDetailButtonColumn;
-import com.fangxuele.tool.push.ui.component.TableInCellTaskExecuteButtonColumn;
-import com.fangxuele.tool.push.ui.component.TableInCellTaskModifyButtonColumn;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.UndoUtil;
@@ -79,56 +76,37 @@ public class TaskForm {
         JTable taskListTable = taskForm.getTaskListTable();
 
         // 任务数据列表
-        String[] headerNames = {"id", "任务名称", "状态", "上次开始", "上次结束", "运行周期", "消息类型", "消息名称", "人群", "详情", "修改", "执行"};
+        String[] headerNames = {"id", "任务名称", "状态", "运行周期", "消息类型", "消息名称", "人群"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
         taskListTable.setModel(model);
 
         taskListTable.getTableHeader().setReorderingAllowed(false);
 
-        // 执行按钮
         TableColumnModel tableColumnModel = taskListTable.getColumnModel();
-        tableColumnModel.getColumn(headerNames.length - 1).
-                setCellRenderer(new TableInCellTaskExecuteButtonColumn(taskListTable, headerNames.length - 1));
-        tableColumnModel.getColumn(headerNames.length - 1).
-                setCellEditor(new TableInCellTaskExecuteButtonColumn(taskListTable, headerNames.length - 1));
-
-        // 修改按钮
-        tableColumnModel.getColumn(headerNames.length - 2).
-                setCellRenderer(new TableInCellTaskModifyButtonColumn(taskListTable, headerNames.length - 2));
-        tableColumnModel.getColumn(headerNames.length - 2).
-                setCellEditor(new TableInCellTaskModifyButtonColumn(taskListTable, headerNames.length - 2));
-
-        // 详情按钮
-        tableColumnModel.getColumn(headerNames.length - 3).
-                setCellRenderer(new TableInCellTaskDetailButtonColumn(taskListTable, headerNames.length - 3));
-        tableColumnModel.getColumn(headerNames.length - 3).
-                setCellEditor(new TableInCellTaskDetailButtonColumn(taskListTable, headerNames.length - 3));
 
         Object[] data;
 
         List<TTask> taskList = taskExtMapper.selectAll();
         for (TTask task : taskList) {
-            data = new Object[9];
+            data = new Object[7];
             data[0] = task.getId();
             data[1] = task.getTitle();
             data[2] = "";
             data[3] = "";
-            data[4] = "";
-            data[5] = "";
-            data[6] = task.getMsgType();
-            data[7] = task.getMessageId();
-            data[8] = task.getPeopleId();
+            data[4] = task.getMsgType();
+            data[5] = task.getMessageId();
+            data[6] = task.getPeopleId();
             model.addRow(data);
         }
         // 隐藏id列
         JTableUtil.hideColumn(taskListTable, 0);
         // 设置列宽
-        tableColumnModel.getColumn(headerNames.length - 1).setPreferredWidth(taskForm.getNewTaskButton().getWidth());
-        tableColumnModel.getColumn(headerNames.length - 1).setMaxWidth(taskForm.getNewTaskButton().getWidth());
-        tableColumnModel.getColumn(headerNames.length - 2).setPreferredWidth(taskForm.getNewTaskButton().getWidth());
-        tableColumnModel.getColumn(headerNames.length - 2).setMaxWidth(taskForm.getNewTaskButton().getWidth());
-        tableColumnModel.getColumn(headerNames.length - 3).setPreferredWidth(taskForm.getNewTaskButton().getWidth());
-        tableColumnModel.getColumn(headerNames.length - 3).setMaxWidth(taskForm.getNewTaskButton().getWidth());
+//        tableColumnModel.getColumn(headerNames.length - 1).setPreferredWidth(taskForm.getNewTaskButton().getWidth());
+//        tableColumnModel.getColumn(headerNames.length - 1).setMaxWidth(taskForm.getNewTaskButton().getWidth());
+//        tableColumnModel.getColumn(headerNames.length - 2).setPreferredWidth(taskForm.getNewTaskButton().getWidth());
+//        tableColumnModel.getColumn(headerNames.length - 2).setMaxWidth(taskForm.getNewTaskButton().getWidth());
+//        tableColumnModel.getColumn(headerNames.length - 3).setPreferredWidth(taskForm.getNewTaskButton().getWidth());
+//        tableColumnModel.getColumn(headerNames.length - 3).setMaxWidth(taskForm.getNewTaskButton().getWidth());
     }
 
     {
