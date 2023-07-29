@@ -130,7 +130,7 @@
                     <children>
                       <component id="8ba28" class="javax.swing.JSeparator">
                         <constraints>
-                          <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="6" hsize-policy="0" anchor="8" fill="2" indent="0" use-parent-layout="false"/>
+                          <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="6" hsize-policy="7" anchor="4" fill="2" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <orientation value="1"/>
@@ -323,7 +323,7 @@
                       </grid>
                       <component id="5f055" class="javax.swing.JSeparator">
                         <constraints>
-                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="0" anchor="8" fill="2" indent="0" use-parent-layout="false"/>
+                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="7" anchor="4" fill="2" indent="0" use-parent-layout="false"/>
                         </constraints>
                         <properties>
                           <orientation value="1"/>
