@@ -1,6 +1,7 @@
 package com.fangxuele.tool.push.ui.listener;
 
 import com.fangxuele.tool.push.ui.dialog.NewTaskDialog;
+import com.fangxuele.tool.push.ui.dialog.TaskHisDetailDialog;
 import com.fangxuele.tool.push.ui.form.TaskForm;
 
 /**
@@ -18,6 +19,12 @@ public class TaskListener {
 
         taskForm.getNewTaskButton().addActionListener(e -> {
             NewTaskDialog dialog = new NewTaskDialog();
+            dialog.pack();
+            dialog.setVisible(true);
+        });
+
+        taskForm.getTaskHisDetailButton().addActionListener(e -> {
+            TaskHisDetailDialog dialog = new TaskHisDetailDialog();
             dialog.pack();
             dialog.setVisible(true);
         });

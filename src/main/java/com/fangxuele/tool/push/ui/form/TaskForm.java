@@ -44,7 +44,7 @@ public class TaskForm {
     private JButton 刷新Button;
     private JButton 停止Button;
     private JButton 删除Button1;
-    private JButton 详情Button1;
+    private JButton taskHisDetailButton;
     private JLabel jvmMemoryLabel;
     private JLabel availableProcessorLabel;
     private JLabel scheduleDetailLabel;
@@ -311,10 +311,10 @@ public class TaskForm {
         panel9.add(删除Button1, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer5 = new Spacer();
         panel9.add(spacer5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-        详情Button1 = new JButton();
-        详情Button1.setIcon(new ImageIcon(getClass().getResource("/icon/add.png")));
-        详情Button1.setText("详情");
-        panel9.add(详情Button1, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        taskHisDetailButton = new JButton();
+        taskHisDetailButton.setIcon(new ImageIcon(getClass().getResource("/icon/add.png")));
+        taskHisDetailButton.setText("详情");
+        panel9.add(taskHisDetailButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
