@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.form;
 
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TTaskExtMapper;
 import com.fangxuele.tool.push.dao.TTaskMapper;
 import com.fangxuele.tool.push.domain.TTask;
@@ -39,7 +40,7 @@ public class TaskForm {
     private JButton 修改Button;
     private JButton 空跑测试Button;
     private JButton 立即执行Button;
-    private JTable table1;
+    private JTable taskHisListTable;
     private JButton 刷新Button;
     private JButton 停止Button;
     private JButton 删除Button1;
@@ -52,6 +53,7 @@ public class TaskForm {
     private JLabel maxPoolSizeLabel;
     private JPanel pushUpPanel;
     private JLabel pushMsgName;
+    private JSplitPane mainSplitPane;
 
     private static TaskForm taskForm;
 
@@ -73,14 +75,17 @@ public class TaskForm {
         taskForm = getInstance();
         taskForm.getTaskListTable().setRowHeight(UiConsts.TABLE_ROW_HEIGHT);
         taskForm.getTaskListTable().setShowHorizontalLines(true);
+        taskForm.getMainSplitPane().setDividerLocation((int) (App.mainFrame.getWidth() / 2));
+
         initTaskListTable();
+        initTaskHisListTable();
     }
 
     public static void initTaskListTable() {
         JTable taskListTable = taskForm.getTaskListTable();
 
         // 任务数据列表
-        String[] headerNames = {"id", "任务名称", "状态", "运行周期", "消息类型", "消息名称", "人群"};
+        String[] headerNames = {"id", "任务名称", "消息类型", "周期", "消息名称", "人群"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
         taskListTable.setModel(model);
 
@@ -92,14 +97,13 @@ public class TaskForm {
 
         List<TTask> taskList = taskExtMapper.selectAll();
         for (TTask task : taskList) {
-            data = new Object[7];
+            data = new Object[6];
             data[0] = task.getId();
             data[1] = task.getTitle();
-            data[2] = "";
-            data[3] = "";
+            data[2] = "HTTP";
+            data[3] = "定时/手动/触发";
             data[4] = task.getMsgType();
             data[5] = task.getMessageId();
-            data[6] = task.getPeopleId();
             model.addRow(data);
         }
         // 隐藏id列
@@ -111,6 +115,36 @@ public class TaskForm {
 //        tableColumnModel.getColumn(headerNames.length - 2).setMaxWidth(taskForm.getNewTaskButton().getWidth());
 //        tableColumnModel.getColumn(headerNames.length - 3).setPreferredWidth(taskForm.getNewTaskButton().getWidth());
 //        tableColumnModel.getColumn(headerNames.length - 3).setMaxWidth(taskForm.getNewTaskButton().getWidth());
+    }
+
+    public static void initTaskHisListTable() {
+        JTable taskHisListTable = taskForm.getTaskHisListTable();
+
+        // 任务数据列表
+        String[] headerNames = {"id", "开始时间", "结束时间", "耗时", "总量", "状态"};
+        DefaultTableModel model = new DefaultTableModel(null, headerNames);
+        taskHisListTable.setModel(model);
+
+        taskHisListTable.getTableHeader().setReorderingAllowed(false);
+
+        TableColumnModel tableColumnModel = taskHisListTable.getColumnModel();
+
+        Object[] data;
+
+//        List<TTask> taskList = Lists.newArrayList();
+//        for (TTask task : taskList) {
+        data = new Object[6];
+        data[0] = "";
+        data[1] = "";
+        data[2] = "";
+        data[3] = "";
+        data[4] = "";
+        data[5] = "";
+        model.addRow(data);
+//        }
+        // 隐藏id列
+        JTableUtil.hideColumn(taskHisListTable, 0);
+        // 设置列宽
     }
 
     {
@@ -130,12 +164,12 @@ public class TaskForm {
     private void $$$setupUI$$$() {
         mainPanel = new JPanel();
         mainPanel.setLayout(new GridLayoutManager(1, 1, new Insets(10, 10, 10, 10), -1, -1));
-        final JSplitPane splitPane1 = new JSplitPane();
-        splitPane1.setDividerLocation(516);
-        mainPanel.add(splitPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));
+        mainSplitPane = new JSplitPane();
+        mainSplitPane.setDividerLocation(516);
+        mainPanel.add(mainSplitPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
-        splitPane1.setLeftComponent(panel1);
+        mainSplitPane.setLeftComponent(panel1);
         taskListScrollPane = new JScrollPane();
         panel1.add(taskListScrollPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         taskListTable = new JTable();
@@ -168,7 +202,7 @@ public class TaskForm {
         panel2.add(spacer1, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
-        splitPane1.setRightComponent(panel3);
+        mainSplitPane.setRightComponent(panel3);
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel3.add(panel4, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -258,8 +292,8 @@ public class TaskForm {
         panel3.add(panel8, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JScrollPane scrollPane1 = new JScrollPane();
         panel8.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        table1 = new JTable();
-        scrollPane1.setViewportView(table1);
+        taskHisListTable = new JTable();
+        scrollPane1.setViewportView(taskHisListTable);
         final JPanel panel9 = new JPanel();
         panel9.setLayout(new GridLayoutManager(1, 5, new Insets(0, 0, 0, 0), -1, -1));
         panel8.add(panel9, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
