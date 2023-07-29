@@ -37,9 +37,10 @@ public class TaskForm {
     private JButton 空跑测试Button;
     private JButton 立即执行Button;
     private JTable table1;
-    private JButton 详情Button;
+    private JButton 刷新Button;
     private JButton 停止Button;
     private JButton 删除Button1;
+    private JButton 详情Button1;
 
     private static TaskForm taskForm;
 
@@ -170,10 +171,10 @@ public class TaskForm {
         final JPanel panel6 = new JPanel();
         panel6.setLayout(new GridLayoutManager(1, 4, new Insets(0, 0, 0, 0), -1, -1));
         panel5.add(panel6, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        详情Button = new JButton();
-        详情Button.setIcon(new ImageIcon(getClass().getResource("/icon/add.png")));
-        详情Button.setText("详情");
-        panel6.add(详情Button, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        刷新Button = new JButton();
+        刷新Button.setIcon(new ImageIcon(getClass().getResource("/icon/add.png")));
+        刷新Button.setText("详情");
+        panel6.add(刷新Button, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
         panel6.add(spacer2, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         停止Button = new JButton();
