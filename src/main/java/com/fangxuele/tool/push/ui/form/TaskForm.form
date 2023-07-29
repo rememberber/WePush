@@ -128,14 +128,6 @@
                     <properties/>
                     <border type="none"/>
                     <children>
-                      <component id="1885f" class="javax.swing.JSeparator">
-                        <constraints>
-                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="7" anchor="8" fill="2" indent="0" use-parent-layout="false"/>
-                        </constraints>
-                        <properties>
-                          <orientation value="1"/>
-                        </properties>
-                      </component>
                       <component id="8ba28" class="javax.swing.JSeparator">
                         <constraints>
                           <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="6" hsize-policy="0" anchor="8" fill="2" indent="0" use-parent-layout="false"/>
@@ -144,7 +136,7 @@
                           <orientation value="1"/>
                         </properties>
                       </component>
-                      <grid id="e65ef" layout-manager="GridLayoutManager" row-count="6" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                      <grid id="e65ef" layout-manager="GridLayoutManager" row-count="7" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                         <margin top="0" left="0" bottom="0" right="0"/>
                         <constraints>
                           <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="3" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -202,6 +194,11 @@
                               <text value="最大线程数：0"/>
                             </properties>
                           </component>
+                          <vspacer id="574ac">
+                            <constraints>
+                              <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                          </vspacer>
                         </children>
                       </grid>
                       <grid id="5e649" layout-manager="GridLayoutManager" row-count="5" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -274,61 +271,49 @@
                               <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
                             </constraints>
                           </vspacer>
-                          <component id="f696e" class="javax.swing.JTextField" binding="a2023072916TextField" default-binding="true">
+                          <component id="35741" class="javax.swing.JLabel">
                             <constraints>
-                              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                                <preferred-size width="150" height="-1"/>
-                              </grid>
+                              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
                               <text value="2023-07-29 16:00:00"/>
                             </properties>
                           </component>
-                          <component id="50353" class="javax.swing.JTextField" binding="a2023072916TextField1" default-binding="true">
+                          <component id="1d590" class="javax.swing.JLabel">
                             <constraints>
-                              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                                <preferred-size width="150" height="-1"/>
-                              </grid>
+                              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
-                              <text value="2023-07-29 16:00:00"/>
+                              <text value="2023-07-29 17:00:00"/>
                             </properties>
                           </component>
-                          <component id="c6829" class="javax.swing.JTextField" binding="a2023072916TextField2" default-binding="true">
+                          <component id="808d7" class="javax.swing.JLabel">
                             <constraints>
-                              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                                <preferred-size width="150" height="-1"/>
-                              </grid>
+                              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
-                              <text value="2023-07-29 16:00:00"/>
+                              <text value="2023-07-29 18:00:00"/>
                             </properties>
                           </component>
-                          <component id="46029" class="javax.swing.JTextField" binding="a2023072916TextField3" default-binding="true">
+                          <component id="de2e2" class="javax.swing.JLabel">
                             <constraints>
-                              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                                <preferred-size width="150" height="-1"/>
-                              </grid>
+                              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
-                              <text value="2023-07-29 16:00:00"/>
+                              <text value="2023-07-29 19:00:00"/>
                             </properties>
                           </component>
-                          <component id="7cb8c" class="javax.swing.JTextField" binding="a2023072916TextField4" default-binding="true">
+                          <component id="2c8" class="javax.swing.JLabel">
                             <constraints>
-                              <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                                <preferred-size width="150" height="-1"/>
-                              </grid>
+                              <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
-                              <text value="2023-07-29 16:00:00"/>
+                              <text value="2023-07-29 20:00:00"/>
                             </properties>
                           </component>
-                          <component id="afbf4" class="javax.swing.JTextField" binding="a2023072916TextField5" default-binding="true">
+                          <component id="f83c" class="javax.swing.JLabel">
                             <constraints>
-                              <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                                <preferred-size width="150" height="-1"/>
-                              </grid>
+                              <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
                               <text value="……"/>
@@ -336,6 +321,14 @@
                           </component>
                         </children>
                       </grid>
+                      <component id="5f055" class="javax.swing.JSeparator">
+                        <constraints>
+                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="0" anchor="8" fill="2" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <orientation value="1"/>
+                        </properties>
+                      </component>
                     </children>
                   </grid>
                 </children>
