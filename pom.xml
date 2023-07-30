@@ -165,12 +165,6 @@
             <version>${poi.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.apple</groupId>
-            <artifactId>AppleJavaExtensions</artifactId>
-            <version>${AppleJavaExtensions.version}</version>
-        </dependency>
-
         <!--腾讯云-->
         <dependency>
             <groupId>com.github.qcloudsms</groupId>
