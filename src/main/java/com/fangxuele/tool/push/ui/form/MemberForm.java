@@ -166,7 +166,7 @@ public class MemberForm {
         splitPane.setLastDividerLocation(800);
         memberPanel.add(splitPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel1.setLayout(new GridLayoutManager(3, 1, new Insets(10, 10, 10, 0), -1, -1));
         panel1.setMinimumSize(new Dimension(-1, -1));
         panel1.setPreferredSize(new Dimension(-1, -1));
         splitPane.setLeftComponent(panel1);
@@ -178,7 +178,7 @@ public class MemberForm {
         memberListTable.setRowHeight(36);
         scrollPane1.setViewportView(memberListTable);
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(1, 5, new Insets(5, 5, 5, 0), -1, -1));
+        panel2.setLayout(new GridLayoutManager(1, 5, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         selectAllButton = new JButton();
         selectAllButton.setIcon(new ImageIcon(getClass().getResource("/icon/selectall_dark.png")));
@@ -199,7 +199,7 @@ public class MemberForm {
         final Spacer spacer1 = new Spacer();
         panel2.add(spacer1, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(1, 2, new Insets(5, 5, 0, 5), -1, -1));
+        panel3.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         searchTextField = new JTextField();
         panel3.add(searchTextField, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -213,10 +213,10 @@ public class MemberForm {
         panel4.setPreferredSize(new Dimension(-1, -1));
         splitPane.setRightComponent(panel4);
         memberPanelRight = new JPanel();
-        memberPanelRight.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
+        memberPanelRight.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 10, 10), -1, -1));
         panel4.add(memberPanelRight, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         memberTabUpPanel = new JPanel();
-        memberTabUpPanel.setLayout(new GridLayoutManager(2, 4, new Insets(0, 5, 5, 0), -1, -1));
+        memberTabUpPanel.setLayout(new GridLayoutManager(2, 4, new Insets(0, 0, 0, 0), -1, -1));
         memberPanelRight.add(memberTabUpPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         memberTabCountLabel = new JLabel();
         Font memberTabCountLabelFont = this.$$$getFont$$$(null, -1, 72, memberTabCountLabel.getFont());
@@ -236,13 +236,14 @@ public class MemberForm {
         memberTabUpPanel.add(clearImportButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         memberImportScrollPane = new JScrollPane();
         memberPanelRight.add(memberImportScrollPane, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        memberImportScrollPane.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), null, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
         importWayPanel = new JPanel();
-        importWayPanel.setLayout(new GridLayoutManager(7, 1, new Insets(8, 0, 0, 0), -1, -1));
+        importWayPanel.setLayout(new GridLayoutManager(7, 1, new Insets(0, 0, 0, 0), -1, -1));
         importWayPanel.setMinimumSize(new Dimension(-1, -1));
         importWayPanel.setPreferredSize(new Dimension(150, 600));
         memberImportScrollPane.setViewportView(importWayPanel);
         memberTabDownPanel = new JPanel();
-        memberTabDownPanel.setLayout(new GridLayoutManager(2, 3, new Insets(8, 15, 0, 5), -1, -1));
+        memberTabDownPanel.setLayout(new GridLayoutManager(2, 3, new Insets(8, 15, 0, 0), -1, -1));
         importWayPanel.add(memberTabDownPanel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         memberTabDownPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "通过文件导入", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, memberTabDownPanel.getFont()), null));
         importFromFileLabel = new JLabel();
@@ -260,7 +261,7 @@ public class MemberForm {
         importFromFileButton.setText("导入");
         memberTabDownPanel.add(importFromFileButton, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         memberTabCenterPanel = new JPanel();
-        memberTabCenterPanel.setLayout(new GridLayoutManager(2, 1, new Insets(8, 15, 0, 5), -1, -1));
+        memberTabCenterPanel.setLayout(new GridLayoutManager(2, 1, new Insets(8, 15, 0, 0), -1, -1));
         importWayPanel.add(memberTabCenterPanel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         memberTabCenterPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "通过SQL导入", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, memberTabCenterPanel.getFont()), null));
         importFromSqlButton = new JButton();
@@ -270,7 +271,7 @@ public class MemberForm {
         importFromSqlTextArea = new JTextArea();
         memberTabCenterPanel.add(importFromSqlTextArea, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(40, 50), null, 0, false));
         importFromWeixinPanel = new JPanel();
-        importFromWeixinPanel.setLayout(new GridLayoutManager(5, 3, new Insets(0, 15, 0, 5), -1, -1));
+        importFromWeixinPanel.setLayout(new GridLayoutManager(5, 3, new Insets(0, 15, 0, 0), -1, -1));
         importWayPanel.add(importFromWeixinPanel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         importFromWeixinPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "通过微信公众平台导入", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, importFromWeixinPanel.getFont()), null));
         memberImportTagComboBox = new JComboBox();
@@ -313,7 +314,7 @@ public class MemberForm {
         label2.setText("标签分组");
         importFromWeixinPanel.add(label2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         importFromWxCpPanel = new JPanel();
-        importFromWxCpPanel.setLayout(new GridLayoutManager(3, 4, new Insets(8, 15, 0, 5), -1, -1));
+        importFromWxCpPanel.setLayout(new GridLayoutManager(3, 4, new Insets(8, 15, 0, 0), -1, -1));
         importWayPanel.add(importFromWxCpPanel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         importFromWxCpPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "通过企业通讯录导入", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, importFromWxCpPanel.getFont()), null));
         wxCpTagsComboBox = new JComboBox();
@@ -357,7 +358,7 @@ public class MemberForm {
         wxCpDeptsImportButton.setText("导入");
         importFromWxCpPanel.add(wxCpDeptsImportButton, new GridConstraints(1, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         importFromDingPanel = new JPanel();
-        importFromDingPanel.setLayout(new GridLayoutManager(2, 4, new Insets(8, 15, 0, 5), -1, -1));
+        importFromDingPanel.setLayout(new GridLayoutManager(2, 4, new Insets(8, 15, 0, 0), -1, -1));
         importWayPanel.add(importFromDingPanel, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         importFromDingPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "通过钉钉通讯录导入", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, importFromDingPanel.getFont()), null));
         dingDeptsComboBox = new JComboBox();
@@ -406,7 +407,7 @@ public class MemberForm {
         clearDbCacheButton.setText("清空本地缓存");
         importOptionPanel.add(clearDbCacheButton, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         importFromNumPanel = new JPanel();
-        importFromNumPanel.setLayout(new GridLayoutManager(1, 3, new Insets(8, 15, 0, 5), -1, -1));
+        importFromNumPanel.setLayout(new GridLayoutManager(1, 3, new Insets(8, 15, 0, 0), -1, -1));
         importWayPanel.add(importFromNumPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         importFromNumPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "没有变量，直接按数量发送", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, importFromNumPanel.getFont()), null));
         数量Label = new JLabel();
