@@ -407,7 +407,7 @@ public class MemberForm {
         clearDbCacheButton.setText("清空本地缓存");
         importOptionPanel.add(clearDbCacheButton, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         importFromNumPanel = new JPanel();
-        importFromNumPanel.setLayout(new GridLayoutManager(1, 3, new Insets(8, 15, 0, 0), -1, -1));
+        importFromNumPanel.setLayout(new GridLayoutManager(1, 3, new Insets(0, 15, 0, 0), -1, -1));
         importWayPanel.add(importFromNumPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         importFromNumPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "没有变量，直接按数量发送", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, importFromNumPanel.getFont()), null));
         数量Label = new JLabel();

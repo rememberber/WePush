@@ -107,7 +107,7 @@ public class InfinityForm {
      */
     private void $$$setupUI$$$() {
         infinityPanel = new JPanel();
-        infinityPanel.setLayout(new GridLayoutManager(3, 2, new Insets(0, 0, 0, 0), -1, -1));
+        infinityPanel.setLayout(new GridLayoutManager(3, 2, new Insets(10, 10, 10, 10), -1, -1));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         infinityPanel.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -118,7 +118,7 @@ public class InfinityForm {
         final Spacer spacer1 = new Spacer();
         infinityPanel.add(spacer1, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         pushUpPanel = new JPanel();
-        pushUpPanel.setLayout(new GridLayoutManager(4, 9, new Insets(5, 5, 5, 5), -1, -1));
+        pushUpPanel.setLayout(new GridLayoutManager(4, 9, new Insets(0, 0, 0, 0), -1, -1));
         infinityPanel.add(pushUpPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         pushSuccessCount = new JLabel();
         Font pushSuccessCountFont = this.$$$getFont$$$(null, -1, 72, pushSuccessCount.getFont());
@@ -211,7 +211,7 @@ public class InfinityForm {
         maxPoolSizeLabel.setText("最大线程数：0");
         panel2.add(maxPoolSizeLabel, new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         pushControlPanel = new JPanel();
-        pushControlPanel.setLayout(new GridLayoutManager(1, 9, new Insets(0, 5, 5, 5), -1, -1));
+        pushControlPanel.setLayout(new GridLayoutManager(1, 9, new Insets(0, 0, 0, 0), -1, -1));
         infinityPanel.add(pushControlPanel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         sliderValueTextField = new JTextField();
         sliderValueTextField.setEditable(false);
