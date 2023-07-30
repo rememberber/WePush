@@ -86,9 +86,9 @@ public class BoostForm {
      */
     private void $$$setupUI$$$() {
         boostPanel = new JPanel();
-        boostPanel.setLayout(new GridLayoutManager(3, 2, new Insets(0, 0, 0, 0), -1, -1));
+        boostPanel.setLayout(new GridLayoutManager(3, 2, new Insets(10, 10, 10, 10), -1, -1));
         final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(5, 13, new Insets(0, 8, 0, 10), -1, -1));
+        panel1.setLayout(new GridLayoutManager(5, 13, new Insets(0, 0, 0, 0), -1, -1));
         boostPanel.add(panel1, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JSeparator separator1 = new JSeparator();
         separator1.setOrientation(1);
@@ -187,7 +187,7 @@ public class BoostForm {
         consoleTextArea = new JTextArea();
         scrollPane1.setViewportView(consoleTextArea);
         final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(1, 5, new Insets(0, 5, 5, 5), -1, -1));
+        panel3.setLayout(new GridLayoutManager(1, 5, new Insets(0, 0, 0, 0), -1, -1));
         boostPanel.add(panel3, new GridConstraints(2, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         startButton = new JButton();
         startButton.setIcon(new ImageIcon(getClass().getResource("/icon/run@2x.png")));
