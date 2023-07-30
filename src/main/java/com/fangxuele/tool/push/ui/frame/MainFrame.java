@@ -4,6 +4,8 @@ import cn.hutool.core.thread.ThreadUtil;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.listener.*;
 import com.fangxuele.tool.push.util.ComponentUtil;
+import com.fangxuele.tool.push.util.SystemUtil;
+import com.formdev.flatlaf.util.SystemInfo;
 import org.apache.commons.compress.utils.Lists;
 
 import javax.swing.*;
@@ -36,15 +38,13 @@ public class MainFrame extends JFrame {
         images.add(UiConsts.IMAGE_LOGO_24);
         images.add(UiConsts.IMAGE_LOGO_16);
         this.setIconImages(images);
-        // Mac系统Dock图标
-//        if (SystemUtil.isMacOs()) {
-//            Application application = Application.getApplication();
-//            application.setDockIconImage(UiConsts.IMAGE_LOGO_1024);
-//            if (!SystemUtil.isMacM1()) {
-//                application.setEnabledAboutMenu(false);
-//                application.setEnabledPreferencesMenu(false);
-//            }
-//        }
+
+        if (SystemUtil.isMacOs() && SystemInfo.isMacFullWindowContentSupported) {
+            this.getRootPane().putClientProperty("apple.awt.fullWindowContent", true);
+            this.getRootPane().putClientProperty("apple.awt.transparentTitleBar", true);
+            this.getRootPane().putClientProperty("apple.awt.fullscreenable", true);
+            this.getRootPane().putClientProperty("apple.awt.windowTitleVisible", false);
+        }
 
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.8, 0.88);
     }
