@@ -6,7 +6,7 @@
 
     <groupId>com.fangxuele.tool</groupId>
     <artifactId>WePush</artifactId>
-    <version>4.5.1</version>
+    <version>4.5.2</version>
     <packaging>jar</packaging>
 
     <name>WePush</name>
