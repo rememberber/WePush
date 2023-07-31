@@ -87,12 +87,12 @@ public class UiConsts {
     /**
      * 软件版本检查url
      */
-    public final static String CHECK_VERSION_URL = "https://gitee.com/zhoubochina/WePush/raw/master/src/main/resources/version_summary.json";
+    public final static String CHECK_VERSION_URL = "https://gitee.com/zhoubochina/WePush/raw/4.x/assets/files/version_summary.json";
 
     /**
      * 用户案例url
      */
-    public final static String USER_CASE_URL = "http://download.zhoubochina.com/file/user_case.json";
+    public final static String USER_CASE_URL = "https://gitee.com/zhoubochina/WePush/raw/4.x/assets/files/user_case.json";
 
     /**
      * 二维码url
@@ -102,7 +102,7 @@ public class UiConsts {
     /**
      * 介绍二维码URL
      */
-    public final static String INTRODUCE_QRCODE_URL = "http://download.zhoubochina.com/qrcode/introduce-wepush-qrcode.png";
+    public final static String INTRODUCE_QRCODE_URL = "https://gitee.com/zhoubochina/WePush/raw/4.x/assets/files/introduce-wepush-qrcode.png";
 
     /**
      * 多账号切换账号类型：公众号
