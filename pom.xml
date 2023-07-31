@@ -24,7 +24,7 @@
         <weixin-java-cp.version>4.5.0</weixin-java-cp.version>
         <weixin-java-miniapp.version>4.5.0</weixin-java-miniapp.version>
         <emoji-java.version>5.1.1</emoji-java.version>
-        <hutool-all.version>5.4.4</hutool-all.version>
+        <hutool-all.version>5.6.4</hutool-all.version>
         <opencsv.version>5.2</opencsv.version>
         <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
         <forms_rt.version>7.0.3</forms_rt.version>
@@ -34,10 +34,10 @@
         <poi.version>4.1.2</poi.version>
         <qcloudsms.version>1.0.6</qcloudsms.version>
         <yunpian-java-sdk.version>1.2.7</yunpian-java-sdk.version>
-        <velocity-engine-core.version>2.2</velocity-engine-core.version>
-        <lombok.version>1.18.22</lombok.version>
-        <mybatis.version>3.5.6</mybatis.version>
-        <sqlite-jdbc.version>3.34.0</sqlite-jdbc.version>
+        <velocity-engine-core.version>2.3</velocity-engine-core.version>
+        <lombok.version>1.18.20</lombok.version>
+        <mybatis.version>3.5.7</mybatis.version>
+        <sqlite-jdbc.version>3.36.0.3</sqlite-jdbc.version>
         <junit.version>4.13.1</junit.version>
         <httpasyncclient.version>4.1.4</httpasyncclient.version>
         <HikariCP.version>3.4.5</HikariCP.version>
@@ -100,7 +100,7 @@
         <dependency>
             <groupId>com.github.binarywang</groupId>
             <artifactId>weixin-java-cp</artifactId>
-            <version>${weixin-java-cp.version}</version>
+            <version>4.5.0</version>
         </dependency>
 
         <dependency>
