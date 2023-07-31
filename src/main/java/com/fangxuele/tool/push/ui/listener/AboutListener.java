@@ -1,15 +1,12 @@
 package com.fangxuele.tool.push.ui.listener;
 
 import cn.hutool.core.thread.ThreadUtil;
-import cn.hutool.http.HttpUtil;
-import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.form.AboutForm;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.util.UpgradeUtil;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -21,7 +18,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Map;
 
 /**
  * <pre>
@@ -96,21 +92,17 @@ public class AboutListener {
      * 初始化二维码
      */
     public static void initQrCode() {
-        String qrCodeContent = HttpUtil.get(UiConsts.QR_CODE_URL);
-        if (StringUtils.isNotEmpty(qrCodeContent)) {
-            Map<String, String> urlMap = JSONUtil.toBean(qrCodeContent, Map.class);
-            JLabel qrCodeLabel = AboutForm.getInstance().getQrCodeLabel();
+        JLabel qrCodeLabel = AboutForm.getInstance().getQrCodeLabel();
 
-            try {
-                URL url = new URL(urlMap.get("url"));
-                BufferedImage image = ImageIO.read(url);
-                qrCodeLabel.setIcon(new ImageIcon(image));
-            } catch (IOException e) {
-                e.printStackTrace();
-                logger.error(e);
-            }
-
-            MainWindow.getInstance().getAboutPanel().updateUI();
+        try {
+            URL url = new URL(UiConsts.QR_CODE_URL);
+            BufferedImage image = ImageIO.read(url);
+            qrCodeLabel.setIcon(new ImageIcon(image));
+        } catch (IOException e) {
+            e.printStackTrace();
+            logger.error(e);
         }
+
+        MainWindow.getInstance().getAboutPanel().updateUI();
     }
 }
