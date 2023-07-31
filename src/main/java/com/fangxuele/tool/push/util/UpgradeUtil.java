@@ -108,7 +108,7 @@ public class UpgradeUtil {
             }
 
             // 然后取两个版本对应的索引
-            String versionSummaryJsonContent = FileUtil.readString(UiConsts.class.getResource("/assets/files/version_summary.json"), CharsetUtil.UTF_8);
+            String versionSummaryJsonContent = HttpUtil.get(UiConsts.CHECK_VERSION_URL);
             versionSummaryJsonContent = versionSummaryJsonContent.replace("\n", "");
             VersionSummary versionSummary = JSON.parseObject(versionSummaryJsonContent, VersionSummary.class);
             String versionIndex = versionSummary.getVersionIndex();
