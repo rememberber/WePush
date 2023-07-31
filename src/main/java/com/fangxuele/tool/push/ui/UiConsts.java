@@ -97,7 +97,7 @@ public class UiConsts {
     /**
      * 二维码url
      */
-    public final static String QR_CODE_URL = "http://download.zhoubochina.com/file/wepush_qrcode.json";
+    public final static String QR_CODE_URL = "https://gitee.com/zhoubochina/WePush/raw/4.x/assets/files/wx-zanshang.jpg";
 
     /**
      * 介绍二维码URL
