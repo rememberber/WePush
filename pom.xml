@@ -47,6 +47,7 @@
         <bce-java-sdk.version>0.10.134</bce-java-sdk.version>
         <qiniu-java-sdk.version>7.3.0</qiniu-java-sdk.version>
         <flatlaf.version>3.1.1</flatlaf.version>
+        <json-path.version>2.6.0</json-path.version>
     </properties>
 
     <dependencies>
@@ -100,7 +101,7 @@
         <dependency>
             <groupId>com.github.binarywang</groupId>
             <artifactId>weixin-java-cp</artifactId>
-            <version>4.5.0</version>
+            <version>${weixin-java-cp.version}</version>
         </dependency>
 
         <dependency>
@@ -421,6 +422,18 @@
             <groupId>com.formdev</groupId>
             <artifactId>flatlaf</artifactId>
             <version>${flatlaf.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
+            <version>${json-path.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
     </dependencies>

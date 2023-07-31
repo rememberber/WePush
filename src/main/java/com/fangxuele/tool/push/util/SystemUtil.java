@@ -21,6 +21,9 @@ public class SystemUtil {
      */
     public final static String LOG_DIR = USER_HOME + File.separator + ".wepush" + File.separator + "logs" + File.separator;
 
+    public static boolean isWindowsOs() {
+        return OS_NAME.contains("Windows");
+    }
     public static boolean isMacOs() {
         return OS_NAME.contains("Mac");
     }
