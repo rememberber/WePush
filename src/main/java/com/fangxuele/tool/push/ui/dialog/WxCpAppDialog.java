@@ -7,10 +7,8 @@ import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TWxCpAppMapper;
 import com.fangxuele.tool.push.domain.TWxCpApp;
 import com.fangxuele.tool.push.ui.form.SettingForm;
-import com.fangxuele.tool.push.util.ComponentUtil;
-import com.fangxuele.tool.push.util.JTableUtil;
-import com.fangxuele.tool.push.util.MybatisUtil;
-import com.fangxuele.tool.push.util.SqliteUtil;
+import com.fangxuele.tool.push.util.*;
+import com.formdev.flatlaf.util.SystemInfo;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -21,11 +19,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.util.List;
 
 /**
@@ -54,6 +48,15 @@ public class WxCpAppDialog extends JDialog {
         super(App.mainFrame, "企业号/企业微信 应用管理");
         setContentPane(contentPane);
         setModal(true);
+
+        if (SystemUtil.isMacOs() && SystemInfo.isMacFullWindowContentSupported) {
+            this.getRootPane().putClientProperty("apple.awt.fullWindowContent", true);
+            this.getRootPane().putClientProperty("apple.awt.transparentTitleBar", true);
+            this.getRootPane().putClientProperty("apple.awt.fullscreenable", true);
+            this.getRootPane().putClientProperty("apple.awt.windowTitleVisible", false);
+            GridLayoutManager gridLayoutManager = (GridLayoutManager) contentPane.getLayout();
+            gridLayoutManager.setMargin(new Insets(28, 0, 0, 0));
+        }
 
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.5, 0.5);
 
