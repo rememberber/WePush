@@ -89,22 +89,22 @@ public class UiConsts {
     /**
      * 软件版本检查url
      */
-    public final static String CHECK_VERSION_URL = "https://gitee.com/zhoubochina/WePush/raw/master/src/main/resources/version_summary.json";
+    public final static String CHECK_VERSION_URL = "https://gitee.com/zhoubochina/WePush/raw/5.x/assets/files/version_summary.json";
 
     /**
      * 用户案例url
      */
-    public final static String USER_CASE_URL = "http://download.zhoubochina.com/file/user_case.json";
+    public final static String USER_CASE_URL = "https://gitee.com/zhoubochina/WePush/raw/5.x/assets/files/user_case.json";
 
     /**
      * 二维码url
      */
-    public final static String QR_CODE_URL = "http://download.zhoubochina.com/file/wepush_qrcode.json";
+    public final static String QR_CODE_URL = "https://gitee.com/zhoubochina/WePush/raw/5.x/assets/files/wx-zanshang.jpg";
 
     /**
      * 介绍二维码URL
      */
-    public final static String INTRODUCE_QRCODE_URL = "http://download.zhoubochina.com/qrcode/introduce-wepush-qrcode.png";
+    public final static String INTRODUCE_QRCODE_URL = "https://gitee.com/zhoubochina/WePush/raw/5.x/assets/files/introduce-wepush-qrcode.png";
 
     /**
      * 多账号切换账号类型：公众号
@@ -115,4 +115,5 @@ public class UiConsts {
      * 多账号切换账号类型：小程序
      */
     public static final String WX_ACCOUNT_TYPE_MA = "ma";
+    public static final String DOWNLOAD_LINK_INFO_URL = "https://gitee.com/zhoubochina/WePush/raw/5.x/assets/files/download_links.json";
 }
