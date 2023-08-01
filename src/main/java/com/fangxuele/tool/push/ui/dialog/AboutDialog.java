@@ -1,8 +1,6 @@
 package com.fangxuele.tool.push.ui.dialog;
 
 import cn.hutool.core.thread.ThreadUtil;
-import cn.hutool.http.HttpUtil;
-import cn.hutool.json.JSONUtil;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.util.ComponentUtil;
@@ -12,7 +10,6 @@ import com.formdev.flatlaf.util.SystemInfo;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import javax.imageio.ImageIO;
@@ -28,7 +25,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Locale;
-import java.util.Map;
 
 @Slf4j
 public class AboutDialog extends JDialog {
@@ -153,19 +149,15 @@ public class AboutDialog extends JDialog {
      * 初始化二维码
      */
     public void initQrCode() {
-        String qrCodeContent = HttpUtil.get(UiConsts.QR_CODE_URL);
-        if (StringUtils.isNotEmpty(qrCodeContent)) {
-            Map<String, String> urlMap = JSONUtil.toBean(qrCodeContent, Map.class);
-            try {
-                URL url = new URL(urlMap.get("url"));
-                BufferedImage image = ImageIO.read(url);
-                qrCodeLabel.setIcon(new ImageIcon(image));
-            } catch (IOException e) {
-                e.printStackTrace();
-                log.error(ExceptionUtils.getStackTrace(e));
-            }
-
+        try {
+            URL url = new URL(UiConsts.QR_CODE_URL);
+            BufferedImage image = ImageIO.read(url);
+            qrCodeLabel.setIcon(new ImageIcon(image));
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.error(ExceptionUtils.getStackTrace(e));
         }
+
     }
 
     {
