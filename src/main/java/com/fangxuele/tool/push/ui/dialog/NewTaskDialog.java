@@ -4,6 +4,8 @@ import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.*;
 import com.fangxuele.tool.push.domain.*;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.logic.PeriodTypeEnum;
+import com.fangxuele.tool.push.logic.TaskModeEnum;
 import com.fangxuele.tool.push.logic.TaskTypeEnum;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.form.TaskForm;
@@ -65,9 +67,9 @@ public class NewTaskDialog extends JDialog {
     private JLabel cronOnlineLabel;
     private JLabel cronHelpLabel;
     private JScrollPane scrollPane;
-    private JRadioButton 固定线程RadioButton;
-    private JRadioButton 变速模式RadioButton;
-    private JTextField textField1;
+    private JRadioButton fixThreadModeRadioButton;
+    private JRadioButton infinityModeRadioButton;
+    private JTextField threadCntTextField;
     private JCheckBox saveResponseBodyCheckBox;
 
     private static TTaskMapper taskMapper = MybatisUtil.getSqlSession().getMapper(TTaskMapper.class);
@@ -570,11 +572,15 @@ public class NewTaskDialog extends JDialog {
                 task.setAccountId(accountMap.get((String) accountComboBox.getSelectedItem()));
                 task.setMessageId(messageMap.get((String) msgComboBox.getSelectedItem()));
                 task.setPeopleId(peopleMap.get((String) peopleComboBox.getSelectedItem()));
+                task.setTaskMode(getTaskMode());
                 task.setTaskPeriod(getTaskPeriod());
+                task.setPeriodType(getPeriodType());
+                task.setPeriodTime(getPeriodTime());
                 task.setCron(getCron());
                 task.setReimportPeople(reimportCheckBox.isSelected() ? 1 : 0);
                 task.setResultAlert(sendPushResultCheckBox.isSelected() ? 1 : 0);
-                task.setAlertEmails(this.mailResultToTextField.getText().trim());
+                task.setAlertEmails(mailResultToTextField.getText().trim());
+                task.setSaveResult(saveResponseBodyCheckBox.isSelected() ? 1 : 0);
                 task.setCreateTime(now);
                 task.setModifiedTime(now);
 
@@ -591,6 +597,44 @@ public class NewTaskDialog extends JDialog {
             }
         }
         dispose();
+    }
+
+    private String getPeriodTime() {
+        if (runAtThisTimeRadioButton.isSelected()) {
+            return startAtThisTimeTextField.getText().trim();
+        } else if (runPerDayRadioButton.isSelected()) {
+            return startPerDayTextField.getText().trim();
+        } else if (runPerWeekRadioButton.isSelected()) {
+            return schedulePerWeekComboBox.getSelectedItem() + "," + startPerWeekTextField.getText().trim();
+        } else if (cronRadioButton.isSelected()) {
+            return cronTextField.getText().trim();
+        } else {
+            return null;
+        }
+    }
+
+    private Integer getTaskMode() {
+        if (fixThreadModeRadioButton.isSelected()) {
+            return TaskModeEnum.FIX_THREAD_TASK_CODE;
+        } else if (infinityModeRadioButton.isSelected()) {
+            return TaskModeEnum.INFINITY_TASK_CODE;
+        } else {
+            return null;
+        }
+    }
+
+    private Integer getPeriodType() {
+        if (runAtThisTimeRadioButton.isSelected()) {
+            return PeriodTypeEnum.RUN_AT_THIS_TIME_TASK_CODE;
+        } else if (runPerDayRadioButton.isSelected()) {
+            return PeriodTypeEnum.RUN_PER_DAY_TASK_CODE;
+        } else if (runPerWeekRadioButton.isSelected()) {
+            return PeriodTypeEnum.RUN_PER_WEEK_TASK_CODE;
+        } else if (cronRadioButton.isSelected()) {
+            return PeriodTypeEnum.CRON_TASK_CODE;
+        } else {
+            return null;
+        }
     }
 
     private void onCancel() {
@@ -756,14 +800,14 @@ public class NewTaskDialog extends JDialog {
         final JLabel label12 = new JLabel();
         label12.setText("模式");
         panel7.add(label12, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        固定线程RadioButton = new JRadioButton();
-        固定线程RadioButton.setText("固定线程");
-        panel7.add(固定线程RadioButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        变速模式RadioButton = new JRadioButton();
-        变速模式RadioButton.setText("变速模式");
-        panel7.add(变速模式RadioButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        textField1 = new JTextField();
-        panel7.add(textField1, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(50, -1), new Dimension(50, -1), 0, false));
+        fixThreadModeRadioButton = new JRadioButton();
+        fixThreadModeRadioButton.setText("固定线程");
+        panel7.add(fixThreadModeRadioButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        infinityModeRadioButton = new JRadioButton();
+        infinityModeRadioButton.setText("变速模式");
+        panel7.add(infinityModeRadioButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        threadCntTextField = new JTextField();
+        panel7.add(threadCntTextField, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(50, -1), new Dimension(50, -1), 0, false));
         final JLabel label13 = new JLabel();
         label13.setText("线程数");
         panel7.add(label13, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));

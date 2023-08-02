@@ -383,7 +383,7 @@
                           <text value="模式"/>
                         </properties>
                       </component>
-                      <component id="4bcca" class="javax.swing.JRadioButton" binding="固定线程RadioButton" default-binding="true">
+                      <component id="4bcca" class="javax.swing.JRadioButton" binding="fixThreadModeRadioButton">
                         <constraints>
                           <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
@@ -391,7 +391,7 @@
                           <text value="固定线程"/>
                         </properties>
                       </component>
-                      <component id="1cd4b" class="javax.swing.JRadioButton" binding="变速模式RadioButton" default-binding="true">
+                      <component id="1cd4b" class="javax.swing.JRadioButton" binding="infinityModeRadioButton">
                         <constraints>
                           <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                         </constraints>
@@ -399,7 +399,7 @@
                           <text value="变速模式"/>
                         </properties>
                       </component>
-                      <component id="5f3a9" class="javax.swing.JTextField" binding="textField1" default-binding="true">
+                      <component id="5f3a9" class="javax.swing.JTextField" binding="threadCntTextField">
                         <constraints>
                           <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="0" indent="0" use-parent-layout="false">
                             <preferred-size width="50" height="-1"/>
