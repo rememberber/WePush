@@ -392,6 +392,8 @@ create table if not exists t_task
     people_id  integer,
     task_mode  integer,
     task_period  integer,
+    period_type  integer,
+    period_time  text,
     cron       text,
     reimport_people       integer,
     result_alert       integer,
