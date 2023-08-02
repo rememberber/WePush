@@ -19,6 +19,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -275,6 +276,7 @@ public class NewTaskDialog extends JDialog {
         scrollPane.getVerticalScrollBar().setUnitIncrement(15);
         scrollPane.getVerticalScrollBar().setDoubleBuffered(true);
         schedulePanel.setVisible(false);
+        threadCntTextField.setText("8");
     }
 
     private void initData() {
@@ -493,7 +495,6 @@ public class NewTaskDialog extends JDialog {
     private void resetTaskMode() {
         fixThreadModeRadioButton.setSelected(false);
         infinityModeRadioButton.setSelected(false);
-        threadCntTextField.setText("8");
     }
 
     private Integer getTaskPeriod() {
@@ -578,7 +579,9 @@ public class NewTaskDialog extends JDialog {
             return;
         } else {
             try {
-                // TODO 校验
+                // 非空校验
+                if (nullCheck()) return;
+
                 String now = SqliteUtil.nowDateForSqlite();
                 TTask task = new TTask();
                 task.setTitle(title);
@@ -611,6 +614,78 @@ public class NewTaskDialog extends JDialog {
             }
         }
         dispose();
+    }
+
+    private boolean nullCheck() {
+        if (StringUtils.isBlank(titleTextField.getText())) {
+            JOptionPane.showMessageDialog(this, "任务名称不能为空！", "提示",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return true;
+        }
+        if (StringUtils.isBlank((String) msgTypeComboBox.getSelectedItem())) {
+            JOptionPane.showMessageDialog(this, "消息类型不能为空！", "提示",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return true;
+        }
+        if (StringUtils.isBlank((String) accountComboBox.getSelectedItem())) {
+            JOptionPane.showMessageDialog(this, "账号不能为空！", "提示",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return true;
+        }
+        if (StringUtils.isBlank((String) msgComboBox.getSelectedItem())) {
+            JOptionPane.showMessageDialog(this, "消息不能为空！", "提示",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return true;
+        }
+        if (StringUtils.isBlank((String) peopleComboBox.getSelectedItem())) {
+            JOptionPane.showMessageDialog(this, "人群不能为空！", "提示",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return true;
+        }
+        if (StringUtils.isBlank(threadCntTextField.getText())) {
+            JOptionPane.showMessageDialog(this, "线程数不能为空！", "提示",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return true;
+        }
+        if (scheduleTaskRadioButton.isSelected()) {
+            if (runAtThisTimeRadioButton.isSelected()) {
+                if (StringUtils.isBlank(startAtThisTimeTextField.getText())) {
+                    JOptionPane.showMessageDialog(this, "定时时间不能为空！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return true;
+                }
+            } else if (runPerDayRadioButton.isSelected()) {
+                if (StringUtils.isBlank(startPerDayTextField.getText())) {
+                    JOptionPane.showMessageDialog(this, "定时时间不能为空！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return true;
+                }
+            } else if (runPerWeekRadioButton.isSelected()) {
+                if (StringUtils.isBlank(startPerWeekTextField.getText())) {
+                    JOptionPane.showMessageDialog(this, "定时时间不能为空！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return true;
+                }
+            } else if (cronRadioButton.isSelected()) {
+                if (StringUtils.isBlank(cronTextField.getText())) {
+                    JOptionPane.showMessageDialog(this, "定时时间不能为空！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return true;
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "定时时间不能为空！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return true;
+            }
+        }
+        if (sendPushResultCheckBox.isSelected()) {
+            if (StringUtils.isBlank(mailResultToTextField.getText())) {
+                JOptionPane.showMessageDialog(this, "推送结果邮箱不能为空！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return true;
+            }
+        }
+        return false;
     }
 
     private String getPeriodTime() {
