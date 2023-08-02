@@ -480,7 +480,7 @@ public class NewTaskDialog extends JDialog {
         triggerTaskRadioButton.setSelected(false);
     }
 
-    private Integer getTaskType() {
+    private Integer getTaskPeriod() {
         if (manualTaskRadioButton.isSelected()) {
             return TaskTypeEnum.MANUAL_TASK_CODE;
         } else if (scheduleTaskRadioButton.isSelected()) {
@@ -570,7 +570,7 @@ public class NewTaskDialog extends JDialog {
                 task.setAccountId(accountMap.get((String) accountComboBox.getSelectedItem()));
                 task.setMessageId(messageMap.get((String) msgComboBox.getSelectedItem()));
                 task.setPeopleId(peopleMap.get((String) peopleComboBox.getSelectedItem()));
-                task.setTaskType(getTaskType());
+                task.setTaskPeriod(getTaskPeriod());
                 task.setCron(getCron());
                 task.setReimportPeople(reimportCheckBox.isSelected() ? 1 : 0);
                 task.setResultAlert(sendPushResultCheckBox.isSelected() ? 1 : 0);

@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fangxuele.tool.push.dao.TTaskHisMapper">
+  <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TTaskHis">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="task_id" jdbcType="INTEGER" property="taskId" />
+    <result column="start_time" jdbcType="VARCHAR" property="startTime" />
+    <result column="end_time" jdbcType="VARCHAR" property="endTime" />
+    <result column="total_cnt" jdbcType="INTEGER" property="totalCnt" />
+    <result column="success_cnt" jdbcType="INTEGER" property="successCnt" />
+    <result column="fail_cnt" jdbcType="INTEGER" property="failCnt" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="success_file_path" jdbcType="VARCHAR" property="successFilePath" />
+    <result column="fail_file_path" jdbcType="VARCHAR" property="failFilePath" />
+    <result column="no_send_file_path" jdbcType="VARCHAR" property="noSendFilePath" />
+    <result column="log_file_path" jdbcType="VARCHAR" property="logFilePath" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+    <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, task_id, start_time, end_time, total_cnt, success_cnt, fail_cnt, status, success_file_path, 
+    fail_file_path, no_send_file_path, log_file_path, remark, create_time, modified_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_task_his
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_task_his
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TTaskHis">
+    insert into t_task_his (id, task_id, start_time, 
+      end_time, total_cnt, success_cnt, 
+      fail_cnt, status, success_file_path, 
+      fail_file_path, no_send_file_path, log_file_path, 
+      remark, create_time, modified_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{taskId,jdbcType=INTEGER}, #{startTime,jdbcType=VARCHAR}, 
+      #{endTime,jdbcType=VARCHAR}, #{totalCnt,jdbcType=INTEGER}, #{successCnt,jdbcType=INTEGER}, 
+      #{failCnt,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{successFilePath,jdbcType=VARCHAR}, 
+      #{failFilePath,jdbcType=VARCHAR}, #{noSendFilePath,jdbcType=VARCHAR}, #{logFilePath,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TTaskHis">
+    insert into t_task_his
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="taskId != null">
+        task_id,
+      </if>
+      <if test="startTime != null">
+        start_time,
+      </if>
+      <if test="endTime != null">
+        end_time,
+      </if>
+      <if test="totalCnt != null">
+        total_cnt,
+      </if>
+      <if test="successCnt != null">
+        success_cnt,
+      </if>
+      <if test="failCnt != null">
+        fail_cnt,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="successFilePath != null">
+        success_file_path,
+      </if>
+      <if test="failFilePath != null">
+        fail_file_path,
+      </if>
+      <if test="noSendFilePath != null">
+        no_send_file_path,
+      </if>
+      <if test="logFilePath != null">
+        log_file_path,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="modifiedTime != null">
+        modified_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="taskId != null">
+        #{taskId,jdbcType=INTEGER},
+      </if>
+      <if test="startTime != null">
+        #{startTime,jdbcType=VARCHAR},
+      </if>
+      <if test="endTime != null">
+        #{endTime,jdbcType=VARCHAR},
+      </if>
+      <if test="totalCnt != null">
+        #{totalCnt,jdbcType=INTEGER},
+      </if>
+      <if test="successCnt != null">
+        #{successCnt,jdbcType=INTEGER},
+      </if>
+      <if test="failCnt != null">
+        #{failCnt,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="successFilePath != null">
+        #{successFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="failFilePath != null">
+        #{failFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="noSendFilePath != null">
+        #{noSendFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="logFilePath != null">
+        #{logFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="modifiedTime != null">
+        #{modifiedTime,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fangxuele.tool.push.domain.TTaskHis">
+    update t_task_his
+    <set>
+      <if test="taskId != null">
+        task_id = #{taskId,jdbcType=INTEGER},
+      </if>
+      <if test="startTime != null">
+        start_time = #{startTime,jdbcType=VARCHAR},
+      </if>
+      <if test="endTime != null">
+        end_time = #{endTime,jdbcType=VARCHAR},
+      </if>
+      <if test="totalCnt != null">
+        total_cnt = #{totalCnt,jdbcType=INTEGER},
+      </if>
+      <if test="successCnt != null">
+        success_cnt = #{successCnt,jdbcType=INTEGER},
+      </if>
+      <if test="failCnt != null">
+        fail_cnt = #{failCnt,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="successFilePath != null">
+        success_file_path = #{successFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="failFilePath != null">
+        fail_file_path = #{failFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="noSendFilePath != null">
+        no_send_file_path = #{noSendFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="logFilePath != null">
+        log_file_path = #{logFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="modifiedTime != null">
+        modified_time = #{modifiedTime,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TTaskHis">
+    update t_task_his
+    set task_id = #{taskId,jdbcType=INTEGER},
+      start_time = #{startTime,jdbcType=VARCHAR},
+      end_time = #{endTime,jdbcType=VARCHAR},
+      total_cnt = #{totalCnt,jdbcType=INTEGER},
+      success_cnt = #{successCnt,jdbcType=INTEGER},
+      fail_cnt = #{failCnt,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      success_file_path = #{successFilePath,jdbcType=VARCHAR},
+      fail_file_path = #{failFilePath,jdbcType=VARCHAR},
+      no_send_file_path = #{noSendFilePath,jdbcType=VARCHAR},
+      log_file_path = #{logFilePath,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=VARCHAR},
+      modified_time = #{modifiedTime,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

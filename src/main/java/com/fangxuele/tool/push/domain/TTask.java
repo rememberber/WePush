@@ -15,7 +15,13 @@ public class TTask implements Serializable {
 
     private Integer peopleId;
 
-    private Integer taskType;
+    private Integer taskMode;
+
+    private Integer taskPeriod;
+
+    private Integer periodType;
+
+    private String periodTime;
 
     private String cron;
 
@@ -24,6 +30,8 @@ public class TTask implements Serializable {
     private Integer resultAlert;
 
     private String alertEmails;
+
+    private Integer saveResult;
 
     private String remark;
 
@@ -81,12 +89,36 @@ public class TTask implements Serializable {
         this.peopleId = peopleId;
     }
 
-    public Integer getTaskType() {
-        return taskType;
+    public Integer getTaskMode() {
+        return taskMode;
     }
 
-    public void setTaskType(Integer taskType) {
-        this.taskType = taskType;
+    public void setTaskMode(Integer taskMode) {
+        this.taskMode = taskMode;
+    }
+
+    public Integer getTaskPeriod() {
+        return taskPeriod;
+    }
+
+    public void setTaskPeriod(Integer taskPeriod) {
+        this.taskPeriod = taskPeriod;
+    }
+
+    public Integer getPeriodType() {
+        return periodType;
+    }
+
+    public void setPeriodType(Integer periodType) {
+        this.periodType = periodType;
+    }
+
+    public String getPeriodTime() {
+        return periodTime;
+    }
+
+    public void setPeriodTime(String periodTime) {
+        this.periodTime = periodTime == null ? null : periodTime.trim();
     }
 
     public String getCron() {
@@ -119,6 +151,14 @@ public class TTask implements Serializable {
 
     public void setAlertEmails(String alertEmails) {
         this.alertEmails = alertEmails == null ? null : alertEmails.trim();
+    }
+
+    public Integer getSaveResult() {
+        return saveResult;
+    }
+
+    public void setSaveResult(Integer saveResult) {
+        this.saveResult = saveResult;
     }
 
     public String getRemark() {
