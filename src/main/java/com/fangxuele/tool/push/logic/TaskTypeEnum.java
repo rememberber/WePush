@@ -33,4 +33,12 @@ public enum TaskTypeEnum {
         return messageTypeEnum.name;
     }
 
+    public static String getDescByCode(Integer taskPeriod) {
+        for (TaskTypeEnum taskTypeEnum : TaskTypeEnum.values()) {
+            if (taskTypeEnum.code == taskPeriod) {
+                return taskTypeEnum.name;
+            }
+        }
+        return null;
+    }
 }

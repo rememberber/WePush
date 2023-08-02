@@ -35,4 +35,12 @@ public enum PeriodTypeEnum {
         return messageTypeEnum.name;
     }
 
+    public static String getDesc(Integer periodType) {
+        for (PeriodTypeEnum periodTypeEnum : PeriodTypeEnum.values()) {
+            if (periodTypeEnum.code == periodType) {
+                return periodTypeEnum.name;
+            }
+        }
+        return null;
+    }
 }

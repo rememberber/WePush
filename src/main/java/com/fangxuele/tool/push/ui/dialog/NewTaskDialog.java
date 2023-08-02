@@ -385,6 +385,8 @@ public class NewTaskDialog extends JDialog {
                     messageMap.put(tMsgKefu.getMsgName(), tMsgKefu.getId());
                     msgComboBox.addItem(tMsgKefu.getMsgName());
                 }
+                saveResponseBodyCheckBox.setSelected(false);
+                saveResponseBodyCheckBox.setVisible(false);
                 break;
             case MessageTypeEnum.KEFU_PRIORITY_CODE:
                 List<TMsgKefuPriority> tMsgKefuPriorityList = msgKefuPriorityMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
@@ -392,6 +394,8 @@ public class NewTaskDialog extends JDialog {
                     messageMap.put(tMsgKefuPriority.getMsgName(), tMsgKefuPriority.getId());
                     msgComboBox.addItem(tMsgKefuPriority.getMsgName());
                 }
+                saveResponseBodyCheckBox.setSelected(false);
+                saveResponseBodyCheckBox.setVisible(false);
                 break;
             case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE:
                 List<TMsgWxUniform> tMsgWxUniformList = wxUniformMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
@@ -399,6 +403,8 @@ public class NewTaskDialog extends JDialog {
                     messageMap.put(tMsgWxUniform.getMsgName(), tMsgWxUniform.getId());
                     msgComboBox.addItem(tMsgWxUniform.getMsgName());
                 }
+                saveResponseBodyCheckBox.setSelected(false);
+                saveResponseBodyCheckBox.setVisible(false);
                 break;
             case MessageTypeEnum.MA_TEMPLATE_CODE:
                 List<TMsgMaTemplate> tMsgMaTemplateList = msgMaTemplateMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
@@ -406,6 +412,8 @@ public class NewTaskDialog extends JDialog {
                     messageMap.put(tMsgMaTemplate.getMsgName(), tMsgMaTemplate.getId());
                     msgComboBox.addItem(tMsgMaTemplate.getMsgName());
                 }
+                saveResponseBodyCheckBox.setSelected(false);
+                saveResponseBodyCheckBox.setVisible(false);
                 break;
             case MessageTypeEnum.MA_SUBSCRIBE_CODE:
                 List<TMsgMaSubscribe> tMsgMaSubscribeList = msgMaSubscribeMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
@@ -413,6 +421,8 @@ public class NewTaskDialog extends JDialog {
                     messageMap.put(tMsgMaSubscribe.getMsgName(), tMsgMaSubscribe.getId());
                     msgComboBox.addItem(tMsgMaSubscribe.getMsgName());
                 }
+                saveResponseBodyCheckBox.setSelected(false);
+                saveResponseBodyCheckBox.setVisible(false);
                 break;
             case MessageTypeEnum.MP_TEMPLATE_CODE:
                 List<TMsgMpTemplate> tMsgMpTemplateList = msgMpTemplateMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
@@ -420,6 +430,8 @@ public class NewTaskDialog extends JDialog {
                     messageMap.put(tMsgMpTemplate.getMsgName(), tMsgMpTemplate.getId());
                     msgComboBox.addItem(tMsgMpTemplate.getMsgName());
                 }
+                saveResponseBodyCheckBox.setSelected(false);
+                saveResponseBodyCheckBox.setVisible(false);
                 break;
             case MessageTypeEnum.MP_SUBSCRIBE_CODE:
                 List<TMsgMpSubscribe> tMsgMpSubscribeList = msgMpSubscribeMapper.selectByMsgTypeAndWxAccountId(msgType, selectedAccount);
@@ -427,6 +439,8 @@ public class NewTaskDialog extends JDialog {
                     messageMap.put(tMsgMpSubscribe.getMsgName(), tMsgMpSubscribe.getId());
                     msgComboBox.addItem(tMsgMpSubscribe.getMsgName());
                 }
+                saveResponseBodyCheckBox.setSelected(false);
+                saveResponseBodyCheckBox.setVisible(false);
                 break;
             case MessageTypeEnum.EMAIL_CODE:
                 List<TMsgMail> tMsgMailList = msgMailMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
@@ -434,6 +448,8 @@ public class NewTaskDialog extends JDialog {
                     messageMap.put(tMsgMail.getMsgName(), tMsgMail.getId());
                     msgComboBox.addItem(tMsgMail.getMsgName());
                 }
+                saveResponseBodyCheckBox.setSelected(false);
+                saveResponseBodyCheckBox.setVisible(false);
                 break;
             case MessageTypeEnum.WX_CP_CODE:
                 List<TMsgWxCp> tMsgWxCpList = msgWxCpMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
@@ -441,6 +457,8 @@ public class NewTaskDialog extends JDialog {
                     messageMap.put(tMsgWxCp.getMsgName(), tMsgWxCp.getId());
                     msgComboBox.addItem(tMsgWxCp.getMsgName());
                 }
+                saveResponseBodyCheckBox.setSelected(false);
+                saveResponseBodyCheckBox.setVisible(false);
                 break;
             case MessageTypeEnum.HTTP_CODE:
                 List<TMsgHttp> tMsgHttpList = msgHttpMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
@@ -448,6 +466,7 @@ public class NewTaskDialog extends JDialog {
                     messageMap.put(tMsgHttp.getMsgName(), tMsgHttp.getId());
                     msgComboBox.addItem(tMsgHttp.getMsgName());
                 }
+                saveResponseBodyCheckBox.setVisible(true);
                 break;
             case MessageTypeEnum.DING_CODE:
                 List<TMsgDing> tMsgDingList = msgDingMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
@@ -455,6 +474,8 @@ public class NewTaskDialog extends JDialog {
                     messageMap.put(tMsgDing.getMsgName(), tMsgDing.getId());
                     msgComboBox.addItem(tMsgDing.getMsgName());
                 }
+                saveResponseBodyCheckBox.setSelected(false);
+                saveResponseBodyCheckBox.setVisible(false);
                 break;
             default:
                 List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
@@ -462,6 +483,8 @@ public class NewTaskDialog extends JDialog {
                     messageMap.put(tMsgSms.getMsgName(), tMsgSms.getId());
                     msgComboBox.addItem(tMsgSms.getMsgName());
                 }
+                saveResponseBodyCheckBox.setSelected(false);
+                saveResponseBodyCheckBox.setVisible(false);
                 break;
         }
     }

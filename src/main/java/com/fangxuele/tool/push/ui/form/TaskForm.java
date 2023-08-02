@@ -4,6 +4,7 @@ import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TTaskExtMapper;
 import com.fangxuele.tool.push.dao.TTaskMapper;
 import com.fangxuele.tool.push.domain.TTask;
+import com.fangxuele.tool.push.logic.TaskTypeEnum;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
@@ -100,10 +101,10 @@ public class TaskForm {
             data = new Object[6];
             data[0] = task.getId();
             data[1] = task.getTitle();
-            data[2] = "HTTP";
-            data[3] = "定时/手动/触发";
-            data[4] = task.getMsgType();
-            data[5] = task.getMessageId();
+            data[2] = task.getMsgType();
+            data[3] = TaskTypeEnum.getDescByCode(task.getTaskPeriod());
+            data[4] = task.getMessageId();
+            data[5] = task.getPeopleId();
             model.addRow(data);
         }
         // 隐藏id列
