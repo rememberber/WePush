@@ -256,6 +256,14 @@ public class NewTaskDialog extends JDialog {
             resetScheduleRadio();
             cronRadioButton.setSelected(true);
         });
+        fixThreadModeRadioButton.addActionListener(e -> {
+            resetTaskMode();
+            fixThreadModeRadioButton.setSelected(true);
+        });
+        infinityModeRadioButton.addActionListener(e -> {
+            resetTaskMode();
+            infinityModeRadioButton.setSelected(true);
+        });
     }
 
     private void init() {
@@ -480,6 +488,12 @@ public class NewTaskDialog extends JDialog {
         manualTaskRadioButton.setSelected(false);
         scheduleTaskRadioButton.setSelected(false);
         triggerTaskRadioButton.setSelected(false);
+    }
+
+    private void resetTaskMode() {
+        fixThreadModeRadioButton.setSelected(false);
+        infinityModeRadioButton.setSelected(false);
+        threadCntTextField.setText("8");
     }
 
     private Integer getTaskPeriod() {
@@ -801,6 +815,7 @@ public class NewTaskDialog extends JDialog {
         label12.setText("模式");
         panel7.add(label12, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         fixThreadModeRadioButton = new JRadioButton();
+        fixThreadModeRadioButton.setSelected(true);
         fixThreadModeRadioButton.setText("固定线程");
         panel7.add(fixThreadModeRadioButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         infinityModeRadioButton = new JRadioButton();
