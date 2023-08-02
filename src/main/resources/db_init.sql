@@ -404,3 +404,24 @@ create table if not exists t_task
 
 create unique index if not exists t_task_title_uindex
     on t_task (title);
+
+create table if not exists t_task_his
+(
+    id            integer
+    constraint t_task_his_pk
+    primary key autoincrement,
+    task_id  integer,
+    start_time  datetime,
+    end_time  datetime,
+    total_cnt  integer,
+    success_cnt  integer,
+    fail_cnt  integer,
+    status  integer,
+    success_file_path  text,
+    fail_file_path  text,
+    no_send_file_path  text,
+    log_file_path  text,
+    remark       text,
+    create_time   datetime,
+    modified_time datetime
+);
