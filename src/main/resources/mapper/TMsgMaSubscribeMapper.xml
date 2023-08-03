@@ -196,7 +196,7 @@
         <include refid="Base_Column_List"/>
         from t_msg_ma_subscribe
         where msg_type = #{msgType,jdbcType=INTEGER}
-        account_id = #{accountId,jdbcType=INTEGER}
+        and account_id = #{accountId,jdbcType=INTEGER}
         order by create_time desc
     </select>
 </mapper>
