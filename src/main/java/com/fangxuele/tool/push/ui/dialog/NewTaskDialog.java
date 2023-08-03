@@ -614,6 +614,7 @@ public class NewTaskDialog extends JDialog {
                 task.setMessageId(messageMap.get((String) msgComboBox.getSelectedItem()));
                 task.setPeopleId(peopleMap.get((String) peopleComboBox.getSelectedItem()));
                 task.setTaskMode(getTaskMode());
+                task.setThreadCnt(Integer.parseInt(threadCntTextField.getText().trim()));
                 task.setTaskPeriod(getTaskPeriod());
                 task.setPeriodType(getPeriodType());
                 task.setPeriodTime(getPeriodTime());
