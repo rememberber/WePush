@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class TMsg implements Serializable {
     private Integer id;
 
-    private String msgType;
+    private Integer msgType;
 
     private Integer accountId;
 
@@ -31,12 +31,12 @@ public class TMsg implements Serializable {
         this.id = id;
     }
 
-    public String getMsgType() {
+    public Integer getMsgType() {
         return msgType;
     }
 
-    public void setMsgType(String msgType) {
-        this.msgType = msgType == null ? null : msgType.trim();
+    public void setMsgType(Integer msgType) {
+        this.msgType = msgType;
     }
 
     public Integer getAccountId() {

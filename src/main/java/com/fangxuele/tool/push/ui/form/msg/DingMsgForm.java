@@ -3,8 +3,9 @@ package com.fangxuele.tool.push.ui.form.msg;
 import cn.hutool.json.JSONUtil;
 import com.fangxuele.tool.push.bean.msg.DingMsg;
 import com.fangxuele.tool.push.dao.TDingAppMapper;
-import com.fangxuele.tool.push.dao.TMsgDingMapper;
+import com.fangxuele.tool.push.dao.TMsgMapper;
 import com.fangxuele.tool.push.domain.TDingApp;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgDing;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.UiConsts;
@@ -67,7 +68,7 @@ public class DingMsgForm implements IMsgForm {
 
     private static DingMsgForm dingMsgForm;
 
-    private static TMsgDingMapper msgDingMapper = MybatisUtil.getSqlSession().getMapper(TMsgDingMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
     private static TDingAppMapper dingAppMapper = MybatisUtil.getSqlSession().getMapper(TDingAppMapper.class);
 
     public static Map<String, String> appNameToAgentIdMap = Maps.newHashMap();
@@ -141,7 +142,8 @@ public class DingMsgForm implements IMsgForm {
         clearAllField();
         initAppNameList();
 
-        TMsgDing tMsgDing = msgDingMapper.selectByPrimaryKey(msgId);
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        TMsgDing tMsgDing = JSONUtil.toBean(tMsg.getContent(), TMsgDing.class);
         if (tMsgDing != null) {
             String dingMsgType = tMsgDing.getDingMsgType();
             getInstance().getAppNameComboBox().setSelectedItem(agentIdToAppNameMap.get(tMsgDing.getAgentId()));
@@ -159,8 +161,8 @@ public class DingMsgForm implements IMsgForm {
             switchRadio(tMsgDing.getRadioType());
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
-            messageEditForm.getMsgNameField().setText(tMsgDing.getMsgName());
-            messageEditForm.getPreviewUserField().setText(tMsgDing.getPreviewUser());
+            messageEditForm.getMsgNameField().setText(tMsg.getMsgName());
+            messageEditForm.getPreviewUserField().setText(tMsg.getPreviewUser());
         } else {
             switchDingMsgType("文本消息");
         }
@@ -176,10 +178,10 @@ public class DingMsgForm implements IMsgForm {
             return;
         }
         Integer msgId = null;
-        TMsgDing msgDing = msgDingMapper.selectByUnique(accountId, MessageTypeEnum.DING_CODE, msgName);
-        if (msgDing != null) {
+        TMsg msg = msgMapper.selectByUnique(MessageTypeEnum.DING_CODE, accountId, msgName);
+        if (msg != null) {
             existSameMsg = true;
-            msgId = msgDing.getId();
+            msgId = msg.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -201,10 +203,11 @@ public class DingMsgForm implements IMsgForm {
 
             String now = SqliteUtil.nowDateForSqlite();
 
+            TMsg tMsg = new TMsg();
+            tMsg.setMsgType(MessageTypeEnum.DING_CODE);
+            tMsg.setAccountId(accountId);
+            tMsg.setMsgName(msgName);
             TMsgDing tMsgDing = new TMsgDing();
-            tMsgDing.setMsgType(MessageTypeEnum.DING_CODE);
-            tMsgDing.setAccountId(accountId);
-            tMsgDing.setMsgName(msgName);
             tMsgDing.setAgentId(appNameToAgentIdMap.get(getInstance().getAppNameComboBox().getSelectedItem()));
             tMsgDing.setDingMsgType(dingMsgType);
             DingMsg dingMsg = new DingMsg();
@@ -216,9 +219,9 @@ public class DingMsgForm implements IMsgForm {
             dingMsg.setBtnUrl(btnUrl);
 
             tMsgDing.setContent(JSONUtil.toJsonStr(dingMsg));
-            tMsgDing.setModifiedTime(now);
+            tMsg.setModifiedTime(now);
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
-            tMsgDing.setPreviewUser(messageEditForm.getPreviewUserField().getText());
+            tMsg.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             if (getInstance().getWorkRadioButton().isSelected()) {
                 tMsgDing.setRadioType("work");
@@ -227,12 +230,14 @@ public class DingMsgForm implements IMsgForm {
             }
             tMsgDing.setWebHook(webHook);
 
+            tMsg.setContent(JSONUtil.toJsonStr(tMsgDing));
+
             if (existSameMsg) {
-                tMsgDing.setId(msgId);
-                msgDingMapper.updateByPrimaryKeySelective(tMsgDing);
+                tMsg.setId(msgId);
+                msgMapper.updateByPrimaryKeySelective(tMsg);
             } else {
-                tMsgDing.setCreateTime(now);
-                msgDingMapper.insertSelective(tMsgDing);
+                tMsg.setCreateTime(now);
+                msgMapper.insertSelective(tMsg);
             }
 
             JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "保存成功！", "成功",

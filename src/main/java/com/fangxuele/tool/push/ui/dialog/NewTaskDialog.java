@@ -79,19 +79,7 @@ public class NewTaskDialog extends JDialog {
     private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
     private static TPeopleMapper peopleMapper = MybatisUtil.getSqlSession().getMapper(TPeopleMapper.class);
 
-    private static TMsgKefuMapper msgKefuMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuMapper.class);
-    private static TMsgKefuPriorityMapper msgKefuPriorityMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuPriorityMapper.class);
-    private static TMsgWxUniformMapper wxUniformMapper = MybatisUtil.getSqlSession().getMapper(TMsgWxUniformMapper.class);
-    private static TMsgMaTemplateMapper msgMaTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMaTemplateMapper.class);
-    private static TMsgMaSubscribeMapper msgMaSubscribeMapper = MybatisUtil.getSqlSession().getMapper(TMsgMaSubscribeMapper.class);
-    private static TMsgMpTemplateMapper msgMpTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMpTemplateMapper.class);
-    private static TMsgMpSubscribeMapper msgMpSubscribeMapper = MybatisUtil.getSqlSession().getMapper(TMsgMpSubscribeMapper.class);
-    private static TMsgSmsMapper msgSmsMapper = MybatisUtil.getSqlSession().getMapper(TMsgSmsMapper.class);
-    private static TMsgMailMapper msgMailMapper = MybatisUtil.getSqlSession().getMapper(TMsgMailMapper.class);
-    private static TMsgHttpMapper msgHttpMapper = MybatisUtil.getSqlSession().getMapper(TMsgHttpMapper.class);
-    private static TMsgWxCpMapper msgWxCpMapper = MybatisUtil.getSqlSession().getMapper(TMsgWxCpMapper.class);
-    private static TMsgDingMapper msgDingMapper = MybatisUtil.getSqlSession().getMapper(TMsgDingMapper.class);
-    private static TWxAccountMapper wxAccountMapper = MybatisUtil.getSqlSession().getMapper(TWxAccountMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
 
     private static Map<String, Integer> msgTypeMap = Maps.newHashMap();
     private static Map<String, Integer> accountMap = Maps.newHashMap();
@@ -378,116 +366,13 @@ public class NewTaskDialog extends JDialog {
 
         messageMap.clear();
         msgComboBox.removeAllItems();
-
-        switch (msgType) {
-            case MessageTypeEnum.KEFU_CODE:
-                List<TMsgKefu> tMsgKefuList = msgKefuMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
-                for (TMsgKefu tMsgKefu : tMsgKefuList) {
-                    messageMap.put(tMsgKefu.getMsgName(), tMsgKefu.getId());
-                    msgComboBox.addItem(tMsgKefu.getMsgName());
-                }
-                saveResponseBodyCheckBox.setSelected(false);
-                otherPanel.setVisible(false);
-                break;
-            case MessageTypeEnum.KEFU_PRIORITY_CODE:
-                List<TMsgKefuPriority> tMsgKefuPriorityList = msgKefuPriorityMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
-                for (TMsgKefuPriority tMsgKefuPriority : tMsgKefuPriorityList) {
-                    messageMap.put(tMsgKefuPriority.getMsgName(), tMsgKefuPriority.getId());
-                    msgComboBox.addItem(tMsgKefuPriority.getMsgName());
-                }
-                saveResponseBodyCheckBox.setSelected(false);
-                otherPanel.setVisible(false);
-                break;
-            case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE:
-                List<TMsgWxUniform> tMsgWxUniformList = wxUniformMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
-                for (TMsgWxUniform tMsgWxUniform : tMsgWxUniformList) {
-                    messageMap.put(tMsgWxUniform.getMsgName(), tMsgWxUniform.getId());
-                    msgComboBox.addItem(tMsgWxUniform.getMsgName());
-                }
-                saveResponseBodyCheckBox.setSelected(false);
-                otherPanel.setVisible(false);
-                break;
-            case MessageTypeEnum.MA_TEMPLATE_CODE:
-                List<TMsgMaTemplate> tMsgMaTemplateList = msgMaTemplateMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
-                for (TMsgMaTemplate tMsgMaTemplate : tMsgMaTemplateList) {
-                    messageMap.put(tMsgMaTemplate.getMsgName(), tMsgMaTemplate.getId());
-                    msgComboBox.addItem(tMsgMaTemplate.getMsgName());
-                }
-                saveResponseBodyCheckBox.setSelected(false);
-                otherPanel.setVisible(false);
-                break;
-            case MessageTypeEnum.MA_SUBSCRIBE_CODE:
-                List<TMsgMaSubscribe> tMsgMaSubscribeList = msgMaSubscribeMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
-                for (TMsgMaSubscribe tMsgMaSubscribe : tMsgMaSubscribeList) {
-                    messageMap.put(tMsgMaSubscribe.getMsgName(), tMsgMaSubscribe.getId());
-                    msgComboBox.addItem(tMsgMaSubscribe.getMsgName());
-                }
-                saveResponseBodyCheckBox.setSelected(false);
-                otherPanel.setVisible(false);
-                break;
-            case MessageTypeEnum.MP_TEMPLATE_CODE:
-                List<TMsgMpTemplate> tMsgMpTemplateList = msgMpTemplateMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
-                for (TMsgMpTemplate tMsgMpTemplate : tMsgMpTemplateList) {
-                    messageMap.put(tMsgMpTemplate.getMsgName(), tMsgMpTemplate.getId());
-                    msgComboBox.addItem(tMsgMpTemplate.getMsgName());
-                }
-                saveResponseBodyCheckBox.setSelected(false);
-                otherPanel.setVisible(false);
-                break;
-            case MessageTypeEnum.MP_SUBSCRIBE_CODE:
-                List<TMsgMpSubscribe> tMsgMpSubscribeList = msgMpSubscribeMapper.selectByMsgTypeAndWxAccountId(msgType, selectedAccount);
-                for (TMsgMpSubscribe tMsgMpSubscribe : tMsgMpSubscribeList) {
-                    messageMap.put(tMsgMpSubscribe.getMsgName(), tMsgMpSubscribe.getId());
-                    msgComboBox.addItem(tMsgMpSubscribe.getMsgName());
-                }
-                saveResponseBodyCheckBox.setSelected(false);
-                otherPanel.setVisible(false);
-                break;
-            case MessageTypeEnum.EMAIL_CODE:
-                List<TMsgMail> tMsgMailList = msgMailMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
-                for (TMsgMail tMsgMail : tMsgMailList) {
-                    messageMap.put(tMsgMail.getMsgName(), tMsgMail.getId());
-                    msgComboBox.addItem(tMsgMail.getMsgName());
-                }
-                saveResponseBodyCheckBox.setSelected(false);
-                otherPanel.setVisible(false);
-                break;
-            case MessageTypeEnum.WX_CP_CODE:
-                List<TMsgWxCp> tMsgWxCpList = msgWxCpMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
-                for (TMsgWxCp tMsgWxCp : tMsgWxCpList) {
-                    messageMap.put(tMsgWxCp.getMsgName(), tMsgWxCp.getId());
-                    msgComboBox.addItem(tMsgWxCp.getMsgName());
-                }
-                saveResponseBodyCheckBox.setSelected(false);
-                otherPanel.setVisible(false);
-                break;
-            case MessageTypeEnum.HTTP_CODE:
-                List<TMsgHttp> tMsgHttpList = msgHttpMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
-                for (TMsgHttp tMsgHttp : tMsgHttpList) {
-                    messageMap.put(tMsgHttp.getMsgName(), tMsgHttp.getId());
-                    msgComboBox.addItem(tMsgHttp.getMsgName());
-                }
-                otherPanel.setVisible(true);
-                break;
-            case MessageTypeEnum.DING_CODE:
-                List<TMsgDing> tMsgDingList = msgDingMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
-                for (TMsgDing tMsgDing : tMsgDingList) {
-                    messageMap.put(tMsgDing.getMsgName(), tMsgDing.getId());
-                    msgComboBox.addItem(tMsgDing.getMsgName());
-                }
-                saveResponseBodyCheckBox.setSelected(false);
-                otherPanel.setVisible(false);
-                break;
-            default:
-                List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
-                for (TMsgSms tMsgSms : tMsgSmsList) {
-                    messageMap.put(tMsgSms.getMsgName(), tMsgSms.getId());
-                    msgComboBox.addItem(tMsgSms.getMsgName());
-                }
-                saveResponseBodyCheckBox.setSelected(false);
-                otherPanel.setVisible(false);
-                break;
+        List<TMsg> tMsgList = msgMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
+        for (TMsg tMsg : tMsgList) {
+            messageMap.put(tMsg.getMsgName(), tMsg.getId());
+            msgComboBox.addItem(tMsg.getMsgName());
         }
+        saveResponseBodyCheckBox.setSelected(false);
+        otherPanel.setVisible(false);
     }
 
     /**

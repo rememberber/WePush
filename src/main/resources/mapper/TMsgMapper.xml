@@ -21,6 +21,22 @@
     from t_msg
     where id = #{id,jdbcType=INTEGER}
   </select>
+    <select id="selectByUnique" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_msg
+    where msg_type = #{msgType,jdbcType=VARCHAR}
+    and account_id = #{accountId,jdbcType=INTEGER}
+    and msg_name = #{msgName,jdbcType=VARCHAR}
+    </select>
+  <select id="selectByMsgTypeAndAccountId" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List"/>
+      from t_msg
+      where msg_type = #{msgType,jdbcType=VARCHAR}
+      and account_id = #{accountId,jdbcType=INTEGER}
+      order by id desc
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from t_msg
     where id = #{id,jdbcType=INTEGER}
