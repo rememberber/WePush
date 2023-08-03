@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
 
 <generatorConfiguration>
-    <classPathEntry location="D:\MVN-Repository\org\xerial\sqlite-jdbc\3.41.2.1\sqlite-jdbc-3.41.2.1.jar"/>
+    <classPathEntry location="/Users/zhoubo/.m2/repository/org/xerial/sqlite-jdbc/3.36.0.3/sqlite-jdbc-3.36.0.3.jar"/>
 
     <context id="SQLiteTables" targetRuntime="MyBatis3">
         <!-- JavaBean 实现 序列化 接口 -->
@@ -17,7 +17,7 @@
         </commentGenerator>
 
         <jdbcConnection driverClass="org.sqlite.JDBC"
-                        connectionURL="jdbc:sqlite:C:/Users/zhoubo9/.WePush5/WePush.db">
+                        connectionURL="jdbc:sqlite:/Users/zhoubo/.WePush5/WePush.db">
         </jdbcConnection>
 
         <javaTypeResolver>
@@ -26,26 +26,26 @@
 
         <!-- Model文件保存位置 -->
         <javaModelGenerator targetPackage="com.fangxuele.tool.push.domain"
-                            targetProject="D:\IdeaProjects\WePush\src\main\java">
+                            targetProject="/Users/zhoubo/IdeaProjects/WePush/src/main/java">
             <property name="enableSubPackages" value="false"/>
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
 
         <!-- 生成的mapper文件 -->
         <sqlMapGenerator targetPackage="mapper"
-                         targetProject="D:\IdeaProjects\WePush\src\main\resources">
+                         targetProject="/Users/zhoubo/IdeaProjects/WePush/src/main/resources">
             <property name="enableSubPackages" value="false"/>
         </sqlMapGenerator>
 
         <!-- 生成的查询条件的类 -->
         <javaClientGenerator type="XMLMAPPER" targetPackage="com.fangxuele.tool.push.dao"
-                             targetProject="D:\IdeaProjects\WePush\src\main\java">
+                             targetProject="/Users/zhoubo/IdeaProjects/WePush/src/main/java">
             <property name="enableSubPackages" value="false"/>
         </javaClientGenerator>
 
         <table schema="main" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false"
                enableSelectByExample="false" selectByExampleQueryId="false"
-               tableName="t_task" domainObjectName="TTask">
+               tableName="t_msg" domainObjectName="TMsg">
             <property name="useActualColumnNames" value="false"/>
             <!--<generatedKey column="ID" sqlStatement="DB2" identity="true"/>-->
         </table>
