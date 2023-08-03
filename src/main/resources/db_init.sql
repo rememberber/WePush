@@ -429,3 +429,6 @@ create table if not exists t_task_his
     create_time   datetime,
     modified_time datetime
 );
+
+create index if not exists t_task_his_task_id_index
+    on t_task_his (task_id);
