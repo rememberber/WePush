@@ -2,7 +2,7 @@ package com.fangxuele.tool.push.ui.form;
 
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.*;
-import com.fangxuele.tool.push.domain.*;
+import com.fangxuele.tool.push.domain.TTask;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.TaskTypeEnum;
 import com.fangxuele.tool.push.ui.UiConsts;
@@ -106,8 +106,6 @@ public class TaskForm {
 
         taskListTable.getTableHeader().setReorderingAllowed(false);
 
-        TableColumnModel tableColumnModel = taskListTable.getColumnModel();
-
         Object[] data;
 
         List<TTask> taskList = taskExtMapper.selectAll();
@@ -116,20 +114,21 @@ public class TaskForm {
             data[0] = task.getId();
             data[1] = task.getTitle();
             data[2] = MessageTypeEnum.getName(Integer.parseInt(task.getMsgType()));
-            data[3] = TaskTypeEnum.getDescByCode(task.getTaskPeriod());
+            data[3] = getTaskType(task);
             data[4] = getMsgName(Integer.valueOf(task.getMsgType()), task.getMessageId());
             data[5] = peopleMapper.selectByPrimaryKey(task.getPeopleId()).getPeopleName();
             model.addRow(data);
         }
         // 隐藏id列
         JTableUtil.hideColumn(taskListTable, 0);
-        // 设置列宽
-//        tableColumnModel.getColumn(headerNames.length - 1).setPreferredWidth(taskForm.getNewTaskButton().getWidth());
-//        tableColumnModel.getColumn(headerNames.length - 1).setMaxWidth(taskForm.getNewTaskButton().getWidth());
-//        tableColumnModel.getColumn(headerNames.length - 2).setPreferredWidth(taskForm.getNewTaskButton().getWidth());
-//        tableColumnModel.getColumn(headerNames.length - 2).setMaxWidth(taskForm.getNewTaskButton().getWidth());
-//        tableColumnModel.getColumn(headerNames.length - 3).setPreferredWidth(taskForm.getNewTaskButton().getWidth());
-//        tableColumnModel.getColumn(headerNames.length - 3).setMaxWidth(taskForm.getNewTaskButton().getWidth());
+    }
+
+    private static String getTaskType(TTask task) {
+        if (TaskTypeEnum.SCHEDULE_TASK.getCode() == task.getTaskPeriod()) {
+            return task.getCron();
+        } else {
+            return TaskTypeEnum.getDescByCode(task.getTaskPeriod());
+        }
     }
 
     private static String getMsgName(Integer msgType, Integer messageId) {

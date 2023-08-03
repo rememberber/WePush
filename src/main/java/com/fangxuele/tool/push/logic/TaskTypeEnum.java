@@ -41,4 +41,8 @@ public enum TaskTypeEnum {
         }
         return null;
     }
+
+    public int getCode() {
+        return code;
+    }
 }
