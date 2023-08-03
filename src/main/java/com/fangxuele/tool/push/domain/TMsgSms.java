@@ -1,6 +1,9 @@
 package com.fangxuele.tool.push.domain;
 
+import com.fangxuele.tool.push.bean.TemplateData;
+
 import java.io.Serializable;
+import java.util.List;
 
 public class TMsgSms implements Serializable {
     private Integer id;
@@ -20,6 +23,8 @@ public class TMsgSms implements Serializable {
     private String modifiedTime;
 
     private String previewUser;
+
+    private List<TemplateData> templateDataList;
 
     private static final long serialVersionUID = 1L;
 
@@ -93,5 +98,13 @@ public class TMsgSms implements Serializable {
 
     public void setPreviewUser(String previewUser) {
         this.previewUser = previewUser == null ? null : previewUser.trim();
+    }
+
+    public List<TemplateData> getTemplateDataList() {
+        return templateDataList;
+    }
+
+    public void setTemplateDataList(List<TemplateData> templateDataList) {
+        this.templateDataList = templateDataList;
     }
 }

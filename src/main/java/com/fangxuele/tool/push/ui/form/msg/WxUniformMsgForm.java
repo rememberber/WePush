@@ -2,7 +2,6 @@ package com.fangxuele.tool.push.ui.form.msg;
 
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TMsgWxUniformMapper;
-import com.fangxuele.tool.push.dao.TTemplateDataMapper;
 import com.fangxuele.tool.push.domain.TMsgWxUniform;
 import com.fangxuele.tool.push.domain.TTemplateData;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;

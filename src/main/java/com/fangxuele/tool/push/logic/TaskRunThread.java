@@ -123,8 +123,6 @@ public class TaskRunThread extends Thread {
         // 设置是否空跑
         taskHis.setDryRun(dryRun);
 
-        PushControl.saveResponseBody = tTask.getSaveResult() == 1;
-
         // TODO 执行前重新导入目标用户
 
         // 重置推送数据
