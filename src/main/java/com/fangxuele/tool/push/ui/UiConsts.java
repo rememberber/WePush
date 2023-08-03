@@ -89,7 +89,7 @@ public class UiConsts {
     /**
      * 软件版本检查url
      */
-    public final static String CHECK_VERSION_URL = "https://gitee.com/zhoubochina/WePush/raw/5.x/assets/files/version_summary.json";
+    public final static String CHECK_VERSION_URL = "https://gitee.com/zhoubochina/WePush/raw/5.x/src/main/resources/version_summary.json";
 
     /**
      * 用户案例url
