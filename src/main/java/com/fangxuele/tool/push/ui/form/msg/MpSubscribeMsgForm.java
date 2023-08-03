@@ -1,9 +1,9 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.bean.TemplateData;
 import com.fangxuele.tool.push.dao.TMsgMpSubscribeMapper;
 import com.fangxuele.tool.push.domain.TMsgMpSubscribe;
-import com.fangxuele.tool.push.domain.TTemplateData;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
 import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
@@ -72,8 +72,6 @@ public class MpSubscribeMsgForm implements IMsgForm {
     private static MpSubscribeMsgForm mpSubscribeMsgForm;
 
     private static TMsgMpSubscribeMapper tMsgMpSubscribeMapper = MybatisUtil.getSqlSession().getMapper(TMsgMpSubscribeMapper.class);
-
-    private static TTemplateDataMapper templateDataMapper = MybatisUtil.getSqlSession().getMapper(TTemplateDataMapper.class);
 
     /**
      * 账号模板列表
@@ -177,8 +175,13 @@ public class MpSubscribeMsgForm implements IMsgForm {
             initTemplateList();
         }
 
+        List<TemplateData> templateDataList = tMsgMpSubscribe.getTemplateDataList();
+        if (templateDataList == null) {
+            templateDataList = new ArrayList<>();
+        }
+
         initTemplateDataTable();
-        fillTemplateDataTable(msgId);
+        fillTemplateDataTable(templateDataList);
     }
 
     @Override
@@ -222,21 +225,6 @@ public class MpSubscribeMsgForm implements IMsgForm {
             tMsgMpSubscribe.setPreviewUser(messageEditForm.getPreviewUserField().getText());
             tMsgMpSubscribe.setWxAccountId(App.config.getWxAccountId());
 
-            if (existSameMsg) {
-                tMsgMpSubscribe.setId(msgId);
-                tMsgMpSubscribeMapper.updateByPrimaryKeySelective(tMsgMpSubscribe);
-            } else {
-                tMsgMpSubscribeMapper.insertSelective(tMsgMpSubscribe);
-                msgId = tMsgMpSubscribe.getId();
-            }
-
-            // 保存模板数据
-
-            // 如果是覆盖保存，则先清空之前的模板数据
-            if (existSameMsg) {
-                templateDataMapper.deleteByMsgTypeAndMsgId(MessageTypeEnum.MP_SUBSCRIBE_CODE, msgId);
-            }
-
             // 如果table为空，则初始化
             if (getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
                 initTemplateDataTable();
@@ -246,21 +234,27 @@ public class MpSubscribeMsgForm implements IMsgForm {
             DefaultTableModel tableModel = (DefaultTableModel) getInstance().getTemplateMsgDataTable()
                     .getModel();
             int rowCount = tableModel.getRowCount();
+            List<TemplateData> templateDataList = new ArrayList<>();
             for (int i = 0; i < rowCount; i++) {
                 String name = (String) tableModel.getValueAt(i, 0);
                 String value = (String) tableModel.getValueAt(i, 1);
                 String color = ((String) tableModel.getValueAt(i, 2)).trim();
 
-                TTemplateData tTemplateData = new TTemplateData();
-                tTemplateData.setMsgType(MessageTypeEnum.MP_SUBSCRIBE_CODE);
-                tTemplateData.setMsgId(msgId);
+                TemplateData tTemplateData = new TemplateData();
                 tTemplateData.setName(name);
                 tTemplateData.setValue(value);
                 tTemplateData.setColor(color);
-                tTemplateData.setCreateTime(now);
-                tTemplateData.setModifiedTime(now);
 
-                templateDataMapper.insert(tTemplateData);
+                templateDataList.add(tTemplateData);
+            }
+
+            tMsgMpSubscribe.setTemplateDataList(templateDataList);
+
+            if (existSameMsg) {
+                tMsgMpSubscribe.setId(msgId);
+                tMsgMpSubscribeMapper.updateByPrimaryKeySelective(tMsgMpSubscribe);
+            } else {
+                tMsgMpSubscribeMapper.insertSelective(tMsgMpSubscribe);
             }
 
             JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "保存成功！", "成功",
@@ -280,13 +274,12 @@ public class MpSubscribeMsgForm implements IMsgForm {
      *
      * @param msgId
      */
-    public static void fillTemplateDataTable(Integer msgId) {
+    public static void fillTemplateDataTable(List<TemplateData> templateDataList) {
         // 模板消息Data表
-        List<TTemplateData> templateDataList = templateDataMapper.selectByMsgTypeAndMsgId(MessageTypeEnum.MP_SUBSCRIBE_CODE, msgId);
         String[] headerNames = {"Name", "Value", "Color", "操作"};
         Object[][] cellData = new String[templateDataList.size()][headerNames.length];
         for (int i = 0; i < templateDataList.size(); i++) {
-            TTemplateData tTemplateData = templateDataList.get(i);
+            TemplateData tTemplateData = templateDataList.get(i);
             cellData[i][0] = tTemplateData.getName();
             cellData[i][1] = tTemplateData.getValue();
             cellData[i][2] = tTemplateData.getColor();

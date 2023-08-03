@@ -1,9 +1,9 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.bean.TemplateData;
 import com.fangxuele.tool.push.dao.TMsgMpTemplateMapper;
 import com.fangxuele.tool.push.domain.TMsgMpTemplate;
-import com.fangxuele.tool.push.domain.TTemplateData;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
 import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
@@ -30,11 +30,8 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.awt.event.ItemEvent;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -75,8 +72,6 @@ public class MpTemplateMsgForm implements IMsgForm {
     private static MpTemplateMsgForm mpTemplateMsgForm;
 
     private static TMsgMpTemplateMapper msgMpTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMpTemplateMapper.class);
-
-    private static TTemplateDataMapper templateDataMapper = MybatisUtil.getSqlSession().getMapper(TTemplateDataMapper.class);
 
     /**
      * 账号模板列表
@@ -181,7 +176,11 @@ public class MpTemplateMsgForm implements IMsgForm {
         }
 
         initTemplateDataTable();
-        fillTemplateDataTable(msgId);
+        List<TemplateData> templateDataList = tMsgMpTemplate.getTemplateDataList();
+        if (templateDataList == null) {
+            templateDataList = new ArrayList<>();
+        }
+        fillTemplateDataTable(templateDataList);
     }
 
     @Override
@@ -225,21 +224,6 @@ public class MpTemplateMsgForm implements IMsgForm {
             tMsgMpTemplate.setPreviewUser(messageEditForm.getPreviewUserField().getText());
             tMsgMpTemplate.setWxAccountId(App.config.getWxAccountId());
 
-            if (existSameMsg) {
-                tMsgMpTemplate.setId(msgId);
-                msgMpTemplateMapper.updateByPrimaryKeySelective(tMsgMpTemplate);
-            } else {
-                msgMpTemplateMapper.insertSelective(tMsgMpTemplate);
-                msgId = tMsgMpTemplate.getId();
-            }
-
-            // 保存模板数据
-
-            // 如果是覆盖保存，则先清空之前的模板数据
-            if (existSameMsg) {
-                templateDataMapper.deleteByMsgTypeAndMsgId(MessageTypeEnum.MP_TEMPLATE_CODE, msgId);
-            }
-
             // 如果table为空，则初始化
             if (getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
                 initTemplateDataTable();
@@ -249,21 +233,27 @@ public class MpTemplateMsgForm implements IMsgForm {
             DefaultTableModel tableModel = (DefaultTableModel) getInstance().getTemplateMsgDataTable()
                     .getModel();
             int rowCount = tableModel.getRowCount();
+            List<TemplateData> templateDataList = new ArrayList<>();
             for (int i = 0; i < rowCount; i++) {
                 String name = (String) tableModel.getValueAt(i, 0);
                 String value = (String) tableModel.getValueAt(i, 1);
                 String color = ((String) tableModel.getValueAt(i, 2)).trim();
 
-                TTemplateData tTemplateData = new TTemplateData();
-                tTemplateData.setMsgType(MessageTypeEnum.MP_TEMPLATE_CODE);
-                tTemplateData.setMsgId(msgId);
+                TemplateData tTemplateData = new TemplateData();
                 tTemplateData.setName(name);
                 tTemplateData.setValue(value);
                 tTemplateData.setColor(color);
-                tTemplateData.setCreateTime(now);
-                tTemplateData.setModifiedTime(now);
 
-                templateDataMapper.insert(tTemplateData);
+                templateDataList.add(tTemplateData);
+            }
+
+            tMsgMpTemplate.setTemplateDataList(templateDataList);
+
+            if (existSameMsg) {
+                tMsgMpTemplate.setId(msgId);
+                msgMpTemplateMapper.updateByPrimaryKeySelective(tMsgMpTemplate);
+            } else {
+                msgMpTemplateMapper.insertSelective(tMsgMpTemplate);
             }
 
             JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "保存成功！", "成功",
@@ -281,15 +271,14 @@ public class MpTemplateMsgForm implements IMsgForm {
     /**
      * 填充模板参数表Table(从数据库读取)
      *
-     * @param msgId
+     * @param templateDataList
      */
-    public static void fillTemplateDataTable(Integer msgId) {
+    public static void fillTemplateDataTable(List<TemplateData> templateDataList) {
         // 模板消息Data表
-        List<TTemplateData> templateDataList = templateDataMapper.selectByMsgTypeAndMsgId(MessageTypeEnum.MP_TEMPLATE_CODE, msgId);
         String[] headerNames = {"Name", "Value", "Color", "操作"};
         Object[][] cellData = new String[templateDataList.size()][headerNames.length];
         for (int i = 0; i < templateDataList.size(); i++) {
-            TTemplateData tTemplateData = templateDataList.get(i);
+            TemplateData tTemplateData = templateDataList.get(i);
             cellData[i][0] = tTemplateData.getName();
             cellData[i][1] = tTemplateData.getValue();
             cellData[i][2] = tTemplateData.getColor();

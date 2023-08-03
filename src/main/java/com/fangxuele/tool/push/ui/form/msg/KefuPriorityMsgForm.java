@@ -1,10 +1,9 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.bean.TemplateData;
 import com.fangxuele.tool.push.dao.TMsgKefuPriorityMapper;
-import com.fangxuele.tool.push.dao.TTemplateDataMapper;
 import com.fangxuele.tool.push.domain.TMsgKefuPriority;
-import com.fangxuele.tool.push.domain.TTemplateData;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
 import com.fangxuele.tool.push.ui.form.MainWindow;
@@ -15,6 +14,7 @@ import com.fangxuele.tool.push.util.SqliteUtil;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,7 +29,6 @@ import java.util.Objects;
 public class KefuPriorityMsgForm implements IMsgForm {
 
     private static TMsgKefuPriorityMapper msgKefuPriorityMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuPriorityMapper.class);
-    private static TTemplateDataMapper templateDataMapper = MybatisUtil.getSqlSession().getMapper(TTemplateDataMapper.class);
 
     private static KefuPriorityMsgForm kefuPriorityMsgForm;
 
@@ -65,13 +64,12 @@ public class KefuPriorityMsgForm implements IMsgForm {
 
             KefuMsgForm.switchKefuMsgType(kefuMsgType);
 
-            MpTemplateMsgForm.selectedMsgTemplateId = tMsgKefuPriority.getTemplateId();
             // 模板消息Data表
-            List<TTemplateData> templateDataList = templateDataMapper.selectByMsgTypeAndMsgId(MessageTypeEnum.KEFU_PRIORITY_CODE, msgId);
+            List<TemplateData> templateDataList = tMsgKefuPriority.getTemplateDataList();
             String[] headerNames = {"Name", "Value", "Color", "操作"};
             Object[][] cellData = new String[templateDataList.size()][headerNames.length];
             for (int i = 0; i < templateDataList.size(); i++) {
-                TTemplateData tTemplateData = templateDataList.get(i);
+                TemplateData tTemplateData = templateDataList.get(i);
                 cellData[i][0] = tTemplateData.getName();
                 cellData[i][1] = tTemplateData.getValue();
                 cellData[i][2] = tTemplateData.getColor();
@@ -153,20 +151,6 @@ public class KefuPriorityMsgForm implements IMsgForm {
             tMsgKefuPriority.setPagePath(kefuPagePath);
             tMsgKefuPriority.setThumbMediaId(kefuThumbMediaId);
 
-            if (existSameMsg) {
-                tMsgKefuPriority.setId(msgId);
-                msgKefuPriorityMapper.updateByPrimaryKeySelective(tMsgKefuPriority);
-            } else {
-                msgKefuPriorityMapper.insertSelective(tMsgKefuPriority);
-                msgId = tMsgKefuPriority.getId();
-            }
-
-            // 保存模板数据
-            // 如果是覆盖保存，则先清空之前的模板数据
-            if (existSameMsg) {
-                templateDataMapper.deleteByMsgTypeAndMsgId(MessageTypeEnum.KEFU_PRIORITY_CODE, msgId);
-            }
-
             // 如果table为空，则初始化
             if (MpTemplateMsgForm.getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
                 MpTemplateMsgForm.initTemplateDataTable();
@@ -176,21 +160,26 @@ public class KefuPriorityMsgForm implements IMsgForm {
             DefaultTableModel tableModel = (DefaultTableModel) MpTemplateMsgForm.getInstance().getTemplateMsgDataTable()
                     .getModel();
             int rowCount = tableModel.getRowCount();
+            List<TemplateData> templateDataList = new ArrayList<>();
             for (int i = 0; i < rowCount; i++) {
                 String name = (String) tableModel.getValueAt(i, 0);
                 String value = (String) tableModel.getValueAt(i, 1);
                 String color = ((String) tableModel.getValueAt(i, 2)).trim();
 
-                TTemplateData tTemplateData = new TTemplateData();
-                tTemplateData.setMsgType(MessageTypeEnum.KEFU_PRIORITY_CODE);
-                tTemplateData.setMsgId(msgId);
+                TemplateData tTemplateData = new TemplateData();
                 tTemplateData.setName(name);
                 tTemplateData.setValue(value);
                 tTemplateData.setColor(color);
-                tTemplateData.setCreateTime(now);
-                tTemplateData.setModifiedTime(now);
 
-                templateDataMapper.insert(tTemplateData);
+                templateDataList.add(tTemplateData);
+            }
+            tMsgKefuPriority.setTemplateDataList(templateDataList);
+
+            if (existSameMsg) {
+                tMsgKefuPriority.setId(msgId);
+                msgKefuPriorityMapper.updateByPrimaryKeySelective(tMsgKefuPriority);
+            } else {
+                msgKefuPriorityMapper.insertSelective(tMsgKefuPriority);
             }
 
             JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "保存成功！", "成功",

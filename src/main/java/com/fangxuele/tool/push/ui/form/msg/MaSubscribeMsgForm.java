@@ -1,9 +1,9 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.bean.TemplateData;
 import com.fangxuele.tool.push.dao.TMsgMaSubscribeMapper;
 import com.fangxuele.tool.push.domain.TMsgMaSubscribe;
-import com.fangxuele.tool.push.domain.TTemplateData;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
 import com.fangxuele.tool.push.ui.form.MainWindow;
@@ -23,10 +23,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.text.StyleContext;
 import java.awt.*;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
 /**
  * <pre>
@@ -56,7 +54,6 @@ public class MaSubscribeMsgForm implements IMsgForm {
     private static MaSubscribeMsgForm maSubscribeMsgForm;
 
     private static TMsgMaSubscribeMapper msgMaSubscribeMapper = MybatisUtil.getSqlSession().getMapper(TMsgMaSubscribeMapper.class);
-    private static TTemplateDataMapper templateDataMapper = MybatisUtil.getSqlSession().getMapper(TTemplateDataMapper.class);
 
     public MaSubscribeMsgForm() {
         // 模板数据-添加 按钮事件
@@ -114,11 +111,11 @@ public class MaSubscribeMsgForm implements IMsgForm {
 
         initTemplateDataTable();
         // 模板消息Data表
-        List<TTemplateData> templateDataList = templateDataMapper.selectByMsgTypeAndMsgId(MessageTypeEnum.MA_SUBSCRIBE_CODE, msgId);
+        List<TemplateData> templateDataList = tMsgMaSubscribe.getTemplateDataList();
         String[] headerNames = {"Name", "Value", "Color", "操作"};
         Object[][] cellData = new String[templateDataList.size()][headerNames.length];
         for (int i = 0; i < templateDataList.size(); i++) {
-            TTemplateData tTemplateData = templateDataList.get(i);
+            TemplateData tTemplateData = templateDataList.get(i);
             cellData[i][0] = tTemplateData.getName();
             cellData[i][1] = tTemplateData.getValue();
             cellData[i][2] = tTemplateData.getColor();
@@ -173,21 +170,6 @@ public class MaSubscribeMsgForm implements IMsgForm {
             tMsgMaSubscribe.setPreviewUser(messageEditForm.getPreviewUserField().getText());
             tMsgMaSubscribe.setWxAccountId(App.config.getWxAccountId());
 
-            if (existSameMsg) {
-                tMsgMaSubscribe.setId(msgId);
-                msgMaSubscribeMapper.updateByPrimaryKeySelective(tMsgMaSubscribe);
-            } else {
-                msgMaSubscribeMapper.insertSelective(tMsgMaSubscribe);
-                msgId = tMsgMaSubscribe.getId();
-            }
-
-            // 保存模板数据
-
-            // 如果是覆盖保存，则先清空之前的模板数据
-            if (existSameMsg) {
-                templateDataMapper.deleteByMsgTypeAndMsgId(MessageTypeEnum.MA_SUBSCRIBE_CODE, msgId);
-            }
-
             // 如果table为空，则初始化
             if (getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
                 initTemplateDataTable();
@@ -197,21 +179,27 @@ public class MaSubscribeMsgForm implements IMsgForm {
             DefaultTableModel tableModel = (DefaultTableModel) getInstance().getTemplateMsgDataTable()
                     .getModel();
             int rowCount = tableModel.getRowCount();
+            List<TemplateData> templateDataList = new ArrayList<>();
             for (int i = 0; i < rowCount; i++) {
                 String name = (String) tableModel.getValueAt(i, 0);
                 String value = (String) tableModel.getValueAt(i, 1);
                 String color = ((String) tableModel.getValueAt(i, 2)).trim();
 
-                TTemplateData tTemplateData = new TTemplateData();
-                tTemplateData.setMsgType(MessageTypeEnum.MA_SUBSCRIBE_CODE);
-                tTemplateData.setMsgId(msgId);
+                TemplateData tTemplateData = new TemplateData();
                 tTemplateData.setName(name);
                 tTemplateData.setValue(value);
                 tTemplateData.setColor(color);
-                tTemplateData.setCreateTime(now);
-                tTemplateData.setModifiedTime(now);
 
-                templateDataMapper.insert(tTemplateData);
+                templateDataList.add(tTemplateData);
+            }
+
+            tMsgMaSubscribe.setTemplateDataList(templateDataList);
+
+            if (existSameMsg) {
+                tMsgMaSubscribe.setId(msgId);
+                msgMaSubscribeMapper.updateByPrimaryKeySelective(tMsgMaSubscribe);
+            } else {
+                msgMaSubscribeMapper.insertSelective(tMsgMaSubscribe);
             }
 
             JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "保存成功！", "成功",

@@ -1,8 +1,8 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
+import com.fangxuele.tool.push.bean.TemplateData;
 import com.fangxuele.tool.push.dao.TMsgSmsMapper;
 import com.fangxuele.tool.push.domain.TMsgSms;
-import com.fangxuele.tool.push.domain.TTemplateData;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
 import com.fangxuele.tool.push.ui.form.MainWindow;
@@ -22,10 +22,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.text.StyleContext;
 import java.awt.*;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
 /**
  * <pre>
@@ -51,7 +49,6 @@ public class UpYunMsgForm implements IMsgForm {
     private static UpYunMsgForm upYunMsgForm;
 
     private static TMsgSmsMapper msgSmsMapper = MybatisUtil.getSqlSession().getMapper(TMsgSmsMapper.class);
-    private static TTemplateDataMapper templateDataMapper = MybatisUtil.getSqlSession().getMapper(TTemplateDataMapper.class);
 
     public UpYunMsgForm() {
         // 模板数据-添加 按钮事件
@@ -101,11 +98,11 @@ public class UpYunMsgForm implements IMsgForm {
 
         initTemplateDataTable();
         // 模板消息Data表
-        List<TTemplateData> templateDataList = templateDataMapper.selectByMsgTypeAndMsgId(MessageTypeEnum.UP_YUN_CODE, msgId);
+        List<TemplateData> templateDataList = tMsgSms.getTemplateDataList();
         String[] headerNames = {"模板参数", "参数对应的值", "操作"};
         Object[][] cellData = new String[templateDataList.size()][headerNames.length];
         for (int i = 0; i < templateDataList.size(); i++) {
-            TTemplateData tTemplateData = templateDataList.get(i);
+            TemplateData tTemplateData = templateDataList.get(i);
             cellData[i][0] = tTemplateData.getName();
             cellData[i][1] = tTemplateData.getValue();
         }
@@ -156,20 +153,6 @@ public class UpYunMsgForm implements IMsgForm {
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
             tMsgSms.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
-            if (existSameMsg) {
-                tMsgSms.setId(msgId);
-                msgSmsMapper.updateByPrimaryKeySelective(tMsgSms);
-            } else {
-                msgSmsMapper.insertSelective(tMsgSms);
-                msgId = tMsgSms.getId();
-            }
-
-            // 保存模板数据
-            // 如果是覆盖保存，则先清空之前的模板数据
-            if (existSameMsg) {
-                templateDataMapper.deleteByMsgTypeAndMsgId(MessageTypeEnum.UP_YUN_CODE, msgId);
-            }
-
             // 如果table为空，则初始化
             if (getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
                 initTemplateDataTable();
@@ -179,19 +162,25 @@ public class UpYunMsgForm implements IMsgForm {
             DefaultTableModel tableModel = (DefaultTableModel) getInstance().getTemplateMsgDataTable()
                     .getModel();
             int rowCount = tableModel.getRowCount();
+            List<TemplateData> templateDataList = new ArrayList<>();
             for (int i = 0; i < rowCount; i++) {
                 String name = (String) tableModel.getValueAt(i, 0);
                 String value = (String) tableModel.getValueAt(i, 1);
 
-                TTemplateData tTemplateData = new TTemplateData();
-                tTemplateData.setMsgType(MessageTypeEnum.UP_YUN_CODE);
-                tTemplateData.setMsgId(msgId);
+                TemplateData tTemplateData = new TemplateData();
                 tTemplateData.setName(name);
                 tTemplateData.setValue(value);
-                tTemplateData.setCreateTime(now);
-                tTemplateData.setModifiedTime(now);
 
-                templateDataMapper.insert(tTemplateData);
+                templateDataList.add(tTemplateData);
+            }
+
+            tMsgSms.setTemplateDataList(templateDataList);
+
+            if (existSameMsg) {
+                tMsgSms.setId(msgId);
+                msgSmsMapper.updateByPrimaryKeySelective(tMsgSms);
+            } else {
+                msgSmsMapper.insertSelective(tMsgSms);
             }
 
             JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "保存成功！", "成功",

@@ -1,6 +1,9 @@
 package com.fangxuele.tool.push.domain;
 
+import com.fangxuele.tool.push.bean.TemplateData;
+
 import java.io.Serializable;
+import java.util.List;
 
 public class TMsgMaSubscribe implements Serializable {
     private Integer id;
@@ -22,6 +25,8 @@ public class TMsgMaSubscribe implements Serializable {
     private String previewUser;
 
     private Integer wxAccountId;
+
+    List<TemplateData> templateDataList;
 
     private static final long serialVersionUID = 1L;
 
@@ -103,5 +108,13 @@ public class TMsgMaSubscribe implements Serializable {
 
     public void setWxAccountId(Integer wxAccountId) {
         this.wxAccountId = wxAccountId;
+    }
+
+    public List<TemplateData> getTemplateDataList() {
+        return templateDataList;
+    }
+
+    public void setTemplateDataList(List<TemplateData> templateDataList) {
+        this.templateDataList = templateDataList;
     }
 }

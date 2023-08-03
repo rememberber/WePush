@@ -1,9 +1,9 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.bean.TemplateData;
 import com.fangxuele.tool.push.dao.TMsgWxUniformMapper;
 import com.fangxuele.tool.push.domain.TMsgWxUniform;
-import com.fangxuele.tool.push.domain.TTemplateData;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
 import com.fangxuele.tool.push.ui.form.MainWindow;
@@ -14,6 +14,7 @@ import com.fangxuele.tool.push.util.SqliteUtil;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,8 +28,6 @@ import java.util.List;
 public class WxUniformMsgForm implements IMsgForm {
 
     private static TMsgWxUniformMapper msgWxUniformMapper = MybatisUtil.getSqlSession().getMapper(TMsgWxUniformMapper.class);
-    private static TTemplateDataMapper templateDataMapper = MybatisUtil.getSqlSession().getMapper(TTemplateDataMapper.class);
-
     private static WxUniformMsgForm wxUniformMsgForm;
 
     @Override
@@ -51,11 +50,11 @@ public class WxUniformMsgForm implements IMsgForm {
             // -------------公众号模板数据开始
             MpTemplateMsgForm.selectedMsgTemplateId = tMsgWxUniform.getMpTemplateId();
             // 模板消息Data表
-            List<TTemplateData> templateDataList = templateDataMapper.selectByMsgTypeAndMsgId(MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE * MessageTypeEnum.MP_TEMPLATE_CODE, msgId);
+            List<TemplateData> templateDataList = tMsgWxUniform.getTemplateDataListMp();
             String[] headerNames = {"Name", "Value", "Color", "操作"};
             Object[][] cellData = new String[templateDataList.size()][headerNames.length];
             for (int i = 0; i < templateDataList.size(); i++) {
-                TTemplateData tTemplateData = templateDataList.get(i);
+                TemplateData tTemplateData = templateDataList.get(i);
                 cellData[i][0] = tTemplateData.getName();
                 cellData[i][1] = tTemplateData.getValue();
                 cellData[i][2] = tTemplateData.getColor();
@@ -78,9 +77,9 @@ public class WxUniformMsgForm implements IMsgForm {
             // -------------小程序模板数据开始
             MaSubscribeMsgForm.initTemplateDataTable();
             // 模板消息Data表
-            templateDataList = templateDataMapper.selectByMsgTypeAndMsgId(MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE * MessageTypeEnum.MA_TEMPLATE_CODE, msgId);
+            templateDataList = tMsgWxUniform.getTemplateDataListMa();
             for (int i = 0; i < templateDataList.size(); i++) {
-                TTemplateData tTemplateData = templateDataList.get(i);
+                TemplateData tTemplateData = templateDataList.get(i);
                 cellData[i][0] = tTemplateData.getName();
                 cellData[i][1] = tTemplateData.getValue();
                 cellData[i][2] = tTemplateData.getColor();
@@ -148,21 +147,6 @@ public class WxUniformMsgForm implements IMsgForm {
             tMsgWxUniform.setPreviewUser(messageEditForm.getPreviewUserField().getText());
             tMsgWxUniform.setWxAccountId(App.config.getWxAccountId());
 
-            if (existSameMsg) {
-                tMsgWxUniform.setId(msgId);
-                msgWxUniformMapper.updateByPrimaryKeySelective(tMsgWxUniform);
-            } else {
-                msgWxUniformMapper.insertSelective(tMsgWxUniform);
-                msgId = tMsgWxUniform.getId();
-            }
-
-            // 保存模板数据
-            // 如果是覆盖保存，则先清空之前的模板数据
-            if (existSameMsg) {
-                templateDataMapper.deleteByMsgTypeAndMsgId(MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE * MessageTypeEnum.MP_TEMPLATE_CODE, msgId);
-                templateDataMapper.deleteByMsgTypeAndMsgId(MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE * MessageTypeEnum.MA_TEMPLATE_CODE, msgId);
-            }
-
             // -------------公众号模板数据开始
             // 如果table为空，则初始化
             if (MpTemplateMsgForm.getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
@@ -173,21 +157,18 @@ public class WxUniformMsgForm implements IMsgForm {
             DefaultTableModel tableModel = (DefaultTableModel) MpTemplateMsgForm.getInstance().getTemplateMsgDataTable()
                     .getModel();
             int rowCount = tableModel.getRowCount();
+            List<TemplateData> templateDataListMp = new ArrayList<>();
             for (int i = 0; i < rowCount; i++) {
                 String name = (String) tableModel.getValueAt(i, 0);
                 String value = (String) tableModel.getValueAt(i, 1);
                 String color = ((String) tableModel.getValueAt(i, 2)).trim();
 
-                TTemplateData tTemplateData = new TTemplateData();
-                tTemplateData.setMsgType(MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE * MessageTypeEnum.MP_TEMPLATE_CODE);
-                tTemplateData.setMsgId(msgId);
+                TemplateData tTemplateData = new TemplateData();
                 tTemplateData.setName(name);
                 tTemplateData.setValue(value);
                 tTemplateData.setColor(color);
-                tTemplateData.setCreateTime(now);
-                tTemplateData.setModifiedTime(now);
 
-                templateDataMapper.insert(tTemplateData);
+                templateDataListMp.add(tTemplateData);
             }
             // -------------公众号模板数据结束
 
@@ -201,22 +182,30 @@ public class WxUniformMsgForm implements IMsgForm {
             tableModel = (DefaultTableModel) MaSubscribeMsgForm.getInstance().getTemplateMsgDataTable()
                     .getModel();
             rowCount = tableModel.getRowCount();
+            List<TemplateData> templateDataListMa = new ArrayList<>();
             for (int i = 0; i < rowCount; i++) {
                 String name = (String) tableModel.getValueAt(i, 0);
                 String value = (String) tableModel.getValueAt(i, 1);
                 String color = ((String) tableModel.getValueAt(i, 2)).trim();
 
-                TTemplateData tTemplateData = new TTemplateData();
-                tTemplateData.setMsgType(MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE * MessageTypeEnum.MA_TEMPLATE_CODE);
-                tTemplateData.setMsgId(msgId);
+                TemplateData tTemplateData = new TemplateData();
                 tTemplateData.setName(name);
                 tTemplateData.setValue(value);
                 tTemplateData.setColor(color);
-                tTemplateData.setCreateTime(now);
-                tTemplateData.setModifiedTime(now);
 
-                templateDataMapper.insert(tTemplateData);
+                templateDataListMa.add(tTemplateData);
             }
+
+            tMsgWxUniform.setTemplateDataListMp(templateDataListMp);
+            tMsgWxUniform.setTemplateDataListMa(templateDataListMa);
+
+            if (existSameMsg) {
+                tMsgWxUniform.setId(msgId);
+                msgWxUniformMapper.updateByPrimaryKeySelective(tMsgWxUniform);
+            } else {
+                msgWxUniformMapper.insertSelective(tMsgWxUniform);
+            }
+
             // -------------小程序模板数据结束
             JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "保存成功！", "成功",
                     JOptionPane.INFORMATION_MESSAGE);
