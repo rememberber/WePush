@@ -99,7 +99,6 @@ public class PushControl {
      */
     public static boolean pushCheck() {
         MainWindow mainWindow = MainWindow.getInstance();
-        PushForm pushForm = PushForm.getInstance();
 
         if (StringUtils.isEmpty(MessageEditForm.getInstance().getMsgNameField().getText())) {
             JOptionPane.showMessageDialog(mainWindow.getMainPanel(), "请先选择一条消息！", "提示",

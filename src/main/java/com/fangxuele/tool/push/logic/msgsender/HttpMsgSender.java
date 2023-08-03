@@ -9,17 +9,9 @@ import cn.hutool.json.JSONUtil;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.msg.HttpMsg;
 import com.fangxuele.tool.push.logic.PushControl;
-import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.msgmaker.HttpMsgMaker;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.ConnectionPool;
-import okhttp3.FormBody;
-import okhttp3.HttpUrl;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
@@ -300,7 +292,7 @@ public class HttpMsgSender implements IMsgSender {
                         builder.proxy(getProxy());
                     }
 
-                    ConnectionPool pool = new ConnectionPool(PushData.threadCount, 10, TimeUnit.MINUTES);
+                    ConnectionPool pool = new ConnectionPool(App.config.getMaxThreads(), 10, TimeUnit.MINUTES);
                     builder.connectionPool(pool);
                     okHttpClient = builder.build();
                 }

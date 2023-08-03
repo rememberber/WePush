@@ -29,7 +29,10 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -47,6 +50,30 @@ public class TaskRunThread extends Thread {
     private Integer taskId;
 
     private Integer dryRun;
+
+    private Long startTime;
+
+    /**
+     * 结束时间
+     */
+    public static long endTime = 0;
+
+    private List<String[]> toSendList;
+
+    /**
+     * 总记录数
+     */
+    static long totalRecords;
+
+    /**
+     * 线程总数
+     */
+    public static int threadCount;
+
+    /**
+     * 固定频率计划任务执行中
+     */
+    public static boolean fixRateScheduling = false;
 
     public Integer getTaskId() {
         return taskId;
@@ -94,27 +121,26 @@ public class TaskRunThread extends Thread {
         TTaskHis taskHis = new TTaskHis();
 
         // 设置是否空跑
-        PushControl.dryRun = dryRun == 1;
         taskHis.setDryRun(dryRun);
 
         PushControl.saveResponseBody = tTask.getSaveResult() == 1;
 
-        // 执行前重新导入目标用户
-        PushControl.reimportMembers();
+        // TODO 执行前重新导入目标用户
 
         // 重置推送数据
-        PushData.reset();
-        PushData.startTime = System.currentTimeMillis();
+        resetLocalData();
+
+        startTime = System.currentTimeMillis();
 
         // 拷贝准备的目标用户
-        PushData.toSendList.addAll(PushData.allUser);
+        toSendList.addAll(PushData.allUser);
         // 总记录数
-        PushData.totalRecords = PushData.toSendList.size();
+        totalRecords = toSendList.size();
 
         Long peopleCnt = peopleDataMapper.countByPeopleId(tTask.getPeopleId());
 
         taskHis.setTotalCnt(peopleCnt.intValue());
-        ConsoleUtil.consoleWithLog("消息总数：" + PushData.totalRecords);
+        ConsoleUtil.consoleWithLog("消息总数：" + totalRecords);
         ConsoleUtil.consoleWithLog("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
 
         // 线程数
@@ -126,11 +152,7 @@ public class TaskRunThread extends Thread {
         PushControl.prepareMsgMaker();
 
         // 线程数
-        PushData.threadCount = tTask.getThreadCnt();
-
-        // 初始化线程table
-        String[] headerNames = {"线程", "分片区间", "成功", "失败", "总数", "当前进度"};
-        DefaultTableModel tableModel = new DefaultTableModel(null, headerNames);
+        threadCount = tTask.getThreadCnt();
 
         taskHis.setStartTime(SqliteUtil.nowDateForSqlite());
 
@@ -148,18 +170,18 @@ public class TaskRunThread extends Thread {
         ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(maxThreadPoolSize, maxThreadPoolSize);
         MsgSendThread msgSendThread;
         // 每个线程分配
-        int perThread = (int) (PushData.totalRecords / PushData.threadCount) + 1;
+        int perThread = (int) (totalRecords / threadCount) + 1;
         DefaultTableModel tableModel = (DefaultTableModel) pushForm.getPushThreadTable().getModel();
         BaseMsgThread.msgType = App.config.getMsgType();
-        for (int i = 0; i < PushData.threadCount; i++) {
+        for (int i = 0; i < threadCount; i++) {
             int startIndex = i * perThread;
-            if (startIndex > PushData.totalRecords - 1) {
-                PushData.threadCount = i;
+            if (startIndex > totalRecords - 1) {
+                threadCount = i;
                 break;
             }
             int endIndex = i * perThread + perThread;
-            if (endIndex > PushData.totalRecords - 1) {
-                endIndex = (int) (PushData.totalRecords);
+            if (endIndex > totalRecords - 1) {
+                endIndex = (int) (totalRecords);
             }
 
             IMsgSender msgSender = MsgSenderFactory.getMsgSender();
@@ -221,7 +243,7 @@ public class TaskRunThread extends Thread {
                     pushForm.getPushStopButton().setText("停止计划任务");
                 }
 
-                PushData.endTime = System.currentTimeMillis();
+                endTime = System.currentTimeMillis();
 
                 // 保存停止前的数据
                 try {
@@ -245,7 +267,7 @@ public class TaskRunThread extends Thread {
             int totalSentCount = successCount + failCount;
             long currentTimeMillis = System.currentTimeMillis();
             long lastTimeMillis = currentTimeMillis - startTimeMillis;
-            long leftTimeMillis = (long) ((double) lastTimeMillis / (totalSentCount) * (PushData.allUser.size() - totalSentCount));
+            long leftTimeMillis = (long) ((double) lastTimeMillis / (totalSentCount) * (toSendList.size() - totalSentCount));
 
             // 耗时
             String formatBetweenLast = DateUtil.formatBetween(lastTimeMillis, BetweenFormatter.Level.SECOND);
@@ -263,6 +285,22 @@ public class TaskRunThread extends Thread {
             pushForm.getTpsLabel().setText(String.valueOf(tps));
             ThreadUtil.safeSleep(200);
         }
+    }
+
+    private void resetLocalData() {
+//        running = true;
+//        processedRecords.reset();
+//        successRecords.reset();
+//        failRecords.reset();
+        threadCount = 0;
+        toSendList = Collections.synchronizedList(new LinkedList<>());
+//        toSendConcurrentLinkedQueue = new ConcurrentLinkedQueue<>();
+//        activeThreadConcurrentLinkedQueue = new ConcurrentLinkedQueue<>();
+//        threadStatusMap = new HashMap<>(100);
+//        sendSuccessList = Collections.synchronizedList(new LinkedList<>());
+//        sendFailList = Collections.synchronizedList(new LinkedList<>());
+        startTime = 0L;
+        endTime = 0;
     }
 
 }
