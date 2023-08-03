@@ -24,8 +24,6 @@ public class TMsgMpSubscribe implements Serializable {
 
     private String previewUser;
 
-    private Integer wxAccountId;
-
     private String createTime;
 
     private String modifiedTime;
@@ -104,14 +102,6 @@ public class TMsgMpSubscribe implements Serializable {
 
     public void setPreviewUser(String previewUser) {
         this.previewUser = previewUser == null ? null : previewUser.trim();
-    }
-
-    public Integer getWxAccountId() {
-        return wxAccountId;
-    }
-
-    public void setWxAccountId(Integer wxAccountId) {
-        this.wxAccountId = wxAccountId;
     }
 
     public String getCreateTime() {

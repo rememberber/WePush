@@ -29,8 +29,6 @@ public class TMsgKefu implements Serializable {
 
     private String previewUser;
 
-    private Integer wxAccountId;
-
     private String appId;
 
     private String pagePath;
@@ -141,14 +139,6 @@ public class TMsgKefu implements Serializable {
 
     public void setPreviewUser(String previewUser) {
         this.previewUser = previewUser == null ? null : previewUser.trim();
-    }
-
-    public Integer getWxAccountId() {
-        return wxAccountId;
-    }
-
-    public void setWxAccountId(Integer wxAccountId) {
-        this.wxAccountId = wxAccountId;
     }
 
     public String getAppId() {

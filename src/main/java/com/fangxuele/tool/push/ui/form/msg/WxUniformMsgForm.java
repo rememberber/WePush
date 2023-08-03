@@ -1,6 +1,5 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
-import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.TemplateData;
 import com.fangxuele.tool.push.dao.TMsgWxUniformMapper;
 import com.fangxuele.tool.push.domain.TMsgWxUniform;
@@ -145,7 +144,6 @@ public class WxUniformMsgForm implements IMsgForm {
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
             tMsgWxUniform.setPreviewUser(messageEditForm.getPreviewUserField().getText());
-            tMsgWxUniform.setWxAccountId(App.config.getWxAccountId());
 
             // -------------公众号模板数据开始
             // 如果table为空，则初始化

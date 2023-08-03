@@ -28,8 +28,6 @@ public class TMsgMpTemplate implements Serializable {
 
     private String previewUser;
 
-    private Integer wxAccountId;
-
     private List<TemplateData> templateDataList;
 
     private static final long serialVersionUID = 1L;
@@ -120,14 +118,6 @@ public class TMsgMpTemplate implements Serializable {
 
     public void setPreviewUser(String previewUser) {
         this.previewUser = previewUser == null ? null : previewUser.trim();
-    }
-
-    public Integer getWxAccountId() {
-        return wxAccountId;
-    }
-
-    public void setWxAccountId(Integer wxAccountId) {
-        this.wxAccountId = wxAccountId;
     }
 
     public List<TemplateData> getTemplateDataList() {

@@ -1,6 +1,5 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
-import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.TemplateData;
 import com.fangxuele.tool.push.dao.TMsgMaSubscribeMapper;
 import com.fangxuele.tool.push.domain.TMsgMaSubscribe;
@@ -168,7 +167,6 @@ public class MaSubscribeMsgForm implements IMsgForm {
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
             tMsgMaSubscribe.setPreviewUser(messageEditForm.getPreviewUserField().getText());
-            tMsgMaSubscribe.setWxAccountId(App.config.getWxAccountId());
 
             // 如果table为空，则初始化
             if (getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {

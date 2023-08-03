@@ -1,6 +1,5 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
-import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.TemplateData;
 import com.fangxuele.tool.push.dao.TMsgMpTemplateMapper;
 import com.fangxuele.tool.push.domain.TMsgMpTemplate;
@@ -222,7 +221,6 @@ public class MpTemplateMsgForm implements IMsgForm {
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
             tMsgMpTemplate.setPreviewUser(messageEditForm.getPreviewUserField().getText());
-            tMsgMpTemplate.setWxAccountId(App.config.getWxAccountId());
 
             // 如果table为空，则初始化
             if (getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {

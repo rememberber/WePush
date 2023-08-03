@@ -34,8 +34,6 @@ public class TMsgWxUniform implements Serializable {
 
     private String previewUser;
 
-    private Integer wxAccountId;
-
     List<TemplateData> templateDataListMp;
 
     List<TemplateData> templateDataListMa;
@@ -152,14 +150,6 @@ public class TMsgWxUniform implements Serializable {
 
     public void setPreviewUser(String previewUser) {
         this.previewUser = previewUser == null ? null : previewUser.trim();
-    }
-
-    public Integer getWxAccountId() {
-        return wxAccountId;
-    }
-
-    public void setWxAccountId(Integer wxAccountId) {
-        this.wxAccountId = wxAccountId;
     }
 
     public List<TemplateData> getTemplateDataListMp() {
