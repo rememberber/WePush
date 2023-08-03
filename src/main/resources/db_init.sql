@@ -432,3 +432,22 @@ create table if not exists t_task_his
 
 create index if not exists t_task_his_task_id_index
     on t_task_his (task_id);
+
+create table if not exists t_msg
+(
+    id            integer
+        constraint t_msg_pk
+            primary key autoincrement,
+    msg_type  text,
+    account_id  integer,
+    msg_name       text,
+    content       text,
+    preview_user       text,
+    remark       text,
+    create_time   datetime,
+    modified_time datetime
+);
+
+create unique index if not exists t_msg_msg_type_account_id_msg_name_uindex
+    on t_msg (msg_type, account_id, msg_name);
+
