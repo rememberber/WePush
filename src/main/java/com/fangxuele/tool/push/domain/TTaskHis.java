@@ -19,6 +19,8 @@ public class TTaskHis implements Serializable {
 
     private Integer status;
 
+    private Integer dryRun;
+
     private String successFilePath;
 
     private String failFilePath;
@@ -97,6 +99,14 @@ public class TTaskHis implements Serializable {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public Integer getDryRun() {
+        return dryRun;
+    }
+
+    public void setDryRun(Integer dryRun) {
+        this.dryRun = dryRun;
     }
 
     public String getSuccessFilePath() {

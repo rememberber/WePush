@@ -13,6 +13,7 @@
     <result column="period_type" jdbcType="INTEGER" property="periodType" />
     <result column="period_time" jdbcType="VARCHAR" property="periodTime" />
     <result column="cron" jdbcType="VARCHAR" property="cron" />
+    <result column="thread_cnt" jdbcType="INTEGER" property="threadCnt" />
     <result column="reimport_people" jdbcType="INTEGER" property="reimportPeople" />
     <result column="result_alert" jdbcType="INTEGER" property="resultAlert" />
     <result column="alert_emails" jdbcType="VARCHAR" property="alertEmails" />
@@ -23,8 +24,8 @@
   </resultMap>
   <sql id="Base_Column_List">
     id, title, msg_type, account_id, message_id, people_id, task_mode, task_period, period_type, 
-    period_time, cron, reimport_people, result_alert, alert_emails, save_result, remark, 
-    create_time, modified_time
+    period_time, cron, thread_cnt, reimport_people, result_alert, alert_emails, save_result, 
+    remark, create_time, modified_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -40,17 +41,17 @@
     insert into t_task (id, title, msg_type, 
       account_id, message_id, people_id, 
       task_mode, task_period, period_type, 
-      period_time, cron, reimport_people, 
-      result_alert, alert_emails, save_result, 
-      remark, create_time, modified_time
-      )
+      period_time, cron, thread_cnt, 
+      reimport_people, result_alert, alert_emails, 
+      save_result, remark, create_time, 
+      modified_time)
     values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{msgType,jdbcType=VARCHAR}, 
       #{accountId,jdbcType=INTEGER}, #{messageId,jdbcType=INTEGER}, #{peopleId,jdbcType=INTEGER}, 
       #{taskMode,jdbcType=INTEGER}, #{taskPeriod,jdbcType=INTEGER}, #{periodType,jdbcType=INTEGER}, 
-      #{periodTime,jdbcType=VARCHAR}, #{cron,jdbcType=VARCHAR}, #{reimportPeople,jdbcType=INTEGER}, 
-      #{resultAlert,jdbcType=INTEGER}, #{alertEmails,jdbcType=VARCHAR}, #{saveResult,jdbcType=INTEGER}, 
-      #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR}
-      )
+      #{periodTime,jdbcType=VARCHAR}, #{cron,jdbcType=VARCHAR}, #{threadCnt,jdbcType=INTEGER}, 
+      #{reimportPeople,jdbcType=INTEGER}, #{resultAlert,jdbcType=INTEGER}, #{alertEmails,jdbcType=VARCHAR}, 
+      #{saveResult,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, 
+      #{modifiedTime,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TTask">
     insert into t_task
@@ -87,6 +88,9 @@
       </if>
       <if test="cron != null">
         cron,
+      </if>
+      <if test="threadCnt != null">
+        thread_cnt,
       </if>
       <if test="reimportPeople != null">
         reimport_people,
@@ -144,6 +148,9 @@
       <if test="cron != null">
         #{cron,jdbcType=VARCHAR},
       </if>
+      <if test="threadCnt != null">
+        #{threadCnt,jdbcType=INTEGER},
+      </if>
       <if test="reimportPeople != null">
         #{reimportPeople,jdbcType=INTEGER},
       </if>
@@ -200,6 +207,9 @@
       <if test="cron != null">
         cron = #{cron,jdbcType=VARCHAR},
       </if>
+      <if test="threadCnt != null">
+        thread_cnt = #{threadCnt,jdbcType=INTEGER},
+      </if>
       <if test="reimportPeople != null">
         reimport_people = #{reimportPeople,jdbcType=INTEGER},
       </if>
@@ -236,6 +246,7 @@
       period_type = #{periodType,jdbcType=INTEGER},
       period_time = #{periodTime,jdbcType=VARCHAR},
       cron = #{cron,jdbcType=VARCHAR},
+      thread_cnt = #{threadCnt,jdbcType=INTEGER},
       reimport_people = #{reimportPeople,jdbcType=INTEGER},
       result_alert = #{resultAlert,jdbcType=INTEGER},
       alert_emails = #{alertEmails,jdbcType=VARCHAR},

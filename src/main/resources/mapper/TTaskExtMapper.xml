@@ -13,6 +13,7 @@
         <result column="period_type" jdbcType="INTEGER" property="periodType" />
         <result column="period_time" jdbcType="VARCHAR" property="periodTime" />
         <result column="cron" jdbcType="VARCHAR" property="cron" />
+        <result column="thread_cnt" jdbcType="INTEGER" property="threadCnt" />
         <result column="reimport_people" jdbcType="INTEGER" property="reimportPeople" />
         <result column="result_alert" jdbcType="INTEGER" property="resultAlert" />
         <result column="alert_emails" jdbcType="VARCHAR" property="alertEmails" />
@@ -23,8 +24,8 @@
     </resultMap>
     <sql id="Base_Column_List">
         id, title, msg_type, account_id, message_id, people_id, task_mode, task_period, period_type,
-        period_time, cron, reimport_people, result_alert, alert_emails, save_result, remark,
-        create_time, modified_time
+        period_time, cron, thread_cnt, reimport_people, result_alert, alert_emails, save_result,
+        remark, create_time, modified_time
     </sql>
     <select id="selectByTitle" parameterType="java.lang.String" resultMap="BaseResultMap">
         select

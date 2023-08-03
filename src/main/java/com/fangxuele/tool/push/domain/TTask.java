@@ -25,6 +25,8 @@ public class TTask implements Serializable {
 
     private String cron;
 
+    private Integer threadCnt;
+
     private Integer reimportPeople;
 
     private Integer resultAlert;
@@ -127,6 +129,14 @@ public class TTask implements Serializable {
 
     public void setCron(String cron) {
         this.cron = cron == null ? null : cron.trim();
+    }
+
+    public Integer getThreadCnt() {
+        return threadCnt;
+    }
+
+    public void setThreadCnt(Integer threadCnt) {
+        this.threadCnt = threadCnt;
     }
 
     public Integer getReimportPeople() {

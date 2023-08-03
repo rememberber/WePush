@@ -10,6 +10,7 @@
     <result column="success_cnt" jdbcType="INTEGER" property="successCnt" />
     <result column="fail_cnt" jdbcType="INTEGER" property="failCnt" />
     <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="dry_run" jdbcType="INTEGER" property="dryRun" />
     <result column="success_file_path" jdbcType="VARCHAR" property="successFilePath" />
     <result column="fail_file_path" jdbcType="VARCHAR" property="failFilePath" />
     <result column="no_send_file_path" jdbcType="VARCHAR" property="noSendFilePath" />
@@ -19,8 +20,9 @@
     <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, task_id, start_time, end_time, total_cnt, success_cnt, fail_cnt, status, success_file_path, 
-    fail_file_path, no_send_file_path, log_file_path, remark, create_time, modified_time
+    id, task_id, start_time, end_time, total_cnt, success_cnt, fail_cnt, status, dry_run, 
+    success_file_path, fail_file_path, no_send_file_path, log_file_path, remark, create_time, 
+    modified_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -35,16 +37,16 @@
   <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TTaskHis">
     insert into t_task_his (id, task_id, start_time, 
       end_time, total_cnt, success_cnt, 
-      fail_cnt, status, success_file_path, 
-      fail_file_path, no_send_file_path, log_file_path, 
-      remark, create_time, modified_time
-      )
+      fail_cnt, status, dry_run, 
+      success_file_path, fail_file_path, no_send_file_path, 
+      log_file_path, remark, create_time, 
+      modified_time)
     values (#{id,jdbcType=INTEGER}, #{taskId,jdbcType=INTEGER}, #{startTime,jdbcType=VARCHAR}, 
       #{endTime,jdbcType=VARCHAR}, #{totalCnt,jdbcType=INTEGER}, #{successCnt,jdbcType=INTEGER}, 
-      #{failCnt,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{successFilePath,jdbcType=VARCHAR}, 
-      #{failFilePath,jdbcType=VARCHAR}, #{noSendFilePath,jdbcType=VARCHAR}, #{logFilePath,jdbcType=VARCHAR}, 
-      #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR}
-      )
+      #{failCnt,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{dryRun,jdbcType=INTEGER}, 
+      #{successFilePath,jdbcType=VARCHAR}, #{failFilePath,jdbcType=VARCHAR}, #{noSendFilePath,jdbcType=VARCHAR}, 
+      #{logFilePath,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, 
+      #{modifiedTime,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TTaskHis">
     insert into t_task_his
@@ -72,6 +74,9 @@
       </if>
       <if test="status != null">
         status,
+      </if>
+      <if test="dryRun != null">
+        dry_run,
       </if>
       <if test="successFilePath != null">
         success_file_path,
@@ -120,6 +125,9 @@
       <if test="status != null">
         #{status,jdbcType=INTEGER},
       </if>
+      <if test="dryRun != null">
+        #{dryRun,jdbcType=INTEGER},
+      </if>
       <if test="successFilePath != null">
         #{successFilePath,jdbcType=VARCHAR},
       </if>
@@ -167,6 +175,9 @@
       <if test="status != null">
         status = #{status,jdbcType=INTEGER},
       </if>
+      <if test="dryRun != null">
+        dry_run = #{dryRun,jdbcType=INTEGER},
+      </if>
       <if test="successFilePath != null">
         success_file_path = #{successFilePath,jdbcType=VARCHAR},
       </if>
@@ -200,6 +211,7 @@
       success_cnt = #{successCnt,jdbcType=INTEGER},
       fail_cnt = #{failCnt,jdbcType=INTEGER},
       status = #{status,jdbcType=INTEGER},
+      dry_run = #{dryRun,jdbcType=INTEGER},
       success_file_path = #{successFilePath,jdbcType=VARCHAR},
       fail_file_path = #{failFilePath,jdbcType=VARCHAR},
       no_send_file_path = #{noSendFilePath,jdbcType=VARCHAR},
