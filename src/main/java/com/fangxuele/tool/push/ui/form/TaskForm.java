@@ -1,9 +1,11 @@
 package com.fangxuele.tool.push.ui.form;
 
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.dao.TPeopleMapper;
 import com.fangxuele.tool.push.dao.TTaskExtMapper;
 import com.fangxuele.tool.push.dao.TTaskMapper;
 import com.fangxuele.tool.push.domain.TTask;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.TaskTypeEnum;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.util.JTableUtil;
@@ -60,6 +62,7 @@ public class TaskForm {
 
     private static TTaskMapper taskMapper = MybatisUtil.getSqlSession().getMapper(TTaskMapper.class);
     private static TTaskExtMapper taskExtMapper = MybatisUtil.getSqlSession().getMapper(TTaskExtMapper.class);
+    private static TPeopleMapper peopleMapper = MybatisUtil.getSqlSession().getMapper(TPeopleMapper.class);
 
     private TaskForm() {
         UndoUtil.register(this);
@@ -101,10 +104,10 @@ public class TaskForm {
             data = new Object[6];
             data[0] = task.getId();
             data[1] = task.getTitle();
-            data[2] = task.getMsgType();
+            data[2] = MessageTypeEnum.getName(Integer.parseInt(task.getMsgType()));
             data[3] = TaskTypeEnum.getDescByCode(task.getTaskPeriod());
             data[4] = task.getMessageId();
-            data[5] = task.getPeopleId();
+            data[5] = peopleMapper.selectByPrimaryKey(task.getPeopleId()).getPeopleName();
             model.addRow(data);
         }
         // 隐藏id列
