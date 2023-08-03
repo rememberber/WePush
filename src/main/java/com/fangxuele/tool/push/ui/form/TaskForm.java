@@ -1,10 +1,8 @@
 package com.fangxuele.tool.push.ui.form;
 
 import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.dao.TPeopleMapper;
-import com.fangxuele.tool.push.dao.TTaskExtMapper;
-import com.fangxuele.tool.push.dao.TTaskMapper;
-import com.fangxuele.tool.push.domain.TTask;
+import com.fangxuele.tool.push.dao.*;
+import com.fangxuele.tool.push.domain.*;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.TaskTypeEnum;
 import com.fangxuele.tool.push.ui.UiConsts;
@@ -64,6 +62,19 @@ public class TaskForm {
     private static TTaskExtMapper taskExtMapper = MybatisUtil.getSqlSession().getMapper(TTaskExtMapper.class);
     private static TPeopleMapper peopleMapper = MybatisUtil.getSqlSession().getMapper(TPeopleMapper.class);
 
+    private static TMsgKefuMapper msgKefuMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuMapper.class);
+    private static TMsgKefuPriorityMapper msgKefuPriorityMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuPriorityMapper.class);
+    private static TMsgWxUniformMapper wxUniformMapper = MybatisUtil.getSqlSession().getMapper(TMsgWxUniformMapper.class);
+    private static TMsgMaTemplateMapper msgMaTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMaTemplateMapper.class);
+    private static TMsgMaSubscribeMapper msgMaSubscribeMapper = MybatisUtil.getSqlSession().getMapper(TMsgMaSubscribeMapper.class);
+    private static TMsgMpTemplateMapper msgMpTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMpTemplateMapper.class);
+    private static TMsgMpSubscribeMapper msgMpSubscribeMapper = MybatisUtil.getSqlSession().getMapper(TMsgMpSubscribeMapper.class);
+    private static TMsgSmsMapper msgSmsMapper = MybatisUtil.getSqlSession().getMapper(TMsgSmsMapper.class);
+    private static TMsgMailMapper msgMailMapper = MybatisUtil.getSqlSession().getMapper(TMsgMailMapper.class);
+    private static TMsgWxCpMapper msgWxCpMapper = MybatisUtil.getSqlSession().getMapper(TMsgWxCpMapper.class);
+    private static TMsgHttpMapper msgHttpMapper = MybatisUtil.getSqlSession().getMapper(TMsgHttpMapper.class);
+    private static TMsgDingMapper msgDingMapper = MybatisUtil.getSqlSession().getMapper(TMsgDingMapper.class);
+
     private TaskForm() {
         UndoUtil.register(this);
     }
@@ -106,7 +117,7 @@ public class TaskForm {
             data[1] = task.getTitle();
             data[2] = MessageTypeEnum.getName(Integer.parseInt(task.getMsgType()));
             data[3] = TaskTypeEnum.getDescByCode(task.getTaskPeriod());
-            data[4] = task.getMessageId();
+            data[4] = getMsgName(Integer.valueOf(task.getMsgType()), task.getMessageId());
             data[5] = peopleMapper.selectByPrimaryKey(task.getPeopleId()).getPeopleName();
             model.addRow(data);
         }
@@ -119,6 +130,48 @@ public class TaskForm {
 //        tableColumnModel.getColumn(headerNames.length - 2).setMaxWidth(taskForm.getNewTaskButton().getWidth());
 //        tableColumnModel.getColumn(headerNames.length - 3).setPreferredWidth(taskForm.getNewTaskButton().getWidth());
 //        tableColumnModel.getColumn(headerNames.length - 3).setMaxWidth(taskForm.getNewTaskButton().getWidth());
+    }
+
+    private static String getMsgName(Integer msgType, Integer messageId) {
+        String msgName = "";
+        switch (msgType) {
+            case MessageTypeEnum.KEFU_CODE:
+                msgName = msgKefuMapper.selectByPrimaryKey(messageId).getMsgName();
+                break;
+            case MessageTypeEnum.KEFU_PRIORITY_CODE:
+                msgName = msgKefuPriorityMapper.selectByPrimaryKey(messageId).getMsgName();
+                break;
+            case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE:
+                msgName = wxUniformMapper.selectByPrimaryKey(messageId).getMsgName();
+                break;
+            case MessageTypeEnum.MA_TEMPLATE_CODE:
+                msgName = msgMaTemplateMapper.selectByPrimaryKey(messageId).getMsgName();
+                break;
+            case MessageTypeEnum.MA_SUBSCRIBE_CODE:
+                msgName = msgMaSubscribeMapper.selectByPrimaryKey(messageId).getMsgName();
+                break;
+            case MessageTypeEnum.MP_TEMPLATE_CODE:
+                msgName = msgMpTemplateMapper.selectByPrimaryKey(messageId).getMsgName();
+                break;
+            case MessageTypeEnum.MP_SUBSCRIBE_CODE:
+                msgName = msgMpSubscribeMapper.selectByPrimaryKey(messageId).getMsgName();
+                break;
+            case MessageTypeEnum.EMAIL_CODE:
+                msgName = msgMailMapper.selectByPrimaryKey(messageId).getMsgName();
+                break;
+            case MessageTypeEnum.WX_CP_CODE:
+                msgName = msgWxCpMapper.selectByPrimaryKey(messageId).getMsgName();
+                break;
+            case MessageTypeEnum.HTTP_CODE:
+                msgName = msgHttpMapper.selectByPrimaryKey(messageId).getMsgName();
+                break;
+            case MessageTypeEnum.DING_CODE:
+                msgName = msgDingMapper.selectByPrimaryKey(messageId).getMsgName();
+                break;
+            default:
+                break;
+        }
+        return msgName;
     }
 
     public static void initTaskHisListTable() {
