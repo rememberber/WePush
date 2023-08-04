@@ -3,7 +3,7 @@
 <mapper namespace="com.fangxuele.tool.push.dao.TPeopleMapper">
     <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TPeople">
         <id column="id" jdbcType="INTEGER" property="id"/>
-        <result column="msg_type" jdbcType="VARCHAR" property="msgType"/>
+        <result column="msg_type" jdbcType="INTEGER" property="msgType"/>
         <result column="account_id" jdbcType="INTEGER" property="accountId"/>
         <result column="people_name" jdbcType="VARCHAR" property="peopleName"/>
         <result column="app_version" jdbcType="VARCHAR" property="appVersion"/>
@@ -28,7 +28,7 @@
         insert into t_people (id, msg_type, account_id,
         people_name, app_version, remark,
         create_time, modified_time)
-        values (#{id,jdbcType=INTEGER}, #{msgType,jdbcType=VARCHAR}, #{accountId,jdbcType=INTEGER},
+        values (#{id,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER}, #{accountId,jdbcType=INTEGER},
         #{peopleName,jdbcType=VARCHAR}, #{appVersion,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR},
         #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR})
     </insert>
@@ -65,7 +65,7 @@
                 #{id,jdbcType=INTEGER},
             </if>
             <if test="msgType != null">
-                #{msgType,jdbcType=VARCHAR},
+                #{msgType,jdbcType=INTEGER},
             </if>
             <if test="accountId != null">
                 #{accountId,jdbcType=INTEGER},
@@ -91,7 +91,7 @@
         update t_people
         <set>
             <if test="msgType != null">
-                msg_type = #{msgType,jdbcType=VARCHAR},
+                msg_type = #{msgType,jdbcType=INTEGER},
             </if>
             <if test="accountId != null">
                 account_id = #{accountId,jdbcType=INTEGER},
@@ -116,7 +116,7 @@
     </update>
     <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TPeople">
         update t_people
-        set msg_type = #{msgType,jdbcType=VARCHAR},
+        set msg_type = #{msgType,jdbcType=INTEGER},
         account_id = #{accountId,jdbcType=INTEGER},
         people_name = #{peopleName,jdbcType=VARCHAR},
         app_version = #{appVersion,jdbcType=VARCHAR},
@@ -130,7 +130,7 @@
         select
         <include refid="Base_Column_List"/>
         from t_people
-        where msg_type = #{msgType,jdbcType=VARCHAR}
+        where msg_type = #{msgType,jdbcType=INTEGER}
         and account_id = #{accountId,jdbcType=INTEGER}
         and people_name = #{peopleName,jdbcType=VARCHAR}
         order by modified_time desc
@@ -140,7 +140,7 @@
         select
         <include refid="Base_Column_List"/>
         from t_people
-        where msg_type = #{msgType,jdbcType=VARCHAR}
+        where msg_type = #{msgType,jdbcType=INTEGER}
         and account_id = #{accountId,jdbcType=INTEGER}
         order by modified_time desc
     </select>

@@ -98,7 +98,7 @@ create table if not exists t_people
     id            integer
         constraint t_people_pk
             primary key autoincrement,
-    msg_type      text,
+    msg_type      integer,
     account_id    integer,
     people_name   text,
     app_version   text,

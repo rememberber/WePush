@@ -105,8 +105,8 @@ public class PeopleEditForm {
             }
 
             // msgType
-            String msgType = tPeople.getMsgType();
-            String msgTypeName = MessageTypeEnum.getName(Integer.parseInt(msgType));
+            Integer msgType = tPeople.getMsgType();
+            String msgTypeName = MessageTypeEnum.getName(msgType);
             peopleEditForm.getPeopleMsgTypeLabel().setText(msgTypeName);
 
             // 上一次导入方式

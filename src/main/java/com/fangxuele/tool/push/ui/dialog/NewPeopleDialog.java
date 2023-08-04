@@ -98,7 +98,7 @@ public class NewPeopleDialog extends JDialog {
                 }
 
                 TPeople tPeopleToSave = new TPeople();
-                tPeopleToSave.setMsgType(String.valueOf(msgType));
+                tPeopleToSave.setMsgType(msgType);
                 tPeopleToSave.setAccountId(selectedAccountId);
                 tPeopleToSave.setPeopleName(peopleName);
                 tPeopleToSave.setAppVersion(UiConsts.APP_VERSION);
