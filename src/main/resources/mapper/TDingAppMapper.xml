@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fangxuele.tool.push.dao.TDingAppMapper">
+    <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TDingApp">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="app_name" jdbcType="VARCHAR" property="appName"/>
+        <result column="agent_id" jdbcType="VARCHAR" property="agentId"/>
+        <result column="app_key" jdbcType="VARCHAR" property="appKey"/>
+        <result column="app_secret" jdbcType="VARCHAR" property="appSecret"/>
+        <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
+        <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, app_name, agent_id, app_key, app_secret, create_time, modified_time
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_ding_app
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from t_ding_app
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TDingApp">
+        insert into t_ding_app (id, app_name, agent_id,
+                                app_key, app_secret, create_time,
+                                modified_time)
+        values (#{id,jdbcType=INTEGER}, #{appName,jdbcType=VARCHAR}, #{agentId,jdbcType=VARCHAR},
+                #{appKey,jdbcType=VARCHAR}, #{appSecret,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR},
+                #{modifiedTime,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TDingApp">
+        insert into t_ding_app
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="appName != null">
+                app_name,
+            </if>
+            <if test="agentId != null">
+                agent_id,
+            </if>
+            <if test="appKey != null">
+                app_key,
+            </if>
+            <if test="appSecret != null">
+                app_secret,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="modifiedTime != null">
+                modified_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="appName != null">
+                #{appName,jdbcType=VARCHAR},
+            </if>
+            <if test="agentId != null">
+                #{agentId,jdbcType=VARCHAR},
+            </if>
+            <if test="appKey != null">
+                #{appKey,jdbcType=VARCHAR},
+            </if>
+            <if test="appSecret != null">
+                #{appSecret,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=VARCHAR},
+            </if>
+            <if test="modifiedTime != null">
+                #{modifiedTime,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.fangxuele.tool.push.domain.TDingApp">
+        update t_ding_app
+        <set>
+            <if test="appName != null">
+                app_name = #{appName,jdbcType=VARCHAR},
+            </if>
+            <if test="agentId != null">
+                agent_id = #{agentId,jdbcType=VARCHAR},
+            </if>
+            <if test="appKey != null">
+                app_key = #{appKey,jdbcType=VARCHAR},
+            </if>
+            <if test="appSecret != null">
+                app_secret = #{appSecret,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=VARCHAR},
+            </if>
+            <if test="modifiedTime != null">
+                modified_time = #{modifiedTime,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TDingApp">
+        update t_ding_app
+        set app_name      = #{appName,jdbcType=VARCHAR},
+            agent_id      = #{agentId,jdbcType=VARCHAR},
+            app_key       = #{appKey,jdbcType=VARCHAR},
+            app_secret    = #{appSecret,jdbcType=VARCHAR},
+            create_time   = #{createTime,jdbcType=VARCHAR},
+            modified_time = #{modifiedTime,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <select id="selectByAppName" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_ding_app
+        where app_name = #{appName,jdbcType=VARCHAR}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_ding_app
+    </select>
+    <select id="selectByAgentId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_ding_app
+        where agent_id = #{agentId,jdbcType=VARCHAR}
+    </select>
+</mapper>
