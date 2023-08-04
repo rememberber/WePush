@@ -1,7 +1,9 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
+import cn.hutool.json.JSONUtil;
 import com.fangxuele.tool.push.bean.TemplateData;
-import com.fangxuele.tool.push.dao.TMsgMaSubscribeMapper;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgMaSubscribe;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
@@ -52,7 +54,7 @@ public class MaSubscribeMsgForm implements IMsgForm {
 
     private static MaSubscribeMsgForm maSubscribeMsgForm;
 
-    private static TMsgMaSubscribeMapper msgMaSubscribeMapper = MybatisUtil.getSqlSession().getMapper(TMsgMaSubscribeMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
 
     public MaSubscribeMsgForm() {
         // 模板数据-添加 按钮事件
@@ -97,20 +99,26 @@ public class MaSubscribeMsgForm implements IMsgForm {
     @Override
     public void init(Integer msgId) {
         clearAllField();
-        TMsgMaSubscribe tMsgMaSubscribe = msgMaSubscribeMapper.selectByPrimaryKey(msgId);
-        if (tMsgMaSubscribe != null) {
-            msgId = tMsgMaSubscribe.getId();
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        if (tMsg != null) {
+            TMsgMaSubscribe tMsgMaSubscribe = JSONUtil.toBean(tMsg.getContent(), TMsgMaSubscribe.class);
             getInstance().getMsgTemplateIdTextField().setText(tMsgMaSubscribe.getTemplateId());
             getInstance().getMsgTemplateUrlTextField().setText(tMsgMaSubscribe.getPage());
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
-            messageEditForm.getMsgNameField().setText(tMsgMaSubscribe.getMsgName());
-            messageEditForm.getPreviewUserField().setText(tMsgMaSubscribe.getPreviewUser());
+            messageEditForm.getMsgNameField().setText(tMsg.getMsgName());
+            messageEditForm.getPreviewUserField().setText(tMsg.getPreviewUser());
         }
 
         initTemplateDataTable();
         // 模板消息Data表
-        List<TemplateData> templateDataList = tMsgMaSubscribe.getTemplateDataList();
+        List<TemplateData> templateDataList;
+        if (tMsg == null) {
+            templateDataList = new ArrayList<>();
+        } else {
+            TMsgMaSubscribe tMsgMaSubscribe = JSONUtil.toBean(tMsg.getContent(), TMsgMaSubscribe.class);
+            templateDataList = tMsgMaSubscribe.getTemplateDataList();
+        }
         String[] headerNames = {"Name", "Value", "Color", "操作"};
         Object[][] cellData = new String[templateDataList.size()][headerNames.length];
         for (int i = 0; i < templateDataList.size(); i++) {
@@ -137,10 +145,10 @@ public class MaSubscribeMsgForm implements IMsgForm {
         int msgId = 0;
         boolean existSameMsg = false;
 
-        TMsgMaSubscribe msgMaSubscribe = msgMaSubscribeMapper.selectByUnique(accountId, MessageTypeEnum.MA_SUBSCRIBE_CODE, msgName);
-        if (msgMaSubscribe != null) {
+        TMsg tMsg = msgMapper.selectByUnique(MessageTypeEnum.MA_SUBSCRIBE_CODE, accountId, msgName);
+        if (tMsg != null) {
             existSameMsg = true;
-            msgId = msgMaSubscribe.getId();
+            msgId = tMsg.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -156,17 +164,18 @@ public class MaSubscribeMsgForm implements IMsgForm {
 
             String now = SqliteUtil.nowDateForSqlite();
 
+            TMsg msg = new TMsg();
             TMsgMaSubscribe tMsgMaSubscribe = new TMsgMaSubscribe();
-            tMsgMaSubscribe.setMsgType(MessageTypeEnum.MA_SUBSCRIBE_CODE);
-            tMsgMaSubscribe.setAccountId(accountId);
-            tMsgMaSubscribe.setMsgName(msgName);
+            msg.setMsgType(MessageTypeEnum.MA_SUBSCRIBE_CODE);
+            msg.setAccountId(accountId);
+            msg.setMsgName(msgName);
             tMsgMaSubscribe.setTemplateId(templateId);
             tMsgMaSubscribe.setPage(templateUrl);
-            tMsgMaSubscribe.setCreateTime(now);
-            tMsgMaSubscribe.setModifiedTime(now);
+            msg.setCreateTime(now);
+            msg.setModifiedTime(now);
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
-            tMsgMaSubscribe.setPreviewUser(messageEditForm.getPreviewUserField().getText());
+            msg.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             // 如果table为空，则初始化
             if (getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
@@ -193,11 +202,12 @@ public class MaSubscribeMsgForm implements IMsgForm {
 
             tMsgMaSubscribe.setTemplateDataList(templateDataList);
 
+            msg.setContent(JSONUtil.toJsonStr(tMsgMaSubscribe));
             if (existSameMsg) {
-                tMsgMaSubscribe.setId(msgId);
-                msgMaSubscribeMapper.updateByPrimaryKeySelective(tMsgMaSubscribe);
+                msg.setId(msgId);
+                msgMapper.updateByPrimaryKeySelective(msg);
             } else {
-                msgMaSubscribeMapper.insertSelective(tMsgMaSubscribe);
+                msgMapper.insertSelective(msg);
             }
 
             JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "保存成功！", "成功",
