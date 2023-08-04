@@ -1,7 +1,8 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
 import cn.hutool.json.JSONUtil;
-import com.fangxuele.tool.push.dao.TMsgHttpMapper;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgHttp;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
@@ -63,7 +64,7 @@ public class HttpMsgForm implements IMsgForm {
 
     private static HttpMsgForm httpMsgForm;
 
-    private static TMsgHttpMapper msgHttpMapper = MybatisUtil.getSqlSession().getMapper(TMsgHttpMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
 
     public HttpMsgForm() {
         paramAddButton.addActionListener(e -> {
@@ -178,11 +179,13 @@ public class HttpMsgForm implements IMsgForm {
     public void init(Integer msgId) {
         clearAllField();
 
-        TMsgHttp tMsgHttp = msgHttpMapper.selectByPrimaryKey(msgId);
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
 
-        if (tMsgHttp == null) {
+        if (tMsg == null) {
             return;
         }
+
+        TMsgHttp tMsgHttp = JSONUtil.toBean(tMsg.getContent(), TMsgHttp.class);
 
         getInstance().getMethodComboBox().setSelectedItem(tMsgHttp.getMethod());
         getInstance().getUrlTextField().setText(tMsgHttp.getUrl());
@@ -191,8 +194,8 @@ public class HttpMsgForm implements IMsgForm {
         switchMethod(tMsgHttp.getMethod());
 
         MessageEditForm messageEditForm = MessageEditForm.getInstance();
-        messageEditForm.getMsgNameField().setText(tMsgHttp.getMsgName());
-        messageEditForm.getPreviewUserField().setText(tMsgHttp.getPreviewUser());
+        messageEditForm.getMsgNameField().setText(tMsg.getMsgName());
+        messageEditForm.getPreviewUserField().setText(tMsg.getPreviewUser());
 
         // Params=====================================
         initParamTable();
@@ -265,10 +268,10 @@ public class HttpMsgForm implements IMsgForm {
     public void save(Integer accountId, String msgName) {
         boolean existSameMsg = false;
         Integer msgId = null;
-        TMsgHttp msgHttp = msgHttpMapper.selectByUnique(accountId, MessageTypeEnum.HTTP_CODE, msgName);
-        if (msgHttp != null) {
+        TMsg tMsg = msgMapper.selectByUnique(MessageTypeEnum.HTTP_CODE, accountId, msgName);
+        if (tMsg != null) {
             existSameMsg = true;
-            msgId = msgHttp.getId();
+            msgId = tMsg.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -285,18 +288,19 @@ public class HttpMsgForm implements IMsgForm {
             String bodyType = (String) getInstance().getBodyTypeComboBox().getSelectedItem();
             String now = SqliteUtil.nowDateForSqlite();
 
+            TMsg msg = new TMsg();
             TMsgHttp tMsgHttp = new TMsgHttp();
-            tMsgHttp.setMsgType(MessageTypeEnum.HTTP_CODE);
-            tMsgHttp.setAccountId(accountId);
-            tMsgHttp.setMsgName(msgName);
+            msg.setMsgType(MessageTypeEnum.HTTP_CODE);
+            msg.setAccountId(accountId);
+            msg.setMsgName(msgName);
             tMsgHttp.setMethod(method);
             tMsgHttp.setUrl(url);
             tMsgHttp.setBody(body);
             tMsgHttp.setBodyType(bodyType);
-            tMsgHttp.setCreateTime(now);
-            tMsgHttp.setModifiedTime(now);
+            msg.setCreateTime(now);
+            msg.setModifiedTime(now);
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
-            tMsgHttp.setPreviewUser(messageEditForm.getPreviewUserField().getText());
+            msg.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             // =============params
             // 如果table为空，则初始化
@@ -361,11 +365,12 @@ public class HttpMsgForm implements IMsgForm {
             }
             tMsgHttp.setCookies(JSONUtil.toJsonStr(cookies));
 
+            msg.setContent(JSONUtil.toJsonStr(tMsgHttp));
             if (existSameMsg) {
-                tMsgHttp.setId(msgId);
-                msgHttpMapper.updateByPrimaryKeySelective(tMsgHttp);
+                msg.setId(msgId);
+                msgMapper.updateByPrimaryKeySelective(msg);
             } else {
-                msgHttpMapper.insertSelective(tMsgHttp);
+                msgMapper.insertSelective(msg);
             }
             JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "保存成功！", "成功",
                     JOptionPane.INFORMATION_MESSAGE);
