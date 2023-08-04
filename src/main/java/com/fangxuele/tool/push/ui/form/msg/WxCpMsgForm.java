@@ -1,7 +1,9 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
-import com.fangxuele.tool.push.dao.TMsgWxCpMapper;
+import cn.hutool.json.JSONUtil;
+import com.fangxuele.tool.push.dao.TMsgMapper;
 import com.fangxuele.tool.push.dao.TWxCpAppMapper;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgWxCp;
 import com.fangxuele.tool.push.domain.TWxCpApp;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
@@ -57,7 +59,7 @@ public class WxCpMsgForm implements IMsgForm {
 
     private static WxCpMsgForm wxCpMsgForm;
 
-    private static TMsgWxCpMapper msgWxCpMapper = MybatisUtil.getSqlSession().getMapper(TMsgWxCpMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
     private static TWxCpAppMapper wxCpAppMapper = MybatisUtil.getSqlSession().getMapper(TWxCpAppMapper.class);
 
     public static Map<String, String> appNameToAgentIdMap = Maps.newHashMap();
@@ -83,12 +85,13 @@ public class WxCpMsgForm implements IMsgForm {
     public void init(Integer msgId) {
         clearAllField();
         initAppNameList();
-        TMsgWxCp tMsgWxCp = msgWxCpMapper.selectByPrimaryKey(msgId);
-        if (tMsgWxCp != null) {
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        if (tMsg != null) {
+            TMsgWxCp tMsgWxCp = JSONUtil.toBean(tMsg.getContent(), TMsgWxCp.class);
             String cpMsgType = tMsgWxCp.getCpMsgType();
             getInstance().getAppNameComboBox().setSelectedItem(agentIdToAppNameMap.get(tMsgWxCp.getAgentId()));
             getInstance().getMsgTypeComboBox().setSelectedItem(cpMsgType);
-            getInstance().getContentTextArea().setText(tMsgWxCp.getContent());
+            getInstance().getContentTextArea().setText(tMsg.getContent());
             getInstance().getTitleTextField().setText(tMsgWxCp.getTitle());
             getInstance().getPicUrlTextField().setText(tMsgWxCp.getImgUrl());
             getInstance().getDescTextField().setText(tMsgWxCp.getDescribe());
@@ -96,8 +99,8 @@ public class WxCpMsgForm implements IMsgForm {
             getInstance().getBtnTxtTextField().setText(tMsgWxCp.getBtnTxt());
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
-            messageEditForm.getMsgNameField().setText(tMsgWxCp.getMsgName());
-            messageEditForm.getPreviewUserField().setText(tMsgWxCp.getPreviewUser());
+            messageEditForm.getMsgNameField().setText(tMsg.getMsgName());
+            messageEditForm.getPreviewUserField().setText(tMsg.getPreviewUser());
 
             switchCpMsgType(cpMsgType);
         } else {
@@ -115,10 +118,10 @@ public class WxCpMsgForm implements IMsgForm {
             return;
         }
         Integer msgId = null;
-        TMsgWxCp msgWxCp = msgWxCpMapper.selectByUnique(accountId, MessageTypeEnum.WX_CP_CODE, msgName);
-        if (msgWxCp != null) {
+        TMsg tMsg = msgMapper.selectByUnique(MessageTypeEnum.WX_CP_CODE, accountId, msgName);
+        if (tMsg != null) {
             existSameMsg = true;
-            msgId = msgWxCp.getId();
+            msgId = tMsg.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -139,10 +142,11 @@ public class WxCpMsgForm implements IMsgForm {
 
             String now = SqliteUtil.nowDateForSqlite();
 
+            TMsg msg = new TMsg();
             TMsgWxCp tMsgWxCp = new TMsgWxCp();
-            tMsgWxCp.setMsgType(MessageTypeEnum.WX_CP_CODE);
-            tMsgWxCp.setAccountId(accountId);
-            tMsgWxCp.setMsgName(msgName);
+            msg.setMsgType(MessageTypeEnum.WX_CP_CODE);
+            msg.setAccountId(accountId);
+            msg.setMsgName(msgName);
             tMsgWxCp.setAgentId(appNameToAgentIdMap.get(getInstance().getAppNameComboBox().getSelectedItem()));
             tMsgWxCp.setCpMsgType(cpMsgType);
             tMsgWxCp.setContent(content);
@@ -151,17 +155,18 @@ public class WxCpMsgForm implements IMsgForm {
             tMsgWxCp.setDescribe(desc);
             tMsgWxCp.setUrl(url);
             tMsgWxCp.setBtnTxt(btnTxt);
-            tMsgWxCp.setModifiedTime(now);
+            msg.setModifiedTime(now);
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
-            tMsgWxCp.setPreviewUser(messageEditForm.getPreviewUserField().getText());
+            msg.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
+            msg.setContent(JSONUtil.toJsonStr(tMsgWxCp));
             if (existSameMsg) {
-                tMsgWxCp.setId(msgId);
-                msgWxCpMapper.updateByPrimaryKeySelective(tMsgWxCp);
+                msg.setId(msgId);
+                msgMapper.updateByPrimaryKeySelective(msg);
             } else {
-                tMsgWxCp.setCreateTime(now);
-                msgWxCpMapper.insertSelective(tMsgWxCp);
+                msg.setCreateTime(now);
+                msgMapper.insertSelective(msg);
             }
 
             JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "保存成功！", "成功",
