@@ -6,13 +6,6 @@ import java.io.Serializable;
 import java.util.List;
 
 public class TMsgWxUniform implements Serializable {
-    private Integer id;
-
-    private Integer accountId;
-
-    private Integer msgType;
-
-    private String msgName;
 
     private String mpTemplateId;
 
@@ -28,49 +21,12 @@ public class TMsgWxUniform implements Serializable {
 
     private String emphasisKeyword;
 
-    private String createTime;
-
-    private String modifiedTime;
-
-    private String previewUser;
-
     List<TemplateData> templateDataListMp;
 
     List<TemplateData> templateDataListMa;
 
     private static final long serialVersionUID = 1L;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getAccountId() {
-        return accountId;
-    }
-
-    public void setAccountId(Integer accountId) {
-        this.accountId = accountId;
-    }
-
-    public Integer getMsgType() {
-        return msgType;
-    }
-
-    public void setMsgType(Integer msgType) {
-        this.msgType = msgType;
-    }
-
-    public String getMsgName() {
-        return msgName;
-    }
-
-    public void setMsgName(String msgName) {
-        this.msgName = msgName == null ? null : msgName.trim();
-    }
 
     public String getMpTemplateId() {
         return mpTemplateId;
@@ -126,30 +82,6 @@ public class TMsgWxUniform implements Serializable {
 
     public void setEmphasisKeyword(String emphasisKeyword) {
         this.emphasisKeyword = emphasisKeyword == null ? null : emphasisKeyword.trim();
-    }
-
-    public String getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(String createTime) {
-        this.createTime = createTime == null ? null : createTime.trim();
-    }
-
-    public String getModifiedTime() {
-        return modifiedTime;
-    }
-
-    public void setModifiedTime(String modifiedTime) {
-        this.modifiedTime = modifiedTime == null ? null : modifiedTime.trim();
-    }
-
-    public String getPreviewUser() {
-        return previewUser;
-    }
-
-    public void setPreviewUser(String previewUser) {
-        this.previewUser = previewUser == null ? null : previewUser.trim();
     }
 
     public List<TemplateData> getTemplateDataListMp() {

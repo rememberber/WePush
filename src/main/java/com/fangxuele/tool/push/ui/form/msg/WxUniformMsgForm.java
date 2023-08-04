@@ -1,7 +1,10 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
+import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.bean.TemplateData;
-import com.fangxuele.tool.push.dao.TMsgWxUniformMapper;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgWxUniform;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
@@ -26,14 +29,15 @@ import java.util.List;
  */
 public class WxUniformMsgForm implements IMsgForm {
 
-    private static TMsgWxUniformMapper msgWxUniformMapper = MybatisUtil.getSqlSession().getMapper(TMsgWxUniformMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
     private static WxUniformMsgForm wxUniformMsgForm;
 
     @Override
     public void init(Integer msgId) {
         clearAllField();
-        TMsgWxUniform tMsgWxUniform = msgWxUniformMapper.selectByPrimaryKey(msgId);
-        if (tMsgWxUniform != null) {
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        if (tMsg != null) {
+            TMsgWxUniform tMsgWxUniform = JSONUtil.toBean(tMsg.getContent(), TMsgWxUniform.class);
             MpTemplateMsgForm.getInstance().getMsgTemplateIdTextField().setText(tMsgWxUniform.getMpTemplateId());
             MpTemplateMsgForm.getInstance().getMsgTemplateUrlTextField().setText(tMsgWxUniform.getMpUrl());
             MpTemplateMsgForm.getInstance().getMsgTemplateMiniAppidTextField().setText(tMsgWxUniform.getMaAppid());
@@ -43,8 +47,8 @@ public class WxUniformMsgForm implements IMsgForm {
             MaSubscribeMsgForm.getInstance().getMsgTemplateUrlTextField().setText(tMsgWxUniform.getPage());
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
-            messageEditForm.getMsgNameField().setText(tMsgWxUniform.getMsgName());
-            messageEditForm.getPreviewUserField().setText(tMsgWxUniform.getPreviewUser());
+            messageEditForm.getMsgNameField().setText(tMsg.getMsgName());
+            messageEditForm.getPreviewUserField().setText(tMsg.getPreviewUser());
 
             // -------------公众号模板数据开始
             MpTemplateMsgForm.selectedMsgTemplateId = tMsgWxUniform.getMpTemplateId();
@@ -105,10 +109,10 @@ public class WxUniformMsgForm implements IMsgForm {
         int msgId = 0;
         boolean existSameMsg = false;
 
-        TMsgWxUniform msgWxUniform = msgWxUniformMapper.selectByUnique(accountId, MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE, msgName);
-        if (msgWxUniform != null) {
+        TMsg tMsg = msgMapper.selectByUnique(MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE, accountId, msgName);
+        if (tMsg != null) {
             existSameMsg = true;
-            msgId = msgWxUniform.getId();
+            msgId = tMsg.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -129,21 +133,22 @@ public class WxUniformMsgForm implements IMsgForm {
 
             String now = SqliteUtil.nowDateForSqlite();
 
+            TMsg msg = new TMsg();
             TMsgWxUniform tMsgWxUniform = new TMsgWxUniform();
-            tMsgWxUniform.setMsgType(MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE);
-            tMsgWxUniform.setAccountId(accountId);
-            tMsgWxUniform.setMsgName(msgName);
+            msg.setMsgType(MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE);
+            msg.setAccountId(accountId);
+            msg.setMsgName(msgName);
             tMsgWxUniform.setMpTemplateId(mpTemplateId);
             tMsgWxUniform.setMaTemplateId(maTemplateId);
             tMsgWxUniform.setMpUrl(templateUrl);
             tMsgWxUniform.setMaAppid(templateMiniAppid);
             tMsgWxUniform.setMaPagePath(templateMiniPagePath);
             tMsgWxUniform.setPage(page);
-            tMsgWxUniform.setCreateTime(now);
-            tMsgWxUniform.setModifiedTime(now);
+            msg.setCreateTime(now);
+            msg.setModifiedTime(now);
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
-            tMsgWxUniform.setPreviewUser(messageEditForm.getPreviewUserField().getText());
+            msg.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             // -------------公众号模板数据开始
             // 如果table为空，则初始化
@@ -197,11 +202,12 @@ public class WxUniformMsgForm implements IMsgForm {
             tMsgWxUniform.setTemplateDataListMp(templateDataListMp);
             tMsgWxUniform.setTemplateDataListMa(templateDataListMa);
 
+            msg.setContent(JSON.toJSONString(tMsgWxUniform));
             if (existSameMsg) {
-                tMsgWxUniform.setId(msgId);
-                msgWxUniformMapper.updateByPrimaryKeySelective(tMsgWxUniform);
+                msg.setId(msgId);
+                msgMapper.updateByPrimaryKeySelective(msg);
             } else {
-                msgWxUniformMapper.insertSelective(tMsgWxUniform);
+                msgMapper.insertSelective(msg);
             }
 
             // -------------小程序模板数据结束
