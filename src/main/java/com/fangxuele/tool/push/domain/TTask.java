@@ -7,7 +7,7 @@ public class TTask implements Serializable {
 
     private String title;
 
-    private String msgType;
+    private Integer msgType;
 
     private Integer accountId;
 
@@ -59,12 +59,12 @@ public class TTask implements Serializable {
         this.title = title == null ? null : title.trim();
     }
 
-    public String getMsgType() {
+    public Integer getMsgType() {
         return msgType;
     }
 
-    public void setMsgType(String msgType) {
-        this.msgType = msgType == null ? null : msgType.trim();
+    public void setMsgType(Integer msgType) {
+        this.msgType = msgType;
     }
 
     public Integer getAccountId() {

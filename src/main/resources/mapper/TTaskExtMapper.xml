@@ -4,7 +4,7 @@
     <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TTask">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="title" jdbcType="VARCHAR" property="title" />
-        <result column="msg_type" jdbcType="VARCHAR" property="msgType" />
+        <result column="msg_type" jdbcType="INTEGER" property="msgType" />
         <result column="account_id" jdbcType="INTEGER" property="accountId" />
         <result column="message_id" jdbcType="INTEGER" property="messageId" />
         <result column="people_id" jdbcType="INTEGER" property="peopleId" />

@@ -4,7 +4,7 @@
   <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TTask">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="title" jdbcType="VARCHAR" property="title" />
-    <result column="msg_type" jdbcType="VARCHAR" property="msgType" />
+    <result column="msg_type" jdbcType="INTEGER" property="msgType" />
     <result column="account_id" jdbcType="INTEGER" property="accountId" />
     <result column="message_id" jdbcType="INTEGER" property="messageId" />
     <result column="people_id" jdbcType="INTEGER" property="peopleId" />
@@ -45,7 +45,7 @@
       reimport_people, result_alert, alert_emails, 
       save_result, remark, create_time, 
       modified_time)
-    values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{msgType,jdbcType=VARCHAR}, 
+    values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{msgType,jdbcType=INTEGER},
       #{accountId,jdbcType=INTEGER}, #{messageId,jdbcType=INTEGER}, #{peopleId,jdbcType=INTEGER}, 
       #{taskMode,jdbcType=INTEGER}, #{taskPeriod,jdbcType=INTEGER}, #{periodType,jdbcType=INTEGER}, 
       #{periodTime,jdbcType=VARCHAR}, #{cron,jdbcType=VARCHAR}, #{threadCnt,jdbcType=INTEGER}, 
@@ -122,7 +122,7 @@
         #{title,jdbcType=VARCHAR},
       </if>
       <if test="msgType != null">
-        #{msgType,jdbcType=VARCHAR},
+        #{msgType,jdbcType=INTEGER},
       </if>
       <if test="accountId != null">
         #{accountId,jdbcType=INTEGER},
@@ -181,7 +181,7 @@
         title = #{title,jdbcType=VARCHAR},
       </if>
       <if test="msgType != null">
-        msg_type = #{msgType,jdbcType=VARCHAR},
+        msg_type = #{msgType,jdbcType=INTEGER},
       </if>
       <if test="accountId != null">
         account_id = #{accountId,jdbcType=INTEGER},
@@ -237,7 +237,7 @@
   <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TTask">
     update t_task
     set title = #{title,jdbcType=VARCHAR},
-      msg_type = #{msgType,jdbcType=VARCHAR},
+      msg_type = #{msgType,jdbcType=INTEGER},
       account_id = #{accountId,jdbcType=INTEGER},
       message_id = #{messageId,jdbcType=INTEGER},
       people_id = #{peopleId,jdbcType=INTEGER},

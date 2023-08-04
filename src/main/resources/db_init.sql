@@ -152,7 +152,7 @@ create table if not exists t_task
         constraint t_task_pk
             primary key autoincrement,
     title           text,
-    msg_type        text,
+    msg_type        integer,
     account_id      integer,
     message_id      integer,
     people_id       integer,

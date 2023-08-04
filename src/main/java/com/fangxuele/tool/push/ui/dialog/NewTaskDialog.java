@@ -494,7 +494,7 @@ public class NewTaskDialog extends JDialog {
                 String now = SqliteUtil.nowDateForSqlite();
                 TTask task = new TTask();
                 task.setTitle(title);
-                task.setMsgType(String.valueOf(msgTypeMap.get((String) msgTypeComboBox.getSelectedItem())));
+                task.setMsgType(msgTypeMap.get((String) msgTypeComboBox.getSelectedItem()));
                 task.setAccountId(accountMap.get((String) accountComboBox.getSelectedItem()));
                 task.setMessageId(messageMap.get((String) msgComboBox.getSelectedItem()));
                 task.setPeopleId(peopleMap.get((String) peopleComboBox.getSelectedItem()));

@@ -102,7 +102,7 @@ public class TaskForm {
             data = new Object[6];
             data[0] = task.getId();
             data[1] = task.getTitle();
-            data[2] = MessageTypeEnum.getName(Integer.parseInt(task.getMsgType()));
+            data[2] = MessageTypeEnum.getName(task.getMsgType());
             data[3] = getTaskType(task);
             data[4] = getMsgName(task.getMessageId());
             data[5] = peopleMapper.selectByPrimaryKey(task.getPeopleId()).getPeopleName();
