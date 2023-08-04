@@ -68,12 +68,22 @@ public class TaskRunThread extends Thread {
     /**
      * 线程总数
      */
-    public static int threadCount;
+    public int threadCount;
 
     /**
      * 固定频率计划任务执行中
      */
-    public static boolean fixRateScheduling = false;
+    public boolean fixRateScheduling = false;
+
+    /**
+     * 发送成功的列表
+     */
+    public List<String[]> sendSuccessList;
+
+    /**
+     * 发送失败的列表
+     */
+    public List<String[]> sendFailList;
 
     public Integer getTaskId() {
         return taskId;
@@ -160,7 +170,7 @@ public class TaskRunThread extends Thread {
     /**
      * 消息数据分片以及线程纷发
      */
-    private static ThreadPoolExecutor shardingAndMsgThread() {
+    private ThreadPoolExecutor shardingAndMsgThread() {
         PushForm pushForm = PushForm.getInstance();
         Object[] data;
 
@@ -213,7 +223,7 @@ public class TaskRunThread extends Thread {
         // 计时
         while (true) {
             if (threadPoolExecutor.isTerminated()) {
-                if (!PushData.fixRateScheduling) {
+                if (!fixRateScheduling) {
                     pushForm.getPushStopButton().setEnabled(false);
                     pushForm.getPushStopButton().updateUI();
                     pushForm.getPushStartButton().setEnabled(true);
@@ -260,8 +270,8 @@ public class TaskRunThread extends Thread {
                 break;
             }
 
-            int successCount = PushData.sendSuccessList.size();
-            int failCount = PushData.sendFailList.size();
+            int successCount = sendSuccessList.size();
+            int failCount = sendFailList.size();
             int totalSentCount = successCount + failCount;
             long currentTimeMillis = System.currentTimeMillis();
             long lastTimeMillis = currentTimeMillis - startTimeMillis;
@@ -295,8 +305,8 @@ public class TaskRunThread extends Thread {
 //        toSendConcurrentLinkedQueue = new ConcurrentLinkedQueue<>();
 //        activeThreadConcurrentLinkedQueue = new ConcurrentLinkedQueue<>();
 //        threadStatusMap = new HashMap<>(100);
-//        sendSuccessList = Collections.synchronizedList(new LinkedList<>());
-//        sendFailList = Collections.synchronizedList(new LinkedList<>());
+        sendSuccessList = Collections.synchronizedList(new LinkedList<>());
+        sendFailList = Collections.synchronizedList(new LinkedList<>());
         startTime = 0L;
         endTime = 0;
     }
