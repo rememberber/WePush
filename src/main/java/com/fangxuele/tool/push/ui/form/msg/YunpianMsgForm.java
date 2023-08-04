@@ -1,6 +1,8 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
-import com.fangxuele.tool.push.dao.TMsgSmsMapper;
+import cn.hutool.json.JSONUtil;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgSms;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.form.MainWindow;
@@ -33,18 +35,19 @@ public class YunpianMsgForm implements IMsgForm {
 
     private static YunpianMsgForm yunpianMsgForm;
 
-    private static TMsgSmsMapper msgSmsMapper = MybatisUtil.getSqlSession().getMapper(TMsgSmsMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
 
     @Override
     public void init(Integer msgId) {
         clearAllField();
-        TMsgSms tMsgSms = msgSmsMapper.selectByPrimaryKey(msgId);
-        if (tMsgSms != null) {
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        if (tMsg != null) {
+            TMsgSms tMsgSms = JSONUtil.toBean(tMsg.getContent(), TMsgSms.class);
             getInstance().getMsgYunpianMsgContentTextField().setText(tMsgSms.getContent());
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
-            messageEditForm.getMsgNameField().setText(tMsgSms.getMsgName());
-            messageEditForm.getPreviewUserField().setText(tMsgSms.getPreviewUser());
+            messageEditForm.getMsgNameField().setText(tMsg.getMsgName());
+            messageEditForm.getPreviewUserField().setText(tMsg.getPreviewUser());
         }
     }
 
@@ -52,10 +55,10 @@ public class YunpianMsgForm implements IMsgForm {
     public void save(Integer accountId, String msgName) {
         boolean existSameMsg = false;
         Integer msgId = null;
-        TMsgSms msgSms = msgSmsMapper.selectByUnique(accountId, MessageTypeEnum.YUN_PIAN_CODE, msgName);
-        if (msgSms != null) {
+        TMsg tMsg = msgMapper.selectByUnique(MessageTypeEnum.YUN_PIAN_CODE, accountId, msgName);
+        if (tMsg != null) {
             existSameMsg = true;
-            msgId = msgSms.getId();
+            msgId = tMsg.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -69,22 +72,24 @@ public class YunpianMsgForm implements IMsgForm {
 
             String now = SqliteUtil.nowDateForSqlite();
 
+            TMsg msg = new TMsg();
             TMsgSms tMsgSms = new TMsgSms();
-            tMsgSms.setMsgType(MessageTypeEnum.YUN_PIAN_CODE);
-            tMsgSms.setAccountId(accountId);
-            tMsgSms.setMsgName(msgName);
+            msg.setMsgType(MessageTypeEnum.YUN_PIAN_CODE);
+            msg.setAccountId(accountId);
+            msg.setMsgName(msgName);
             tMsgSms.setContent(yunpianMsgContent);
-            tMsgSms.setCreateTime(now);
-            tMsgSms.setModifiedTime(now);
+            msg.setCreateTime(now);
+            msg.setModifiedTime(now);
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
-            tMsgSms.setPreviewUser(messageEditForm.getPreviewUserField().getText());
+            msg.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
+            msg.setContent(JSONUtil.toJsonStr(tMsgSms));
             if (existSameMsg) {
-                tMsgSms.setId(msgId);
-                msgSmsMapper.updateByPrimaryKeySelective(tMsgSms);
+                msg.setId(msgId);
+                msgMapper.updateByPrimaryKeySelective(msg);
             } else {
-                msgSmsMapper.insertSelective(tMsgSms);
+                msgMapper.insertSelective(msg);
             }
 
             JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "保存成功！", "成功",
