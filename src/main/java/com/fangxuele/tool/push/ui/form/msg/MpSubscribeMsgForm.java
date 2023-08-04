@@ -1,7 +1,9 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
+import cn.hutool.json.JSONUtil;
 import com.fangxuele.tool.push.bean.TemplateData;
-import com.fangxuele.tool.push.dao.TMsgMpSubscribeMapper;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgMpSubscribe;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
@@ -70,7 +72,7 @@ public class MpSubscribeMsgForm implements IMsgForm {
 
     private static MpSubscribeMsgForm mpSubscribeMsgForm;
 
-    private static TMsgMpSubscribeMapper tMsgMpSubscribeMapper = MybatisUtil.getSqlSession().getMapper(TMsgMpSubscribeMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
 
     /**
      * 账号模板列表
@@ -157,8 +159,9 @@ public class MpSubscribeMsgForm implements IMsgForm {
 
         clearAllField();
 
-        TMsgMpSubscribe tMsgMpSubscribe = tMsgMpSubscribeMapper.selectByPrimaryKey(msgId);
-        if (tMsgMpSubscribe != null) {
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        if (tMsg != null) {
+            TMsgMpSubscribe tMsgMpSubscribe = JSONUtil.toBean(tMsg.getContent(), TMsgMpSubscribe.class);
             selectedMsgTemplateId = tMsgMpSubscribe.getTemplateId();
             initTemplateList();
 
@@ -168,13 +171,20 @@ public class MpSubscribeMsgForm implements IMsgForm {
             mpTemplateMsgForm.getMsgTemplateMiniPagePathTextField().setText(tMsgMpSubscribe.getMaPagePath());
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
-            messageEditForm.getMsgNameField().setText(tMsgMpSubscribe.getMsgName());
-            messageEditForm.getPreviewUserField().setText(tMsgMpSubscribe.getPreviewUser());
+            messageEditForm.getMsgNameField().setText(tMsg.getMsgName());
+            messageEditForm.getPreviewUserField().setText(tMsg.getPreviewUser());
         } else {
             initTemplateList();
         }
 
-        List<TemplateData> templateDataList = tMsgMpSubscribe.getTemplateDataList();
+        List<TemplateData> templateDataList;
+        if (tMsg == null) {
+            templateDataList = new ArrayList<>();
+        } else {
+            TMsgMpSubscribe tMsgMpSubscribe = JSONUtil.toBean(tMsg.getContent(), TMsgMpSubscribe.class);
+            templateDataList = tMsgMpSubscribe.getTemplateDataList();
+        }
+
         if (templateDataList == null) {
             templateDataList = new ArrayList<>();
         }
@@ -188,10 +198,10 @@ public class MpSubscribeMsgForm implements IMsgForm {
         int msgId = 0;
         boolean existSameMsg = false;
 
-        TMsgMpSubscribe msgMpSubscribe = tMsgMpSubscribeMapper.selectByUnique(accountId, MessageTypeEnum.MP_SUBSCRIBE_CODE, msgName);
-        if (msgMpSubscribe != null) {
+        TMsg tMsg = msgMapper.selectByUnique(MessageTypeEnum.MP_SUBSCRIBE_CODE, accountId, msgName);
+        if (tMsg != null) {
             existSameMsg = true;
-            msgId = msgMpSubscribe.getId();
+            msgId = tMsg.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -209,19 +219,20 @@ public class MpSubscribeMsgForm implements IMsgForm {
 
             String now = SqliteUtil.nowDateForSqlite();
 
+            TMsg msg = new TMsg();
             TMsgMpSubscribe tMsgMpSubscribe = new TMsgMpSubscribe();
-            tMsgMpSubscribe.setMsgType(MessageTypeEnum.MP_SUBSCRIBE_CODE);
-            tMsgMpSubscribe.setAccountId(accountId);
-            tMsgMpSubscribe.setMsgName(msgName);
+            msg.setMsgType(MessageTypeEnum.MP_SUBSCRIBE_CODE);
+            msg.setAccountId(accountId);
+            msg.setMsgName(msgName);
             tMsgMpSubscribe.setTemplateId(templateId);
             tMsgMpSubscribe.setUrl(templateUrl);
             tMsgMpSubscribe.setMaAppid(templateMiniAppid);
             tMsgMpSubscribe.setMaPagePath(templateMiniPagePath);
-            tMsgMpSubscribe.setCreateTime(now);
-            tMsgMpSubscribe.setModifiedTime(now);
+            msg.setCreateTime(now);
+            msg.setModifiedTime(now);
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
-            tMsgMpSubscribe.setPreviewUser(messageEditForm.getPreviewUserField().getText());
+            msg.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             // 如果table为空，则初始化
             if (getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
@@ -248,11 +259,12 @@ public class MpSubscribeMsgForm implements IMsgForm {
 
             tMsgMpSubscribe.setTemplateDataList(templateDataList);
 
+            msg.setContent(JSONUtil.toJsonStr(tMsgMpSubscribe));
             if (existSameMsg) {
-                tMsgMpSubscribe.setId(msgId);
-                tMsgMpSubscribeMapper.updateByPrimaryKeySelective(tMsgMpSubscribe);
+                msg.setId(msgId);
+                msgMapper.updateByPrimaryKeySelective(msg);
             } else {
-                tMsgMpSubscribeMapper.insertSelective(tMsgMpSubscribe);
+                msgMapper.insertSelective(msg);
             }
 
             JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "保存成功！", "成功",
