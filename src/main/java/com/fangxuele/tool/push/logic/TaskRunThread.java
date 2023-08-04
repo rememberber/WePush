@@ -8,10 +8,13 @@ import cn.hutool.cron.pattern.CronPattern;
 import cn.hutool.cron.pattern.CronPatternUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPeopleDataMapper;
 import com.fangxuele.tool.push.dao.TTaskHisMapper;
 import com.fangxuele.tool.push.dao.TTaskMapper;
+import com.fangxuele.tool.push.domain.TPeopleData;
 import com.fangxuele.tool.push.domain.TTask;
 import com.fangxuele.tool.push.domain.TTaskHis;
 import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
@@ -41,7 +44,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * </pre>
  *
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
- * @since 2017/6/28.
+ * @since 2023/8/03
  */
 public class TaskRunThread extends Thread {
 
@@ -141,13 +144,18 @@ public class TaskRunThread extends Thread {
         startTime = System.currentTimeMillis();
 
         // 拷贝准备的目标用户
-        toSendList.addAll(PushData.allUser);
+        List<TPeopleData> tPeopleData = peopleDataMapper.selectByPeopleId(tTask.getPeopleId());
+
+        tPeopleData.forEach(peopleData -> {
+            String varData = peopleData.getVarData();
+            String[] strings = JSON.parseObject(varData, new TypeReference<String[]>() {
+            });
+            toSendList.add(strings);
+        });
         // 总记录数
         totalRecords = toSendList.size();
 
-        Long peopleCnt = peopleDataMapper.countByPeopleId(tTask.getPeopleId());
-
-        taskHis.setTotalCnt(peopleCnt.intValue());
+        taskHis.setTotalCnt((int) totalRecords);
         ConsoleUtil.consoleWithLog("消息总数：" + totalRecords);
         ConsoleUtil.consoleWithLog("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
 
