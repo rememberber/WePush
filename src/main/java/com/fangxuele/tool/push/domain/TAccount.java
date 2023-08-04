@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class TAccount implements Serializable {
     private Integer id;
 
-    private String msgType;
+    private Integer msgType;
 
     private String accountName;
 
@@ -27,12 +27,12 @@ public class TAccount implements Serializable {
         this.id = id;
     }
 
-    public String getMsgType() {
+    public Integer getMsgType() {
         return msgType;
     }
 
-    public void setMsgType(String msgType) {
-        this.msgType = msgType == null ? null : msgType.trim();
+    public void setMsgType(Integer msgType) {
+        this.msgType = msgType;
     }
 
     public String getAccountName() {

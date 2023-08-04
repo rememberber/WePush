@@ -64,7 +64,7 @@ public class TxYunAccountForm implements IAccountForm {
                 String now = SqliteUtil.nowDateForSqlite();
 
                 TAccount tAccount1 = new TAccount();
-                tAccount1.setMsgType(String.valueOf(msgType));
+                tAccount1.setMsgType(msgType);
                 tAccount1.setAccountName(accountName);
 
                 TxYunAccountConfig txYunAccountConfig = new TxYunAccountConfig();

@@ -82,7 +82,7 @@ create table if not exists t_account
     id             integer
         constraint t_account_pk
             primary key autoincrement,
-    msg_type       text,
+    msg_type       integer,
     account_name   text,
     account_config text,
     remark         text,

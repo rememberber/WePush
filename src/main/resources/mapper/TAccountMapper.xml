@@ -3,7 +3,7 @@
 <mapper namespace="com.fangxuele.tool.push.dao.TAccountMapper">
     <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TAccount">
         <id column="id" jdbcType="INTEGER" property="id"/>
-        <result column="msg_type" jdbcType="VARCHAR" property="msgType"/>
+        <result column="msg_type" jdbcType="INTEGER" property="msgType"/>
         <result column="account_name" jdbcType="VARCHAR" property="accountName"/>
         <result column="account_config" jdbcType="VARCHAR" property="accountConfig"/>
         <result column="remark" jdbcType="VARCHAR" property="remark"/>
@@ -26,11 +26,11 @@
     </delete>
     <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TAccount">
         insert into t_account (id, msg_type, account_name,
-                               account_config, remark, create_time,
-                               modified_time)
-        values (#{id,jdbcType=INTEGER}, #{msgType,jdbcType=VARCHAR}, #{accountName,jdbcType=VARCHAR},
-                #{accountConfig,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR},
-                #{modifiedTime,jdbcType=VARCHAR})
+        account_config, remark, create_time,
+        modified_time)
+        values (#{id,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER}, #{accountName,jdbcType=VARCHAR},
+        #{accountConfig,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR},
+        #{modifiedTime,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TAccount">
         insert into t_account
@@ -62,7 +62,7 @@
                 #{id,jdbcType=INTEGER},
             </if>
             <if test="msgType != null">
-                #{msgType,jdbcType=VARCHAR},
+                #{msgType,jdbcType=INTEGER},
             </if>
             <if test="accountName != null">
                 #{accountName,jdbcType=VARCHAR},
@@ -85,7 +85,7 @@
         update t_account
         <set>
             <if test="msgType != null">
-                msg_type = #{msgType,jdbcType=VARCHAR},
+                msg_type = #{msgType,jdbcType=INTEGER},
             </if>
             <if test="accountName != null">
                 account_name = #{accountName,jdbcType=VARCHAR},
@@ -107,12 +107,12 @@
     </update>
     <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TAccount">
         update t_account
-        set msg_type       = #{msgType,jdbcType=VARCHAR},
-            account_name   = #{accountName,jdbcType=VARCHAR},
-            account_config = #{accountConfig,jdbcType=VARCHAR},
-            remark         = #{remark,jdbcType=VARCHAR},
-            create_time    = #{createTime,jdbcType=VARCHAR},
-            modified_time  = #{modifiedTime,jdbcType=VARCHAR}
+        set msg_type = #{msgType,jdbcType=INTEGER},
+        account_name = #{accountName,jdbcType=VARCHAR},
+        account_config = #{accountConfig,jdbcType=VARCHAR},
+        remark = #{remark,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=VARCHAR},
+        modified_time = #{modifiedTime,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>
 
@@ -128,7 +128,7 @@
         delete
         from t_account
         where msg_type = #{msgType,jdbcType=INTEGER}
-          and account_name = #{accountName,jdbcType=VARCHAR}
+        and account_name = #{accountName,jdbcType=VARCHAR}
     </delete>
     <select id="selectByMsgTypeAndAccountName" resultMap="BaseResultMap">
         select
@@ -139,13 +139,13 @@
     </select>
     <update id="updateByMsgTypeAndAccountName" parameterType="com.fangxuele.tool.push.domain.TAccount">
         update t_account
-        set msg_type       = #{msgType,jdbcType=VARCHAR},
-            account_name   = #{accountName,jdbcType=VARCHAR},
-            account_config = #{accountConfig,jdbcType=VARCHAR},
-            remark         = #{remark,jdbcType=VARCHAR},
-            create_time    = #{createTime,jdbcType=VARCHAR},
-            modified_time  = #{modifiedTime,jdbcType=VARCHAR}
-        where msg_type = #{msgType,jdbcType=VARCHAR}
-          and account_name = #{accountName,jdbcType=VARCHAR}
+        set msg_type = #{msgType,jdbcType=INTEGER},
+        account_name = #{accountName,jdbcType=VARCHAR},
+        account_config = #{accountConfig,jdbcType=VARCHAR},
+        remark = #{remark,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=VARCHAR},
+        modified_time = #{modifiedTime,jdbcType=VARCHAR}
+        where msg_type = #{msgType,jdbcType=INTEGER}
+        and account_name = #{accountName,jdbcType=VARCHAR}
     </update>
 </mapper>

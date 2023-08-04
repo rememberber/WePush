@@ -67,7 +67,7 @@ public class WxMaAccountForm implements IAccountForm {
                 String now = SqliteUtil.nowDateForSqlite();
 
                 TAccount tAccount1 = new TAccount();
-                tAccount1.setMsgType(String.valueOf(MessageTypeEnum.WX_MA_CODE));
+                tAccount1.setMsgType(MessageTypeEnum.WX_MA_CODE);
                 tAccount1.setAccountName(accountName);
 
                 WxMaAccountConfig wxMaAccountConfig = new WxMaAccountConfig();
