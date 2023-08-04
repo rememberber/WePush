@@ -3,13 +3,6 @@ package com.fangxuele.tool.push.domain;
 import java.io.Serializable;
 
 public class TMsgKefu implements Serializable {
-    private Integer id;
-
-    private Integer accountId;
-
-    private Integer msgType;
-
-    private String msgName;
 
     private String kefuMsgType;
 
@@ -36,38 +29,6 @@ public class TMsgKefu implements Serializable {
     private String thumbMediaId;
 
     private static final long serialVersionUID = 1L;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getAccountId() {
-        return accountId;
-    }
-
-    public void setAccountId(Integer accountId) {
-        this.accountId = accountId;
-    }
-
-    public Integer getMsgType() {
-        return msgType;
-    }
-
-    public void setMsgType(Integer msgType) {
-        this.msgType = msgType;
-    }
-
-    public String getMsgName() {
-        return msgName;
-    }
-
-    public void setMsgName(String msgName) {
-        this.msgName = msgName == null ? null : msgName.trim();
-    }
 
     public String getKefuMsgType() {
         return kefuMsgType;
