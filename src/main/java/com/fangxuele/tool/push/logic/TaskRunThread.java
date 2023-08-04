@@ -11,9 +11,11 @@ import cn.hutool.log.LogFactory;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.dao.TMsgMapper;
 import com.fangxuele.tool.push.dao.TPeopleDataMapper;
 import com.fangxuele.tool.push.dao.TTaskHisMapper;
 import com.fangxuele.tool.push.dao.TTaskMapper;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TPeopleData;
 import com.fangxuele.tool.push.domain.TTask;
 import com.fangxuele.tool.push.domain.TTaskHis;
@@ -29,7 +31,6 @@ import com.fangxuele.tool.push.util.SqliteUtil;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.IOException;
 import java.util.Collections;
@@ -109,6 +110,8 @@ public class TaskRunThread extends Thread {
 
     private static TPeopleDataMapper peopleDataMapper = MybatisUtil.getSqlSession().getMapper(TPeopleDataMapper.class);
 
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
+
     public TaskRunThread(Integer taskId, Integer dryRun) {
         this.taskId = taskId;
         this.dryRun = dryRun;
@@ -117,10 +120,13 @@ public class TaskRunThread extends Thread {
     @Override
     public void run() {
         // 准备推送
-        preparePushRun();
+        TTask tTask = taskMapper.selectByPrimaryKey(taskId);
+
+        preparePushRun(tTask);
         ConsoleUtil.consoleWithLog("推送开始……");
         // 消息数据分片以及线程纷发
-        ThreadPoolExecutor threadPoolExecutor = shardingAndMsgThread();
+        TMsg tMsg = msgMapper.selectByPrimaryKey(tTask.getMessageId());
+        ThreadPoolExecutor threadPoolExecutor = shardingAndMsgThread(tMsg);
         // 时间监控
         timeMonitor(threadPoolExecutor);
     }
@@ -128,8 +134,8 @@ public class TaskRunThread extends Thread {
     /**
      * 准备推送
      */
-    private void preparePushRun() {
-        TTask tTask = taskMapper.selectByPrimaryKey(taskId);
+    private void preparePushRun(TTask tTask) {
+
         // 初始化任务历史表
         TTaskHis taskHis = new TTaskHis();
 
@@ -178,17 +184,14 @@ public class TaskRunThread extends Thread {
     /**
      * 消息数据分片以及线程纷发
      */
-    private ThreadPoolExecutor shardingAndMsgThread() {
-        PushForm pushForm = PushForm.getInstance();
-        Object[] data;
+    private ThreadPoolExecutor shardingAndMsgThread(TMsg tMsg) {
 
         int maxThreadPoolSize = App.config.getMaxThreads();
         ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(maxThreadPoolSize, maxThreadPoolSize);
         MsgSendThread msgSendThread;
         // 每个线程分配
         int perThread = (int) (totalRecords / threadCount) + 1;
-        DefaultTableModel tableModel = (DefaultTableModel) pushForm.getPushThreadTable().getModel();
-        BaseMsgThread.msgType = App.config.getMsgType();
+        BaseMsgThread.msgType = tMsg.getMsgType();
         for (int i = 0; i < threadCount; i++) {
             int startIndex = i * perThread;
             if (startIndex > totalRecords - 1) {
@@ -205,12 +208,6 @@ public class TaskRunThread extends Thread {
 
             msgSendThread.setTableRow(i);
             msgSendThread.setName("T-" + i);
-
-            data = new Object[6];
-            data[0] = msgSendThread.getName();
-            data[1] = startIndex + "-" + endIndex;
-            data[5] = 0;
-            tableModel.addRow(data);
 
             threadPoolExecutor.execute(msgSendThread);
         }
