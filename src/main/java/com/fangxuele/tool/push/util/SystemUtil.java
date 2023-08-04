@@ -19,7 +19,7 @@ public class SystemUtil {
     /**
      * 日志文件路径
      */
-    public final static String LOG_DIR = USER_HOME + File.separator + ".wepush" + File.separator + "logs" + File.separator;
+    public final static String LOG_DIR = USER_HOME + File.separator + ".WePush5" + File.separator + "logs" + File.separator;
 
     public static boolean isWindowsOs() {
         return OS_NAME.contains("Windows");
