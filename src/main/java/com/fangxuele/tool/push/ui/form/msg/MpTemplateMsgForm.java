@@ -1,7 +1,9 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
+import cn.hutool.json.JSONUtil;
 import com.fangxuele.tool.push.bean.TemplateData;
-import com.fangxuele.tool.push.dao.TMsgMpTemplateMapper;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgMpTemplate;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
@@ -70,7 +72,7 @@ public class MpTemplateMsgForm implements IMsgForm {
 
     private static MpTemplateMsgForm mpTemplateMsgForm;
 
-    private static TMsgMpTemplateMapper msgMpTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMpTemplateMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
 
     /**
      * 账号模板列表
@@ -157,8 +159,9 @@ public class MpTemplateMsgForm implements IMsgForm {
 
         clearAllField();
 
-        TMsgMpTemplate tMsgMpTemplate = msgMpTemplateMapper.selectByPrimaryKey(msgId);
-        if (tMsgMpTemplate != null) {
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        if (tMsg != null) {
+            TMsgMpTemplate tMsgMpTemplate = JSONUtil.toBean(tMsg.getContent(), TMsgMpTemplate.class);
             selectedMsgTemplateId = tMsgMpTemplate.getTemplateId();
             initTemplateList();
 
@@ -168,14 +171,20 @@ public class MpTemplateMsgForm implements IMsgForm {
             mpTemplateMsgForm.getMsgTemplateMiniPagePathTextField().setText(tMsgMpTemplate.getMaPagePath());
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
-            messageEditForm.getMsgNameField().setText(tMsgMpTemplate.getMsgName());
-            messageEditForm.getPreviewUserField().setText(tMsgMpTemplate.getPreviewUser());
+            messageEditForm.getMsgNameField().setText(tMsg.getMsgName());
+            messageEditForm.getPreviewUserField().setText(tMsg.getPreviewUser());
         } else {
             initTemplateList();
         }
 
         initTemplateDataTable();
-        List<TemplateData> templateDataList = tMsgMpTemplate.getTemplateDataList();
+        List<TemplateData> templateDataList;
+        if (tMsg == null) {
+            templateDataList = new ArrayList<>();
+        } else {
+            TMsgMpTemplate tMsgMpTemplate = JSONUtil.toBean(tMsg.getContent(), TMsgMpTemplate.class);
+            templateDataList = tMsgMpTemplate.getTemplateDataList();
+        }
         if (templateDataList == null) {
             templateDataList = new ArrayList<>();
         }
@@ -187,10 +196,10 @@ public class MpTemplateMsgForm implements IMsgForm {
         int msgId = 0;
         boolean existSameMsg = false;
 
-        TMsgMpTemplate msgMpTemplate = msgMpTemplateMapper.selectByUnique(accountId, MessageTypeEnum.MP_TEMPLATE_CODE, msgName);
-        if (msgMpTemplate != null) {
+        TMsg tMsg = msgMapper.selectByUnique(accountId, MessageTypeEnum.MP_TEMPLATE_CODE, msgName);
+        if (tMsg != null) {
             existSameMsg = true;
-            msgId = msgMpTemplate.getId();
+            msgId = tMsg.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -208,19 +217,20 @@ public class MpTemplateMsgForm implements IMsgForm {
 
             String now = SqliteUtil.nowDateForSqlite();
 
+            TMsg msg = new TMsg();
             TMsgMpTemplate tMsgMpTemplate = new TMsgMpTemplate();
-            tMsgMpTemplate.setMsgType(MessageTypeEnum.MP_TEMPLATE_CODE);
-            tMsgMpTemplate.setAccountId(accountId);
-            tMsgMpTemplate.setMsgName(msgName);
+            msg.setMsgType(MessageTypeEnum.MP_TEMPLATE_CODE);
+            msg.setAccountId(accountId);
+            msg.setMsgName(msgName);
             tMsgMpTemplate.setTemplateId(templateId);
             tMsgMpTemplate.setUrl(templateUrl);
             tMsgMpTemplate.setMaAppid(templateMiniAppid);
             tMsgMpTemplate.setMaPagePath(templateMiniPagePath);
-            tMsgMpTemplate.setCreateTime(now);
-            tMsgMpTemplate.setModifiedTime(now);
+            msg.setCreateTime(now);
+            msg.setModifiedTime(now);
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
-            tMsgMpTemplate.setPreviewUser(messageEditForm.getPreviewUserField().getText());
+            msg.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             // 如果table为空，则初始化
             if (getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
@@ -247,11 +257,12 @@ public class MpTemplateMsgForm implements IMsgForm {
 
             tMsgMpTemplate.setTemplateDataList(templateDataList);
 
+            msg.setContent(JSONUtil.toJsonStr(tMsgMpTemplate));
             if (existSameMsg) {
-                tMsgMpTemplate.setId(msgId);
-                msgMpTemplateMapper.updateByPrimaryKeySelective(tMsgMpTemplate);
+                msg.setId(msgId);
+                msgMapper.updateByPrimaryKeySelective(msg);
             } else {
-                msgMpTemplateMapper.insertSelective(tMsgMpTemplate);
+                msgMapper.insertSelective(msg);
             }
 
             JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "保存成功！", "成功",
