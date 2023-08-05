@@ -21,7 +21,6 @@ import com.fangxuele.tool.push.domain.TTask;
 import com.fangxuele.tool.push.domain.TTaskHis;
 import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
-import com.fangxuele.tool.push.logic.msgthread.BaseMsgThread;
 import com.fangxuele.tool.push.logic.msgthread.MsgSendThread;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
@@ -188,7 +187,6 @@ public class TaskRunThread extends Thread {
         MsgSendThread msgSendThread;
         // 每个线程分配
         int perThread = (int) (totalRecords / threadCount) + 1;
-        BaseMsgThread.msgType = tMsg.getMsgType();
         for (int i = 0; i < threadCount; i++) {
             int startIndex = i * perThread;
             if (startIndex > totalRecords - 1) {
@@ -200,7 +198,7 @@ public class TaskRunThread extends Thread {
                 endIndex = (int) (totalRecords);
             }
 
-            IMsgSender msgSender = MsgSenderFactory.getMsgSender();
+            IMsgSender msgSender = MsgSenderFactory.getMsgSender(tMsg.getId(), dryRun);
             msgSendThread = new MsgSendThread(startIndex, endIndex, msgSender);
 
             msgSendThread.setTableRow(i);

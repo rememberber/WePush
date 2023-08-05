@@ -78,7 +78,7 @@ public class MsgSenderFactory {
         return iMsgSender;
     }
 
-    public static IMsgSender getMsgSender(Integer msgId, Boolean dryRun) {
+    public static IMsgSender getMsgSender(Integer msgId, Integer dryRun) {
         IMsgSender iMsgSender = null;
         switch (App.config.getMsgType()) {
             case MessageTypeEnum.MP_TEMPLATE_CODE:

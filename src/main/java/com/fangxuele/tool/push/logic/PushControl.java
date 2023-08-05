@@ -472,7 +472,7 @@ public class PushControl {
         }
 
         // 准备消息构造器
-        IMsgSender msgSender = MsgSenderFactory.getMsgSender(tMsgId, false);
+        IMsgSender msgSender = MsgSenderFactory.getMsgSender(tMsgId, 0);
 
         if (msgSender != null) {
             for (String[] msgData : msgDataList) {

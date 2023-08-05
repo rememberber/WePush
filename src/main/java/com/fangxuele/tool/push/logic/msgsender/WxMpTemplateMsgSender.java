@@ -41,12 +41,12 @@ public class WxMpTemplateMsgSender implements IMsgSender {
     private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
     private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
 
-    private Boolean dryRun;
+    private Integer dryRun;
 
     public WxMpTemplateMsgSender() {
     }
 
-    public WxMpTemplateMsgSender(Integer msgId, Boolean dryRun) {
+    public WxMpTemplateMsgSender(Integer msgId, Integer dryRun) {
         TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
         wxMpTemplateMsgMaker = new WxMpTemplateMsgMaker(tMsg);
         wxMpService = getWxMpService(tMsg.getAccountId());
@@ -61,7 +61,7 @@ public class WxMpTemplateMsgSender implements IMsgSender {
             String openId = msgData[0];
             WxMpTemplateMessage wxMessageTemplate = wxMpTemplateMsgMaker.makeMsg(msgData);
             wxMessageTemplate.setToUser(openId);
-            if (dryRun) {
+            if (dryRun == 1) {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
