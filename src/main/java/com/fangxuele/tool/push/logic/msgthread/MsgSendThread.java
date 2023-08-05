@@ -60,10 +60,6 @@ public class MsgSendThread extends BaseMsgThread {
                     PushData.increaseSuccess();
                     PushForm.getInstance().getPushSuccessCount().setText(String.valueOf(PushData.successRecords));
 
-                    // 当前线程发送成功+1
-                    successCountLocal.set(successCountLocal.get() + 1);
-                    pushTableLocal.get().setValueAt(successCountLocal.get(), tableRow, 2);
-
                     // 保存发送成功
                     PushData.sendSuccessList.add(msgData);
                 } else {
@@ -76,14 +72,7 @@ public class MsgSendThread extends BaseMsgThread {
 
                     // 失败异常信息输出控制台
                     ConsoleUtil.consoleOnly("发送失败:" + sendResult.getInfo() + ";msgData:" + JSONUtil.toJsonPrettyStr(msgData));
-
-                    // 当前线程发送失败+1
-                    failCountLocal.set(failCountLocal.get() + 1);
-                    pushTableLocal.get().setValueAt(failCountLocal.get(), tableRow, 3);
                 }
-
-                // 当前线程进度条
-                pushTableLocal.get().setValueAt((int) ((double) (i + 1) / list.size() * 100), tableRow, 5);
 
                 // 总进度条
                 PushForm.getInstance().getPushTotalProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
@@ -93,12 +82,7 @@ public class MsgSendThread extends BaseMsgThread {
             currentThreadFinish();
         } catch (Exception e) {
             logger.error(ExceptionUtils.getStackTrace(e));
-        } finally {
-            successCountLocal.remove();
-            failCountLocal.remove();
-            pushTableLocal.remove();
         }
-
     }
 
 }

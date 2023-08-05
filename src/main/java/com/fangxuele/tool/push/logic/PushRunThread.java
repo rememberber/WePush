@@ -147,7 +147,6 @@ public class PushRunThread extends Thread {
             IMsgSender msgSender = MsgSenderFactory.getMsgSender();
             msgSendThread = new MsgSendThread(startIndex, endIndex, msgSender);
 
-            msgSendThread.setTableRow(i);
             msgSendThread.setName("T-" + i);
 
             data = new Object[6];

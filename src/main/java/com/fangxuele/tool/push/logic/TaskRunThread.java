@@ -201,7 +201,6 @@ public class TaskRunThread extends Thread {
             IMsgSender msgSender = MsgSenderFactory.getMsgSender(tMsg.getId(), dryRun);
             msgSendThread = new MsgSendThread(startIndex, endIndex, msgSender);
 
-            msgSendThread.setTableRow(i);
             msgSendThread.setName("T-" + i);
 
             threadPoolExecutor.execute(msgSendThread);
