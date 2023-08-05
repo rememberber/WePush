@@ -109,6 +109,7 @@ public class MessageManageForm {
 
         // 隐藏id列
         JTableUtil.hideColumn(messageManageForm.getMsgHistable(), 1);
+
     }
 
     {

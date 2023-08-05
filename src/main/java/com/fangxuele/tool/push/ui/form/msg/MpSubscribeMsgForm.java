@@ -283,7 +283,7 @@ public class MpSubscribeMsgForm implements IMsgForm {
     /**
      * 填充模板参数表Table(从数据库读取)
      *
-     * @param msgId
+     * @param templateDataList
      */
     public static void fillTemplateDataTable(List<TemplateData> templateDataList) {
         // 模板消息Data表
