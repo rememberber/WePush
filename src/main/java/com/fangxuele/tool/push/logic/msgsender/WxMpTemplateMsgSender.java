@@ -1,8 +1,13 @@
 package com.fangxuele.tool.push.logic.msgsender;
 
+import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.bean.account.WxMpAccountConfig;
+import com.fangxuele.tool.push.dao.TAccountMapper;
+import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.WeWxMpServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.util.http.apache.DefaultApacheHttpClientBuilder;
@@ -11,6 +16,9 @@ import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
 import me.chanjar.weixin.mp.config.impl.WxMpDefaultConfigImpl;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <pre>
@@ -26,6 +34,10 @@ public class WxMpTemplateMsgSender implements IMsgSender {
     public volatile static WxMpService wxMpService;
     public volatile static CloseableHttpAsyncClient closeableHttpAsyncClient;
     private WxMpTemplateMsgMaker wxMpTemplateMsgMaker;
+
+    private static Map<Integer, WxMpService> wxMpServiceMap = new HashMap<>();
+
+    private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
 
     public WxMpTemplateMsgSender() {
         wxMpTemplateMsgMaker = new WxMpTemplateMsgMaker();
@@ -122,6 +134,51 @@ public class WxMpTemplateMsgSender implements IMsgSender {
             }
         }
         return wxMpService;
+    }
+
+    public static WxMpService getWxMpService(Integer accountId) {
+        if (wxMpServiceMap.containsKey(accountId)) {
+            return wxMpServiceMap.get(accountId);
+        } else {
+            TAccount tAccount = accountMapper.selectByPrimaryKey(accountId);
+            String accountConfig = tAccount.getAccountConfig();
+            WxMpAccountConfig wxMpAccountConfig = JSON.parseObject(accountConfig, WxMpAccountConfig.class);
+
+            WxMpDefaultConfigImpl wxMpConfigStorage = wxMpConfigStorage();
+            wxMpConfigStorage.setAppId(wxMpAccountConfig.getAppId());
+            wxMpConfigStorage.setSecret(wxMpAccountConfig.getAppSecret());
+            wxMpConfigStorage.setToken(wxMpAccountConfig.getToken());
+            wxMpConfigStorage.setAesKey(wxMpAccountConfig.getAesKey());
+            if (App.config.isMpUseProxy()) {
+                wxMpConfigStorage.setHttpProxyHost(App.config.getMpProxyHost());
+                wxMpConfigStorage.setHttpProxyPort(Integer.parseInt(App.config.getMpProxyPort()));
+                wxMpConfigStorage.setHttpProxyUsername(App.config.getMpProxyUserName());
+                wxMpConfigStorage.setHttpProxyPassword(App.config.getMpProxyPassword());
+            }
+            DefaultApacheHttpClientBuilder clientBuilder = DefaultApacheHttpClientBuilder.get();
+            //从连接池获取链接的超时时间(单位ms)
+            clientBuilder.setConnectionRequestTimeout(10000);
+            //建立链接的超时时间(单位ms)
+            clientBuilder.setConnectionTimeout(5000);
+            //连接池socket超时时间(单位ms)
+            clientBuilder.setSoTimeout(5000);
+            //空闲链接的超时时间(单位ms)
+            clientBuilder.setIdleConnTimeout(60000);
+            //空闲链接的检测周期(单位ms)
+            clientBuilder.setCheckWaitTime(3000);
+            //每路最大连接数
+            clientBuilder.setMaxConnPerHost(App.config.getMaxThreads());
+            //连接池最大连接数
+            clientBuilder.setMaxTotalConn(App.config.getMaxThreads());
+            //HttpClient请求时使用的User Agent
+//        clientBuilder.setUserAgent(..)
+            wxMpConfigStorage.setApacheHttpClientBuilder(clientBuilder);
+            WxMpService wxMpService = new WeWxMpServiceImpl();
+            wxMpService.setWxMpConfigStorage(wxMpConfigStorage);
+            wxMpServiceMap.put(accountId, wxMpService);
+            return wxMpService;
+        }
+
     }
 
 }

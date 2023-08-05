@@ -10,6 +10,7 @@ import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
 import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
+import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.UIUtil;
@@ -312,7 +313,18 @@ public class MpTemplateMsgForm implements IMsgForm {
         needListenTemplateListComboBox = false;
         try {
             templateMap = Maps.newHashMap();
-            templateList = WxMpTemplateMsgSender.getWxMpService().getTemplateMsgService().getAllPrivateTemplate();
+
+            MessageManageForm messageManageForm = MessageManageForm.getInstance();
+            String selectedAccountName = (String) messageManageForm.getAccountComboBox().getSelectedItem();
+            if (StringUtils.isEmpty(selectedAccountName)) {
+                return;
+            }
+            Integer selectedAccountId = MessageManageForm.accountMap.get(selectedAccountName);
+            if (selectedAccountId == null) {
+                return;
+            }
+
+            templateList = WxMpTemplateMsgSender.getWxMpService(selectedAccountId).getTemplateMsgService().getAllPrivateTemplate();
             getInstance().getTemplateListComboBox().removeAllItems();
             int selectedIndex = 0;
             for (int i = 0; i < templateList.size(); i++) {
