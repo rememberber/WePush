@@ -31,8 +31,8 @@ public class WxUniformMsgSender implements IMsgSender {
     private WxMaSubscribeMsgMaker wxMaSubscribeMsgMaker;
 
     public WxUniformMsgSender() {
-        wxMpTemplateMsgMaker = new WxMpTemplateMsgMaker();
-        wxMaSubscribeMsgMaker = new WxMaSubscribeMsgMaker();
+//        wxMpTemplateMsgMaker = new WxMpTemplateMsgMaker();
+//        wxMaSubscribeMsgMaker = new WxMaSubscribeMsgMaker();
     }
 
     @Override

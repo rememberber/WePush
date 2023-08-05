@@ -17,7 +17,6 @@ import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.ui.form.msg.DingMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.MsgFormFactory;
-import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
 import com.fangxuele.tool.push.ui.frame.HttpResultFrame;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -106,14 +105,7 @@ public class MessageEditListener {
                     return;
                 }
 
-                if (tMsg.getMsgType() == MessageTypeEnum.WX_CP_CODE
-                        && WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem() == null) {
-                    JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "请选择应用！", "失败",
-                            JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                List<SendResult> sendResultList = PushControl.preview();
+                List<SendResult> sendResultList = PushControl.preview(tMsg.getId());
                 if (sendResultList != null) {
 
                     StringBuilder tipsBuilder = new StringBuilder();
@@ -129,7 +121,7 @@ public class MessageEditListener {
                     sendResultList.stream().filter(sendResult -> !sendResult.isSuccess())
                             .forEach(sendResult -> tipsBuilder.append("<p>").append(sendResult.getInfo()).append("</p>"));
 
-                    if (App.config.getMsgType() == MessageTypeEnum.HTTP_CODE && totalCount == successCount) {
+                    if (tMsg.getMsgType() == MessageTypeEnum.HTTP_CODE && totalCount == successCount) {
                         HttpSendResult httpSendResult = (HttpSendResult) sendResultList.get(0);
                         HttpResultForm.getInstance().getBodyTextArea().setText(httpSendResult.getBody());
                         HttpResultForm.getInstance().getBodyTextArea().setCaretPosition(0);

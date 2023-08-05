@@ -93,7 +93,7 @@ public class InfinityPushRunThread extends Thread {
         ConsoleUtil.infinityConsoleWithLog("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
 
         // 准备消息构造器
-        PushControl.prepareMsgMaker();
+//        PushControl.prepareMsgMaker();
     }
 
     /**

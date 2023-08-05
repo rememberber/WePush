@@ -1,6 +1,7 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 
 /**
@@ -18,11 +19,11 @@ public class MsgMakerFactory {
      *
      * @return IMsgMaker
      */
-    public static IMsgMaker getMsgMaker() {
+    public static IMsgMaker getMsgMaker(TMsg tMsg) {
         IMsgMaker iMsgMaker = null;
         switch (App.config.getMsgType()) {
             case MessageTypeEnum.MP_TEMPLATE_CODE:
-                iMsgMaker = new WxMpTemplateMsgMaker();
+                iMsgMaker = new WxMpTemplateMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.MA_SUBSCRIBE_CODE:
                 iMsgMaker = new WxMaSubscribeMsgMaker();

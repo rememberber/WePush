@@ -170,9 +170,6 @@ public class TaskRunThread extends Thread {
 
         ConsoleUtil.consoleWithLog("线程池大小：" + App.config.getMaxThreads());
 
-        // 准备消息构造器
-        PushControl.prepareMsgMaker();
-
         // 线程数
         threadCount = tTask.getThreadCnt();
 

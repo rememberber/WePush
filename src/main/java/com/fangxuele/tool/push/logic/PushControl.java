@@ -9,10 +9,6 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPushHistoryMapper;
 import com.fangxuele.tool.push.domain.TPushHistory;
-import com.fangxuele.tool.push.logic.msgmaker.MsgMakerFactory;
-import com.fangxuele.tool.push.logic.msgmaker.WxKefuMsgMaker;
-import com.fangxuele.tool.push.logic.msgmaker.WxMaSubscribeMsgMaker;
-import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
 import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
@@ -77,7 +73,7 @@ public class PushControl {
         }
 
         // 准备消息构造器
-        prepareMsgMaker();
+//        prepareMsgMaker();
         IMsgSender msgSender = MsgSenderFactory.getMsgSender();
 
         dryRun = false;
@@ -416,21 +412,6 @@ public class PushControl {
     }
 
     /**
-     * 准备消息构造器
-     */
-    static void prepareMsgMaker() {
-        if (App.config.getMsgType() == MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE) {
-            new WxMpTemplateMsgMaker().prepare();
-            new WxMaSubscribeMsgMaker().prepare();
-        } else if (App.config.getMsgType() == MessageTypeEnum.KEFU_PRIORITY_CODE) {
-            new WxKefuMsgMaker().prepare();
-            new WxMpTemplateMsgMaker().prepare();
-        } else {
-            MsgMakerFactory.getMsgMaker().prepare();
-        }
-    }
-
-    /**
      * 重新导入目标用户(定时任务)
      */
     public static void reimportMembers() {
@@ -480,4 +461,27 @@ public class PushControl {
         }
     }
 
+    public static List<SendResult> preview(Integer tMsgId) {
+        List<SendResult> sendResultList = new ArrayList<>();
+//        if (!configCheck()) {
+//            return null;
+//        }
+        List<String[]> msgDataList = new ArrayList<>();
+        for (String data : MessageEditForm.getInstance().getPreviewUserField().getText().split(";")) {
+            msgDataList.add(data.split(MemberListener.TXT_FILE_DATA_SEPERATOR_REGEX));
+        }
+
+        // 准备消息构造器
+        IMsgSender msgSender = MsgSenderFactory.getMsgSender(tMsgId, false);
+
+        if (msgSender != null) {
+            for (String[] msgData : msgDataList) {
+                sendResultList.add(msgSender.send(msgData));
+            }
+        } else {
+            return null;
+        }
+
+        return sendResultList;
+    }
 }

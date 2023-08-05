@@ -4,8 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.account.WxMpAccountConfig;
 import com.fangxuele.tool.push.dao.TAccountMapper;
+import com.fangxuele.tool.push.dao.TMsgMapper;
 import com.fangxuele.tool.push.domain.TAccount;
-import com.fangxuele.tool.push.logic.PushControl;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.WeWxMpServiceImpl;
@@ -38,10 +39,18 @@ public class WxMpTemplateMsgSender implements IMsgSender {
     private static Map<Integer, WxMpService> wxMpServiceMap = new HashMap<>();
 
     private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
+
+    private Boolean dryRun;
 
     public WxMpTemplateMsgSender() {
-        wxMpTemplateMsgMaker = new WxMpTemplateMsgMaker();
-        wxMpService = getWxMpService();
+    }
+
+    public WxMpTemplateMsgSender(Integer msgId, Boolean dryRun) {
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        wxMpTemplateMsgMaker = new WxMpTemplateMsgMaker(tMsg);
+        wxMpService = getWxMpService(tMsg.getAccountId());
+        this.dryRun = dryRun;
     }
 
     @Override
@@ -52,7 +61,7 @@ public class WxMpTemplateMsgSender implements IMsgSender {
             String openId = msgData[0];
             WxMpTemplateMessage wxMessageTemplate = wxMpTemplateMsgMaker.makeMsg(msgData);
             wxMessageTemplate.setToUser(openId);
-            if (PushControl.dryRun) {
+            if (dryRun) {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {

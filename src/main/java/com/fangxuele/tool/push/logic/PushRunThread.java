@@ -101,7 +101,7 @@ public class PushRunThread extends Thread {
         ConsoleUtil.consoleWithLog("线程池大小：" + App.config.getMaxThreads());
 
         // 准备消息构造器
-        PushControl.prepareMsgMaker();
+//        PushControl.prepareMsgMaker();
 
         // 线程数
         PushData.threadCount = Integer.parseInt(pushForm.getThreadCountTextField().getText());

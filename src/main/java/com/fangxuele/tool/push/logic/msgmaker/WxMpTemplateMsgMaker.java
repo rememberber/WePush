@@ -1,6 +1,9 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
+import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.bean.TemplateData;
+import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.domain.TMsgMpTemplate;
 import com.fangxuele.tool.push.ui.form.msg.MpTemplateMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
@@ -21,15 +24,24 @@ import java.util.List;
  */
 public class WxMpTemplateMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
-    public static String templateId;
+    public String templateId;
 
-    private static String templateUrl;
+    private String templateUrl;
 
-    private static String miniAppId;
+    private String miniAppId;
 
-    private static String miniAppPagePath;
+    private String miniAppPagePath;
 
-    public static List<TemplateData> templateDataList;
+    public List<TemplateData> templateDataList;
+
+    public WxMpTemplateMsgMaker(TMsg tMsg) {
+        TMsgMpTemplate tMsgWxMpTemplate = JSON.parseObject(tMsg.getContent(), TMsgMpTemplate.class);
+        this.templateId = tMsgWxMpTemplate.getTemplateId();
+        this.templateUrl = tMsgWxMpTemplate.getUrl();
+        this.miniAppId = tMsgWxMpTemplate.getMaAppid();
+        this.miniAppPagePath = tMsgWxMpTemplate.getMaPagePath();
+        this.templateDataList = tMsgWxMpTemplate.getTemplateDataList();
+    }
 
     /**
      * 准备(界面字段等)
