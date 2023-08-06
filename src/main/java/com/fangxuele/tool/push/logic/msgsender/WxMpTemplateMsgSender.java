@@ -190,4 +190,8 @@ public class WxMpTemplateMsgSender implements IMsgSender {
 
     }
 
+    public static void removeAccount(Integer accountId) {
+        wxMpServiceMap.remove(accountId);
+    }
+
 }

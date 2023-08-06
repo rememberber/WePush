@@ -80,6 +80,7 @@ public class MsgSenderFactory {
 
     public static IMsgSender getMsgSender(Integer msgId, Integer dryRun) {
         IMsgSender iMsgSender = null;
+        // TODO
         switch (App.config.getMsgType()) {
             case MessageTypeEnum.MP_TEMPLATE_CODE:
                 iMsgSender = new WxMpTemplateMsgSender(msgId, dryRun);
