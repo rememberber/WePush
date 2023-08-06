@@ -27,16 +27,17 @@ import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.LongAdder;
 
 /**
  * <pre>
@@ -46,6 +47,8 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
  * @since 2023/8/03
  */
+@Getter
+@Setter
 public class TaskRunThread extends Thread {
 
     private static final Log logger = LogFactory.get();
@@ -53,6 +56,21 @@ public class TaskRunThread extends Thread {
     private Integer taskId;
 
     private Integer dryRun;
+
+    /**
+     * 发送成功数
+     */
+    public LongAdder successRecords = new LongAdder();
+
+    /**
+     * 发送失败数
+     */
+    public LongAdder failRecords = new LongAdder();
+
+    /**
+     * 停止标志
+     */
+    public volatile boolean running = false;
 
     private Long startTime;
 
@@ -88,6 +106,8 @@ public class TaskRunThread extends Thread {
      */
     public List<String[]> sendFailList;
 
+    private TTask tTask;
+
     public Integer getTaskId() {
         return taskId;
     }
@@ -119,7 +139,7 @@ public class TaskRunThread extends Thread {
     @Override
     public void run() {
         // 准备推送
-        TTask tTask = taskMapper.selectByPrimaryKey(taskId);
+        this.tTask = taskMapper.selectByPrimaryKey(taskId);
 
         preparePushRun(tTask);
         ConsoleUtil.consoleWithLog("推送开始……");
@@ -199,7 +219,7 @@ public class TaskRunThread extends Thread {
             }
 
             IMsgSender msgSender = MsgSenderFactory.getMsgSender(tMsg.getId(), dryRun);
-            msgSendThread = new MsgSendThread(startIndex, endIndex, msgSender);
+            msgSendThread = new MsgSendThread(startIndex, endIndex, msgSender, this);
 
             msgSendThread.setName("T-" + i);
 
@@ -294,16 +314,26 @@ public class TaskRunThread extends Thread {
         }
     }
 
+    /**
+     * 成功数+1
+     */
+    public void increaseSuccess() {
+        successRecords.add(1);
+    }
+
+    /**
+     * 失败数+1
+     */
+    public void increaseFail() {
+        failRecords.add(1);
+    }
+
     private void resetLocalData() {
-//        running = true;
-//        processedRecords.reset();
-//        successRecords.reset();
-//        failRecords.reset();
+        running = true;
+        successRecords.reset();
+        failRecords.reset();
         threadCount = 0;
         toSendList = Collections.synchronizedList(new LinkedList<>());
-//        toSendConcurrentLinkedQueue = new ConcurrentLinkedQueue<>();
-//        activeThreadConcurrentLinkedQueue = new ConcurrentLinkedQueue<>();
-//        threadStatusMap = new HashMap<>(100);
         sendSuccessList = Collections.synchronizedList(new LinkedList<>());
         sendFailList = Collections.synchronizedList(new LinkedList<>());
         startTime = 0L;

@@ -2,7 +2,7 @@ package com.fangxuele.tool.push.logic.msgthread;
 
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
-import com.fangxuele.tool.push.logic.PushData;
+import com.fangxuele.tool.push.logic.TaskRunThread;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 
 import java.util.List;
@@ -34,6 +34,8 @@ public class BaseMsgThread extends Thread {
      */
     public List<String[]> list;
 
+    protected TaskRunThread taskRunThread;
+
     public static int msgType;
 
     /**
@@ -47,6 +49,12 @@ public class BaseMsgThread extends Thread {
         this.endIndex = end;
     }
 
+    public BaseMsgThread(int startIndex, int endIndex, TaskRunThread taskRunThread) {
+        this.startIndex = startIndex;
+        this.endIndex = endIndex;
+        this.taskRunThread = taskRunThread;
+    }
+
     @Override
     public void run() {
 
@@ -58,7 +66,7 @@ public class BaseMsgThread extends Thread {
     public void initCurrentThread() {
         ConsoleUtil.consoleWithLog("线程" + this.getName() + "负责处理第:" + startIndex + "-" + endIndex + "条数据");
 
-        list = PushData.toSendList.subList(startIndex, endIndex);
+        list = taskRunThread.getToSendList().subList(startIndex, endIndex);
 
     }
 

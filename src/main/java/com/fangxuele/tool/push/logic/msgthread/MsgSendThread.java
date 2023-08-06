@@ -2,11 +2,9 @@ package com.fangxuele.tool.push.logic.msgthread;
 
 import cn.hutool.json.JSONUtil;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
-import com.fangxuele.tool.push.logic.PushControl;
-import com.fangxuele.tool.push.logic.PushData;
+import com.fangxuele.tool.push.logic.TaskRunThread;
 import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.SendResult;
-import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bouncycastle.util.Arrays;
@@ -34,6 +32,11 @@ public class MsgSendThread extends BaseMsgThread {
         this.iMsgSender = iMsgSender;
     }
 
+    public MsgSendThread(int startIndex, int endIndex, IMsgSender msgSender, TaskRunThread taskRunThread) {
+        super(startIndex, endIndex, taskRunThread);
+        this.iMsgSender = msgSender;
+    }
+
     @Override
     public void run() {
         try {
@@ -41,7 +44,7 @@ public class MsgSendThread extends BaseMsgThread {
             initCurrentThread();
 
             for (int i = 0; i < list.size(); i++) {
-                if (!PushData.running) {
+                if (!taskRunThread.running) {
                     // 停止
                     return;
                 }
@@ -50,32 +53,27 @@ public class MsgSendThread extends BaseMsgThread {
                 String[] msgData = list.get(i);
                 SendResult sendResult = iMsgSender.send(msgData);
 
-                if (msgType == MessageTypeEnum.HTTP_CODE && PushControl.saveResponseBody) {
+                if (taskRunThread.getTTask().getMsgType() == MessageTypeEnum.HTTP_CODE && taskRunThread.getTTask().getSaveResult() == 1) {
                     String body = sendResult.getInfo() == null ? "" : sendResult.getInfo();
                     msgData = Arrays.append(msgData, body);
                 }
 
                 if (sendResult.isSuccess()) {
                     // 总发送成功+1
-                    PushData.increaseSuccess();
-                    PushForm.getInstance().getPushSuccessCount().setText(String.valueOf(PushData.successRecords));
+                    taskRunThread.increaseSuccess();
 
                     // 保存发送成功
-                    PushData.sendSuccessList.add(msgData);
+                    taskRunThread.sendSuccessList.add(msgData);
                 } else {
                     // 总发送失败+1
-                    PushData.increaseFail();
-                    PushForm.getInstance().getPushFailCount().setText(String.valueOf(PushData.failRecords));
+                    taskRunThread.increaseFail();
 
                     // 保存发送失败
-                    PushData.sendFailList.add(msgData);
+                    taskRunThread.sendFailList.add(msgData);
 
                     // 失败异常信息输出控制台
                     ConsoleUtil.consoleOnly("发送失败:" + sendResult.getInfo() + ";msgData:" + JSONUtil.toJsonPrettyStr(msgData));
                 }
-
-                // 总进度条
-                PushForm.getInstance().getPushTotalProgressBar().setValue(PushData.successRecords.intValue() + PushData.failRecords.intValue());
             }
 
             // 当前线程结束
