@@ -92,6 +92,7 @@ public class WxMpAccountForm implements IAccountForm {
 
                 if (existSameAccount) {
                     accountMapper.updateByMsgTypeAndAccountName(tAccount1);
+                    // TODO 其他accountform也要加上
                     WxMpTemplateMsgSender.removeAccount(tAccount.getId());
                 } else {
                     tAccount1.setCreateTime(now);
