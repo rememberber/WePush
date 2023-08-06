@@ -40,7 +40,7 @@ public class TaskForm {
     private JButton deleteButton;
     private JButton 修改Button;
     private JButton 空跑测试Button;
-    private JButton 立即执行Button;
+    private JButton startButton;
     private JTable taskHisListTable;
     private JButton 刷新Button;
     private JButton 停止Button;
@@ -202,10 +202,10 @@ public class TaskForm {
         空跑测试Button.setIcon(new ImageIcon(getClass().getResource("/icon/remove.png")));
         空跑测试Button.setText("空跑测试");
         panel2.add(空跑测试Button, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        立即执行Button = new JButton();
-        立即执行Button.setIcon(new ImageIcon(getClass().getResource("/icon/remove.png")));
-        立即执行Button.setText("立即执行");
-        panel2.add(立即执行Button, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        startButton = new JButton();
+        startButton.setIcon(new ImageIcon(getClass().getResource("/icon/remove.png")));
+        startButton.setText("立即执行");
+        panel2.add(startButton, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
         panel2.add(spacer1, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
