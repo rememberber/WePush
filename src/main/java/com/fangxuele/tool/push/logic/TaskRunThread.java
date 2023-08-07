@@ -194,8 +194,7 @@ public class TaskRunThread extends Thread {
 
         // 线程数
         ConsoleUtil.consoleWithLog("线程数：" + tTask.getThreadCnt());
-
-        ConsoleUtil.consoleWithLog("线程池大小：" + App.config.getMaxThreads());
+        ConsoleUtil.consoleWithLog("线程池大小：" + tTask.getThreadCnt());
 
         // 线程数
         threadCount = tTask.getThreadCnt();
@@ -222,7 +221,7 @@ public class TaskRunThread extends Thread {
      */
     private ThreadPoolExecutor shardingAndMsgThread(TMsg tMsg) {
 
-        int maxThreadPoolSize = App.config.getMaxThreads();
+        int maxThreadPoolSize = tTask.getThreadCnt();
         ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(maxThreadPoolSize, maxThreadPoolSize);
         MsgSendThread msgSendThread;
         // 每个线程分配
