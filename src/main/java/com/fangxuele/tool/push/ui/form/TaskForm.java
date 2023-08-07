@@ -39,7 +39,7 @@ public class TaskForm {
     private JScrollPane taskListScrollPane;
     private JButton deleteButton;
     private JButton 修改Button;
-    private JButton 空跑测试Button;
+    private JButton startDryRunButton;
     private JButton startButton;
     private JTable taskHisListTable;
     private JButton 刷新Button;
@@ -198,10 +198,10 @@ public class TaskForm {
         修改Button.setIcon(new ImageIcon(getClass().getResource("/icon/add.png")));
         修改Button.setText("修改");
         panel2.add(修改Button, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        空跑测试Button = new JButton();
-        空跑测试Button.setIcon(new ImageIcon(getClass().getResource("/icon/remove.png")));
-        空跑测试Button.setText("空跑测试");
-        panel2.add(空跑测试Button, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        startDryRunButton = new JButton();
+        startDryRunButton.setIcon(new ImageIcon(getClass().getResource("/icon/remove.png")));
+        startDryRunButton.setText("空跑测试");
+        panel2.add(startDryRunButton, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         startButton = new JButton();
         startButton.setIcon(new ImageIcon(getClass().getResource("/icon/remove.png")));
         startButton.setText("立即执行");

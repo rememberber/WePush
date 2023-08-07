@@ -147,7 +147,7 @@ public class TaskRunThread extends Thread {
         TMsg tMsg = msgMapper.selectByPrimaryKey(tTask.getMessageId());
         ThreadPoolExecutor threadPoolExecutor = shardingAndMsgThread(tMsg);
         // 时间监控
-        timeMonitor(threadPoolExecutor);
+//        timeMonitor(threadPoolExecutor);
     }
 
     /**
