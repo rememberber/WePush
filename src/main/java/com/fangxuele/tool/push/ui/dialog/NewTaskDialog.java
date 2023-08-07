@@ -73,6 +73,7 @@ public class NewTaskDialog extends JDialog {
     private JTextField threadCntTextField;
     private JCheckBox saveResponseBodyCheckBox;
     private JPanel otherPanel;
+    private JTextField maxThreadCntTextField;
 
     private static TTaskMapper taskMapper = MybatisUtil.getSqlSession().getMapper(TTaskMapper.class);
     private static TTaskExtMapper taskExtMapper = MybatisUtil.getSqlSession().getMapper(TTaskExtMapper.class);
@@ -266,6 +267,7 @@ public class NewTaskDialog extends JDialog {
         scrollPane.getVerticalScrollBar().setDoubleBuffered(true);
         schedulePanel.setVisible(false);
         threadCntTextField.setText("8");
+        maxThreadCntTextField.setText("100");
     }
 
     private void initData() {
@@ -500,6 +502,7 @@ public class NewTaskDialog extends JDialog {
                 task.setPeopleId(peopleMap.get((String) peopleComboBox.getSelectedItem()));
                 task.setTaskMode(getTaskMode());
                 task.setThreadCnt(Integer.parseInt(threadCntTextField.getText().trim()));
+                task.setMaxThreadCnt(Integer.parseInt(maxThreadCntTextField.getText().trim()));
                 task.setTaskPeriod(getTaskPeriod());
                 task.setPeriodType(getPeriodType());
                 task.setPeriodTime(getPeriodTime());
@@ -556,6 +559,14 @@ public class NewTaskDialog extends JDialog {
             JOptionPane.showMessageDialog(this, "线程数不能为空！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
             return true;
+        }
+        // 如果是变速模式，最大线程数不能为空
+        if (infinityModeRadioButton.isSelected()) {
+            if (StringUtils.isBlank(maxThreadCntTextField.getText())) {
+                JOptionPane.showMessageDialog(this, "最大线程数不能为空！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return true;
+            }
         }
         if (scheduleTaskRadioButton.isSelected()) {
             if (runAtThisTimeRadioButton.isSelected()) {
@@ -794,7 +805,7 @@ public class NewTaskDialog extends JDialog {
         triggerTaskRadioButton.setText("触发任务");
         panel6.add(triggerTaskRadioButton, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel7 = new JPanel();
-        panel7.setLayout(new GridLayoutManager(1, 6, new Insets(0, 0, 0, 0), -1, -1));
+        panel7.setLayout(new GridLayoutManager(1, 8, new Insets(0, 0, 0, 0), -1, -1));
         panel5.add(panel7, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label12 = new JLabel();
         label12.setText("模式");
@@ -807,12 +818,18 @@ public class NewTaskDialog extends JDialog {
         infinityModeRadioButton.setText("变速模式");
         panel7.add(infinityModeRadioButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         threadCntTextField = new JTextField();
+        threadCntTextField.setHorizontalAlignment(2);
         panel7.add(threadCntTextField, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(50, -1), new Dimension(50, -1), 0, false));
         final JLabel label13 = new JLabel();
         label13.setText("线程数");
         panel7.add(label13, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer4 = new Spacer();
-        panel7.add(spacer4, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        panel7.add(spacer4, new GridConstraints(0, 7, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        final JLabel label14 = new JLabel();
+        label14.setText("最大线程数");
+        panel7.add(label14, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        maxThreadCntTextField = new JTextField();
+        panel7.add(maxThreadCntTextField, new GridConstraints(0, 6, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(50, -1), new Dimension(50, -1), 0, false));
         final JPanel panel8 = new JPanel();
         panel8.setLayout(new GridLayoutManager(2, 2, new Insets(10, 10, 10, 10), -1, -1));
         panel3.add(panel8, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));

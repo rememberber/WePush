@@ -27,6 +27,8 @@ public class TTask implements Serializable {
 
     private Integer threadCnt;
 
+    private Integer maxThreadCnt;
+
     private Integer reimportPeople;
 
     private Integer resultAlert;
@@ -137,6 +139,14 @@ public class TTask implements Serializable {
 
     public void setThreadCnt(Integer threadCnt) {
         this.threadCnt = threadCnt;
+    }
+
+    public Integer getMaxThreadCnt() {
+        return maxThreadCnt;
+    }
+
+    public void setMaxThreadCnt(Integer maxThreadCnt) {
+        this.maxThreadCnt = maxThreadCnt;
     }
 
     public Integer getReimportPeople() {

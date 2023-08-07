@@ -2,29 +2,30 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fangxuele.tool.push.dao.TTaskExtMapper">
     <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TTask">
-        <id column="id" jdbcType="INTEGER" property="id" />
-        <result column="title" jdbcType="VARCHAR" property="title" />
-        <result column="msg_type" jdbcType="INTEGER" property="msgType" />
-        <result column="account_id" jdbcType="INTEGER" property="accountId" />
-        <result column="message_id" jdbcType="INTEGER" property="messageId" />
-        <result column="people_id" jdbcType="INTEGER" property="peopleId" />
-        <result column="task_mode" jdbcType="INTEGER" property="taskMode" />
-        <result column="task_period" jdbcType="INTEGER" property="taskPeriod" />
-        <result column="period_type" jdbcType="INTEGER" property="periodType" />
-        <result column="period_time" jdbcType="VARCHAR" property="periodTime" />
-        <result column="cron" jdbcType="VARCHAR" property="cron" />
-        <result column="thread_cnt" jdbcType="INTEGER" property="threadCnt" />
-        <result column="reimport_people" jdbcType="INTEGER" property="reimportPeople" />
-        <result column="result_alert" jdbcType="INTEGER" property="resultAlert" />
-        <result column="alert_emails" jdbcType="VARCHAR" property="alertEmails" />
-        <result column="save_result" jdbcType="INTEGER" property="saveResult" />
-        <result column="remark" jdbcType="VARCHAR" property="remark" />
-        <result column="create_time" jdbcType="VARCHAR" property="createTime" />
-        <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime" />
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="msg_type" jdbcType="INTEGER" property="msgType"/>
+        <result column="account_id" jdbcType="INTEGER" property="accountId"/>
+        <result column="message_id" jdbcType="INTEGER" property="messageId"/>
+        <result column="people_id" jdbcType="INTEGER" property="peopleId"/>
+        <result column="task_mode" jdbcType="INTEGER" property="taskMode"/>
+        <result column="task_period" jdbcType="INTEGER" property="taskPeriod"/>
+        <result column="period_type" jdbcType="INTEGER" property="periodType"/>
+        <result column="period_time" jdbcType="VARCHAR" property="periodTime"/>
+        <result column="cron" jdbcType="VARCHAR" property="cron"/>
+        <result column="thread_cnt" jdbcType="INTEGER" property="threadCnt"/>
+        <result column="max_thread_cnt" jdbcType="INTEGER" property="maxThreadCnt"/>
+        <result column="reimport_people" jdbcType="INTEGER" property="reimportPeople"/>
+        <result column="result_alert" jdbcType="INTEGER" property="resultAlert"/>
+        <result column="alert_emails" jdbcType="VARCHAR" property="alertEmails"/>
+        <result column="save_result" jdbcType="INTEGER" property="saveResult"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
+        <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime"/>
     </resultMap>
     <sql id="Base_Column_List">
         id, title, msg_type, account_id, message_id, people_id, task_mode, task_period, period_type,
-        period_time, cron, thread_cnt, reimport_people, result_alert, alert_emails, save_result,
+        period_time, cron, thread_cnt, max_thread_cnt, reimport_people, result_alert, alert_emails, save_result,
         remark, create_time, modified_time
     </sql>
     <select id="selectByTitle" parameterType="java.lang.String" resultMap="BaseResultMap">

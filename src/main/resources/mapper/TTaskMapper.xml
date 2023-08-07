@@ -1,259 +1,271 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fangxuele.tool.push.dao.TTaskMapper">
-  <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TTask">
-    <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="title" jdbcType="VARCHAR" property="title" />
-    <result column="msg_type" jdbcType="INTEGER" property="msgType" />
-    <result column="account_id" jdbcType="INTEGER" property="accountId" />
-    <result column="message_id" jdbcType="INTEGER" property="messageId" />
-    <result column="people_id" jdbcType="INTEGER" property="peopleId" />
-    <result column="task_mode" jdbcType="INTEGER" property="taskMode" />
-    <result column="task_period" jdbcType="INTEGER" property="taskPeriod" />
-    <result column="period_type" jdbcType="INTEGER" property="periodType" />
-    <result column="period_time" jdbcType="VARCHAR" property="periodTime" />
-    <result column="cron" jdbcType="VARCHAR" property="cron" />
-    <result column="thread_cnt" jdbcType="INTEGER" property="threadCnt" />
-    <result column="reimport_people" jdbcType="INTEGER" property="reimportPeople" />
-    <result column="result_alert" jdbcType="INTEGER" property="resultAlert" />
-    <result column="alert_emails" jdbcType="VARCHAR" property="alertEmails" />
-    <result column="save_result" jdbcType="INTEGER" property="saveResult" />
-    <result column="remark" jdbcType="VARCHAR" property="remark" />
-    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
-    <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    id, title, msg_type, account_id, message_id, people_id, task_mode, task_period, period_type, 
-    period_time, cron, thread_cnt, reimport_people, result_alert, alert_emails, save_result, 
-    remark, create_time, modified_time
-  </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from t_task
-    where id = #{id,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from t_task
-    where id = #{id,jdbcType=INTEGER}
-  </delete>
-  <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TTask">
-    insert into t_task (id, title, msg_type, 
-      account_id, message_id, people_id, 
-      task_mode, task_period, period_type, 
-      period_time, cron, thread_cnt, 
-      reimport_people, result_alert, alert_emails, 
-      save_result, remark, create_time, 
-      modified_time)
-    values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{msgType,jdbcType=INTEGER},
-      #{accountId,jdbcType=INTEGER}, #{messageId,jdbcType=INTEGER}, #{peopleId,jdbcType=INTEGER}, 
-      #{taskMode,jdbcType=INTEGER}, #{taskPeriod,jdbcType=INTEGER}, #{periodType,jdbcType=INTEGER}, 
-      #{periodTime,jdbcType=VARCHAR}, #{cron,jdbcType=VARCHAR}, #{threadCnt,jdbcType=INTEGER}, 
-      #{reimportPeople,jdbcType=INTEGER}, #{resultAlert,jdbcType=INTEGER}, #{alertEmails,jdbcType=VARCHAR}, 
-      #{saveResult,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, 
-      #{modifiedTime,jdbcType=VARCHAR})
-  </insert>
-  <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TTask">
-    insert into t_task
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="title != null">
-        title,
-      </if>
-      <if test="msgType != null">
-        msg_type,
-      </if>
-      <if test="accountId != null">
-        account_id,
-      </if>
-      <if test="messageId != null">
-        message_id,
-      </if>
-      <if test="peopleId != null">
-        people_id,
-      </if>
-      <if test="taskMode != null">
-        task_mode,
-      </if>
-      <if test="taskPeriod != null">
-        task_period,
-      </if>
-      <if test="periodType != null">
-        period_type,
-      </if>
-      <if test="periodTime != null">
-        period_time,
-      </if>
-      <if test="cron != null">
-        cron,
-      </if>
-      <if test="threadCnt != null">
-        thread_cnt,
-      </if>
-      <if test="reimportPeople != null">
-        reimport_people,
-      </if>
-      <if test="resultAlert != null">
-        result_alert,
-      </if>
-      <if test="alertEmails != null">
-        alert_emails,
-      </if>
-      <if test="saveResult != null">
-        save_result,
-      </if>
-      <if test="remark != null">
-        remark,
-      </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
-      <if test="modifiedTime != null">
-        modified_time,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=INTEGER},
-      </if>
-      <if test="title != null">
-        #{title,jdbcType=VARCHAR},
-      </if>
-      <if test="msgType != null">
-        #{msgType,jdbcType=INTEGER},
-      </if>
-      <if test="accountId != null">
-        #{accountId,jdbcType=INTEGER},
-      </if>
-      <if test="messageId != null">
-        #{messageId,jdbcType=INTEGER},
-      </if>
-      <if test="peopleId != null">
-        #{peopleId,jdbcType=INTEGER},
-      </if>
-      <if test="taskMode != null">
-        #{taskMode,jdbcType=INTEGER},
-      </if>
-      <if test="taskPeriod != null">
-        #{taskPeriod,jdbcType=INTEGER},
-      </if>
-      <if test="periodType != null">
-        #{periodType,jdbcType=INTEGER},
-      </if>
-      <if test="periodTime != null">
-        #{periodTime,jdbcType=VARCHAR},
-      </if>
-      <if test="cron != null">
-        #{cron,jdbcType=VARCHAR},
-      </if>
-      <if test="threadCnt != null">
-        #{threadCnt,jdbcType=INTEGER},
-      </if>
-      <if test="reimportPeople != null">
-        #{reimportPeople,jdbcType=INTEGER},
-      </if>
-      <if test="resultAlert != null">
-        #{resultAlert,jdbcType=INTEGER},
-      </if>
-      <if test="alertEmails != null">
-        #{alertEmails,jdbcType=VARCHAR},
-      </if>
-      <if test="saveResult != null">
-        #{saveResult,jdbcType=INTEGER},
-      </if>
-      <if test="remark != null">
-        #{remark,jdbcType=VARCHAR},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=VARCHAR},
-      </if>
-      <if test="modifiedTime != null">
-        #{modifiedTime,jdbcType=VARCHAR},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.fangxuele.tool.push.domain.TTask">
-    update t_task
-    <set>
-      <if test="title != null">
-        title = #{title,jdbcType=VARCHAR},
-      </if>
-      <if test="msgType != null">
+    <resultMap id="BaseResultMap" type="com.fangxuele.tool.push.domain.TTask">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="msg_type" jdbcType="INTEGER" property="msgType"/>
+        <result column="account_id" jdbcType="INTEGER" property="accountId"/>
+        <result column="message_id" jdbcType="INTEGER" property="messageId"/>
+        <result column="people_id" jdbcType="INTEGER" property="peopleId"/>
+        <result column="task_mode" jdbcType="INTEGER" property="taskMode"/>
+        <result column="task_period" jdbcType="INTEGER" property="taskPeriod"/>
+        <result column="period_type" jdbcType="INTEGER" property="periodType"/>
+        <result column="period_time" jdbcType="VARCHAR" property="periodTime"/>
+        <result column="cron" jdbcType="VARCHAR" property="cron"/>
+        <result column="thread_cnt" jdbcType="INTEGER" property="threadCnt"/>
+        <result column="max_thread_cnt" jdbcType="INTEGER" property="maxThreadCnt"/>
+        <result column="reimport_people" jdbcType="INTEGER" property="reimportPeople"/>
+        <result column="result_alert" jdbcType="INTEGER" property="resultAlert"/>
+        <result column="alert_emails" jdbcType="VARCHAR" property="alertEmails"/>
+        <result column="save_result" jdbcType="INTEGER" property="saveResult"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
+        <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, title, msg_type, account_id, message_id, people_id, task_mode, task_period, period_type,
+        period_time, cron, thread_cnt, max_thread_cnt, reimport_people, result_alert, alert_emails, save_result,
+        remark, create_time, modified_time
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_task
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from t_task
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TTask">
+        insert into t_task (id, title, msg_type,
+        account_id, message_id, people_id,
+        task_mode, task_period, period_type,
+        period_time, cron, thread_cnt, max_thread_cnt,
+        reimport_people, result_alert, alert_emails,
+        save_result, remark, create_time,
+        modified_time)
+        values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{msgType,jdbcType=INTEGER},
+        #{accountId,jdbcType=INTEGER}, #{messageId,jdbcType=INTEGER}, #{peopleId,jdbcType=INTEGER},
+        #{taskMode,jdbcType=INTEGER}, #{taskPeriod,jdbcType=INTEGER}, #{periodType,jdbcType=INTEGER},
+        #{periodTime,jdbcType=VARCHAR}, #{cron,jdbcType=VARCHAR}, #{threadCnt,jdbcType=INTEGER},
+        #{maxThreadCnt,jdbcType=INTEGER},
+        #{reimportPeople,jdbcType=INTEGER}, #{resultAlert,jdbcType=INTEGER}, #{alertEmails,jdbcType=VARCHAR},
+        #{saveResult,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR},
+        #{modifiedTime,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TTask">
+        insert into t_task
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="title != null">
+                title,
+            </if>
+            <if test="msgType != null">
+                msg_type,
+            </if>
+            <if test="accountId != null">
+                account_id,
+            </if>
+            <if test="messageId != null">
+                message_id,
+            </if>
+            <if test="peopleId != null">
+                people_id,
+            </if>
+            <if test="taskMode != null">
+                task_mode,
+            </if>
+            <if test="taskPeriod != null">
+                task_period,
+            </if>
+            <if test="periodType != null">
+                period_type,
+            </if>
+            <if test="periodTime != null">
+                period_time,
+            </if>
+            <if test="cron != null">
+                cron,
+            </if>
+            <if test="threadCnt != null">
+                thread_cnt,
+            </if>
+            <if test="maxThreadCnt != null">
+                max_thread_cnt,
+            </if>
+            <if test="reimportPeople != null">
+                reimport_people,
+            </if>
+            <if test="resultAlert != null">
+                result_alert,
+            </if>
+            <if test="alertEmails != null">
+                alert_emails,
+            </if>
+            <if test="saveResult != null">
+                save_result,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="modifiedTime != null">
+                modified_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="title != null">
+                #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="msgType != null">
+                #{msgType,jdbcType=INTEGER},
+            </if>
+            <if test="accountId != null">
+                #{accountId,jdbcType=INTEGER},
+            </if>
+            <if test="messageId != null">
+                #{messageId,jdbcType=INTEGER},
+            </if>
+            <if test="peopleId != null">
+                #{peopleId,jdbcType=INTEGER},
+            </if>
+            <if test="taskMode != null">
+                #{taskMode,jdbcType=INTEGER},
+            </if>
+            <if test="taskPeriod != null">
+                #{taskPeriod,jdbcType=INTEGER},
+            </if>
+            <if test="periodType != null">
+                #{periodType,jdbcType=INTEGER},
+            </if>
+            <if test="periodTime != null">
+                #{periodTime,jdbcType=VARCHAR},
+            </if>
+            <if test="cron != null">
+                #{cron,jdbcType=VARCHAR},
+            </if>
+            <if test="threadCnt != null">
+                #{threadCnt,jdbcType=INTEGER},
+            </if>
+            <if test="maxThreadCnt != null">
+                #{maxThreadCnt,jdbcType=INTEGER},
+            </if>
+            <if test="reimportPeople != null">
+                #{reimportPeople,jdbcType=INTEGER},
+            </if>
+            <if test="resultAlert != null">
+                #{resultAlert,jdbcType=INTEGER},
+            </if>
+            <if test="alertEmails != null">
+                #{alertEmails,jdbcType=VARCHAR},
+            </if>
+            <if test="saveResult != null">
+                #{saveResult,jdbcType=INTEGER},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=VARCHAR},
+            </if>
+            <if test="modifiedTime != null">
+                #{modifiedTime,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.fangxuele.tool.push.domain.TTask">
+        update t_task
+        <set>
+            <if test="title != null">
+                title = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="msgType != null">
+                msg_type = #{msgType,jdbcType=INTEGER},
+            </if>
+            <if test="accountId != null">
+                account_id = #{accountId,jdbcType=INTEGER},
+            </if>
+            <if test="messageId != null">
+                message_id = #{messageId,jdbcType=INTEGER},
+            </if>
+            <if test="peopleId != null">
+                people_id = #{peopleId,jdbcType=INTEGER},
+            </if>
+            <if test="taskMode != null">
+                task_mode = #{taskMode,jdbcType=INTEGER},
+            </if>
+            <if test="taskPeriod != null">
+                task_period = #{taskPeriod,jdbcType=INTEGER},
+            </if>
+            <if test="periodType != null">
+                period_type = #{periodType,jdbcType=INTEGER},
+            </if>
+            <if test="periodTime != null">
+                period_time = #{periodTime,jdbcType=VARCHAR},
+            </if>
+            <if test="cron != null">
+                cron = #{cron,jdbcType=VARCHAR},
+            </if>
+            <if test="threadCnt != null">
+                thread_cnt = #{threadCnt,jdbcType=INTEGER},
+            </if>
+            <if test="maxThreadCnt != null">
+                max_thread_cnt = #{maxThreadCnt,jdbcType=INTEGER},
+            </if>
+            <if test="reimportPeople != null">
+                reimport_people = #{reimportPeople,jdbcType=INTEGER},
+            </if>
+            <if test="resultAlert != null">
+                result_alert = #{resultAlert,jdbcType=INTEGER},
+            </if>
+            <if test="alertEmails != null">
+                alert_emails = #{alertEmails,jdbcType=VARCHAR},
+            </if>
+            <if test="saveResult != null">
+                save_result = #{saveResult,jdbcType=INTEGER},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=VARCHAR},
+            </if>
+            <if test="modifiedTime != null">
+                modified_time = #{modifiedTime,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TTask">
+        update t_task
+        set title = #{title,jdbcType=VARCHAR},
         msg_type = #{msgType,jdbcType=INTEGER},
-      </if>
-      <if test="accountId != null">
         account_id = #{accountId,jdbcType=INTEGER},
-      </if>
-      <if test="messageId != null">
         message_id = #{messageId,jdbcType=INTEGER},
-      </if>
-      <if test="peopleId != null">
         people_id = #{peopleId,jdbcType=INTEGER},
-      </if>
-      <if test="taskMode != null">
         task_mode = #{taskMode,jdbcType=INTEGER},
-      </if>
-      <if test="taskPeriod != null">
         task_period = #{taskPeriod,jdbcType=INTEGER},
-      </if>
-      <if test="periodType != null">
         period_type = #{periodType,jdbcType=INTEGER},
-      </if>
-      <if test="periodTime != null">
         period_time = #{periodTime,jdbcType=VARCHAR},
-      </if>
-      <if test="cron != null">
         cron = #{cron,jdbcType=VARCHAR},
-      </if>
-      <if test="threadCnt != null">
         thread_cnt = #{threadCnt,jdbcType=INTEGER},
-      </if>
-      <if test="reimportPeople != null">
+        max_thread_cnt = #{maxThreadCnt,jdbcType=INTEGER},
         reimport_people = #{reimportPeople,jdbcType=INTEGER},
-      </if>
-      <if test="resultAlert != null">
         result_alert = #{resultAlert,jdbcType=INTEGER},
-      </if>
-      <if test="alertEmails != null">
         alert_emails = #{alertEmails,jdbcType=VARCHAR},
-      </if>
-      <if test="saveResult != null">
         save_result = #{saveResult,jdbcType=INTEGER},
-      </if>
-      <if test="remark != null">
         remark = #{remark,jdbcType=VARCHAR},
-      </if>
-      <if test="createTime != null">
         create_time = #{createTime,jdbcType=VARCHAR},
-      </if>
-      <if test="modifiedTime != null">
-        modified_time = #{modifiedTime,jdbcType=VARCHAR},
-      </if>
-    </set>
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TTask">
-    update t_task
-    set title = #{title,jdbcType=VARCHAR},
-      msg_type = #{msgType,jdbcType=INTEGER},
-      account_id = #{accountId,jdbcType=INTEGER},
-      message_id = #{messageId,jdbcType=INTEGER},
-      people_id = #{peopleId,jdbcType=INTEGER},
-      task_mode = #{taskMode,jdbcType=INTEGER},
-      task_period = #{taskPeriod,jdbcType=INTEGER},
-      period_type = #{periodType,jdbcType=INTEGER},
-      period_time = #{periodTime,jdbcType=VARCHAR},
-      cron = #{cron,jdbcType=VARCHAR},
-      thread_cnt = #{threadCnt,jdbcType=INTEGER},
-      reimport_people = #{reimportPeople,jdbcType=INTEGER},
-      result_alert = #{resultAlert,jdbcType=INTEGER},
-      alert_emails = #{alertEmails,jdbcType=VARCHAR},
-      save_result = #{saveResult,jdbcType=INTEGER},
-      remark = #{remark,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=VARCHAR},
-      modified_time = #{modifiedTime,jdbcType=VARCHAR}
-    where id = #{id,jdbcType=INTEGER}
-  </update>
+        modified_time = #{modifiedTime,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
 </mapper>

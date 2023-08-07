@@ -63,6 +63,7 @@ public class WxMpTemplateMsgSender implements IMsgSender {
             wxMessageTemplate.setToUser(openId);
             if (dryRun == 1) {
                 sendResult.setSuccess(true);
+                Thread.sleep(10);
                 return sendResult;
             } else {
                 wxMpService.getTemplateMsgService().sendTemplateMsg(wxMessageTemplate);

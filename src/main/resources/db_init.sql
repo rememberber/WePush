@@ -162,6 +162,7 @@ create table if not exists t_task
     period_time     text,
     cron            text,
     thread_cnt      integer,
+    max_thread_cnt  integer,
     reimport_people integer,
     result_alert    integer,
     alert_emails    text,
