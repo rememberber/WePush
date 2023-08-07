@@ -137,6 +137,8 @@ public class TaskRunThread extends Thread {
 
     private TTaskHis taskHis;
 
+    private TMsg tMsg;
+
     public TaskRunThread(Integer taskId, Integer dryRun) {
         this.taskId = taskId;
         this.dryRun = dryRun;
@@ -150,7 +152,7 @@ public class TaskRunThread extends Thread {
         preparePushRun(tTask);
         ConsoleUtil.consoleWithLog("推送开始……");
         // 消息数据分片以及线程纷发
-        TMsg tMsg = msgMapper.selectByPrimaryKey(tTask.getMessageId());
+        tMsg = msgMapper.selectByPrimaryKey(tTask.getMessageId());
         ThreadPoolExecutor threadPoolExecutor = shardingAndMsgThread(tMsg);
         // 时间监控
         timeMonitor(threadPoolExecutor);
@@ -399,95 +401,91 @@ public class TaskRunThread extends Thread {
     }
 
     private void savePushData() throws IOException {
-        if (!PushData.toSendConcurrentLinkedQueue.isEmpty()) {
-            PushData.toSendList = new ArrayList<>(PushData.toSendConcurrentLinkedQueue);
-        }
-        MessageEditForm messageEditForm = MessageEditForm.getInstance();
         File pushHisDir = new File(SystemUtil.CONFIG_HOME + "data" + File.separator + "push_his");
         if (!pushHisDir.exists()) {
             boolean mkdirs = pushHisDir.mkdirs();
         }
 
-        String msgName = messageEditForm.getMsgNameField().getText();
+        String taskName = tTask.getTitle();
         String nowTime = DateUtil.now().replace(":", "_").replace(" ", "_");
         CSVWriter writer;
         int msgType = App.config.getMsgType();
 
         List<File> fileList = new ArrayList<>();
         // 保存已发送
-        if (PushData.sendSuccessList.size() > 0) {
+        if (sendSuccessList.size() > 0) {
             File sendSuccessFile = new File(SystemUtil.CONFIG_HOME + "data" +
-                    File.separator + "push_his" + File.separator + MessageTypeEnum.getName(msgType) + "-" + msgName +
+                    File.separator + "push_his" + File.separator + MessageTypeEnum.getName(msgType) + "-" + taskName +
                     "-发送成功-" + nowTime + ".csv");
             FileUtil.touch(sendSuccessFile);
             writer = new CSVWriter(new FileWriter(sendSuccessFile));
 
-            for (String[] str : PushData.sendSuccessList) {
+            for (String[] str : sendSuccessList) {
                 writer.writeNext(str);
             }
             writer.close();
 
-            savePushResult(msgName, "发送成功", sendSuccessFile);
+            taskHis.setSuccessFilePath(sendSuccessFile.getAbsolutePath());
             fileList.add(sendSuccessFile);
             // 保存累计推送总数
-            App.config.setPushTotal(App.config.getPushTotal() + PushData.sendSuccessList.size());
+            App.config.setPushTotal(App.config.getPushTotal() + sendSuccessList.size());
             App.config.save();
         }
 
         // 保存未发送
-        for (String[] str : PushData.sendSuccessList) {
+        for (String[] str : sendSuccessList) {
             if (msgType == MessageTypeEnum.HTTP_CODE && PushControl.saveResponseBody) {
                 str = ArrayUtils.remove(str, str.length - 1);
                 String[] finalStr = str;
-                PushData.toSendList = PushData.toSendList.stream().filter(strings -> !JSONUtil.toJsonStr(strings).equals(JSONUtil.toJsonStr(finalStr))).collect(Collectors.toList());
+                toSendList = toSendList.stream().filter(strings -> !JSONUtil.toJsonStr(strings).equals(JSONUtil.toJsonStr(finalStr))).collect(Collectors.toList());
             } else {
-                PushData.toSendList.remove(str);
+                toSendList.remove(str);
             }
         }
-        for (String[] str : PushData.sendFailList) {
+        for (String[] str : sendFailList) {
             if (msgType == MessageTypeEnum.HTTP_CODE && PushControl.saveResponseBody) {
                 str = ArrayUtils.remove(str, str.length - 1);
                 String[] finalStr = str;
-                PushData.toSendList = PushData.toSendList.stream().filter(strings -> !JSONUtil.toJsonStr(strings).equals(JSONUtil.toJsonStr(finalStr))).collect(Collectors.toList());
+                toSendList = toSendList.stream().filter(strings -> !JSONUtil.toJsonStr(strings).equals(JSONUtil.toJsonStr(finalStr))).collect(Collectors.toList());
             } else {
-                PushData.toSendList.remove(str);
+                toSendList.remove(str);
             }
         }
 
-        if (PushData.toSendList.size() > 0) {
+        if (toSendList.size() > 0) {
             File unSendFile = new File(SystemUtil.CONFIG_HOME + "data" + File.separator +
-                    "push_his" + File.separator + MessageTypeEnum.getName(msgType) + "-" + msgName + "-未发送-" + nowTime +
+                    "push_his" + File.separator + MessageTypeEnum.getName(msgType) + "-" + taskName + "-未发送-" + nowTime +
                     ".csv");
             FileUtil.touch(unSendFile);
             writer = new CSVWriter(new FileWriter(unSendFile));
-            for (String[] str : PushData.toSendList) {
+            for (String[] str : toSendList) {
                 writer.writeNext(str);
             }
             writer.close();
 
-            savePushResult(msgName, "未发送", unSendFile);
+            taskHis.setNoSendFilePath(unSendFile.getAbsolutePath());
             fileList.add(unSendFile);
         }
 
         // 保存发送失败
-        if (PushData.sendFailList.size() > 0) {
+        if (sendFailList.size() > 0) {
             File failSendFile = new File(SystemUtil.CONFIG_HOME + "data" + File.separator +
-                    "push_his" + File.separator + MessageTypeEnum.getName(msgType) + "-" + msgName + "-发送失败-" + nowTime + ".csv");
+                    "push_his" + File.separator + MessageTypeEnum.getName(msgType) + "-" + taskName + "-发送失败-" + nowTime + ".csv");
             FileUtil.touch(failSendFile);
             writer = new CSVWriter(new FileWriter(failSendFile));
-            for (String[] str : PushData.sendFailList) {
+            for (String[] str : sendFailList) {
                 writer.writeNext(str);
             }
             writer.close();
 
-            savePushResult(msgName, "发送失败", failSendFile);
+            taskHis.setFailFilePath(failSendFile.getAbsolutePath());
             fileList.add(failSendFile);
         }
 
         PushHisForm.init();
 
         // 发送推送结果邮件
-        if ((PushData.scheduling || PushData.fixRateScheduling)
+        if ((PushData.scheduling || fixRateScheduling)
                 && ScheduleForm.getInstance().getSendPushResultCheckBox().isSelected()) {
             ConsoleUtil.consoleWithLog("发送推送结果邮件开始");
             String mailResultTo = ScheduleForm.getInstance().getMailResultToTextField().getText().replace("；", ";").replace(" ", "");
@@ -495,23 +493,23 @@ public class TaskRunThread extends Thread {
             ArrayList<String> mailToList = new ArrayList<>(Arrays.asList(mailTos));
 
             MailMsgSender mailMsgSender = new MailMsgSender();
-            String title = "WePush推送结果：【" + messageEditForm.getMsgNameField().getText()
-                    + "】" + PushData.sendSuccessList.size() + "成功；" + PushData.sendFailList.size() + "失败；"
-                    + PushData.toSendList.size() + "未发送";
+            String title = "WePush推送结果：【" + taskName
+                    + "】" + sendSuccessList.size() + "成功；" + sendFailList.size() + "失败；"
+                    + toSendList.size() + "未发送";
             StringBuilder contentBuilder = new StringBuilder();
             contentBuilder.append("<h2>WePush推送结果</h2>");
             contentBuilder.append("<p>消息类型：").append(MessageTypeEnum.getName(App.config.getMsgType())).append("</p>");
-            contentBuilder.append("<p>消息名称：").append(messageEditForm.getMsgNameField().getText()).append("</p>");
+            contentBuilder.append("<p>消息名称：").append(taskName).append("</p>");
             contentBuilder.append("<br/>");
 
-            contentBuilder.append("<p style='color:green'><strong>成功数：").append(PushData.sendSuccessList.size()).append("</strong></p>");
-            contentBuilder.append("<p style='color:red'><strong>失败数：").append(PushData.sendFailList.size()).append("</strong></p>");
-            contentBuilder.append("<p>未推送数：").append(PushData.toSendList.size()).append("</p>");
+            contentBuilder.append("<p style='color:green'><strong>成功数：").append(sendSuccessList.size()).append("</strong></p>");
+            contentBuilder.append("<p style='color:red'><strong>失败数：").append(sendFailList.size()).append("</strong></p>");
+            contentBuilder.append("<p>未推送数：").append(toSendList.size()).append("</p>");
             contentBuilder.append("<br/>");
 
-            contentBuilder.append("<p>开始时间：").append(DateFormatUtils.format(new Date(PushData.startTime), "yyyy-MM-dd HH:mm:ss")).append("</p>");
-            contentBuilder.append("<p>完毕时间：").append(DateFormatUtils.format(new Date(PushData.endTime), "yyyy-MM-dd HH:mm:ss")).append("</p>");
-            contentBuilder.append("<p>总耗时：").append(DateUtil.formatBetween(PushData.endTime - PushData.startTime, BetweenFormatter.Level.SECOND)).append("</p>");
+            contentBuilder.append("<p>开始时间：").append(DateFormatUtils.format(new Date(startTime), "yyyy-MM-dd HH:mm:ss")).append("</p>");
+            contentBuilder.append("<p>完毕时间：").append(DateFormatUtils.format(new Date(endTime), "yyyy-MM-dd HH:mm:ss")).append("</p>");
+            contentBuilder.append("<p>总耗时：").append(DateUtil.formatBetween(endTime - startTime, BetweenFormatter.Level.SECOND)).append("</p>");
             contentBuilder.append("<br/>");
 
             contentBuilder.append("<p>详情请查看附件</p>");
@@ -526,26 +524,6 @@ public class TaskRunThread extends Thread {
             mailMsgSender.sendPushResultMail(mailToList, title, contentBuilder.toString(), files);
             ConsoleUtil.consoleWithLog("发送推送结果邮件结束");
         }
-    }
-
-    /**
-     * 保存结果到DB
-     *
-     * @param msgName    消息名称
-     * @param resultInfo 结果信息
-     * @param file       文件
-     */
-    private static void savePushResult(String msgName, String resultInfo, File file) {
-        TPushHistory tPushHistory = new TPushHistory();
-        String now = SqliteUtil.nowDateForSqlite();
-        tPushHistory.setMsgType(App.config.getMsgType());
-        tPushHistory.setMsgName(msgName);
-        tPushHistory.setResult(resultInfo);
-        tPushHistory.setCsvFile(file.getAbsolutePath());
-        tPushHistory.setCreateTime(now);
-        tPushHistory.setModifiedTime(now);
-
-//        pushHistoryMapper.insertSelective(tPushHistory);
     }
 
 }
