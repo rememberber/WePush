@@ -39,6 +39,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.stream.Collectors;
@@ -139,6 +140,9 @@ public class TaskRunThread extends Thread {
 
     private TMsg tMsg;
 
+    // TODO 注意相关资源删除或者关闭的时候，进行清理回收
+    public Map<Integer, TaskRunThread> taskRunThreadMap = new ConcurrentHashMap<>();
+
     public TaskRunThread(Integer taskId, Integer dryRun) {
         this.taskId = taskId;
         this.dryRun = dryRun;
@@ -156,6 +160,8 @@ public class TaskRunThread extends Thread {
         ThreadPoolExecutor threadPoolExecutor = shardingAndMsgThread(tMsg);
         // 时间监控
         timeMonitor(threadPoolExecutor);
+
+        taskRunThreadMap.put(taskId, this);
     }
 
     /**
