@@ -96,5 +96,17 @@ public class TaskListener {
                 super.mousePressed(e);
             }
         });
+
+        taskForm.getRefreshHisButton().addActionListener(e -> {
+            int selectedRow = taskForm.getTaskListTable().getSelectedRow();
+            if (selectedRow < 0) {
+                JOptionPane.showMessageDialog(taskForm.getMainPanel(), "请先选择要刷新的任务！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            Integer selectedTaskId = (Integer) taskForm.getTaskListTable().getValueAt(selectedRow, 0);
+            TaskForm.initTaskHisListTable(selectedTaskId);
+        });
     }
 }

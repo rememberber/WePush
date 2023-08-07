@@ -132,6 +132,8 @@ public class TaskRunThread extends Thread {
 
     private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
 
+    private TTaskHis taskHis;
+
     public TaskRunThread(Integer taskId, Integer dryRun) {
         this.taskId = taskId;
         this.dryRun = dryRun;
@@ -148,7 +150,7 @@ public class TaskRunThread extends Thread {
         TMsg tMsg = msgMapper.selectByPrimaryKey(tTask.getMessageId());
         ThreadPoolExecutor threadPoolExecutor = shardingAndMsgThread(tMsg);
         // 时间监控
-//        timeMonitor(threadPoolExecutor);
+        timeMonitor(threadPoolExecutor);
     }
 
     /**
@@ -157,7 +159,7 @@ public class TaskRunThread extends Thread {
     private void preparePushRun(TTask tTask) {
 
         // 初始化任务历史表
-        TTaskHis taskHis = new TTaskHis();
+        taskHis = new TTaskHis();
 
         taskHis.setTaskId(tTask.getId());
 
@@ -197,13 +199,16 @@ public class TaskRunThread extends Thread {
 
         taskHis.setStartTime(SqliteUtil.nowDateForSqlite());
 
-        taskHis.setEndTime(SqliteUtil.nowDateForSqlite());
-
         taskHis.setStatus(10);
 
         taskHisMapper.insert(taskHis);
 
-        TaskForm.initTaskHisListTable(taskId);
+        TaskForm taskForm = TaskForm.getInstance();
+        int selectedRow = taskForm.getTaskListTable().getSelectedRow();
+        Integer selectedTaskId = (Integer) taskForm.getTaskListTable().getValueAt(selectedRow, 0);
+        if (selectedTaskId.equals(taskId)) {
+            TaskForm.initTaskHisListTable(taskId);
+        }
     }
 
     /**
@@ -252,14 +257,6 @@ public class TaskRunThread extends Thread {
         while (true) {
             if (threadPoolExecutor.isTerminated()) {
                 if (!fixRateScheduling) {
-                    pushForm.getPushStopButton().setEnabled(false);
-                    pushForm.getPushStopButton().updateUI();
-                    pushForm.getPushStartButton().setEnabled(true);
-                    pushForm.getThreadCountSlider().setEnabled(true);
-                    pushForm.getPushStartButton().updateUI();
-                    pushForm.getScheduleRunButton().setEnabled(true);
-                    pushForm.getScheduleRunButton().updateUI();
-                    pushForm.getScheduleDetailLabel().setText("");
 
                     if (App.trayIcon != null) {
                         MessageEditForm messageEditForm = MessageEditForm.getInstance();
@@ -279,7 +276,9 @@ public class TaskRunThread extends Thread {
                     pushForm.getPushStopButton().setText("停止计划任务");
                 }
 
-                endTime = System.currentTimeMillis();
+                taskHis.setEndTime(SqliteUtil.nowDateForSqlite());
+
+                taskHisMapper.updateByPrimaryKey(taskHis);
 
                 // 保存停止前的数据
                 try {
@@ -305,6 +304,9 @@ public class TaskRunThread extends Thread {
             long lastTimeMillis = currentTimeMillis - startTimeMillis;
             long leftTimeMillis = (long) ((double) lastTimeMillis / (totalSentCount) * (toSendList.size() - totalSentCount));
 
+            taskHis.setSuccessCnt(successCount);
+            taskHis.setFailCnt(failCount);
+
             // 耗时
             String formatBetweenLast = DateUtil.formatBetween(lastTimeMillis, BetweenFormatter.Level.SECOND);
             pushForm.getPushLastTimeLabel().setText("".equals(formatBetweenLast) ? "0s" : formatBetweenLast);
@@ -319,6 +321,8 @@ public class TaskRunThread extends Thread {
             int tps = (totalSentCount - totalSentCountBefore) * 5;
             totalSentCountBefore = totalSentCount;
             pushForm.getTpsLabel().setText(String.valueOf(tps));
+
+            taskHisMapper.updateByPrimaryKey(taskHis);
             ThreadUtil.safeSleep(200);
         }
     }

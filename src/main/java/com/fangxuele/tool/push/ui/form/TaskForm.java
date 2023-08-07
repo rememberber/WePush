@@ -1,6 +1,5 @@
 package com.fangxuele.tool.push.ui.form;
 
-import cn.hutool.core.date.DateUtil;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.*;
 import com.fangxuele.tool.push.domain.TTask;
@@ -44,7 +43,7 @@ public class TaskForm {
     private JButton startDryRunButton;
     private JButton startButton;
     private JTable taskHisListTable;
-    private JButton 刷新Button;
+    private JButton refreshHisButton;
     private JButton 停止Button;
     private JButton 删除Button1;
     private JButton taskHisDetailButton;
@@ -132,7 +131,7 @@ public class TaskForm {
         JTable taskHisListTable = taskForm.getTaskHisListTable();
 
         // 任务数据列表
-        String[] headerNames = {"id", "开始时间", "结束时间", "耗时", "总量", "状态"};
+        String[] headerNames = {"id", "开始时间", "结束时间", "总量", "成功", "状态"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
         taskHisListTable.setModel(model);
 
@@ -289,10 +288,10 @@ public class TaskForm {
         final JPanel panel9 = new JPanel();
         panel9.setLayout(new GridLayoutManager(1, 5, new Insets(0, 0, 0, 0), -1, -1));
         panel8.add(panel9, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        刷新Button = new JButton();
-        刷新Button.setIcon(new ImageIcon(getClass().getResource("/icon/add.png")));
-        刷新Button.setText("刷新");
-        panel9.add(刷新Button, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        refreshHisButton = new JButton();
+        refreshHisButton.setIcon(new ImageIcon(getClass().getResource("/icon/add.png")));
+        refreshHisButton.setText("刷新");
+        panel9.add(refreshHisButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         停止Button = new JButton();
         停止Button.setIcon(new ImageIcon(getClass().getResource("/icon/remove.png")));
         停止Button.setText("停止");
@@ -342,7 +341,7 @@ public class TaskForm {
         JTable taskHisListTable = taskForm.getTaskHisListTable();
 
         // 任务数据列表
-        String[] headerNames = {"id", "开始时间", "结束时间", "耗时", "总量", "状态"};
+        String[] headerNames = {"id", "开始时间", "结束时间", "总量", "成功", "状态"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
         taskHisListTable.setModel(model);
 
@@ -358,8 +357,8 @@ public class TaskForm {
             data[0] = taskHis.getTaskId();
             data[1] = taskHis.getStartTime();
             data[2] = taskHis.getEndTime();
-            data[3] = DateUtil.formatBetween(DateUtil.parse(taskHis.getEndTime()).getTime() - DateUtil.parse(taskHis.getStartTime()).getTime());
-            data[4] = taskHis.getTotalCnt();
+            data[3] = taskHis.getTotalCnt();
+            data[4] = taskHis.getSuccessCnt();
             data[5] = taskHis.getStatus();
             model.addRow(data);
         }
