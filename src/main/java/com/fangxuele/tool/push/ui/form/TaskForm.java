@@ -354,7 +354,7 @@ public class TaskForm {
         List<TTaskHis> taskHisList = taskHisMapper.selectByTaskId(selectedTaskId);
         for (TTaskHis taskHis : taskHisList) {
             data = new Object[6];
-            data[0] = taskHis.getTaskId();
+            data[0] = taskHis.getId();
             data[1] = taskHis.getStartTime();
             data[2] = taskHis.getEndTime();
             data[3] = taskHis.getTotalCnt();
