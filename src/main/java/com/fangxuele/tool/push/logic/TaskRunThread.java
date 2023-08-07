@@ -32,7 +32,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
-import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.util.Collections;
@@ -300,9 +299,6 @@ public class TaskRunThread extends Thread {
                         App.trayIcon.displayMessage("WePush", msgName + " 发送完毕！", TrayIcon.MessageType.INFO);
                     }
 
-                    String finishTip = "发送完毕！\n";
-                    JOptionPane.showMessageDialog(pushForm.getPushPanel(), finishTip, "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
                     pushForm.getScheduleDetailLabel().setVisible(false);
                 } else {
                     if (App.config.isRadioCron()) {
