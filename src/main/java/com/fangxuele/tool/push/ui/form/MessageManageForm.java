@@ -1,9 +1,10 @@
 package com.fangxuele.tool.push.ui.form;
 
 import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.dao.*;
-import com.fangxuele.tool.push.domain.*;
-import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.dao.TAccountMapper;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.ui.form.msg.MsgFormFactory;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
@@ -74,7 +75,7 @@ public class MessageManageForm {
     private static void initAccountComboBox() {
         accountMap = Maps.newHashMap();
         messageManageForm.getAccountComboBox().removeAllItems();
-        int msgType = MessageTypeEnum.getMsgTypeForAccount();
+        int msgType = App.config.getMsgType();
         List<TAccount> tAccountList = accountMapper.selectByMsgType(msgType);
         for (TAccount tAccount : tAccountList) {
             String accountName = tAccount.getAccountName();

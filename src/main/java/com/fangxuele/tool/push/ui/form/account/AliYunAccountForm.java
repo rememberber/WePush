@@ -8,7 +8,6 @@ import com.aliyuncs.profile.DefaultProfile;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.account.AliYunAccountConfig;
 import com.fangxuele.tool.push.domain.TAccount;
-import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.msgsender.AliYunMsgSender;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.util.SqliteUtil;
@@ -132,7 +131,7 @@ public class AliYunAccountForm implements IAccountForm {
         if (iAcsClient == null) {
             synchronized (AliYunMsgSender.class) {
                 if (iAcsClient == null) {
-                    TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(MessageTypeEnum.getMsgTypeForAccount(), accountName);
+                    TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
                     if (tAccount == null) {
                         log.error("未获取到对应的微信公众号账号配置:{}", accountName);
                     }

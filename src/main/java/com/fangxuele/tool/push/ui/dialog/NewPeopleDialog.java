@@ -7,7 +7,6 @@ import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.dao.TPeopleMapper;
 import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TPeople;
-import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.form.PeopleManageForm;
 import com.fangxuele.tool.push.util.ComponentUtil;
@@ -62,7 +61,7 @@ public class NewPeopleDialog extends JDialog {
             gridLayoutManager.setMargin(new Insets(28, 0, 0, 0));
         }
 
-        int msgType = MessageTypeEnum.getMsgTypeForAccount();
+        int msgType = App.config.getMsgType();
 
         initAccountComboBox(msgType);
 

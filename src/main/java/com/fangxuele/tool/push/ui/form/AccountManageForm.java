@@ -1,8 +1,8 @@
 package com.fangxuele.tool.push.ui.form;
 
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.domain.TAccount;
-import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -62,7 +62,7 @@ public class AccountManageForm {
         // 隐藏表头
         JTableUtil.hideTableHeader(accountManageForm.getAccountListTable());
 
-        int msgType = MessageTypeEnum.getMsgTypeForAccount();
+        int msgType = App.config.getMsgType();
 
         Object[] data;
 

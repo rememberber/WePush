@@ -4,7 +4,6 @@ import cn.hutool.json.JSONUtil;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.account.WxMpAccountConfig;
 import com.fangxuele.tool.push.domain.TAccount;
-import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.util.SqliteUtil;
@@ -41,7 +40,7 @@ public class WxMpAccountForm implements IAccountForm {
     @Override
     public void init(String accountName) {
         if (StringUtils.isNotEmpty(accountName)) {
-            TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(MessageTypeEnum.WX_MP_CODE, accountName);
+            TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
 
             WxMpAccountForm instance = getInstance();
             WxMpAccountConfig wxMpAccountConfig = JSONUtil.toBean(tAccount.getAccountConfig(), WxMpAccountConfig.class);
@@ -57,7 +56,7 @@ public class WxMpAccountForm implements IAccountForm {
         if (StringUtils.isNotEmpty(accountName)) {
 
             WxMpAccountForm instance = getInstance();
-            TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(MessageTypeEnum.WX_MP_CODE, accountName);
+            TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
 
             boolean existSameAccount = false;
 
@@ -77,7 +76,7 @@ public class WxMpAccountForm implements IAccountForm {
                 String now = SqliteUtil.nowDateForSqlite();
 
                 TAccount tAccount1 = new TAccount();
-                tAccount1.setMsgType(MessageTypeEnum.WX_MP_CODE);
+                tAccount1.setMsgType(App.config.getMsgType());
                 tAccount1.setAccountName(accountName);
 
                 WxMpAccountConfig wxMpAccountConfig = new WxMpAccountConfig();
@@ -130,7 +129,7 @@ public class WxMpAccountForm implements IAccountForm {
      * @return WxMpConfigStorage
      */
     private static WxMpDefaultConfigImpl wxMpConfigStorage(String accountName) {
-        TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(MessageTypeEnum.getMsgTypeForAccount(), accountName);
+        TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
         if (tAccount == null) {
             log.error("未获取到对应的微信公众号账号配置:{}", accountName);
         }

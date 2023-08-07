@@ -7,7 +7,6 @@ import com.baidubce.services.sms.SmsClientConfiguration;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.account.BdYunAccountConfig;
 import com.fangxuele.tool.push.domain.TAccount;
-import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.msgsender.BdYunMsgSender;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.util.SqliteUtil;
@@ -134,7 +133,7 @@ public class BdYunAccountForm implements IAccountForm {
         if (smsClient == null) {
             synchronized (BdYunMsgSender.class) {
                 if (smsClient == null) {
-                    TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(MessageTypeEnum.getMsgTypeForAccount(), accountName);
+                    TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
                     if (tAccount == null) {
                         log.error("未获取到对应的微信公众号账号配置:{}", accountName);
                     }

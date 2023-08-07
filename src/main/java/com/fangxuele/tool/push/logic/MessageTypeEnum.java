@@ -1,7 +1,5 @@
 package com.fangxuele.tool.push.logic;
 
-import com.fangxuele.tool.push.App;
-
 /**
  * <pre>
  * 消息类型常量
@@ -57,8 +55,6 @@ public enum MessageTypeEnum {
     public static final int WX_UNIFORM_MESSAGE_CODE = 17;
     public static final int MA_SUBSCRIBE_CODE = 18;
     public static final int MP_SUBSCRIBE_CODE = 19;
-    public static final int WX_MP_CODE = 20;
-    public static final int WX_MA_CODE = 21;
 
     MessageTypeEnum(int code, String name) {
         this.code = code;
@@ -143,16 +139,14 @@ public enum MessageTypeEnum {
                 || msgType == MessageTypeEnum.KEFU_PRIORITY_CODE
                 || msgType == MessageTypeEnum.MP_TEMPLATE_CODE
                 || msgType == MessageTypeEnum.MP_SUBSCRIBE_CODE
-                || msgType == MessageTypeEnum.WX_MP_CODE
-                || msgType == MessageTypeEnum.WX_MA_CODE;
+                ;
     }
 
     public static boolean isWxMaType(int msgType) {
         return msgType == MessageTypeEnum.MA_TEMPLATE_CODE
                 || msgType == MessageTypeEnum.MA_SUBSCRIBE_CODE
                 || msgType == MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE
-                || msgType == MessageTypeEnum.WX_MP_CODE
-                || msgType == MessageTypeEnum.WX_MA_CODE;
+                ;
     }
 
     public static boolean isWxMaOrMpType(int msgType) {
@@ -160,13 +154,4 @@ public enum MessageTypeEnum {
                 || isWxMpType(msgType);
     }
 
-    public static int getMsgTypeForAccount() {
-        int msgType = App.config.getMsgType();
-        if (isWxMaType(msgType)) {
-            msgType = WX_MA_CODE;
-        } else if (isWxMpType(msgType)) {
-            msgType = WX_MP_CODE;
-        }
-        return msgType;
-    }
 }

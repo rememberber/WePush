@@ -9,7 +9,6 @@ import com.dingtalk.api.response.OapiGettokenResponse;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.account.DingAccountConfig;
 import com.fangxuele.tool.push.domain.TAccount;
-import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.msgmaker.DingMsgMaker;
 import com.fangxuele.tool.push.ui.form.MainWindow;
@@ -157,7 +156,7 @@ public class DingAccountForm implements IAccountForm {
             synchronized (PushControl.class) {
                 if (accessTokenTimedCache == null || StringUtils.isEmpty(accessTokenTimedCache.get("accessToken"))) {
 
-                    TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(MessageTypeEnum.getMsgTypeForAccount(), accountName);
+                    TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
                     if (tAccount == null) {
                         log.error("未获取到对应的微信公众号账号配置:{}", accountName);
                     }

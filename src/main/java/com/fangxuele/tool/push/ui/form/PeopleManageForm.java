@@ -1,10 +1,10 @@
 package com.fangxuele.tool.push.ui.form;
 
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.dao.TPeopleMapper;
 import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TPeople;
-import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.google.common.collect.Maps;
@@ -65,7 +65,7 @@ public class PeopleManageForm {
     private static void initAccountComboBox() {
         accountMap = Maps.newHashMap();
         peopleManageForm.getAccountComboBox().removeAllItems();
-        int msgType = MessageTypeEnum.getMsgTypeForAccount();
+        int msgType = App.config.getMsgType();
         List<TAccount> tAccountList = accountMapper.selectByMsgType(msgType);
         for (TAccount tAccount : tAccountList) {
             String accountName = tAccount.getAccountName();
@@ -83,7 +83,7 @@ public class PeopleManageForm {
         // 隐藏表头
         JTableUtil.hideTableHeader(peopleManageForm.getPeopleListTable());
 
-        int msgType = MessageTypeEnum.getMsgTypeForAccount();
+        int msgType = App.config.getMsgType();
         String selectedAccountName = (String) peopleManageForm.getAccountComboBox().getSelectedItem();
         Integer selectedAccountId = accountMap.get(selectedAccountName);
 
