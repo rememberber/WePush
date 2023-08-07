@@ -24,6 +24,7 @@ import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.logic.msgthread.MsgSendThread;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
+import com.fangxuele.tool.push.ui.form.TaskForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
@@ -201,6 +202,8 @@ public class TaskRunThread extends Thread {
         taskHis.setStatus(10);
 
         taskHisMapper.insert(taskHis);
+
+        TaskForm.initTaskHisListTable(taskId);
     }
 
     /**
