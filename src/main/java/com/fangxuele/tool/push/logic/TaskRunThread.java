@@ -141,7 +141,7 @@ public class TaskRunThread extends Thread {
     private TMsg tMsg;
 
     // TODO 注意相关资源删除或者关闭的时候，进行清理回收
-    public Map<Integer, TaskRunThread> taskRunThreadMap = new ConcurrentHashMap<>();
+    public static Map<Integer, TaskRunThread> taskRunThreadMap = new ConcurrentHashMap<>();
 
     public TaskRunThread(Integer taskId, Integer dryRun) {
         this.taskId = taskId;
