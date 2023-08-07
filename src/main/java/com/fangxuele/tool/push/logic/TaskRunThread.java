@@ -313,7 +313,7 @@ public class TaskRunThread extends Thread {
                 // 保存停止前的数据
                 try {
                     // 空跑控制
-                    if (!pushForm.getDryRunCheckBox().isSelected()) {
+                    if (dryRun == 0) {
                         ConsoleUtil.consoleWithLog("正在保存结果数据……");
                         savePushData();
                         ConsoleUtil.consoleWithLog("结果数据保存完毕！");
@@ -426,6 +426,7 @@ public class TaskRunThread extends Thread {
             writer.close();
 
             taskHis.setSuccessFilePath(sendSuccessFile.getAbsolutePath());
+            taskHisMapper.updateByPrimaryKey(taskHis);
             fileList.add(sendSuccessFile);
             // 保存累计推送总数
             App.config.setPushTotal(App.config.getPushTotal() + sendSuccessList.size());
@@ -464,6 +465,7 @@ public class TaskRunThread extends Thread {
             writer.close();
 
             taskHis.setNoSendFilePath(unSendFile.getAbsolutePath());
+            taskHisMapper.updateByPrimaryKey(taskHis);
             fileList.add(unSendFile);
         }
 
@@ -479,6 +481,7 @@ public class TaskRunThread extends Thread {
             writer.close();
 
             taskHis.setFailFilePath(failSendFile.getAbsolutePath());
+            taskHisMapper.updateByPrimaryKey(taskHis);
             fileList.add(failSendFile);
         }
 
