@@ -158,10 +158,10 @@ public class TaskRunThread extends Thread {
         // 消息数据分片以及线程纷发
         tMsg = msgMapper.selectByPrimaryKey(tTask.getMessageId());
         ThreadPoolExecutor threadPoolExecutor = shardingAndMsgThread(tMsg);
+
+        taskRunThreadMap.put(taskHis.getId(), this);
         // 时间监控
         timeMonitor(threadPoolExecutor);
-
-        taskRunThreadMap.put(taskId, this);
     }
 
     /**
@@ -315,6 +315,8 @@ public class TaskRunThread extends Thread {
                         pushForm.getScheduleDetailLabel().setText("计划任务执行中，下一次执行时间：" + DateFormatUtils.format(nextDate, "yyyy-MM-dd HH:mm:ss"));
                     }
                 }
+
+                running = false;
 
                 // 保存停止前的数据
                 try {

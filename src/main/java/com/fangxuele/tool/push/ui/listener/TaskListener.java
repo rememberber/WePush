@@ -36,7 +36,17 @@ public class TaskListener {
         });
 
         taskForm.getTaskHisDetailButton().addActionListener(e -> {
-            TaskHisDetailDialog dialog = new TaskHisDetailDialog();
+            int selectedRow = taskForm.getTaskHisListTable().getSelectedRow();
+            if (selectedRow < 0) {
+                JOptionPane.showMessageDialog(taskForm.getMainPanel(), "请先选择要查看的任务记录！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            Integer taskHisId = (Integer) taskForm.getTaskHisListTable().getValueAt(selectedRow, 0);
+            TaskRunThread taskRunThread = TaskRunThread.taskRunThreadMap.get(taskHisId);
+
+            TaskHisDetailDialog dialog = new TaskHisDetailDialog(taskRunThread, taskHisId);
             dialog.pack();
             dialog.setVisible(true);
         });

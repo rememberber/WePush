@@ -1,12 +1,16 @@
 package com.fangxuele.tool.push.ui.dialog;
 
+import cn.hutool.core.thread.ThreadUtil;
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.dao.TTaskHisMapper;
+import com.fangxuele.tool.push.domain.TTaskHis;
+import com.fangxuele.tool.push.logic.TaskRunThread;
 import com.fangxuele.tool.push.util.ComponentUtil;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.formdev.flatlaf.util.SystemInfo;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
@@ -39,6 +43,8 @@ public class TaskHisDetailDialog extends JDialog {
     private JButton pushStopButton;
     private JSlider threadCountSlider;
 
+    private static TTaskHisMapper taskHisMapper = MybatisUtil.getSqlSession().getMapper(TTaskHisMapper.class);
+
     public TaskHisDetailDialog() {
         super(App.mainFrame, "执行详情");
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.5, 0.64);
@@ -68,6 +74,30 @@ public class TaskHisDetailDialog extends JDialog {
         // 设置滚动条速度
 //        ScrollUtil.smoothPane(settingScrollPane);
 
+    }
+
+    public TaskHisDetailDialog(TaskRunThread taskRunThread, Integer taskHisId) {
+        this();
+        if (taskRunThread != null) {
+            ThreadUtil.execAsync(() -> {
+                while (true) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if (!taskRunThread.running) {
+                        break;
+                    }
+                    pushSuccessCount.setText(String.valueOf(taskRunThread.getSuccessRecords()));
+                    pushFailCount.setText(String.valueOf(taskRunThread.getFailRecords()));
+                }
+            });
+        } else {
+            TTaskHis tTaskHis = taskHisMapper.selectByPrimaryKey(taskHisId);
+            pushSuccessCount.setText(String.valueOf(tTaskHis.getSuccessCnt()));
+            pushFailCount.setText(String.valueOf(tTaskHis.getFailCnt()));
+        }
     }
 
     {
