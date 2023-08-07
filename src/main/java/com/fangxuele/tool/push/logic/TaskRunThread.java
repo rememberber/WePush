@@ -197,9 +197,12 @@ public class TaskRunThread extends Thread {
         // 线程数
         threadCount = tTask.getThreadCnt();
 
-        taskHis.setStartTime(SqliteUtil.nowDateForSqlite());
-
         taskHis.setStatus(10);
+
+        String nowDateForSqlite = SqliteUtil.nowDateForSqlite();
+        taskHis.setStartTime(nowDateForSqlite);
+        taskHis.setCreateTime(nowDateForSqlite);
+        taskHis.setModifiedTime(nowDateForSqlite);
 
         taskHisMapper.insert(taskHis);
 
@@ -278,7 +281,19 @@ public class TaskRunThread extends Thread {
 
                 taskHis.setEndTime(SqliteUtil.nowDateForSqlite());
 
+                int successCount = sendSuccessList.size();
+                int failCount = sendFailList.size();
+                taskHis.setSuccessCnt(successCount);
+                taskHis.setFailCnt(failCount);
+
                 taskHisMapper.updateByPrimaryKey(taskHis);
+
+                TaskForm taskForm = TaskForm.getInstance();
+                int selectedRow = taskForm.getTaskListTable().getSelectedRow();
+                Integer selectedTaskId = (Integer) taskForm.getTaskListTable().getValueAt(selectedRow, 0);
+                if (selectedTaskId.equals(taskId)) {
+                    TaskForm.initTaskHisListTable(taskId);
+                }
 
                 // 保存停止前的数据
                 try {
