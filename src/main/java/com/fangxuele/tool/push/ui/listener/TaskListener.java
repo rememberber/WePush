@@ -6,10 +6,13 @@ import com.fangxuele.tool.push.domain.TTask;
 import com.fangxuele.tool.push.logic.TaskRunThread;
 import com.fangxuele.tool.push.ui.dialog.NewTaskDialog;
 import com.fangxuele.tool.push.ui.dialog.TaskHisDetailDialog;
+import com.fangxuele.tool.push.ui.form.PushHisForm;
 import com.fangxuele.tool.push.ui.form.TaskForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 
 import javax.swing.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * <pre>
@@ -77,6 +80,20 @@ public class TaskListener {
                     JOptionPane.YES_NO_OPTION);
             if (isPush == JOptionPane.YES_OPTION) {
                 ThreadUtil.execute(new TaskRunThread(taskId, 1));
+            }
+        });
+
+        // 点击左侧表格事件
+        taskForm.getTaskListTable().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                PushHisForm.getInstance().getPushHisTextArea().setText("");
+
+                int selectedRow = taskForm.getTaskListTable().getSelectedRow();
+                Integer selectedTaskId = (Integer) taskForm.getTaskListTable().getValueAt(selectedRow, 0);
+
+                TaskForm.initTaskHisListTable(selectedTaskId);
+                super.mousePressed(e);
             }
         });
     }

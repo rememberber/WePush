@@ -1,8 +1,10 @@
 package com.fangxuele.tool.push.ui.form;
 
+import cn.hutool.core.date.DateUtil;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.*;
 import com.fangxuele.tool.push.domain.TTask;
+import com.fangxuele.tool.push.domain.TTaskHis;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.TaskTypeEnum;
 import com.fangxuele.tool.push.ui.UiConsts;
@@ -59,6 +61,7 @@ public class TaskForm {
     private static TaskForm taskForm;
 
     private static TTaskMapper taskMapper = MybatisUtil.getSqlSession().getMapper(TTaskMapper.class);
+    private static TTaskHisMapper taskHisMapper = MybatisUtil.getSqlSession().getMapper(TTaskHisMapper.class);
     private static TTaskExtMapper taskExtMapper = MybatisUtil.getSqlSession().getMapper(TTaskExtMapper.class);
     private static TPeopleMapper peopleMapper = MybatisUtil.getSqlSession().getMapper(TPeopleMapper.class);
 
@@ -82,7 +85,7 @@ public class TaskForm {
         taskForm.getMainSplitPane().setDividerLocation((int) (App.mainFrame.getWidth() / 2));
 
         initTaskListTable();
-        initTaskHisListTable();
+//        initTaskHisListTable();
     }
 
     public static void initTaskListTable() {
@@ -134,25 +137,6 @@ public class TaskForm {
         taskHisListTable.setModel(model);
 
         taskHisListTable.getTableHeader().setReorderingAllowed(false);
-
-        TableColumnModel tableColumnModel = taskHisListTable.getColumnModel();
-
-        Object[] data;
-
-//        List<TTask> taskList = Lists.newArrayList();
-//        for (TTask task : taskList) {
-        data = new Object[6];
-        data[0] = "";
-        data[1] = "";
-        data[2] = "";
-        data[3] = "";
-        data[4] = "";
-        data[5] = "";
-        model.addRow(data);
-//        }
-        // 隐藏id列
-        JTableUtil.hideColumn(taskHisListTable, 0);
-        // 设置列宽
     }
 
     {
@@ -354,4 +338,33 @@ public class TaskForm {
         return mainPanel;
     }
 
+    public static void initTaskHisListTable(Integer selectedTaskId) {
+        JTable taskHisListTable = taskForm.getTaskHisListTable();
+
+        // 任务数据列表
+        String[] headerNames = {"id", "开始时间", "结束时间", "耗时", "总量", "状态"};
+        DefaultTableModel model = new DefaultTableModel(null, headerNames);
+        taskHisListTable.setModel(model);
+
+        taskHisListTable.getTableHeader().setReorderingAllowed(false);
+
+        TableColumnModel tableColumnModel = taskHisListTable.getColumnModel();
+
+        Object[] data;
+
+        List<TTaskHis> taskHisList = taskHisMapper.selectByTaskId(selectedTaskId);
+        for (TTaskHis taskHis : taskHisList) {
+            data = new Object[6];
+            data[0] = taskHis.getTaskId();
+            data[1] = taskHis.getStartTime();
+            data[2] = taskHis.getEndTime();
+            data[3] = DateUtil.formatBetween(DateUtil.parse(taskHis.getEndTime()).getTime() - DateUtil.parse(taskHis.getStartTime()).getTime());
+            data[4] = taskHis.getTotalCnt();
+            data[5] = taskHis.getStatus();
+            model.addRow(data);
+        }
+        // 隐藏id列
+        JTableUtil.hideColumn(taskHisListTable, 0);
+        // 设置列宽
+    }
 }

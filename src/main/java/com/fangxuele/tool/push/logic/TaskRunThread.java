@@ -158,6 +158,8 @@ public class TaskRunThread extends Thread {
         // 初始化任务历史表
         TTaskHis taskHis = new TTaskHis();
 
+        taskHis.setTaskId(tTask.getId());
+
         // 设置是否空跑
         taskHis.setDryRun(dryRun);
 
@@ -193,6 +195,10 @@ public class TaskRunThread extends Thread {
         threadCount = tTask.getThreadCnt();
 
         taskHis.setStartTime(SqliteUtil.nowDateForSqlite());
+
+        taskHis.setEndTime(SqliteUtil.nowDateForSqlite());
+
+        taskHis.setStatus(10);
 
         taskHisMapper.insert(taskHis);
     }
