@@ -19,6 +19,9 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.util.Locale;
 
 public class TaskHisDetailDialog extends JDialog {
@@ -78,6 +81,7 @@ public class TaskHisDetailDialog extends JDialog {
 
     public TaskHisDetailDialog(TaskRunThread taskRunThread, Integer taskHisId) {
         this();
+        BufferedReader logReader = new BufferedReader(new FileReader(new File(taskRunThread.getLogFilePath())));
         if (taskRunThread != null) {
             ThreadUtil.execAsync(() -> {
                 while (true) {
