@@ -64,7 +64,7 @@ public class BaseMsgThread extends Thread {
      * 初始化当前线程
      */
     public void initCurrentThread() {
-        ConsoleUtil.consoleWithLog("线程" + this.getName() + "负责处理第:" + startIndex + "-" + endIndex + "条数据");
+        ConsoleUtil.pushLog(taskRunThread.getLogWriter(), "线程" + this.getName() + "负责处理第:" + startIndex + "-" + endIndex + "条数据");
 
         list = taskRunThread.getToSendList().subList(startIndex, endIndex);
 
@@ -74,7 +74,7 @@ public class BaseMsgThread extends Thread {
      * 当前线程结束
      */
     public void currentThreadFinish() {
-        ConsoleUtil.consoleWithLog(this.getName() + "已处理完第" + startIndex + "-" + endIndex + "条的数据");
+        ConsoleUtil.pushLog(taskRunThread.getLogWriter(), this.getName() + "已处理完第" + startIndex + "-" + endIndex + "条的数据");
     }
 
 }

@@ -72,7 +72,7 @@ public class MsgSendThread extends BaseMsgThread {
                     taskRunThread.sendFailList.add(msgData);
 
                     // 失败异常信息输出控制台
-                    ConsoleUtil.consoleOnly("发送失败:" + sendResult.getInfo() + ";msgData:" + JSONUtil.toJsonPrettyStr(msgData));
+                    ConsoleUtil.pushLog(taskRunThread.getLogWriter(), "发送失败:" + sendResult.getInfo() + ";msgData:" + JSONUtil.toJsonPrettyStr(msgData));
                 }
             }
 
