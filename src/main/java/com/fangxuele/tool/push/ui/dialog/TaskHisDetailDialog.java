@@ -1,20 +1,34 @@
 package com.fangxuele.tool.push.ui.dialog;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.dao.TPeopleDataMapper;
+import com.fangxuele.tool.push.dao.TPeopleMapper;
 import com.fangxuele.tool.push.dao.TTaskHisMapper;
+import com.fangxuele.tool.push.dao.TTaskMapper;
+import com.fangxuele.tool.push.domain.TPeople;
+import com.fangxuele.tool.push.domain.TPeopleData;
+import com.fangxuele.tool.push.domain.TTask;
 import com.fangxuele.tool.push.domain.TTaskHis;
 import com.fangxuele.tool.push.logic.TaskRunThread;
+import com.fangxuele.tool.push.ui.UiConsts;
+import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.PeopleEditForm;
+import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.formdev.flatlaf.util.StringUtils;
 import com.formdev.flatlaf.util.SystemInfo;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import com.opencsv.CSVReader;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
@@ -24,6 +38,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 public class TaskHisDetailDialog extends JDialog {
@@ -56,6 +71,9 @@ public class TaskHisDetailDialog extends JDialog {
     private JButton noSendToPeopleButton;
 
     private static TTaskHisMapper taskHisMapper = MybatisUtil.getSqlSession().getMapper(TTaskHisMapper.class);
+    private static TTaskMapper taskMapper = MybatisUtil.getSqlSession().getMapper(TTaskMapper.class);
+    private static TPeopleMapper peopleMapper = MybatisUtil.getSqlSession().getMapper(TPeopleMapper.class);
+    private static TPeopleDataMapper peopleDataMapper = MybatisUtil.getSqlSession().getMapper(TPeopleDataMapper.class);
 
     private static final Log logger = LogFactory.get();
 
@@ -96,6 +114,76 @@ public class TaskHisDetailDialog extends JDialog {
 
     public TaskHisDetailDialog(TaskRunThread taskRunThread, Integer taskHisId) {
         this();
+
+        successToPeopleButton.addActionListener(e -> {
+            ThreadUtil.execute(() -> {
+                PeopleEditForm peopleEditForm = PeopleEditForm.getInstance();
+                JProgressBar memberTabImportProgressBar = peopleEditForm.getMemberTabImportProgressBar();
+                CSVReader reader = null;
+                try {
+                    MainWindow.getInstance().getTabbedPane().setSelectedIndex(3);
+
+                    TTaskHis tTaskHis = taskHisMapper.selectByPrimaryKey(taskHisId);
+                    TTask tTask = taskMapper.selectByPrimaryKey(tTaskHis.getTaskId());
+
+                    TPeople tPeopleToSave = new TPeople();
+                    tPeopleToSave.setMsgType(tTask.getMsgType());
+                    tPeopleToSave.setAccountId(tTask.getAccountId());
+                    tPeopleToSave.setPeopleName(FileUtil.getName(tTaskHis.getSuccessFilePath()));
+                    tPeopleToSave.setAppVersion(UiConsts.APP_VERSION);
+                    String now = SqliteUtil.nowDateForSqlite();
+                    tPeopleToSave.setCreateTime(now);
+                    tPeopleToSave.setModifiedTime(now);
+
+                    peopleMapper.insert(tPeopleToSave);
+
+                    memberTabImportProgressBar.setVisible(true);
+                    memberTabImportProgressBar.setIndeterminate(true);
+                    File msgTemplateDataFile = new File(tTaskHis.getSuccessFilePath());
+                    if (msgTemplateDataFile.exists()) {
+                        // 可以解决中文乱码问题
+                        DataInputStream in = new DataInputStream(new FileInputStream(msgTemplateDataFile));
+                        reader = new CSVReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+                        String[] nextLine;
+                        TPeopleData tPeopleData;
+                        while ((nextLine = reader.readNext()) != null) {
+                            tPeopleData = new TPeopleData();
+                            tPeopleData.setPeopleId(PeopleManageListener.selectedPeopleId);
+                            tPeopleData.setPin(nextLine[0]);
+                            tPeopleData.setVarData(JSONUtil.toJsonStr(nextLine));
+                            tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                            tPeopleData.setCreateTime(now);
+                            tPeopleData.setModifiedTime(now);
+
+                            peopleDataMapper.insert(tPeopleData);
+                        }
+                    }
+                    JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } catch (Exception e1) {
+                    JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + e1.getMessage(), "失败",
+                            JOptionPane.ERROR_MESSAGE);
+                    logger.error(e1);
+                } finally {
+                    memberTabImportProgressBar.setMaximum(100);
+                    memberTabImportProgressBar.setValue(100);
+                    memberTabImportProgressBar.setIndeterminate(false);
+                    memberTabImportProgressBar.setVisible(false);
+                    if (reader != null) {
+                        try {
+                            reader.close();
+                        } catch (IOException e1) {
+                            logger.error(e1);
+                            e1.printStackTrace();
+                        }
+                    }
+                }
+
+            });
+
+            dispose();
+        });
+
         BufferedReader logReader = null;
 
         if (taskRunThread != null) {
