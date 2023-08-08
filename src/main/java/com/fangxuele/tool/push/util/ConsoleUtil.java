@@ -65,7 +65,7 @@ public class ConsoleUtil {
 
     public synchronized static void pushLog(BufferedWriter logWriter, String content) {
         try {
-            logWriter.write(content);
+            logWriter.write(SqliteUtil.nowDateForSqlite() + " " + content);
             logWriter.newLine();
             logWriter.flush();
         } catch (Exception e) {

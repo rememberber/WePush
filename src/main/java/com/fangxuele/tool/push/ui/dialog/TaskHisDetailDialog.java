@@ -19,9 +19,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.*;
 import java.util.Locale;
 
 public class TaskHisDetailDialog extends JDialog {
@@ -81,20 +79,42 @@ public class TaskHisDetailDialog extends JDialog {
 
     public TaskHisDetailDialog(TaskRunThread taskRunThread, Integer taskHisId) {
         this();
-        BufferedReader logReader = new BufferedReader(new FileReader(new File(taskRunThread.getLogFilePath())));
+        BufferedReader logReader = null;
+        try {
+            logReader = new BufferedReader(new FileReader(taskRunThread.getLogFilePath()));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         if (taskRunThread != null) {
+            BufferedReader finalLogReader = logReader;
             ThreadUtil.execAsync(() -> {
                 while (true) {
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(200);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+
+                    try {
+                        String line = finalLogReader.readLine();
+                        if (line != null) {
+                            textArea1.append(line + "\n");
+                            textArea1.setCaretPosition(textArea1.getText().length());
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     if (!taskRunThread.running) {
+                        try {
+                            finalLogReader.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                         break;
                     }
                     pushSuccessCount.setText(String.valueOf(taskRunThread.getSuccessRecords()));
                     pushFailCount.setText(String.valueOf(taskRunThread.getFailRecords()));
+
                 }
             });
         } else {

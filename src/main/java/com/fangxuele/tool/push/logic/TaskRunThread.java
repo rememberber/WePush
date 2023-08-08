@@ -162,6 +162,7 @@ public class TaskRunThread extends Thread {
             logFilePath = SystemUtil.CONFIG_HOME + "data" + File.separator +
                     "push_log" + File.separator + tTask.getTitle() +
                     ".log";
+            FileUtil.touch(logFilePath);
             logWriter = new BufferedWriter(new FileWriter(logFilePath));
         } catch (IOException e) {
             logger.error(e);
@@ -213,12 +214,12 @@ public class TaskRunThread extends Thread {
         totalRecords = toSendList.size();
 
         taskHis.setTotalCnt((int) totalRecords);
-        ConsoleUtil.consoleWithLog("消息总数：" + totalRecords);
-        ConsoleUtil.consoleWithLog("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
+        ConsoleUtil.pushLog(logWriter, "消息总数：" + totalRecords);
+        ConsoleUtil.pushLog(logWriter, "可用处理器核心：" + Runtime.getRuntime().availableProcessors());
 
         // 线程数
-        ConsoleUtil.consoleWithLog("线程数：" + tTask.getThreadCnt());
-        ConsoleUtil.consoleWithLog("线程池大小：" + tTask.getThreadCnt());
+        ConsoleUtil.pushLog(logWriter, "线程数：" + tTask.getThreadCnt());
+        ConsoleUtil.pushLog(logWriter, "线程池大小：" + tTask.getThreadCnt());
 
         // 线程数
         threadCount = tTask.getThreadCnt();
@@ -269,7 +270,7 @@ public class TaskRunThread extends Thread {
             threadPoolExecutor.execute(msgSendThread);
         }
         threadPoolExecutor.shutdown();
-        ConsoleUtil.consoleWithLog("所有线程宝宝启动完毕……");
+        ConsoleUtil.pushLog(logWriter, "所有线程宝宝启动完毕……");
         return threadPoolExecutor;
     }
 
@@ -336,9 +337,9 @@ public class TaskRunThread extends Thread {
                 try {
                     // 空跑控制
                     if (dryRun == 0) {
-                        ConsoleUtil.consoleWithLog("正在保存结果数据……");
+                        ConsoleUtil.pushLog(logWriter, "正在保存结果数据……");
                         savePushData();
-                        ConsoleUtil.consoleWithLog("结果数据保存完毕！");
+                        ConsoleUtil.pushLog(logWriter, "结果数据保存完毕！");
                     }
                 } catch (IOException e) {
                     logger.error(e);
@@ -524,7 +525,7 @@ public class TaskRunThread extends Thread {
         // 发送推送结果邮件
         if ((PushData.scheduling || fixRateScheduling)
                 && ScheduleForm.getInstance().getSendPushResultCheckBox().isSelected()) {
-            ConsoleUtil.consoleWithLog("发送推送结果邮件开始");
+            ConsoleUtil.pushLog(logWriter, "发送推送结果邮件开始");
             String mailResultTo = ScheduleForm.getInstance().getMailResultToTextField().getText().replace("；", ";").replace(" ", "");
             String[] mailTos = mailResultTo.split(";");
             ArrayList<String> mailToList = new ArrayList<>(Arrays.asList(mailTos));
@@ -559,7 +560,7 @@ public class TaskRunThread extends Thread {
             File[] files = new File[fileList.size()];
             fileList.toArray(files);
             mailMsgSender.sendPushResultMail(mailToList, title, contentBuilder.toString(), files);
-            ConsoleUtil.consoleWithLog("发送推送结果邮件结束");
+            ConsoleUtil.pushLog(logWriter, "发送推送结果邮件结束");
         }
     }
 
