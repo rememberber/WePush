@@ -6,6 +6,8 @@ import com.fangxuele.tool.push.ui.form.InfinityForm;
 import com.fangxuele.tool.push.ui.form.PushForm;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.BufferedWriter;
+
 /**
  * <pre>
  * WePush控制台打印相关
@@ -59,5 +61,15 @@ public class ConsoleUtil {
     public static void infinityConsoleOnly(String log) {
         InfinityForm.getInstance().getConsoleTextArea().append(log + "\n");
         InfinityForm.getInstance().getConsoleTextArea().setCaretPosition(InfinityForm.getInstance().getConsoleTextArea().getText().length());
+    }
+
+    public synchronized static void pushLog(BufferedWriter logWriter, String content) {
+        try {
+            logWriter.write(content);
+            logWriter.newLine();
+            logWriter.flush();
+        } catch (Exception e) {
+            logger.error(e.toString());
+        }
     }
 }

@@ -34,6 +34,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 import java.awt.*;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -140,6 +141,10 @@ public class TaskRunThread extends Thread {
 
     private TMsg tMsg;
 
+    private String logFilePath;
+
+    private BufferedWriter logWriter;
+
     // TODO 注意相关资源删除或者关闭的时候，进行清理回收
     public static Map<Integer, TaskRunThread> taskRunThreadMap = new ConcurrentHashMap<>();
 
@@ -153,8 +158,17 @@ public class TaskRunThread extends Thread {
         // 准备推送
         this.tTask = taskMapper.selectByPrimaryKey(taskId);
 
+        try {
+            logFilePath = SystemUtil.CONFIG_HOME + "data" + File.separator +
+                    "push_log" + File.separator + tTask.getTitle() +
+                    ".log";
+            logWriter = new BufferedWriter(new FileWriter(logFilePath));
+        } catch (IOException e) {
+            logger.error(e);
+        }
+
         preparePushRun(tTask);
-        ConsoleUtil.consoleWithLog("推送开始……");
+        ConsoleUtil.pushLog(logWriter, "推送开始……");
         // 消息数据分片以及线程纷发
         tMsg = msgMapper.selectByPrimaryKey(tTask.getMessageId());
         ThreadPoolExecutor threadPoolExecutor = shardingAndMsgThread(tMsg);
@@ -176,6 +190,8 @@ public class TaskRunThread extends Thread {
 
         // 设置是否空跑
         taskHis.setDryRun(dryRun);
+
+        taskHis.setLogFilePath(logFilePath);
 
         // TODO 执行前重新导入目标用户
 
@@ -316,8 +332,6 @@ public class TaskRunThread extends Thread {
                     }
                 }
 
-                running = false;
-
                 // 保存停止前的数据
                 try {
                     // 空跑控制
@@ -329,6 +343,18 @@ public class TaskRunThread extends Thread {
                 } catch (IOException e) {
                     logger.error(e);
                 }
+
+                // 关闭logWriter
+                if (logWriter != null) {
+                    try {
+                        logWriter.flush();
+                        logWriter.close();
+                    } catch (IOException e) {
+                        logger.error(e);
+                    }
+                }
+
+                running = false;
                 break;
             }
 
