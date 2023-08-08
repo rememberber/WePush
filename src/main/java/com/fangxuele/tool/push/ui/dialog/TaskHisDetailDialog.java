@@ -1,6 +1,8 @@
 package com.fangxuele.tool.push.ui.dialog;
 
 import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.log.Log;
+import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TTaskHisMapper;
 import com.fangxuele.tool.push.domain.TTaskHis;
@@ -46,6 +48,10 @@ public class TaskHisDetailDialog extends JDialog {
 
     private static TTaskHisMapper taskHisMapper = MybatisUtil.getSqlSession().getMapper(TTaskHisMapper.class);
 
+    private static final Log logger = LogFactory.get();
+
+    private Boolean dialogClosed = false;
+
     public TaskHisDetailDialog() {
         super(App.mainFrame, "执行详情");
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.5, 0.64);
@@ -65,16 +71,18 @@ public class TaskHisDetailDialog extends JDialog {
 
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                dispose();
+                onClose();
             }
         });
 
         // call onCancel() on ESCAPE
-        contentPane.registerKeyboardAction(e -> dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        contentPane.registerKeyboardAction(e -> onClose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        // 设置滚动条速度
-//        ScrollUtil.smoothPane(settingScrollPane);
+    }
 
+    private void onClose() {
+        dialogClosed = true;
+        dispose();
     }
 
     public TaskHisDetailDialog(TaskRunThread taskRunThread, Integer taskHisId) {
@@ -104,7 +112,7 @@ public class TaskHisDetailDialog extends JDialog {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    if (!taskRunThread.running) {
+                    if (!taskRunThread.running || dialogClosed) {
                         try {
                             finalLogReader.close();
                         } catch (IOException e) {
@@ -114,6 +122,8 @@ public class TaskHisDetailDialog extends JDialog {
                     }
                     pushSuccessCount.setText(String.valueOf(taskRunThread.getSuccessRecords()));
                     pushFailCount.setText(String.valueOf(taskRunThread.getFailRecords()));
+
+                    System.out.println(taskRunThread.getSuccessRecords());
 
                 }
             });
