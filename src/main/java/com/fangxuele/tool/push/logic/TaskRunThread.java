@@ -179,6 +179,10 @@ public class TaskRunThread extends Thread {
         taskRunThreadMap.put(taskHis.getId(), this);
         // 时间监控
         timeMonitor(threadPoolExecutor);
+
+        resetLocalData();
+
+        taskRunThreadMap.remove(taskHis.getId());
     }
 
     /**
@@ -322,9 +326,7 @@ public class TaskRunThread extends Thread {
                 if (!fixRateScheduling) {
 
                     if (App.trayIcon != null) {
-                        MessageEditForm messageEditForm = MessageEditForm.getInstance();
-                        String msgName = messageEditForm.getMsgNameField().getText();
-                        App.trayIcon.displayMessage("WePush", msgName + " 发送完毕！", TrayIcon.MessageType.INFO);
+                        App.trayIcon.displayMessage("WePush", tTask.getTitle() + " 发送完毕！", TrayIcon.MessageType.INFO);
                     }
 
                     pushForm.getScheduleDetailLabel().setVisible(false);
@@ -368,8 +370,8 @@ public class TaskRunThread extends Thread {
             long lastTimeMillis = currentTimeMillis - startTimeMillis;
             long leftTimeMillis = (long) ((double) lastTimeMillis / (totalSentCount) * (toSendList.size() - totalSentCount));
 
-            taskHis.setSuccessCnt(successCount);
-            taskHis.setFailCnt(failCount);
+            taskHis.setSuccessCnt(successRecords.intValue());
+            taskHis.setFailCnt(failRecords.intValue());
 
             // 耗时
             String formatBetweenLast = DateUtil.formatBetween(lastTimeMillis, BetweenFormatter.Level.SECOND);
