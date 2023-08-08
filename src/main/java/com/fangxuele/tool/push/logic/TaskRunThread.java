@@ -524,8 +524,6 @@ public class TaskRunThread extends Thread {
             fileList.add(failSendFile);
         }
 
-        PushHisForm.init();
-
         // 发送推送结果邮件
         if ((PushData.scheduling || fixRateScheduling)
                 && ScheduleForm.getInstance().getSendPushResultCheckBox().isSelected()) {

@@ -27,7 +27,6 @@ public class MainWindow {
     private JTabbedPane tabbedPane;
     private JSplitPane messagePanel;
     private JPanel pushPanel;
-    private JPanel pushHisPanel;
     private JPanel messageEditPanel;
     private JPanel messageManagePanel;
     private JPanel messageTypePanel;
@@ -67,7 +66,6 @@ public class MainWindow {
         mainWindow.getPeoplePanel().setDividerLocation((int) (App.mainFrame.getWidth() / 5.6));
         mainWindow.getAccountManagePanel().add(AccountManageForm.getInstance().getAccountManagePanel(), GRID_CONSTRAINTS);
         mainWindow.getAccountEditPanel().add(AccountEditForm.getInstance().getAccountEditPanel(), GRID_CONSTRAINTS);
-        mainWindow.getPushHisPanel().add(PushHisForm.getInstance().getPushHisPanel(), GRID_CONSTRAINTS);
         mainWindow.getMessageEditPanel().add(MessageEditForm.getInstance().getMessageEditPanel(), GRID_CONSTRAINTS);
         mainWindow.getMessageManagePanel().add(MessageManageForm.getInstance().getMessageManagePanel(), GRID_CONSTRAINTS);
         mainWindow.getPeopleManagePanel().add(PeopleManageForm.getInstance().getPeopleManagePanel(), GRID_CONSTRAINTS);
@@ -160,10 +158,6 @@ public class MainWindow {
         infinityPanel = new JPanel();
         infinityPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane.addTab("变速模式", infinityPanel);
-        pushHisPanel = new JPanel();
-        pushHisPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        pushHisPanel.setMinimumSize(new Dimension(-1, -1));
-        tabbedPane.addTab("推送历史", pushHisPanel);
     }
 
     /**

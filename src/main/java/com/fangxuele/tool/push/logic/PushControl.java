@@ -7,18 +7,17 @@ import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.dao.TPushHistoryMapper;
-import com.fangxuele.tool.push.domain.TPushHistory;
 import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.logic.msgsender.SendResult;
 import com.fangxuele.tool.push.ui.UiConsts;
-import com.fangxuele.tool.push.ui.form.*;
+import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.MemberForm;
+import com.fangxuele.tool.push.ui.form.MessageEditForm;
+import com.fangxuele.tool.push.ui.form.ScheduleForm;
 import com.fangxuele.tool.push.ui.listener.MemberListener;
 import com.fangxuele.tool.push.util.ConsoleUtil;
-import com.fangxuele.tool.push.util.MybatisUtil;
-import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.opencsv.CSVWriter;
 import me.chanjar.weixin.common.error.WxErrorException;
@@ -51,8 +50,6 @@ public class PushControl {
     public static boolean dryRun;
 
     public volatile static boolean saveResponseBody = false;
-
-    private static TPushHistoryMapper pushHistoryMapper = MybatisUtil.getSqlSession().getMapper(TPushHistoryMapper.class);
 
     /**
      * 模板变量前缀
@@ -347,8 +344,6 @@ public class PushControl {
             fileList.add(failSendFile);
         }
 
-        PushHisForm.init();
-
         // 发送推送结果邮件
         if ((PushData.scheduling || PushData.fixRateScheduling)
                 && ScheduleForm.getInstance().getSendPushResultCheckBox().isSelected()) {
@@ -399,16 +394,16 @@ public class PushControl {
      * @param file       文件
      */
     private static void savePushResult(String msgName, String resultInfo, File file) {
-        TPushHistory tPushHistory = new TPushHistory();
-        String now = SqliteUtil.nowDateForSqlite();
-        tPushHistory.setMsgType(App.config.getMsgType());
-        tPushHistory.setMsgName(msgName);
-        tPushHistory.setResult(resultInfo);
-        tPushHistory.setCsvFile(file.getAbsolutePath());
-        tPushHistory.setCreateTime(now);
-        tPushHistory.setModifiedTime(now);
-
-        pushHistoryMapper.insertSelective(tPushHistory);
+//        TPushHistory tPushHistory = new TPushHistory();
+//        String now = SqliteUtil.nowDateForSqlite();
+//        tPushHistory.setMsgType(App.config.getMsgType());
+//        tPushHistory.setMsgName(msgName);
+//        tPushHistory.setResult(resultInfo);
+//        tPushHistory.setCsvFile(file.getAbsolutePath());
+//        tPushHistory.setCreateTime(now);
+//        tPushHistory.setModifiedTime(now);
+//
+//        pushHistoryMapper.insertSelective(tPushHistory);
     }
 
     /**

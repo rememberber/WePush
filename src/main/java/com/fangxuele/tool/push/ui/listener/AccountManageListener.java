@@ -34,8 +34,6 @@ public class AccountManageListener {
         accountListTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                PushHisForm.getInstance().getPushHisTextArea().setText("");
-
                 int selectedRow = accountListTable.getSelectedRow();
                 String selectedMsgName = accountListTable
                         .getValueAt(selectedRow, 0).toString();

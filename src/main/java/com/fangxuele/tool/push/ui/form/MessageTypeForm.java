@@ -143,7 +143,6 @@ public class MessageTypeForm {
         PeopleManageForm.init();
         PeopleEditForm.init(null);
         MemberForm.init();
-        PushHisForm.init();
         ScheduleForm.init();
     }
 

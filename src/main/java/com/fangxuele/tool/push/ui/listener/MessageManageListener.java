@@ -35,8 +35,6 @@ public class MessageManageListener {
         msgHistable.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                PushHisForm.getInstance().getPushHisTextArea().setText("");
-
                 int selectedRow = msgHistable.getSelectedRow();
                 Integer selectedMsgId = (Integer) msgHistable.getValueAt(selectedRow, 1);
 

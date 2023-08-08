@@ -13,7 +13,6 @@
         </environment>
     </environments>
     <mappers>
-        <mapper resource="mapper/TPushHistoryMapper.xml"/>
         <mapper resource="mapper/TWxMpUserMapper.xml"/>
         <mapper resource="mapper/TWxAccountMapper.xml"/>
         <mapper resource="mapper/TWxCpAppMapper.xml"/>

@@ -6,7 +6,6 @@ import com.fangxuele.tool.push.domain.TTask;
 import com.fangxuele.tool.push.logic.TaskRunThread;
 import com.fangxuele.tool.push.ui.dialog.NewTaskDialog;
 import com.fangxuele.tool.push.ui.dialog.TaskHisDetailDialog;
-import com.fangxuele.tool.push.ui.form.PushHisForm;
 import com.fangxuele.tool.push.ui.form.TaskForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 
@@ -97,8 +96,6 @@ public class TaskListener {
         taskForm.getTaskListTable().addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                PushHisForm.getInstance().getPushHisTextArea().setText("");
-
                 int selectedRow = taskForm.getTaskListTable().getSelectedRow();
                 Integer selectedTaskId = (Integer) taskForm.getTaskListTable().getValueAt(selectedRow, 0);
 
