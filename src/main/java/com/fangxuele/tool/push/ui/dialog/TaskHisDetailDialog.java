@@ -18,7 +18,7 @@ import com.fangxuele.tool.push.logic.TaskRunThread;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
-import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
+import com.fangxuele.tool.push.ui.form.PeopleManageForm;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
@@ -129,7 +129,7 @@ public class TaskHisDetailDialog extends JDialog {
                     TPeople tPeopleToSave = new TPeople();
                     tPeopleToSave.setMsgType(tTask.getMsgType());
                     tPeopleToSave.setAccountId(tTask.getAccountId());
-                    tPeopleToSave.setPeopleName(FileUtil.getName(tTaskHis.getSuccessFilePath()));
+                    tPeopleToSave.setPeopleName(FileUtil.getName(tTaskHis.getSuccessFilePath()).replace(".csv", ""));
                     tPeopleToSave.setAppVersion(UiConsts.APP_VERSION);
                     String now = SqliteUtil.nowDateForSqlite();
                     tPeopleToSave.setCreateTime(now);
@@ -148,7 +148,7 @@ public class TaskHisDetailDialog extends JDialog {
                         TPeopleData tPeopleData;
                         while ((nextLine = reader.readNext()) != null) {
                             tPeopleData = new TPeopleData();
-                            tPeopleData.setPeopleId(PeopleManageListener.selectedPeopleId);
+                            tPeopleData.setPeopleId(tPeopleToSave.getId());
                             tPeopleData.setPin(nextLine[0]);
                             tPeopleData.setVarData(JSONUtil.toJsonStr(nextLine));
                             tPeopleData.setAppVersion(UiConsts.APP_VERSION);
@@ -158,6 +158,150 @@ public class TaskHisDetailDialog extends JDialog {
                             peopleDataMapper.insert(tPeopleData);
                         }
                     }
+                    PeopleManageForm.initPeopleList();
+
+                    JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } catch (Exception e1) {
+                    JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + e1.getMessage(), "失败",
+                            JOptionPane.ERROR_MESSAGE);
+                    logger.error(e1);
+                } finally {
+                    memberTabImportProgressBar.setMaximum(100);
+                    memberTabImportProgressBar.setValue(100);
+                    memberTabImportProgressBar.setIndeterminate(false);
+                    memberTabImportProgressBar.setVisible(false);
+                    if (reader != null) {
+                        try {
+                            reader.close();
+                        } catch (IOException e1) {
+                            logger.error(e1);
+                            e1.printStackTrace();
+                        }
+                    }
+                }
+
+            });
+
+            dispose();
+        });
+
+        failToPeopleButton.addActionListener(e -> {
+            ThreadUtil.execute(() -> {
+                PeopleEditForm peopleEditForm = PeopleEditForm.getInstance();
+                JProgressBar memberTabImportProgressBar = peopleEditForm.getMemberTabImportProgressBar();
+                CSVReader reader = null;
+                try {
+                    MainWindow.getInstance().getTabbedPane().setSelectedIndex(3);
+
+                    TTaskHis tTaskHis = taskHisMapper.selectByPrimaryKey(taskHisId);
+                    TTask tTask = taskMapper.selectByPrimaryKey(tTaskHis.getTaskId());
+
+                    TPeople tPeopleToSave = new TPeople();
+                    tPeopleToSave.setMsgType(tTask.getMsgType());
+                    tPeopleToSave.setAccountId(tTask.getAccountId());
+                    tPeopleToSave.setPeopleName(FileUtil.getName(tTaskHis.getFailFilePath()).replace(".csv", ""));
+                    tPeopleToSave.setAppVersion(UiConsts.APP_VERSION);
+                    String now = SqliteUtil.nowDateForSqlite();
+                    tPeopleToSave.setCreateTime(now);
+                    tPeopleToSave.setModifiedTime(now);
+
+                    peopleMapper.insert(tPeopleToSave);
+
+                    memberTabImportProgressBar.setVisible(true);
+                    memberTabImportProgressBar.setIndeterminate(true);
+                    File msgTemplateDataFile = new File(tTaskHis.getFailFilePath());
+                    if (msgTemplateDataFile.exists()) {
+                        // 可以解决中文乱码问题
+                        DataInputStream in = new DataInputStream(new FileInputStream(msgTemplateDataFile));
+                        reader = new CSVReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+                        String[] nextLine;
+                        TPeopleData tPeopleData;
+                        while ((nextLine = reader.readNext()) != null) {
+                            tPeopleData = new TPeopleData();
+                            tPeopleData.setPeopleId(tPeopleToSave.getId());
+                            tPeopleData.setPin(nextLine[0]);
+                            tPeopleData.setVarData(JSONUtil.toJsonStr(nextLine));
+                            tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                            tPeopleData.setCreateTime(now);
+                            tPeopleData.setModifiedTime(now);
+
+                            peopleDataMapper.insert(tPeopleData);
+                        }
+                    }
+                    PeopleManageForm.initPeopleList();
+
+                    JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } catch (Exception e1) {
+                    JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + e1.getMessage(), "失败",
+                            JOptionPane.ERROR_MESSAGE);
+                    logger.error(e1);
+                } finally {
+                    memberTabImportProgressBar.setMaximum(100);
+                    memberTabImportProgressBar.setValue(100);
+                    memberTabImportProgressBar.setIndeterminate(false);
+                    memberTabImportProgressBar.setVisible(false);
+                    if (reader != null) {
+                        try {
+                            reader.close();
+                        } catch (IOException e1) {
+                            logger.error(e1);
+                            e1.printStackTrace();
+                        }
+                    }
+                }
+
+            });
+
+            dispose();
+        });
+
+        noSendToPeopleButton.addActionListener(e -> {
+            ThreadUtil.execute(() -> {
+                PeopleEditForm peopleEditForm = PeopleEditForm.getInstance();
+                JProgressBar memberTabImportProgressBar = peopleEditForm.getMemberTabImportProgressBar();
+                CSVReader reader = null;
+                try {
+                    MainWindow.getInstance().getTabbedPane().setSelectedIndex(3);
+
+                    TTaskHis tTaskHis = taskHisMapper.selectByPrimaryKey(taskHisId);
+                    TTask tTask = taskMapper.selectByPrimaryKey(tTaskHis.getTaskId());
+
+                    TPeople tPeopleToSave = new TPeople();
+                    tPeopleToSave.setMsgType(tTask.getMsgType());
+                    tPeopleToSave.setAccountId(tTask.getAccountId());
+                    tPeopleToSave.setPeopleName(FileUtil.getName(tTaskHis.getNoSendFilePath()).replace(".csv", ""));
+                    tPeopleToSave.setAppVersion(UiConsts.APP_VERSION);
+                    String now = SqliteUtil.nowDateForSqlite();
+                    tPeopleToSave.setCreateTime(now);
+                    tPeopleToSave.setModifiedTime(now);
+
+                    peopleMapper.insert(tPeopleToSave);
+
+                    memberTabImportProgressBar.setVisible(true);
+                    memberTabImportProgressBar.setIndeterminate(true);
+                    File msgTemplateDataFile = new File(tTaskHis.getNoSendFilePath());
+                    if (msgTemplateDataFile.exists()) {
+                        // 可以解决中文乱码问题
+                        DataInputStream in = new DataInputStream(new FileInputStream(msgTemplateDataFile));
+                        reader = new CSVReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+                        String[] nextLine;
+                        TPeopleData tPeopleData;
+                        while ((nextLine = reader.readNext()) != null) {
+                            tPeopleData = new TPeopleData();
+                            tPeopleData.setPeopleId(tPeopleToSave.getId());
+                            tPeopleData.setPin(nextLine[0]);
+                            tPeopleData.setVarData(JSONUtil.toJsonStr(nextLine));
+                            tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                            tPeopleData.setCreateTime(now);
+                            tPeopleData.setModifiedTime(now);
+
+                            peopleDataMapper.insert(tPeopleData);
+                        }
+                    }
+                    PeopleManageForm.initPeopleList();
+
                     JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成",
                             JOptionPane.INFORMATION_MESSAGE);
                 } catch (Exception e1) {

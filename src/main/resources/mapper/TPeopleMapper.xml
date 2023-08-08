@@ -12,7 +12,8 @@
         <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, msg_type, account_id, people_name, app_version, remark, create_time, modified_time
+        id
+        , msg_type, account_id, people_name, app_version, remark, create_time, modified_time
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -21,16 +22,17 @@
         where id = #{id,jdbcType=INTEGER}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-        delete from t_people
+        delete
+        from t_people
         where id = #{id,jdbcType=INTEGER}
     </delete>
-    <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TPeople">
+    <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TPeople" keyProperty="id" useGeneratedKeys="true">
         insert into t_people (id, msg_type, account_id,
-        people_name, app_version, remark,
-        create_time, modified_time)
+                              people_name, app_version, remark,
+                              create_time, modified_time)
         values (#{id,jdbcType=INTEGER}, #{msgType,jdbcType=INTEGER}, #{accountId,jdbcType=INTEGER},
-        #{peopleName,jdbcType=VARCHAR}, #{appVersion,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR},
-        #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR})
+                #{peopleName,jdbcType=VARCHAR}, #{appVersion,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR},
+                #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TPeople">
         insert into t_people
@@ -116,13 +118,13 @@
     </update>
     <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TPeople">
         update t_people
-        set msg_type = #{msgType,jdbcType=INTEGER},
-        account_id = #{accountId,jdbcType=INTEGER},
-        people_name = #{peopleName,jdbcType=VARCHAR},
-        app_version = #{appVersion,jdbcType=VARCHAR},
-        remark = #{remark,jdbcType=VARCHAR},
-        create_time = #{createTime,jdbcType=VARCHAR},
-        modified_time = #{modifiedTime,jdbcType=VARCHAR}
+        set msg_type      = #{msgType,jdbcType=INTEGER},
+            account_id    = #{accountId,jdbcType=INTEGER},
+            people_name   = #{peopleName,jdbcType=VARCHAR},
+            app_version   = #{appVersion,jdbcType=VARCHAR},
+            remark        = #{remark,jdbcType=VARCHAR},
+            create_time   = #{createTime,jdbcType=VARCHAR},
+            modified_time = #{modifiedTime,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>
 
