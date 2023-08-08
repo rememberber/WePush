@@ -159,8 +159,10 @@ public class TaskRunThread extends Thread {
         this.tTask = taskMapper.selectByPrimaryKey(taskId);
 
         try {
+            String nowTime = DateUtil.now().replace(":", "_").replace(" ", "_");
+
             logFilePath = SystemUtil.CONFIG_HOME + "data" + File.separator +
-                    "push_log" + File.separator + tTask.getTitle() +
+                    "push_log" + File.separator + tTask.getTitle() + "_" + nowTime +
                     ".log";
             FileUtil.touch(logFilePath);
             logWriter = new BufferedWriter(new FileWriter(logFilePath));
