@@ -118,6 +118,11 @@ public class TaskForm {
         }
         // 隐藏id列
         JTableUtil.hideColumn(taskListTable, 0);
+
+        // 设置列宽
+        TableColumnModel tableColumnModel = taskListTable.getColumnModel();
+        tableColumnModel.getColumn(2).setPreferredWidth(60);
+        tableColumnModel.getColumn(3).setPreferredWidth(50);
     }
 
     private static String getTaskType(TTask task) {
@@ -131,17 +136,6 @@ public class TaskForm {
     private static String getMsgName(Integer messageId) {
         String msgName = msgMapper.selectByPrimaryKey(messageId).getMsgName();
         return msgName;
-    }
-
-    public static void initTaskHisListTable() {
-        JTable taskHisListTable = taskForm.getTaskHisListTable();
-
-        // 任务数据列表
-        String[] headerNames = {"id", "开始时间", "结束时间", "总量", "成功", "状态"};
-        DefaultTableModel model = new DefaultTableModel(null, headerNames);
-        taskHisListTable.setModel(model);
-
-        taskHisListTable.getTableHeader().setReorderingAllowed(false);
     }
 
     {
@@ -347,29 +341,31 @@ public class TaskForm {
         JTable taskHisListTable = taskForm.getTaskHisListTable();
 
         // 任务数据列表
-        String[] headerNames = {"id", "开始时间", "结束时间", "总量", "成功", "状态"};
+        String[] headerNames = {"id", "是否空跑", "开始时间", "结束时间", "总量", "成功", "状态"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
         taskHisListTable.setModel(model);
 
         taskHisListTable.getTableHeader().setReorderingAllowed(false);
 
-        TableColumnModel tableColumnModel = taskHisListTable.getColumnModel();
-
         Object[] data;
 
         List<TTaskHis> taskHisList = taskHisMapper.selectByTaskId(selectedTaskId);
         for (TTaskHis taskHis : taskHisList) {
-            data = new Object[6];
+            data = new Object[7];
             data[0] = taskHis.getId();
-            data[1] = taskHis.getStartTime();
-            data[2] = taskHis.getEndTime();
-            data[3] = taskHis.getTotalCnt();
-            data[4] = taskHis.getSuccessCnt();
-            data[5] = taskHis.getStatus();
+            data[1] = "空跑";
+            data[2] = taskHis.getStartTime();
+            data[3] = taskHis.getEndTime();
+            data[4] = taskHis.getTotalCnt();
+            data[5] = taskHis.getSuccessCnt();
+            data[6] = taskHis.getStatus();
             model.addRow(data);
         }
         // 隐藏id列
         JTableUtil.hideColumn(taskHisListTable, 0);
         // 设置列宽
+        TableColumnModel tableColumnModel = taskHisListTable.getColumnModel();
+        tableColumnModel.getColumn(1).setPreferredWidth(30);
+        tableColumnModel.getColumn(6).setPreferredWidth(30);
     }
 }

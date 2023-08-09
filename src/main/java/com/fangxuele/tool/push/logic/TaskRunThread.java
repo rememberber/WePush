@@ -320,9 +320,9 @@ public class TaskRunThread extends Thread {
                         }
                     }
                     if (taskHisListTableRow != -1) {
-                        taskForm.getTaskHisListTable().setValueAt(taskHis.getStatus(), taskHisListTableRow, 5);
-                        taskForm.getTaskHisListTable().setValueAt(taskHis.getSuccessCnt(), taskHisListTableRow, 4);
-                        taskForm.getTaskHisListTable().setValueAt(taskHis.getEndTime(), taskHisListTableRow, 2);
+                        taskForm.getTaskHisListTable().setValueAt(taskHis.getStatus(), taskHisListTableRow, 6);
+                        taskForm.getTaskHisListTable().setValueAt(taskHis.getSuccessCnt(), taskHisListTableRow, 5);
+                        taskForm.getTaskHisListTable().setValueAt(taskHis.getEndTime(), taskHisListTableRow, 3);
                     }
                 }
 
