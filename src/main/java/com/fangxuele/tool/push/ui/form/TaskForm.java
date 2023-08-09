@@ -18,7 +18,6 @@ import lombok.Getter;
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumnModel;
 import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.util.List;
@@ -120,9 +119,8 @@ public class TaskForm {
         JTableUtil.hideColumn(taskListTable, 0);
 
         // 设置列宽
-        TableColumnModel tableColumnModel = taskListTable.getColumnModel();
-        tableColumnModel.getColumn(2).setPreferredWidth(60);
-        tableColumnModel.getColumn(3).setPreferredWidth(50);
+//        TableColumnModel tableColumnModel = taskListTable.getColumnModel();
+//        tableColumnModel.getColumn(3).setMaxWidth(60);
     }
 
     private static String getTaskType(TTask task) {
@@ -364,8 +362,8 @@ public class TaskForm {
         // 隐藏id列
         JTableUtil.hideColumn(taskHisListTable, 0);
         // 设置列宽
-        TableColumnModel tableColumnModel = taskHisListTable.getColumnModel();
-        tableColumnModel.getColumn(1).setPreferredWidth(30);
-        tableColumnModel.getColumn(6).setPreferredWidth(30);
+//        TableColumnModel tableColumnModel = taskHisListTable.getColumnModel();
+//        tableColumnModel.getColumn(1).setMaxWidth(50);
+//        tableColumnModel.getColumn(6).setMaxWidth(50);
     }
 }
