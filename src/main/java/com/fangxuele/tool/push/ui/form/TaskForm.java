@@ -80,7 +80,13 @@ public class TaskForm {
     public static void init() {
         taskForm = getInstance();
         taskForm.getTaskListTable().setRowHeight(UiConsts.TABLE_ROW_HEIGHT);
+        taskForm.getTaskHisListTable().setRowHeight(UiConsts.TABLE_ROW_HEIGHT);
+        JTableUtil.setTableHeaderLeftAlignment(taskForm.getTaskListTable());
+        JTableUtil.setTableHeaderLeftAlignment(taskForm.getTaskHisListTable());
         taskForm.getTaskListTable().setShowHorizontalLines(true);
+        taskForm.getTaskHisListTable().setShowHorizontalLines(true);
+        taskForm.getTaskListTable().setShowVerticalLines(true);
+        taskForm.getTaskHisListTable().setShowVerticalLines(true);
         taskForm.getMainSplitPane().setDividerLocation((int) (App.mainFrame.getWidth() / 2));
 
         initTaskListTable();
