@@ -2,10 +2,13 @@ package com.fangxuele.tool.push.ui.listener;
 
 import cn.hutool.core.thread.ThreadUtil;
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.dao.TTaskHisMapper;
 import com.fangxuele.tool.push.dao.TTaskMapper;
 import com.fangxuele.tool.push.domain.TTask;
-import com.fangxuele.tool.push.logic.PushData;
+import com.fangxuele.tool.push.domain.TTaskHis;
+import com.fangxuele.tool.push.logic.TaskModeEnum;
 import com.fangxuele.tool.push.logic.TaskRunThread;
+import com.fangxuele.tool.push.ui.dialog.InfinityTaskHisDetailDialog;
 import com.fangxuele.tool.push.ui.dialog.NewTaskDialog;
 import com.fangxuele.tool.push.ui.dialog.TaskHisDetailDialog;
 import com.fangxuele.tool.push.ui.form.TaskForm;
@@ -26,6 +29,7 @@ import java.awt.event.MouseEvent;
 public class TaskListener {
 
     private static TTaskMapper taskMapper = MybatisUtil.getSqlSession().getMapper(TTaskMapper.class);
+    private static TTaskHisMapper taskHisMapper = MybatisUtil.getSqlSession().getMapper(TTaskHisMapper.class);
 
     public static void addListeners() {
         TaskForm taskForm = TaskForm.getInstance();
@@ -45,11 +49,18 @@ public class TaskListener {
             }
 
             Integer taskHisId = (Integer) taskForm.getTaskHisListTable().getValueAt(selectedRow, 0);
-            TaskRunThread taskRunThread = TaskRunThread.taskRunThreadMap.get(taskHisId);
+            TTaskHis tTaskHis = taskHisMapper.selectByPrimaryKey(taskHisId);
+            if (TaskModeEnum.FIX_THREAD_TASK_CODE == tTaskHis.getTaskMode()) {
+                TaskRunThread taskRunThread = TaskRunThread.taskRunThreadMap.get(taskHisId);
 
-            TaskHisDetailDialog dialog = new TaskHisDetailDialog(taskRunThread, taskHisId);
-            dialog.pack();
-            dialog.setVisible(true);
+                TaskHisDetailDialog dialog = new TaskHisDetailDialog(taskRunThread, taskHisId);
+                dialog.pack();
+                dialog.setVisible(true);
+            } else if (TaskModeEnum.INFINITY_TASK_CODE == tTaskHis.getTaskMode()) {
+                InfinityTaskHisDetailDialog dialog = new InfinityTaskHisDetailDialog();
+                dialog.pack();
+                dialog.setVisible(true);
+            }
         });
 
         taskForm.getStartButton().addActionListener(e -> {
