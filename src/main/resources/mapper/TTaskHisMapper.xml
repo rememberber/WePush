@@ -15,13 +15,14 @@
         <result column="fail_file_path" jdbcType="VARCHAR" property="failFilePath"/>
         <result column="no_send_file_path" jdbcType="VARCHAR" property="noSendFilePath"/>
         <result column="log_file_path" jdbcType="VARCHAR" property="logFilePath"/>
+        <result column="task_mode" jdbcType="INTEGER" property="taskMode"/>
         <result column="remark" jdbcType="VARCHAR" property="remark"/>
         <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
         <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime"/>
     </resultMap>
     <sql id="Base_Column_List">
         id, task_id, start_time, end_time, total_cnt, success_cnt, fail_cnt, status, dry_run,
-        success_file_path, fail_file_path, no_send_file_path, log_file_path, remark, create_time,
+        success_file_path, fail_file_path, no_send_file_path, log_file_path, task_mode, remark, create_time,
         modified_time
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -44,17 +45,19 @@
     <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TTaskHis" keyProperty="id"
             useGeneratedKeys="true">
         insert into t_task_his (id, task_id, start_time,
-        end_time, total_cnt, success_cnt,
-        fail_cnt, status, dry_run,
-        success_file_path, fail_file_path, no_send_file_path,
-        log_file_path, remark, create_time,
-        modified_time)
+                                end_time, total_cnt, success_cnt,
+                                fail_cnt, status, dry_run,
+                                success_file_path, fail_file_path, no_send_file_path,
+                                log_file_path, task_mode, remark, create_time,
+                                modified_time)
         values (#{id,jdbcType=INTEGER}, #{taskId,jdbcType=INTEGER}, #{startTime,jdbcType=VARCHAR},
-        #{endTime,jdbcType=VARCHAR}, #{totalCnt,jdbcType=INTEGER}, #{successCnt,jdbcType=INTEGER},
-        #{failCnt,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{dryRun,jdbcType=INTEGER},
-        #{successFilePath,jdbcType=VARCHAR}, #{failFilePath,jdbcType=VARCHAR}, #{noSendFilePath,jdbcType=VARCHAR},
-        #{logFilePath,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR},
-        #{modifiedTime,jdbcType=VARCHAR})
+                #{endTime,jdbcType=VARCHAR}, #{totalCnt,jdbcType=INTEGER}, #{successCnt,jdbcType=INTEGER},
+                #{failCnt,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{dryRun,jdbcType=INTEGER},
+                #{successFilePath,jdbcType=VARCHAR}, #{failFilePath,jdbcType=VARCHAR},
+                #{noSendFilePath,jdbcType=VARCHAR},
+                #{logFilePath,jdbcType=VARCHAR}, #{taskMode,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR},
+                #{createTime,jdbcType=VARCHAR},
+                #{modifiedTime,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TTaskHis">
         insert into t_task_his
@@ -97,6 +100,9 @@
             </if>
             <if test="logFilePath != null">
                 log_file_path,
+            </if>
+            <if test="taskMode != null">
+                task_mode,
             </if>
             <if test="remark != null">
                 remark,
@@ -148,6 +154,9 @@
             <if test="logFilePath != null">
                 #{logFilePath,jdbcType=VARCHAR},
             </if>
+            <if test="taskMode != null">
+                #{taskMode,jdbcType=INTEGER},
+            </if>
             <if test="remark != null">
                 #{remark,jdbcType=VARCHAR},
             </if>
@@ -198,6 +207,9 @@
             <if test="logFilePath != null">
                 log_file_path = #{logFilePath,jdbcType=VARCHAR},
             </if>
+            <if test="taskMode != null">
+                task_mode = #{taskMode,jdbcType=INTEGER},
+            </if>
             <if test="remark != null">
                 remark = #{remark,jdbcType=VARCHAR},
             </if>
@@ -224,6 +236,7 @@
         fail_file_path = #{failFilePath,jdbcType=VARCHAR},
         no_send_file_path = #{noSendFilePath,jdbcType=VARCHAR},
         log_file_path = #{logFilePath,jdbcType=VARCHAR},
+        task_mode = #{taskMode,jdbcType=INTEGER},
         remark = #{remark,jdbcType=VARCHAR},
         create_time = #{createTime,jdbcType=VARCHAR},
         modified_time = #{modifiedTime,jdbcType=VARCHAR}

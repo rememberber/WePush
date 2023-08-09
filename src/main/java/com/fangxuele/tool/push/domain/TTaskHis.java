@@ -29,6 +29,8 @@ public class TTaskHis implements Serializable {
 
     private String logFilePath;
 
+    private Integer taskMode;
+
     private String remark;
 
     private String createTime;
@@ -139,6 +141,14 @@ public class TTaskHis implements Serializable {
 
     public void setLogFilePath(String logFilePath) {
         this.logFilePath = logFilePath == null ? null : logFilePath.trim();
+    }
+
+    public Integer getTaskMode() {
+        return taskMode;
+    }
+
+    public void setTaskMode(Integer taskMode) {
+        this.taskMode = taskMode;
     }
 
     public String getRemark() {

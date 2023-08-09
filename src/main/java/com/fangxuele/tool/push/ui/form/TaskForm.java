@@ -351,7 +351,7 @@ public class TaskForm {
         for (TTaskHis taskHis : taskHisList) {
             data = new Object[7];
             data[0] = taskHis.getId();
-            data[1] = "空跑";
+            data[1] = taskHis.getDryRun() == 1 ? "空跑" : "否";
             data[2] = taskHis.getStartTime();
             data[3] = taskHis.getEndTime();
             data[4] = taskHis.getTotalCnt();

@@ -1,16 +1,3 @@
-create table if not exists t_push_history
-(
-    id            integer
-        constraint t_push_history_pk
-            primary key autoincrement,
-    msg_id        integer,
-    msg_type      integer,
-    msg_name      text,
-    result        text,
-    csv_file      text,
-    create_time   datetime,
-    modified_time datetime
-);
 create table if not exists t_wx_mp_user
 (
     open_id         text
@@ -192,6 +179,7 @@ create table if not exists t_task_his
     fail_file_path    text,
     no_send_file_path text,
     log_file_path     text,
+    task_mode         integer,
     remark            text,
     create_time       datetime,
     modified_time     datetime

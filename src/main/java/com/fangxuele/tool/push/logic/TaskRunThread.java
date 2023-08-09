@@ -201,6 +201,8 @@ public class TaskRunThread extends Thread {
         // 设置是否空跑
         taskHis.setDryRun(dryRun);
 
+        taskHis.setTaskMode(tTask.getTaskMode());
+
         taskHis.setLogFilePath(logFilePath);
 
         // TODO 执行前重新导入目标用户
