@@ -410,7 +410,7 @@ public class TaskRunThread extends Thread {
                     }
                 }
                 if (taskHisListTableRow != -1) {
-                    taskForm.getTaskHisListTable().setValueAt(taskHis.getSuccessCnt(), taskHisListTableRow, 4);
+                    taskForm.getTaskHisListTable().setValueAt(taskHis.getSuccessCnt(), taskHisListTableRow, 5);
                 }
             }
             ThreadUtil.safeSleep(200);
