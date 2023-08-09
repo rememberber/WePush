@@ -21,9 +21,9 @@ import com.fangxuele.tool.push.domain.TTaskHis;
 import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
-import com.fangxuele.tool.push.logic.msgthread.MsgSendThread;
+import com.fangxuele.tool.push.logic.msgthread.MsgInfinitySendThread;
 import com.fangxuele.tool.push.ui.UiConsts;
-import com.fangxuele.tool.push.ui.form.PushForm;
+import com.fangxuele.tool.push.ui.form.InfinityForm;
 import com.fangxuele.tool.push.ui.form.ScheduleForm;
 import com.fangxuele.tool.push.ui.form.TaskForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
@@ -36,6 +36,7 @@ import lombok.Setter;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -44,21 +45,22 @@ import java.io.IOException;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.stream.Collectors;
 
 /**
  * <pre>
- * 推送执行控制线程
+ * 性能模式推送执行控制线程
  * </pre>
  *
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
- * @since 2023/8/03
+ * @since 2023/8/9
  */
 @Getter
 @Setter
-public class TaskRunThread extends Thread {
+public class InfinityTaskRunThread extends Thread {
 
     private static final Log logger = LogFactory.get();
 
@@ -115,6 +117,22 @@ public class TaskRunThread extends Thread {
      */
     public List<String[]> sendFailList;
 
+
+    /**
+     * 线程安全队列，非阻塞，用于存放待发送的消息，多线程消费该队列
+     */
+    public ConcurrentLinkedQueue<String[]> toSendConcurrentLinkedQueue = new ConcurrentLinkedQueue<>();
+
+    /**
+     * 线程安全队列，非阻塞，用于存放活跃的线程名称
+     */
+    public ConcurrentLinkedQueue<String> activeThreadConcurrentLinkedQueue = new ConcurrentLinkedQueue<>();
+
+    /**
+     * 线程状态Map,key:线程名称，value:true运行，false停止
+     */
+    public Map<String, Boolean> threadStatusMap = new HashMap<>(100);
+
     private TTask tTask;
 
     public Integer getTaskId() {
@@ -149,9 +167,9 @@ public class TaskRunThread extends Thread {
     private BufferedWriter logWriter;
 
     // TODO 注意相关资源删除或者关闭的时候，进行清理回收
-    public static Map<Integer, TaskRunThread> taskRunThreadMap = new ConcurrentHashMap<>();
+    public static Map<Integer, InfinityTaskRunThread> infinityTaskRunThreadMap = new ConcurrentHashMap<>();
 
-    public TaskRunThread(Integer taskId, Integer dryRun) {
+    public InfinityTaskRunThread(Integer taskId, Integer dryRun) {
         this.taskId = taskId;
         this.dryRun = dryRun;
     }
@@ -173,19 +191,25 @@ public class TaskRunThread extends Thread {
             logger.error(e);
         }
 
-        preparePushRun(tTask);
-        ConsoleUtil.pushLog(logWriter, "推送开始……");
-        // 消息数据分片以及线程纷发
+        preparePushRun();
+        ConsoleUtil.infinityConsoleWithLog("推送开始……");
+        ConsoleUtil.infinityConsoleWithLog("推送过程中可随时拖拽下方滑动条调整线程数量，以达到最佳推送速度。");
+        // 线程池初始化
         tMsg = msgMapper.selectByPrimaryKey(tTask.getMessageId());
-        ThreadPoolExecutor threadPoolExecutor = shardingAndMsgThread(tMsg);
 
-        taskRunThreadMap.put(taskHis.getId(), this);
+        int initCorePoolSize = tTask.getThreadCnt();
+        ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(initCorePoolSize, tTask.getMaxThreadCnt());
+        adjustThreadCount(threadPoolExecutor, initCorePoolSize);
+        // 线程动态调整
+        threadMonitor(threadPoolExecutor);
+
+        infinityTaskRunThreadMap.put(taskHis.getId(), this);
         // 时间监控
         timeMonitor(threadPoolExecutor);
 
         resetLocalData();
 
-        taskRunThreadMap.remove(taskHis.getId());
+        infinityTaskRunThreadMap.remove(taskHis.getId());
     }
 
     /**
@@ -219,21 +243,13 @@ public class TaskRunThread extends Thread {
             String varData = peopleData.getVarData();
             String[] strings = JSON.parseObject(varData, new TypeReference<String[]>() {
             });
-            toSendList.add(strings);
+            toSendConcurrentLinkedQueue.add(strings);
         });
         // 总记录数
-        totalRecords = toSendList.size();
+        totalRecords = toSendConcurrentLinkedQueue.size();
 
-        taskHis.setTotalCnt((int) totalRecords);
         ConsoleUtil.pushLog(logWriter, "消息总数：" + totalRecords);
         ConsoleUtil.pushLog(logWriter, "可用处理器核心：" + Runtime.getRuntime().availableProcessors());
-
-        // 线程数
-        ConsoleUtil.pushLog(logWriter, "线程数：" + tTask.getThreadCnt());
-        ConsoleUtil.pushLog(logWriter, "线程池大小：" + tTask.getThreadCnt());
-
-        // 线程数
-        threadCount = tTask.getThreadCnt();
 
         taskHis.setStatus(10);
 
@@ -252,37 +268,20 @@ public class TaskRunThread extends Thread {
         }
     }
 
-    /**
-     * 消息数据分片以及线程纷发
-     */
-    private ThreadPoolExecutor shardingAndMsgThread(TMsg tMsg) {
 
-        int maxThreadPoolSize = tTask.getThreadCnt();
-        ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(maxThreadPoolSize, maxThreadPoolSize);
-        MsgSendThread msgSendThread;
-        // 每个线程分配
-        int perThread = (int) (totalRecords / threadCount) + 1;
-        for (int i = 0; i < threadCount; i++) {
-            int startIndex = i * perThread;
-            if (startIndex > totalRecords - 1) {
-                threadCount = i;
-                break;
-            }
-            int endIndex = i * perThread + perThread;
-            if (endIndex > totalRecords - 1) {
-                endIndex = (int) (totalRecords);
-            }
-
-            IMsgSender msgSender = MsgSenderFactory.getMsgSender(tMsg.getId(), dryRun);
-            msgSendThread = new MsgSendThread(startIndex, endIndex, msgSender, this);
-
-            msgSendThread.setName("T-" + i);
-
-            threadPoolExecutor.execute(msgSendThread);
+    synchronized private void adjustThreadCount(ThreadPoolExecutor threadPoolExecutor, int targetCount) {
+        IMsgSender msgSender;
+        MsgInfinitySendThread msgInfinitySendThread;
+        while (activeThreadConcurrentLinkedQueue.size() < targetCount) {
+            msgSender = MsgSenderFactory.getMsgSender(tMsg.getId(), dryRun);
+            msgInfinitySendThread = new MsgInfinitySendThread(msgSender, this);
+            threadPoolExecutor.execute(msgInfinitySendThread);
         }
-        threadPoolExecutor.shutdown();
-        ConsoleUtil.pushLog(logWriter, "所有线程宝宝启动完毕……");
-        return threadPoolExecutor;
+        while (activeThreadConcurrentLinkedQueue.size() > targetCount) {
+            String threadName = activeThreadConcurrentLinkedQueue.poll();
+            threadStatusMap.put(threadName, false);
+        }
+        threadPoolExecutor.setCorePoolSize(targetCount);
     }
 
     /**
@@ -291,55 +290,30 @@ public class TaskRunThread extends Thread {
      * @param threadPoolExecutor
      */
     private void timeMonitor(ThreadPoolExecutor threadPoolExecutor) {
-        PushForm pushForm = PushForm.getInstance();
+        InfinityForm infinityForm = InfinityForm.getInstance();
+
         long startTimeMillis = System.currentTimeMillis();
-        int totalSentCountBefore = 0;
+        long processedRecordsBefore = 0;
         // 计时
         while (true) {
-            if (threadPoolExecutor.isTerminated()) {
-                taskHis.setEndTime(SqliteUtil.nowDateForSqlite());
-
-                int successCount = sendSuccessList.size();
-                int failCount = sendFailList.size();
-                taskHis.setSuccessCnt(successCount);
-                taskHis.setFailCnt(failCount);
-
-                taskHisMapper.updateByPrimaryKey(taskHis);
-
-                TaskForm taskForm = TaskForm.getInstance();
-                int selectedRow = taskForm.getTaskListTable().getSelectedRow();
-                Integer selectedTaskId = (Integer) taskForm.getTaskListTable().getValueAt(selectedRow, 0);
-                if (selectedTaskId.equals(taskId)) {
-                    // 遍历TaskListTable找到taskHisId对应的行号
-                    int taskHisId = taskHis.getId();
-                    int taskHisListTableRows = taskForm.getTaskHisListTable().getRowCount();
-                    int taskHisListTableRow = -1;
-                    for (int i = 0; i < taskHisListTableRows; i++) {
-                        int taskHisIdInTable = (int) taskForm.getTaskHisListTable().getValueAt(i, 0);
-                        if (taskHisId == taskHisIdInTable) {
-                            taskHisListTableRow = i;
-                            break;
-                        }
-                    }
-                    if (taskHisListTableRow != -1) {
-                        taskForm.getTaskHisListTable().setValueAt(taskHis.getStatus(), taskHisListTableRow, 6);
-                        taskForm.getTaskHisListTable().setValueAt(taskHis.getSuccessCnt(), taskHisListTableRow, 5);
-                        taskForm.getTaskHisListTable().setValueAt(taskHis.getEndTime(), taskHisListTableRow, 3);
-                    }
-                }
-
+            if ((!running && activeThreadConcurrentLinkedQueue.isEmpty()) || toSendConcurrentLinkedQueue.isEmpty()) {
                 if (!fixRateScheduling) {
-
                     if (App.trayIcon != null) {
                         App.trayIcon.displayMessage("WePush", tTask.getTitle() + " 发送完毕！", TrayIcon.MessageType.INFO);
                     }
-// TODO 看是否还有保留的必要
-//                    pushForm.getScheduleDetailLabel().setVisible(false);
+
+                    String finishTip = "发送完毕！\n";
+                    JOptionPane.showMessageDialog(App.mainFrame, finishTip, "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    // TODO 看是否还有保留的必要
+//                    infinityForm.getScheduleDetailLabel().setVisible(false);
                 } else {
                     // TODO 看是否还有保留的必要
-//                    Date nextDate = CronPatternUtil.nextDateAfter(new CronPattern(tTask.getCron()), new Date(), true);
-//                    pushForm.getScheduleDetailLabel().setText("计划任务执行中，下一次执行时间：" + DateFormatUtils.format(nextDate, "yyyy-MM-dd HH:mm:ss"));
+//                    Date nextDate = CronPatternUtil.nextDateAfter(new CronPattern(App.config.getTextCron()), new Date(), true);
+//                    infinityForm.getScheduleDetailLabel().setText("计划任务执行中，下一次执行时间：" + DateFormatUtils.format(nextDate, "yyyy-MM-dd HH:mm:ss"));
                 }
+
+                endTime = System.currentTimeMillis();
 
                 // 保存停止前的数据
                 try {
@@ -351,6 +325,9 @@ public class TaskRunThread extends Thread {
                     }
                 } catch (IOException e) {
                     logger.error(e);
+                } finally {
+                    threadPoolExecutor.shutdown();
+                    ConsoleUtil.pushLog(logWriter, "推送结束！");
                 }
 
                 // 关闭logWriter
@@ -422,6 +399,10 @@ public class TaskRunThread extends Thread {
     }
 
     private void savePushData() throws IOException {
+        if (!PushData.toSendConcurrentLinkedQueue.isEmpty()) {
+            toSendList = new ArrayList<>(toSendConcurrentLinkedQueue);
+        }
+
         File pushHisDir = new File(SystemUtil.CONFIG_HOME + "data" + File.separator + "push_his");
         if (!pushHisDir.exists()) {
             boolean mkdirs = pushHisDir.mkdirs();
@@ -547,4 +528,18 @@ public class TaskRunThread extends Thread {
         }
     }
 
+    void resetLocalData() {
+        running = true;
+        successRecords.reset();
+        failRecords.reset();
+        threadCount = 0;
+        toSendList = Collections.synchronizedList(new LinkedList<>());
+        toSendConcurrentLinkedQueue = new ConcurrentLinkedQueue<>();
+        activeThreadConcurrentLinkedQueue = new ConcurrentLinkedQueue<>();
+        threadStatusMap = new HashMap<>(100);
+        sendSuccessList = Collections.synchronizedList(new LinkedList<>());
+        sendFailList = Collections.synchronizedList(new LinkedList<>());
+        startTime = 0;
+        endTime = 0;
+    }
 }
