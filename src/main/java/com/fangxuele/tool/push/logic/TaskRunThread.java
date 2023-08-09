@@ -4,8 +4,6 @@ import cn.hutool.core.date.BetweenFormatter;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.thread.ThreadUtil;
-import cn.hutool.cron.pattern.CronPattern;
-import cn.hutool.cron.pattern.CronPatternUtil;
 import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
@@ -16,13 +14,18 @@ import com.fangxuele.tool.push.dao.TMsgMapper;
 import com.fangxuele.tool.push.dao.TPeopleDataMapper;
 import com.fangxuele.tool.push.dao.TTaskHisMapper;
 import com.fangxuele.tool.push.dao.TTaskMapper;
-import com.fangxuele.tool.push.domain.*;
+import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.domain.TPeopleData;
+import com.fangxuele.tool.push.domain.TTask;
+import com.fangxuele.tool.push.domain.TTaskHis;
 import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.logic.msgthread.MsgSendThread;
 import com.fangxuele.tool.push.ui.UiConsts;
-import com.fangxuele.tool.push.ui.form.*;
+import com.fangxuele.tool.push.ui.form.PushForm;
+import com.fangxuele.tool.push.ui.form.ScheduleForm;
+import com.fangxuele.tool.push.ui.form.TaskForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
@@ -38,8 +41,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.LongAdder;
@@ -328,11 +331,12 @@ public class TaskRunThread extends Thread {
                     if (App.trayIcon != null) {
                         App.trayIcon.displayMessage("WePush", tTask.getTitle() + " 发送完毕！", TrayIcon.MessageType.INFO);
                     }
-
-                    pushForm.getScheduleDetailLabel().setVisible(false);
+// TODO 看是否还有保留的必要
+//                    pushForm.getScheduleDetailLabel().setVisible(false);
                 } else {
-                    Date nextDate = CronPatternUtil.nextDateAfter(new CronPattern(tTask.getCron()), new Date(), true);
-                    pushForm.getScheduleDetailLabel().setText("计划任务执行中，下一次执行时间：" + DateFormatUtils.format(nextDate, "yyyy-MM-dd HH:mm:ss"));
+                    // TODO 看是否还有保留的必要
+//                    Date nextDate = CronPatternUtil.nextDateAfter(new CronPattern(tTask.getCron()), new Date(), true);
+//                    pushForm.getScheduleDetailLabel().setText("计划任务执行中，下一次执行时间：" + DateFormatUtils.format(nextDate, "yyyy-MM-dd HH:mm:ss"));
                 }
 
                 // 保存停止前的数据
@@ -523,8 +527,7 @@ public class TaskRunThread extends Thread {
         }
 
         // 发送推送结果邮件
-        if ((PushData.scheduling || fixRateScheduling)
-                && ScheduleForm.getInstance().getSendPushResultCheckBox().isSelected()) {
+        if (tTask.getResultAlert() == 1) {
             ConsoleUtil.pushLog(logWriter, "发送推送结果邮件开始");
             String mailResultTo = ScheduleForm.getInstance().getMailResultToTextField().getText().replace("；", ";").replace(" ", "");
             String[] mailTos = mailResultTo.split(";");

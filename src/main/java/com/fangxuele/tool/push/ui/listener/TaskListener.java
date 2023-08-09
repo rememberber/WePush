@@ -1,8 +1,10 @@
 package com.fangxuele.tool.push.ui.listener;
 
 import cn.hutool.core.thread.ThreadUtil;
+import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TTaskMapper;
 import com.fangxuele.tool.push.domain.TTask;
+import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.TaskRunThread;
 import com.fangxuele.tool.push.ui.dialog.NewTaskDialog;
 import com.fangxuele.tool.push.ui.dialog.TaskHisDetailDialog;
@@ -114,6 +116,27 @@ public class TaskListener {
 
             Integer selectedTaskId = (Integer) taskForm.getTaskListTable().getValueAt(selectedRow, 0);
             TaskForm.initTaskHisListTable(selectedTaskId);
+        });
+
+        taskForm.getStopButton().addActionListener(e -> {
+            int selectedRow = taskForm.getTaskHisListTable().getSelectedRow();
+            if (selectedRow < 0) {
+                JOptionPane.showMessageDialog(taskForm.getMainPanel(), "请先选择要停止的任务记录！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            Integer taskHisId = (Integer) taskForm.getTaskHisListTable().getValueAt(selectedRow, 0);
+            TaskRunThread taskRunThread = TaskRunThread.taskRunThreadMap.get(taskHisId);
+
+            if (taskRunThread != null && taskRunThread.isRunning()) {
+                int isStop = JOptionPane.showConfirmDialog(App.mainFrame,
+                        "确定停止当前的推送吗？", "确认停止？",
+                        JOptionPane.YES_NO_OPTION);
+                if (isStop == JOptionPane.YES_OPTION) {
+                    taskRunThread.running = false;
+                }
+            }
         });
     }
 }

@@ -44,7 +44,7 @@ public class TaskForm {
     private JButton startButton;
     private JTable taskHisListTable;
     private JButton refreshHisButton;
-    private JButton 停止Button;
+    private JButton stopButton;
     private JButton 删除Button1;
     private JButton taskHisDetailButton;
     private JLabel jvmMemoryLabel;
@@ -292,10 +292,10 @@ public class TaskForm {
         refreshHisButton.setIcon(new ImageIcon(getClass().getResource("/icon/add.png")));
         refreshHisButton.setText("刷新");
         panel9.add(refreshHisButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        停止Button = new JButton();
-        停止Button.setIcon(new ImageIcon(getClass().getResource("/icon/remove.png")));
-        停止Button.setText("停止");
-        panel9.add(停止Button, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        stopButton = new JButton();
+        stopButton.setIcon(new ImageIcon(getClass().getResource("/icon/remove.png")));
+        stopButton.setText("停止");
+        panel9.add(stopButton, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         删除Button1 = new JButton();
         删除Button1.setIcon(new ImageIcon(getClass().getResource("/icon/remove.png")));
         删除Button1.setText("删除");
