@@ -331,10 +331,8 @@ public class TaskRunThread extends Thread {
 
                     pushForm.getScheduleDetailLabel().setVisible(false);
                 } else {
-                    if (App.config.isRadioCron()) {
-                        Date nextDate = CronPatternUtil.nextDateAfter(new CronPattern(App.config.getTextCron()), new Date(), true);
-                        pushForm.getScheduleDetailLabel().setText("计划任务执行中，下一次执行时间：" + DateFormatUtils.format(nextDate, "yyyy-MM-dd HH:mm:ss"));
-                    }
+                    Date nextDate = CronPatternUtil.nextDateAfter(new CronPattern(tTask.getCron()), new Date(), true);
+                    pushForm.getScheduleDetailLabel().setText("计划任务执行中，下一次执行时间：" + DateFormatUtils.format(nextDate, "yyyy-MM-dd HH:mm:ss"));
                 }
 
                 // 保存停止前的数据

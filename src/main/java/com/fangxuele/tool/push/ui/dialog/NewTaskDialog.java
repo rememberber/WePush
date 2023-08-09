@@ -1,12 +1,16 @@
 package com.fangxuele.tool.push.ui.dialog;
 
+import cn.hutool.cron.CronUtil;
+import cn.hutool.cron.pattern.CronPattern;
+import cn.hutool.cron.pattern.CronPatternUtil;
+import cn.hutool.cron.task.Task;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.*;
-import com.fangxuele.tool.push.domain.*;
-import com.fangxuele.tool.push.logic.MessageTypeEnum;
-import com.fangxuele.tool.push.logic.PeriodTypeEnum;
-import com.fangxuele.tool.push.logic.TaskModeEnum;
-import com.fangxuele.tool.push.logic.TaskTypeEnum;
+import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.domain.TPeople;
+import com.fangxuele.tool.push.domain.TTask;
+import com.fangxuele.tool.push.logic.*;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.form.TaskForm;
 import com.fangxuele.tool.push.util.ComponentUtil;
@@ -19,6 +23,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -493,7 +498,7 @@ public class NewTaskDialog extends JDialog {
                 // 非空校验
                 if (nullCheck()) return;
 
-                String now = SqliteUtil.nowDateForSqlite();
+                String nowDateForSqlite = SqliteUtil.nowDateForSqlite();
                 TTask task = new TTask();
                 task.setTitle(title);
                 task.setMsgType(msgTypeMap.get((String) msgTypeComboBox.getSelectedItem()));
@@ -511,15 +516,51 @@ public class NewTaskDialog extends JDialog {
                 task.setResultAlert(sendPushResultCheckBox.isSelected() ? 1 : 0);
                 task.setAlertEmails(mailResultToTextField.getText().trim());
                 task.setSaveResult(saveResponseBodyCheckBox.isSelected() ? 1 : 0);
-                task.setCreateTime(now);
-                task.setModifiedTime(now);
+                task.setCreateTime(nowDateForSqlite);
+                task.setModifiedTime(nowDateForSqlite);
 
                 taskMapper.insert(task);
 
                 TaskForm.initTaskListTable();
 
-                JOptionPane.showMessageDialog(this, "保存成功！", "提示",
-                        JOptionPane.INFORMATION_MESSAGE);
+                // 如果是定时任务
+                if (task.getTaskPeriod() == TaskTypeEnum.SCHEDULE_TASK_CODE) {
+                    {
+
+                        List<String> latest5RunTimeList = Lists.newArrayList();
+                        Date now = new Date();
+                        for (int i = 0; i < 5; i++) {
+                            Date date = CronPatternUtil.nextDateAfter(new CronPattern(task.getCron()), DateUtils.addDays(now, i), true);
+                            latest5RunTimeList.add(DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss"));
+                        }
+
+                        // TODO 重启应用时把所有定时任务重新加入到任务队列
+
+                        int isSchedulePush = JOptionPane.showConfirmDialog(App.mainFrame,
+                                "将按" +
+                                        task.getCron() +
+                                        "表达式触发推送\n\n" +
+                                        "最近5次运行时间:\n" +
+                                        String.join("\n", latest5RunTimeList) +
+                                        "\n\n消息名称：" +
+                                        task.getMessageId() +
+                                        "\n推送人数：" + task.getPeopleId(), "确认定时推送？",
+                                JOptionPane.YES_NO_OPTION);
+                        if (isSchedulePush == JOptionPane.YES_OPTION) {
+                            // 支持秒级别定时任务
+                            CronUtil.setMatchSecond(true);
+                            CronUtil.schedule(task.getCron(), (Task) () -> {
+                                TaskRunThread taskRunThread = new TaskRunThread(task.getId(), 0);
+                                taskRunThread.setFixRateScheduling(true);
+                                taskRunThread.start();
+                            });
+                            CronUtil.start();
+                        }
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "保存成功！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
             } catch (Exception e) {
                 log.error("新建任务异常:{}", ExceptionUtils.getStackTrace(e));
                 JOptionPane.showMessageDialog(this, "新建任务失败！\n" + e.getMessage(), "失败",

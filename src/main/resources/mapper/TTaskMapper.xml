@@ -38,7 +38,7 @@
         delete from t_task
         where id = #{id,jdbcType=INTEGER}
     </delete>
-    <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TTask">
+    <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TTask" keyProperty="id" useGeneratedKeys="true">
         insert into t_task (id, title, msg_type,
         account_id, message_id, people_id,
         task_mode, task_period, period_type,
