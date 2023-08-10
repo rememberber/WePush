@@ -27,7 +27,6 @@ import com.formdev.flatlaf.util.StringUtils;
 import com.formdev.flatlaf.util.SystemInfo;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
 import com.opencsv.CSVReader;
 
 import javax.swing.*;
@@ -114,6 +113,9 @@ public class TaskHisDetailDialog extends JDialog {
     public TaskHisDetailDialog(TaskRunThread taskRunThread, Integer taskHisId) {
         this();
 
+        TTaskHis tTaskHis = taskHisMapper.selectByPrimaryKey(taskHisId);
+        TTask tTask = taskMapper.selectByPrimaryKey(tTaskHis.getTaskId());
+
         successToPeopleButton.addActionListener(e -> {
             ThreadUtil.execute(() -> {
                 PeopleEditForm peopleEditForm = PeopleEditForm.getInstance();
@@ -121,9 +123,6 @@ public class TaskHisDetailDialog extends JDialog {
                 CSVReader reader = null;
                 try {
                     MainWindow.getInstance().getTabbedPane().setSelectedIndex(3);
-
-                    TTaskHis tTaskHis = taskHisMapper.selectByPrimaryKey(taskHisId);
-                    TTask tTask = taskMapper.selectByPrimaryKey(tTaskHis.getTaskId());
 
                     TPeople tPeopleToSave = new TPeople();
                     tPeopleToSave.setMsgType(tTask.getMsgType());
@@ -193,9 +192,6 @@ public class TaskHisDetailDialog extends JDialog {
                 try {
                     MainWindow.getInstance().getTabbedPane().setSelectedIndex(3);
 
-                    TTaskHis tTaskHis = taskHisMapper.selectByPrimaryKey(taskHisId);
-                    TTask tTask = taskMapper.selectByPrimaryKey(tTaskHis.getTaskId());
-
                     TPeople tPeopleToSave = new TPeople();
                     tPeopleToSave.setMsgType(tTask.getMsgType());
                     tPeopleToSave.setAccountId(tTask.getAccountId());
@@ -263,9 +259,6 @@ public class TaskHisDetailDialog extends JDialog {
                 CSVReader reader = null;
                 try {
                     MainWindow.getInstance().getTabbedPane().setSelectedIndex(3);
-
-                    TTaskHis tTaskHis = taskHisMapper.selectByPrimaryKey(taskHisId);
-                    TTask tTask = taskMapper.selectByPrimaryKey(tTaskHis.getTaskId());
 
                     TPeople tPeopleToSave = new TPeople();
                     tPeopleToSave.setMsgType(tTask.getMsgType());
@@ -368,8 +361,6 @@ public class TaskHisDetailDialog extends JDialog {
                 }
             });
         } else {
-            TTaskHis tTaskHis = taskHisMapper.selectByPrimaryKey(taskHisId);
-
             pushSuccessCount.setText(String.valueOf(tTaskHis.getSuccessCnt()));
             pushFailCount.setText(String.valueOf(tTaskHis.getFailCnt()));
 
