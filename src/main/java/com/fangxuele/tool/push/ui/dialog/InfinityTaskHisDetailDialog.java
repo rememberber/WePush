@@ -423,16 +423,16 @@ public class InfinityTaskHisDetailDialog extends JDialog {
      */
     private void $$$setupUI$$$() {
         contentPane = new JPanel();
-        contentPane.setLayout(new GridLayoutManager(4, 1, new Insets(10, 10, 10, 10), -1, -1));
+        contentPane.setLayout(new GridLayoutManager(4, 1, new Insets(0, 0, 0, 0), -1, -1));
         final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 10, 0, 10), -1, -1));
         contentPane.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, true));
         final JScrollPane scrollPane1 = new JScrollPane();
         panel1.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         consoleTextArea = new JTextArea();
         scrollPane1.setViewportView(consoleTextArea);
         pushUpPanel = new JPanel();
-        pushUpPanel.setLayout(new GridLayoutManager(4, 9, new Insets(5, 5, 5, 5), -1, -1));
+        pushUpPanel.setLayout(new GridLayoutManager(4, 9, new Insets(10, 10, 0, 10), -1, -1));
         contentPane.add(pushUpPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, true));
         pushSuccessCount = new JLabel();
         Font pushSuccessCountFont = this.$$$getFont$$$(null, -1, 72, pushSuccessCount.getFont());
@@ -501,7 +501,7 @@ public class InfinityTaskHisDetailDialog extends JDialog {
         availableProcessorLabel.setText("可用处理器核心：--");
         panel2.add(availableProcessorLabel, new GridConstraints(5, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         pushTotalCountLabel = new JLabel();
-        pushTotalCountLabel.setText("消息总数：0");
+        pushTotalCountLabel.setText("消息总数：-");
         panel2.add(pushTotalCountLabel, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         pushMsgName = new JLabel();
         Font pushMsgNameFont = this.$$$getFont$$$(null, -1, 24, pushMsgName.getFont());
@@ -516,16 +516,16 @@ public class InfinityTaskHisDetailDialog extends JDialog {
         activeThreadCountLabel = new JLabel();
         Font activeThreadCountLabelFont = this.$$$getFont$$$(null, Font.BOLD, -1, activeThreadCountLabel.getFont());
         if (activeThreadCountLabelFont != null) activeThreadCountLabel.setFont(activeThreadCountLabelFont);
-        activeThreadCountLabel.setText("活跃线程数：0");
+        activeThreadCountLabel.setText("活跃线程数：-");
         panel2.add(activeThreadCountLabel, new GridConstraints(2, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         corePoolSizeLabel = new JLabel();
-        corePoolSizeLabel.setText("核心线程数：0");
+        corePoolSizeLabel.setText("核心线程数：-");
         panel2.add(corePoolSizeLabel, new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         maxPoolSizeLabel = new JLabel();
-        maxPoolSizeLabel.setText("最大线程数：0");
+        maxPoolSizeLabel.setText("最大线程数：-");
         panel2.add(maxPoolSizeLabel, new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         pushControlPanel = new JPanel();
-        pushControlPanel.setLayout(new GridLayoutManager(1, 4, new Insets(0, 5, 5, 5), -1, -1));
+        pushControlPanel.setLayout(new GridLayoutManager(1, 4, new Insets(0, 10, 10, 10), -1, -1));
         contentPane.add(pushControlPanel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, true));
         sliderValueTextField = new JTextField();
         sliderValueTextField.setEditable(false);
@@ -565,7 +565,7 @@ public class InfinityTaskHisDetailDialog extends JDialog {
         threadCountSlider.setValueIsAdjusting(false);
         pushControlPanel.add(threadCountSlider, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(3, 4, new Insets(10, 10, 10, 10), -1, -1));
+        panel3.setLayout(new GridLayoutManager(3, 4, new Insets(0, 10, 0, 10), -1, -1));
         contentPane.add(panel3, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label6 = new JLabel();
         label6.setText("成功");
