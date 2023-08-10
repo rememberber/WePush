@@ -38,7 +38,7 @@
         <velocity-engine-core.version>2.2</velocity-engine-core.version>
         <lombok.version>1.18.22</lombok.version>
         <mybatis.version>3.5.6</mybatis.version>
-        <sqlite-jdbc.version>3.36.0.1</sqlite-jdbc.version>
+        <sqlite-jdbc.version>3.41.2.2</sqlite-jdbc.version>
         <junit.version>4.13.1</junit.version>
         <httpasyncclient.version>4.1.4</httpasyncclient.version>
         <HikariCP.version>3.4.5</HikariCP.version>
