@@ -119,6 +119,24 @@ public class InfinityTaskHisDetailDialog extends JDialog {
     public InfinityTaskHisDetailDialog(InfinityTaskRunThread infinityTaskRunThread, Integer taskHisId) {
         this();
 
+        TTaskHis tTaskHis = taskHisMapper.selectByPrimaryKey(taskHisId);
+        TTask tTask = taskMapper.selectByPrimaryKey(tTaskHis.getTaskId());
+
+        threadCountSlider.setMaximum(tTask.getMaxThreadCnt());
+        threadCountSlider.setValue(tTask.getThreadCnt());
+        sliderValueTextField.setText(String.valueOf(tTask.getThreadCnt()));
+
+        ThreadUtil.execute(() -> threadCountSlider.addChangeListener(e -> {
+            if (!infinityTaskRunThread.running) {
+                return;
+            }
+            JSlider slider = (JSlider) e.getSource();
+            int value = slider.getValue();
+            int finalValue = value;
+            sliderValueTextField.setText(String.valueOf(finalValue));
+            infinityTaskRunThread.adjustThreadCount(infinityTaskRunThread.getThreadPoolExecutor(), finalValue);
+        }));
+
         successToPeopleButton.addActionListener(e -> {
             ThreadUtil.execute(() -> {
                 PeopleEditForm peopleEditForm = PeopleEditForm.getInstance();
@@ -126,9 +144,6 @@ public class InfinityTaskHisDetailDialog extends JDialog {
                 CSVReader reader = null;
                 try {
                     MainWindow.getInstance().getTabbedPane().setSelectedIndex(3);
-
-                    TTaskHis tTaskHis = taskHisMapper.selectByPrimaryKey(taskHisId);
-                    TTask tTask = taskMapper.selectByPrimaryKey(tTaskHis.getTaskId());
 
                     TPeople tPeopleToSave = new TPeople();
                     tPeopleToSave.setMsgType(tTask.getMsgType());
@@ -198,9 +213,6 @@ public class InfinityTaskHisDetailDialog extends JDialog {
                 try {
                     MainWindow.getInstance().getTabbedPane().setSelectedIndex(3);
 
-                    TTaskHis tTaskHis = taskHisMapper.selectByPrimaryKey(taskHisId);
-                    TTask tTask = taskMapper.selectByPrimaryKey(tTaskHis.getTaskId());
-
                     TPeople tPeopleToSave = new TPeople();
                     tPeopleToSave.setMsgType(tTask.getMsgType());
                     tPeopleToSave.setAccountId(tTask.getAccountId());
@@ -268,9 +280,6 @@ public class InfinityTaskHisDetailDialog extends JDialog {
                 CSVReader reader = null;
                 try {
                     MainWindow.getInstance().getTabbedPane().setSelectedIndex(3);
-
-                    TTaskHis tTaskHis = taskHisMapper.selectByPrimaryKey(taskHisId);
-                    TTask tTask = taskMapper.selectByPrimaryKey(tTaskHis.getTaskId());
 
                     TPeople tPeopleToSave = new TPeople();
                     tPeopleToSave.setMsgType(tTask.getMsgType());
@@ -373,8 +382,6 @@ public class InfinityTaskHisDetailDialog extends JDialog {
                 }
             });
         } else {
-            TTaskHis tTaskHis = taskHisMapper.selectByPrimaryKey(taskHisId);
-
             pushSuccessCount.setText(String.valueOf(tTaskHis.getSuccessCnt()));
             pushFailCount.setText(String.valueOf(tTaskHis.getFailCnt()));
 

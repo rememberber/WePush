@@ -172,6 +172,8 @@ public class InfinityTaskRunThread extends Thread {
     // TODO 注意相关资源删除或者关闭的时候，进行清理回收
     public static Map<Integer, InfinityTaskRunThread> infinityTaskRunThreadMap = new ConcurrentHashMap<>();
 
+    private ThreadPoolExecutor threadPoolExecutor;
+
     public InfinityTaskRunThread(Integer taskId, Integer dryRun) {
         this.taskId = taskId;
         this.dryRun = dryRun;
@@ -201,7 +203,7 @@ public class InfinityTaskRunThread extends Thread {
         tMsg = msgMapper.selectByPrimaryKey(tTask.getMessageId());
 
         int initCorePoolSize = tTask.getThreadCnt();
-        ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(initCorePoolSize, tTask.getMaxThreadCnt());
+        threadPoolExecutor = ThreadUtil.newExecutor(initCorePoolSize, tTask.getMaxThreadCnt());
         adjustThreadCount(threadPoolExecutor, initCorePoolSize);
 
         infinityTaskRunThreadMap.put(taskHis.getId(), this);
@@ -271,7 +273,7 @@ public class InfinityTaskRunThread extends Thread {
     }
 
 
-    synchronized private void adjustThreadCount(ThreadPoolExecutor threadPoolExecutor, int targetCount) {
+    synchronized public void adjustThreadCount(ThreadPoolExecutor threadPoolExecutor, int targetCount) {
         IMsgSender msgSender;
         MsgInfinitySendThread msgInfinitySendThread;
         while (activeThreadConcurrentLinkedQueue.size() < targetCount) {
