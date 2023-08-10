@@ -176,6 +176,9 @@ public class TaskRunThread extends Thread {
 
         running = true;
 
+        taskHis.setStatus(20);
+        taskHisMapper.updateByPrimaryKey(taskHis);
+
         ConsoleUtil.pushLog(logWriter, "推送开始……");
         // 消息数据分片以及线程纷发
         tMsg = msgMapper.selectByPrimaryKey(tTask.getMessageId());
@@ -302,7 +305,7 @@ public class TaskRunThread extends Thread {
                 taskHis.setSuccessCnt(successCount);
                 taskHis.setFailCnt(failCount);
                 // TODO
-                taskHis.setStatus(20);
+                taskHis.setStatus(30);
 
                 taskHisMapper.updateByPrimaryKey(taskHis);
 

@@ -200,6 +200,9 @@ public class InfinityTaskRunThread extends Thread {
 
         running = true;
 
+        taskHis.setStatus(20);
+        taskHisMapper.updateByPrimaryKey(taskHis);
+
         ConsoleUtil.infinityConsoleWithLog("推送开始……");
         ConsoleUtil.infinityConsoleWithLog("推送过程中可随时拖拽下方滑动条调整线程数量，以达到最佳推送速度。");
         // 线程池初始化
@@ -305,7 +308,7 @@ public class InfinityTaskRunThread extends Thread {
                 taskHis.setSuccessCnt(successRecords.intValue());
                 taskHis.setFailCnt(failRecords.intValue());
                 // TODO
-                taskHis.setStatus(20);
+                taskHis.setStatus(30);
 
                 taskHisMapper.updateByPrimaryKey(taskHis);
 
