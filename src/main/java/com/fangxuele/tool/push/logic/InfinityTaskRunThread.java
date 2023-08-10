@@ -129,6 +129,11 @@ public class InfinityTaskRunThread extends Thread {
     public ConcurrentLinkedQueue<String> activeThreadConcurrentLinkedQueue = new ConcurrentLinkedQueue<>();
 
     /**
+     * (异步发送)已处理数
+     */
+    public LongAdder processedRecords = new LongAdder();
+
+    /**
      * 线程状态Map,key:线程名称，value:true运行，false停止
      */
     public Map<String, Boolean> threadStatusMap = new HashMap<>(100);
@@ -200,8 +205,6 @@ public class InfinityTaskRunThread extends Thread {
         int initCorePoolSize = tTask.getThreadCnt();
         ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(initCorePoolSize, tTask.getMaxThreadCnt());
         adjustThreadCount(threadPoolExecutor, initCorePoolSize);
-        // 线程动态调整
-        threadMonitor(threadPoolExecutor);
 
         infinityTaskRunThreadMap.put(taskHis.getId(), this);
         // 时间监控
@@ -386,16 +389,11 @@ public class InfinityTaskRunThread extends Thread {
         failRecords.add(1);
     }
 
-    private void resetLocalData() {
-        running = true;
-        successRecords.reset();
-        failRecords.reset();
-        threadCount = 0;
-        toSendList = Collections.synchronizedList(new LinkedList<>());
-        sendSuccessList = Collections.synchronizedList(new LinkedList<>());
-        sendFailList = Collections.synchronizedList(new LinkedList<>());
-        startTime = 0L;
-        endTime = 0;
+    /**
+     * 已处理数+1
+     */
+    public void increaseProcessed() {
+        processedRecords.add(1);
     }
 
     private void savePushData() throws IOException {
@@ -530,6 +528,7 @@ public class InfinityTaskRunThread extends Thread {
 
     void resetLocalData() {
         running = true;
+        processedRecords.reset();
         successRecords.reset();
         failRecords.reset();
         threadCount = 0;
@@ -539,7 +538,7 @@ public class InfinityTaskRunThread extends Thread {
         threadStatusMap = new HashMap<>(100);
         sendSuccessList = Collections.synchronizedList(new LinkedList<>());
         sendFailList = Collections.synchronizedList(new LinkedList<>());
-        startTime = 0;
+        startTime = 0L;
         endTime = 0;
     }
 }

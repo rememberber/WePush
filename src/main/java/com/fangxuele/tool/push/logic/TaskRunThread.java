@@ -173,7 +173,7 @@ public class TaskRunThread extends Thread {
             logger.error(e);
         }
 
-        preparePushRun(tTask);
+        preparePushRun();
         ConsoleUtil.pushLog(logWriter, "推送开始……");
         // 消息数据分片以及线程纷发
         tMsg = msgMapper.selectByPrimaryKey(tTask.getMessageId());
