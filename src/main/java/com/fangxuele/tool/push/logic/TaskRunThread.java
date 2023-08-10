@@ -40,8 +40,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.LongAdder;
@@ -323,14 +323,11 @@ public class TaskRunThread extends Thread {
                     }
                 }
 
-                if (!fixRateScheduling) {
+                if (App.trayIcon != null) {
+                    App.trayIcon.displayMessage("WePush", tTask.getTitle() + " 发送完毕！", TrayIcon.MessageType.INFO);
+                }
 
-                    if (App.trayIcon != null) {
-                        App.trayIcon.displayMessage("WePush", tTask.getTitle() + " 发送完毕！", TrayIcon.MessageType.INFO);
-                    }
-// TODO 看是否还有保留的必要
-//                    pushForm.getScheduleDetailLabel().setVisible(false);
-                } else {
+                if (fixRateScheduling) {
                     // TODO 看是否还有保留的必要
 //                    Date nextDate = CronPatternUtil.nextDateAfter(new CronPattern(tTask.getCron()), new Date(), true);
 //                    pushForm.getScheduleDetailLabel().setText("计划任务执行中，下一次执行时间：" + DateFormatUtils.format(nextDate, "yyyy-MM-dd HH:mm:ss"));
@@ -364,8 +361,6 @@ public class TaskRunThread extends Thread {
 
             taskHis.setSuccessCnt(successRecords.intValue());
             taskHis.setFailCnt(failRecords.intValue());
-
-            taskHisMapper.updateByPrimaryKey(taskHis);
 
             TaskForm taskForm = TaskForm.getInstance();
             int selectedRow = taskForm.getTaskListTable().getSelectedRow();

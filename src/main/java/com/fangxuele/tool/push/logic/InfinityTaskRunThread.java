@@ -35,14 +35,13 @@ import lombok.Setter;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
-import javax.swing.*;
 import java.awt.*;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -296,23 +295,42 @@ public class InfinityTaskRunThread extends Thread {
         // 计时
         while (true) {
             if ((!running && activeThreadConcurrentLinkedQueue.isEmpty()) || toSendConcurrentLinkedQueue.isEmpty()) {
-                if (!fixRateScheduling) {
-                    if (App.trayIcon != null) {
-                        App.trayIcon.displayMessage("WePush", tTask.getTitle() + " 发送完毕！", TrayIcon.MessageType.INFO);
-                    }
+                endTime = System.currentTimeMillis();
+                taskHis.setEndTime(SqliteUtil.nowDateForSqlite());
+                taskHis.setSuccessCnt(successRecords.intValue());
+                taskHis.setFailCnt(failRecords.intValue());
 
-                    String finishTip = "发送完毕！\n";
-                    JOptionPane.showMessageDialog(App.mainFrame, finishTip, "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    // TODO 看是否还有保留的必要
-//                    infinityForm.getScheduleDetailLabel().setVisible(false);
-                } else {
+                taskHisMapper.updateByPrimaryKey(taskHis);
+
+                TaskForm taskForm = TaskForm.getInstance();
+                int selectedRow = taskForm.getTaskListTable().getSelectedRow();
+                Integer selectedTaskId = (Integer) taskForm.getTaskListTable().getValueAt(selectedRow, 0);
+                if (selectedTaskId.equals(taskId)) {
+                    // 遍历TaskListTable找到taskHisId对应的行号
+                    int taskHisId = taskHis.getId();
+                    int taskHisListTableRows = taskForm.getTaskHisListTable().getRowCount();
+                    int taskHisListTableRow = -1;
+                    for (int i = 0; i < taskHisListTableRows; i++) {
+                        int taskHisIdInTable = (int) taskForm.getTaskHisListTable().getValueAt(i, 0);
+                        if (taskHisId == taskHisIdInTable) {
+                            taskHisListTableRow = i;
+                            break;
+                        }
+                    }
+                    if (taskHisListTableRow != -1) {
+                        taskForm.getTaskHisListTable().setValueAt(taskHis.getSuccessCnt(), taskHisListTableRow, 5);
+                    }
+                }
+
+                if (App.trayIcon != null) {
+                    App.trayIcon.displayMessage("WePush", tTask.getTitle() + " 发送完毕！", TrayIcon.MessageType.INFO);
+                }
+
+                if (fixRateScheduling) {
                     // TODO 看是否还有保留的必要
 //                    Date nextDate = CronPatternUtil.nextDateAfter(new CronPattern(App.config.getTextCron()), new Date(), true);
 //                    infinityForm.getScheduleDetailLabel().setText("计划任务执行中，下一次执行时间：" + DateFormatUtils.format(nextDate, "yyyy-MM-dd HH:mm:ss"));
                 }
-
-                endTime = System.currentTimeMillis();
 
                 // 保存停止前的数据
                 try {
@@ -345,8 +363,6 @@ public class InfinityTaskRunThread extends Thread {
 
             taskHis.setSuccessCnt(successRecords.intValue());
             taskHis.setFailCnt(failRecords.intValue());
-
-            taskHisMapper.updateByPrimaryKey(taskHis);
 
             TaskForm taskForm = TaskForm.getInstance();
             int selectedRow = taskForm.getTaskListTable().getSelectedRow();
