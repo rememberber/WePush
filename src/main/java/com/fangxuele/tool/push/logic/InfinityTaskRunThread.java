@@ -249,6 +249,7 @@ public class InfinityTaskRunThread extends Thread {
         });
         // 总记录数
         totalRecords = toSendConcurrentLinkedQueue.size();
+        taskHis.setTotalCnt((int) totalRecords);
 
         ConsoleUtil.pushLog(logWriter, "消息总数：" + totalRecords);
         ConsoleUtil.pushLog(logWriter, "可用处理器核心：" + Runtime.getRuntime().availableProcessors());

@@ -41,7 +41,7 @@ public class MsgInfinitySendThread extends Thread {
     public void run() {
 
         while (infinityTaskRunThread.running && infinityTaskRunThread.threadStatusMap.get(this.getName()) && !infinityTaskRunThread.toSendConcurrentLinkedQueue.isEmpty()) {
-            String[] msgData = PushData.toSendConcurrentLinkedQueue.poll();
+            String[] msgData = infinityTaskRunThread.toSendConcurrentLinkedQueue.poll();
             if (msgData == null) {
                 continue;
             }
@@ -50,11 +50,10 @@ public class MsgInfinitySendThread extends Thread {
                 if (sendResult.isSuccess()) {
                     infinityTaskRunThread.increaseSuccess();
                     // 保存发送成功
-//                    ConsoleUtil.pushLog(infinityTaskRunThread.getLogWriter(),Thread.currentThread().getName() + "：发送成功：" + msgData[0]);
                     infinityTaskRunThread.sendSuccessList.add(msgData);
                 } else {
                     infinityTaskRunThread.increaseFail();
-                    InfinityForm.getInstance().getPushFailCount().setText(String.valueOf(PushData.failRecords));
+                    InfinityForm.getInstance().getPushFailCount().setText(String.valueOf(infinityTaskRunThread.failRecords));
                     // 保存发送失败
                     infinityTaskRunThread.sendFailList.add(msgData);
                     ConsoleUtil.pushLog(infinityTaskRunThread.getLogWriter(), "发送失败:" + sendResult.getInfo() + ";msgData:" + JSONUtil.toJsonPrettyStr(msgData));
@@ -70,6 +69,5 @@ public class MsgInfinitySendThread extends Thread {
         }
         infinityTaskRunThread.activeThreadConcurrentLinkedQueue.remove(this.getName());
         infinityTaskRunThread.threadStatusMap.put(this.getName(), false);
-
     }
 }
