@@ -127,14 +127,13 @@ public class InfinityTaskHisDetailDialog extends JDialog {
         sliderValueTextField.setText(String.valueOf(tTask.getThreadCnt()));
 
         ThreadUtil.execute(() -> threadCountSlider.addChangeListener(e -> {
-            if (!infinityTaskRunThread.running) {
-                return;
-            }
             JSlider slider = (JSlider) e.getSource();
             int value = slider.getValue();
             int finalValue = value;
             sliderValueTextField.setText(String.valueOf(finalValue));
-            infinityTaskRunThread.adjustThreadCount(infinityTaskRunThread.getThreadPoolExecutor(), finalValue);
+            if (infinityTaskRunThread != null && infinityTaskRunThread.getThreadPoolExecutor() != null && infinityTaskRunThread.isRunning()) {
+                infinityTaskRunThread.adjustThreadCount(infinityTaskRunThread.getThreadPoolExecutor(), finalValue);
+            }
         }));
 
         successToPeopleButton.addActionListener(e -> {

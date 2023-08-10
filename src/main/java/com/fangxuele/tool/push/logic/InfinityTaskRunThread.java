@@ -197,6 +197,9 @@ public class InfinityTaskRunThread extends Thread {
         }
 
         preparePushRun();
+
+        running = true;
+
         ConsoleUtil.infinityConsoleWithLog("推送开始……");
         ConsoleUtil.infinityConsoleWithLog("推送过程中可随时拖拽下方滑动条调整线程数量，以达到最佳推送速度。");
         // 线程池初始化
@@ -539,7 +542,7 @@ public class InfinityTaskRunThread extends Thread {
     }
 
     void resetLocalData() {
-        running = true;
+        running = false;
         processedRecords.reset();
         successRecords.reset();
         failRecords.reset();

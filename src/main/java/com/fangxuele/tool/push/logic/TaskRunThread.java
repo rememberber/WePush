@@ -173,6 +173,9 @@ public class TaskRunThread extends Thread {
         }
 
         preparePushRun();
+
+        running = true;
+
         ConsoleUtil.pushLog(logWriter, "推送开始……");
         // 消息数据分片以及线程纷发
         tMsg = msgMapper.selectByPrimaryKey(tTask.getMessageId());
@@ -396,7 +399,7 @@ public class TaskRunThread extends Thread {
     }
 
     private void resetLocalData() {
-        running = true;
+        running = false;
         successRecords.reset();
         failRecords.reset();
         threadCount = 0;
