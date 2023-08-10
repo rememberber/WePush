@@ -106,7 +106,11 @@ public class TaskListener {
                     "确认推送？",
                     JOptionPane.YES_NO_OPTION);
             if (isPush == JOptionPane.YES_OPTION) {
-                ThreadUtil.execute(new TaskRunThread(taskId, 1));
+                if (TaskModeEnum.FIX_THREAD_TASK_CODE == tTask.getTaskMode()) {
+                    ThreadUtil.execute(new TaskRunThread(taskId, 1));
+                } else if (TaskModeEnum.INFINITY_TASK_CODE == tTask.getTaskMode()) {
+                    ThreadUtil.execute(new InfinityTaskRunThread(taskId, 1));
+                }
             }
         });
 
@@ -122,18 +126,6 @@ public class TaskListener {
             }
         });
 
-        taskForm.getRefreshHisButton().addActionListener(e -> {
-            int selectedRow = taskForm.getTaskListTable().getSelectedRow();
-            if (selectedRow < 0) {
-                JOptionPane.showMessageDialog(taskForm.getMainPanel(), "请先选择要刷新的任务！", "提示",
-                        JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
-
-            Integer selectedTaskId = (Integer) taskForm.getTaskListTable().getValueAt(selectedRow, 0);
-            TaskForm.initTaskHisListTable(selectedTaskId);
-        });
-
         taskForm.getStopButton().addActionListener(e -> {
             int selectedRow = taskForm.getTaskHisListTable().getSelectedRow();
             if (selectedRow < 0) {
@@ -143,14 +135,28 @@ public class TaskListener {
             }
 
             Integer taskHisId = (Integer) taskForm.getTaskHisListTable().getValueAt(selectedRow, 0);
-            TaskRunThread taskRunThread = TaskRunThread.taskRunThreadMap.get(taskHisId);
 
-            if (taskRunThread != null && taskRunThread.isRunning()) {
-                int isStop = JOptionPane.showConfirmDialog(App.mainFrame,
-                        "确定停止当前的推送吗？", "确认停止？",
-                        JOptionPane.YES_NO_OPTION);
-                if (isStop == JOptionPane.YES_OPTION) {
-                    taskRunThread.running = false;
+            TTaskHis tTaskHis = taskHisMapper.selectByPrimaryKey(taskHisId);
+
+            if (tTaskHis.getTaskMode() == TaskModeEnum.FIX_THREAD_TASK_CODE) {
+                TaskRunThread taskRunThread = TaskRunThread.taskRunThreadMap.get(taskHisId);
+                if (taskRunThread != null && taskRunThread.isRunning()) {
+                    int isStop = JOptionPane.showConfirmDialog(App.mainFrame,
+                            "确定停止当前的推送吗？", "确认停止？",
+                            JOptionPane.YES_NO_OPTION);
+                    if (isStop == JOptionPane.YES_OPTION) {
+                        taskRunThread.running = false;
+                    }
+                }
+            } else if (tTaskHis.getTaskMode() == TaskModeEnum.INFINITY_TASK_CODE) {
+                InfinityTaskRunThread infinityTaskRunThread = InfinityTaskRunThread.infinityTaskRunThreadMap.get(taskHisId);
+                if (infinityTaskRunThread != null && infinityTaskRunThread.isRunning()) {
+                    int isStop = JOptionPane.showConfirmDialog(App.mainFrame,
+                            "确定停止当前的推送吗？", "确认停止？",
+                            JOptionPane.YES_NO_OPTION);
+                    if (isStop == JOptionPane.YES_OPTION) {
+                        infinityTaskRunThread.running = false;
+                    }
                 }
             }
         });
