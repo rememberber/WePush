@@ -6,6 +6,7 @@ import com.fangxuele.tool.push.dao.TTaskHisMapper;
 import com.fangxuele.tool.push.dao.TTaskMapper;
 import com.fangxuele.tool.push.domain.TTask;
 import com.fangxuele.tool.push.domain.TTaskHis;
+import com.fangxuele.tool.push.logic.InfinityTaskRunThread;
 import com.fangxuele.tool.push.logic.TaskModeEnum;
 import com.fangxuele.tool.push.logic.TaskRunThread;
 import com.fangxuele.tool.push.ui.dialog.InfinityTaskHisDetailDialog;
@@ -80,7 +81,11 @@ public class TaskListener {
                     "确认推送？",
                     JOptionPane.YES_NO_OPTION);
             if (isPush == JOptionPane.YES_OPTION) {
-                ThreadUtil.execute(new TaskRunThread(taskId, 0));
+                if (TaskModeEnum.FIX_THREAD_TASK_CODE == tTask.getTaskMode()) {
+                    ThreadUtil.execute(new TaskRunThread(taskId, 0));
+                } else if (TaskModeEnum.INFINITY_TASK_CODE == tTask.getTaskMode()) {
+                    ThreadUtil.execute(new InfinityTaskRunThread(taskId, 0));
+                }
             }
         });
 

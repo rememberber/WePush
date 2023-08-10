@@ -430,7 +430,7 @@ public class TaskRunThread extends Thread {
         String taskName = tTask.getTitle();
         String nowTime = DateUtil.now().replace(":", "_").replace(" ", "_");
         CSVWriter writer;
-        int msgType = App.config.getMsgType();
+        int msgType = tTask.getMsgType();
 
         List<File> fileList = new ArrayList<>();
         // 保存已发送
@@ -519,7 +519,7 @@ public class TaskRunThread extends Thread {
                     + toSendList.size() + "未发送";
             StringBuilder contentBuilder = new StringBuilder();
             contentBuilder.append("<h2>WePush推送结果</h2>");
-            contentBuilder.append("<p>消息类型：").append(MessageTypeEnum.getName(App.config.getMsgType())).append("</p>");
+            contentBuilder.append("<p>消息类型：").append(MessageTypeEnum.getName(tTask.getMsgType())).append("</p>");
             contentBuilder.append("<p>消息名称：").append(taskName).append("</p>");
             contentBuilder.append("<br/>");
 

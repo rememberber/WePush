@@ -397,7 +397,7 @@ public class InfinityTaskRunThread extends Thread {
     }
 
     private void savePushData() throws IOException {
-        if (!PushData.toSendConcurrentLinkedQueue.isEmpty()) {
+        if (!toSendConcurrentLinkedQueue.isEmpty()) {
             toSendList = new ArrayList<>(toSendConcurrentLinkedQueue);
         }
 
@@ -409,7 +409,7 @@ public class InfinityTaskRunThread extends Thread {
         String taskName = tTask.getTitle();
         String nowTime = DateUtil.now().replace(":", "_").replace(" ", "_");
         CSVWriter writer;
-        int msgType = App.config.getMsgType();
+        int msgType = tTask.getMsgType();
 
         List<File> fileList = new ArrayList<>();
         // 保存已发送
@@ -435,7 +435,7 @@ public class InfinityTaskRunThread extends Thread {
 
         // 保存未发送
         for (String[] str : sendSuccessList) {
-            if (msgType == MessageTypeEnum.HTTP_CODE && PushControl.saveResponseBody) {
+            if (msgType == MessageTypeEnum.HTTP_CODE && tTask.getSaveResult() == 1) {
                 str = ArrayUtils.remove(str, str.length - 1);
                 String[] finalStr = str;
                 toSendList = toSendList.stream().filter(strings -> !JSONUtil.toJsonStr(strings).equals(JSONUtil.toJsonStr(finalStr))).collect(Collectors.toList());
@@ -444,7 +444,7 @@ public class InfinityTaskRunThread extends Thread {
             }
         }
         for (String[] str : sendFailList) {
-            if (msgType == MessageTypeEnum.HTTP_CODE && PushControl.saveResponseBody) {
+            if (msgType == MessageTypeEnum.HTTP_CODE && tTask.getSaveResult() == 1) {
                 str = ArrayUtils.remove(str, str.length - 1);
                 String[] finalStr = str;
                 toSendList = toSendList.stream().filter(strings -> !JSONUtil.toJsonStr(strings).equals(JSONUtil.toJsonStr(finalStr))).collect(Collectors.toList());
@@ -498,7 +498,7 @@ public class InfinityTaskRunThread extends Thread {
                     + toSendList.size() + "未发送";
             StringBuilder contentBuilder = new StringBuilder();
             contentBuilder.append("<h2>WePush推送结果</h2>");
-            contentBuilder.append("<p>消息类型：").append(MessageTypeEnum.getName(App.config.getMsgType())).append("</p>");
+            contentBuilder.append("<p>消息类型：").append(MessageTypeEnum.getName(tTask.getMsgType())).append("</p>");
             contentBuilder.append("<p>消息名称：").append(taskName).append("</p>");
             contentBuilder.append("<br/>");
 
