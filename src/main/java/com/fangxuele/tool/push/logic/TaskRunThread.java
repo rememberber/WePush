@@ -23,7 +23,6 @@ import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.logic.msgthread.MsgSendThread;
 import com.fangxuele.tool.push.ui.UiConsts;
-import com.fangxuele.tool.push.ui.form.PushForm;
 import com.fangxuele.tool.push.ui.form.ScheduleForm;
 import com.fangxuele.tool.push.ui.form.TaskForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
@@ -256,7 +255,6 @@ public class TaskRunThread extends Thread {
      * 消息数据分片以及线程纷发
      */
     private ThreadPoolExecutor shardingAndMsgThread(TMsg tMsg) {
-
         int maxThreadPoolSize = tTask.getThreadCnt();
         ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(maxThreadPoolSize, maxThreadPoolSize);
         MsgSendThread msgSendThread;
@@ -291,9 +289,6 @@ public class TaskRunThread extends Thread {
      * @param threadPoolExecutor
      */
     private void timeMonitor(ThreadPoolExecutor threadPoolExecutor) {
-        PushForm pushForm = PushForm.getInstance();
-        long startTimeMillis = System.currentTimeMillis();
-        int totalSentCountBefore = 0;
         // 计时
         while (true) {
             if (threadPoolExecutor.isTerminated()) {

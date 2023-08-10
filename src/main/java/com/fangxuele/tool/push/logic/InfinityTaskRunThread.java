@@ -23,7 +23,6 @@ import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.logic.msgthread.MsgInfinitySendThread;
 import com.fangxuele.tool.push.ui.UiConsts;
-import com.fangxuele.tool.push.ui.form.InfinityForm;
 import com.fangxuele.tool.push.ui.form.ScheduleForm;
 import com.fangxuele.tool.push.ui.form.TaskForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
@@ -293,10 +292,6 @@ public class InfinityTaskRunThread extends Thread {
      * @param threadPoolExecutor
      */
     private void timeMonitor(ThreadPoolExecutor threadPoolExecutor) {
-        InfinityForm infinityForm = InfinityForm.getInstance();
-
-        long startTimeMillis = System.currentTimeMillis();
-        long processedRecordsBefore = 0;
         // 计时
         while (true) {
             if ((!running && activeThreadConcurrentLinkedQueue.isEmpty()) || toSendConcurrentLinkedQueue.isEmpty()) {
