@@ -298,6 +298,8 @@ public class TaskRunThread extends Thread {
                 int failCount = sendFailList.size();
                 taskHis.setSuccessCnt(successCount);
                 taskHis.setFailCnt(failCount);
+                // TODO
+                taskHis.setStatus(20);
 
                 taskHisMapper.updateByPrimaryKey(taskHis);
 
@@ -325,12 +327,6 @@ public class TaskRunThread extends Thread {
 
                 if (App.trayIcon != null) {
                     App.trayIcon.displayMessage("WePush", tTask.getTitle() + " 发送完毕！", TrayIcon.MessageType.INFO);
-                }
-
-                if (fixRateScheduling) {
-                    // TODO 看是否还有保留的必要
-//                    Date nextDate = CronPatternUtil.nextDateAfter(new CronPattern(tTask.getCron()), new Date(), true);
-//                    pushForm.getScheduleDetailLabel().setText("计划任务执行中，下一次执行时间：" + DateFormatUtils.format(nextDate, "yyyy-MM-dd HH:mm:ss"));
                 }
 
                 // 保存停止前的数据

@@ -134,7 +134,7 @@ public class InfinityTaskRunThread extends Thread {
     /**
      * 线程状态Map,key:线程名称，value:true运行，false停止
      */
-    public Map<String, Boolean> threadStatusMap = new HashMap<>(100);
+    public Map<String, Boolean> threadStatusMap = new ConcurrentHashMap<>(100);
 
     private TTask tTask;
 
@@ -299,6 +299,8 @@ public class InfinityTaskRunThread extends Thread {
                 taskHis.setEndTime(SqliteUtil.nowDateForSqlite());
                 taskHis.setSuccessCnt(successRecords.intValue());
                 taskHis.setFailCnt(failRecords.intValue());
+                // TODO
+                taskHis.setStatus(20);
 
                 taskHisMapper.updateByPrimaryKey(taskHis);
 
@@ -318,18 +320,14 @@ public class InfinityTaskRunThread extends Thread {
                         }
                     }
                     if (taskHisListTableRow != -1) {
+                        taskForm.getTaskHisListTable().setValueAt(taskHis.getStatus(), taskHisListTableRow, 6);
                         taskForm.getTaskHisListTable().setValueAt(taskHis.getSuccessCnt(), taskHisListTableRow, 5);
+                        taskForm.getTaskHisListTable().setValueAt(taskHis.getEndTime(), taskHisListTableRow, 3);
                     }
                 }
 
                 if (App.trayIcon != null) {
                     App.trayIcon.displayMessage("WePush", tTask.getTitle() + " 发送完毕！", TrayIcon.MessageType.INFO);
-                }
-
-                if (fixRateScheduling) {
-                    // TODO 看是否还有保留的必要
-//                    Date nextDate = CronPatternUtil.nextDateAfter(new CronPattern(App.config.getTextCron()), new Date(), true);
-//                    infinityForm.getScheduleDetailLabel().setText("计划任务执行中，下一次执行时间：" + DateFormatUtils.format(nextDate, "yyyy-MM-dd HH:mm:ss"));
                 }
 
                 // 保存停止前的数据
@@ -547,7 +545,7 @@ public class InfinityTaskRunThread extends Thread {
         toSendList = Collections.synchronizedList(new LinkedList<>());
         toSendConcurrentLinkedQueue = new ConcurrentLinkedQueue<>();
         activeThreadConcurrentLinkedQueue = new ConcurrentLinkedQueue<>();
-        threadStatusMap = new HashMap<>(100);
+        threadStatusMap = new ConcurrentHashMap<>(100);
         sendSuccessList = Collections.synchronizedList(new LinkedList<>());
         sendFailList = Collections.synchronizedList(new LinkedList<>());
         startTime = 0L;
