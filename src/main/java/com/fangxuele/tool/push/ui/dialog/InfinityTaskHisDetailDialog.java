@@ -1,5 +1,8 @@
 package com.fangxuele.tool.push.ui.dialog;
 
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
@@ -7,18 +10,34 @@ import com.fangxuele.tool.push.dao.TPeopleDataMapper;
 import com.fangxuele.tool.push.dao.TPeopleMapper;
 import com.fangxuele.tool.push.dao.TTaskHisMapper;
 import com.fangxuele.tool.push.dao.TTaskMapper;
+import com.fangxuele.tool.push.domain.TPeople;
+import com.fangxuele.tool.push.domain.TPeopleData;
+import com.fangxuele.tool.push.domain.TTask;
+import com.fangxuele.tool.push.domain.TTaskHis;
+import com.fangxuele.tool.push.logic.InfinityTaskRunThread;
+import com.fangxuele.tool.push.ui.UiConsts;
+import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.ui.form.PeopleEditForm;
+import com.fangxuele.tool.push.ui.form.PeopleManageForm;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.formdev.flatlaf.util.SystemInfo;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.opencsv.CSVReader;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.text.StyleContext;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 public class InfinityTaskHisDetailDialog extends JDialog {
@@ -45,6 +64,15 @@ public class InfinityTaskHisDetailDialog extends JDialog {
     private JButton pushStopButton;
     private JLabel threadTipsLabel;
     private JSlider threadCountSlider;
+    private JTextField successFileTextField;
+    private JTextField failFileTextField;
+    private JTextField noSendFileTextField;
+    private JButton 打开Button;
+    private JButton 打开Button1;
+    private JButton 打开Button2;
+    private JButton successToPeopleButton;
+    private JButton failToPeopleButton;
+    private JButton noSendToPeopleButton;
 
     private static TTaskHisMapper taskHisMapper = MybatisUtil.getSqlSession().getMapper(TTaskHisMapper.class);
     private static TTaskMapper taskMapper = MybatisUtil.getSqlSession().getMapper(TTaskMapper.class);
@@ -88,6 +116,297 @@ public class InfinityTaskHisDetailDialog extends JDialog {
         dispose();
     }
 
+    public InfinityTaskHisDetailDialog(InfinityTaskRunThread infinityTaskRunThread, Integer taskHisId) {
+        this();
+
+        successToPeopleButton.addActionListener(e -> {
+            ThreadUtil.execute(() -> {
+                PeopleEditForm peopleEditForm = PeopleEditForm.getInstance();
+                JProgressBar memberTabImportProgressBar = peopleEditForm.getMemberTabImportProgressBar();
+                CSVReader reader = null;
+                try {
+                    MainWindow.getInstance().getTabbedPane().setSelectedIndex(3);
+
+                    TTaskHis tTaskHis = taskHisMapper.selectByPrimaryKey(taskHisId);
+                    TTask tTask = taskMapper.selectByPrimaryKey(tTaskHis.getTaskId());
+
+                    TPeople tPeopleToSave = new TPeople();
+                    tPeopleToSave.setMsgType(tTask.getMsgType());
+                    tPeopleToSave.setAccountId(tTask.getAccountId());
+                    tPeopleToSave.setPeopleName(FileUtil.getName(tTaskHis.getSuccessFilePath()).replace(".csv", ""));
+                    tPeopleToSave.setAppVersion(UiConsts.APP_VERSION);
+                    String now = SqliteUtil.nowDateForSqlite();
+                    tPeopleToSave.setCreateTime(now);
+                    tPeopleToSave.setModifiedTime(now);
+
+                    peopleMapper.insert(tPeopleToSave);
+
+                    memberTabImportProgressBar.setVisible(true);
+                    memberTabImportProgressBar.setIndeterminate(true);
+                    File msgTemplateDataFile = new File(tTaskHis.getSuccessFilePath());
+                    if (msgTemplateDataFile.exists()) {
+                        // 可以解决中文乱码问题
+                        DataInputStream in = new DataInputStream(new FileInputStream(msgTemplateDataFile));
+                        reader = new CSVReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+                        String[] nextLine;
+                        TPeopleData tPeopleData;
+                        while ((nextLine = reader.readNext()) != null) {
+                            tPeopleData = new TPeopleData();
+                            tPeopleData.setPeopleId(tPeopleToSave.getId());
+                            tPeopleData.setPin(nextLine[0]);
+                            tPeopleData.setVarData(JSONUtil.toJsonStr(nextLine));
+                            tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                            tPeopleData.setCreateTime(now);
+                            tPeopleData.setModifiedTime(now);
+
+                            peopleDataMapper.insert(tPeopleData);
+                        }
+                    }
+                    PeopleManageForm.initPeopleList();
+
+                    JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } catch (Exception e1) {
+                    JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + e1.getMessage(), "失败",
+                            JOptionPane.ERROR_MESSAGE);
+                    logger.error(e1);
+                } finally {
+                    memberTabImportProgressBar.setMaximum(100);
+                    memberTabImportProgressBar.setValue(100);
+                    memberTabImportProgressBar.setIndeterminate(false);
+                    memberTabImportProgressBar.setVisible(false);
+                    if (reader != null) {
+                        try {
+                            reader.close();
+                        } catch (IOException e1) {
+                            logger.error(e1);
+                            e1.printStackTrace();
+                        }
+                    }
+                }
+
+            });
+
+            dispose();
+        });
+
+        failToPeopleButton.addActionListener(e -> {
+            ThreadUtil.execute(() -> {
+                PeopleEditForm peopleEditForm = PeopleEditForm.getInstance();
+                JProgressBar memberTabImportProgressBar = peopleEditForm.getMemberTabImportProgressBar();
+                CSVReader reader = null;
+                try {
+                    MainWindow.getInstance().getTabbedPane().setSelectedIndex(3);
+
+                    TTaskHis tTaskHis = taskHisMapper.selectByPrimaryKey(taskHisId);
+                    TTask tTask = taskMapper.selectByPrimaryKey(tTaskHis.getTaskId());
+
+                    TPeople tPeopleToSave = new TPeople();
+                    tPeopleToSave.setMsgType(tTask.getMsgType());
+                    tPeopleToSave.setAccountId(tTask.getAccountId());
+                    tPeopleToSave.setPeopleName(FileUtil.getName(tTaskHis.getFailFilePath()).replace(".csv", ""));
+                    tPeopleToSave.setAppVersion(UiConsts.APP_VERSION);
+                    String now = SqliteUtil.nowDateForSqlite();
+                    tPeopleToSave.setCreateTime(now);
+                    tPeopleToSave.setModifiedTime(now);
+
+                    peopleMapper.insert(tPeopleToSave);
+
+                    memberTabImportProgressBar.setVisible(true);
+                    memberTabImportProgressBar.setIndeterminate(true);
+                    File msgTemplateDataFile = new File(tTaskHis.getFailFilePath());
+                    if (msgTemplateDataFile.exists()) {
+                        // 可以解决中文乱码问题
+                        DataInputStream in = new DataInputStream(new FileInputStream(msgTemplateDataFile));
+                        reader = new CSVReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+                        String[] nextLine;
+                        TPeopleData tPeopleData;
+                        while ((nextLine = reader.readNext()) != null) {
+                            tPeopleData = new TPeopleData();
+                            tPeopleData.setPeopleId(tPeopleToSave.getId());
+                            tPeopleData.setPin(nextLine[0]);
+                            tPeopleData.setVarData(JSONUtil.toJsonStr(nextLine));
+                            tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                            tPeopleData.setCreateTime(now);
+                            tPeopleData.setModifiedTime(now);
+
+                            peopleDataMapper.insert(tPeopleData);
+                        }
+                    }
+                    PeopleManageForm.initPeopleList();
+
+                    JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } catch (Exception e1) {
+                    JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + e1.getMessage(), "失败",
+                            JOptionPane.ERROR_MESSAGE);
+                    logger.error(e1);
+                } finally {
+                    memberTabImportProgressBar.setMaximum(100);
+                    memberTabImportProgressBar.setValue(100);
+                    memberTabImportProgressBar.setIndeterminate(false);
+                    memberTabImportProgressBar.setVisible(false);
+                    if (reader != null) {
+                        try {
+                            reader.close();
+                        } catch (IOException e1) {
+                            logger.error(e1);
+                            e1.printStackTrace();
+                        }
+                    }
+                }
+
+            });
+
+            dispose();
+        });
+
+        noSendToPeopleButton.addActionListener(e -> {
+            ThreadUtil.execute(() -> {
+                PeopleEditForm peopleEditForm = PeopleEditForm.getInstance();
+                JProgressBar memberTabImportProgressBar = peopleEditForm.getMemberTabImportProgressBar();
+                CSVReader reader = null;
+                try {
+                    MainWindow.getInstance().getTabbedPane().setSelectedIndex(3);
+
+                    TTaskHis tTaskHis = taskHisMapper.selectByPrimaryKey(taskHisId);
+                    TTask tTask = taskMapper.selectByPrimaryKey(tTaskHis.getTaskId());
+
+                    TPeople tPeopleToSave = new TPeople();
+                    tPeopleToSave.setMsgType(tTask.getMsgType());
+                    tPeopleToSave.setAccountId(tTask.getAccountId());
+                    tPeopleToSave.setPeopleName(FileUtil.getName(tTaskHis.getNoSendFilePath()).replace(".csv", ""));
+                    tPeopleToSave.setAppVersion(UiConsts.APP_VERSION);
+                    String now = SqliteUtil.nowDateForSqlite();
+                    tPeopleToSave.setCreateTime(now);
+                    tPeopleToSave.setModifiedTime(now);
+
+                    peopleMapper.insert(tPeopleToSave);
+
+                    memberTabImportProgressBar.setVisible(true);
+                    memberTabImportProgressBar.setIndeterminate(true);
+                    File msgTemplateDataFile = new File(tTaskHis.getNoSendFilePath());
+                    if (msgTemplateDataFile.exists()) {
+                        // 可以解决中文乱码问题
+                        DataInputStream in = new DataInputStream(new FileInputStream(msgTemplateDataFile));
+                        reader = new CSVReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+                        String[] nextLine;
+                        TPeopleData tPeopleData;
+                        while ((nextLine = reader.readNext()) != null) {
+                            tPeopleData = new TPeopleData();
+                            tPeopleData.setPeopleId(tPeopleToSave.getId());
+                            tPeopleData.setPin(nextLine[0]);
+                            tPeopleData.setVarData(JSONUtil.toJsonStr(nextLine));
+                            tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                            tPeopleData.setCreateTime(now);
+                            tPeopleData.setModifiedTime(now);
+
+                            peopleDataMapper.insert(tPeopleData);
+                        }
+                    }
+                    PeopleManageForm.initPeopleList();
+
+                    JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } catch (Exception e1) {
+                    JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + e1.getMessage(), "失败",
+                            JOptionPane.ERROR_MESSAGE);
+                    logger.error(e1);
+                } finally {
+                    memberTabImportProgressBar.setMaximum(100);
+                    memberTabImportProgressBar.setValue(100);
+                    memberTabImportProgressBar.setIndeterminate(false);
+                    memberTabImportProgressBar.setVisible(false);
+                    if (reader != null) {
+                        try {
+                            reader.close();
+                        } catch (IOException e1) {
+                            logger.error(e1);
+                            e1.printStackTrace();
+                        }
+                    }
+                }
+
+            });
+
+            dispose();
+        });
+
+        BufferedReader logReader = null;
+
+        if (infinityTaskRunThread != null) {
+            try {
+                logReader = new BufferedReader(new FileReader(infinityTaskRunThread.getLogFilePath()));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            BufferedReader finalLogReader = logReader;
+
+            ThreadUtil.execAsync(() -> {
+                while (true) {
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        String line = finalLogReader.readLine();
+                        if (line != null) {
+                            consoleTextArea.append(line + "\n");
+                            consoleTextArea.setCaretPosition(consoleTextArea.getText().length());
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    if (!infinityTaskRunThread.running || dialogClosed) {
+                        try {
+                            finalLogReader.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    }
+                    pushSuccessCount.setText(String.valueOf(infinityTaskRunThread.getSuccessRecords()));
+                    pushFailCount.setText(String.valueOf(infinityTaskRunThread.getFailRecords()));
+                }
+            });
+        } else {
+            TTaskHis tTaskHis = taskHisMapper.selectByPrimaryKey(taskHisId);
+
+            pushSuccessCount.setText(String.valueOf(tTaskHis.getSuccessCnt()));
+            pushFailCount.setText(String.valueOf(tTaskHis.getFailCnt()));
+
+            successFileTextField.setText(tTaskHis.getSuccessFilePath());
+            failFileTextField.setText(tTaskHis.getFailFilePath());
+            noSendFileTextField.setText(tTaskHis.getNoSendFilePath());
+
+            if (!StringUtils.isEmpty(tTaskHis.getLogFilePath())) {
+                try {
+                    logReader = new BufferedReader(new FileReader(tTaskHis.getLogFilePath()));
+
+                    String line;
+                    while ((line = logReader.readLine()) != null) {
+                        consoleTextArea.append(line + "\n");
+                        consoleTextArea.setCaretPosition(consoleTextArea.getText().length());
+                        if (dialogClosed) {
+                            logReader.close();
+                            break;
+                        }
+                    }
+                    if (logReader != null) {
+                        logReader.close();
+                    }
+                } catch (FileNotFoundException e) {
+                    throw new RuntimeException(e);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    }
+
     {
 // GUI initializer generated by IntelliJ IDEA GUI Designer
 // >>> IMPORTANT!! <<<
@@ -104,7 +423,7 @@ public class InfinityTaskHisDetailDialog extends JDialog {
      */
     private void $$$setupUI$$$() {
         contentPane = new JPanel();
-        contentPane.setLayout(new GridLayoutManager(3, 1, new Insets(10, 10, 10, 10), -1, -1));
+        contentPane.setLayout(new GridLayoutManager(4, 1, new Insets(10, 10, 10, 10), -1, -1));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         contentPane.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, true));
@@ -207,7 +526,7 @@ public class InfinityTaskHisDetailDialog extends JDialog {
         panel2.add(maxPoolSizeLabel, new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         pushControlPanel = new JPanel();
         pushControlPanel.setLayout(new GridLayoutManager(1, 4, new Insets(0, 5, 5, 5), -1, -1));
-        contentPane.add(pushControlPanel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, true));
+        contentPane.add(pushControlPanel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, true));
         sliderValueTextField = new JTextField();
         sliderValueTextField.setEditable(false);
         sliderValueTextField.setHorizontalAlignment(10);
@@ -245,6 +564,45 @@ public class InfinityTaskHisDetailDialog extends JDialog {
         threadCountSlider.setValue(0);
         threadCountSlider.setValueIsAdjusting(false);
         pushControlPanel.add(threadCountSlider, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JPanel panel3 = new JPanel();
+        panel3.setLayout(new GridLayoutManager(3, 4, new Insets(10, 10, 10, 10), -1, -1));
+        contentPane.add(panel3, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        final JLabel label6 = new JLabel();
+        label6.setText("成功");
+        panel3.add(label6, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label7 = new JLabel();
+        label7.setText("失败");
+        panel3.add(label7, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label8 = new JLabel();
+        label8.setText("未发送");
+        panel3.add(label8, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        successFileTextField = new JTextField();
+        successFileTextField.setEditable(false);
+        panel3.add(successFileTextField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        failFileTextField = new JTextField();
+        failFileTextField.setEditable(false);
+        panel3.add(failFileTextField, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        noSendFileTextField = new JTextField();
+        noSendFileTextField.setEditable(false);
+        panel3.add(noSendFileTextField, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        打开Button = new JButton();
+        打开Button.setText("打开");
+        panel3.add(打开Button, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        打开Button1 = new JButton();
+        打开Button1.setText("打开");
+        panel3.add(打开Button1, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        打开Button2 = new JButton();
+        打开Button2.setText("打开");
+        panel3.add(打开Button2, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        successToPeopleButton = new JButton();
+        successToPeopleButton.setText("创建为人群");
+        panel3.add(successToPeopleButton, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        failToPeopleButton = new JButton();
+        failToPeopleButton.setText("创建为人群");
+        panel3.add(failToPeopleButton, new GridConstraints(1, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        noSendToPeopleButton = new JButton();
+        noSendToPeopleButton.setText("创建为人群");
+        panel3.add(noSendToPeopleButton, new GridConstraints(2, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

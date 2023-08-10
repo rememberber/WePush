@@ -58,7 +58,9 @@ public class TaskListener {
                 dialog.pack();
                 dialog.setVisible(true);
             } else if (TaskModeEnum.INFINITY_TASK_CODE == tTaskHis.getTaskMode()) {
-                InfinityTaskHisDetailDialog dialog = new InfinityTaskHisDetailDialog();
+                InfinityTaskRunThread infinityTaskRunThread = InfinityTaskRunThread.infinityTaskRunThreadMap.get(taskHisId);
+
+                InfinityTaskHisDetailDialog dialog = new InfinityTaskHisDetailDialog(infinityTaskRunThread, taskHisId);
                 dialog.pack();
                 dialog.setVisible(true);
             }
