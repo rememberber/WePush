@@ -313,23 +313,25 @@ public class TaskRunThread extends Thread {
 
                 TaskForm taskForm = TaskForm.getInstance();
                 int selectedRow = taskForm.getTaskListTable().getSelectedRow();
-                Integer selectedTaskId = (Integer) taskForm.getTaskListTable().getValueAt(selectedRow, 0);
-                if (selectedTaskId.equals(taskId)) {
-                    // 遍历TaskListTable找到taskHisId对应的行号
-                    int taskHisId = taskHis.getId();
-                    int taskHisListTableRows = taskForm.getTaskHisListTable().getRowCount();
-                    int taskHisListTableRow = -1;
-                    for (int i = 0; i < taskHisListTableRows; i++) {
-                        int taskHisIdInTable = (int) taskForm.getTaskHisListTable().getValueAt(i, 0);
-                        if (taskHisId == taskHisIdInTable) {
-                            taskHisListTableRow = i;
-                            break;
+                if (selectedRow > -1) {
+                    Integer selectedTaskId = (Integer) taskForm.getTaskListTable().getValueAt(selectedRow, 0);
+                    if (selectedTaskId.equals(taskId)) {
+                        // 遍历TaskListTable找到taskHisId对应的行号
+                        int taskHisId = taskHis.getId();
+                        int taskHisListTableRows = taskForm.getTaskHisListTable().getRowCount();
+                        int taskHisListTableRow = -1;
+                        for (int i = 0; i < taskHisListTableRows; i++) {
+                            int taskHisIdInTable = (int) taskForm.getTaskHisListTable().getValueAt(i, 0);
+                            if (taskHisId == taskHisIdInTable) {
+                                taskHisListTableRow = i;
+                                break;
+                            }
                         }
-                    }
-                    if (taskHisListTableRow != -1) {
-                        taskForm.getTaskHisListTable().setValueAt(taskHis.getStatus(), taskHisListTableRow, 6);
-                        taskForm.getTaskHisListTable().setValueAt(taskHis.getSuccessCnt(), taskHisListTableRow, 5);
-                        taskForm.getTaskHisListTable().setValueAt(taskHis.getEndTime(), taskHisListTableRow, 3);
+                        if (taskHisListTableRow != -1) {
+                            taskForm.getTaskHisListTable().setValueAt(taskHis.getStatus(), taskHisListTableRow, 6);
+                            taskForm.getTaskHisListTable().setValueAt(taskHis.getSuccessCnt(), taskHisListTableRow, 5);
+                            taskForm.getTaskHisListTable().setValueAt(taskHis.getEndTime(), taskHisListTableRow, 3);
+                        }
                     }
                 }
 
@@ -368,21 +370,23 @@ public class TaskRunThread extends Thread {
 
             TaskForm taskForm = TaskForm.getInstance();
             int selectedRow = taskForm.getTaskListTable().getSelectedRow();
-            Integer selectedTaskId = (Integer) taskForm.getTaskListTable().getValueAt(selectedRow, 0);
-            if (selectedTaskId.equals(taskId)) {
-                // 遍历TaskListTable找到taskHisId对应的行号
-                int taskHisId = taskHis.getId();
-                int taskHisListTableRows = taskForm.getTaskHisListTable().getRowCount();
-                int taskHisListTableRow = -1;
-                for (int i = 0; i < taskHisListTableRows; i++) {
-                    int taskHisIdInTable = (int) taskForm.getTaskHisListTable().getValueAt(i, 0);
-                    if (taskHisId == taskHisIdInTable) {
-                        taskHisListTableRow = i;
-                        break;
+            if (selectedRow > -1) {
+                Integer selectedTaskId = (Integer) taskForm.getTaskListTable().getValueAt(selectedRow, 0);
+                if (selectedTaskId.equals(taskId)) {
+                    // 遍历TaskListTable找到taskHisId对应的行号
+                    int taskHisId = taskHis.getId();
+                    int taskHisListTableRows = taskForm.getTaskHisListTable().getRowCount();
+                    int taskHisListTableRow = -1;
+                    for (int i = 0; i < taskHisListTableRows; i++) {
+                        int taskHisIdInTable = (int) taskForm.getTaskHisListTable().getValueAt(i, 0);
+                        if (taskHisId == taskHisIdInTable) {
+                            taskHisListTableRow = i;
+                            break;
+                        }
                     }
-                }
-                if (taskHisListTableRow != -1) {
-                    taskForm.getTaskHisListTable().setValueAt(taskHis.getSuccessCnt(), taskHisListTableRow, 5);
+                    if (taskHisListTableRow != -1) {
+                        taskForm.getTaskHisListTable().setValueAt(taskHis.getSuccessCnt(), taskHisListTableRow, 5);
+                    }
                 }
             }
             ThreadUtil.safeSleep(200);

@@ -313,18 +313,20 @@ public class NewTaskDialog extends JDialog {
             schedulePanel.setVisible(true);
         }
         // 任务时间
-        if (beforeTTask.getPeriodType() == PeriodTypeEnum.RUN_AT_THIS_TIME_TASK_CODE) {
-            runAtThisTimeRadioButton.setSelected(true);
-            startAtThisTimeTextField.setText(beforeTTask.getPeriodTime());
-        } else if (beforeTTask.getPeriodType() == PeriodTypeEnum.RUN_PER_DAY_TASK_CODE) {
-            runPerDayRadioButton.setSelected(true);
-            startPerDayTextField.setText(beforeTTask.getPeriodTime());
-        } else if (beforeTTask.getPeriodType() == PeriodTypeEnum.RUN_PER_WEEK_TASK_CODE) {
-            runPerWeekRadioButton.setSelected(true);
-            startPerWeekTextField.setText(beforeTTask.getPeriodTime());
-        } else if (beforeTTask.getPeriodType() == PeriodTypeEnum.CRON_TASK_CODE) {
-            cronRadioButton.setSelected(true);
-            cronTextField.setText(beforeTTask.getPeriodTime());
+        if (beforeTTask.getPeriodType() != null) {
+            if (beforeTTask.getPeriodType() == PeriodTypeEnum.RUN_AT_THIS_TIME_TASK_CODE) {
+                runAtThisTimeRadioButton.setSelected(true);
+                startAtThisTimeTextField.setText(beforeTTask.getPeriodTime());
+            } else if (beforeTTask.getPeriodType() == PeriodTypeEnum.RUN_PER_DAY_TASK_CODE) {
+                runPerDayRadioButton.setSelected(true);
+                startPerDayTextField.setText(beforeTTask.getPeriodTime());
+            } else if (beforeTTask.getPeriodType() == PeriodTypeEnum.RUN_PER_WEEK_TASK_CODE) {
+                runPerWeekRadioButton.setSelected(true);
+                startPerWeekTextField.setText(beforeTTask.getPeriodTime());
+            } else if (beforeTTask.getPeriodType() == PeriodTypeEnum.CRON_TASK_CODE) {
+                cronRadioButton.setSelected(true);
+                cronTextField.setText(beforeTTask.getPeriodTime());
+            }
         }
         sendPushResultCheckBox.setSelected(beforeTTask.getResultAlert() != null && beforeTTask.getResultAlert() == 1);
         mailResultToTextField.setText(beforeTTask.getAlertEmails());
