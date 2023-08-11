@@ -41,6 +41,22 @@ public class TaskListener {
             dialog.setVisible(true);
         });
 
+        taskForm.getModifyButton().addActionListener(e -> {
+            int selectedRow = taskForm.getTaskListTable().getSelectedRow();
+            if (selectedRow < 0) {
+                JOptionPane.showMessageDialog(taskForm.getMainPanel(), "请先选择要修改的任务！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            Integer taskId = (Integer) taskForm.getTaskListTable().getValueAt(selectedRow, 0);
+            TTask tTask = taskMapper.selectByPrimaryKey(taskId);
+
+            NewTaskDialog dialog = new NewTaskDialog(tTask);
+            dialog.pack();
+            dialog.setVisible(true);
+        });
+
         taskForm.getTaskHisDetailButton().addActionListener(e -> {
             int selectedRow = taskForm.getTaskHisListTable().getSelectedRow();
             if (selectedRow < 0) {

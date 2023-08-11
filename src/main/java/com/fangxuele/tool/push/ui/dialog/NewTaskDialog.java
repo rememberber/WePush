@@ -87,12 +87,18 @@ public class NewTaskDialog extends JDialog {
 
     private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
 
-    private static Map<String, Integer> msgTypeMap = Maps.newHashMap();
-    private static Map<String, Integer> accountMap = Maps.newHashMap();
-    private static Map<String, Integer> messageMap = Maps.newHashMap();
-    private static Map<String, Integer> peopleMap = Maps.newHashMap();
+    private Map<String, Integer> msgTypeMap = Maps.newHashMap();
+    private Map<Integer, String> msgTypeMapReverse = Maps.newHashMap();
+    private Map<String, Integer> accountMap = Maps.newHashMap();
+    private Map<Integer, String> accountMapReverse = Maps.newHashMap();
+    private Map<String, Integer> messageMap = Maps.newHashMap();
+    private Map<Integer, String> messageMapReverse = Maps.newHashMap();
+    private Map<String, Integer> peopleMap = Maps.newHashMap();
+    private Map<Integer, String> peopleMapReverse = Maps.newHashMap();
 
     private static final String CRON_DATE_FORMAT = "ss mm HH dd MM ? yyyy";
+
+    private TTask beforeTTask;
 
     public NewTaskDialog() {
 
@@ -262,6 +268,65 @@ public class NewTaskDialog extends JDialog {
         });
     }
 
+    public NewTaskDialog(TTask tTask) {
+        beforeTTask = tTask;
+
+        fillForm(beforeTTask);
+    }
+
+    /**
+     * 填充表单
+     *
+     * @param beforeTTask
+     */
+    private void fillForm(TTask beforeTTask) {
+        init();
+        // 任务类型
+        if (beforeTTask.getTaskPeriod() == TaskTypeEnum.MANUAL_TASK_CODE) {
+            manualTaskRadioButton.setSelected(true);
+            schedulePanel.setVisible(false);
+        } else {
+            scheduleTaskRadioButton.setSelected(true);
+            schedulePanel.setVisible(true);
+        }
+        // 任务模式
+        if (beforeTTask.getTaskMode() == TaskModeEnum.FIX_THREAD_TASK_CODE) {
+            fixThreadModeRadioButton.setSelected(true);
+        } else {
+            infinityModeRadioButton.setSelected(true);
+        }
+        // 任务名称
+        titleTextField.setText(beforeTTask.getTitle());
+        // 任务类型
+        msgTypeComboBox.setSelectedItem(msgTypeMapReverse.get(beforeTTask.getMsgType()));
+        // 账号
+        accountComboBox.setSelectedItem(beforeTTask.getAccountId());
+        // 消息
+        messageComboBox.setSelectedItem(beforeTTask.getMessage());
+        // 人群
+        peopleComboBox.setSelectedItem(beforeTTask.getPeople());
+        // 任务时间
+        if (beforeTTask.getTaskType() == TaskTypeEnum.SCHEDULE.getCode()) {
+            if (beforeTTask.getScheduleType() == ScheduleTypeEnum.RUN_AT_THIS_TIME.getCode()) {
+                runAtThisTimeRadioButton.setSelected(true);
+                runAtThisTimeTextField.setText(beforeTTask.getScheduleTime());
+            } else if (beforeTTask.getScheduleType() == ScheduleTypeEnum.RUN_PER_DAY.getCode()) {
+                runPerDayRadioButton.setSelected(true);
+                runPerDayTextField.setText(beforeTTask.getScheduleTime());
+            } else if (beforeTTask.getScheduleType() == ScheduleTypeEnum.RUN_PER_WEEK.getCode()) {
+                runPerWeekRadioButton.setSelected(true);
+                runPerWeekTextField.setText(beforeTTask.getScheduleTime());
+            } else if (beforeTTask.getScheduleType() == ScheduleTypeEnum.CRON.getCode()) {
+                cronRadioButton.setSelected(true);
+                cronTextField.setText(beforeTTask.getScheduleTime());
+            }
+        }
+        // 线程数
+        threadCntTextField.setText(String.valueOf(beforeTTask.getThreadCnt()));
+        // 最大线程数
+        maxThreadCntTextField.setText(String.valueOf(beforeTTask.getMaxThreadCnt()));
+    }
+
     private void init() {
         initUI();
         initData();
@@ -291,57 +356,75 @@ public class NewTaskDialog extends JDialog {
      */
     private void initMsgTypeComboBoxData() {
         msgTypeMap.clear();
+        msgTypeMapReverse.clear();
         this.msgTypeComboBox.removeAllItems();
 
         msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.HTTP), MessageTypeEnum.HTTP_CODE);
+        msgTypeMapReverse.put(MessageTypeEnum.HTTP_CODE, MessageTypeEnum.getName(MessageTypeEnum.HTTP));
         this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.HTTP));
 
         msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.MP_TEMPLATE), MessageTypeEnum.MP_TEMPLATE_CODE);
+        msgTypeMapReverse.put(MessageTypeEnum.MP_TEMPLATE_CODE, MessageTypeEnum.getName(MessageTypeEnum.MP_TEMPLATE));
         this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.MP_TEMPLATE));
 
         msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.MP_SUBSCRIBE), MessageTypeEnum.MP_SUBSCRIBE_CODE);
+        msgTypeMapReverse.put(MessageTypeEnum.MP_SUBSCRIBE_CODE, MessageTypeEnum.getName(MessageTypeEnum.MP_SUBSCRIBE));
         this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.MP_SUBSCRIBE));
 
         msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.MA_SUBSCRIBE), MessageTypeEnum.MA_SUBSCRIBE_CODE);
+        msgTypeMapReverse.put(MessageTypeEnum.MA_SUBSCRIBE_CODE, MessageTypeEnum.getName(MessageTypeEnum.MA_SUBSCRIBE));
         this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.MA_SUBSCRIBE));
 
         msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.KEFU), MessageTypeEnum.KEFU_CODE);
+        msgTypeMapReverse.put(MessageTypeEnum.KEFU_CODE, MessageTypeEnum.getName(MessageTypeEnum.KEFU));
         this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.KEFU));
 
         msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.KEFU_PRIORITY), MessageTypeEnum.KEFU_PRIORITY_CODE);
+        msgTypeMapReverse.put(MessageTypeEnum.KEFU_PRIORITY_CODE, MessageTypeEnum.getName(MessageTypeEnum.KEFU_PRIORITY));
         this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.KEFU_PRIORITY));
 
         msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.WX_UNIFORM_MESSAGE), MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE);
+        msgTypeMapReverse.put(MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE, MessageTypeEnum.getName(MessageTypeEnum.WX_UNIFORM_MESSAGE));
         this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.WX_UNIFORM_MESSAGE));
 
         msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.WX_CP), MessageTypeEnum.WX_CP_CODE);
+        msgTypeMapReverse.put(MessageTypeEnum.WX_CP_CODE, MessageTypeEnum.getName(MessageTypeEnum.WX_CP));
         this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.WX_CP));
 
         msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.DING), MessageTypeEnum.DING_CODE);
+        msgTypeMapReverse.put(MessageTypeEnum.DING_CODE, MessageTypeEnum.getName(MessageTypeEnum.DING));
         this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.DING));
 
         msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.ALI_YUN), MessageTypeEnum.ALI_YUN_CODE);
+        msgTypeMapReverse.put(MessageTypeEnum.ALI_YUN_CODE, MessageTypeEnum.getName(MessageTypeEnum.ALI_YUN));
         this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.ALI_YUN));
 
         msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.TX_YUN), MessageTypeEnum.TX_YUN_CODE);
+        msgTypeMapReverse.put(MessageTypeEnum.TX_YUN_CODE, MessageTypeEnum.getName(MessageTypeEnum.TX_YUN));
         this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.TX_YUN));
 
         msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.HW_YUN), MessageTypeEnum.HW_YUN_CODE);
+        msgTypeMapReverse.put(MessageTypeEnum.HW_YUN_CODE, MessageTypeEnum.getName(MessageTypeEnum.HW_YUN));
         this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.HW_YUN));
 
         msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.BD_YUN), MessageTypeEnum.BD_YUN_CODE);
+        msgTypeMapReverse.put(MessageTypeEnum.BD_YUN_CODE, MessageTypeEnum.getName(MessageTypeEnum.BD_YUN));
         this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.BD_YUN));
 
         msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.YUN_PIAN), MessageTypeEnum.YUN_PIAN_CODE);
+        msgTypeMapReverse.put(MessageTypeEnum.YUN_PIAN_CODE, MessageTypeEnum.getName(MessageTypeEnum.YUN_PIAN));
         this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.YUN_PIAN));
 
         msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.UP_YUN), MessageTypeEnum.UP_YUN_CODE);
+        msgTypeMapReverse.put(MessageTypeEnum.UP_YUN_CODE, MessageTypeEnum.getName(MessageTypeEnum.UP_YUN));
         this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.UP_YUN));
 
         msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.QI_NIU_YUN), MessageTypeEnum.QI_NIU_YUN_CODE);
+        msgTypeMapReverse.put(MessageTypeEnum.QI_NIU_YUN_CODE, MessageTypeEnum.getName(MessageTypeEnum.QI_NIU_YUN));
         this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.QI_NIU_YUN));
 
         msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.EMAIL), MessageTypeEnum.EMAIL_CODE);
+        msgTypeMapReverse.put(MessageTypeEnum.EMAIL_CODE, MessageTypeEnum.getName(MessageTypeEnum.EMAIL));
         this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.EMAIL));
     }
 

@@ -38,7 +38,7 @@ public class TaskForm {
     private JButton newTaskButton;
     private JScrollPane taskListScrollPane;
     private JButton deleteButton;
-    private JButton 修改Button;
+    private JButton modifyButton;
     private JButton startDryRunButton;
     private JButton startButton;
     private JTable taskHisListTable;
@@ -174,10 +174,10 @@ public class TaskForm {
         deleteButton.setIcon(new ImageIcon(getClass().getResource("/icon/remove.png")));
         deleteButton.setText("删除");
         panel2.add(deleteButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        修改Button = new JButton();
-        修改Button.setIcon(new ImageIcon(getClass().getResource("/icon/add.png")));
-        修改Button.setText("修改");
-        panel2.add(修改Button, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        modifyButton = new JButton();
+        modifyButton.setIcon(new ImageIcon(getClass().getResource("/icon/add.png")));
+        modifyButton.setText("修改");
+        panel2.add(modifyButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         startDryRunButton = new JButton();
         startDryRunButton.setIcon(new ImageIcon(getClass().getResource("/icon/remove.png")));
         startDryRunButton.setText("空跑测试");
