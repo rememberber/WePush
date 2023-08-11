@@ -1,6 +1,6 @@
 package com.fangxuele.tool.push.ui.dialog;
 
-import cn.hutool.cron.CronUtil;
+import cn.hutool.cron.Scheduler;
 import cn.hutool.cron.pattern.CronPattern;
 import cn.hutool.cron.pattern.CronPatternUtil;
 import cn.hutool.cron.task.Task;
@@ -12,8 +12,8 @@ import com.fangxuele.tool.push.domain.TPeople;
 import com.fangxuele.tool.push.domain.TTask;
 import com.fangxuele.tool.push.logic.*;
 import com.fangxuele.tool.push.ui.UiConsts;
-import com.fangxuele.tool.push.ui.listener.TaskListener;
 import com.fangxuele.tool.push.ui.form.TaskForm;
+import com.fangxuele.tool.push.ui.listener.TaskListener;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
@@ -645,8 +645,9 @@ public class NewTaskDialog extends JDialog {
                                 JOptionPane.YES_NO_OPTION);
                         if (isSchedulePush == JOptionPane.YES_OPTION) {
                             // 支持秒级别定时任务
-                            CronUtil.setMatchSecond(true);
-                            String schedulerId = CronUtil.schedule(task.getCron(), (Task) () -> {
+                            Scheduler scheduler = new Scheduler();
+                            scheduler.setMatchSecond(true);
+                            String schedulerId = scheduler.schedule(task.getCron(), (Task) () -> {
                                 if (task.getTaskMode() == TaskModeEnum.FIX_THREAD_TASK_CODE) {
                                     TaskRunThread taskRunThread = new TaskRunThread(task.getId(), 0);
                                     taskRunThread.setFixRateScheduling(true);
@@ -657,8 +658,8 @@ public class NewTaskDialog extends JDialog {
                                     infinityTaskRunThread.start();
                                 }
                             });
-                            CronUtil.start();
-                            TaskListener.scheduledTaskMap.put(task.getId(), schedulerId);
+                            scheduler.start();
+                            TaskListener.scheduledTaskMap.put(task.getId(), scheduler);
                         }
                     }
                 } else {
@@ -667,7 +668,11 @@ public class NewTaskDialog extends JDialog {
                 }
                 // 如果修改前是定时任务，修改后不是定时任务，需要删除之前的定时任务
                 if (beforeTTask != null && beforeTTask.getTaskPeriod() == TaskTypeEnum.SCHEDULE_TASK_CODE && task.getTaskPeriod() != TaskTypeEnum.SCHEDULE_TASK_CODE) {
-                    CronUtil.remove(TaskListener.scheduledTaskMap.get(beforeTTask.getId()));
+                    Scheduler scheduler = TaskListener.scheduledTaskMap.get(beforeTTask.getId());
+                    if (scheduler != null) {
+                        scheduler.stop();
+                        TaskListener.scheduledTaskMap.remove(beforeTTask.getId());
+                    }
                 }
             } catch (Exception e) {
                 log.error("保存任务异常:{}", ExceptionUtils.getStackTrace(e));

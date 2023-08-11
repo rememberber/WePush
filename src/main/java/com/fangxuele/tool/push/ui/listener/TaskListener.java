@@ -1,6 +1,7 @@
 package com.fangxuele.tool.push.ui.listener;
 
 import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.cron.Scheduler;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TTaskHisMapper;
 import com.fangxuele.tool.push.dao.TTaskMapper;
@@ -34,7 +35,7 @@ public class TaskListener {
     private static TTaskMapper taskMapper = MybatisUtil.getSqlSession().getMapper(TTaskMapper.class);
     private static TTaskHisMapper taskHisMapper = MybatisUtil.getSqlSession().getMapper(TTaskHisMapper.class);
 
-    public static Map<Integer,String> scheduledTaskMap = new HashMap<>(16);
+    public static Map<Integer, Scheduler> scheduledTaskMap = new HashMap<>(16);
 
     public static void addListeners() {
         TaskForm taskForm = TaskForm.getInstance();
