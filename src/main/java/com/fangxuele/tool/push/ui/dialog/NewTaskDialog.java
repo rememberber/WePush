@@ -12,6 +12,7 @@ import com.fangxuele.tool.push.domain.TPeople;
 import com.fangxuele.tool.push.domain.TTask;
 import com.fangxuele.tool.push.logic.*;
 import com.fangxuele.tool.push.ui.UiConsts;
+import com.fangxuele.tool.push.ui.listener.TaskListener;
 import com.fangxuele.tool.push.ui.form.TaskForm;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
@@ -269,8 +270,8 @@ public class NewTaskDialog extends JDialog {
     }
 
     public NewTaskDialog(TTask tTask) {
+        this();
         beforeTTask = tTask;
-
         fillForm(beforeTTask);
     }
 
@@ -280,7 +281,9 @@ public class NewTaskDialog extends JDialog {
      * @param beforeTTask
      */
     private void fillForm(TTask beforeTTask) {
-        init();
+        resetTaskType();
+        resetTaskMode();
+        resetScheduleRadio();
         // 任务类型
         if (beforeTTask.getTaskPeriod() == TaskTypeEnum.MANUAL_TASK_CODE) {
             manualTaskRadioButton.setSelected(true);
@@ -300,25 +303,25 @@ public class NewTaskDialog extends JDialog {
         // 任务类型
         msgTypeComboBox.setSelectedItem(msgTypeMapReverse.get(beforeTTask.getMsgType()));
         // 账号
-        accountComboBox.setSelectedItem(beforeTTask.getAccountId());
+        accountComboBox.setSelectedItem(accountMapReverse.get(beforeTTask.getAccountId()));
         // 消息
-        messageComboBox.setSelectedItem(beforeTTask.getMessage());
+        msgComboBox.setSelectedItem(messageMapReverse.get(beforeTTask.getMessageId()));
         // 人群
-        peopleComboBox.setSelectedItem(beforeTTask.getPeople());
+        peopleComboBox.setSelectedItem(peopleMapReverse.get(beforeTTask.getPeopleId()));
         // 任务时间
-        if (beforeTTask.getTaskType() == TaskTypeEnum.SCHEDULE.getCode()) {
-            if (beforeTTask.getScheduleType() == ScheduleTypeEnum.RUN_AT_THIS_TIME.getCode()) {
+        if (beforeTTask.getTaskPeriod() == TaskTypeEnum.SCHEDULE_TASK_CODE) {
+            if (beforeTTask.getPeriodType() == PeriodTypeEnum.RUN_AT_THIS_TIME_TASK_CODE) {
                 runAtThisTimeRadioButton.setSelected(true);
-                runAtThisTimeTextField.setText(beforeTTask.getScheduleTime());
-            } else if (beforeTTask.getScheduleType() == ScheduleTypeEnum.RUN_PER_DAY.getCode()) {
+                startAtThisTimeTextField.setText(beforeTTask.getPeriodTime());
+            } else if (beforeTTask.getPeriodType() == PeriodTypeEnum.RUN_PER_DAY_TASK_CODE) {
                 runPerDayRadioButton.setSelected(true);
-                runPerDayTextField.setText(beforeTTask.getScheduleTime());
-            } else if (beforeTTask.getScheduleType() == ScheduleTypeEnum.RUN_PER_WEEK.getCode()) {
+                startPerDayTextField.setText(beforeTTask.getPeriodTime());
+            } else if (beforeTTask.getPeriodType() == PeriodTypeEnum.RUN_PER_WEEK_TASK_CODE) {
                 runPerWeekRadioButton.setSelected(true);
-                runPerWeekTextField.setText(beforeTTask.getScheduleTime());
-            } else if (beforeTTask.getScheduleType() == ScheduleTypeEnum.CRON.getCode()) {
+                startPerWeekTextField.setText(beforeTTask.getPeriodTime());
+            } else if (beforeTTask.getPeriodType() == PeriodTypeEnum.CRON_TASK_CODE) {
                 cronRadioButton.setSelected(true);
-                cronTextField.setText(beforeTTask.getScheduleTime());
+                cronTextField.setText(beforeTTask.getPeriodTime());
             }
         }
         // 线程数
@@ -437,9 +440,11 @@ public class NewTaskDialog extends JDialog {
         List<TAccount> tAccounts = accountMapper.selectByMsgType(selectedMsgType);
 
         accountMap.clear();
+        accountMapReverse.clear();
         accountComboBox.removeAllItems();
         for (TAccount tAccount : tAccounts) {
             accountMap.put(tAccount.getAccountName(), tAccount.getId());
+            accountMapReverse.put(tAccount.getId(), tAccount.getAccountName());
             accountComboBox.addItem(tAccount.getAccountName());
         }
     }
@@ -455,10 +460,12 @@ public class NewTaskDialog extends JDialog {
         Integer selectedAccount = accountMap.get(selectedAccountStr);
 
         messageMap.clear();
+        messageMapReverse.clear();
         msgComboBox.removeAllItems();
         List<TMsg> tMsgList = msgMapper.selectByMsgTypeAndAccountId(msgType, selectedAccount);
         for (TMsg tMsg : tMsgList) {
             messageMap.put(tMsg.getMsgName(), tMsg.getId());
+            messageMapReverse.put(tMsg.getId(), tMsg.getMsgName());
             msgComboBox.addItem(tMsg.getMsgName());
         }
         saveResponseBodyCheckBox.setSelected(false);
@@ -476,11 +483,13 @@ public class NewTaskDialog extends JDialog {
         Integer selectedAccount = accountMap.get(selectedAccountStr);
 
         peopleMap.clear();
+        peopleMapReverse.clear();
         peopleComboBox.removeAllItems();
 
         List<TPeople> tPeopleList = peopleMapper.selectByMsgTypeAndAccountId(String.valueOf(msgType), selectedAccount);
         for (TPeople tPeople : tPeopleList) {
             peopleMap.put(tPeople.getPeopleName(), tPeople.getId());
+            peopleMapReverse.put(tPeople.getId(), tPeople.getPeopleName());
             peopleComboBox.addItem(tPeople.getPeopleName());
         }
     }
@@ -572,7 +581,7 @@ public class NewTaskDialog extends JDialog {
     private void onOK() {
         String title = this.titleTextField.getText().trim();
         TTask tTask = taskExtMapper.selectByTitle(title);
-        if (tTask != null) {
+        if (tTask != null && beforeTTask == null) {
             JOptionPane.showMessageDialog(this, "存在同名任务！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
             return;
@@ -599,15 +608,19 @@ public class NewTaskDialog extends JDialog {
                 task.setResultAlert(sendPushResultCheckBox.isSelected() ? 1 : 0);
                 task.setAlertEmails(mailResultToTextField.getText().trim());
                 task.setSaveResult(saveResponseBodyCheckBox.isSelected() ? 1 : 0);
-                task.setCreateTime(nowDateForSqlite);
                 task.setModifiedTime(nowDateForSqlite);
-
-                taskMapper.insert(task);
+                if (beforeTTask == null) {
+                    task.setCreateTime(nowDateForSqlite);
+                    taskMapper.insert(task);
+                } else {
+                    task.setId(beforeTTask.getId());
+                    taskMapper.updateByPrimaryKey(task);
+                }
 
                 TaskForm.initTaskListTable();
 
-                // 如果是定时任务
-                if (task.getTaskPeriod() == TaskTypeEnum.SCHEDULE_TASK_CODE) {
+                // 如果修改前不是定时任务，或者是新建的是定时任务
+                if ((beforeTTask == null || beforeTTask.getTaskPeriod() != TaskTypeEnum.SCHEDULE_TASK_CODE) && task.getTaskPeriod() == TaskTypeEnum.SCHEDULE_TASK_CODE) {
                     {
 
                         List<String> latest5RunTimeList = Lists.newArrayList();
@@ -632,21 +645,27 @@ public class NewTaskDialog extends JDialog {
                         if (isSchedulePush == JOptionPane.YES_OPTION) {
                             // 支持秒级别定时任务
                             CronUtil.setMatchSecond(true);
-                            CronUtil.schedule(task.getCron(), (Task) () -> {
+                            String schedulerId = CronUtil.schedule(task.getCron(), (Task) () -> {
+                                // TODO
                                 TaskRunThread taskRunThread = new TaskRunThread(task.getId(), 0);
                                 taskRunThread.setFixRateScheduling(true);
                                 taskRunThread.start();
                             });
                             CronUtil.start();
+                            TaskListener.scheduledTaskMap.put(task.getId(), schedulerId);
                         }
                     }
                 } else {
                     JOptionPane.showMessageDialog(this, "保存成功！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
                 }
+                // 如果修改前是定时任务，修改后不是定时任务，需要删除之前的定时任务
+                if (beforeTTask != null && beforeTTask.getTaskPeriod() == TaskTypeEnum.SCHEDULE_TASK_CODE && task.getTaskPeriod() != TaskTypeEnum.SCHEDULE_TASK_CODE) {
+                    CronUtil.remove(TaskListener.scheduledTaskMap.get(beforeTTask.getId()));
+                }
             } catch (Exception e) {
-                log.error("新建任务异常:{}", ExceptionUtils.getStackTrace(e));
-                JOptionPane.showMessageDialog(this, "新建任务失败！\n" + e.getMessage(), "失败",
+                log.error("保存任务异常:{}", ExceptionUtils.getStackTrace(e));
+                JOptionPane.showMessageDialog(this, "保存失败！\n" + e.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
             }
         }

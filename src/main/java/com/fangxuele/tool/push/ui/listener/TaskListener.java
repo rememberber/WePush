@@ -18,6 +18,8 @@ import com.fangxuele.tool.push.util.MybatisUtil;
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <pre>
@@ -31,6 +33,8 @@ public class TaskListener {
 
     private static TTaskMapper taskMapper = MybatisUtil.getSqlSession().getMapper(TTaskMapper.class);
     private static TTaskHisMapper taskHisMapper = MybatisUtil.getSqlSession().getMapper(TTaskHisMapper.class);
+
+    public static Map<Integer,String> scheduledTaskMap = new HashMap<>(16);
 
     public static void addListeners() {
         TaskForm taskForm = TaskForm.getInstance();
