@@ -134,8 +134,6 @@ public class TaskRunThread extends Thread {
 
     private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
 
-    private static TPeopleImportConfigMapper peopleImportConfigMapper = MybatisUtil.getSqlSession().getMapper(TPeopleImportConfigMapper.class);
-
     private TTaskHis taskHis;
 
     private TMsg tMsg;
@@ -146,6 +144,8 @@ public class TaskRunThread extends Thread {
 
     // TODO 注意相关资源删除或者关闭的时候，进行清理回收
     public static Map<Integer, TaskRunThread> taskRunThreadMap = new ConcurrentHashMap<>();
+
+    private static TPeopleImportConfigMapper peopleImportConfigMapper = MybatisUtil.getSqlSession().getMapper(TPeopleImportConfigMapper.class);
 
     public TaskRunThread(Integer taskId, Integer dryRun) {
         this.taskId = taskId;
@@ -208,7 +208,7 @@ public class TaskRunThread extends Thread {
         taskHis.setLogFilePath(logFilePath);
 
         // TODO 执行前重新导入目标用户
-        if (tTask.getReimportPeople() == 1) {
+        if (tTask.getTaskPeriod() == TaskTypeEnum.SCHEDULE_TASK_CODE && tTask.getReimportPeople() == 1) {
             // 获取上一次导入方式
             TPeopleImportConfig tPeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(tTask.getPeopleId());
             String lastWay = tPeopleImportConfig.getLastWay();

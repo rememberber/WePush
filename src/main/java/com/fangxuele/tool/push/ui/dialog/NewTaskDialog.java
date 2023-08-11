@@ -328,6 +328,7 @@ public class NewTaskDialog extends JDialog {
                 cronTextField.setText(beforeTTask.getPeriodTime());
             }
         }
+        reimportCheckBox.setSelected(beforeTTask.getReimportPeople() != null && beforeTTask.getReimportPeople() == 1);
         sendPushResultCheckBox.setSelected(beforeTTask.getResultAlert() != null && beforeTTask.getResultAlert() == 1);
         mailResultToTextField.setText(beforeTTask.getAlertEmails());
     }
