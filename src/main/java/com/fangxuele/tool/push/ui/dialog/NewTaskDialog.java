@@ -284,23 +284,9 @@ public class NewTaskDialog extends JDialog {
         resetTaskType();
         resetTaskMode();
         resetScheduleRadio();
-        // 任务类型
-        if (beforeTTask.getTaskPeriod() == TaskTypeEnum.MANUAL_TASK_CODE) {
-            manualTaskRadioButton.setSelected(true);
-            schedulePanel.setVisible(false);
-        } else {
-            scheduleTaskRadioButton.setSelected(true);
-            schedulePanel.setVisible(true);
-        }
-        // 任务模式
-        if (beforeTTask.getTaskMode() == TaskModeEnum.FIX_THREAD_TASK_CODE) {
-            fixThreadModeRadioButton.setSelected(true);
-        } else if (beforeTTask.getTaskMode() == TaskModeEnum.INFINITY_TASK_CODE) {
-            infinityModeRadioButton.setSelected(true);
-        }
         // 任务名称
         titleTextField.setText(beforeTTask.getTitle());
-        // 任务类型
+        // 消息类型
         msgTypeComboBox.setSelectedItem(msgTypeMapReverse.get(beforeTTask.getMsgType()));
         // 账号
         accountComboBox.setSelectedItem(accountMapReverse.get(beforeTTask.getAccountId()));
@@ -308,26 +294,40 @@ public class NewTaskDialog extends JDialog {
         msgComboBox.setSelectedItem(messageMapReverse.get(beforeTTask.getMessageId()));
         // 人群
         peopleComboBox.setSelectedItem(peopleMapReverse.get(beforeTTask.getPeopleId()));
-        // 任务时间
-        if (beforeTTask.getTaskPeriod() == TaskTypeEnum.SCHEDULE_TASK_CODE) {
-            if (beforeTTask.getPeriodType() == PeriodTypeEnum.RUN_AT_THIS_TIME_TASK_CODE) {
-                runAtThisTimeRadioButton.setSelected(true);
-                startAtThisTimeTextField.setText(beforeTTask.getPeriodTime());
-            } else if (beforeTTask.getPeriodType() == PeriodTypeEnum.RUN_PER_DAY_TASK_CODE) {
-                runPerDayRadioButton.setSelected(true);
-                startPerDayTextField.setText(beforeTTask.getPeriodTime());
-            } else if (beforeTTask.getPeriodType() == PeriodTypeEnum.RUN_PER_WEEK_TASK_CODE) {
-                runPerWeekRadioButton.setSelected(true);
-                startPerWeekTextField.setText(beforeTTask.getPeriodTime());
-            } else if (beforeTTask.getPeriodType() == PeriodTypeEnum.CRON_TASK_CODE) {
-                cronRadioButton.setSelected(true);
-                cronTextField.setText(beforeTTask.getPeriodTime());
-            }
+        // 任务模式
+        if (beforeTTask.getTaskMode() == TaskModeEnum.FIX_THREAD_TASK_CODE) {
+            fixThreadModeRadioButton.setSelected(true);
+        } else if (beforeTTask.getTaskMode() == TaskModeEnum.INFINITY_TASK_CODE) {
+            infinityModeRadioButton.setSelected(true);
         }
         // 线程数
         threadCntTextField.setText(String.valueOf(beforeTTask.getThreadCnt()));
         // 最大线程数
         maxThreadCntTextField.setText(String.valueOf(beforeTTask.getMaxThreadCnt()));
+        // 任务周期
+        if (beforeTTask.getTaskPeriod() == TaskTypeEnum.MANUAL_TASK_CODE) {
+            manualTaskRadioButton.setSelected(true);
+            schedulePanel.setVisible(false);
+        } else {
+            scheduleTaskRadioButton.setSelected(true);
+            schedulePanel.setVisible(true);
+        }
+        // 任务时间
+        if (beforeTTask.getPeriodType() == PeriodTypeEnum.RUN_AT_THIS_TIME_TASK_CODE) {
+            runAtThisTimeRadioButton.setSelected(true);
+            startAtThisTimeTextField.setText(beforeTTask.getPeriodTime());
+        } else if (beforeTTask.getPeriodType() == PeriodTypeEnum.RUN_PER_DAY_TASK_CODE) {
+            runPerDayRadioButton.setSelected(true);
+            startPerDayTextField.setText(beforeTTask.getPeriodTime());
+        } else if (beforeTTask.getPeriodType() == PeriodTypeEnum.RUN_PER_WEEK_TASK_CODE) {
+            runPerWeekRadioButton.setSelected(true);
+            startPerWeekTextField.setText(beforeTTask.getPeriodTime());
+        } else if (beforeTTask.getPeriodType() == PeriodTypeEnum.CRON_TASK_CODE) {
+            cronRadioButton.setSelected(true);
+            cronTextField.setText(beforeTTask.getPeriodTime());
+        }
+        sendPushResultCheckBox.setSelected(beforeTTask.getResultAlert() != null && beforeTTask.getResultAlert() == 1);
+        mailResultToTextField.setText(beforeTTask.getAlertEmails());
     }
 
     private void init() {
