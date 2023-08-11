@@ -295,7 +295,7 @@ public class NewTaskDialog extends JDialog {
         // 任务模式
         if (beforeTTask.getTaskMode() == TaskModeEnum.FIX_THREAD_TASK_CODE) {
             fixThreadModeRadioButton.setSelected(true);
-        } else {
+        } else if (beforeTTask.getTaskMode() == TaskModeEnum.INFINITY_TASK_CODE) {
             infinityModeRadioButton.setSelected(true);
         }
         // 任务名称
@@ -646,10 +646,15 @@ public class NewTaskDialog extends JDialog {
                             // 支持秒级别定时任务
                             CronUtil.setMatchSecond(true);
                             String schedulerId = CronUtil.schedule(task.getCron(), (Task) () -> {
-                                // TODO
-                                TaskRunThread taskRunThread = new TaskRunThread(task.getId(), 0);
-                                taskRunThread.setFixRateScheduling(true);
-                                taskRunThread.start();
+                                if (task.getTaskMode() == TaskModeEnum.FIX_THREAD_TASK_CODE) {
+                                    TaskRunThread taskRunThread = new TaskRunThread(task.getId(), 0);
+                                    taskRunThread.setFixRateScheduling(true);
+                                    taskRunThread.start();
+                                } else if (task.getTaskMode() == TaskModeEnum.INFINITY_TASK_CODE) {
+                                    InfinityTaskRunThread infinityTaskRunThread = new InfinityTaskRunThread(task.getId(), 0);
+                                    infinityTaskRunThread.setFixRateScheduling(true);
+                                    infinityTaskRunThread.start();
+                                }
                             });
                             CronUtil.start();
                             TaskListener.scheduledTaskMap.put(task.getId(), schedulerId);
