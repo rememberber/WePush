@@ -622,7 +622,6 @@ public class NewTaskDialog extends JDialog {
                 // 如果修改前不是定时任务，或者是新建的是定时任务
                 if ((beforeTTask == null || beforeTTask.getTaskPeriod() != TaskTypeEnum.SCHEDULE_TASK_CODE) && task.getTaskPeriod() == TaskTypeEnum.SCHEDULE_TASK_CODE) {
                     {
-
                         List<String> latest5RunTimeList = Lists.newArrayList();
                         Date now = new Date();
                         for (int i = 0; i < 5; i++) {
@@ -631,7 +630,6 @@ public class NewTaskDialog extends JDialog {
                         }
 
                         // TODO 重启应用时把所有定时任务重新加入到任务队列
-
                         int isSchedulePush = JOptionPane.showConfirmDialog(App.mainFrame,
                                 "将按" +
                                         task.getCron() +

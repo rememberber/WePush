@@ -251,9 +251,11 @@ public class TaskRunThread extends Thread {
 
         TaskForm taskForm = TaskForm.getInstance();
         int selectedRow = taskForm.getTaskListTable().getSelectedRow();
-        Integer selectedTaskId = (Integer) taskForm.getTaskListTable().getValueAt(selectedRow, 0);
-        if (selectedTaskId.equals(taskId)) {
-            TaskForm.initTaskHisListTable(taskId);
+        if (selectedRow > -1) {
+            Integer selectedTaskId = (Integer) taskForm.getTaskListTable().getValueAt(selectedRow, 0);
+            if (selectedTaskId.equals(taskId)) {
+                TaskForm.initTaskHisListTable(taskId);
+            }
         }
     }
 
