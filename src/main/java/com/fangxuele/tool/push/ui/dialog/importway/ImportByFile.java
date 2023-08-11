@@ -16,7 +16,6 @@ import com.fangxuele.tool.push.logic.PeopleImportWayEnum;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
-import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.FileCharSetUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
@@ -50,15 +49,19 @@ public class ImportByFile extends JDialog {
     private static TPeopleDataMapper peopleDataMapper = MybatisUtil.getSqlSession().getMapper(TPeopleDataMapper.class);
     private static TPeopleImportConfigMapper peopleImportConfigMapper = MybatisUtil.getSqlSession().getMapper(TPeopleImportConfigMapper.class);
 
-    public ImportByFile() {
+    private Integer peopleId;
+
+    public ImportByFile(Integer peopleId) {
         super(App.mainFrame, "通过文件导入人群");
         setContentPane(contentPane);
         setModal(true);
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.4, 0.2);
         getRootPane().setDefaultButton(importFromFileButton);
 
+        this.peopleId = peopleId;
+
         // 获取上一次导入的配置
-        TPeopleImportConfig tPeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
+        TPeopleImportConfig tPeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(peopleId);
         if (tPeopleImportConfig != null) {
             memberFilePathField.setText(tPeopleImportConfig.getLastFilePath());
         }
@@ -84,17 +87,9 @@ public class ImportByFile extends JDialog {
 
         });
 
-        importFromFileButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onOK();
-            }
-        });
+        importFromFileButton.addActionListener(e -> onOK());
 
-        buttonCancel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        });
+        buttonCancel.addActionListener(e -> onCancel());
 
         // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -105,11 +100,7 @@ public class ImportByFile extends JDialog {
         });
 
         // call onCancel() on ESCAPE
-        contentPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
     private void onOK() {
@@ -119,7 +110,7 @@ public class ImportByFile extends JDialog {
                     JOptionPane.INFORMATION_MESSAGE);
             return;
         }
-        ThreadUtil.execute(() -> importFromFile(filePath));
+        ThreadUtil.execute(() -> importFromFile(filePath, false, false));
         dispose();
     }
 
@@ -130,7 +121,7 @@ public class ImportByFile extends JDialog {
     /**
      * 通过文件导入
      */
-    public void importFromFile(String filePath) {
+    public void importFromFile(String filePath, Boolean clear, Boolean silence) {
         PeopleEditForm peopleEditForm = PeopleEditForm.getInstance();
         peopleEditForm.getImportButton().setEnabled(false);
         JPanel memberPanel = peopleEditForm.getMainPanel();
@@ -139,32 +130,38 @@ public class ImportByFile extends JDialog {
 
         File file = new File(filePath);
         if (!file.exists()) {
-            JOptionPane.showMessageDialog(memberPanel, filePath + "\n该文件不存在！", "文件不存在",
-                    JOptionPane.ERROR_MESSAGE);
-            peopleEditForm.getImportButton().setEnabled(true);
+            if (!silence) {
+                JOptionPane.showMessageDialog(memberPanel, filePath + "\n该文件不存在！", "文件不存在",
+                        JOptionPane.ERROR_MESSAGE);
+                peopleEditForm.getImportButton().setEnabled(true);
+            } else {
+                logger.warn("该文件不存在");
+            }
             return;
         }
         CSVReader reader = null;
         FileReader fileReader;
 
         int currentImported = 0;
-        Long totalCount = peopleDataMapper.countByPeopleId(PeopleManageListener.selectedPeopleId);
+        Long totalCount = peopleDataMapper.countByPeopleId(peopleId);
         if (totalCount != null) {
             currentImported = Math.toIntExact(totalCount);
         }
 
         try {
-            progressBar.setVisible(true);
-            progressBar.setIndeterminate(true);
+            if (!silence) {
+                progressBar.setVisible(true);
+                progressBar.setIndeterminate(true);
+            }
             String fileNameLowerCase = file.getName().toLowerCase();
             TPeopleData tPeopleData;
             String now = SqliteUtil.nowDateForSqlite();
 
             // 保存导入配置
-            TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
+            TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(peopleId);
 
             TPeopleImportConfig tPeopleImportConfig = new TPeopleImportConfig();
-            tPeopleImportConfig.setPeopleId(PeopleManageListener.selectedPeopleId);
+            tPeopleImportConfig.setPeopleId(peopleId);
             tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_FILE_CODE));
             tPeopleImportConfig.setLastFilePath(filePath);
             tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
@@ -183,10 +180,14 @@ public class ImportByFile extends JDialog {
                 DataInputStream in = new DataInputStream(new FileInputStream(file));
                 reader = new CSVReader(new InputStreamReader(in, FileCharSetUtil.getCharSet(file)));
 
+                if (clear) {
+                    peopleDataMapper.deleteByPeopleId(peopleId);
+                }
+
                 String[] nextLine;
-                while (PeopleManageListener.selectedPeopleId != null && (nextLine = reader.readNext()) != null) {
+                while (peopleId != null && (nextLine = reader.readNext()) != null) {
                     tPeopleData = new TPeopleData();
-                    tPeopleData.setPeopleId(PeopleManageListener.selectedPeopleId);
+                    tPeopleData.setPeopleId(peopleId);
                     tPeopleData.setPin(nextLine[0]);
                     tPeopleData.setVarData(JSONUtil.toJsonStr(nextLine));
                     tPeopleData.setAppVersion(UiConsts.APP_VERSION);
@@ -195,11 +196,17 @@ public class ImportByFile extends JDialog {
 
                     peopleDataMapper.insert(tPeopleData);
                     currentImported++;
-                    memberCountLabel.setText(String.valueOf(currentImported));
+                    if (!silence) {
+                        memberCountLabel.setText(String.valueOf(currentImported));
+                    }
                 }
             } else if (fileNameLowerCase.endsWith(".xlsx") || fileNameLowerCase.endsWith(".xls")) {
                 ExcelReader excelReader = ExcelUtil.getReader(file);
                 List<List<Object>> readAll = excelReader.read(1, Integer.MAX_VALUE);
+
+                if (clear) {
+                    peopleDataMapper.deleteByPeopleId(peopleId);
+                }
 
                 for (List<Object> objects : readAll) {
                     if (objects != null && objects.size() > 0) {
@@ -209,7 +216,7 @@ public class ImportByFile extends JDialog {
                         }
 
                         tPeopleData = new TPeopleData();
-                        tPeopleData.setPeopleId(PeopleManageListener.selectedPeopleId);
+                        tPeopleData.setPeopleId(peopleId);
                         tPeopleData.setPin(nextLine[0]);
                         tPeopleData.setVarData(JSONUtil.toJsonStr(nextLine));
                         tPeopleData.setAppVersion(UiConsts.APP_VERSION);
@@ -218,19 +225,25 @@ public class ImportByFile extends JDialog {
 
                         peopleDataMapper.insert(tPeopleData);
                         currentImported++;
-                        memberCountLabel.setText(String.valueOf(currentImported));
+                        if (!silence) {
+                            memberCountLabel.setText(String.valueOf(currentImported));
+                        }
                     }
                 }
             } else if (fileNameLowerCase.endsWith(".txt")) {
                 fileReader = new FileReader(file, FileCharSetUtil.getCharSetName(file));
                 BufferedReader br = fileReader.getReader();
 
+                if (clear) {
+                    peopleDataMapper.deleteByPeopleId(peopleId);
+                }
+
                 String line;
-                while (PeopleManageListener.selectedPeopleId != null && (line = br.readLine()) != null) {
+                while (peopleId != null && (line = br.readLine()) != null) {
                     String[] nextLine = line.split(TXT_FILE_DATA_SEPERATOR_REGEX);
 
                     tPeopleData = new TPeopleData();
-                    tPeopleData.setPeopleId(PeopleManageListener.selectedPeopleId);
+                    tPeopleData.setPeopleId(peopleId);
                     tPeopleData.setPin(nextLine[0]);
                     tPeopleData.setVarData(JSONUtil.toJsonStr(nextLine));
                     tPeopleData.setAppVersion(UiConsts.APP_VERSION);
@@ -239,36 +252,45 @@ public class ImportByFile extends JDialog {
 
                     peopleDataMapper.insert(tPeopleData);
                     currentImported++;
-                    memberCountLabel.setText(String.valueOf(currentImported));
+                    if (!silence) {
+                        memberCountLabel.setText(String.valueOf(currentImported));
+                    }
                 }
             } else {
-                JOptionPane.showMessageDialog(memberPanel, "不支持该格式的文件！", "文件格式不支持",
-                        JOptionPane.ERROR_MESSAGE);
-                peopleEditForm.getImportButton().setEnabled(true);
+                if (!silence) {
+                    JOptionPane.showMessageDialog(memberPanel, "不支持该格式的文件！", "文件格式不支持",
+                            JOptionPane.ERROR_MESSAGE);
+                    peopleEditForm.getImportButton().setEnabled(true);
+                } else {
+                    logger.warn("不支持该格式的文件");
+                }
                 return;
             }
 
-            PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
+            if (!silence) {
+                PeopleEditForm.initDataTable(peopleId);
+            }
 
-            if (!PushData.fixRateScheduling) {
+            if (!PushData.fixRateScheduling && !silence) {
                 progressBar.setIndeterminate(false);
                 progressBar.setVisible(false);
                 JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
             }
-
-            App.config.setMemberFilePath(filePath);
-            App.config.save();
         } catch (Exception e1) {
-            JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + e1.getMessage(), "失败",
-                    JOptionPane.ERROR_MESSAGE);
+            if (!silence) {
+                JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+            }
             logger.error(e1);
             e1.printStackTrace();
         } finally {
-            progressBar.setMaximum(100);
-            progressBar.setValue(100);
-            progressBar.setIndeterminate(false);
-            progressBar.setVisible(false);
-            peopleEditForm.getImportButton().setEnabled(true);
+            if (!silence) {
+                progressBar.setMaximum(100);
+                progressBar.setValue(100);
+                progressBar.setIndeterminate(false);
+                progressBar.setVisible(false);
+                peopleEditForm.getImportButton().setEnabled(true);
+            }
             if (reader != null) {
                 try {
                     reader.close();
@@ -334,4 +356,9 @@ public class ImportByFile extends JDialog {
         return contentPane;
     }
 
+    public void reImport() {
+        TPeopleImportConfig tPeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(peopleId);
+        importFromFile(tPeopleImportConfig.getLastFilePath(), true, true);
+        dispose();
+    }
 }

@@ -64,6 +64,9 @@ public class PeopleEditListener {
                 return;
             }
 
+            TPeople tPeople = peopleMapper.selectByPrimaryKey(PeopleManageListener.selectedPeopleId);
+            Integer msgType = tPeople.getMsgType();
+
             JPopupMenu popupMenu = new JPopupMenu();
 
             JMenuItem menuItem1 = new JMenuItem();
@@ -82,7 +85,7 @@ public class PeopleEditListener {
             });
             popupMenu.add(menuItem2);
 
-            if (MessageTypeEnum.isWxMaOrMpType(App.config.getMsgType())) {
+            if (MessageTypeEnum.isWxMaOrMpType(msgType)) {
                 JMenuItem menuItem3 = new JMenuItem();
                 menuItem3.setText(PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_WX_MP));
                 menuItem3.addActionListener(e1 -> {
@@ -92,7 +95,7 @@ public class PeopleEditListener {
                 popupMenu.add(menuItem3);
             }
 
-            if (MessageTypeEnum.WX_CP_CODE == App.config.getMsgType()) {
+            if (MessageTypeEnum.WX_CP_CODE == msgType) {
                 JMenuItem menuItem4 = new JMenuItem();
                 menuItem4.setText(PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_WX_CP));
                 menuItem4.addActionListener(e1 -> {
@@ -102,7 +105,7 @@ public class PeopleEditListener {
                 popupMenu.add(menuItem4);
             }
 
-            if (MessageTypeEnum.DING_CODE == App.config.getMsgType()) {
+            if (MessageTypeEnum.DING_CODE == msgType) {
                 JMenuItem menuItem5 = new JMenuItem();
                 menuItem5.setText(PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_DING));
                 menuItem5.addActionListener(e1 -> {
@@ -112,7 +115,7 @@ public class PeopleEditListener {
                 popupMenu.add(menuItem5);
             }
 
-            if (MessageTypeEnum.HTTP_CODE == App.config.getMsgType()) {
+            if (MessageTypeEnum.HTTP_CODE == msgType) {
                 JMenuItem menuItem6 = new JMenuItem();
                 menuItem6.setText(PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_NUM));
                 menuItem6.addActionListener(e1 -> {
@@ -300,7 +303,7 @@ public class PeopleEditListener {
         String selectedAccountName = PeopleManageForm.getInstance().getAccountComboBox().getSelectedItem().toString();
 
         if (PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_FILE).equals(actionCommand)) {
-            ImportByFile dialog = new ImportByFile();
+            ImportByFile dialog = new ImportByFile(PeopleManageListener.selectedPeopleId);
             dialog.pack();
             dialog.setVisible(true);
         } else if (PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_SQL).equals(actionCommand)) {

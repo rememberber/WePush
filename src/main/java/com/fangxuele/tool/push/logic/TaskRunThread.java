@@ -10,19 +10,14 @@ import cn.hutool.log.LogFactory;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.dao.TMsgMapper;
-import com.fangxuele.tool.push.dao.TPeopleDataMapper;
-import com.fangxuele.tool.push.dao.TTaskHisMapper;
-import com.fangxuele.tool.push.dao.TTaskMapper;
-import com.fangxuele.tool.push.domain.TMsg;
-import com.fangxuele.tool.push.domain.TPeopleData;
-import com.fangxuele.tool.push.domain.TTask;
-import com.fangxuele.tool.push.domain.TTaskHis;
+import com.fangxuele.tool.push.dao.*;
+import com.fangxuele.tool.push.domain.*;
 import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.logic.msgthread.MsgSendThread;
 import com.fangxuele.tool.push.ui.UiConsts;
+import com.fangxuele.tool.push.ui.dialog.importway.ImportByFile;
 import com.fangxuele.tool.push.ui.form.ScheduleForm;
 import com.fangxuele.tool.push.ui.form.TaskForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
@@ -40,8 +35,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.LongAdder;
@@ -139,6 +134,8 @@ public class TaskRunThread extends Thread {
 
     private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
 
+    private static TPeopleImportConfigMapper peopleImportConfigMapper = MybatisUtil.getSqlSession().getMapper(TPeopleImportConfigMapper.class);
+
     private TTaskHis taskHis;
 
     private TMsg tMsg;
@@ -211,6 +208,34 @@ public class TaskRunThread extends Thread {
         taskHis.setLogFilePath(logFilePath);
 
         // TODO 执行前重新导入目标用户
+        if (tTask.getReimportPeople() == 1) {
+            // 获取上一次导入方式
+            TPeopleImportConfig tPeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(tTask.getPeopleId());
+            String lastWay = tPeopleImportConfig.getLastWay();
+            switch (Integer.valueOf(lastWay)) {
+                case PeopleImportWayEnum.BY_FILE_CODE:
+                    ImportByFile importByFile = new ImportByFile(tTask.getPeopleId());
+                    importByFile.reImport();
+                    break;
+                case PeopleImportWayEnum.BY_SQL_CODE:
+                    // TODO
+                    break;
+                case PeopleImportWayEnum.BY_NUM_CODE:
+                    // TODO
+                    break;
+                case PeopleImportWayEnum.BY_WX_MP_CODE:
+                    // TODO
+                    break;
+                case PeopleImportWayEnum.BY_WX_CP_CODE:
+                    // TODO
+                    break;
+                case PeopleImportWayEnum.BY_DING_CODE:
+                    // TODO
+                    break;
+                default:
+                    break;
+            }
+        }
 
         // 重置推送数据
         resetLocalData();
