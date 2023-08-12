@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.dialog.importway;
 
+import cn.hutool.core.lang.UUID;
 import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
@@ -43,11 +44,7 @@ public class ImportByNum extends JDialog {
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.2, 0.2);
         getRootPane().setDefaultButton(importFromNumButton);
 
-        importFromNumButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onOK();
-            }
-        });
+        importFromNumButton.addActionListener(e -> onOK());
 
         // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -58,11 +55,7 @@ public class ImportByNum extends JDialog {
         });
 
         // call onCancel() on ESCAPE
-        contentPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
     private void onOK() {
@@ -78,6 +71,7 @@ public class ImportByNum extends JDialog {
 
         int currentImported = 0;
         String now = SqliteUtil.nowDateForSqlite();
+        String dataVersion = UUID.fastUUID().toString(true);
 
         // 保存导入配置
         TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
@@ -86,6 +80,7 @@ public class ImportByNum extends JDialog {
         tPeopleImportConfig.setPeopleId(PeopleManageListener.selectedPeopleId);
         tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_NUM_CODE));
         tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
+        tPeopleImportConfig.setLastDataVersion(dataVersion);
         tPeopleImportConfig.setModifiedTime(now);
 
         if (beforePeopleImportConfig != null) {
@@ -111,6 +106,7 @@ public class ImportByNum extends JDialog {
                 tPeopleData.setPin(array[0]);
                 tPeopleData.setVarData(JSONUtil.toJsonStr(array));
                 tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                tPeopleData.setDataVersion(dataVersion);
                 tPeopleData.setCreateTime(now);
                 tPeopleData.setModifiedTime(now);
 

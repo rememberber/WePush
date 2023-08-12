@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.dialog.importway;
 
+import cn.hutool.core.lang.UUID;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
@@ -117,12 +118,15 @@ public class ImportByDing extends JDialog {
                     int importedCount = 0;
                     String now = SqliteUtil.nowDateForSqlite();
 
+                    String dataVersion = UUID.fastUUID().toString(true);
+
                     // 保存导入配置
                     TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
 
                     TPeopleImportConfig tPeopleImportConfig = new TPeopleImportConfig();
                     tPeopleImportConfig.setPeopleId(PeopleManageListener.selectedPeopleId);
                     tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_DING_CODE));
+                    tPeopleImportConfig.setLastDataVersion(dataVersion);
                     tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
                     tPeopleImportConfig.setModifiedTime(now);
 
@@ -168,6 +172,7 @@ public class ImportByDing extends JDialog {
                             tPeopleData.setPin(dataArray[0]);
                             tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
                             tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                            tPeopleData.setDataVersion(dataVersion);
                             tPeopleData.setCreateTime(now);
                             tPeopleData.setModifiedTime(now);
 
@@ -198,11 +203,7 @@ public class ImportByDing extends JDialog {
         });
 
         // 钉钉-导入全部
-        dingImportAllButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onOK();
-            }
-        });
+        dingImportAllButton.addActionListener(e -> onOK());
 
         // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -213,11 +214,7 @@ public class ImportByDing extends JDialog {
         });
 
         // call onCancel() on ESCAPE
-        contentPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
     private void onOK() {
@@ -245,7 +242,9 @@ public class ImportByDing extends JDialog {
             progressBar.setVisible(true);
             progressBar.setIndeterminate(true);
             int importedCount = 0;
+
             String now = SqliteUtil.nowDateForSqlite();
+            String dataVersion = UUID.fastUUID().toString(true);
 
             // 保存导入配置
             TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
@@ -254,6 +253,7 @@ public class ImportByDing extends JDialog {
             tPeopleImportConfig.setPeopleId(PeopleManageListener.selectedPeopleId);
             tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_DING_CODE));
             tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
+            tPeopleImportConfig.setLastDataVersion(dataVersion);
             tPeopleImportConfig.setModifiedTime(now);
 
             if (beforePeopleImportConfig != null) {
@@ -297,6 +297,7 @@ public class ImportByDing extends JDialog {
                     tPeopleData.setPin(dataArray[0]);
                     tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
                     tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                    tPeopleData.setDataVersion(dataVersion);
                     tPeopleData.setCreateTime(now);
                     tPeopleData.setModifiedTime(now);
 

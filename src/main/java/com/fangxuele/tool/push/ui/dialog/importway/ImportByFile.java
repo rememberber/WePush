@@ -1,6 +1,7 @@
 package com.fangxuele.tool.push.ui.dialog.importway;
 
 import cn.hutool.core.io.file.FileReader;
+import cn.hutool.core.lang.UUID;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
@@ -156,6 +157,7 @@ public class ImportByFile extends JDialog {
             String fileNameLowerCase = file.getName().toLowerCase();
             TPeopleData tPeopleData;
             String now = SqliteUtil.nowDateForSqlite();
+            String dataVersion = UUID.fastUUID().toString(true);
 
             // 保存导入配置
             TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(peopleId);
@@ -165,6 +167,7 @@ public class ImportByFile extends JDialog {
             tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_FILE_CODE));
             tPeopleImportConfig.setLastFilePath(filePath);
             tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
+            tPeopleImportConfig.setLastDataVersion(dataVersion);
             tPeopleImportConfig.setModifiedTime(now);
 
             if (beforePeopleImportConfig != null) {
@@ -191,6 +194,7 @@ public class ImportByFile extends JDialog {
                     tPeopleData.setPin(nextLine[0]);
                     tPeopleData.setVarData(JSONUtil.toJsonStr(nextLine));
                     tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                    tPeopleData.setDataVersion(dataVersion);
                     tPeopleData.setCreateTime(now);
                     tPeopleData.setModifiedTime(now);
 
@@ -220,6 +224,7 @@ public class ImportByFile extends JDialog {
                         tPeopleData.setPin(nextLine[0]);
                         tPeopleData.setVarData(JSONUtil.toJsonStr(nextLine));
                         tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                        tPeopleData.setDataVersion(dataVersion);
                         tPeopleData.setCreateTime(now);
                         tPeopleData.setModifiedTime(now);
 
@@ -247,6 +252,7 @@ public class ImportByFile extends JDialog {
                     tPeopleData.setPin(nextLine[0]);
                     tPeopleData.setVarData(JSONUtil.toJsonStr(nextLine));
                     tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                    tPeopleData.setDataVersion(dataVersion);
                     tPeopleData.setCreateTime(now);
                     tPeopleData.setModifiedTime(now);
 

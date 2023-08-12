@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.dialog.importway;
 
+import cn.hutool.core.lang.UUID;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
@@ -120,6 +121,7 @@ public class ImportByWxCp extends JDialog {
                     progressBar.setIndeterminate(true);
                     int importedCount = 0;
                     String now = SqliteUtil.nowDateForSqlite();
+                    String dataVersion = UUID.fastUUID().toString(true);
 
                     // 保存导入配置
                     TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
@@ -128,6 +130,7 @@ public class ImportByWxCp extends JDialog {
                     tPeopleImportConfig.setPeopleId(PeopleManageListener.selectedPeopleId);
                     tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_WX_CP_CODE));
                     tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
+                    tPeopleImportConfig.setLastDataVersion(dataVersion);
                     tPeopleImportConfig.setModifiedTime(now);
 
                     if (beforePeopleImportConfig != null) {
@@ -157,6 +160,7 @@ public class ImportByWxCp extends JDialog {
                         tPeopleData.setPin(dataArray[0]);
                         tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
                         tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                        tPeopleData.setDataVersion(dataVersion);
                         tPeopleData.setCreateTime(now);
                         tPeopleData.setModifiedTime(now);
 
@@ -217,6 +221,7 @@ public class ImportByWxCp extends JDialog {
                     progressBar.setIndeterminate(true);
                     int importedCount = 0;
                     String now = SqliteUtil.nowDateForSqlite();
+                    String dataVersion = UUID.fastUUID().toString(true);
 
                     // 保存导入配置
                     TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
@@ -225,6 +230,7 @@ public class ImportByWxCp extends JDialog {
                     tPeopleImportConfig.setPeopleId(PeopleManageListener.selectedPeopleId);
                     tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_WX_CP_CODE));
                     tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
+                    tPeopleImportConfig.setLastDataVersion(dataVersion);
                     tPeopleImportConfig.setModifiedTime(now);
 
                     if (beforePeopleImportConfig != null) {
@@ -262,6 +268,7 @@ public class ImportByWxCp extends JDialog {
                         tPeopleData.setPin(dataArray[0]);
                         tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
                         tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                        tPeopleData.setDataVersion(dataVersion);
                         tPeopleData.setCreateTime(now);
                         tPeopleData.setModifiedTime(now);
 
@@ -288,11 +295,7 @@ public class ImportByWxCp extends JDialog {
         });
 
         // 企业号-导入全部
-        wxCpImportAllButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onOK();
-            }
-        });
+        wxCpImportAllButton.addActionListener(e -> onOK());
 
         // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -303,11 +306,7 @@ public class ImportByWxCp extends JDialog {
         });
 
         // call onCancel() on ESCAPE
-        contentPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
     private void onOK() {
@@ -336,6 +335,7 @@ public class ImportByWxCp extends JDialog {
             progressBar.setIndeterminate(true);
             int importedCount = 0;
             String now = SqliteUtil.nowDateForSqlite();
+            String dataVersion = UUID.fastUUID().toString(true);
 
             // 保存导入配置
             TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
@@ -344,6 +344,7 @@ public class ImportByWxCp extends JDialog {
             tPeopleImportConfig.setPeopleId(PeopleManageListener.selectedPeopleId);
             tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_WX_CP_CODE));
             tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
+            tPeopleImportConfig.setLastDataVersion(dataVersion);
             tPeopleImportConfig.setModifiedTime(now);
 
             if (beforePeopleImportConfig != null) {
@@ -387,6 +388,7 @@ public class ImportByWxCp extends JDialog {
                 tPeopleData.setPin(dataArray[0]);
                 tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
                 tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                tPeopleData.setDataVersion(dataVersion);
                 tPeopleData.setCreateTime(now);
                 tPeopleData.setModifiedTime(now);
 

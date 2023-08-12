@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.dialog.importway;
 
+import cn.hutool.core.lang.UUID;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.db.DbUtil;
 import cn.hutool.db.Entity;
@@ -58,17 +59,9 @@ public class ImportBySQL extends JDialog {
             importFromSqlTextArea.setText(tPeopleImportConfig.getLastSql());
         }
 
-        importFromSqlButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onOK();
-            }
-        });
+        importFromSqlButton.addActionListener(e -> onOK());
 
-        buttonCancel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        });
+        buttonCancel.addActionListener(e -> onCancel());
 
         // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -79,11 +72,7 @@ public class ImportBySQL extends JDialog {
         });
 
         // call onCancel() on ESCAPE
-        contentPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
     private void onOK() {
@@ -133,6 +122,7 @@ public class ImportBySQL extends JDialog {
                 progressBar.setIndeterminate(true);
 
                 String now = SqliteUtil.nowDateForSqlite();
+                String dataVersion = UUID.fastUUID().toString(true);
 
                 // 保存导入配置
                 TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
@@ -142,6 +132,7 @@ public class ImportBySQL extends JDialog {
                 tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_SQL_CODE));
                 tPeopleImportConfig.setLastSql(querySql);
                 tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
+                tPeopleImportConfig.setLastDataVersion(dataVersion);
                 tPeopleImportConfig.setModifiedTime(now);
 
                 if (beforePeopleImportConfig != null) {
@@ -171,6 +162,7 @@ public class ImportBySQL extends JDialog {
                     tPeopleData.setPin(msgData[0]);
                     tPeopleData.setVarData(JSONUtil.toJsonStr(msgData));
                     tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                    tPeopleData.setDataVersion(dataVersion);
                     tPeopleData.setCreateTime(now);
                     tPeopleData.setModifiedTime(now);
 
