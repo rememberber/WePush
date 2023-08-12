@@ -641,13 +641,15 @@ public class NewTaskDialog extends JDialog {
                                         String.join("\n", latest5RunTimeList), "确认定时推送？",
                                 JOptionPane.YES_NO_OPTION);
                         if (isSchedulePush == JOptionPane.YES_OPTION && StringUtils.isNotEmpty(task.getCron())) {
-                            Scheduler scheduler = TaskListener.scheduledTaskMap.get(beforeTTask.getId());
-                            if (scheduler != null) {
-                                scheduler.stop();
+                            if (beforeTTask != null) {
+                                Scheduler scheduler = TaskListener.scheduledTaskMap.get(beforeTTask.getId());
+                                if (scheduler != null) {
+                                    scheduler.stop();
+                                }
                             }
 
                             // 支持秒级别定时任务
-                            scheduler = new Scheduler();
+                            Scheduler scheduler = new Scheduler();
                             scheduler.setMatchSecond(true);
                             String schedulerId = scheduler.schedule(task.getCron(), (Task) () -> {
                                 if (task.getTaskMode() == TaskModeEnum.FIX_THREAD_TASK_CODE) {
@@ -665,10 +667,12 @@ public class NewTaskDialog extends JDialog {
                         }
                     }
                 } else {
-                    Scheduler scheduler = TaskListener.scheduledTaskMap.get(beforeTTask.getId());
-                    if (scheduler != null) {
-                        scheduler.stop();
-                        TaskListener.scheduledTaskMap.remove(beforeTTask.getId());
+                    if (beforeTTask != null) {
+                        Scheduler scheduler = TaskListener.scheduledTaskMap.get(beforeTTask.getId());
+                        if (scheduler != null) {
+                            scheduler.stop();
+                            TaskListener.scheduledTaskMap.remove(beforeTTask.getId());
+                        }
                     }
                     JOptionPane.showMessageDialog(this, "保存成功！", "提示",
                             JOptionPane.INFORMATION_MESSAGE);
