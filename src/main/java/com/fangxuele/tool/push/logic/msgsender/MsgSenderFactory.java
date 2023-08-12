@@ -128,7 +128,7 @@ public class MsgSenderFactory {
                 iMsgSender = new UpYunMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.QI_NIU_YUN_CODE:
-                iMsgSender = new QiNiuYunMsgSender();
+                iMsgSender = new QiNiuYunMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.MP_SUBSCRIBE_CODE:
                 iMsgSender = new WxMpSubscribeMsgSender();
