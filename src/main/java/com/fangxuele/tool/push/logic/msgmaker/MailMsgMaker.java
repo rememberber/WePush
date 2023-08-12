@@ -1,11 +1,16 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
+import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.bean.msg.MailMsg;
+import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.domain.TMsgMail;
 import com.fangxuele.tool.push.ui.form.msg.MailMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.VelocityContext;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,6 +27,23 @@ public class MailMsgMaker extends BaseMsgMaker implements IMsgMaker {
     public static String mailCc;
     public static List<File> mailFiles;
     public static String mailContent;
+
+    public MailMsgMaker(TMsg tMsg) {
+        TMsgMail tMsgMail = JSON.parseObject(tMsg.getContent(), TMsgMail.class);
+        mailTitle = tMsgMail.getTitle();
+        mailCc = tMsgMail.getCc();
+        List<File> files = new ArrayList<>();
+        String text = tMsgMail.getFiles();
+        String[] strings = text.split("\\n");
+        for (String string : strings) {
+            string = string.trim();
+            if (StringUtils.isNotEmpty(string)) {
+                files.add(new File(string));
+            }
+        }
+        mailFiles = files;
+        mailContent = tMsgMail.getContent();
+    }
 
     /**
      * 准备(界面字段等)

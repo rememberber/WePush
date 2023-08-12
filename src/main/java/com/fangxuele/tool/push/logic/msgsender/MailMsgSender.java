@@ -2,10 +2,16 @@ package com.fangxuele.tool.push.logic.msgsender;
 
 import cn.hutool.extra.mail.MailAccount;
 import cn.hutool.extra.mail.MailUtil;
+import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.bean.account.EmailAccountConfig;
 import com.fangxuele.tool.push.bean.msg.MailMsg;
-import com.fangxuele.tool.push.logic.PushControl;
+import com.fangxuele.tool.push.dao.TAccountMapper;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.logic.msgmaker.MailMsgMaker;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
@@ -13,7 +19,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <pre>
@@ -30,9 +38,21 @@ public class MailMsgSender implements IMsgSender {
 
     private MailMsgMaker mailMsgMaker;
 
+    private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
+
+    private Integer dryRun;
+
+    private static Map<Integer, MailAccount> mailAccountMap = new HashMap<>();
+
     public MailMsgSender() {
-        mailMsgMaker = new MailMsgMaker();
-        mailAccount = getMailAccount();
+    }
+
+    public MailMsgSender(Integer msgId, Integer dryRun) {
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        mailMsgMaker = new MailMsgMaker(tMsg);
+        mailAccount = getMailAccount(tMsg.getAccountId());
+        this.dryRun = dryRun;
     }
 
     @Override
@@ -43,7 +63,7 @@ public class MailMsgSender implements IMsgSender {
             MailMsg mailMsg = mailMsgMaker.makeMsg(msgData);
             List<String> tos = Lists.newArrayList();
             tos.add(msgData[0]);
-            if (PushControl.dryRun) {
+            if (dryRun == 1) {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
@@ -138,5 +158,29 @@ public class MailMsgSender implements IMsgSender {
             }
         }
         return mailAccount;
+    }
+
+    private MailAccount getMailAccount(Integer accountId) {
+        if (mailAccountMap.containsKey(accountId)) {
+            return mailAccountMap.get(accountId);
+        } else {
+            TAccount tAccount = accountMapper.selectByPrimaryKey(accountId);
+            String accountConfig = tAccount.getAccountConfig();
+            EmailAccountConfig emailAccountConfig = JSON.parseObject(accountConfig, EmailAccountConfig.class);
+
+            mailAccount = new MailAccount();
+            mailAccount.setHost(emailAccountConfig.getMailHost());
+            mailAccount.setPort(Integer.valueOf(emailAccountConfig.getMailPort()));
+            mailAccount.setAuth(true);
+            mailAccount.setFrom(emailAccountConfig.getMailFrom());
+            mailAccount.setUser(emailAccountConfig.getMailUser());
+            mailAccount.setPass(emailAccountConfig.getMailPassword());
+            // TODO
+            mailAccount.setSslEnable(App.config.isMailUseSSL());
+            mailAccount.setStarttlsEnable(App.config.isMailUseStartTLS());
+
+            mailAccountMap.put(accountId, mailAccount);
+            return mailAccount;
+        }
     }
 }

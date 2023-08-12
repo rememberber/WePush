@@ -110,7 +110,7 @@ public class MsgSenderFactory {
                 iMsgSender = new YunPianMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.EMAIL_CODE:
-                iMsgSender = new MailMsgSender();
+                iMsgSender = new MailMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.WX_CP_CODE:
                 iMsgSender = new WxCpMsgSender();
