@@ -13,7 +13,6 @@ import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.dao.TMsgMapper;
 import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TMsg;
-import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.msgmaker.AliyunMsgMaker;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -64,7 +63,7 @@ public class AliYunMsgSender implements IMsgSender {
             //初始化acsClient,暂不支持region化
             SendSmsRequest sendSmsRequest = aliyunMsgMaker.makeMsg(msgData);
             sendSmsRequest.setPhoneNumbers(msgData[0]);
-            if (PushControl.dryRun) {
+            if (dryRun == 1) {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
