@@ -1,14 +1,21 @@
 package com.fangxuele.tool.push.logic.msgsender;
 
+import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.logic.PushControl;
+import com.fangxuele.tool.push.bean.account.YunPianAccountConfig;
+import com.fangxuele.tool.push.dao.TAccountMapper;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.logic.msgmaker.YunPianMsgMaker;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import com.yunpian.sdk.YunpianClient;
 import com.yunpian.sdk.model.Result;
 import com.yunpian.sdk.model.SmsSingleSend;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -28,10 +35,24 @@ public class YunPianMsgSender implements IMsgSender {
 
     private YunPianMsgMaker yunPianMsgMaker;
 
+    private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
+
+    private Integer dryRun;
+
+    private static Map<Integer, YunpianClient> yunpianClientMap = new HashMap<>();
+
+
     public YunPianMsgSender() {
-        yunPianMsgMaker = new YunPianMsgMaker();
-        yunpianClient = getYunpianClient();
     }
+
+    public YunPianMsgSender(Integer msgId, Integer dryRun) {
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        yunPianMsgMaker = new YunPianMsgMaker(tMsg);
+        yunpianClient = getYunpianClient(tMsg.getAccountId());
+        this.dryRun = dryRun;
+    }
+
 
     @Override
     public SendResult send(String[] msgData) {
@@ -41,7 +62,7 @@ public class YunPianMsgSender implements IMsgSender {
             Map<String, String> params = yunPianMsgMaker.makeMsg(msgData);
             String telNum = msgData[0];
             params.put(YunpianClient.MOBILE, telNum);
-            if (PushControl.dryRun) {
+            if (dryRun == 1) {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
@@ -83,5 +104,24 @@ public class YunPianMsgSender implements IMsgSender {
             }
         }
         return yunpianClient;
+    }
+
+
+    private YunpianClient getYunpianClient(Integer accountId) {
+        if (yunpianClientMap.containsKey(accountId)) {
+            return yunpianClientMap.get(accountId);
+        } else {
+            TAccount tAccount = accountMapper.selectByPrimaryKey(accountId);
+            String accountConfig = tAccount.getAccountConfig();
+            YunPianAccountConfig yunPianAccountConfig = JSON.parseObject(accountConfig, YunPianAccountConfig.class);
+
+            String yunpianApiKey = yunPianAccountConfig.getApiKey();
+
+            yunpianClient = new YunpianClient(yunpianApiKey).init();
+
+            yunpianClientMap.put(accountId, yunpianClient);
+            return yunpianClient;
+        }
+
     }
 }

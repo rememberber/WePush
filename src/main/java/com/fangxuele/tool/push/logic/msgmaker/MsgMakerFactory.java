@@ -41,7 +41,7 @@ public class MsgMakerFactory {
                 iMsgMaker = new HwYunMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.YUN_PIAN_CODE:
-                iMsgMaker = new YunPianMsgMaker();
+                iMsgMaker = new YunPianMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.EMAIL_CODE:
                 iMsgMaker = new MailMsgMaker();
