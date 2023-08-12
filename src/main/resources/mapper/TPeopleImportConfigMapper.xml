@@ -8,12 +8,15 @@
         <result column="last_file_path" jdbcType="VARCHAR" property="lastFilePath"/>
         <result column="last_sql" jdbcType="VARCHAR" property="lastSql"/>
         <result column="app_version" jdbcType="VARCHAR" property="appVersion"/>
+        <result column="last_way_config" jdbcType="VARCHAR" property="lastWayConfig"/>
+        <result column="last_data_version" jdbcType="VARCHAR" property="lastDataVersion"/>
         <result column="remark" jdbcType="VARCHAR" property="remark"/>
         <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
         <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, people_id, last_way, last_file_path, last_sql, app_version, remark, create_time,
+        id
+        , people_id, last_way, last_file_path, last_sql, app_version,last_way_config,last_data_version, remark, create_time,
         modified_time
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -29,18 +32,19 @@
         where people_id = #{peopleId,jdbcType=INTEGER}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-        delete from t_people_import_config
+        delete
+        from t_people_import_config
         where id = #{id,jdbcType=INTEGER}
     </delete>
     <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TPeopleImportConfig">
         insert into t_people_import_config (id, people_id, last_way,
-        last_file_path, last_sql, app_version,
-        remark, create_time, modified_time
-        )
+                                            last_file_path, last_sql, app_version,
+                                            last_way_config,
+                                            last_data_version, remark, create_time, modified_time)
         values (#{id,jdbcType=INTEGER}, #{peopleId,jdbcType=INTEGER}, #{lastWay,jdbcType=VARCHAR},
-        #{lastFilePath,jdbcType=VARCHAR}, #{lastSql,jdbcType=VARCHAR}, #{appVersion,jdbcType=VARCHAR},
-        #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR}
-        )
+                #{lastFilePath,jdbcType=VARCHAR}, #{lastSql,jdbcType=VARCHAR}, #{appVersion,jdbcType=VARCHAR},
+                #{lastWayConfig,jdbcType=VARCHAR}, #{lastDataVersion,jdbcType=VARCHAR},
+                #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TPeopleImportConfig">
         insert into t_people_import_config
@@ -62,6 +66,12 @@
             </if>
             <if test="appVersion != null">
                 app_version,
+            </if>
+            <if test="lastWayConfig != null">
+                last_way_config,
+            </if>
+            <if test="lastDataVersion != null">
+                last_data_version,
             </if>
             <if test="remark != null">
                 remark,
@@ -92,6 +102,12 @@
             <if test="appVersion != null">
                 #{appVersion,jdbcType=VARCHAR},
             </if>
+            <if test="lastWayConfig != null">
+                #{lastWayConfig,jdbcType=VARCHAR},
+            </if>
+            <if test="lastDataVersion != null">
+                #{lastDataVersion,jdbcType=VARCHAR},
+            </if>
             <if test="remark != null">
                 #{remark,jdbcType=VARCHAR},
             </if>
@@ -121,6 +137,12 @@
             <if test="appVersion != null">
                 app_version = #{appVersion,jdbcType=VARCHAR},
             </if>
+            <if test="lastWayConfig != null">
+                last_way_config = #{lastWayConfig,jdbcType=VARCHAR},
+            </if>
+            <if test="lastDataVersion != null">
+                last_data_version = #{lastDataVersion,jdbcType=VARCHAR},
+            </if>
             <if test="remark != null">
                 remark = #{remark,jdbcType=VARCHAR},
             </if>
@@ -135,14 +157,16 @@
     </update>
     <update id="updateByPrimaryKey" parameterType="com.fangxuele.tool.push.domain.TPeopleImportConfig">
         update t_people_import_config
-        set people_id = #{peopleId,jdbcType=INTEGER},
-        last_way = #{lastWay,jdbcType=VARCHAR},
-        last_file_path = #{lastFilePath,jdbcType=VARCHAR},
-        last_sql = #{lastSql,jdbcType=VARCHAR},
-        app_version = #{appVersion,jdbcType=VARCHAR},
-        remark = #{remark,jdbcType=VARCHAR},
-        create_time = #{createTime,jdbcType=VARCHAR},
-        modified_time = #{modifiedTime,jdbcType=VARCHAR}
+        set people_id         = #{peopleId,jdbcType=INTEGER},
+            last_way          = #{lastWay,jdbcType=VARCHAR},
+            last_file_path    = #{lastFilePath,jdbcType=VARCHAR},
+            last_sql          = #{lastSql,jdbcType=VARCHAR},
+            app_version       = #{appVersion,jdbcType=VARCHAR},
+            last_way_config   = #{lastWayConfig,jdbcType=VARCHAR},
+            last_data_version = #{lastDataVersion,jdbcType=VARCHAR},
+            remark            = #{remark,jdbcType=VARCHAR},
+            create_time       = #{createTime,jdbcType=VARCHAR},
+            modified_time     = #{modifiedTime,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>
 </mapper>

@@ -15,6 +15,10 @@ public class TPeopleImportConfig implements Serializable {
 
     private String appVersion;
 
+    private String lastWayConfig;
+
+    private String lastDataVersion;
+
     private String remark;
 
     private String createTime;
@@ -69,6 +73,22 @@ public class TPeopleImportConfig implements Serializable {
 
     public void setAppVersion(String appVersion) {
         this.appVersion = appVersion == null ? null : appVersion.trim();
+    }
+
+    public String getLastWayConfig() {
+        return lastWayConfig;
+    }
+
+    public void setLastWayConfig(String lastWayConfig) {
+        this.lastWayConfig = lastWayConfig;
+    }
+
+    public String getLastDataVersion() {
+        return lastDataVersion;
+    }
+
+    public void setLastDataVersion(String lastDataVersion) {
+        this.lastDataVersion = lastDataVersion;
     }
 
     public String getRemark() {

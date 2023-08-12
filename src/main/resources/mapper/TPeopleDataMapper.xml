@@ -7,12 +7,13 @@
         <result column="pin" jdbcType="VARCHAR" property="pin"/>
         <result column="var_data" jdbcType="VARCHAR" property="varData"/>
         <result column="app_version" jdbcType="VARCHAR" property="appVersion"/>
+        <result column="data_version" jdbcType="VARCHAR" property="dataVersion"/>
         <result column="remark" jdbcType="VARCHAR" property="remark"/>
         <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
         <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, people_id, pin, var_data, app_version, remark, create_time, modified_time
+        id, people_id, pin, var_data, app_version, data_version, remark, create_time, modified_time
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -26,11 +27,12 @@
     </delete>
     <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TPeopleData">
         insert into t_people_data (id, people_id, pin,
-        var_data, app_version, remark,
-        create_time, modified_time)
+                                   var_data, app_version, data_version, remark,
+                                   create_time, modified_time)
         values (#{id,jdbcType=INTEGER}, #{peopleId,jdbcType=INTEGER}, #{pin,jdbcType=VARCHAR},
-        #{varData,jdbcType=VARCHAR}, #{appVersion,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR},
-        #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR})
+                #{varData,jdbcType=VARCHAR}, #{appVersion,jdbcType=VARCHAR}, #{dataVersion,jdbcType=VARCHAR},
+                #{remark,jdbcType=VARCHAR},
+                #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TPeopleData">
         insert into t_people_data
@@ -49,6 +51,9 @@
             </if>
             <if test="appVersion != null">
                 app_version,
+            </if>
+            <if test="dataVersion != null">
+                data_version,
             </if>
             <if test="remark != null">
                 remark,
@@ -76,6 +81,9 @@
             <if test="appVersion != null">
                 #{appVersion,jdbcType=VARCHAR},
             </if>
+            <if test="dataVersion != null">
+                #{dataVersion,jdbcType=VARCHAR},
+            </if>
             <if test="remark != null">
                 #{remark,jdbcType=VARCHAR},
             </if>
@@ -102,6 +110,9 @@
             <if test="appVersion != null">
                 app_version = #{appVersion,jdbcType=VARCHAR},
             </if>
+            <if test="dataVersion != null">
+                data_version = #{dataVersion,jdbcType=VARCHAR},
+            </if>
             <if test="remark != null">
                 remark = #{remark,jdbcType=VARCHAR},
             </if>
@@ -120,6 +131,7 @@
         pin = #{pin,jdbcType=VARCHAR},
         var_data = #{varData,jdbcType=VARCHAR},
         app_version = #{appVersion,jdbcType=VARCHAR},
+        data_version = #{dataVersion,jdbcType=VARCHAR},
         remark = #{remark,jdbcType=VARCHAR},
         create_time = #{createTime,jdbcType=VARCHAR},
         modified_time = #{modifiedTime,jdbcType=VARCHAR}

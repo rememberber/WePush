@@ -13,6 +13,8 @@ public class TPeopleData implements Serializable {
 
     private String appVersion;
 
+    private String dataVersion;
+
     private String remark;
 
     private String createTime;
@@ -59,6 +61,14 @@ public class TPeopleData implements Serializable {
 
     public void setAppVersion(String appVersion) {
         this.appVersion = appVersion == null ? null : appVersion.trim();
+    }
+
+    public String getDataVersion() {
+        return dataVersion;
+    }
+
+    public void setDataVersion(String dataVersion) {
+        this.dataVersion = dataVersion;
     }
 
     public String getRemark() {
