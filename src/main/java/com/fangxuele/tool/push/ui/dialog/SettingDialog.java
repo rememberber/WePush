@@ -232,7 +232,7 @@ public class SettingDialog extends JDialog {
                 App.config.save();
 
                 WxMpTemplateMsgSender.wxMpConfigStorage = null;
-                WxMpTemplateMsgSender.wxMpService = null;
+//                WxMpTemplateMsgSender.wxMpService = null;
                 JOptionPane.showMessageDialog(this, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {
@@ -253,7 +253,7 @@ public class SettingDialog extends JDialog {
                 App.config.save();
 
                 WxMaSubscribeMsgSender.wxMaConfigStorage = null;
-                WxMaSubscribeMsgSender.wxMaService = null;
+//                WxMaSubscribeMsgSender.wxMaService = null;
                 JOptionPane.showMessageDialog(this, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e1) {

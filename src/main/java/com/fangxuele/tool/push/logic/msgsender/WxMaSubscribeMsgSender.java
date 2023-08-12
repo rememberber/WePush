@@ -4,12 +4,22 @@ import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.api.impl.WxMaServiceImpl;
 import cn.binarywang.wx.miniapp.bean.WxMaSubscribeMessage;
 import cn.binarywang.wx.miniapp.config.impl.WxMaDefaultConfigImpl;
+import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.bean.account.WxMaAccountConfig;
+import com.fangxuele.tool.push.dao.TAccountMapper;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.msgmaker.WxMaSubscribeMsgMaker;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.util.http.apache.DefaultApacheHttpClientBuilder;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <pre>
@@ -22,15 +32,27 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 @Slf4j
 public class WxMaSubscribeMsgSender implements IMsgSender {
 
-    public volatile static WxMaService wxMaService;
+    public volatile WxMaService wxMaService;
 
     public volatile static WxMaDefaultConfigImpl wxMaConfigStorage;
 
     private WxMaSubscribeMsgMaker wxMaSubscribeMsgMaker;
 
+    private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
+
+    private Integer dryRun;
+
+    private static Map<Integer, WxMaService> wxMaServiceMap = new HashMap<>();
+
     public WxMaSubscribeMsgSender() {
-        wxMaSubscribeMsgMaker = new WxMaSubscribeMsgMaker();
-        wxMaService = getWxMaService();
+    }
+
+    public WxMaSubscribeMsgSender(Integer msgId, Integer dryRun) {
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        wxMaSubscribeMsgMaker = new WxMaSubscribeMsgMaker(tMsg);
+        wxMaService = getWxMaService(tMsg.getAccountId());
+        this.dryRun = dryRun;
     }
 
     @Override
@@ -109,23 +131,53 @@ public class WxMaSubscribeMsgSender implements IMsgSender {
      * @return WxMaService
      */
     static WxMaService getWxMaService() {
-        if (wxMaService == null) {
-            synchronized (WxMaSubscribeMsgSender.class) {
-                if (wxMaService == null) {
-                    wxMaService = new WxMaServiceImpl();
-                }
+        return null;
+    }
+
+    public static WxMaService getWxMaService(Integer accountId) {
+        if (wxMaServiceMap.containsKey(accountId)) {
+            return wxMaServiceMap.get(accountId);
+        } else {
+            TAccount tAccount = accountMapper.selectByPrimaryKey(accountId);
+            String accountConfig = tAccount.getAccountConfig();
+            WxMaAccountConfig wxMaAccountConfig = JSON.parseObject(accountConfig, WxMaAccountConfig.class);
+
+            WxMaDefaultConfigImpl configStorage = new WxMaDefaultConfigImpl();
+            configStorage.setAppid(wxMaAccountConfig.getAppId());
+            configStorage.setSecret(wxMaAccountConfig.getAppSecret());
+            configStorage.setToken(wxMaAccountConfig.getToken());
+            configStorage.setAesKey(wxMaAccountConfig.getAesKey());
+            configStorage.setMsgDataFormat("JSON");
+            if (App.config.isMaUseProxy()) {
+                configStorage.setHttpProxyHost(App.config.getMaProxyHost());
+                configStorage.setHttpProxyPort(Integer.parseInt(App.config.getMaProxyPort()));
+                configStorage.setHttpProxyUsername(App.config.getMaProxyUserName());
+                configStorage.setHttpProxyPassword(App.config.getMaProxyPassword());
             }
+            DefaultApacheHttpClientBuilder clientBuilder = DefaultApacheHttpClientBuilder.get();
+            //从连接池获取链接的超时时间(单位ms)
+            clientBuilder.setConnectionRequestTimeout(10000);
+            //建立链接的超时时间(单位ms)
+            clientBuilder.setConnectionTimeout(5000);
+            //连接池socket超时时间(单位ms)
+            clientBuilder.setSoTimeout(5000);
+            //空闲链接的超时时间(单位ms)
+            clientBuilder.setIdleConnTimeout(60000);
+            //空闲链接的检测周期(单位ms)
+            clientBuilder.setCheckWaitTime(60000);
+            //每路最大连接数
+            clientBuilder.setMaxConnPerHost(App.config.getMaxThreads());
+            //连接池最大连接数
+            clientBuilder.setMaxTotalConn(App.config.getMaxThreads());
+            //HttpClient请求时使用的User Agent
+//        clientBuilder.setUserAgent(..)
+            configStorage.setApacheHttpClientBuilder(clientBuilder);
+
+            WxMaService wxMaService = new WxMaServiceImpl();
+            wxMaService.setWxMaConfig(configStorage);
+
+            wxMaServiceMap.put(accountId, wxMaService);
+            return wxMaService;
         }
-        if (wxMaConfigStorage == null) {
-            synchronized (WxMaSubscribeMsgSender.class) {
-                if (wxMaConfigStorage == null) {
-                    wxMaConfigStorage = wxMaConfigStorage();
-                    if (wxMaConfigStorage != null) {
-                        wxMaService.setWxMaConfig(wxMaConfigStorage);
-                    }
-                }
-            }
-        }
-        return wxMaService;
     }
 }

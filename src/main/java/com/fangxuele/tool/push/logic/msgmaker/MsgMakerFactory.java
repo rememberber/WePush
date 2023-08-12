@@ -26,7 +26,7 @@ public class MsgMakerFactory {
                 iMsgMaker = new WxMpTemplateMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.MA_SUBSCRIBE_CODE:
-                iMsgMaker = new WxMaSubscribeMsgMaker();
+                iMsgMaker = new WxMaSubscribeMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.KEFU_CODE:
                 iMsgMaker = new WxKefuMsgMaker();

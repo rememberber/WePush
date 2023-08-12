@@ -32,7 +32,7 @@ import java.util.Map;
 @Slf4j
 public class WxMpTemplateMsgSender implements IMsgSender {
     public volatile static WxMpDefaultConfigImpl wxMpConfigStorage;
-    public volatile static WxMpService wxMpService;
+    public volatile WxMpService wxMpService;
     public volatile static CloseableHttpAsyncClient closeableHttpAsyncClient;
     private WxMpTemplateMsgMaker wxMpTemplateMsgMaker;
 
@@ -130,22 +130,7 @@ public class WxMpTemplateMsgSender implements IMsgSender {
      * @return WxMpService
      */
     public static WxMpService getWxMpService() {
-        if (wxMpConfigStorage == null) {
-            synchronized (WxMpTemplateMsgSender.class) {
-                if (wxMpConfigStorage == null) {
-                    wxMpConfigStorage = wxMpConfigStorage();
-                }
-            }
-        }
-        if (wxMpService == null && wxMpConfigStorage != null) {
-            synchronized (WxMpTemplateMsgSender.class) {
-                if (wxMpService == null && wxMpConfigStorage != null) {
-                    wxMpService = new WeWxMpServiceImpl();
-                    wxMpService.setWxMpConfigStorage(wxMpConfigStorage);
-                }
-            }
-        }
-        return wxMpService;
+        return null;
     }
 
     public static WxMpService getWxMpService(Integer accountId) {
@@ -156,7 +141,7 @@ public class WxMpTemplateMsgSender implements IMsgSender {
             String accountConfig = tAccount.getAccountConfig();
             WxMpAccountConfig wxMpAccountConfig = JSON.parseObject(accountConfig, WxMpAccountConfig.class);
 
-            WxMpDefaultConfigImpl wxMpConfigStorage = wxMpConfigStorage();
+            WxMpDefaultConfigImpl wxMpConfigStorage = new WxMpDefaultConfigImpl();
             wxMpConfigStorage.setAppId(wxMpAccountConfig.getAppId());
             wxMpConfigStorage.setSecret(wxMpAccountConfig.getAppSecret());
             wxMpConfigStorage.setToken(wxMpAccountConfig.getToken());

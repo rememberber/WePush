@@ -1,7 +1,10 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
 import cn.binarywang.wx.miniapp.bean.WxMaSubscribeMessage;
+import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.bean.TemplateData;
+import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.domain.TMsgMaSubscribe;
 import com.fangxuele.tool.push.ui.form.msg.MaSubscribeMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import org.apache.commons.compress.utils.Lists;
@@ -21,8 +24,15 @@ import java.util.List;
 public class WxMaSubscribeMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
     public static String templateId;
-    private static String templateUrl;
+    private static String page;
     public static List<TemplateData> templateDataList;
+
+    public WxMaSubscribeMsgMaker(TMsg tMsg) {
+        TMsgMaSubscribe tMsgMaSubscribe = JSON.parseObject(tMsg.getContent(), TMsgMaSubscribe.class);
+        this.templateId = tMsgMaSubscribe.getTemplateId();
+        this.page = tMsgMaSubscribe.getPage();
+        this.templateDataList = tMsgMaSubscribe.getTemplateDataList();
+    }
 
     /**
      * 准备(界面字段等)
@@ -30,7 +40,7 @@ public class WxMaSubscribeMsgMaker extends BaseMsgMaker implements IMsgMaker {
     @Override
     public void prepare() {
         templateId = MaSubscribeMsgForm.getInstance().getMsgTemplateIdTextField().getText().trim();
-        templateUrl = MaSubscribeMsgForm.getInstance().getMsgTemplateUrlTextField().getText().trim();
+        page = MaSubscribeMsgForm.getInstance().getMsgTemplateUrlTextField().getText().trim();
 
         if (MaSubscribeMsgForm.getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
             MaSubscribeMsgForm.initTemplateDataTable();
@@ -64,7 +74,7 @@ public class WxMaSubscribeMsgMaker extends BaseMsgMaker implements IMsgMaker {
         WxMaSubscribeMessage wxMaSubscribeMessage = new WxMaSubscribeMessage();
         wxMaSubscribeMessage.setTemplateId(templateId);
         VelocityContext velocityContext = getVelocityContext(msgData);
-        String templateUrlEvaluated = TemplateUtil.evaluate(templateUrl, velocityContext);
+        String templateUrlEvaluated = TemplateUtil.evaluate(page, velocityContext);
         wxMaSubscribeMessage.setPage(templateUrlEvaluated);
 
         WxMaSubscribeMessage.MsgData wxMaSubscribeData;
