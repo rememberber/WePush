@@ -1,16 +1,12 @@
 package com.fangxuele.tool.push.ui.form.account;
 
-import cn.hutool.cache.CacheUtil;
 import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.json.JSONUtil;
 import com.dingtalk.api.DefaultDingTalkClient;
-import com.dingtalk.api.request.OapiGettokenRequest;
-import com.dingtalk.api.response.OapiGettokenResponse;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.account.DingAccountConfig;
 import com.fangxuele.tool.push.domain.TAccount;
-import com.fangxuele.tool.push.logic.PushControl;
-import com.fangxuele.tool.push.logic.msgmaker.DingMsgMaker;
+import com.fangxuele.tool.push.logic.msgsender.DingMsgSender;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.UIUtil;
@@ -18,7 +14,6 @@ import com.fangxuele.tool.push.util.UndoUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import com.taobao.api.ApiException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -125,61 +120,15 @@ public class DingAccountForm implements IAccountForm {
         return wxMpAccountForm;
     }
 
-    public static DefaultDingTalkClient getDefaultDingTalkClient() {
-        invalidAccount();
-
-        if (defaultDingTalkClient == null) {
-            synchronized (PushControl.class) {
-                if (defaultDingTalkClient == null) {
-                    defaultDingTalkClient = new DefaultDingTalkClient("https://oapi.dingtalk.com/topapi/message/corpconversation/asyncsend_v2");
-                }
-            }
-        }
-        return defaultDingTalkClient;
-    }
-
-    public static DefaultDingTalkClient getRobotClient() {
-        if (robotClient == null) {
-            synchronized (PushControl.class) {
-                if (robotClient == null) {
-                    robotClient = new DefaultDingTalkClient(DingMsgMaker.webHook);
-                }
-            }
-        }
-        return robotClient;
-    }
-
     public static TimedCache<String, String> getAccessTokenTimedCache(String accountName) {
         invalidAccount();
 
-        if (accessTokenTimedCache == null || StringUtils.isEmpty(accessTokenTimedCache.get("accessToken"))) {
-            synchronized (PushControl.class) {
-                if (accessTokenTimedCache == null || StringUtils.isEmpty(accessTokenTimedCache.get("accessToken"))) {
-
-                    TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
-                    if (tAccount == null) {
-                        log.error("未获取到对应的微信公众号账号配置:{}", accountName);
-                    }
-
-                    DingAccountConfig dingAccountConfig = JSONUtil.toBean(tAccount.getAccountConfig(), DingAccountConfig.class);
-
-                    DefaultDingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/gettoken");
-                    OapiGettokenRequest request = new OapiGettokenRequest();
-                    request.setAppkey(dingAccountConfig.getAppKey());
-                    request.setAppsecret(dingAccountConfig.getAppSecret());
-                    request.setHttpMethod("GET");
-                    OapiGettokenResponse response = null;
-                    try {
-                        response = client.execute(request);
-                    } catch (ApiException e) {
-                        e.printStackTrace();
-                    }
-                    accessTokenTimedCache = CacheUtil.newTimedCache((response.getExpiresIn() - 60) * 1000);
-                    accessTokenTimedCache.put("accessToken", response.getAccessToken());
-                }
-            }
+        TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
+        if (tAccount == null) {
+            log.error("未获取到对应的微信公众号账号配置:{}", accountName);
         }
-        return accessTokenTimedCache;
+
+        return DingMsgSender.getAccessTokenTimedCache(tAccount.getId());
     }
 
     public static void invalidAccount() {

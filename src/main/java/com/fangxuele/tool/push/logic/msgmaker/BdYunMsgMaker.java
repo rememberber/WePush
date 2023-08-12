@@ -1,11 +1,16 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
+import com.alibaba.fastjson.JSON;
+import com.fangxuele.tool.push.bean.TemplateData;
+import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.domain.TMsgSms;
 import com.fangxuele.tool.push.ui.form.msg.BdYunMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import com.google.common.collect.Maps;
 import org.apache.velocity.VelocityContext;
 
 import javax.swing.table.DefaultTableModel;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -21,6 +26,15 @@ public class BdYunMsgMaker extends BaseMsgMaker implements IMsgMaker {
     public static String templateId;
 
     public static Map<String, String> paramMap;
+
+    public BdYunMsgMaker(TMsg tMsg) {
+        TMsgSms tMsgSms = JSON.parseObject(tMsg.getContent(), TMsgSms.class);
+        templateId = tMsgSms.getTemplateId();
+        paramMap = new HashMap<>();
+        for (TemplateData templateData : tMsgSms.getTemplateDataList()) {
+            paramMap.put(templateData.getName(), templateData.getValue());
+        }
+    }
 
     /**
      * 准备(界面字段等)
