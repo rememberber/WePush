@@ -1,15 +1,20 @@
 package com.fangxuele.tool.push.logic.msgsender;
 
-import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.logic.PushControl;
+import com.alibaba.fastjson.JSON;
+import com.aliyuncs.IAcsClient;
+import com.fangxuele.tool.push.bean.account.YunPianAccountConfig;
+import com.fangxuele.tool.push.dao.TAccountMapper;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.logic.msgmaker.UpYunMsgMaker;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import okhttp3.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <pre>
@@ -30,9 +35,29 @@ public class UpYunMsgSender implements IMsgSender {
 
     private static final String URL = "https://sms-api.upyun.com/api/messages";
 
+    private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
+
+    private Integer dryRun;
+
+    private static Map<Integer, IAcsClient> acsClientMap = new HashMap<>();
+
+    private YunPianAccountConfig yunPianAccountConfig;
+
     public UpYunMsgSender() {
-        upYunMsgMaker = new UpYunMsgMaker();
+//        upYunMsgMaker = new UpYunMsgMaker();
         okHttpClint = HttpMsgSender.getOkHttpClient();
+    }
+
+    public UpYunMsgSender(Integer msgId, Integer dryRun) {
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        upYunMsgMaker = new UpYunMsgMaker(tMsg);
+        okHttpClint = HttpMsgSender.getOkHttpClient();
+        this.dryRun = dryRun;
+
+        TAccount tAccount = accountMapper.selectByPrimaryKey(tMsg.getAccountId());
+        String accountConfig = tAccount.getAccountConfig();
+        yunPianAccountConfig = JSON.parseObject(accountConfig, YunPianAccountConfig.class);
     }
 
     @Override
@@ -50,9 +75,10 @@ public class UpYunMsgSender implements IMsgSender {
             formBodyBuilder.add("vars", String.join("|", params));
             RequestBody requestBody = formBodyBuilder.build();
             requestBuilder.url(URL).post(requestBody);
-            requestBuilder.addHeader("Authorization", App.config.getUpAuthorizationToken());
+            // TODO 待确定是否正确
+            requestBuilder.addHeader("Authorization", yunPianAccountConfig.getApiKey());
             Request request = requestBuilder.build();
-            if (PushControl.dryRun) {
+            if (dryRun == 1) {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {

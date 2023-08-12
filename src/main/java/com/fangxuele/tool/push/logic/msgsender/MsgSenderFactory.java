@@ -125,7 +125,7 @@ public class MsgSenderFactory {
                 iMsgSender = new BdYunMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.UP_YUN_CODE:
-                iMsgSender = new UpYunMsgSender();
+                iMsgSender = new UpYunMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.QI_NIU_YUN_CODE:
                 iMsgSender = new QiNiuYunMsgSender();

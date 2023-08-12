@@ -59,7 +59,7 @@ public class MsgMakerFactory {
                 iMsgMaker = new BdYunMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.UP_YUN_CODE:
-                iMsgMaker = new UpYunMsgMaker();
+                iMsgMaker = new UpYunMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.QI_NIU_YUN_CODE:
                 iMsgMaker = new QiNiuYunMsgMaker();
