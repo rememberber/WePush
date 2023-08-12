@@ -1,7 +1,12 @@
 package com.fangxuele.tool.push.logic.msgsender;
 
+import com.fangxuele.tool.push.dao.TAccountMapper;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.msgmaker.WxKefuMsgMaker;
+import com.fangxuele.tool.push.logic.msgmaker.WxMaSubscribeMsgMaker;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
@@ -20,9 +25,18 @@ public class WxKefuMsgSender implements IMsgSender {
     private WxKefuMsgMaker wxKefuMsgMaker;
     public volatile static WxMpService wxMpService;
 
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
+
+    private Integer dryRun;
+
     public WxKefuMsgSender() {
-        wxKefuMsgMaker = new WxKefuMsgMaker();
-        wxMpService = WxMpTemplateMsgSender.getWxMpService();
+    }
+
+    public WxKefuMsgSender(Integer msgId, Integer dryRun) {
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        wxKefuMsgMaker = new WxKefuMsgMaker(tMsg);
+        wxMpService = WxMpTemplateMsgSender.getWxMpService(tMsg.getAccountId());
+        this.dryRun = dryRun;
     }
 
     @Override

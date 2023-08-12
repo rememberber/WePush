@@ -89,7 +89,7 @@ public class MsgSenderFactory {
                 iMsgSender = new WxMaSubscribeMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.KEFU_CODE:
-                iMsgSender = new WxKefuMsgSender();
+                iMsgSender = new WxKefuMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.KEFU_PRIORITY_CODE:
                 iMsgSender = new WxKefuPriorMsgSender();

@@ -1,5 +1,8 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
+import com.alibaba.fastjson.JSON;
+import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.domain.TMsgKefu;
 import com.fangxuele.tool.push.ui.form.msg.KefuMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
@@ -32,6 +35,20 @@ public class WxKefuMsgMaker extends BaseMsgMaker implements IMsgMaker {
     private static String msgKefuPagepath;
 
     private static String msgKefuThumbMediaId;
+
+    public WxKefuMsgMaker(TMsg tMsg) {
+        TMsgKefu tMsgKefu = JSON.parseObject(tMsg.getContent(), TMsgKefu.class);
+
+        msgKefuMsgType = tMsgKefu.getKefuMsgType();
+        msgKefuMsgTitle = tMsgKefu.getTitle();
+        msgKefuPicUrl = tMsgKefu.getImgUrl();
+        msgKefuDesc = tMsgKefu.getDescribe();
+        msgKefuUrl = tMsgKefu.getUrl();
+        msgKefuMsgContent = tMsgKefu.getContent();
+        msgKefuAppid = tMsgKefu.getAppId();
+        msgKefuPagepath = tMsgKefu.getPagePath();
+        msgKefuThumbMediaId = tMsgKefu.getThumbMediaId();
+    }
 
     /**
      * 准备(界面字段等)

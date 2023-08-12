@@ -29,7 +29,7 @@ public class MsgMakerFactory {
                 iMsgMaker = new WxMaSubscribeMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.KEFU_CODE:
-                iMsgMaker = new WxKefuMsgMaker();
+                iMsgMaker = new WxKefuMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.ALI_YUN_CODE:
                 iMsgMaker = new AliyunMsgMaker();
