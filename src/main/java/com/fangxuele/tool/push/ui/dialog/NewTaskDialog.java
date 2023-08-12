@@ -344,6 +344,8 @@ public class NewTaskDialog extends JDialog {
         schedulePanel.setVisible(false);
         threadCntTextField.setText("8");
         maxThreadCntTextField.setText("100");
+        reimportCheckBox.setEnabled(false);
+        reimportCheckBox.setToolTipText("功能开发中……");
     }
 
     private void initData() {
