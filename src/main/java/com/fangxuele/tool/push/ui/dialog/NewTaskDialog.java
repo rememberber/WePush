@@ -643,9 +643,14 @@ public class NewTaskDialog extends JDialog {
                                         task.getMessageId() +
                                         "\n推送人数：" + task.getPeopleId(), "确认定时推送？",
                                 JOptionPane.YES_NO_OPTION);
-                        if (isSchedulePush == JOptionPane.YES_OPTION) {
+                        if (isSchedulePush == JOptionPane.YES_OPTION && StringUtils.isNotEmpty(task.getCron())) {
+                            Scheduler scheduler = TaskListener.scheduledTaskMap.get(beforeTTask.getId());
+                            if (scheduler != null) {
+                                scheduler.stop();
+                            }
+
                             // 支持秒级别定时任务
-                            Scheduler scheduler = new Scheduler();
+                            scheduler = new Scheduler();
                             scheduler.setMatchSecond(true);
                             String schedulerId = scheduler.schedule(task.getCron(), (Task) () -> {
                                 if (task.getTaskMode() == TaskModeEnum.FIX_THREAD_TASK_CODE) {
