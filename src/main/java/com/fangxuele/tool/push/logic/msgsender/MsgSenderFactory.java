@@ -113,7 +113,7 @@ public class MsgSenderFactory {
                 iMsgSender = new MailMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.WX_CP_CODE:
-                iMsgSender = new WxCpMsgSender();
+                iMsgSender = new WxCpMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.HTTP_CODE:
                 iMsgSender = new HttpMsgSender();

@@ -47,7 +47,7 @@ public class MsgMakerFactory {
                 iMsgMaker = new MailMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.WX_CP_CODE:
-                iMsgMaker = new WxCpMsgMaker();
+                iMsgMaker = new WxCpMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.HTTP_CODE:
                 iMsgMaker = new HttpMsgMaker();

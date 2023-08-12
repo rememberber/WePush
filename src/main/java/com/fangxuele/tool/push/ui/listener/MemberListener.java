@@ -279,7 +279,7 @@ public class MemberListener {
 
                 try {
                     // 获取标签列表
-                    List<WxCpTag> wxCpTagList = WxCpMsgSender.getWxCpService().getTagService().listAll();
+                    List<WxCpTag> wxCpTagList = WxCpMsgSender.getWxCpService(null).getTagService().listAll();
                     for (WxCpTag wxCpTag : wxCpTagList) {
                         memberForm.getWxCpTagsComboBox().addItem(wxCpTag.getName());
                         wxCpTagNameToIdMap.put(wxCpTag.getName(), wxCpTag.getId());
@@ -308,7 +308,7 @@ public class MemberListener {
                     // 获取标签id
                     String tagId = wxCpTagNameToIdMap.get(memberForm.getWxCpTagsComboBox().getSelectedItem());
                     // 获取用户
-                    List<WxCpUser> wxCpUsers = WxCpMsgSender.getWxCpService().getTagService().listUsersByTagId(tagId);
+                    List<WxCpUser> wxCpUsers = WxCpMsgSender.getWxCpService(null).getTagService().listUsersByTagId(tagId);
                     for (WxCpUser wxCpUser : wxCpUsers) {
                         Long[] depIds = wxCpUser.getDepartIds();
                         List<String> deptNameList = Lists.newArrayList();
@@ -351,7 +351,7 @@ public class MemberListener {
 
                 try {
                     // 获取部门列表
-                    List<WxCpDepart> wxCpDepartList = WxCpMsgSender.getWxCpService().getDepartmentService().list(null);
+                    List<WxCpDepart> wxCpDepartList = WxCpMsgSender.getWxCpService(null).getDepartmentService().list(null);
                     for (WxCpDepart wxCpDepart : wxCpDepartList) {
                         memberForm.getWxCpDeptsComboBox().addItem(wxCpDepart.getName());
                         wxCpDeptNameToIdMap.put(wxCpDepart.getName(), wxCpDepart.getId());
@@ -380,7 +380,7 @@ public class MemberListener {
                     // 获取部门id
                     Long deptId = wxCpDeptNameToIdMap.get(memberForm.getWxCpDeptsComboBox().getSelectedItem());
                     // 获取用户
-                    List<WxCpUser> wxCpUsers = WxCpMsgSender.getWxCpService().getUserService().listByDepartment(deptId, true, 0);
+                    List<WxCpUser> wxCpUsers = WxCpMsgSender.getWxCpService(null).getUserService().listByDepartment(deptId, true, 0);
                     for (WxCpUser wxCpUser : wxCpUsers) {
                         String statusStr = "";
                         if (wxCpUser.getStatus() == 1) {
@@ -1413,7 +1413,7 @@ public class MemberListener {
             PushData.allUser = Collections.synchronizedList(new ArrayList<>());
 
             // 获取最小部门id
-            List<WxCpDepart> wxCpDepartList = WxCpMsgSender.getWxCpService().getDepartmentService().list(null);
+            List<WxCpDepart> wxCpDepartList = WxCpMsgSender.getWxCpService(null).getDepartmentService().list(null);
             long minDeptId = Long.MAX_VALUE;
             for (WxCpDepart wxCpDepart : wxCpDepartList) {
                 if (wxCpDepart.getId() < minDeptId) {
@@ -1421,7 +1421,7 @@ public class MemberListener {
                 }
             }
             // 获取用户
-            List<WxCpUser> wxCpUsers = WxCpMsgSender.getWxCpService().getUserService().listByDepartment(minDeptId, true, 0);
+            List<WxCpUser> wxCpUsers = WxCpMsgSender.getWxCpService(null).getUserService().listByDepartment(minDeptId, true, 0);
             for (WxCpUser wxCpUser : wxCpUsers) {
                 String statusStr = "";
                 if (wxCpUser.getStatus() == 1) {

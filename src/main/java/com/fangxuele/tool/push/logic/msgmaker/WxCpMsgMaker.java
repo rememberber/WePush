@@ -1,5 +1,8 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
+import com.alibaba.fastjson.JSON;
+import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.domain.TMsgWxCp;
 import com.fangxuele.tool.push.logic.msgsender.WxCpMsgSender;
 import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
@@ -32,6 +35,19 @@ public class WxCpMsgMaker extends BaseMsgMaker implements IMsgMaker {
     private static String btnTxt;
 
     private static String msgContent;
+
+    public WxCpMsgMaker(TMsg tMsg) {
+        TMsgWxCp tMsgWxCp = JSON.parseObject(tMsg.getContent(), TMsgWxCp.class);
+        agentId = tMsgWxCp.getAgentId();
+
+        msgType = tMsgWxCp.getCpMsgType();
+        msgTitle = tMsgWxCp.getTitle();
+        picUrl = tMsgWxCp.getImgUrl();
+        desc = tMsgWxCp.getDescribe();
+        url = tMsgWxCp.getUrl();
+        btnTxt = tMsgWxCp.getBtnTxt();
+        msgContent = tMsgWxCp.getContent();
+    }
 
     /**
      * 准备(界面字段等)
