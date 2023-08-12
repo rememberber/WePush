@@ -638,10 +638,7 @@ public class NewTaskDialog extends JDialog {
                                         task.getCron() +
                                         "表达式触发推送\n\n" +
                                         "最近5次运行时间:\n" +
-                                        String.join("\n", latest5RunTimeList) +
-                                        "\n\n消息名称：" +
-                                        task.getMessageId() +
-                                        "\n推送人数：" + task.getPeopleId(), "确认定时推送？",
+                                        String.join("\n", latest5RunTimeList), "确认定时推送？",
                                 JOptionPane.YES_NO_OPTION);
                         if (isSchedulePush == JOptionPane.YES_OPTION && StringUtils.isNotEmpty(task.getCron())) {
                             Scheduler scheduler = TaskListener.scheduledTaskMap.get(beforeTTask.getId());
