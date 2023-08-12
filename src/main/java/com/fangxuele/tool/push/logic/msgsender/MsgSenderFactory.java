@@ -104,7 +104,7 @@ public class MsgSenderFactory {
                 iMsgSender = new TxYunMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.HW_YUN_CODE:
-                iMsgSender = new HwYunMsgSender();
+                iMsgSender = new HwYunMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.YUN_PIAN_CODE:
                 iMsgSender = new YunPianMsgSender();

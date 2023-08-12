@@ -87,7 +87,7 @@ public class TxYunMsgSender implements IMsgSender {
         return null;
     }
 
-    public static SmsSingleSender getTxYunSender(Integer accountId) {
+    public SmsSingleSender getTxYunSender(Integer accountId) {
         if (smsSingleSenderMap.containsKey(accountId)) {
             return smsSingleSenderMap.get(accountId);
         } else {
