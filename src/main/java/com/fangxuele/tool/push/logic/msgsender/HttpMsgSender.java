@@ -8,8 +8,12 @@ import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONUtil;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.msg.HttpMsg;
-import com.fangxuele.tool.push.logic.PushControl;
+import com.fangxuele.tool.push.dao.TAccountMapper;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.logic.msgmaker.HttpMsgMaker;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
@@ -18,6 +22,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import java.net.HttpCookie;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -39,9 +44,23 @@ public class HttpMsgSender implements IMsgSender {
 
     public volatile static Proxy proxy;
 
+    private static Map<Integer, OkHttpClient> okHttpClientMap = new HashMap<>();
+
+    private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
+
+    private Integer dryRun;
+
     public HttpMsgSender() {
-        httpMsgMaker = new HttpMsgMaker();
-        okHttpClient = getOkHttpClient();
+//        httpMsgMaker = new HttpMsgMaker();
+//        okHttpClient = getOkHttpClient();
+    }
+
+    public HttpMsgSender(Integer msgId, Integer dryRun) {
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        httpMsgMaker = new HttpMsgMaker(tMsg);
+        okHttpClient = getOkHttpClient(tMsg.getAccountId());
+        this.dryRun = dryRun;
     }
 
     @Override
@@ -104,7 +123,7 @@ public class HttpMsgSender implements IMsgSender {
                 httpRequest.setProxy(getProxy());
             }
 
-            if (PushControl.dryRun) {
+            if (dryRun == 1) {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
@@ -213,7 +232,7 @@ public class HttpMsgSender implements IMsgSender {
 
             Request request = requestBuilder.build();
 
-            if (PushControl.dryRun) {
+            if (dryRun == 1) {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
@@ -299,5 +318,28 @@ public class HttpMsgSender implements IMsgSender {
             }
         }
         return okHttpClient;
+    }
+
+    private OkHttpClient getOkHttpClient(Integer accountId) {
+        if (okHttpClientMap.containsKey(accountId)) {
+            return okHttpClientMap.get(accountId);
+        } else {
+            TAccount tAccount = accountMapper.selectByPrimaryKey(accountId);
+            String accountConfig = tAccount.getAccountConfig();
+//            HttpAccountCofig httpAccountCofig = JSON.parseObject(accountConfig, HttpAccountCofig.class);
+            OkHttpClient.Builder builder = new OkHttpClient.Builder();
+            builder.connectTimeout(3, TimeUnit.MINUTES);
+            if (App.config.isHttpUseProxy()) {
+                builder.proxy(getProxy());
+            }
+
+            ConnectionPool pool = new ConnectionPool(App.config.getMaxThreads(), 10, TimeUnit.MINUTES);
+            builder.connectionPool(pool);
+            okHttpClient = builder.build();
+
+            okHttpClientMap.put(accountId, okHttpClient);
+            return okHttpClient;
+        }
+
     }
 }

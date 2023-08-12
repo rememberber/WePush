@@ -50,7 +50,7 @@ public class MsgMakerFactory {
                 iMsgMaker = new WxCpMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.HTTP_CODE:
-                iMsgMaker = new HttpMsgMaker();
+                iMsgMaker = new HttpMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.DING_CODE:
                 iMsgMaker = new DingMsgMaker();

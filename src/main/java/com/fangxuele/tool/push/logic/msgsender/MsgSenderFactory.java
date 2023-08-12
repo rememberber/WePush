@@ -116,7 +116,7 @@ public class MsgSenderFactory {
                 iMsgSender = new WxCpMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.HTTP_CODE:
-                iMsgSender = new HttpMsgSender();
+                iMsgSender = new HttpMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.DING_CODE:
                 iMsgSender = new DingMsgSender();

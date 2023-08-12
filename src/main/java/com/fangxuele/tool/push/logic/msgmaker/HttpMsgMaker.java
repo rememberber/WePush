@@ -1,6 +1,10 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.fangxuele.tool.push.bean.msg.HttpMsg;
+import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.domain.TMsgHttp;
 import com.fangxuele.tool.push.ui.form.msg.HttpMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import com.google.common.collect.Lists;
@@ -33,6 +37,22 @@ public class HttpMsgMaker extends BaseMsgMaker implements IMsgMaker {
     public static List<HttpMsgForm.NameValueObject> paramList;
     public static List<HttpMsgForm.NameValueObject> headerList;
     public static List<HttpMsgForm.CookieObject> cookieList;
+
+    public HttpMsgMaker(TMsg tMsg) {
+        TMsgHttp tMsgHttp = JSON.parseObject(tMsg.getContent(), TMsgHttp.class);
+
+        method = tMsgHttp.getMethod();
+        url = tMsgHttp.getUrl();
+        body = tMsgHttp.getBody();
+        bodyType = tMsgHttp.getBodyType();
+
+        paramList = JSON.parseObject(tMsgHttp.getParams(), new TypeReference<List<HttpMsgForm.NameValueObject>>() {
+        });
+        headerList = JSON.parseObject(tMsgHttp.getHeaders(), new TypeReference<List<HttpMsgForm.NameValueObject>>() {
+        });
+        cookieList = JSON.parseObject(tMsgHttp.getCookies(), new TypeReference<List<HttpMsgForm.CookieObject>>() {
+        });
+    }
 
     @Override
     public void prepare() {
