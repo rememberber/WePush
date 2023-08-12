@@ -95,7 +95,7 @@ public class MsgSenderFactory {
                 iMsgSender = new WxKefuPriorMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE:
-                iMsgSender = new WxUniformMsgSender();
+                iMsgSender = new WxUniformMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.ALI_YUN_CODE:
                 iMsgSender = new AliYunMsgSender();
