@@ -1,10 +1,13 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
 import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
 import com.aliyuncs.http.MethodType;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.TemplateData;
+import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.domain.TMsgSms;
 import com.fangxuele.tool.push.ui.form.msg.AliYunMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import org.apache.commons.compress.utils.Lists;
@@ -25,9 +28,15 @@ import java.util.Map;
  */
 public class AliyunMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
-    public static String templateId;
+    public String templateId;
 
-    public static List<TemplateData> templateDataList;
+    public List<TemplateData> templateDataList;
+
+    public AliyunMsgMaker(TMsg tMsg) {
+        TMsgSms tMsgSms = JSON.parseObject(tMsg.getContent(), TMsgSms.class);
+        this.templateId = tMsgSms.getTemplateId();
+        this.templateDataList = tMsgSms.getTemplateDataList();
+    }
 
     /**
      * 准备(界面字段等)
@@ -67,6 +76,7 @@ public class AliyunMsgMaker extends BaseMsgMaker implements IMsgMaker {
         //使用post提交
         request.setSysMethod(MethodType.POST);
         //必填:短信签名-可在短信控制台中找到
+        // TODO
         request.setSignName(App.config.getAliyunSign());
 
         // 模板参数

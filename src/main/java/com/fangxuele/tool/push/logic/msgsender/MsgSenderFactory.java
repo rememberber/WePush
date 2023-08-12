@@ -98,7 +98,7 @@ public class MsgSenderFactory {
                 iMsgSender = new WxUniformMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.ALI_YUN_CODE:
-                iMsgSender = new AliYunMsgSender();
+                iMsgSender = new AliYunMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.TX_YUN_CODE:
                 iMsgSender = new TxYunMsgSender();

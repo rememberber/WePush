@@ -32,7 +32,7 @@ public class MsgMakerFactory {
                 iMsgMaker = new WxKefuMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.ALI_YUN_CODE:
-                iMsgMaker = new AliyunMsgMaker();
+                iMsgMaker = new AliyunMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.TX_YUN_CODE:
                 iMsgMaker = new TxYunMsgMaker();

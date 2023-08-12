@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.logic.msgsender;
 
+import com.alibaba.fastjson.JSON;
 import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.IAcsClient;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
@@ -7,10 +8,19 @@ import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.http.HttpClientConfig;
 import com.aliyuncs.profile.DefaultProfile;
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.bean.account.AliYunAccountConfig;
+import com.fangxuele.tool.push.dao.TAccountMapper;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.msgmaker.AliyunMsgMaker;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <pre>
@@ -29,9 +39,21 @@ public class AliYunMsgSender implements IMsgSender {
 
     private AliyunMsgMaker aliyunMsgMaker;
 
+    private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
+
+    private Integer dryRun;
+
+    private static Map<Integer, IAcsClient> acsClientMap = new HashMap<>();
+
     public AliYunMsgSender() {
-        aliyunMsgMaker = new AliyunMsgMaker();
-        iAcsClient = getAliyunIAcsClient();
+    }
+
+    public AliYunMsgSender(Integer msgId, Integer dryRun) {
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        aliyunMsgMaker = new AliyunMsgMaker(tMsg);
+        iAcsClient = getAliyunIAcsClient(tMsg.getAccountId());
+        this.dryRun = dryRun;
     }
 
     @Override
@@ -95,5 +117,35 @@ public class AliYunMsgSender implements IMsgSender {
             }
         }
         return iAcsClient;
+    }
+
+    private IAcsClient getAliyunIAcsClient(Integer accountId) {
+        if (acsClientMap.containsKey(accountId)) {
+            return acsClientMap.get(accountId);
+        } else {
+            TAccount tAccount = accountMapper.selectByPrimaryKey(accountId);
+            String accountConfig = tAccount.getAccountConfig();
+            AliYunAccountConfig aliYunAccountConfig = JSON.parseObject(accountConfig, AliYunAccountConfig.class);
+
+            String aliyunAccessKeyId = aliYunAccountConfig.getAccessKeyId();
+            String aliyunAccessKeySecret = aliYunAccountConfig.getAccessKeySecret();
+
+            // 创建DefaultAcsClient实例并初始化
+            DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", aliyunAccessKeyId, aliyunAccessKeySecret);
+
+            // 多个SDK client共享一个连接池，此处设置该连接池的参数，
+            // 比如每个host的最大连接数，超时时间等
+            HttpClientConfig clientConfig = HttpClientConfig.getDefault();
+            clientConfig.setMaxRequestsPerHost(App.config.getMaxThreads());
+            clientConfig.setConnectionTimeoutMillis(10000L);
+
+            profile.setHttpClientConfig(clientConfig);
+            iAcsClient = new DefaultAcsClient(profile);
+
+            acsClientMap.put(accountId, iAcsClient);
+
+            return iAcsClient;
+        }
+
     }
 }
