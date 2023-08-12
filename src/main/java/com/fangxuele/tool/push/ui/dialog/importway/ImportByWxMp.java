@@ -16,6 +16,7 @@ import com.fangxuele.tool.push.domain.TWxMpUser;
 import com.fangxuele.tool.push.logic.PeopleImportWayEnum;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.ui.UiConsts;
+import com.fangxuele.tool.push.ui.dialog.importway.config.WxMpImportConfig;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
 import com.fangxuele.tool.push.ui.form.account.WxMpAccountForm;
 import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
@@ -262,6 +263,10 @@ public class ImportByWxMp extends JDialog {
         tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
         tPeopleImportConfig.setLastDataVersion(dataVersion);
         tPeopleImportConfig.setModifiedTime(now);
+
+        WxMpImportConfig wxMpImportConfig = new WxMpImportConfig();
+        wxMpImportConfig.setUserType(1);
+        tPeopleImportConfig.setLastWayConfig(JSONUtil.toJsonStr(wxMpImportConfig));
 
         if (beforePeopleImportConfig != null) {
             tPeopleImportConfig.setId(beforePeopleImportConfig.getId());
@@ -514,6 +519,11 @@ public class ImportByWxMp extends JDialog {
         tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
         tPeopleImportConfig.setLastDataVersion(dataVersion);
         tPeopleImportConfig.setModifiedTime(now);
+
+        WxMpImportConfig wxMpImportConfig = new WxMpImportConfig();
+        wxMpImportConfig.setTagId(tagId);
+        wxMpImportConfig.setUserType(retain ? 3 : 2);
+        tPeopleImportConfig.setLastWayConfig(JSONUtil.toJsonStr(wxMpImportConfig));
 
         if (beforePeopleImportConfig != null) {
             tPeopleImportConfig.setId(beforePeopleImportConfig.getId());

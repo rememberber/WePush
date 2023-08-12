@@ -19,6 +19,7 @@ import com.fangxuele.tool.push.domain.TPeopleImportConfig;
 import com.fangxuele.tool.push.logic.PeopleImportWayEnum;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.ui.UiConsts;
+import com.fangxuele.tool.push.ui.dialog.importway.config.DingImportConfig;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
 import com.fangxuele.tool.push.ui.form.account.DingAccountForm;
 import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
@@ -120,6 +121,9 @@ public class ImportByDing extends JDialog {
 
                     String dataVersion = UUID.fastUUID().toString(true);
 
+                    // 获取部门id
+                    Long deptId = wxCpDeptNameToIdMap.get(dingDeptsComboBox.getSelectedItem());
+
                     // 保存导入配置
                     TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
 
@@ -130,6 +134,11 @@ public class ImportByDing extends JDialog {
                     tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
                     tPeopleImportConfig.setModifiedTime(now);
 
+                    DingImportConfig dingImportConfig = new DingImportConfig();
+                    dingImportConfig.setUserType(2);
+                    dingImportConfig.setDeptId(deptId);
+                    tPeopleImportConfig.setLastWayConfig(JSONUtil.toJsonStr(dingImportConfig));
+
                     if (beforePeopleImportConfig != null) {
                         tPeopleImportConfig.setId(beforePeopleImportConfig.getId());
                         peopleImportConfigMapper.updateByPrimaryKeySelective(tPeopleImportConfig);
@@ -138,8 +147,6 @@ public class ImportByDing extends JDialog {
                         peopleImportConfigMapper.insert(tPeopleImportConfig);
                     }
 
-                    // 获取部门id
-                    Long deptId = wxCpDeptNameToIdMap.get(dingDeptsComboBox.getSelectedItem());
                     // 获取用户
                     DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/user/simplelist");
                     OapiUserSimplelistRequest request = new OapiUserSimplelistRequest();
@@ -255,6 +262,10 @@ public class ImportByDing extends JDialog {
             tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
             tPeopleImportConfig.setLastDataVersion(dataVersion);
             tPeopleImportConfig.setModifiedTime(now);
+
+            DingImportConfig dingImportConfig = new DingImportConfig();
+            dingImportConfig.setUserType(1);
+            tPeopleImportConfig.setLastWayConfig(JSONUtil.toJsonStr(dingImportConfig));
 
             if (beforePeopleImportConfig != null) {
                 tPeopleImportConfig.setId(beforePeopleImportConfig.getId());

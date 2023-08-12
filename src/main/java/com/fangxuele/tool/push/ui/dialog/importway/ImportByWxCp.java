@@ -13,6 +13,7 @@ import com.fangxuele.tool.push.domain.TPeopleImportConfig;
 import com.fangxuele.tool.push.logic.PeopleImportWayEnum;
 import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.ui.UiConsts;
+import com.fangxuele.tool.push.ui.dialog.importway.config.WxCpImportConfig;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
 import com.fangxuele.tool.push.ui.form.account.WxCpAccountForm;
 import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
@@ -33,7 +34,9 @@ import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.text.StyleContext;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -123,6 +126,9 @@ public class ImportByWxCp extends JDialog {
                     String now = SqliteUtil.nowDateForSqlite();
                     String dataVersion = UUID.fastUUID().toString(true);
 
+                    // 获取标签id
+                    String tagId = wxCpTagNameToIdMap.get(wxCpTagsComboBox.getSelectedItem());
+
                     // 保存导入配置
                     TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
 
@@ -133,6 +139,11 @@ public class ImportByWxCp extends JDialog {
                     tPeopleImportConfig.setLastDataVersion(dataVersion);
                     tPeopleImportConfig.setModifiedTime(now);
 
+                    WxCpImportConfig wxCpImportConfig = new WxCpImportConfig();
+                    wxCpImportConfig.setUserType(2);
+                    wxCpImportConfig.setTagId(tagId);
+                    tPeopleImportConfig.setLastWayConfig(JSONUtil.toJsonStr(wxCpImportConfig));
+
                     if (beforePeopleImportConfig != null) {
                         tPeopleImportConfig.setId(beforePeopleImportConfig.getId());
                         peopleImportConfigMapper.updateByPrimaryKeySelective(tPeopleImportConfig);
@@ -141,8 +152,6 @@ public class ImportByWxCp extends JDialog {
                         peopleImportConfigMapper.insert(tPeopleImportConfig);
                     }
 
-                    // 获取标签id
-                    String tagId = wxCpTagNameToIdMap.get(wxCpTagsComboBox.getSelectedItem());
                     // 获取用户
                     List<WxCpUser> wxCpUsers = WxCpAccountForm.getWxCpService(selectedAccountName).getTagService().listUsersByTagId(tagId);
                     for (WxCpUser wxCpUser : wxCpUsers) {
@@ -223,6 +232,9 @@ public class ImportByWxCp extends JDialog {
                     String now = SqliteUtil.nowDateForSqlite();
                     String dataVersion = UUID.fastUUID().toString(true);
 
+                    // 获取部门id
+                    Long deptId = wxCpDeptNameToIdMap.get(wxCpDeptsComboBox.getSelectedItem());
+
                     // 保存导入配置
                     TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
 
@@ -233,6 +245,11 @@ public class ImportByWxCp extends JDialog {
                     tPeopleImportConfig.setLastDataVersion(dataVersion);
                     tPeopleImportConfig.setModifiedTime(now);
 
+                    WxCpImportConfig wxCpImportConfig = new WxCpImportConfig();
+                    wxCpImportConfig.setUserType(3);
+                    wxCpImportConfig.setDepId(deptId);
+                    tPeopleImportConfig.setLastWayConfig(JSONUtil.toJsonStr(wxCpImportConfig));
+
                     if (beforePeopleImportConfig != null) {
                         tPeopleImportConfig.setId(beforePeopleImportConfig.getId());
                         peopleImportConfigMapper.updateByPrimaryKeySelective(tPeopleImportConfig);
@@ -241,8 +258,7 @@ public class ImportByWxCp extends JDialog {
                         peopleImportConfigMapper.insert(tPeopleImportConfig);
                     }
 
-                    // 获取部门id
-                    Long deptId = wxCpDeptNameToIdMap.get(wxCpDeptsComboBox.getSelectedItem());
+
                     // 获取用户
                     List<WxCpUser> wxCpUsers = WxCpAccountForm.getWxCpService(selectedAccountName).getUserService().listByDepartment(deptId, true, 0);
                     for (WxCpUser wxCpUser : wxCpUsers) {
@@ -346,6 +362,10 @@ public class ImportByWxCp extends JDialog {
             tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
             tPeopleImportConfig.setLastDataVersion(dataVersion);
             tPeopleImportConfig.setModifiedTime(now);
+
+            WxCpImportConfig wxCpImportConfig = new WxCpImportConfig();
+            wxCpImportConfig.setUserType(1);
+            tPeopleImportConfig.setLastWayConfig(JSONUtil.toJsonStr(wxCpImportConfig));
 
             if (beforePeopleImportConfig != null) {
                 tPeopleImportConfig.setId(beforePeopleImportConfig.getId());
