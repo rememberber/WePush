@@ -53,7 +53,7 @@ public class MsgMakerFactory {
                 iMsgMaker = new HttpMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.DING_CODE:
-                iMsgMaker = new DingMsgMaker();
+                iMsgMaker = new DingMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.BD_YUN_CODE:
                 iMsgMaker = new BdYunMsgMaker();

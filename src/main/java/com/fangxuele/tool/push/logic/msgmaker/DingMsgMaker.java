@@ -1,6 +1,9 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
+import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.bean.msg.DingMsg;
+import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.domain.TMsgDing;
 import com.fangxuele.tool.push.logic.msgsender.DingMsgSender;
 import com.fangxuele.tool.push.ui.form.msg.DingMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
@@ -37,6 +40,26 @@ public class DingMsgMaker extends BaseMsgMaker implements IMsgMaker {
     public static String radioType;
 
     public static String webHook;
+
+    public DingMsgMaker(TMsg tMsg) {
+        TMsgDing tMsgDing = JSON.parseObject(tMsg.getContent(), TMsgDing.class);
+
+        agentId = tMsgDing.getAgentId();
+        msgType = tMsgDing.getDingMsgType();
+        // TODO
+        msgTitle = DingMsgForm.getInstance().getTitleTextField().getText();
+        // TODO
+        picUrl = DingMsgForm.getInstance().getPicUrlTextField().getText().trim();
+        // TODO
+        url = DingMsgForm.getInstance().getUrlTextField().getText().trim();
+        // TODO
+        btnTxt = DingMsgForm.getInstance().getBtnTxtTextField().getText().trim();
+        // TODO
+        btnUrl = DingMsgForm.getInstance().getBtnURLTextField().getText().trim();
+        msgContent = tMsgDing.getContent();
+        radioType = tMsgDing.getRadioType();
+        webHook = tMsgDing.getWebHook();
+    }
 
     /**
      * 准备(界面字段等)
