@@ -441,7 +441,7 @@ public class MemberListener {
                     DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/department/list");
                     OapiDepartmentListRequest request = new OapiDepartmentListRequest();
                     request.setHttpMethod("GET");
-                    OapiDepartmentListResponse response = client.execute(request, DingMsgSender.getAccessTokenTimedCache().get("accessToken"));
+                    OapiDepartmentListResponse response = client.execute(request, DingMsgSender.getAccessTokenTimedCache(null).get("accessToken"));
                     if (response.getErrcode() != 0) {
                         JOptionPane.showMessageDialog(memberPanel, "刷新失败！\n\n" + response.getErrmsg(), "失败",
                                 JOptionPane.ERROR_MESSAGE);
@@ -486,7 +486,7 @@ public class MemberListener {
                     long offset = 0;
                     OapiUserSimplelistResponse response = new OapiUserSimplelistResponse();
                     while (response.getErrcode() == null || response.getUserlist().size() > 0) {
-                        response = client.execute(request, DingMsgSender.getAccessTokenTimedCache().get("accessToken"));
+                        response = client.execute(request, DingMsgSender.getAccessTokenTimedCache(null).get("accessToken"));
                         if (response.getErrcode() != 0) {
                             if (response.getErrcode() == 60011) {
                                 JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + response.getErrmsg() + "\n\n进入开发者后台，在小程序或者微应用详情的「接口权限」模块，点击申请对应的通讯录接口读写权限", "失败",
@@ -1490,7 +1490,7 @@ public class MemberListener {
             long offset = 0;
             OapiUserSimplelistResponse response = new OapiUserSimplelistResponse();
             while (response.getErrcode() == null || response.getUserlist().size() > 0) {
-                response = client.execute(request, DingMsgSender.getAccessTokenTimedCache().get("accessToken"));
+                response = client.execute(request, DingMsgSender.getAccessTokenTimedCache(null).get("accessToken"));
                 if (response.getErrcode() != 0) {
                     if (response.getErrcode() == 60011) {
                         JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + response.getErrmsg() + "\n\n进入开发者后台，在小程序或者微应用详情的「接口权限」模块，点击申请对应的通讯录接口读写权限", "失败",

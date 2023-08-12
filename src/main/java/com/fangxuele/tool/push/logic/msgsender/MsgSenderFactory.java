@@ -119,7 +119,7 @@ public class MsgSenderFactory {
                 iMsgSender = new HttpMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.DING_CODE:
-                iMsgSender = new DingMsgSender();
+                iMsgSender = new DingMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.BD_YUN_CODE:
                 iMsgSender = new BdYunMsgSender();

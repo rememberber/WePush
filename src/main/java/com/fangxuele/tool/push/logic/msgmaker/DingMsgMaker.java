@@ -51,7 +51,7 @@ public class DingMsgMaker extends BaseMsgMaker implements IMsgMaker {
         synchronized (this) {
             if (agentIdBefore == null || !agentIdBefore.equals(agentIdNow)) {
                 agentId = agentIdNow;
-                DingMsgSender.accessTokenTimedCache = null;
+//                DingMsgSender.accessTokenTimedCache = null;
                 DingMsgSender.defaultDingTalkClient = null;
             }
             if (webHookBefore == null || !webHookBefore.equals(webHookNow)) {

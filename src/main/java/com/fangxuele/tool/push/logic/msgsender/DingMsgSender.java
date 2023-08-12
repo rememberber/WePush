@@ -2,6 +2,7 @@ package com.fangxuele.tool.push.logic.msgsender;
 
 import cn.hutool.cache.CacheUtil;
 import cn.hutool.cache.impl.TimedCache;
+import com.alibaba.fastjson.JSON;
 import com.dingtalk.api.DefaultDingTalkClient;
 import com.dingtalk.api.DingTalkClient;
 import com.dingtalk.api.request.OapiGettokenRequest;
@@ -10,11 +11,18 @@ import com.dingtalk.api.request.OapiRobotSendRequest;
 import com.dingtalk.api.response.OapiGettokenResponse;
 import com.dingtalk.api.response.OapiMessageCorpconversationAsyncsendV2Response;
 import com.dingtalk.api.response.OapiRobotSendResponse;
+import com.fangxuele.tool.push.bean.account.DingAccountConfig;
+import com.fangxuele.tool.push.bean.account.WxMpAccountConfig;
 import com.fangxuele.tool.push.bean.msg.DingMsg;
+import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.dao.TDingAppMapper;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TDingApp;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.msgmaker.DingMsgMaker;
+import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
 import com.fangxuele.tool.push.ui.form.msg.DingMsgForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.taobao.api.ApiException;
@@ -23,7 +31,9 @@ import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <pre>
@@ -37,14 +47,28 @@ import java.util.List;
 public class DingMsgSender implements IMsgSender {
     public volatile static DefaultDingTalkClient defaultDingTalkClient;
     public volatile static DefaultDingTalkClient robotClient;
-    public static TimedCache<String, String> accessTokenTimedCache;
+    private TimedCache<String, String> accessTokenTimedCache;
     private DingMsgMaker dingMsgMaker;
 
     private static TDingAppMapper dingAppMapper = MybatisUtil.getSqlSession().getMapper(TDingAppMapper.class);
 
+    private static Map<Integer, TimedCache<String, String>> timedCacheMap = new HashMap<>();
+
+    private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
+
+    private Integer dryRun;
+
     public DingMsgSender() {
         dingMsgMaker = new DingMsgMaker();
         defaultDingTalkClient = getDefaultDingTalkClient();
+    }
+
+    public DingMsgSender(Integer msgId, Integer dryRun) {
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        dingMsgMaker = new DingMsgMaker(tMsg);
+        accessTokenTimedCache = getAccessTokenTimedCache(tMsg.getAccountId());
+        this.dryRun = dryRun;
     }
 
     @Override
@@ -218,7 +242,7 @@ public class DingMsgSender implements IMsgSender {
         return robotClient;
     }
 
-    public static TimedCache<String, String> getAccessTokenTimedCache() {
+    public TimedCache<String, String> getAccessTokenTimedCache() {
         if (accessTokenTimedCache == null || StringUtils.isEmpty(accessTokenTimedCache.get("accessToken"))) {
             synchronized (PushControl.class) {
                 if (accessTokenTimedCache == null || StringUtils.isEmpty(accessTokenTimedCache.get("accessToken"))) {
@@ -241,5 +265,16 @@ public class DingMsgSender implements IMsgSender {
             }
         }
         return accessTokenTimedCache;
+    }
+
+    private TimedCache<String, String> getAccessTokenTimedCache(Integer accountId) {
+        if (defaultDingTalkClientMap.containsKey(accountId)) {
+            return defaultDingTalkClientMap.get(accountId);
+        } else {
+            TAccount tAccount = accountMapper.selectByPrimaryKey(accountId);
+            String accountConfig = tAccount.getAccountConfig();
+            DingAccountConfig dingAccountConfig = JSON.parseObject(accountConfig, DingAccountConfig.class);
+        }
+
     }
 }
