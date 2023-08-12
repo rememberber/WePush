@@ -622,8 +622,8 @@ public class NewTaskDialog extends JDialog {
 
                 TaskForm.initTaskListTable();
 
-                // 如果修改前不是定时任务，或者是新建的是定时任务
-                if ((beforeTTask == null || beforeTTask.getTaskPeriod() != TaskTypeEnum.SCHEDULE_TASK_CODE) && task.getTaskPeriod() == TaskTypeEnum.SCHEDULE_TASK_CODE) {
+                // 如果是定时任务
+                if (task.getTaskPeriod() == TaskTypeEnum.SCHEDULE_TASK_CODE) {
                     {
                         List<String> latest5RunTimeList = Lists.newArrayList();
                         Date now = new Date();
@@ -668,16 +668,13 @@ public class NewTaskDialog extends JDialog {
                         }
                     }
                 } else {
-                    JOptionPane.showMessageDialog(this, "保存成功！", "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
-                }
-                // 如果修改前是定时任务，修改后不是定时任务，需要删除之前的定时任务
-                if (beforeTTask != null && beforeTTask.getTaskPeriod() == TaskTypeEnum.SCHEDULE_TASK_CODE && task.getTaskPeriod() != TaskTypeEnum.SCHEDULE_TASK_CODE) {
                     Scheduler scheduler = TaskListener.scheduledTaskMap.get(beforeTTask.getId());
                     if (scheduler != null) {
                         scheduler.stop();
                         TaskListener.scheduledTaskMap.remove(beforeTTask.getId());
                     }
+                    JOptionPane.showMessageDialog(this, "保存成功！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
                 }
             } catch (Exception e) {
                 log.error("保存任务异常:{}", ExceptionUtils.getStackTrace(e));
