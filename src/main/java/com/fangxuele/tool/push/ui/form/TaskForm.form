@@ -15,7 +15,9 @@
           </grid>
         </constraints>
         <properties>
+          <continuousLayout value="true"/>
           <dividerLocation value="516"/>
+          <doubleBuffered value="true"/>
         </properties>
         <border type="none"/>
         <children>
