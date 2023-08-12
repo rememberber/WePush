@@ -1,6 +1,9 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
+import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.bean.TemplateData;
+import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.domain.TMsgMpSubscribe;
 import com.fangxuele.tool.push.ui.form.msg.MpSubscribeMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import me.chanjar.weixin.mp.bean.subscribe.WxMpSubscribeMessage;
@@ -31,6 +34,15 @@ public class WxMpSubscribeMsgMaker extends BaseMsgMaker implements IMsgMaker {
     private static String miniAppPagePath;
 
     public static List<TemplateData> templateDataList;
+
+    public WxMpSubscribeMsgMaker(TMsg tMsg) {
+        TMsgMpSubscribe tMsgMpSubscribe = JSON.parseObject(tMsg.getContent(), TMsgMpSubscribe.class);
+        this.templateId = tMsgMpSubscribe.getTemplateId();
+        this.templateUrl = tMsgMpSubscribe.getUrl();
+        this.miniAppId = tMsgMpSubscribe.getMaAppid();
+        this.miniAppPagePath = tMsgMpSubscribe.getMaPagePath();
+        this.templateDataList = tMsgMpSubscribe.getTemplateDataList();
+    }
 
     /**
      * 准备(界面字段等)

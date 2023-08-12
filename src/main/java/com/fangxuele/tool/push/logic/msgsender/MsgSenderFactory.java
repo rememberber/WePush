@@ -131,7 +131,7 @@ public class MsgSenderFactory {
                 iMsgSender = new QiNiuYunMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.MP_SUBSCRIBE_CODE:
-                iMsgSender = new WxMpSubscribeMsgSender();
+                iMsgSender = new WxMpSubscribeMsgSender(msgId, dryRun);
                 break;
             default:
                 break;

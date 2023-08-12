@@ -1,7 +1,9 @@
 package com.fangxuele.tool.push.logic.msgsender;
 
-import com.fangxuele.tool.push.logic.PushControl;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.logic.msgmaker.WxMpSubscribeMsgMaker;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.subscribe.WxMpSubscribeMessage;
@@ -20,9 +22,20 @@ public class WxMpSubscribeMsgSender implements IMsgSender {
     public volatile static WxMpService wxMpService;
     private WxMpSubscribeMsgMaker wxMpSubscribeMsgMaker;
 
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
+
+    private Integer dryRun;
+
     public WxMpSubscribeMsgSender() {
-        wxMpSubscribeMsgMaker = new WxMpSubscribeMsgMaker();
+//        wxMpSubscribeMsgMaker = new WxMpSubscribeMsgMaker();
         wxMpService = WxMpTemplateMsgSender.getWxMpService();
+    }
+
+    public WxMpSubscribeMsgSender(Integer msgId, Integer dryRun) {
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        wxMpSubscribeMsgMaker = new WxMpSubscribeMsgMaker(tMsg);
+        wxMpService = WxMpTemplateMsgSender.getWxMpService(tMsg.getAccountId());
+        this.dryRun = dryRun;
     }
 
     @Override
@@ -33,7 +46,7 @@ public class WxMpSubscribeMsgSender implements IMsgSender {
             String openId = msgData[0];
             WxMpSubscribeMessage wxMessageTemplate = wxMpSubscribeMsgMaker.makeMsg(msgData);
             wxMessageTemplate.setToUser(openId);
-            if (PushControl.dryRun) {
+            if (dryRun == 1) {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
