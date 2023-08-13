@@ -135,15 +135,12 @@ public class MessageTypeForm {
         AccountManageForm.init();
         AccountEditForm.init(null);
         initMessageEditFormLayOut(msgType);
-        initMemberFormLayOut(msgType);
         MessageEditForm.switchMsgType(msgType);
         MessageEditForm.getInstance().getMsgTypeName().setText(MessageTypeEnum.getName(msgType));
         MessageManageForm.init();
         MessageEditForm.getInstance().getMsgNameField().setText("");
         PeopleManageForm.init();
         PeopleEditForm.init(null);
-        MemberForm.init();
-        ScheduleForm.init();
     }
 
     private static void initMessageEditFormLayOut(int msgType) {
@@ -154,28 +151,6 @@ public class MessageTypeForm {
             MessageEditForm.getInstance().getPreviewMemberLabel().setText("预览用户");
             MessageEditForm.getInstance().getPreviewMsgButton().setText("预览");
         }
-    }
-
-    private static void initMemberFormLayOut(int msgType) {
-        Component[] components = MemberForm.getInstance().getImportWayPanel().getComponents();
-        for (Component component : components) {
-            if (component instanceof JPanel) {
-                component.setVisible(false);
-            }
-        }
-        MemberForm.getInstance().getMemberTabDownPanel().setVisible(true);
-        MemberForm.getInstance().getMemberTabCenterPanel().setVisible(true);
-        if (MessageTypeEnum.isWxMaOrMpType(msgType)) {
-            MemberForm.getInstance().getImportFromWeixinPanel().setVisible(true);
-            MemberForm.getInstance().getImportOptionPanel().setVisible(true);
-        }
-        if (msgType == MessageTypeEnum.WX_CP_CODE) {
-            MemberForm.getInstance().getImportFromWxCpPanel().setVisible(true);
-        }
-        if (msgType == MessageTypeEnum.DING_CODE) {
-            MemberForm.getInstance().getImportFromDingPanel().setVisible(true);
-        }
-
     }
 
     /**

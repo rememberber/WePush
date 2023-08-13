@@ -14,7 +14,6 @@ import com.fangxuele.tool.push.dao.TPeopleImportConfigMapper;
 import com.fangxuele.tool.push.domain.TPeopleData;
 import com.fangxuele.tool.push.domain.TPeopleImportConfig;
 import com.fangxuele.tool.push.logic.PeopleImportWayEnum;
-import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
 import com.fangxuele.tool.push.util.ComponentUtil;
@@ -277,7 +276,7 @@ public class ImportByFile extends JDialog {
                 PeopleEditForm.initDataTable(peopleId);
             }
 
-            if (!PushData.fixRateScheduling && !silence) {
+            if (!silence) {
                 progressBar.setIndeterminate(false);
                 progressBar.setVisible(false);
                 JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);

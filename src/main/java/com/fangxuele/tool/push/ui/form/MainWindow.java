@@ -26,11 +26,9 @@ public class MainWindow {
     private JPanel mainPanel;
     private JTabbedPane tabbedPane;
     private JSplitPane messagePanel;
-    private JPanel pushPanel;
     private JPanel messageEditPanel;
     private JPanel messageManagePanel;
     private JPanel messageTypePanel;
-    private JPanel infinityPanel;
     private JSplitPane accountPanel;
     private JPanel accountManagePanel;
     private JPanel accountEditPanel;
@@ -71,9 +69,7 @@ public class MainWindow {
         mainWindow.getPeopleManagePanel().add(PeopleManageForm.getInstance().getPeopleManagePanel(), GRID_CONSTRAINTS);
         mainWindow.getPeopleEditPanel().add(PeopleEditForm.getInstance().getMainPanel(), GRID_CONSTRAINTS);
         mainWindow.getTaskPanel().add(TaskForm.getInstance().getMainPanel(), GRID_CONSTRAINTS);
-        mainWindow.getPushPanel().add(PushForm.getInstance().getPushPanel(), GRID_CONSTRAINTS);
         mainWindow.getMessageTypePanel().add(MessageTypeForm.getInstance().getMessageTypePanel(), GRID_CONSTRAINTS);
-        mainWindow.getInfinityPanel().add(InfinityForm.getInstance().getInfinityPanel(), GRID_CONSTRAINTS);
         mainWindow.getMessagePanel().setDividerLocation((int) (App.mainFrame.getWidth() / 5.6));
         mainWindow.getMainPanel().updateUI();
     }
@@ -151,13 +147,6 @@ public class MainWindow {
         taskPanel = new JPanel();
         taskPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane.addTab("⑤推送任务", taskPanel);
-        pushPanel = new JPanel();
-        pushPanel.setLayout(new GridLayoutManager(1, 1, new Insets(10, 10, 10, 10), -1, -1));
-        pushPanel.setMinimumSize(new Dimension(-1, -1));
-        tabbedPane.addTab("开始推送", pushPanel);
-        infinityPanel = new JPanel();
-        infinityPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        tabbedPane.addTab("变速模式", infinityPanel);
     }
 
     /**

@@ -188,11 +188,7 @@ public class Init {
         ThreadUtil.execute(MessageManageForm::init);
         ThreadUtil.execute(PeopleManageForm::init);
         ThreadUtil.execute(() -> PeopleEditForm.init(null));
-        ThreadUtil.execute(MemberForm::init);
-        ThreadUtil.execute(PushForm::init);
         ThreadUtil.execute(TaskForm::init);
-        ThreadUtil.execute(InfinityForm::init);
-        ThreadUtil.execute(ScheduleForm::init);
 
         // 检查新版版
         if (App.config.isAutoCheckUpdate()) {
@@ -290,15 +286,9 @@ public class Init {
     }
 
     public static void shutdown() {
-        if (!PushForm.getInstance().getPushStartButton().isEnabled()) {
-            JOptionPane.showMessageDialog(MainWindow.getInstance().getPushPanel(),
-                    "有推送任务正在进行！\n\n为避免数据丢失，请先停止!\n\n", "Sorry~",
-                    JOptionPane.WARNING_MESSAGE);
-        } else {
-            App.config.save();
-            App.sqlSession.close();
-            App.mainFrame.dispose();
-            System.exit(0);
-        }
+        App.config.save();
+        App.sqlSession.close();
+        App.mainFrame.dispose();
+        System.exit(0);
     }
 }

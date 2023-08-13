@@ -18,7 +18,6 @@ import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.logic.msgthread.MsgSendThread;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.importway.ImportByFile;
-import com.fangxuele.tool.push.ui.form.ScheduleForm;
 import com.fangxuele.tool.push.ui.form.TaskForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
@@ -479,7 +478,7 @@ public class TaskRunThread extends Thread {
 
         // 保存未发送
         for (String[] str : sendSuccessList) {
-            if (msgType == MessageTypeEnum.HTTP_CODE && PushControl.saveResponseBody) {
+            if (msgType == MessageTypeEnum.HTTP_CODE && tTask.getSaveResult() == 1) {
                 str = ArrayUtils.remove(str, str.length - 1);
                 String[] finalStr = str;
                 toSendList = toSendList.stream().filter(strings -> !JSONUtil.toJsonStr(strings).equals(JSONUtil.toJsonStr(finalStr))).collect(Collectors.toList());
@@ -488,7 +487,7 @@ public class TaskRunThread extends Thread {
             }
         }
         for (String[] str : sendFailList) {
-            if (msgType == MessageTypeEnum.HTTP_CODE && PushControl.saveResponseBody) {
+            if (msgType == MessageTypeEnum.HTTP_CODE && tTask.getSaveResult() == 1) {
                 str = ArrayUtils.remove(str, str.length - 1);
                 String[] finalStr = str;
                 toSendList = toSendList.stream().filter(strings -> !JSONUtil.toJsonStr(strings).equals(JSONUtil.toJsonStr(finalStr))).collect(Collectors.toList());
@@ -532,7 +531,7 @@ public class TaskRunThread extends Thread {
         // 发送推送结果邮件
         if (tTask.getResultAlert() == 1) {
             ConsoleUtil.pushLog(logWriter, "发送推送结果邮件开始");
-            String mailResultTo = ScheduleForm.getInstance().getMailResultToTextField().getText().replace("；", ";").replace(" ", "");
+            String mailResultTo = tTask.getAlertEmails().replace("；", ";").replace(" ", "");
             String[] mailTos = mailResultTo.split(";");
             ArrayList<String> mailToList = new ArrayList<>(Arrays.asList(mailTos));
 

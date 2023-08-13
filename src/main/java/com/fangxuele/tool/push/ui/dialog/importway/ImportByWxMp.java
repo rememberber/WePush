@@ -14,14 +14,12 @@ import com.fangxuele.tool.push.domain.TPeopleData;
 import com.fangxuele.tool.push.domain.TPeopleImportConfig;
 import com.fangxuele.tool.push.domain.TWxMpUser;
 import com.fangxuele.tool.push.logic.PeopleImportWayEnum;
-import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.importway.config.WxMpImportConfig;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
 import com.fangxuele.tool.push.ui.form.account.WxMpAccountForm;
 import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
 import com.fangxuele.tool.push.util.ComponentUtil;
-import com.fangxuele.tool.push.util.ConsoleUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -43,7 +41,9 @@ import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.text.StyleContext;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.List;
 import java.util.*;
 
@@ -211,10 +211,8 @@ public class ImportByWxMp extends JDialog {
         try {
             getMpUserList(dialog);
             PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
-            if (!PushData.fixRateScheduling) {
-                progressBar.setVisible(false);
-                JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
-            }
+            progressBar.setVisible(false);
+            JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
         } catch (WxErrorException e1) {
             JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + e1.getMessage(), "失败",
                     JOptionPane.ERROR_MESSAGE);
@@ -245,8 +243,8 @@ public class ImportByWxMp extends JDialog {
 
         WxMpUserList wxMpUserList = wxMpService.getUserService().userList(null);
 
-        ConsoleUtil.consoleWithLog("关注该公众账号的总用户数：" + wxMpUserList.getTotal());
-        ConsoleUtil.consoleWithLog("拉取的OPENID个数：" + wxMpUserList.getCount());
+        logger.info("关注该公众账号的总用户数：" + wxMpUserList.getTotal());
+        logger.info("拉取的OPENID个数：" + wxMpUserList.getCount());
 
         progressBar.setIndeterminate(false);
         progressBar.setMaximum((int) wxMpUserList.getTotal());
@@ -306,7 +304,7 @@ public class ImportByWxMp extends JDialog {
         while (StringUtils.isNotEmpty(wxMpUserList.getNextOpenid())) {
             wxMpUserList = wxMpService.getUserService().userList(wxMpUserList.getNextOpenid());
 
-            ConsoleUtil.consoleWithLog("拉取的OPENID个数：" + wxMpUserList.getCount());
+            logger.info("拉取的OPENID个数：" + wxMpUserList.getCount());
 
             if (wxMpUserList.getCount() == 0) {
                 break;
@@ -415,7 +413,7 @@ public class ImportByWxMp extends JDialog {
 
         WxTagListUser wxTagListUser = wxMpService.getUserTagService().tagListUser(tagId, "");
 
-        ConsoleUtil.consoleWithLog("拉取的OPENID个数：" + wxTagListUser.getCount());
+        logger.info("拉取的OPENID个数：" + wxTagListUser.getCount());
 
         if (wxTagListUser.getCount() == 0) {
             return;
@@ -429,7 +427,7 @@ public class ImportByWxMp extends JDialog {
         while (StringUtils.isNotEmpty(wxTagListUser.getNextOpenid())) {
             wxTagListUser = wxMpService.getUserTagService().tagListUser(tagId, wxTagListUser.getNextOpenid());
 
-            ConsoleUtil.consoleWithLog("拉取的OPENID个数：" + wxTagListUser.getCount());
+            logger.info("拉取的OPENID个数：" + wxTagListUser.getCount());
 
             if (wxTagListUser.getCount() == 0) {
                 break;
@@ -501,7 +499,7 @@ public class ImportByWxMp extends JDialog {
 
         WxTagListUser wxTagListUser = wxMpService.getUserTagService().tagListUser(tagId, "");
 
-        ConsoleUtil.consoleWithLog("拉取的OPENID个数：" + wxTagListUser.getCount());
+        logger.info("拉取的OPENID个数：" + wxTagListUser.getCount());
 
         if (wxTagListUser.getCount() == 0) {
             return;
@@ -552,7 +550,7 @@ public class ImportByWxMp extends JDialog {
         while (StringUtils.isNotEmpty(wxTagListUser.getNextOpenid())) {
             wxTagListUser = wxMpService.getUserTagService().tagListUser(tagId, wxTagListUser.getNextOpenid());
 
-            ConsoleUtil.consoleWithLog("拉取的OPENID个数：" + wxTagListUser.getCount());
+            logger.info("拉取的OPENID个数：" + wxTagListUser.getCount());
 
             if (wxTagListUser.getCount() == 0) {
                 break;

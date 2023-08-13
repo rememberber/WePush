@@ -2,10 +2,8 @@ package com.fangxuele.tool.push.logic.msgthread;
 
 import cn.hutool.json.JSONUtil;
 import com.fangxuele.tool.push.logic.InfinityTaskRunThread;
-import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.SendResult;
-import com.fangxuele.tool.push.ui.form.InfinityForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
@@ -22,12 +20,6 @@ public class MsgInfinitySendThread extends Thread {
     private IMsgSender iMsgSender;
 
     private InfinityTaskRunThread infinityTaskRunThread;
-
-    public MsgInfinitySendThread(IMsgSender msgSender) {
-        this.iMsgSender = msgSender;
-        PushData.activeThreadConcurrentLinkedQueue.offer(this.getName());
-        PushData.threadStatusMap.put(this.getName(), true);
-    }
 
     public MsgInfinitySendThread(IMsgSender msgSender, InfinityTaskRunThread infinityTaskRunThread) {
         this.iMsgSender = msgSender;
@@ -53,7 +45,6 @@ public class MsgInfinitySendThread extends Thread {
                     infinityTaskRunThread.sendSuccessList.add(msgData);
                 } else {
                     infinityTaskRunThread.increaseFail();
-                    InfinityForm.getInstance().getPushFailCount().setText(String.valueOf(infinityTaskRunThread.failRecords));
                     // 保存发送失败
                     infinityTaskRunThread.sendFailList.add(msgData);
                     ConsoleUtil.pushLog(infinityTaskRunThread.getLogWriter(), "发送失败:" + sendResult.getInfo() + ";msgData:" + JSONUtil.toJsonPrettyStr(msgData));

@@ -18,7 +18,6 @@ import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.logic.msgthread.MsgInfinitySendThread;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.importway.ImportByFile;
-import com.fangxuele.tool.push.ui.form.ScheduleForm;
 import com.fangxuele.tool.push.ui.form.TaskForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
@@ -200,8 +199,8 @@ public class InfinityTaskRunThread extends Thread {
         taskHis.setStatus(20);
         taskHisMapper.updateByPrimaryKey(taskHis);
 
-        ConsoleUtil.infinityConsoleWithLog("推送开始……");
-        ConsoleUtil.infinityConsoleWithLog("推送过程中可随时拖拽下方滑动条调整线程数量，以达到最佳推送速度。");
+        ConsoleUtil.pushLog(logWriter, "推送开始……");
+        ConsoleUtil.pushLog(logWriter, "推送过程中可随时拖拽下方滑动条调整线程数量，以达到最佳推送速度。");
         // 线程池初始化
         tMsg = msgMapper.selectByPrimaryKey(tTask.getMessageId());
 
@@ -537,7 +536,7 @@ public class InfinityTaskRunThread extends Thread {
         // 发送推送结果邮件
         if (tTask.getResultAlert() == 1) {
             ConsoleUtil.pushLog(logWriter, "发送推送结果邮件开始");
-            String mailResultTo = ScheduleForm.getInstance().getMailResultToTextField().getText().replace("；", ";").replace(" ", "");
+            String mailResultTo = tTask.getAlertEmails().replace("；", ";").replace(" ", "");
             String[] mailTos = mailResultTo.split(";");
             ArrayList<String> mailToList = new ArrayList<>(Arrays.asList(mailTos));
 

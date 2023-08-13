@@ -11,7 +11,6 @@ import com.fangxuele.tool.push.dao.TPeopleImportConfigMapper;
 import com.fangxuele.tool.push.domain.TPeopleData;
 import com.fangxuele.tool.push.domain.TPeopleImportConfig;
 import com.fangxuele.tool.push.logic.PeopleImportWayEnum;
-import com.fangxuele.tool.push.logic.PushData;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.importway.config.WxCpImportConfig;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
@@ -179,9 +178,7 @@ public class ImportByWxCp extends JDialog {
                         memberCountLabel.setText(String.valueOf(importedCount));
                     }
                     PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
-                    if (!PushData.fixRateScheduling) {
-                        JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
-                    }
+                    JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + ex, "失败",
                             JOptionPane.ERROR_MESSAGE);
@@ -295,9 +292,7 @@ public class ImportByWxCp extends JDialog {
                     }
                     PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
 
-                    if (!PushData.fixRateScheduling) {
-                        JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
-                    }
+                    JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + ex, "失败",
                             JOptionPane.ERROR_MESSAGE);
@@ -420,9 +415,7 @@ public class ImportByWxCp extends JDialog {
 
             PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
 
-            if (!PushData.fixRateScheduling) {
-                JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
-            }
+            JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + ex, "失败",
                     JOptionPane.ERROR_MESSAGE);

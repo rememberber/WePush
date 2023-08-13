@@ -2,7 +2,6 @@ package com.fangxuele.tool.push.ui.listener;
 
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.form.MainWindow;
-import com.fangxuele.tool.push.ui.form.PushForm;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,16 +46,10 @@ public class FrameListener {
 
             @Override
             public void windowClosing(WindowEvent e) {
-                if (!PushForm.getInstance().getPushStartButton().isEnabled()) {
-                    JOptionPane.showMessageDialog(MainWindow.getInstance().getPushPanel(),
-                            "有推送任务正在进行！\n\n为避免数据丢失，请先停止!\n\n", "Sorry~",
-                            JOptionPane.WARNING_MESSAGE);
-                } else {
-                    mainFrame.dispose();
-                    if (!App.config.isCloseToTray()) {
-                        App.sqlSession.close();
-                        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    }
+                mainFrame.dispose();
+                if (!App.config.isCloseToTray()) {
+                    App.sqlSession.close();
+                    mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 }
             }
 

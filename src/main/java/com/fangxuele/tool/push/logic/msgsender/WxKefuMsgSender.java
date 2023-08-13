@@ -1,11 +1,8 @@
 package com.fangxuele.tool.push.logic.msgsender;
 
-import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.dao.TMsgMapper;
 import com.fangxuele.tool.push.domain.TMsg;
-import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.msgmaker.WxKefuMsgMaker;
-import com.fangxuele.tool.push.logic.msgmaker.WxMaSubscribeMsgMaker;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.mp.api.WxMpService;
@@ -47,7 +44,7 @@ public class WxKefuMsgSender implements IMsgSender {
             String openId = msgData[0];
             WxMpKefuMessage wxMpKefuMessage = wxKefuMsgMaker.makeMsg(msgData);
             wxMpKefuMessage.setToUser(openId);
-            if (PushControl.dryRun) {
+            if (dryRun == 1) {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
