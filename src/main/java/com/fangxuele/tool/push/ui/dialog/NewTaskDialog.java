@@ -618,6 +618,7 @@ public class NewTaskDialog extends JDialog {
                     task.setCreateTime(nowDateForSqlite);
                     taskMapper.insert(task);
                 } else {
+                    task.setCreateTime(beforeTTask.getCreateTime());
                     task.setId(beforeTTask.getId());
                     taskMapper.updateByPrimaryKey(task);
                 }
