@@ -48,6 +48,15 @@ public class WxMaAccountForm implements IAccountForm {
             instance.getAppSecretTextField().setText(wxMaAccountConfig.getAppSecret());
             instance.getTokenTextField().setText(wxMaAccountConfig.getToken());
             instance.getAesKeyTextField().setText(wxMaAccountConfig.getAesKey());
+
+            // TODO
+            maUseProxyCheckBox.setSelected(App.config.isMaUseProxy());
+            maProxyHostTextField.setText(App.config.getMaProxyHost());
+            maProxyPortTextField.setText(App.config.getMaProxyPort());
+            maProxyUserNameTextField.setText(App.config.getMaProxyUserName());
+            maProxyPasswordTextField.setText(App.config.getMaProxyPassword());
+
+            toggleMaProxyPanel();
         }
     }
 
@@ -86,6 +95,13 @@ public class WxMaAccountForm implements IAccountForm {
                 wxMaAccountConfig.setToken(instance.getTokenTextField().getText());
                 wxMaAccountConfig.setAesKey(instance.getAesKeyTextField().getText());
 
+                // TODO
+                App.config.setMaUseProxy(maUseProxyCheckBox.isSelected());
+                App.config.setMaProxyHost(maProxyHostTextField.getText());
+                App.config.setMaProxyPort(maProxyPortTextField.getText());
+                App.config.setMaProxyUserName(maProxyUserNameTextField.getText());
+                App.config.setMaProxyPassword(maProxyPasswordTextField.getText());
+
                 tAccount1.setAccountConfig(JSONUtil.toJsonStr(wxMaAccountConfig));
 
                 tAccount1.setModifiedTime(now);
@@ -117,9 +133,25 @@ public class WxMaAccountForm implements IAccountForm {
     public static WxMaAccountForm getInstance() {
         if (wxMpAccountForm == null) {
             wxMpAccountForm = new WxMaAccountForm();
+
+            wxMpAccountForm.toggleMaProxyPanel();
+
+            wxMpAccountForm.getMaUseProxyCheckBox().addChangeListener(e -> wxMpAccountForm.toggleMaProxyPanel());
         }
         UndoUtil.register(wxMpAccountForm);
         return wxMpAccountForm;
+    }
+
+    /**
+     * 切换小程序代理设置面板显示/隐藏
+     */
+    public void toggleMaProxyPanel() {
+        boolean maUseProxy = maUseProxyCheckBox.isSelected();
+        if (maUseProxy) {
+            maProxyPanel.setVisible(true);
+        } else {
+            maProxyPanel.setVisible(false);
+        }
     }
 
     {

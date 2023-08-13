@@ -319,6 +319,9 @@ public class WxMpAccountForm implements IAccountForm {
                     super.mouseExited(e);
                 }
             });
+
+            wxMpAccountForm.toggleMpProxyPanel();
+            wxMpAccountForm.toggleMpOutSideAccessTokenPanel();
         }
 
         return wxMpAccountForm;
