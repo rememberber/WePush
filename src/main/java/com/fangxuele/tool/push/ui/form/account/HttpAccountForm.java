@@ -12,17 +12,37 @@ import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
+import javax.swing.plaf.FontUIResource;
+import javax.swing.text.StyleContext;
 import java.awt.*;
+import java.util.Locale;
 
 @Getter
 public class HttpAccountForm implements IAccountForm {
     private JPanel mainPanel;
+    private JCheckBox httpUseProxyCheckBox;
+    private JPanel httpProxyPanel;
+    private JTextField httpProxyHostTextField;
+    private JTextField httpProxyPortTextField;
+    private JTextField httpProxyUserTextField;
+    private JTextField httpProxyPasswordTextField;
 
     private static HttpAccountForm wxMpAccountForm;
 
     @Override
     public void init(String accountName) {
+        if (StringUtils.isNotEmpty(accountName)) {
+            // TODO
+            TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
+            httpUseProxyCheckBox.setSelected(App.config.isHttpUseProxy());
+            httpProxyHostTextField.setText(App.config.getHttpProxyHost());
+            httpProxyPortTextField.setText(App.config.getHttpProxyPort());
+            httpProxyUserTextField.setText(App.config.getHttpProxyUserName());
+            httpProxyPasswordTextField.setText(App.config.getHttpProxyPassword());
 
+            toggleHttpProxyPanel();
+        }
     }
 
     @Override
@@ -53,6 +73,13 @@ public class HttpAccountForm implements IAccountForm {
                 tAccount1.setMsgType(msgType);
                 tAccount1.setAccountName(accountName);
 
+                // TODO
+                App.config.setHttpUseProxy(httpUseProxyCheckBox.isSelected());
+                App.config.setHttpProxyHost(httpProxyHostTextField.getText());
+                App.config.setHttpProxyPort(httpProxyPortTextField.getText());
+                App.config.setHttpProxyUserName(httpProxyUserTextField.getText());
+                App.config.setHttpProxyPassword(httpProxyPasswordTextField.getText());
+
                 tAccount1.setModifiedTime(now);
 
                 if (existSameAccount) {
@@ -82,9 +109,25 @@ public class HttpAccountForm implements IAccountForm {
     public static HttpAccountForm getInstance() {
         if (wxMpAccountForm == null) {
             wxMpAccountForm = new HttpAccountForm();
+
+            wxMpAccountForm.getHttpUseProxyCheckBox().addChangeListener(e -> wxMpAccountForm.toggleHttpProxyPanel());
+
+            wxMpAccountForm.toggleHttpProxyPanel();
         }
         UndoUtil.register(wxMpAccountForm);
         return wxMpAccountForm;
+    }
+
+    /**
+     * 切换HTTP代理设置面板显示/隐藏
+     */
+    public void toggleHttpProxyPanel() {
+        boolean httpUseProxy = httpUseProxyCheckBox.isSelected();
+        if (httpUseProxy) {
+            httpProxyPanel.setVisible(true);
+        } else {
+            httpProxyPanel.setVisible(false);
+        }
     }
 
     {
@@ -109,9 +152,60 @@ public class HttpAccountForm implements IAccountForm {
         mainPanel.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
         panel1.add(spacer1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        final JPanel panel2 = new JPanel();
+        panel2.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
+        Font panel2Font = this.$$$getFont$$$("Microsoft YaHei UI", -1, -1, panel2.getFont());
+        if (panel2Font != null) panel2.setFont(panel2Font);
+        panel1.add(panel2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel2.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), null, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, panel2.getFont()), null));
+        httpUseProxyCheckBox = new JCheckBox();
+        httpUseProxyCheckBox.setText("使用HTTP代理");
+        panel2.add(httpUseProxyCheckBox, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        httpProxyPanel = new JPanel();
+        httpProxyPanel.setLayout(new GridLayoutManager(4, 2, new Insets(0, 26, 0, 0), -1, -1));
+        panel2.add(httpProxyPanel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
-        label1.setText("还没想好，HTTP请求类型消息这里做点什么好……");
-        panel1.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        label1.setText("Host");
+        httpProxyPanel.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        httpProxyHostTextField = new JTextField();
+        httpProxyPanel.add(httpProxyHostTextField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        final JLabel label2 = new JLabel();
+        label2.setText("端口");
+        httpProxyPanel.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label3 = new JLabel();
+        label3.setText("用户名");
+        httpProxyPanel.add(label3, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label4 = new JLabel();
+        label4.setText("密码");
+        httpProxyPanel.add(label4, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        httpProxyPortTextField = new JTextField();
+        httpProxyPanel.add(httpProxyPortTextField, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        httpProxyUserTextField = new JTextField();
+        httpProxyPanel.add(httpProxyUserTextField, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        httpProxyPasswordTextField = new JTextField();
+        httpProxyPanel.add(httpProxyPasswordTextField, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+    }
+
+    /**
+     * @noinspection ALL
+     */
+    private Font $$$getFont$$$(String fontName, int style, int size, Font currentFont) {
+        if (currentFont == null) return null;
+        String resultName;
+        if (fontName == null) {
+            resultName = currentFont.getName();
+        } else {
+            Font testFont = new Font(fontName, Font.PLAIN, 10);
+            if (testFont.canDisplay('a') && testFont.canDisplay('1')) {
+                resultName = fontName;
+            } else {
+                resultName = currentFont.getName();
+            }
+        }
+        Font font = new Font(resultName, style >= 0 ? style : currentFont.getStyle(), size >= 0 ? size : currentFont.getSize());
+        boolean isMac = System.getProperty("os.name", "").toLowerCase(Locale.ENGLISH).startsWith("mac");
+        Font fontWithFallback = isMac ? new Font(font.getFamily(), font.getStyle(), font.getSize()) : new StyleContext().getFont(font.getFamily(), font.getStyle(), font.getSize());
+        return fontWithFallback instanceof FontUIResource ? fontWithFallback : new FontUIResource(fontWithFallback);
     }
 
     /**
