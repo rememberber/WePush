@@ -4,6 +4,7 @@ import cn.hutool.json.JSONUtil;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.account.EmailAccountConfig;
 import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.ui.dialog.MailTestDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.UIUtil;
@@ -29,7 +30,7 @@ public class EmailAccountForm implements IAccountForm {
     private JButton testMailButton;
     private JTextField mailPasswordField;
 
-    private static EmailAccountForm wxMpAccountForm;
+    private static EmailAccountForm emailAccountForm;
 
     @Override
     public void init(String accountName) {
@@ -115,11 +116,29 @@ public class EmailAccountForm implements IAccountForm {
     }
 
     public static EmailAccountForm getInstance() {
-        if (wxMpAccountForm == null) {
-            wxMpAccountForm = new EmailAccountForm();
+        if (emailAccountForm == null) {
+            emailAccountForm = new EmailAccountForm();
+
+            // E-Mail测试
+            emailAccountForm.getTestMailButton().addActionListener(e -> {
+
+                // TODO
+//                App.config.setMailHost(mailHostTextField.getText());
+//                App.config.setMailPort(mailPortTextField.getText());
+//                App.config.setMailFrom(mailFromTextField.getText());
+//                App.config.setMailUser(mailUserTextField.getText());
+//                App.config.setMailPassword(new String(mailPasswordField.getPassword()));
+//                App.config.setMailUseStartTLS(mailStartTLSCheckBox.isSelected());
+//                App.config.setMailUseSSL(mailSSLCheckBox.isSelected());
+//                MailMsgSender.mailAccount = null;
+
+                MailTestDialog mailTestDialog = new MailTestDialog();
+                mailTestDialog.pack();
+                mailTestDialog.setVisible(true);
+            });
         }
-        UndoUtil.register(wxMpAccountForm);
-        return wxMpAccountForm;
+        UndoUtil.register(emailAccountForm);
+        return emailAccountForm;
     }
 
     {
