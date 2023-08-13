@@ -151,6 +151,20 @@ public class WxMpAccountForm implements IAccountForm {
                 wxMpAccountConfig.setToken(instance.getTokenTextField().getText());
                 wxMpAccountConfig.setAesKey(instance.getAesKeyTextField().getText());
 
+                // TODO
+                App.config.setMpUseProxy(mpUseProxyCheckBox.isSelected());
+                App.config.setMpProxyHost(mpProxyHostTextField.getText());
+                App.config.setMpProxyPort(mpProxyPortTextField.getText());
+                App.config.setMpProxyUserName(mpProxyUserNameTextField.getText());
+                App.config.setMpProxyPassword(mpProxyPasswordTextField.getText());
+
+                App.config.setMpUseOutSideAt(useOutSideAccessTokenCheckBox.isSelected());
+                App.config.setMpManualAt(manualAtRadioButton.isSelected());
+                App.config.setMpApiAt(apiAtRadioButton.isSelected());
+                App.config.setMpAt(accessTokenTextField.getText());
+                App.config.setMpAtExpiresIn(atExpiresInTextField.getText());
+                App.config.setMpAtApiUrl(atApiUrlTextField.getText());
+
                 tAccount1.setAccountConfig(JSONUtil.toJsonStr(wxMpAccountConfig));
 
                 tAccount1.setModifiedTime(now);
