@@ -41,8 +41,6 @@ public class TxYunMsgSender implements IMsgSender {
 
     private static Map<Integer, SmsSingleSender> smsSingleSenderMap = new HashMap<>();
 
-    public TxYunMsgSender() {
-    }
 
     public TxYunMsgSender(Integer msgId, Integer dryRun) {
         TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);

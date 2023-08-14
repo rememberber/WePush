@@ -43,11 +43,6 @@ public class QiNiuYunMsgSender implements IMsgSender {
 
     private static Map<Integer, SmsManager> smsManagerMap = new HashMap<>();
 
-    public QiNiuYunMsgSender() {
-//        qiNiuYunMsgMaker = new QiNiuYunMsgMaker();
-        smsManager = getSmsManager();
-    }
-
     public QiNiuYunMsgSender(Integer msgId, Integer dryRun) {
         TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
         qiNiuYunMsgMaker = new QiNiuYunMsgMaker(tMsg);

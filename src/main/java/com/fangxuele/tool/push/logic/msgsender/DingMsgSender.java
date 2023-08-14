@@ -60,11 +60,6 @@ public class DingMsgSender implements IMsgSender {
 
     private TMsgDing tMsgDing;
 
-    public DingMsgSender() {
-//        dingMsgMaker = new DingMsgMaker();
-        defaultDingTalkClient = getDefaultDingTalkClient();
-    }
-
     public DingMsgSender(Integer msgId, Integer dryRun) {
         TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
         dingMsgMaker = new DingMsgMaker(tMsg);

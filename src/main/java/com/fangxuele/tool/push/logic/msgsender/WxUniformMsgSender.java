@@ -41,8 +41,6 @@ public class WxUniformMsgSender implements IMsgSender {
 
     private WxMaService wxMaService;
 
-    public WxUniformMsgSender() {
-    }
 
     public WxUniformMsgSender(Integer msgId, Integer dryRun) {
         TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);

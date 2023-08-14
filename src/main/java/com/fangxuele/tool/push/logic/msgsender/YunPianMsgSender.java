@@ -43,9 +43,6 @@ public class YunPianMsgSender implements IMsgSender {
     private static Map<Integer, YunpianClient> yunpianClientMap = new HashMap<>();
 
 
-    public YunPianMsgSender() {
-    }
-
     public YunPianMsgSender(Integer msgId, Integer dryRun) {
         TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
         yunPianMsgMaker = new YunPianMsgMaker(tMsg);

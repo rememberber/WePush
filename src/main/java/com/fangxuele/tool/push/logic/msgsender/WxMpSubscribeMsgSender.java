@@ -26,11 +26,6 @@ public class WxMpSubscribeMsgSender implements IMsgSender {
 
     private Integer dryRun;
 
-    public WxMpSubscribeMsgSender() {
-//        wxMpSubscribeMsgMaker = new WxMpSubscribeMsgMaker();
-        wxMpService = WxMpTemplateMsgSender.getWxMpService();
-    }
-
     public WxMpSubscribeMsgSender(Integer msgId, Integer dryRun) {
         TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
         wxMpSubscribeMsgMaker = new WxMpSubscribeMsgMaker(tMsg);

@@ -45,9 +45,6 @@ public class AliYunMsgSender implements IMsgSender {
 
     private static Map<Integer, IAcsClient> acsClientMap = new HashMap<>();
 
-    public AliYunMsgSender() {
-    }
-
     public AliYunMsgSender(Integer msgId, Integer dryRun) {
         TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
         aliyunMsgMaker = new AliyunMsgMaker(tMsg);

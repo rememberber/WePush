@@ -40,10 +40,6 @@ public class WxMpTemplateMsgSender implements IMsgSender {
 
     private Integer dryRun;
 
-    public WxMpTemplateMsgSender() {
-        // TODO 看是否还有保留的必要
-    }
-
     public WxMpTemplateMsgSender(Integer msgId, Integer dryRun) {
         TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
         wxMpTemplateMsgMaker = new WxMpTemplateMsgMaker(tMsg);

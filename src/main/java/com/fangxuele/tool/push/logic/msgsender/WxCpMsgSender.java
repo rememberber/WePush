@@ -43,10 +43,6 @@ public class WxCpMsgSender implements IMsgSender {
 
     private Integer dryRun;
 
-    public WxCpMsgSender() {
-        wxCpMsgMaker = new WxCpMsgMaker(null);
-    }
-
     public WxCpMsgSender(Integer msgId, Integer dryRun) {
         TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
         wxCpMsgMaker = new WxCpMsgMaker(tMsg);

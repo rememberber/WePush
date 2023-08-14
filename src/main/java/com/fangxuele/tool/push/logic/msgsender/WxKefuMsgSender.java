@@ -26,9 +26,6 @@ public class WxKefuMsgSender implements IMsgSender {
 
     private Integer dryRun;
 
-    public WxKefuMsgSender() {
-    }
-
     public WxKefuMsgSender(Integer msgId, Integer dryRun) {
         TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
         wxKefuMsgMaker = new WxKefuMsgMaker(tMsg);

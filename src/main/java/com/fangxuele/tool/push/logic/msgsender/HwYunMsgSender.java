@@ -66,9 +66,6 @@ public class HwYunMsgSender implements IMsgSender {
 
     private HwYunAccountConfig hwYunAccountConfig;
 
-    public HwYunMsgSender() {
-    }
-
     public HwYunMsgSender(Integer msgId, Integer dryRun) {
         TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
         hwYunMsgMaker = new HwYunMsgMaker(tMsg);
