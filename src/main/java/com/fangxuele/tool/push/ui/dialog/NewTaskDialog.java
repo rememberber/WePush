@@ -614,16 +614,6 @@ public class NewTaskDialog extends JDialog {
                 task.setAlertEmails(mailResultToTextField.getText().trim());
                 task.setSaveResult(saveResponseBodyCheckBox.isSelected() ? 1 : 0);
                 task.setModifiedTime(nowDateForSqlite);
-                if (beforeTTask == null) {
-                    task.setCreateTime(nowDateForSqlite);
-                    taskMapper.insert(task);
-                } else {
-                    task.setCreateTime(beforeTTask.getCreateTime());
-                    task.setId(beforeTTask.getId());
-                    taskMapper.updateByPrimaryKey(task);
-                }
-
-                TaskForm.initTaskListTable();
 
                 // 如果是定时任务
                 if (task.getTaskPeriod() == TaskTypeEnum.SCHEDULE_TASK_CODE) {
@@ -667,6 +657,8 @@ public class NewTaskDialog extends JDialog {
                             });
                             scheduler.start();
                             TaskListener.scheduledTaskMap.put(task.getId(), scheduler);
+                        } else {
+                            return;
                         }
                     }
                 } else {
@@ -677,16 +669,30 @@ public class NewTaskDialog extends JDialog {
                             TaskListener.scheduledTaskMap.remove(beforeTTask.getId());
                         }
                     }
-                    JOptionPane.showMessageDialog(this, "保存成功！", "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
+
                 }
+
+                if (beforeTTask == null) {
+                    task.setCreateTime(nowDateForSqlite);
+                    taskMapper.insert(task);
+                } else {
+                    task.setCreateTime(beforeTTask.getCreateTime());
+                    task.setId(beforeTTask.getId());
+                    taskMapper.updateByPrimaryKey(task);
+                }
+
+                TaskForm.initTaskListTable();
+
+                JOptionPane.showMessageDialog(this, "保存成功！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+                dispose();
             } catch (Exception e) {
                 log.error("保存任务异常:{}", ExceptionUtils.getStackTrace(e));
                 JOptionPane.showMessageDialog(this, "保存失败！\n" + e.getMessage(), "失败",
                         JOptionPane.ERROR_MESSAGE);
             }
         }
-        dispose();
+
     }
 
     private boolean nullCheck() {
