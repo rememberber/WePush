@@ -98,18 +98,7 @@ public class WxCpMsgSender implements IMsgSender {
             configStorage.setCorpId(wxCpAccountConfig.getCorpId());
             String agentId = wxCpAccountConfig.getAgentId();
             configStorage.setAgentId(Integer.valueOf(agentId));
-
-            // TODO
-//            List<TWxCpApp> wxCpAppList = WX_CP_APP_MAPPER.selectByAgentId(agentId);
-//            if (wxCpAppList.size() > 0) {
-//                configStorage.setCorpSecret(wxCpAppList.get(0).getSecret());
-//            }
-            if (App.config.isMpUseProxy()) {
-                configStorage.setHttpProxyHost(App.config.getMpProxyHost());
-                configStorage.setHttpProxyPort(Integer.parseInt(App.config.getMpProxyPort()));
-                configStorage.setHttpProxyUsername(App.config.getMpProxyUserName());
-                configStorage.setHttpProxyPassword(App.config.getMpProxyPassword());
-            }
+            configStorage.setCorpSecret(wxCpAccountConfig.getSecret());
             DefaultApacheHttpClientBuilder clientBuilder = DefaultApacheHttpClientBuilder.get();
             //从连接池获取链接的超时时间(单位ms)
             clientBuilder.setConnectionRequestTimeout(10000);
