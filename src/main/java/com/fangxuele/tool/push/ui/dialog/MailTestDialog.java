@@ -1,6 +1,7 @@
 package com.fangxuele.tool.push.ui.dialog;
 
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.bean.account.EmailAccountConfig;
 import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.SendResult;
 import com.fangxuele.tool.push.util.ComponentUtil;
@@ -32,7 +33,9 @@ public class MailTestDialog extends JDialog {
     private JButton buttonCancel;
     private JTextField mailToTextField;
 
-    public MailTestDialog() {
+    private EmailAccountConfig emailAccountConfig;
+
+    private MailTestDialog() {
         super(App.mainFrame, "测试E-Mail服务器设置");
         setContentPane(contentPane);
         setModal(true);
@@ -66,12 +69,17 @@ public class MailTestDialog extends JDialog {
         contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
+    public MailTestDialog(EmailAccountConfig emailAccountConfig) {
+        this();
+        this.emailAccountConfig = emailAccountConfig;
+    }
+
     private void onOK() {
         if (StringUtils.isBlank(mailToTextField.getText())) {
             mailToTextField.grabFocus();
         } else {
             MailMsgSender mailMsgSender = new MailMsgSender();
-            SendResult sendResult = mailMsgSender.sendTestMail(mailToTextField.getText());
+            SendResult sendResult = mailMsgSender.sendTestMail(emailAccountConfig, mailToTextField.getText());
             dispose();
             if (sendResult.isSuccess()) {
                 JOptionPane.showMessageDialog(App.mainFrame, "发送成功！", "成功",

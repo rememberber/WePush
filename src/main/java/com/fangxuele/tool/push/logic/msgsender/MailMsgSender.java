@@ -34,8 +34,6 @@ import java.util.Map;
 @Slf4j
 public class MailMsgSender implements IMsgSender {
 
-    public volatile static MailAccount mailAccount;
-
     private MailMsgMaker mailMsgMaker;
 
     private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
@@ -44,6 +42,8 @@ public class MailMsgSender implements IMsgSender {
     private Integer dryRun;
 
     private static Map<Integer, MailAccount> mailAccountMap = new HashMap<>();
+
+    private MailAccount mailAccount;
 
     public MailMsgSender() {
     }
@@ -93,22 +93,6 @@ public class MailMsgSender implements IMsgSender {
         return null;
     }
 
-    public SendResult sendTestMail(String tos) {
-        SendResult sendResult = new SendResult();
-
-        try {
-            MailUtil.send(mailAccount, tos, "这是一封来自WePush的测试邮件",
-                    "<h1>恭喜，配置正确，邮件发送成功！</h1><p>来自WePush，一款专注于批量推送的小而美的工具。</p>", true);
-            sendResult.setSuccess(true);
-        } catch (Exception e) {
-            sendResult.setSuccess(false);
-            sendResult.setInfo(e.getMessage());
-            log.error(e.toString());
-        }
-
-        return sendResult;
-    }
-
     /**
      * 发送推送结果
      *
@@ -119,7 +103,7 @@ public class MailMsgSender implements IMsgSender {
         SendResult sendResult = new SendResult();
 
         try {
-            MailUtil.send(mailAccount, tos, title, content, true, files);
+            MailUtil.send(getMailAccount(), tos, title, content, true, files);
             sendResult.setSuccess(true);
         } catch (Exception e) {
             sendResult.setSuccess(false);
@@ -135,7 +119,7 @@ public class MailMsgSender implements IMsgSender {
      *
      * @return MailAccount
      */
-    private static MailAccount getMailAccount() {
+    private MailAccount getMailAccount() {
         if (mailAccount == null) {
             synchronized (MailMsgSender.class) {
                 if (mailAccount == null) {
@@ -168,19 +152,44 @@ public class MailMsgSender implements IMsgSender {
             String accountConfig = tAccount.getAccountConfig();
             EmailAccountConfig emailAccountConfig = JSON.parseObject(accountConfig, EmailAccountConfig.class);
 
-            mailAccount = new MailAccount();
+            MailAccount mailAccount = new MailAccount();
             mailAccount.setHost(emailAccountConfig.getMailHost());
             mailAccount.setPort(Integer.valueOf(emailAccountConfig.getMailPort()));
             mailAccount.setAuth(true);
             mailAccount.setFrom(emailAccountConfig.getMailFrom());
             mailAccount.setUser(emailAccountConfig.getMailUser());
             mailAccount.setPass(emailAccountConfig.getMailPassword());
-            // TODO
-            mailAccount.setSslEnable(App.config.isMailUseSSL());
-            mailAccount.setStarttlsEnable(App.config.isMailUseStartTLS());
+            mailAccount.setSslEnable(emailAccountConfig.isMailSSL());
+            mailAccount.setStarttlsEnable(emailAccountConfig.isMailStartTLS());
 
             mailAccountMap.put(accountId, mailAccount);
             return mailAccount;
         }
+    }
+
+    public SendResult sendTestMail(EmailAccountConfig emailAccountConfig, String tos) {
+        SendResult sendResult = new SendResult();
+
+        try {
+            MailAccount mailAccount = new MailAccount();
+            mailAccount.setHost(emailAccountConfig.getMailHost());
+            mailAccount.setPort(Integer.valueOf(emailAccountConfig.getMailPort()));
+            mailAccount.setAuth(true);
+            mailAccount.setFrom(emailAccountConfig.getMailFrom());
+            mailAccount.setUser(emailAccountConfig.getMailUser());
+            mailAccount.setPass(emailAccountConfig.getMailPassword());
+            mailAccount.setSslEnable(emailAccountConfig.isMailSSL());
+            mailAccount.setStarttlsEnable(emailAccountConfig.isMailStartTLS());
+
+            MailUtil.send(mailAccount, tos, "这是一封来自WePush的测试邮件",
+                    "<h1>恭喜，配置正确，邮件发送成功！</h1><p>来自WePush，一款专注于批量推送的小而美的工具。</p>", true);
+            sendResult.setSuccess(true);
+        } catch (Exception e) {
+            sendResult.setSuccess(false);
+            sendResult.setInfo(e.getMessage());
+            log.error(e.toString());
+        }
+
+        return sendResult;
     }
 }

@@ -122,17 +122,16 @@ public class EmailAccountForm implements IAccountForm {
             // E-Mail测试
             emailAccountForm.getTestMailButton().addActionListener(e -> {
 
-                // TODO
-//                App.config.setMailHost(mailHostTextField.getText());
-//                App.config.setMailPort(mailPortTextField.getText());
-//                App.config.setMailFrom(mailFromTextField.getText());
-//                App.config.setMailUser(mailUserTextField.getText());
-//                App.config.setMailPassword(new String(mailPasswordField.getPassword()));
-//                App.config.setMailUseStartTLS(mailStartTLSCheckBox.isSelected());
-//                App.config.setMailUseSSL(mailSSLCheckBox.isSelected());
-//                MailMsgSender.mailAccount = null;
+                EmailAccountConfig emailAccountConfig = new EmailAccountConfig();
+                emailAccountConfig.setMailHost(emailAccountForm.getMailHostTextField().getText());
+                emailAccountConfig.setMailPort(emailAccountForm.getMailPortTextField().getText());
+                emailAccountConfig.setMailFrom(emailAccountForm.getMailFromTextField().getText());
+                emailAccountConfig.setMailUser(emailAccountForm.getMailUserTextField().getText());
+                emailAccountConfig.setMailPassword(emailAccountForm.getMailPasswordField().getText());
+                emailAccountConfig.setMailStartTLS(emailAccountForm.getMailStartTLSCheckBox().isSelected());
+                emailAccountConfig.setMailSSL(emailAccountForm.getMailSSLCheckBox().isSelected());
 
-                MailTestDialog mailTestDialog = new MailTestDialog();
+                MailTestDialog mailTestDialog = new MailTestDialog(emailAccountConfig);
                 mailTestDialog.pack();
                 mailTestDialog.setVisible(true);
             });

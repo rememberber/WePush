@@ -3,7 +3,7 @@ package com.fangxuele.tool.push.ui.dialog;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
+import com.fangxuele.tool.push.bean.account.EmailAccountConfig;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.HikariUtil;
@@ -156,9 +156,17 @@ public class SettingDialog extends JDialog {
             App.config.setMailPassword(new String(mailPasswordField.getPassword()));
             App.config.setMailUseStartTLS(mailStartTLSCheckBox.isSelected());
             App.config.setMailUseSSL(mailSSLCheckBox.isSelected());
-            MailMsgSender.mailAccount = null;
 
-            MailTestDialog mailTestDialog = new MailTestDialog();
+            EmailAccountConfig emailAccountConfig = new EmailAccountConfig();
+            emailAccountConfig.setMailHost(mailHostTextField.getText());
+            emailAccountConfig.setMailPort(mailPortTextField.getText());
+            emailAccountConfig.setMailFrom(mailFromTextField.getText());
+            emailAccountConfig.setMailUser(mailUserTextField.getText());
+            emailAccountConfig.setMailPassword(new String(mailPasswordField.getPassword()));
+            emailAccountConfig.setMailStartTLS(mailStartTLSCheckBox.isSelected());
+            emailAccountConfig.setMailSSL(mailSSLCheckBox.isSelected());
+
+            MailTestDialog mailTestDialog = new MailTestDialog(emailAccountConfig);
             mailTestDialog.pack();
             mailTestDialog.setVisible(true);
         });
@@ -174,8 +182,6 @@ public class SettingDialog extends JDialog {
                 App.config.setMailUseStartTLS(mailStartTLSCheckBox.isSelected());
                 App.config.setMailUseSSL(mailSSLCheckBox.isSelected());
                 App.config.save();
-
-                MailMsgSender.mailAccount = null;
 
                 JOptionPane.showMessageDialog(this, "保存成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
