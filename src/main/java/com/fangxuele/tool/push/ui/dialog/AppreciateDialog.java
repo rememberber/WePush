@@ -65,6 +65,7 @@ public class AppreciateDialog extends JDialog {
      * 初始化二维码
      */
     public void initQrCode() {
+        // TODO
         String qrCodeContent = HttpUtil.get(UiConsts.QR_CODE_URL);
         if (StringUtils.isNotEmpty(qrCodeContent)) {
             Map<String, String> urlMap = JSONUtil.toBean(qrCodeContent, Map.class);

@@ -60,8 +60,9 @@ public class MainWindow {
             gridLayoutManager.setMargin(new Insets(25, 0, 0, 0));
         }
 
-        mainWindow.getAccountPanel().setDividerLocation((int) (App.mainFrame.getWidth() / 5.6));
-        mainWindow.getPeoplePanel().setDividerLocation((int) (App.mainFrame.getWidth() / 5.6));
+        mainWindow.getAccountPanel().setDividerLocation((int) (App.mainFrame.getWidth() / 5));
+        mainWindow.getMessagePanel().setDividerLocation((int) (App.mainFrame.getWidth() / 5));
+        mainWindow.getPeoplePanel().setDividerLocation((int) (App.mainFrame.getWidth() / 5));
         mainWindow.getAccountManagePanel().add(AccountManageForm.getInstance().getAccountManagePanel(), GRID_CONSTRAINTS);
         mainWindow.getAccountEditPanel().add(AccountEditForm.getInstance().getAccountEditPanel(), GRID_CONSTRAINTS);
         mainWindow.getMessageEditPanel().add(MessageEditForm.getInstance().getMessageEditPanel(), GRID_CONSTRAINTS);
@@ -70,7 +71,6 @@ public class MainWindow {
         mainWindow.getPeopleEditPanel().add(PeopleEditForm.getInstance().getMainPanel(), GRID_CONSTRAINTS);
         mainWindow.getTaskPanel().add(TaskForm.getInstance().getMainPanel(), GRID_CONSTRAINTS);
         mainWindow.getMessageTypePanel().add(MessageTypeForm.getInstance().getMessageTypePanel(), GRID_CONSTRAINTS);
-        mainWindow.getMessagePanel().setDividerLocation((int) (App.mainFrame.getWidth() / 5.6));
         mainWindow.getMainPanel().updateUI();
     }
 
