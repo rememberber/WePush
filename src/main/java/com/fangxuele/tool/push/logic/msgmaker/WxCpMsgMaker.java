@@ -1,9 +1,13 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
 import com.alibaba.fastjson.JSON;
+import com.fangxuele.tool.push.bean.account.WxCpAccountConfig;
+import com.fangxuele.tool.push.dao.TAccountMapper;
+import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgWxCp;
 import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import me.chanjar.weixin.cp.bean.article.NewArticle;
 import me.chanjar.weixin.cp.bean.message.WxCpMessage;
@@ -19,25 +23,33 @@ import org.apache.velocity.VelocityContext;
  */
 public class WxCpMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
-    private static String agentId;
+    private String agentId;
 
-    public static String msgType;
+    public String msgType;
 
-    private static String msgTitle;
+    private String msgTitle;
 
-    private static String picUrl;
+    private String picUrl;
 
-    public static String desc;
+    public String desc;
 
-    public static String url;
+    public String url;
 
-    private static String btnTxt;
+    private String btnTxt;
 
-    private static String msgContent;
+    private String msgContent;
+
+    private WxCpAccountConfig wxCpAccountConfig;
+
+    private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
 
     public WxCpMsgMaker(TMsg tMsg) {
         TMsgWxCp tMsgWxCp = JSON.parseObject(tMsg.getContent(), TMsgWxCp.class);
-        agentId = tMsgWxCp.getAgentId();
+
+        TAccount tAccount = accountMapper.selectByPrimaryKey(tMsg.getAccountId());
+        String accountConfig = tAccount.getAccountConfig();
+        wxCpAccountConfig = JSON.parseObject(accountConfig, WxCpAccountConfig.class);
+        agentId = wxCpAccountConfig.getAgentId();
 
         msgType = tMsgWxCp.getCpMsgType();
         msgTitle = tMsgWxCp.getTitle();
@@ -53,15 +65,6 @@ public class WxCpMsgMaker extends BaseMsgMaker implements IMsgMaker {
      */
     @Override
     public void prepare() {
-        String agentIdBefore = agentId;
-//        String agentIdNow = WxCpMsgForm.appNameToAgentIdMap.get(WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem());
-//        synchronized (this) {
-//            if (agentIdBefore == null || !agentIdBefore.equals(agentIdNow)) {
-//                agentId = agentIdNow;
-//                WxCpMsgSender.wxCpConfigStorage = null;
-//                WxCpMsgSender.wxCpService = null;
-//            }
-//        }
         msgType = (String) WxCpMsgForm.getInstance().getMsgTypeComboBox().getSelectedItem();
         msgTitle = WxCpMsgForm.getInstance().getTitleTextField().getText();
         picUrl = WxCpMsgForm.getInstance().getPicUrlTextField().getText().trim();

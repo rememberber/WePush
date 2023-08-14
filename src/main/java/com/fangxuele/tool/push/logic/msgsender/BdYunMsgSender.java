@@ -61,7 +61,7 @@ public class BdYunMsgSender implements IMsgSender {
     public SendResult send(String[] msgData) {
         SendResult sendResult = new SendResult();
         try {
-            String templateCode = BdYunMsgMaker.templateId;
+            String templateCode = bdYunMsgMaker.getTemplateId();
             Map<String, String> params = bdYunMsgMaker.makeMsg(msgData);
             String phoneNumber = msgData[0];
             if (dryRun == 1) {

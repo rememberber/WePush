@@ -6,8 +6,6 @@ public class TMsgWxCp implements Serializable {
 
     private String cpMsgType;
 
-    private String agentId;
-
     private String content;
 
     private String title;
@@ -28,14 +26,6 @@ public class TMsgWxCp implements Serializable {
 
     public void setCpMsgType(String cpMsgType) {
         this.cpMsgType = cpMsgType == null ? null : cpMsgType.trim();
-    }
-
-    public String getAgentId() {
-        return agentId;
-    }
-
-    public void setAgentId(String agentId) {
-        this.agentId = agentId == null ? null : agentId.trim();
     }
 
     public String getContent() {
