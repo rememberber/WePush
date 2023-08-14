@@ -1,7 +1,6 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
 import cn.hutool.json.JSONUtil;
-import com.fangxuele.tool.push.bean.msg.DingMsg;
 import com.fangxuele.tool.push.dao.TMsgMapper;
 import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgDing;
@@ -49,7 +48,6 @@ public class DingMsgForm implements IMsgForm {
     private JLabel urlLabel;
     private JTextField urlTextField;
     private JLabel contentLabel;
-    private JComboBox appNameComboBox;
     private JButton appManageButton;
     private JTextField titleTextField;
     private JTextArea contentTextArea;
@@ -133,14 +131,12 @@ public class DingMsgForm implements IMsgForm {
         TMsgDing tMsgDing = JSONUtil.toBean(tMsg.getContent(), TMsgDing.class);
         if (tMsgDing != null) {
             String dingMsgType = tMsgDing.getDingMsgType();
-            getInstance().getAppNameComboBox().setSelectedItem(agentIdToAppNameMap.get(tMsgDing.getAgentId()));
             getInstance().getMsgTypeComboBox().setSelectedItem(dingMsgType);
-            DingMsg dingMsg = JSONUtil.toBean(tMsgDing.getContent(), DingMsg.class);
-            getInstance().getContentTextArea().setText(dingMsg.getContent());
-            getInstance().getTitleTextField().setText(dingMsg.getTitle());
-            getInstance().getPicUrlTextField().setText(dingMsg.getPicUrl());
-            getInstance().getUrlTextField().setText(dingMsg.getUrl());
-            getInstance().getBtnTxtTextField().setText(dingMsg.getBtnTxt());
+            getInstance().getContentTextArea().setText(tMsgDing.getContent());
+            getInstance().getTitleTextField().setText(tMsgDing.getMsgTitle());
+            getInstance().getPicUrlTextField().setText(tMsgDing.getPicUrl());
+            getInstance().getUrlTextField().setText(tMsgDing.getUrl());
+            getInstance().getBtnTxtTextField().setText(tMsgDing.getBtnTxt());
             getInstance().getWebHookTextField().setText(tMsgDing.getWebHook());
 
             switchDingMsgType(dingMsgType);
@@ -159,11 +155,6 @@ public class DingMsgForm implements IMsgForm {
     public void save(Integer accountId, String msgName) {
         boolean existSameMsg = false;
 
-        if (getInstance().getAppNameComboBox().getSelectedItem() == null) {
-            JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "请选择应用！", "成功",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
         Integer msgId = null;
         TMsg msg = msgMapper.selectByUnique(MessageTypeEnum.DING_CODE, accountId, msgName);
         if (msg != null) {
@@ -195,17 +186,14 @@ public class DingMsgForm implements IMsgForm {
             tMsg.setAccountId(accountId);
             tMsg.setMsgName(msgName);
             TMsgDing tMsgDing = new TMsgDing();
-            tMsgDing.setAgentId(appNameToAgentIdMap.get(getInstance().getAppNameComboBox().getSelectedItem()));
             tMsgDing.setDingMsgType(dingMsgType);
-            DingMsg dingMsg = new DingMsg();
-            dingMsg.setContent(content);
-            dingMsg.setTitle(title);
-            dingMsg.setPicUrl(picUrl);
-            dingMsg.setUrl(url);
-            dingMsg.setBtnTxt(btnTxt);
-            dingMsg.setBtnUrl(btnUrl);
+            tMsgDing.setContent(content);
+            tMsgDing.setMsgTitle(title);
+            tMsgDing.setPicUrl(picUrl);
+            tMsgDing.setUrl(url);
+            tMsgDing.setBtnTxt(btnTxt);
+            tMsgDing.setBtnUrl(btnUrl);
 
-            tMsgDing.setContent(JSONUtil.toJsonStr(dingMsg));
             tMsg.setModifiedTime(now);
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
             tMsg.setPreviewUser(messageEditForm.getPreviewUserField().getText());
@@ -398,8 +386,6 @@ public class DingMsgForm implements IMsgForm {
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(2, 3, new Insets(0, 0, 20, 0), -1, -1));
         dingMsgPanel.add(panel2, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        appNameComboBox = new JComboBox();
-        panel2.add(appNameComboBox, new GridConstraints(0, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         workRadioButton = new JRadioButton();
         workRadioButton.setText("工作通知消息");
         panel2.add(workRadioButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));

@@ -8,11 +8,19 @@ public class TMsgDing implements Serializable {
 
     private String dingMsgType;
 
-    private String agentId;
-
     private String webHook;
 
     private String content;
+
+    private  String msgTitle;
+
+    private String picUrl;
+
+    private String url;
+
+    private String btnTxt;
+
+    private String btnUrl;
 
     private static final long serialVersionUID = 1L;
 
@@ -32,14 +40,6 @@ public class TMsgDing implements Serializable {
         this.dingMsgType = dingMsgType == null ? null : dingMsgType.trim();
     }
 
-    public String getAgentId() {
-        return agentId;
-    }
-
-    public void setAgentId(String agentId) {
-        this.agentId = agentId == null ? null : agentId.trim();
-    }
-
     public String getWebHook() {
         return webHook;
     }
@@ -54,5 +54,45 @@ public class TMsgDing implements Serializable {
 
     public void setContent(String content) {
         this.content = content == null ? null : content.trim();
+    }
+
+    public String getMsgTitle() {
+        return msgTitle;
+    }
+
+    public void setMsgTitle(String msgTitle) {
+        this.msgTitle = msgTitle;
+    }
+
+    public String getPicUrl() {
+        return picUrl;
+    }
+
+    public void setPicUrl(String picUrl) {
+        this.picUrl = picUrl;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getBtnTxt() {
+        return btnTxt;
+    }
+
+    public void setBtnTxt(String btnTxt) {
+        this.btnTxt = btnTxt;
+    }
+
+    public String getBtnUrl() {
+        return btnUrl;
+    }
+
+    public void setBtnUrl(String btnUrl) {
+        this.btnUrl = btnUrl;
     }
 }
