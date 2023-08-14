@@ -6,7 +6,6 @@ import com.baidubce.services.sms.SmsClient;
 import com.baidubce.services.sms.SmsClientConfiguration;
 import com.baidubce.services.sms.model.SendMessageV2Request;
 import com.baidubce.services.sms.model.SendMessageV2Response;
-import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.account.BdYunAccountConfig;
 import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.dao.TMsgMapper;
@@ -45,16 +44,17 @@ public class BdYunMsgSender implements IMsgSender {
 
     private static Map<Integer, SmsClient> smsClientMap = new HashMap<>();
 
-    public BdYunMsgSender() {
-//        bdYunMsgMaker = new BdYunMsgMaker();
-        smsClient = getBdYunSmsClient();
-    }
+    private BdYunAccountConfig bdYunAccountConfig;
 
     public BdYunMsgSender(Integer msgId, Integer dryRun) {
         TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
         bdYunMsgMaker = new BdYunMsgMaker(tMsg);
         smsClient = getBdYunSmsClient(tMsg.getAccountId());
         this.dryRun = dryRun;
+
+        TAccount tAccount = accountMapper.selectByPrimaryKey(tMsg.getAccountId());
+        String accountConfig = tAccount.getAccountConfig();
+        bdYunAccountConfig = JSON.parseObject(accountConfig, BdYunAccountConfig.class);
     }
 
     @Override
@@ -70,8 +70,7 @@ public class BdYunMsgSender implements IMsgSender {
             } else {
                 // 定义请求参数
                 // 发送使用签名的调用ID
-                // TODO
-                String invokeId = App.config.getBdInvokeId();
+                String invokeId = bdYunAccountConfig.getBdInvokeId();
 
                 //实例化请求对象
                 SendMessageV2Request request = new SendMessageV2Request();
@@ -102,35 +101,6 @@ public class BdYunMsgSender implements IMsgSender {
     @Override
     public SendResult asyncSend(String[] msgData) {
         return null;
-    }
-
-    /**
-     * 获取百度云短信发送客户端
-     *
-     * @return SmsClient
-     */
-    private static SmsClient getBdYunSmsClient() {
-        if (smsClient == null) {
-            synchronized (BdYunMsgSender.class) {
-                if (smsClient == null) {
-                    // SMS服务域名，可根据环境选择具体域名
-                    String endPoint = App.config.getBdEndPoint();
-                    // 发送账号安全认证的Access Key ID
-                    String accessKeyId = App.config.getBdAccessKeyId();
-                    // 发送账号安全认证的Secret Access Key
-                    String secretAccessKy = App.config.getBdSecretAccessKey();
-
-                    // ak、sk等config
-                    SmsClientConfiguration config = new SmsClientConfiguration();
-                    config.setCredentials(new DefaultBceCredentials(accessKeyId, secretAccessKy));
-                    config.setEndpoint(endPoint);
-
-                    // 实例化发送客户端
-                    smsClient = new SmsClient(config);
-                }
-            }
-        }
-        return smsClient;
     }
 
     private SmsClient getBdYunSmsClient(Integer accountId) {
