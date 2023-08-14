@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.bean.msg.MailMsg;
 import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgMail;
-import com.fangxuele.tool.push.ui.form.msg.MailMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.VelocityContext;
@@ -43,17 +42,6 @@ public class MailMsgMaker extends BaseMsgMaker implements IMsgMaker {
         }
         mailFiles = files;
         mailContent = tMsgMail.getContent();
-    }
-
-    /**
-     * 准备(界面字段等)
-     */
-    @Override
-    public void prepare() {
-        mailTitle = MailMsgForm.getInstance().getMailTitleTextField().getText();
-        mailCc = MailMsgForm.getInstance().getMailCcTextField().getText();
-        mailFiles = MailMsgForm.getInstance().getAttachmentFiles();
-        mailContent = MailMsgForm.getInstance().getMailContentPane().getText();
     }
 
     /**

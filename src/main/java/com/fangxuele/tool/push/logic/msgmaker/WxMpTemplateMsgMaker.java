@@ -4,14 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.bean.TemplateData;
 import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgMpTemplate;
-import com.fangxuele.tool.push.ui.form.msg.MpTemplateMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
-import org.apache.commons.compress.utils.Lists;
 import org.apache.velocity.VelocityContext;
 
-import javax.swing.table.DefaultTableModel;
 import java.util.List;
 
 /**
@@ -41,37 +38,6 @@ public class WxMpTemplateMsgMaker extends BaseMsgMaker implements IMsgMaker {
         this.miniAppId = tMsgWxMpTemplate.getMaAppid();
         this.miniAppPagePath = tMsgWxMpTemplate.getMaPagePath();
         this.templateDataList = tMsgWxMpTemplate.getTemplateDataList();
-    }
-
-    /**
-     * 准备(界面字段等)
-     */
-    @Override
-    public void prepare() {
-        templateId = MpTemplateMsgForm.getInstance().getMsgTemplateIdTextField().getText().trim();
-        templateUrl = MpTemplateMsgForm.getInstance().getMsgTemplateUrlTextField().getText().trim();
-        miniAppId = MpTemplateMsgForm.getInstance().getMsgTemplateMiniAppidTextField().getText().trim();
-        miniAppPagePath = MpTemplateMsgForm.getInstance().getMsgTemplateMiniPagePathTextField().getText().trim();
-
-        if (MpTemplateMsgForm.getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-            MpTemplateMsgForm.initTemplateDataTable();
-        }
-
-        DefaultTableModel tableModel = (DefaultTableModel) MpTemplateMsgForm.getInstance().getTemplateMsgDataTable().getModel();
-        int rowCount = tableModel.getRowCount();
-        TemplateData templateData;
-        templateDataList = Lists.newArrayList();
-        for (int i = 0; i < rowCount; i++) {
-            String name = ((String) tableModel.getValueAt(i, 0)).trim();
-            String value = ((String) tableModel.getValueAt(i, 1)).trim();
-            String color = ((String) tableModel.getValueAt(i, 2)).trim();
-            templateData = new TemplateData();
-            templateData.setName(name);
-            templateData.setValue(value);
-            templateData.setColor(color);
-            templateDataList.add(templateData);
-        }
-
     }
 
     /**

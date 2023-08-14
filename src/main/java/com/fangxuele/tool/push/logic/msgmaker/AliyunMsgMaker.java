@@ -10,13 +10,10 @@ import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgSms;
-import com.fangxuele.tool.push.ui.form.msg.AliYunMsgForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.TemplateUtil;
-import org.apache.commons.compress.utils.Lists;
 import org.apache.velocity.VelocityContext;
 
-import javax.swing.table.DefaultTableModel;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,32 +44,6 @@ public class AliyunMsgMaker extends BaseMsgMaker implements IMsgMaker {
         TAccount tAccount = accountMapper.selectByPrimaryKey(tMsg.getAccountId());
         String accountConfig = tAccount.getAccountConfig();
         aliYunAccountConfig = JSON.parseObject(accountConfig, AliYunAccountConfig.class);
-    }
-
-    /**
-     * 准备(界面字段等)
-     */
-    @Override
-    public void prepare() {
-        templateId = AliYunMsgForm.getInstance().getMsgTemplateIdTextField().getText();
-
-        if (AliYunMsgForm.getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-            AliYunMsgForm.initTemplateDataTable();
-        }
-
-        DefaultTableModel tableModel = (DefaultTableModel) AliYunMsgForm.getInstance().getTemplateMsgDataTable().getModel();
-        int rowCount = tableModel.getRowCount();
-        TemplateData templateData;
-        templateDataList = Lists.newArrayList();
-        for (int i = 0; i < rowCount; i++) {
-            String name = ((String) tableModel.getValueAt(i, 0)).trim();
-            String value = ((String) tableModel.getValueAt(i, 1)).trim();
-            templateData = new TemplateData();
-            templateData.setName(name);
-            templateData.setValue(value);
-            templateDataList.add(templateData);
-        }
-
     }
 
     /**

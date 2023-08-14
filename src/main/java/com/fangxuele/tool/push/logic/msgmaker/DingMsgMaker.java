@@ -49,13 +49,6 @@ public class DingMsgMaker extends BaseMsgMaker implements IMsgMaker {
     }
 
     /**
-     * 准备(界面字段等)
-     */
-    @Override
-    public void prepare() {
-    }
-
-    /**
      * 组织消息-企业号
      *
      * @param msgData 消息数据

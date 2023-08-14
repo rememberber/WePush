@@ -6,7 +6,6 @@ import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgWxCp;
-import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import me.chanjar.weixin.cp.bean.article.NewArticle;
@@ -58,20 +57,6 @@ public class WxCpMsgMaker extends BaseMsgMaker implements IMsgMaker {
         url = tMsgWxCp.getUrl();
         btnTxt = tMsgWxCp.getBtnTxt();
         msgContent = tMsgWxCp.getContent();
-    }
-
-    /**
-     * 准备(界面字段等)
-     */
-    @Override
-    public void prepare() {
-        msgType = (String) WxCpMsgForm.getInstance().getMsgTypeComboBox().getSelectedItem();
-        msgTitle = WxCpMsgForm.getInstance().getTitleTextField().getText();
-        picUrl = WxCpMsgForm.getInstance().getPicUrlTextField().getText().trim();
-        desc = WxCpMsgForm.getInstance().getDescTextField().getText();
-        url = WxCpMsgForm.getInstance().getUrlTextField().getText().trim();
-        btnTxt = WxCpMsgForm.getInstance().getBtnTxtTextField().getText().trim();
-        msgContent = WxCpMsgForm.getInstance().getContentTextArea().getText();
     }
 
     /**

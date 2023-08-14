@@ -4,13 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.bean.TemplateData;
 import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgSms;
-import com.fangxuele.tool.push.ui.form.msg.UpYunMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import lombok.Getter;
-import org.apache.commons.compress.utils.Lists;
 import org.apache.velocity.VelocityContext;
 
-import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,26 +33,6 @@ public class UpYunMsgMaker extends BaseMsgMaker implements IMsgMaker {
         paramList = new ArrayList<>();
         for (TemplateData templateData : tMsgSms.getTemplateDataList()) {
             paramList.add(templateData.getValue());
-        }
-    }
-
-    /**
-     * 准备(界面字段等)
-     */
-    @Override
-    public void prepare() {
-        templateId = UpYunMsgForm.getInstance().getMsgTemplateIdTextField().getText();
-
-        if (UpYunMsgForm.getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-            UpYunMsgForm.initTemplateDataTable();
-        }
-
-        DefaultTableModel tableModel = (DefaultTableModel) UpYunMsgForm.getInstance().getTemplateMsgDataTable().getModel();
-        int rowCount = tableModel.getRowCount();
-        paramList = Lists.newArrayList();
-        for (int i = 0; i < rowCount; i++) {
-            String value = ((String) tableModel.getValueAt(i, 1));
-            paramList.add(value);
         }
     }
 

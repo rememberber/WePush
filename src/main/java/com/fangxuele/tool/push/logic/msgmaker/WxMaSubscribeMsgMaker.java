@@ -5,12 +5,9 @@ import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.bean.TemplateData;
 import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgMaSubscribe;
-import com.fangxuele.tool.push.ui.form.msg.MaSubscribeMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
-import org.apache.commons.compress.utils.Lists;
 import org.apache.velocity.VelocityContext;
 
-import javax.swing.table.DefaultTableModel;
 import java.util.List;
 
 /**
@@ -32,34 +29,6 @@ public class WxMaSubscribeMsgMaker extends BaseMsgMaker implements IMsgMaker {
         this.templateId = tMsgMaSubscribe.getTemplateId();
         this.page = tMsgMaSubscribe.getPage();
         this.templateDataList = tMsgMaSubscribe.getTemplateDataList();
-    }
-
-    /**
-     * 准备(界面字段等)
-     */
-    @Override
-    public void prepare() {
-        templateId = MaSubscribeMsgForm.getInstance().getMsgTemplateIdTextField().getText().trim();
-        page = MaSubscribeMsgForm.getInstance().getMsgTemplateUrlTextField().getText().trim();
-
-        if (MaSubscribeMsgForm.getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-            MaSubscribeMsgForm.initTemplateDataTable();
-        }
-
-        DefaultTableModel tableModel = (DefaultTableModel) MaSubscribeMsgForm.getInstance().getTemplateMsgDataTable().getModel();
-        int rowCount = tableModel.getRowCount();
-        TemplateData templateData;
-        templateDataList = Lists.newArrayList();
-        for (int i = 0; i < rowCount; i++) {
-            String name = ((String) tableModel.getValueAt(i, 0)).trim();
-            String value = ((String) tableModel.getValueAt(i, 1)).trim();
-            String color = ((String) tableModel.getValueAt(i, 2)).trim();
-            templateData = new TemplateData();
-            templateData.setName(name);
-            templateData.setValue(value);
-            templateData.setColor(color);
-            templateDataList.add(templateData);
-        }
     }
 
     /**

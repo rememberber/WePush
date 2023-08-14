@@ -3,7 +3,6 @@ package com.fangxuele.tool.push.logic.msgmaker;
 import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgSms;
-import com.fangxuele.tool.push.ui.form.msg.YunpianMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import com.yunpian.sdk.YunpianClient;
 import org.apache.velocity.VelocityContext;
@@ -26,14 +25,6 @@ public class YunPianMsgMaker extends BaseMsgMaker implements IMsgMaker {
     public YunPianMsgMaker(TMsg tMsg) {
         TMsgSms tMsgSms = JSON.parseObject(tMsg.getContent(), TMsgSms.class);
         this.msgYunpianMsgContent = tMsgSms.getContent();
-    }
-
-    /**
-     * 准备(界面字段等)
-     */
-    @Override
-    public void prepare() {
-        msgYunpianMsgContent = YunpianMsgForm.getInstance().getMsgYunpianMsgContentTextField().getText();
     }
 
     /**

@@ -3,7 +3,6 @@ package com.fangxuele.tool.push.logic.msgmaker;
 import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgKefu;
-import com.fangxuele.tool.push.ui.form.msg.KefuMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
 import org.apache.velocity.VelocityContext;
@@ -48,22 +47,6 @@ public class WxKefuMsgMaker extends BaseMsgMaker implements IMsgMaker {
         msgKefuAppid = tMsgKefu.getAppId();
         msgKefuPagepath = tMsgKefu.getPagePath();
         msgKefuThumbMediaId = tMsgKefu.getThumbMediaId();
-    }
-
-    /**
-     * 准备(界面字段等)
-     */
-    @Override
-    public void prepare() {
-        msgKefuMsgType = KefuMsgForm.getInstance().getMsgKefuMsgTypeComboBox().getSelectedItem().toString();
-        msgKefuMsgTitle = KefuMsgForm.getInstance().getMsgKefuMsgTitleTextField().getText();
-        msgKefuPicUrl = KefuMsgForm.getInstance().getMsgKefuPicUrlTextField().getText();
-        msgKefuDesc = KefuMsgForm.getInstance().getMsgKefuDescTextField().getText();
-        msgKefuUrl = KefuMsgForm.getInstance().getMsgKefuUrlTextField().getText();
-        msgKefuMsgContent = KefuMsgForm.getInstance().getContentTextArea().getText();
-        msgKefuAppid = KefuMsgForm.getInstance().getMsgKefuAppidTextField().getText();
-        msgKefuPagepath = KefuMsgForm.getInstance().getMsgKefuPagepathTextField().getText();
-        msgKefuThumbMediaId = KefuMsgForm.getInstance().getMsgKefuThumbMediaIdTextField().getText();
     }
 
     /**
