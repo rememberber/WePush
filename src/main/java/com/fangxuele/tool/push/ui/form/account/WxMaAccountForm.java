@@ -48,13 +48,11 @@ public class WxMaAccountForm implements IAccountForm {
             instance.getAppSecretTextField().setText(wxMaAccountConfig.getAppSecret());
             instance.getTokenTextField().setText(wxMaAccountConfig.getToken());
             instance.getAesKeyTextField().setText(wxMaAccountConfig.getAesKey());
-
-            // TODO
-            maUseProxyCheckBox.setSelected(App.config.isMaUseProxy());
-            maProxyHostTextField.setText(App.config.getMaProxyHost());
-            maProxyPortTextField.setText(App.config.getMaProxyPort());
-            maProxyUserNameTextField.setText(App.config.getMaProxyUserName());
-            maProxyPasswordTextField.setText(App.config.getMaProxyPassword());
+            instance.getMaUseProxyCheckBox().setSelected(wxMaAccountConfig.isMaUseProxy());
+            instance.getMaProxyHostTextField().setText(wxMaAccountConfig.getMaProxyHost());
+            instance.getMaProxyPortTextField().setText(wxMaAccountConfig.getMaProxyPort());
+            instance.getMaProxyUserNameTextField().setText(wxMaAccountConfig.getMaProxyUserName());
+            instance.getMaProxyPasswordTextField().setText(wxMaAccountConfig.getMaProxyPassword());
 
             toggleMaProxyPanel();
         }
@@ -94,13 +92,11 @@ public class WxMaAccountForm implements IAccountForm {
                 wxMaAccountConfig.setAppSecret(instance.getAppSecretTextField().getText());
                 wxMaAccountConfig.setToken(instance.getTokenTextField().getText());
                 wxMaAccountConfig.setAesKey(instance.getAesKeyTextField().getText());
-
-                // TODO
-                App.config.setMaUseProxy(maUseProxyCheckBox.isSelected());
-                App.config.setMaProxyHost(maProxyHostTextField.getText());
-                App.config.setMaProxyPort(maProxyPortTextField.getText());
-                App.config.setMaProxyUserName(maProxyUserNameTextField.getText());
-                App.config.setMaProxyPassword(maProxyPasswordTextField.getText());
+                wxMaAccountConfig.setMaUseProxy(instance.getMaUseProxyCheckBox().isSelected());
+                wxMaAccountConfig.setMaProxyHost(instance.getMaProxyHostTextField().getText());
+                wxMaAccountConfig.setMaProxyPort(instance.getMaProxyPortTextField().getText());
+                wxMaAccountConfig.setMaProxyUserName(instance.getMaProxyUserNameTextField().getText());
+                wxMaAccountConfig.setMaProxyPassword(instance.getMaProxyPasswordTextField().getText());
 
                 tAccount1.setAccountConfig(JSONUtil.toJsonStr(wxMaAccountConfig));
 

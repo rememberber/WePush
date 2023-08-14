@@ -11,4 +11,9 @@ public class WxMaAccountConfig {
     private String appSecret;
     private String token;
     private String aesKey;
+    private boolean maUseProxy;
+    private String maProxyHost;
+    private String maProxyPort;
+    private String maProxyUserName;
+    private String maProxyPassword;
 }

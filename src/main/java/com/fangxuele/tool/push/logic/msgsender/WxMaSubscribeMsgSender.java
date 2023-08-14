@@ -33,8 +33,6 @@ public class WxMaSubscribeMsgSender implements IMsgSender {
 
     public volatile WxMaService wxMaService;
 
-    public volatile static WxMaDefaultConfigImpl wxMaConfigStorage;
-
     private WxMaSubscribeMsgMaker wxMaSubscribeMsgMaker;
 
     private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
@@ -43,9 +41,6 @@ public class WxMaSubscribeMsgSender implements IMsgSender {
     private Integer dryRun;
 
     private static Map<Integer, WxMaService> wxMaServiceMap = new HashMap<>();
-
-    public WxMaSubscribeMsgSender() {
-    }
 
     public WxMaSubscribeMsgSender(Integer msgId, Integer dryRun) {
         TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
@@ -84,55 +79,6 @@ public class WxMaSubscribeMsgSender implements IMsgSender {
         return null;
     }
 
-
-    /**
-     * 微信小程序配置
-     *
-     * @return WxMaInMemoryConfig
-     */
-    private static WxMaDefaultConfigImpl wxMaConfigStorage() {
-        WxMaDefaultConfigImpl configStorage = new WxMaDefaultConfigImpl();
-        configStorage.setAppid(App.config.getMiniAppAppId());
-        configStorage.setSecret(App.config.getMiniAppAppSecret());
-        configStorage.setToken(App.config.getMiniAppToken());
-        configStorage.setAesKey(App.config.getMiniAppAesKey());
-        configStorage.setMsgDataFormat("JSON");
-        if (App.config.isMaUseProxy()) {
-            configStorage.setHttpProxyHost(App.config.getMaProxyHost());
-            configStorage.setHttpProxyPort(Integer.parseInt(App.config.getMaProxyPort()));
-            configStorage.setHttpProxyUsername(App.config.getMaProxyUserName());
-            configStorage.setHttpProxyPassword(App.config.getMaProxyPassword());
-        }
-        DefaultApacheHttpClientBuilder clientBuilder = DefaultApacheHttpClientBuilder.get();
-        //从连接池获取链接的超时时间(单位ms)
-        clientBuilder.setConnectionRequestTimeout(10000);
-        //建立链接的超时时间(单位ms)
-        clientBuilder.setConnectionTimeout(5000);
-        //连接池socket超时时间(单位ms)
-        clientBuilder.setSoTimeout(5000);
-        //空闲链接的超时时间(单位ms)
-        clientBuilder.setIdleConnTimeout(60000);
-        //空闲链接的检测周期(单位ms)
-        clientBuilder.setCheckWaitTime(60000);
-        //每路最大连接数
-        clientBuilder.setMaxConnPerHost(App.config.getMaxThreads());
-        //连接池最大连接数
-        clientBuilder.setMaxTotalConn(App.config.getMaxThreads());
-        //HttpClient请求时使用的User Agent
-//        clientBuilder.setUserAgent(..)
-        configStorage.setApacheHttpClientBuilder(clientBuilder);
-        return configStorage;
-    }
-
-    /**
-     * 获取微信小程序工具服务
-     *
-     * @return WxMaService
-     */
-    static WxMaService getWxMaService() {
-        return null;
-    }
-
     public static WxMaService getWxMaService(Integer accountId) {
         if (wxMaServiceMap.containsKey(accountId)) {
             return wxMaServiceMap.get(accountId);
@@ -147,11 +93,11 @@ public class WxMaSubscribeMsgSender implements IMsgSender {
             configStorage.setToken(wxMaAccountConfig.getToken());
             configStorage.setAesKey(wxMaAccountConfig.getAesKey());
             configStorage.setMsgDataFormat("JSON");
-            if (App.config.isMaUseProxy()) {
-                configStorage.setHttpProxyHost(App.config.getMaProxyHost());
-                configStorage.setHttpProxyPort(Integer.parseInt(App.config.getMaProxyPort()));
-                configStorage.setHttpProxyUsername(App.config.getMaProxyUserName());
-                configStorage.setHttpProxyPassword(App.config.getMaProxyPassword());
+            if (wxMaAccountConfig.isMaUseProxy()) {
+                configStorage.setHttpProxyHost(wxMaAccountConfig.getMaProxyHost());
+                configStorage.setHttpProxyPort(Integer.parseInt(wxMaAccountConfig.getMaProxyPort()));
+                configStorage.setHttpProxyUsername(wxMaAccountConfig.getMaProxyUserName());
+                configStorage.setHttpProxyPassword(wxMaAccountConfig.getMaProxyPassword());
             }
             DefaultApacheHttpClientBuilder clientBuilder = DefaultApacheHttpClientBuilder.get();
             //从连接池获取链接的超时时间(单位ms)
