@@ -240,5 +240,65 @@ public class TaskListener {
                 TaskForm.initTaskHisListTable(selectedTaskId);
             }
         });
+
+        taskForm.getDeleteButton().addActionListener(e -> {
+            int selectedRow = taskForm.getTaskListTable().getSelectedRow();
+            if (selectedRow < 0) {
+                JOptionPane.showMessageDialog(taskForm.getMainPanel(), "请先选择要删除的任务！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            Integer taskId = (Integer) taskForm.getTaskListTable().getValueAt(selectedRow, 0);
+
+            int isDelete = JOptionPane.showConfirmDialog(App.mainFrame,
+                    "确定删除当前的任务吗？", "确认删除？",
+                    JOptionPane.YES_NO_OPTION);
+            if (isDelete == JOptionPane.YES_OPTION) {
+                // 删除任务历史记录
+                taskHisMapper.selectByTaskId(taskId).forEach(tTaskHis -> {
+                    // 删除文件
+                    String successFilePath = tTaskHis.getSuccessFilePath();
+                    if (StringUtils.isNotBlank(successFilePath)) {
+                        File successFile = new File(successFilePath);
+                        if (successFile.exists()) {
+                            successFile.delete();
+                        }
+                    }
+                    String failFilePath = tTaskHis.getFailFilePath();
+                    if (StringUtils.isNotBlank(failFilePath)) {
+                        File failFile = new File(failFilePath);
+                        if (failFile.exists()) {
+                            failFile.delete();
+                        }
+                    }
+                    String noSendFilePath = tTaskHis.getNoSendFilePath();
+                    if (StringUtils.isNotBlank(noSendFilePath)) {
+                        File noSendFile = new File(noSendFilePath);
+                        if (noSendFile.exists()) {
+                            noSendFile.delete();
+                        }
+                    }
+                    String logFilePath = tTaskHis.getLogFilePath();
+                    if (StringUtils.isNotBlank(logFilePath)) {
+                        File logFile = new File(logFilePath);
+                        if (logFile.exists()) {
+                            logFile.delete();
+                        }
+                    }
+                    taskHisMapper.deleteByPrimaryKey(tTaskHis.getId());
+                });
+
+                // 删除定时任务
+                Scheduler scheduler = scheduledTaskMap.get(taskId);
+                if (scheduler != null) {
+                    scheduler.stop();
+                    scheduledTaskMap.remove(taskId);
+                }
+
+                taskMapper.deleteByPrimaryKey(taskId);
+                TaskForm.initTaskListTable();
+            }
+        });
     }
 }

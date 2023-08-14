@@ -120,6 +120,12 @@ public class TaskForm {
         // 设置列宽
 //        TableColumnModel tableColumnModel = taskListTable.getColumnModel();
 //        tableColumnModel.getColumn(3).setMaxWidth(60);
+
+        // 如果有数据，则默认选中第一行
+        if (taskListTable.getRowCount() > 0) {
+            taskListTable.setRowSelectionInterval(0, 0);
+            initTaskHisListTable((Integer) taskListTable.getValueAt(0, 0));
+        }
     }
 
     private static String getTaskType(TTask task) {
