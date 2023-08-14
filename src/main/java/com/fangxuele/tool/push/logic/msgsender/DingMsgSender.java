@@ -40,8 +40,8 @@ import java.util.Map;
  */
 @Slf4j
 public class DingMsgSender implements IMsgSender {
-    public volatile static DefaultDingTalkClient defaultDingTalkClient;
-    public volatile static DefaultDingTalkClient robotClient;
+    private DefaultDingTalkClient defaultDingTalkClient;
+    private DefaultDingTalkClient robotClient;
     private TimedCache<String, String> accessTokenTimedCache;
     private DingMsgMaker dingMsgMaker;
 
@@ -99,6 +99,7 @@ public class DingMsgSender implements IMsgSender {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
+                DefaultDingTalkClient defaultDingTalkClient = getDefaultDingTalkClient();
                 OapiMessageCorpconversationAsyncsendV2Response response2 = defaultDingTalkClient.execute(request2, getAccessTokenTimedCache(tAccount.getId()).get("accessToken"));
                 if (response2.getErrcode() != 0) {
                     sendResult.setSuccess(false);
@@ -220,7 +221,7 @@ public class DingMsgSender implements IMsgSender {
         return null;
     }
 
-    public static DefaultDingTalkClient getDefaultDingTalkClient() {
+    public DefaultDingTalkClient getDefaultDingTalkClient() {
         if (defaultDingTalkClient == null) {
             synchronized (PushControl.class) {
                 if (defaultDingTalkClient == null) {
