@@ -1,6 +1,8 @@
 package com.fangxuele.tool.push.ui.form.account;
 
+import cn.hutool.json.JSONUtil;
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.bean.account.HttpAccountConfig;
 import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.util.SqliteUtil;
@@ -33,13 +35,15 @@ public class HttpAccountForm implements IAccountForm {
     @Override
     public void init(String accountName) {
         if (StringUtils.isNotEmpty(accountName)) {
-            // TODO
             TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
-            httpUseProxyCheckBox.setSelected(App.config.isHttpUseProxy());
-            httpProxyHostTextField.setText(App.config.getHttpProxyHost());
-            httpProxyPortTextField.setText(App.config.getHttpProxyPort());
-            httpProxyUserTextField.setText(App.config.getHttpProxyUserName());
-            httpProxyPasswordTextField.setText(App.config.getHttpProxyPassword());
+
+            HttpAccountForm instance = getInstance();
+            HttpAccountConfig httpAccountConfig = JSONUtil.toBean(tAccount.getAccountConfig(), HttpAccountConfig.class);
+            instance.getHttpUseProxyCheckBox().setSelected(httpAccountConfig.isUseProxy());
+            instance.getHttpProxyHostTextField().setText(httpAccountConfig.getProxyHost());
+            instance.getHttpProxyPortTextField().setText(httpAccountConfig.getProxyPort());
+            instance.getHttpProxyUserTextField().setText(httpAccountConfig.getProxyUserName());
+            instance.getHttpProxyPasswordTextField().setText(httpAccountConfig.getProxyPassword());
 
             toggleHttpProxyPanel();
         }
@@ -73,12 +77,14 @@ public class HttpAccountForm implements IAccountForm {
                 tAccount1.setMsgType(msgType);
                 tAccount1.setAccountName(accountName);
 
-                // TODO
-                App.config.setHttpUseProxy(httpUseProxyCheckBox.isSelected());
-                App.config.setHttpProxyHost(httpProxyHostTextField.getText());
-                App.config.setHttpProxyPort(httpProxyPortTextField.getText());
-                App.config.setHttpProxyUserName(httpProxyUserTextField.getText());
-                App.config.setHttpProxyPassword(httpProxyPasswordTextField.getText());
+                HttpAccountConfig httpAccountConfig = new HttpAccountConfig();
+                httpAccountConfig.setUseProxy(instance.getHttpUseProxyCheckBox().isSelected());
+                httpAccountConfig.setProxyHost(instance.getHttpProxyHostTextField().getText());
+                httpAccountConfig.setProxyPort(instance.getHttpProxyPortTextField().getText());
+                httpAccountConfig.setProxyUserName(instance.getHttpProxyUserTextField().getText());
+                httpAccountConfig.setProxyPassword(instance.getHttpProxyPasswordTextField().getText());
+
+                tAccount1.setAccountConfig(JSONUtil.toJsonStr(httpAccountConfig));
 
                 tAccount1.setModifiedTime(now);
 

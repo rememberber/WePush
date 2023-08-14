@@ -44,11 +44,6 @@ public class UpYunMsgSender implements IMsgSender {
 
     private YunPianAccountConfig yunPianAccountConfig;
 
-    public UpYunMsgSender() {
-//        upYunMsgMaker = new UpYunMsgMaker();
-        okHttpClint = HttpMsgSender.getOkHttpClient();
-    }
-
     public UpYunMsgSender(Integer msgId, Integer dryRun) {
         TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
         upYunMsgMaker = new UpYunMsgMaker(tMsg);
