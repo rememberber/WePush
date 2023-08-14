@@ -95,7 +95,7 @@ public class HwYunMsgSender implements IMsgSender {
             String sender = hwYunAccountConfig.getSenderCode();
             String signature = hwYunAccountConfig.getSignature();
             //模板ID
-            String templateId = HwYunMsgMaker.templateId;
+            String templateId = hwYunMsgMaker.getTemplateId();
             //模板变量
             String templateParas = JSONUtil.toJsonStr(hwYunMsgMaker.makeMsg(msgData));
             String receiver = msgData[0];

@@ -19,27 +19,27 @@ import org.apache.velocity.VelocityContext;
  */
 public class DingMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
-    public static String agentId;
+    private String agentId;
 
-    public static String msgType;
+    private String msgType;
 
-    private static String msgTitle;
+    private String msgTitle;
 
-    private static String picUrl;
+    private String picUrl;
 
-    public static String desc;
+    private String desc;
 
-    public static String url;
+    private String url;
 
-    private static String btnTxt;
+    private String btnTxt;
 
-    private static String btnUrl;
+    private String btnUrl;
 
-    private static String msgContent;
+    private String msgContent;
 
-    public static String radioType;
+    private String radioType;
 
-    public static String webHook;
+    private String webHook;
 
     public DingMsgMaker(TMsg tMsg) {
         TMsgDing tMsgDing = JSON.parseObject(tMsg.getContent(), TMsgDing.class);

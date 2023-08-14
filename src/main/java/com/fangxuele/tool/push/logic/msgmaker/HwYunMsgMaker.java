@@ -6,6 +6,7 @@ import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgSms;
 import com.fangxuele.tool.push.ui.form.msg.HwYunMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
+import lombok.Getter;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.velocity.VelocityContext;
 
@@ -21,11 +22,12 @@ import java.util.List;
  * @author <a href="https://github.com/rememberber">Zhou Bo</a>
  * @since 2019/6/14.
  */
+@Getter
 public class HwYunMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
-    public static String templateId;
+    private String templateId;
 
-    public static List<String> paramList;
+    private List<String> paramList;
 
     public HwYunMsgMaker(TMsg tMsg) {
         TMsgSms tMsgSms = JSON.parseObject(tMsg.getContent(), TMsgSms.class);

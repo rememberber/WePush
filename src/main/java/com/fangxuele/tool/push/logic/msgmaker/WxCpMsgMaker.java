@@ -25,15 +25,15 @@ public class WxCpMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
     private String agentId;
 
-    public String msgType;
+    private String msgType;
 
     private String msgTitle;
 
     private String picUrl;
 
-    public String desc;
+    private String desc;
 
-    public String url;
+    private String url;
 
     private String btnTxt;
 

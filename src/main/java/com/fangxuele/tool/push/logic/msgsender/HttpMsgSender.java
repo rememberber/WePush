@@ -78,7 +78,7 @@ public class HttpMsgSender implements IMsgSender {
         try {
             HttpMsg httpMsg = httpMsgMaker.makeMsg(msgData);
             HttpRequest httpRequest;
-            switch (HttpMsgMaker.method) {
+            switch (httpMsgMaker.getMethod()) {
                 case "GET":
                     httpRequest = HttpRequest.get(httpMsg.getUrl());
                     break;
@@ -179,14 +179,14 @@ public class HttpMsgSender implements IMsgSender {
             Request.Builder requestBuilder = new Request.Builder();
 
             RequestBody requestBody = RequestBody.create("", MediaType.get("text/plain"));
-            if (!"GET".equals(HttpMsgMaker.method) && httpMsg.getParamMap() != null && !httpMsg.getParamMap().isEmpty()) {
+            if (!"GET".equals(httpMsgMaker.getMethod()) && httpMsg.getParamMap() != null && !httpMsg.getParamMap().isEmpty()) {
                 FormBody.Builder formBodyBuilder = new FormBody.Builder();
                 for (Map.Entry<String, Object> paramEntry : httpMsg.getParamMap().entrySet()) {
                     formBodyBuilder.add(paramEntry.getKey(), (String) paramEntry.getValue());
                 }
                 requestBody = formBodyBuilder.build();
-            } else if (!"GET".equals(HttpMsgMaker.method) && StringUtils.isNotEmpty(httpMsg.getBody())) {
-                String bodyType = HttpMsgMaker.bodyType;
+            } else if (!"GET".equals(httpMsgMaker.getMethod()) && StringUtils.isNotEmpty(httpMsg.getBody())) {
+                String bodyType = httpMsgMaker.getBodyType();
                 MediaType mediaType = MediaType.get(bodyType + "; charset=utf-8");
                 requestBody = RequestBody.create(httpMsg.getBody(), mediaType);
             }
@@ -199,7 +199,7 @@ public class HttpMsgSender implements IMsgSender {
             if (httpMsg.getCookies() != null && !httpMsg.getCookies().isEmpty()) {
                 requestBuilder.addHeader(Header.COOKIE.toString(), cookieHeader(httpMsg.getCookies()));
             }
-            switch (HttpMsgMaker.method) {
+            switch (httpMsgMaker.getMethod()) {
                 case "GET":
                     HttpUrl.Builder urlBuilder = HttpUrl.parse(httpMsg.getUrl()).newBuilder();
                     if (httpMsg.getParamMap() != null && !httpMsg.getParamMap().isEmpty()) {

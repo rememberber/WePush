@@ -21,7 +21,7 @@ import java.util.Map;
  */
 public class YunPianMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
-    public static String msgYunpianMsgContent;
+    private String msgYunpianMsgContent;
 
     public YunPianMsgMaker(TMsg tMsg) {
         TMsgSms tMsgSms = JSON.parseObject(tMsg.getContent(), TMsgSms.class);

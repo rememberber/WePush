@@ -7,6 +7,7 @@ import com.fangxuele.tool.push.domain.TMsgSms;
 import com.fangxuele.tool.push.ui.form.msg.QiNiuYunMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import com.google.common.collect.Maps;
+import lombok.Getter;
 import org.apache.velocity.VelocityContext;
 
 import javax.swing.table.DefaultTableModel;
@@ -21,11 +22,12 @@ import java.util.Map;
  * @author <a href="https://github.com/rememberber">Zhou Bo</a>
  * @since 2019/6/14.
  */
+@Getter
 public class QiNiuYunMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
-    public static String templateId;
+    private String templateId;
 
-    public static Map<String, String> paramMap;
+    private Map<String, String> paramMap;
 
     public QiNiuYunMsgMaker(TMsg tMsg) {
         TMsgSms tMsgSms = JSON.parseObject(tMsg.getContent(), TMsgSms.class);

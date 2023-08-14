@@ -18,23 +18,23 @@ import org.apache.velocity.VelocityContext;
  */
 public class WxKefuMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
-    private static String msgKefuMsgType;
+    private String msgKefuMsgType;
 
-    private static String msgKefuMsgTitle;
+    private String msgKefuMsgTitle;
 
-    private static String msgKefuMsgContent;
+    private String msgKefuMsgContent;
 
-    private static String msgKefuPicUrl;
+    private String msgKefuPicUrl;
 
-    private static String msgKefuDesc;
+    private String msgKefuDesc;
 
-    private static String msgKefuUrl;
+    private String msgKefuUrl;
 
-    private static String msgKefuAppid;
+    private String msgKefuAppid;
 
-    private static String msgKefuPagepath;
+    private String msgKefuPagepath;
 
-    private static String msgKefuThumbMediaId;
+    private String msgKefuThumbMediaId;
 
     public WxKefuMsgMaker(TMsg tMsg) {
         TMsgKefu tMsgKefu = JSON.parseObject(tMsg.getContent(), TMsgKefu.class);

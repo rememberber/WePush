@@ -25,15 +25,15 @@ import java.util.Map;
  */
 public class WxMpSubscribeMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
-    public static String templateId;
+    private String templateId;
 
-    private static String templateUrl;
+    private String templateUrl;
 
-    private static String miniAppId;
+    private String miniAppId;
 
-    private static String miniAppPagePath;
+    private String miniAppPagePath;
 
-    public static List<TemplateData> templateDataList;
+    private List<TemplateData> templateDataList;
 
     public WxMpSubscribeMsgMaker(TMsg tMsg) {
         TMsgMpSubscribe tMsgMpSubscribe = JSON.parseObject(tMsg.getContent(), TMsgMpSubscribe.class);

@@ -59,7 +59,7 @@ public class QiNiuYunMsgSender implements IMsgSender {
     public SendResult send(String[] msgData) {
         SendResult sendResult = new SendResult();
         try {
-            String templateId = QiNiuYunMsgMaker.templateId;
+            String templateId = qiNiuYunMsgMaker.getTemplateId();
             Map<String, String> params = qiNiuYunMsgMaker.makeMsg(msgData);
             String telNum = msgData[0];
 

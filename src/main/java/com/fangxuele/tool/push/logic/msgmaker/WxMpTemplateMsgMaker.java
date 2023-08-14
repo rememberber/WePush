@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class WxMpTemplateMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
-    public String templateId;
+    private String templateId;
 
     private String templateUrl;
 
@@ -32,7 +32,7 @@ public class WxMpTemplateMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
     private String miniAppPagePath;
 
-    public List<TemplateData> templateDataList;
+    private List<TemplateData> templateDataList;
 
     public WxMpTemplateMsgMaker(TMsg tMsg) {
         TMsgMpTemplate tMsgWxMpTemplate = JSON.parseObject(tMsg.getContent(), TMsgMpTemplate.class);

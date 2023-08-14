@@ -23,10 +23,10 @@ import java.util.List;
  */
 public class MailMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
-    public static String mailTitle;
-    public static String mailCc;
-    public static List<File> mailFiles;
-    public static String mailContent;
+    private String mailTitle;
+    private String mailCc;
+    private List<File> mailFiles;
+    private String mailContent;
 
     public MailMsgMaker(TMsg tMsg) {
         TMsgMail tMsgMail = JSON.parseObject(tMsg.getContent(), TMsgMail.class);

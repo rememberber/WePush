@@ -31,9 +31,9 @@ import java.util.Map;
  */
 public class AliyunMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
-    public String templateId;
+    private String templateId;
 
-    public List<TemplateData> templateDataList;
+    private List<TemplateData> templateDataList;
 
     private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
 

@@ -53,7 +53,7 @@ public class UpYunMsgSender implements IMsgSender {
     public SendResult send(String[] msgData) {
         SendResult sendResult = new SendResult();
         try {
-            String templateId = UpYunMsgMaker.templateId;
+            String templateId = upYunMsgMaker.getTemplateId();
             String[] params = upYunMsgMaker.makeMsg(msgData);
             String telNum = msgData[0];
 

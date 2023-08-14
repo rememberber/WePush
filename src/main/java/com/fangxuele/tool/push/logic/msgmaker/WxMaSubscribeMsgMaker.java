@@ -23,9 +23,9 @@ import java.util.List;
  */
 public class WxMaSubscribeMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
-    public static String templateId;
-    private static String page;
-    public static List<TemplateData> templateDataList;
+    private String templateId;
+    private String page;
+    private List<TemplateData> templateDataList;
 
     public WxMaSubscribeMsgMaker(TMsg tMsg) {
         TMsgMaSubscribe tMsgMaSubscribe = JSON.parseObject(tMsg.getContent(), TMsgMaSubscribe.class);
