@@ -1,7 +1,6 @@
 package com.fangxuele.tool.push.logic.msgsender;
 
 import com.alibaba.fastjson.JSON;
-import com.aliyuncs.IAcsClient;
 import com.fangxuele.tool.push.bean.account.YunPianAccountConfig;
 import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.dao.TMsgMapper;
@@ -12,9 +11,6 @@ import com.fangxuele.tool.push.util.MybatisUtil;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * <pre>
@@ -39,8 +35,6 @@ public class UpYunMsgSender implements IMsgSender {
     private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
 
     private Integer dryRun;
-
-    private static Map<Integer, IAcsClient> acsClientMap = new HashMap<>();
 
     private YunPianAccountConfig yunPianAccountConfig;
 
@@ -70,7 +64,6 @@ public class UpYunMsgSender implements IMsgSender {
             formBodyBuilder.add("vars", String.join("|", params));
             RequestBody requestBody = formBodyBuilder.build();
             requestBuilder.url(URL).post(requestBody);
-            // TODO 待确定是否正确
             requestBuilder.addHeader("Authorization", yunPianAccountConfig.getApiKey());
             Request request = requestBuilder.build();
             if (dryRun == 1) {
