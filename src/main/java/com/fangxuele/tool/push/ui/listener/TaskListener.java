@@ -296,6 +296,20 @@ public class TaskListener {
                     scheduledTaskMap.remove(taskId);
                 }
 
+                TaskRunThread taskRunThread = TaskRunThread.taskRunThreadMap.get(taskId);
+                if (taskRunThread != null) {
+                    taskRunThread.running = false;
+                    taskRunThread.interrupt();
+                }
+                TaskRunThread.taskRunThreadMap.remove(taskId);
+
+                InfinityTaskRunThread infinityTaskRunThread = InfinityTaskRunThread.infinityTaskRunThreadMap.get(taskId);
+                if (infinityTaskRunThread != null) {
+                    infinityTaskRunThread.running = false;
+                    infinityTaskRunThread.interrupt();
+                }
+                InfinityTaskRunThread.infinityTaskRunThreadMap.remove(taskId);
+
                 taskMapper.deleteByPrimaryKey(taskId);
                 TaskForm.initTaskListTable();
             }
