@@ -1,6 +1,8 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
 public interface IMsgMaker {
+
+    // TODO
     /**
      * 准备(界面字段等)
      */
