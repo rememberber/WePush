@@ -31,7 +31,7 @@ import java.util.Map;
 @Slf4j
 public class WxMaSubscribeMsgSender implements IMsgSender {
 
-    public volatile WxMaService wxMaService;
+    private WxMaService wxMaService;
 
     private WxMaSubscribeMsgMaker wxMaSubscribeMsgMaker;
 
@@ -47,6 +47,10 @@ public class WxMaSubscribeMsgSender implements IMsgSender {
         wxMaSubscribeMsgMaker = new WxMaSubscribeMsgMaker(tMsg);
         wxMaService = getWxMaService(tMsg.getAccountId());
         this.dryRun = dryRun;
+    }
+
+    public static void removeAccount(Integer accountId) {
+        wxMaServiceMap.remove(accountId);
     }
 
     @Override

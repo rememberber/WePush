@@ -20,7 +20,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 @Slf4j
 public class WxKefuMsgSender implements IMsgSender {
     private WxKefuMsgMaker wxKefuMsgMaker;
-    public volatile static WxMpService wxMpService;
+    private WxMpService wxMpService;
 
     private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
 

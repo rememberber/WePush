@@ -71,6 +71,10 @@ public class DingMsgSender implements IMsgSender {
         tMsgDing = JSON.parseObject(tMsg.getContent(), TMsgDing.class);
     }
 
+    public static void removeAccount(Integer account1Id) {
+        timedCacheMap.remove(account1Id);
+    }
+
     @Override
     public SendResult send(String[] msgData) {
         if ("work".equals(tMsgDing.getRadioType())) {

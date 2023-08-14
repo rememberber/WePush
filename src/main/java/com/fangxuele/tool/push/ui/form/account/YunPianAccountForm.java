@@ -4,6 +4,7 @@ import cn.hutool.json.JSONUtil;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.account.YunPianAccountConfig;
 import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.logic.msgsender.YunPianMsgSender;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.UIUtil;
@@ -72,6 +73,7 @@ public class YunPianAccountForm implements IAccountForm {
 
                 if (existSameAccount) {
                     accountMapper.updateByMsgTypeAndAccountName(tAccount1);
+                    YunPianMsgSender.removeAccount(tAccount1.getId());
                 } else {
                     tAccount1.setCreateTime(now);
                     accountMapper.insertSelective(tAccount1);

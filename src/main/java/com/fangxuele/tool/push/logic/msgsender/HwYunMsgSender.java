@@ -46,7 +46,7 @@ public class HwYunMsgSender implements IMsgSender {
     /**
      * CloseableHttpClient
      */
-    public volatile static CloseableHttpClient closeableHttpClient;
+    private CloseableHttpClient closeableHttpClient;
 
     /**
      * 无需修改,用于格式化鉴权头域,给"X-WSSE"参数赋值
@@ -76,6 +76,11 @@ public class HwYunMsgSender implements IMsgSender {
         hwYunAccountConfig = JSON.parseObject(accountConfig, HwYunAccountConfig.class);
 
         closeableHttpClient = getHttpClient();
+    }
+
+    public static void removeAccount(Integer account1Id) {
+
+        // do nothing
     }
 
     @Override

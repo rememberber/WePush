@@ -32,8 +32,7 @@ import java.util.Map;
  */
 @Slf4j
 public class WxCpMsgSender implements IMsgSender {
-    public volatile static WxCpDefaultConfigImpl wxCpConfigStorage;
-    public volatile static WxCpService wxCpService;
+    private WxCpService wxCpService;
     private final WxCpMsgMaker wxCpMsgMaker;
 
     private static Map<Integer, WxCpService> wxCpServiceMap = new HashMap<>();
@@ -48,6 +47,10 @@ public class WxCpMsgSender implements IMsgSender {
         wxCpMsgMaker = new WxCpMsgMaker(tMsg);
         wxCpService = getWxCpService(tMsg.getAccountId());
         this.dryRun = dryRun;
+    }
+
+    public static void removeAccount(Integer account1Id) {
+        wxCpServiceMap.remove(account1Id);
     }
 
     @Override
@@ -118,8 +121,8 @@ public class WxCpMsgSender implements IMsgSender {
 //        clientBuilder.setUserAgent(..)
             configStorage.setApacheHttpClientBuilder(clientBuilder);
 
-            wxCpService = new WxCpServiceApacheHttpClientImpl();
-            wxCpService.setWxCpConfigStorage(wxCpConfigStorage);
+            WxCpService wxCpService = new WxCpServiceApacheHttpClientImpl();
+            wxCpService.setWxCpConfigStorage(configStorage);
 
             wxCpServiceMap.put(accountId, wxCpService);
             return wxCpService;

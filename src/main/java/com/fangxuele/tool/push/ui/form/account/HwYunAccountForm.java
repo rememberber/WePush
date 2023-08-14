@@ -4,6 +4,8 @@ import cn.hutool.json.JSONUtil;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.account.HwYunAccountConfig;
 import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.logic.msgsender.AliYunMsgSender;
+import com.fangxuele.tool.push.logic.msgsender.HwYunMsgSender;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.UIUtil;
@@ -84,6 +86,7 @@ public class HwYunAccountForm implements IAccountForm {
 
                 if (existSameAccount) {
                     accountMapper.updateByMsgTypeAndAccountName(tAccount1);
+                    HwYunMsgSender.removeAccount(tAccount1.getId());
                 } else {
                     tAccount1.setCreateTime(now);
                     accountMapper.insertSelective(tAccount1);

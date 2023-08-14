@@ -30,7 +30,7 @@ public class TxYunMsgSender implements IMsgSender {
     /**
      * 腾讯云短信sender
      */
-    public volatile SmsSingleSender smsSingleSender;
+    private SmsSingleSender smsSingleSender;
 
     private TxYunMsgMaker txYunMsgMaker;
 
@@ -47,6 +47,10 @@ public class TxYunMsgSender implements IMsgSender {
         txYunMsgMaker = new TxYunMsgMaker(tMsg);
         smsSingleSender = getTxYunSender(tMsg.getAccountId());
         this.dryRun = dryRun;
+    }
+
+    public static void removeAccount(Integer account1Id) {
+        smsSingleSenderMap.remove(account1Id);
     }
 
     @Override

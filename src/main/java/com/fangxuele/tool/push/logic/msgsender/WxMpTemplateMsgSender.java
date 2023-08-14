@@ -30,7 +30,7 @@ import java.util.Map;
  */
 @Slf4j
 public class WxMpTemplateMsgSender implements IMsgSender {
-    public volatile WxMpService wxMpService;
+    private WxMpService wxMpService;
     private WxMpTemplateMsgMaker wxMpTemplateMsgMaker;
 
     private static Map<Integer, WxMpService> wxMpServiceMap = new HashMap<>();

@@ -33,7 +33,7 @@ public class BdYunMsgSender implements IMsgSender {
     /**
      * 百度云短信SmsClient
      */
-    public volatile static SmsClient smsClient;
+    private SmsClient smsClient;
 
     private BdYunMsgMaker bdYunMsgMaker;
 
@@ -55,6 +55,10 @@ public class BdYunMsgSender implements IMsgSender {
         TAccount tAccount = accountMapper.selectByPrimaryKey(tMsg.getAccountId());
         String accountConfig = tAccount.getAccountConfig();
         bdYunAccountConfig = JSON.parseObject(accountConfig, BdYunAccountConfig.class);
+    }
+
+    public static void removeAccount(Integer accountId) {
+        smsClientMap.remove(accountId);
     }
 
     @Override

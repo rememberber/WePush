@@ -34,7 +34,7 @@ public class AliYunMsgSender implements IMsgSender {
     /**
      * 阿里云短信client
      */
-    public volatile static IAcsClient iAcsClient;
+    private IAcsClient iAcsClient;
 
     private AliyunMsgMaker aliyunMsgMaker;
 
@@ -50,6 +50,10 @@ public class AliYunMsgSender implements IMsgSender {
         aliyunMsgMaker = new AliyunMsgMaker(tMsg);
         iAcsClient = getAliyunIAcsClient(tMsg.getAccountId());
         this.dryRun = dryRun;
+    }
+
+    public static void removeAccount(Integer accountId) {
+        acsClientMap.remove(accountId);
     }
 
     @Override
@@ -84,35 +88,6 @@ public class AliYunMsgSender implements IMsgSender {
     @Override
     public SendResult asyncSend(String[] msgData) {
         return null;
-    }
-
-    /**
-     * 获取阿里云短信发送客户端
-     *
-     * @return IAcsClient
-     */
-    private static IAcsClient getAliyunIAcsClient() {
-        if (iAcsClient == null) {
-            synchronized (AliYunMsgSender.class) {
-                if (iAcsClient == null) {
-                    String aliyunAccessKeyId = App.config.getAliyunAccessKeyId();
-                    String aliyunAccessKeySecret = App.config.getAliyunAccessKeySecret();
-
-                    // 创建DefaultAcsClient实例并初始化
-                    DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", aliyunAccessKeyId, aliyunAccessKeySecret);
-
-                    // 多个SDK client共享一个连接池，此处设置该连接池的参数，
-                    // 比如每个host的最大连接数，超时时间等
-                    HttpClientConfig clientConfig = HttpClientConfig.getDefault();
-                    clientConfig.setMaxRequestsPerHost(App.config.getMaxThreads());
-                    clientConfig.setConnectionTimeoutMillis(10000L);
-
-                    profile.setHttpClientConfig(clientConfig);
-                    iAcsClient = new DefaultAcsClient(profile);
-                }
-            }
-        }
-        return iAcsClient;
     }
 
     private IAcsClient getAliyunIAcsClient(Integer accountId) {

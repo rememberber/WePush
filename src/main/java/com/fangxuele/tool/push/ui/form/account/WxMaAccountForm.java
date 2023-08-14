@@ -4,6 +4,7 @@ import cn.hutool.json.JSONUtil;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.account.WxMaAccountConfig;
 import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.logic.msgsender.WxMaSubscribeMsgSender;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.UIUtil;
@@ -104,6 +105,7 @@ public class WxMaAccountForm implements IAccountForm {
 
                 if (existSameAccount) {
                     accountMapper.updateByMsgTypeAndAccountName(tAccount1);
+                    WxMaSubscribeMsgSender.removeAccount(tAccount1.getId());
                 } else {
                     tAccount1.setCreateTime(now);
                     accountMapper.insertSelective(tAccount1);

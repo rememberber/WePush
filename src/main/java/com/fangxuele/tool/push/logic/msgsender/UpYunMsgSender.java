@@ -25,7 +25,7 @@ public class UpYunMsgSender implements IMsgSender {
     /**
      * 又拍云短信sender
      */
-    public volatile static OkHttpClient okHttpClint;
+    private OkHttpClient okHttpClint;
 
     private UpYunMsgMaker upYunMsgMaker;
 
@@ -47,6 +47,10 @@ public class UpYunMsgSender implements IMsgSender {
         TAccount tAccount = accountMapper.selectByPrimaryKey(tMsg.getAccountId());
         String accountConfig = tAccount.getAccountConfig();
         yunPianAccountConfig = JSON.parseObject(accountConfig, YunPianAccountConfig.class);
+    }
+
+    public static void removeAccount(Integer account1Id) {
+        // do nothing
     }
 
     @Override

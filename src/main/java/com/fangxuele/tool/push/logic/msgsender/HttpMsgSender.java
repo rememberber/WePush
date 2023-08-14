@@ -42,7 +42,7 @@ public class HttpMsgSender implements IMsgSender {
 
     private HttpMsgMaker httpMsgMaker;
 
-    private volatile static OkHttpClient okHttpClient;
+    private static OkHttpClient okHttpClient;
     private static Map<Integer, OkHttpClient> okHttpClientMap = new HashMap<>();
 
     private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
@@ -60,6 +60,10 @@ public class HttpMsgSender implements IMsgSender {
         String accountConfig = tAccount.getAccountConfig();
         httpAccountConfig = JSON.parseObject(accountConfig, HttpAccountConfig.class);
         this.dryRun = dryRun;
+    }
+
+    public static void removeAccount(Integer tAccount1Id) {
+        okHttpClientMap.remove(tAccount1Id);
     }
 
     @Override

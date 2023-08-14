@@ -1,7 +1,6 @@
 package com.fangxuele.tool.push.logic.msgsender;
 
 import com.alibaba.fastjson.JSON;
-import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.account.QiniuYunAccountConfig;
 import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.dao.TMsgMapper;
@@ -32,7 +31,7 @@ public class QiNiuYunMsgSender implements IMsgSender {
     /**
      * 七牛云短信smsManager
      */
-    public volatile static SmsManager smsManager;
+    private SmsManager smsManager;
 
     private QiNiuYunMsgMaker qiNiuYunMsgMaker;
 
@@ -48,6 +47,10 @@ public class QiNiuYunMsgSender implements IMsgSender {
         qiNiuYunMsgMaker = new QiNiuYunMsgMaker(tMsg);
         smsManager = getSmsManager(tMsg.getAccountId());
         this.dryRun = dryRun;
+    }
+
+    public static void removeAccount(Integer account1Id) {
+        smsManagerMap.remove(account1Id);
     }
 
     @Override
@@ -84,28 +87,6 @@ public class QiNiuYunMsgSender implements IMsgSender {
     public SendResult asyncSend(String[] msgData) {
         return null;
     }
-
-    /**
-     * 获取七牛云短信发送客户端
-     *
-     * @return SmsSingleSender
-     */
-    private static SmsManager getSmsManager() {
-        if (smsManager == null) {
-            synchronized (QiNiuYunMsgSender.class) {
-                if (smsManager == null) {
-                    // 设置需要操作的账号的AK和SK
-                    String qiniuAccessKey = App.config.getQiniuAccessKey();
-                    String qiniuSecretKey = App.config.getQiniuSecretKey();
-                    Auth auth = Auth.create(qiniuAccessKey, qiniuSecretKey);
-
-                    smsManager = new SmsManager(auth);
-                }
-            }
-        }
-        return smsManager;
-    }
-
 
     private SmsManager getSmsManager(Integer accountId) {
         if (smsManagerMap.containsKey(accountId)) {

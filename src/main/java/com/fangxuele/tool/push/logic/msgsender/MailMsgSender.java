@@ -55,6 +55,10 @@ public class MailMsgSender implements IMsgSender {
         this.dryRun = dryRun;
     }
 
+    public static void removeAccount(Integer account1Id) {
+        mailAccountMap.remove(account1Id);
+    }
+
     @Override
     public SendResult send(String[] msgData) {
         SendResult sendResult = new SendResult();

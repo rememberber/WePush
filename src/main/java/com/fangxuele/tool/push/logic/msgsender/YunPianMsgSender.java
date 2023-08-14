@@ -1,7 +1,6 @@
 package com.fangxuele.tool.push.logic.msgsender;
 
 import com.alibaba.fastjson.JSON;
-import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.account.YunPianAccountConfig;
 import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.dao.TMsgMapper;
@@ -31,7 +30,7 @@ public class YunPianMsgSender implements IMsgSender {
     /**
      * 云片网短信client
      */
-    public volatile static YunpianClient yunpianClient;
+    private YunpianClient yunpianClient;
 
     private YunPianMsgMaker yunPianMsgMaker;
 
@@ -48,6 +47,10 @@ public class YunPianMsgSender implements IMsgSender {
         yunPianMsgMaker = new YunPianMsgMaker(tMsg);
         yunpianClient = getYunpianClient(tMsg.getAccountId());
         this.dryRun = dryRun;
+    }
+
+    public static void removeAccount(Integer account1Id) {
+        yunpianClientMap.remove(account1Id);
     }
 
 
@@ -84,25 +87,6 @@ public class YunPianMsgSender implements IMsgSender {
     public SendResult asyncSend(String[] msgData) {
         return null;
     }
-
-    /**
-     * 获取云片网短信发送客户端
-     *
-     * @return YunpianClient
-     */
-    private static YunpianClient getYunpianClient() {
-        if (yunpianClient == null) {
-            synchronized (YunPianMsgSender.class) {
-                if (yunpianClient == null) {
-                    String yunpianApiKey = App.config.getYunpianApiKey();
-
-                    yunpianClient = new YunpianClient(yunpianApiKey).init();
-                }
-            }
-        }
-        return yunpianClient;
-    }
-
 
     private YunpianClient getYunpianClient(Integer accountId) {
         if (yunpianClientMap.containsKey(accountId)) {
