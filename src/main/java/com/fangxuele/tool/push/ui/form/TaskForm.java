@@ -125,6 +125,12 @@ public class TaskForm {
         if (taskListTable.getRowCount() > 0) {
             taskListTable.setRowSelectionInterval(0, 0);
             initTaskHisListTable((Integer) taskListTable.getValueAt(0, 0));
+        } else {
+            JTable taskHisListTable = taskForm.getTaskHisListTable();
+            // 清空任务历史列表
+            String[] headerNames2 = {"id", "是否空跑", "开始时间", "结束时间", "总量", "成功", "状态"};
+            DefaultTableModel model2 = new DefaultTableModel(null, headerNames2);
+            taskHisListTable.setModel(model2);
         }
     }
 
@@ -368,5 +374,10 @@ public class TaskForm {
 //        TableColumnModel tableColumnModel = taskHisListTable.getColumnModel();
 //        tableColumnModel.getColumn(1).setMaxWidth(50);
 //        tableColumnModel.getColumn(6).setMaxWidth(50);
+
+        // 如果有数据，则默认选中第一行
+        if (taskHisListTable.getRowCount() > 0) {
+            taskHisListTable.setRowSelectionInterval(0, 0);
+        }
     }
 }
