@@ -14,10 +14,8 @@ import com.dingtalk.api.response.OapiRobotSendResponse;
 import com.fangxuele.tool.push.bean.account.DingAccountConfig;
 import com.fangxuele.tool.push.bean.msg.DingMsg;
 import com.fangxuele.tool.push.dao.TAccountMapper;
-import com.fangxuele.tool.push.dao.TDingAppMapper;
 import com.fangxuele.tool.push.dao.TMsgMapper;
 import com.fangxuele.tool.push.domain.TAccount;
-import com.fangxuele.tool.push.domain.TDingApp;
 import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgDing;
 import com.fangxuele.tool.push.logic.PushControl;
@@ -48,8 +46,6 @@ public class DingMsgSender implements IMsgSender {
     public volatile static DefaultDingTalkClient robotClient;
     private TimedCache<String, String> accessTokenTimedCache;
     private DingMsgMaker dingMsgMaker;
-
-    private static TDingAppMapper dingAppMapper = MybatisUtil.getSqlSession().getMapper(TDingAppMapper.class);
 
     private static Map<Integer, TimedCache<String, String>> timedCacheMap = new HashMap<>();
 
@@ -259,10 +255,11 @@ public class DingMsgSender implements IMsgSender {
                 if (accessTokenTimedCache == null || StringUtils.isEmpty(accessTokenTimedCache.get("accessToken"))) {
                     DefaultDingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/gettoken");
                     OapiGettokenRequest request = new OapiGettokenRequest();
+                    // TODO
                     String agentId = DingMsgForm.appNameToAgentIdMap.get(DingMsgForm.getInstance().getAppNameComboBox().getSelectedItem());
-                    TDingApp tDingApp = dingAppMapper.selectByAgentId(agentId);
-                    request.setAppkey(tDingApp.getAppKey());
-                    request.setAppsecret(tDingApp.getAppSecret());
+//                    TDingApp tDingApp = dingAppMapper.selectByAgentId(agentId);
+//                    request.setAppkey(tDingApp.getAppKey());
+//                    request.setAppsecret(tDingApp.getAppSecret());
                     request.setHttpMethod("GET");
                     OapiGettokenResponse response = null;
                     try {

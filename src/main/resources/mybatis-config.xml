@@ -14,9 +14,6 @@
     </environments>
     <mappers>
         <mapper resource="mapper/TWxMpUserMapper.xml"/>
-        <mapper resource="mapper/TWxAccountMapper.xml"/>
-        <mapper resource="mapper/TWxCpAppMapper.xml"/>
-        <mapper resource="mapper/TDingAppMapper.xml"/>
         <mapper resource="mapper/TAccountMapper.xml"/>
         <mapper resource="mapper/TPeopleMapper.xml"/>
         <mapper resource="mapper/TPeopleDataMapper.xml"/>

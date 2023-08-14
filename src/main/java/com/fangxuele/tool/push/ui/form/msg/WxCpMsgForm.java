@@ -2,12 +2,9 @@ package com.fangxuele.tool.push.ui.form.msg;
 
 import cn.hutool.json.JSONUtil;
 import com.fangxuele.tool.push.dao.TMsgMapper;
-import com.fangxuele.tool.push.dao.TWxCpAppMapper;
 import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgWxCp;
-import com.fangxuele.tool.push.domain.TWxCpApp;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
-import com.fangxuele.tool.push.ui.dialog.WxCpAppDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
@@ -24,7 +21,6 @@ import javax.swing.plaf.FontUIResource;
 import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.awt.event.ItemEvent;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -51,7 +47,6 @@ public class WxCpMsgForm implements IMsgForm {
     private JLabel urlLabel;
     private JTextField urlTextField;
     private JLabel contentLabel;
-    private JComboBox appNameComboBox;
     private JButton appManageButton;
     private JTextArea contentTextArea;
     private JTextField btnTxtTextField;
@@ -60,7 +55,6 @@ public class WxCpMsgForm implements IMsgForm {
     private static WxCpMsgForm wxCpMsgForm;
 
     private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
-    private static TWxCpAppMapper wxCpAppMapper = MybatisUtil.getSqlSession().getMapper(TWxCpAppMapper.class);
 
     public static Map<String, String> appNameToAgentIdMap = Maps.newHashMap();
     public static Map<String, String> agentIdToAppNameMap = Maps.newHashMap();
@@ -72,24 +66,15 @@ public class WxCpMsgForm implements IMsgForm {
                 switchCpMsgType(e.getItem().toString());
             }
         });
-        appManageButton.addActionListener(e -> {
-            WxCpAppDialog dialog = new WxCpAppDialog();
-            dialog.renderTable();
-            dialog.pack();
-            dialog.setVisible(true);
-            initAppNameList();
-        });
     }
 
     @Override
     public void init(Integer msgId) {
         clearAllField();
-        initAppNameList();
         TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
         if (tMsg != null) {
             TMsgWxCp tMsgWxCp = JSONUtil.toBean(tMsg.getContent(), TMsgWxCp.class);
             String cpMsgType = tMsgWxCp.getCpMsgType();
-            getInstance().getAppNameComboBox().setSelectedItem(agentIdToAppNameMap.get(tMsgWxCp.getAgentId()));
             getInstance().getMsgTypeComboBox().setSelectedItem(cpMsgType);
             getInstance().getContentTextArea().setText(tMsg.getContent());
             getInstance().getTitleTextField().setText(tMsgWxCp.getTitle());
@@ -112,11 +97,6 @@ public class WxCpMsgForm implements IMsgForm {
     public void save(Integer accountId, String msgName) {
         boolean existSameMsg = false;
 
-        if (getInstance().getAppNameComboBox().getSelectedItem() == null) {
-            JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "请选择应用！", "成功",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
         Integer msgId = null;
         TMsg tMsg = msgMapper.selectByUnique(MessageTypeEnum.WX_CP_CODE, accountId, msgName);
         if (tMsg != null) {
@@ -147,7 +127,8 @@ public class WxCpMsgForm implements IMsgForm {
             msg.setMsgType(MessageTypeEnum.WX_CP_CODE);
             msg.setAccountId(accountId);
             msg.setMsgName(msgName);
-            tMsgWxCp.setAgentId(appNameToAgentIdMap.get(getInstance().getAppNameComboBox().getSelectedItem()));
+//            TODO
+//            tMsgWxCp.setAgentId(appNameToAgentIdMap.get(getInstance().getAppNameComboBox().getSelectedItem()));
             tMsgWxCp.setCpMsgType(cpMsgType);
             tMsgWxCp.setContent(content);
             tMsgWxCp.setTitle(title);
@@ -179,19 +160,6 @@ public class WxCpMsgForm implements IMsgForm {
             wxCpMsgForm = new WxCpMsgForm();
         }
         return wxCpMsgForm;
-    }
-
-    /**
-     * 初始化应用名称列表
-     */
-    public static void initAppNameList() {
-        List<TWxCpApp> tWxCpAppList = wxCpAppMapper.selectAll();
-        getInstance().getAppNameComboBox().removeAllItems();
-        for (TWxCpApp tWxCpApp : tWxCpAppList) {
-            appNameToAgentIdMap.put(tWxCpApp.getAppName(), tWxCpApp.getAgentId());
-            agentIdToAppNameMap.put(tWxCpApp.getAgentId(), tWxCpApp.getAppName());
-            getInstance().getAppNameComboBox().addItem(tWxCpApp.getAppName());
-        }
     }
 
     /**
@@ -279,14 +247,14 @@ public class WxCpMsgForm implements IMsgForm {
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         wxCpMsgPanel = new JPanel();
-        wxCpMsgPanel.setLayout(new GridLayoutManager(9, 3, new Insets(10, 8, 0, 8), -1, -1));
+        wxCpMsgPanel.setLayout(new GridLayoutManager(8, 2, new Insets(10, 8, 0, 8), -1, -1));
         panel1.add(wxCpMsgPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         wxCpMsgPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, wxCpMsgPanel.getFont()), null));
         msgTypeLabel = new JLabel();
         msgTypeLabel.setText("消息类型");
-        wxCpMsgPanel.add(msgTypeLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        wxCpMsgPanel.add(msgTypeLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
-        wxCpMsgPanel.add(spacer1, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        wxCpMsgPanel.add(spacer1, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         msgTypeComboBox = new JComboBox();
         final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
         defaultComboBoxModel1.addElement("图文消息");
@@ -294,47 +262,39 @@ public class WxCpMsgForm implements IMsgForm {
         defaultComboBoxModel1.addElement("文本卡片消息");
         defaultComboBoxModel1.addElement("markdown消息");
         msgTypeComboBox.setModel(defaultComboBoxModel1);
-        wxCpMsgPanel.add(msgTypeComboBox, new GridConstraints(1, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        wxCpMsgPanel.add(msgTypeComboBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         titleLabel = new JLabel();
         titleLabel.setText("标题");
-        wxCpMsgPanel.add(titleLabel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        wxCpMsgPanel.add(titleLabel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         picUrlLabel = new JLabel();
         picUrlLabel.setText("图片URL");
-        wxCpMsgPanel.add(picUrlLabel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        wxCpMsgPanel.add(picUrlLabel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         picUrlTextField = new JTextField();
-        wxCpMsgPanel.add(picUrlTextField, new GridConstraints(4, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        wxCpMsgPanel.add(picUrlTextField, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         descLabel = new JLabel();
         descLabel.setText("描述");
-        wxCpMsgPanel.add(descLabel, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        wxCpMsgPanel.add(descLabel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         descTextField = new JTextField();
-        wxCpMsgPanel.add(descTextField, new GridConstraints(5, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        wxCpMsgPanel.add(descTextField, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         urlLabel = new JLabel();
         urlLabel.setText("跳转URL");
-        wxCpMsgPanel.add(urlLabel, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        wxCpMsgPanel.add(urlLabel, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         urlTextField = new JTextField();
-        wxCpMsgPanel.add(urlTextField, new GridConstraints(6, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        wxCpMsgPanel.add(urlTextField, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         contentLabel = new JLabel();
         contentLabel.setText("内容");
-        wxCpMsgPanel.add(contentLabel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_NORTHWEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label1 = new JLabel();
-        label1.setText("选择应用");
-        wxCpMsgPanel.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        appNameComboBox = new JComboBox();
-        wxCpMsgPanel.add(appNameComboBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        appManageButton = new JButton();
-        appManageButton.setText("应用管理");
-        wxCpMsgPanel.add(appManageButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        wxCpMsgPanel.add(contentLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_NORTHWEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         titleTextField = new JTextField();
-        wxCpMsgPanel.add(titleTextField, new GridConstraints(3, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, new Dimension(380, -1), new Dimension(380, -1), null, 0, false));
+        wxCpMsgPanel.add(titleTextField, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, new Dimension(380, -1), new Dimension(380, -1), null, 0, false));
         contentTextArea = new JTextArea();
-        wxCpMsgPanel.add(contentTextArea, new GridConstraints(2, 1, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+        wxCpMsgPanel.add(contentTextArea, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
         btnTxtLabel = new JLabel();
         btnTxtLabel.setText("按钮文字");
         btnTxtLabel.setToolTipText("可不填。默认为“详情”， 不超过4个文字，超过自动截断");
-        wxCpMsgPanel.add(btnTxtLabel, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        wxCpMsgPanel.add(btnTxtLabel, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         btnTxtTextField = new JTextField();
         btnTxtTextField.setToolTipText("可不填。默认为“详情”， 不超过4个文字，超过自动截断");
-        wxCpMsgPanel.add(btnTxtTextField, new GridConstraints(7, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        wxCpMsgPanel.add(btnTxtTextField, new GridConstraints(6, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         msgTypeLabel.setLabelFor(msgTypeComboBox);
         titleLabel.setLabelFor(titleTextField);
         picUrlLabel.setLabelFor(picUrlTextField);

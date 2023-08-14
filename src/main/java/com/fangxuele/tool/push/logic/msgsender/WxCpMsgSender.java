@@ -5,10 +5,8 @@ import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.account.WxCpAccountConfig;
 import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.dao.TMsgMapper;
-import com.fangxuele.tool.push.dao.TWxCpAppMapper;
 import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TMsg;
-import com.fangxuele.tool.push.domain.TWxCpApp;
 import com.fangxuele.tool.push.logic.msgmaker.WxCpMsgMaker;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +20,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,8 +35,6 @@ public class WxCpMsgSender implements IMsgSender {
     public volatile static WxCpDefaultConfigImpl wxCpConfigStorage;
     public volatile static WxCpService wxCpService;
     private final WxCpMsgMaker wxCpMsgMaker;
-
-    private final static TWxCpAppMapper WX_CP_APP_MAPPER = MybatisUtil.getSqlSession().getMapper(TWxCpAppMapper.class);
 
     private static Map<Integer, WxCpService> wxCpServiceMap = new HashMap<>();
 
@@ -108,11 +103,11 @@ public class WxCpMsgSender implements IMsgSender {
             String agentId = wxCpAccountConfig.getAgentId();
             configStorage.setAgentId(Integer.valueOf(agentId));
 
-            List<TWxCpApp> wxCpAppList = WX_CP_APP_MAPPER.selectByAgentId(agentId);
-            if (wxCpAppList.size() > 0) {
-                configStorage.setCorpSecret(wxCpAppList.get(0).getSecret());
-            }
             // TODO
+//            List<TWxCpApp> wxCpAppList = WX_CP_APP_MAPPER.selectByAgentId(agentId);
+//            if (wxCpAppList.size() > 0) {
+//                configStorage.setCorpSecret(wxCpAppList.get(0).getSecret());
+//            }
             if (App.config.isMpUseProxy()) {
                 configStorage.setHttpProxyHost(App.config.getMpProxyHost());
                 configStorage.setHttpProxyPort(Integer.parseInt(App.config.getMpProxyPort()));

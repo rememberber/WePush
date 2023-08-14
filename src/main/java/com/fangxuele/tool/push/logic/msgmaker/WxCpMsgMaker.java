@@ -3,7 +3,6 @@ package com.fangxuele.tool.push.logic.msgmaker;
 import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgWxCp;
-import com.fangxuele.tool.push.logic.msgsender.WxCpMsgSender;
 import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import me.chanjar.weixin.cp.bean.article.NewArticle;
@@ -55,14 +54,14 @@ public class WxCpMsgMaker extends BaseMsgMaker implements IMsgMaker {
     @Override
     public void prepare() {
         String agentIdBefore = agentId;
-        String agentIdNow = WxCpMsgForm.appNameToAgentIdMap.get(WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem());
-        synchronized (this) {
-            if (agentIdBefore == null || !agentIdBefore.equals(agentIdNow)) {
-                agentId = agentIdNow;
-                WxCpMsgSender.wxCpConfigStorage = null;
-                WxCpMsgSender.wxCpService = null;
-            }
-        }
+//        String agentIdNow = WxCpMsgForm.appNameToAgentIdMap.get(WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem());
+//        synchronized (this) {
+//            if (agentIdBefore == null || !agentIdBefore.equals(agentIdNow)) {
+//                agentId = agentIdNow;
+//                WxCpMsgSender.wxCpConfigStorage = null;
+//                WxCpMsgSender.wxCpService = null;
+//            }
+//        }
         msgType = (String) WxCpMsgForm.getInstance().getMsgTypeComboBox().getSelectedItem();
         msgTitle = WxCpMsgForm.getInstance().getTitleTextField().getText();
         picUrl = WxCpMsgForm.getInstance().getPicUrlTextField().getText().trim();

@@ -2,15 +2,12 @@ package com.fangxuele.tool.push.ui.form.msg;
 
 import cn.hutool.json.JSONUtil;
 import com.fangxuele.tool.push.bean.msg.DingMsg;
-import com.fangxuele.tool.push.dao.TDingAppMapper;
 import com.fangxuele.tool.push.dao.TMsgMapper;
-import com.fangxuele.tool.push.domain.TDingApp;
 import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgDing;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
-import com.fangxuele.tool.push.ui.dialog.DingAppDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
@@ -29,7 +26,6 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -69,7 +65,6 @@ public class DingMsgForm implements IMsgForm {
     private static DingMsgForm dingMsgForm;
 
     private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
-    private static TDingAppMapper dingAppMapper = MybatisUtil.getSqlSession().getMapper(TDingAppMapper.class);
 
     public static Map<String, String> appNameToAgentIdMap = Maps.newHashMap();
     public static Map<String, String> agentIdToAppNameMap = Maps.newHashMap();
@@ -80,13 +75,6 @@ public class DingMsgForm implements IMsgForm {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 switchDingMsgType(e.getItem().toString());
             }
-        });
-        appManageButton.addActionListener(e -> {
-            DingAppDialog dialog = new DingAppDialog();
-            dialog.renderTable();
-            dialog.pack();
-            dialog.setVisible(true);
-            initAppNameList();
         });
 
         workRadioButton.addChangeListener(e -> {
@@ -140,7 +128,6 @@ public class DingMsgForm implements IMsgForm {
     @Override
     public void init(Integer msgId) {
         clearAllField();
-        initAppNameList();
 
         TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
         TMsgDing tMsgDing = JSONUtil.toBean(tMsg.getContent(), TMsgDing.class);
@@ -250,19 +237,6 @@ public class DingMsgForm implements IMsgForm {
             dingMsgForm = new DingMsgForm();
         }
         return dingMsgForm;
-    }
-
-    /**
-     * 初始化应用名称列表
-     */
-    public static void initAppNameList() {
-        List<TDingApp> tDingAppList = dingAppMapper.selectAll();
-        getInstance().getAppNameComboBox().removeAllItems();
-        for (TDingApp tDingApp : tDingAppList) {
-            appNameToAgentIdMap.put(tDingApp.getAppName(), tDingApp.getAgentId());
-            agentIdToAppNameMap.put(tDingApp.getAgentId(), tDingApp.getAppName());
-            getInstance().getAppNameComboBox().addItem(tDingApp.getAppName());
-        }
     }
 
     /**
@@ -422,13 +396,10 @@ public class DingMsgForm implements IMsgForm {
         btnURLLabel.setText("按钮URL");
         dingMsgPanel.add(btnURLLabel, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(2, 4, new Insets(0, 0, 20, 0), -1, -1));
+        panel2.setLayout(new GridLayoutManager(2, 3, new Insets(0, 0, 20, 0), -1, -1));
         dingMsgPanel.add(panel2, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         appNameComboBox = new JComboBox();
         panel2.add(appNameComboBox, new GridConstraints(0, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        appManageButton = new JButton();
-        appManageButton.setText("应用管理");
-        panel2.add(appManageButton, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         workRadioButton = new JRadioButton();
         workRadioButton.setText("工作通知消息");
         panel2.add(workRadioButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -436,7 +407,7 @@ public class DingMsgForm implements IMsgForm {
         robotRadioButton.setText("群机器人消息");
         panel2.add(robotRadioButton, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         webHookTextField = new JTextField();
-        panel2.add(webHookTextField, new GridConstraints(1, 2, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel2.add(webHookTextField, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         webHookHelpLabel = new JLabel();
         webHookHelpLabel.setIcon(new ImageIcon(getClass().getResource("/icon/helpButton.png")));
         webHookHelpLabel.setText("webhook");

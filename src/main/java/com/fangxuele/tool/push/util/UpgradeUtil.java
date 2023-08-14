@@ -6,9 +6,6 @@ import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.VersionSummary;
-import com.fangxuele.tool.push.dao.TWxAccountMapper;
-import com.fangxuele.tool.push.domain.TWxAccount;
-import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.UpdateInfoDialog;
 import lombok.extern.slf4j.Slf4j;
@@ -154,71 +151,6 @@ public class UpgradeUtil {
     private static void upgrade(int versionIndex) {
         log.info("执行升级脚本开始，版本索引：{}", versionIndex);
         switch (versionIndex) {
-            case 21:
-                String accountName = "默认账号";
-                TWxAccountMapper wxAccountMapper = MybatisUtil.getSqlSession().getMapper(TWxAccountMapper.class);
-                if (StringUtils.isNotBlank(App.config.getWechatAppId())) {
-                    boolean update = false;
-                    List<TWxAccount> tWxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(UiConsts.WX_ACCOUNT_TYPE_MP, accountName);
-                    if (tWxAccountList.size() > 0) {
-                        update = true;
-                    }
-
-                    TWxAccount tWxAccount = new TWxAccount();
-                    String now = SqliteUtil.nowDateForSqlite();
-                    tWxAccount.setAccountType(UiConsts.WX_ACCOUNT_TYPE_MP);
-                    tWxAccount.setAccountName(accountName);
-                    tWxAccount.setAppId(App.config.getWechatAppId());
-                    tWxAccount.setAppSecret(App.config.getWechatAppSecret());
-                    tWxAccount.setToken(App.config.getWechatToken());
-                    tWxAccount.setAesKey(App.config.getWechatAesKey());
-                    tWxAccount.setModifiedTime(now);
-                    if (update) {
-                        tWxAccount.setId(tWxAccountList.get(0).getId());
-                        wxAccountMapper.updateByPrimaryKeySelective(tWxAccount);
-                    } else {
-                        tWxAccount.setCreateTime(now);
-                        wxAccountMapper.insert(tWxAccount);
-                    }
-
-                }
-                if (StringUtils.isNotBlank(App.config.getMiniAppAppId())) {
-                    boolean update = false;
-                    List<TWxAccount> tWxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(UiConsts.WX_ACCOUNT_TYPE_MA, accountName);
-                    if (tWxAccountList.size() > 0) {
-                        update = true;
-                    }
-
-                    TWxAccount tWxAccount = new TWxAccount();
-                    String now = SqliteUtil.nowDateForSqlite();
-                    tWxAccount.setAccountType(UiConsts.WX_ACCOUNT_TYPE_MA);
-                    tWxAccount.setAccountName(accountName);
-                    tWxAccount.setAppId(App.config.getMiniAppAppId());
-                    tWxAccount.setAppSecret(App.config.getMiniAppAppSecret());
-                    tWxAccount.setToken(App.config.getMiniAppToken());
-                    tWxAccount.setAesKey(App.config.getMiniAppAesKey());
-                    tWxAccount.setModifiedTime(now);
-                    if (update) {
-                        tWxAccount.setId(tWxAccountList.get(0).getId());
-                        wxAccountMapper.updateByPrimaryKeySelective(tWxAccount);
-                    } else {
-                        tWxAccount.setCreateTime(now);
-                        wxAccountMapper.insert(tWxAccount);
-                    }
-                }
-                break;
-            case 26:
-                if (StringUtils.isNotBlank(App.config.getMysqlDatabase())) {
-                    App.config.setMysqlUrl(App.config.getMysqlUrl() + '/' + App.config.getMysqlDatabase());
-                    App.config.save();
-                }
-                break;
-            case 46:
-            case 47:
-            case 48:
-                if(SystemUtil.isJBR()){
-                    App.config.setProps(Init.FONT_SIZE_INIT_PROP,"");
-                }
             default:
         }
         log.info("执行升级脚本结束，版本索引：{}", versionIndex);

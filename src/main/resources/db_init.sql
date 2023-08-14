@@ -21,48 +21,6 @@ create table if not exists t_wx_mp_user
     create_time     text,
     modified_time   text
 );
-create table if not exists t_wx_account
-(
-    id            integer
-        constraint t_wx_account_pk
-            primary key autoincrement,
-    account_type  text,
-    account_name  text,
-    app_id        text,
-    app_secret    text,
-    token         text,
-    aes_key       text,
-    create_time   datetime,
-    modified_time datetime
-);
-
-create table if not exists t_wx_cp_app
-(
-    id            integer
-        constraint t_wx_cp_app_pk
-            primary key autoincrement,
-    corpId        text,
-    app_name      text,
-    agent_id      text,
-    secret        text,
-    token         text,
-    aes_key       text,
-    create_time   datetime,
-    modified_time datetime
-);
-
-create table if not exists t_ding_app
-(
-    id            integer
-        constraint t_ding_app_pk
-            primary key autoincrement,
-    app_name      text,
-    agent_id      text,
-    app_key       text,
-    app_secret    text,
-    create_time   datetime,
-    modified_time datetime
-);
 
 create table if not exists t_account
 (
