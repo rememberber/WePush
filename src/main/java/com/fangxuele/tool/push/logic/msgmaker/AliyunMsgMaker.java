@@ -4,11 +4,14 @@ import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
 import com.aliyuncs.http.MethodType;
-import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.TemplateData;
+import com.fangxuele.tool.push.bean.account.AliYunAccountConfig;
+import com.fangxuele.tool.push.dao.TAccountMapper;
+import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgSms;
 import com.fangxuele.tool.push.ui.form.msg.AliYunMsgForm;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.velocity.VelocityContext;
@@ -32,10 +35,18 @@ public class AliyunMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
     public List<TemplateData> templateDataList;
 
+    private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
+
+    private AliYunAccountConfig aliYunAccountConfig;
+
     public AliyunMsgMaker(TMsg tMsg) {
         TMsgSms tMsgSms = JSON.parseObject(tMsg.getContent(), TMsgSms.class);
         this.templateId = tMsgSms.getTemplateId();
         this.templateDataList = tMsgSms.getTemplateDataList();
+
+        TAccount tAccount = accountMapper.selectByPrimaryKey(tMsg.getAccountId());
+        String accountConfig = tAccount.getAccountConfig();
+        aliYunAccountConfig = JSON.parseObject(accountConfig, AliYunAccountConfig.class);
     }
 
     /**
@@ -76,8 +87,7 @@ public class AliyunMsgMaker extends BaseMsgMaker implements IMsgMaker {
         //使用post提交
         request.setSysMethod(MethodType.POST);
         //必填:短信签名-可在短信控制台中找到
-        // TODO
-        request.setSignName(App.config.getAliyunSign());
+        request.setSignName(aliYunAccountConfig.getSign());
 
         // 模板参数
         Map<String, String> paramMap = new HashMap<>(10);
