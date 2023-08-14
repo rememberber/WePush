@@ -70,20 +70,17 @@ public class WxMpAccountForm implements IAccountForm {
             instance.getAppSecretTextField().setText(wxMpAccountConfig.getAppSecret());
             instance.getTokenTextField().setText(wxMpAccountConfig.getToken());
             instance.getAesKeyTextField().setText(wxMpAccountConfig.getAesKey());
-
-            // TODO
-            mpUseProxyCheckBox.setSelected(App.config.isMpUseProxy());
-            mpProxyHostTextField.setText(App.config.getMpProxyHost());
-            mpProxyPortTextField.setText(App.config.getMpProxyPort());
-            mpProxyUserNameTextField.setText(App.config.getMpProxyUserName());
-            mpProxyPasswordTextField.setText(App.config.getMpProxyPassword());
-
-            useOutSideAccessTokenCheckBox.setSelected(App.config.isMpUseOutSideAt());
-            manualAtRadioButton.setSelected(App.config.isMpManualAt());
-            apiAtRadioButton.setSelected(App.config.isMpApiAt());
-            accessTokenTextField.setText(App.config.getMpAt());
-            atExpiresInTextField.setText(App.config.getMpAtExpiresIn());
-            atApiUrlTextField.setText(App.config.getMpAtApiUrl());
+            instance.getMpUseProxyCheckBox().setSelected(wxMpAccountConfig.isMpUseProxy());
+            instance.getMpProxyHostTextField().setText(wxMpAccountConfig.getMpProxyHost());
+            instance.getMpProxyPortTextField().setText(wxMpAccountConfig.getMpProxyPort());
+            instance.getMpProxyUserNameTextField().setText(wxMpAccountConfig.getMpProxyUserName());
+            instance.getMpProxyPasswordTextField().setText(wxMpAccountConfig.getMpProxyPassword());
+            instance.getUseOutSideAccessTokenCheckBox().setSelected(wxMpAccountConfig.isMpUseOutSideAt());
+            instance.getManualAtRadioButton().setSelected(wxMpAccountConfig.isMpManualAt());
+            instance.getApiAtRadioButton().setSelected(wxMpAccountConfig.isMpApiAt());
+            instance.getAccessTokenTextField().setText(wxMpAccountConfig.getMpAt());
+            instance.getAtExpiresInTextField().setText(wxMpAccountConfig.getMpAtExpiresIn());
+            instance.getAtApiUrlTextField().setText(wxMpAccountConfig.getMpAtApiUrl());
 
             toggleMpProxyPanel();
             toggleMpOutSideAccessTokenPanel();
@@ -149,20 +146,17 @@ public class WxMpAccountForm implements IAccountForm {
                 wxMpAccountConfig.setAppSecret(instance.getAppSecretTextField().getText());
                 wxMpAccountConfig.setToken(instance.getTokenTextField().getText());
                 wxMpAccountConfig.setAesKey(instance.getAesKeyTextField().getText());
-
-                // TODO
-                App.config.setMpUseProxy(mpUseProxyCheckBox.isSelected());
-                App.config.setMpProxyHost(mpProxyHostTextField.getText());
-                App.config.setMpProxyPort(mpProxyPortTextField.getText());
-                App.config.setMpProxyUserName(mpProxyUserNameTextField.getText());
-                App.config.setMpProxyPassword(mpProxyPasswordTextField.getText());
-
-                App.config.setMpUseOutSideAt(useOutSideAccessTokenCheckBox.isSelected());
-                App.config.setMpManualAt(manualAtRadioButton.isSelected());
-                App.config.setMpApiAt(apiAtRadioButton.isSelected());
-                App.config.setMpAt(accessTokenTextField.getText());
-                App.config.setMpAtExpiresIn(atExpiresInTextField.getText());
-                App.config.setMpAtApiUrl(atApiUrlTextField.getText());
+                wxMpAccountConfig.setMpUseProxy(instance.getMpUseProxyCheckBox().isSelected());
+                wxMpAccountConfig.setMpProxyHost(instance.getMpProxyHostTextField().getText());
+                wxMpAccountConfig.setMpProxyPort(instance.getMpProxyPortTextField().getText());
+                wxMpAccountConfig.setMpProxyUserName(instance.getMpProxyUserNameTextField().getText());
+                wxMpAccountConfig.setMpProxyPassword(instance.getMpProxyPasswordTextField().getText());
+                wxMpAccountConfig.setMpUseOutSideAt(instance.getUseOutSideAccessTokenCheckBox().isSelected());
+                wxMpAccountConfig.setMpManualAt(instance.getManualAtRadioButton().isSelected());
+                wxMpAccountConfig.setMpApiAt(instance.getApiAtRadioButton().isSelected());
+                wxMpAccountConfig.setMpAt(instance.getAccessTokenTextField().getText());
+                wxMpAccountConfig.setMpAtExpiresIn(instance.getAtExpiresInTextField().getText());
+                wxMpAccountConfig.setMpAtApiUrl(instance.getAtApiUrlTextField().getText());
 
                 tAccount1.setAccountConfig(JSONUtil.toJsonStr(wxMpAccountConfig));
 

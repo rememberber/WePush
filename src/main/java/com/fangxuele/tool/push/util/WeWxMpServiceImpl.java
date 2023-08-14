@@ -3,7 +3,7 @@ package com.fangxuele.tool.push.util;
 import cn.hutool.cache.CacheUtil;
 import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.json.JSONUtil;
-import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.bean.account.WxMpAccountConfig;
 import me.chanjar.weixin.common.bean.WxAccessToken;
 import me.chanjar.weixin.common.enums.WxType;
 import me.chanjar.weixin.common.error.WxError;
@@ -33,6 +33,12 @@ public class WeWxMpServiceImpl extends WxMpServiceImpl {
 
     private int count;
 
+    private WxMpAccountConfig wxMpAccountConfig;
+
+    public WeWxMpServiceImpl(WxMpAccountConfig wxMpAccountConfig) {
+        wxMpAccountConfig = wxMpAccountConfig;
+    }
+
     @Override
     public String getAccessToken(boolean forceRefresh) throws WxErrorException {
         final WxMpConfigStorage config = this.getWxMpConfigStorage();
@@ -60,15 +66,15 @@ public class WeWxMpServiceImpl extends WxMpServiceImpl {
             try {
                 WxAccessToken accessToken;
 
-                if (App.config.isMpUseOutSideAt() && App.config.isMpManualAt()) {
+                if (wxMpAccountConfig.isMpUseOutSideAt() && wxMpAccountConfig.isMpManualAt()) {
                     accessToken = new WxAccessToken();
-                    accessToken.setAccessToken(App.config.getMpAt());
-                    accessToken.setExpiresIn(Integer.parseInt(App.config.getMpAtExpiresIn()));
+                    accessToken.setAccessToken(wxMpAccountConfig.getMpAt());
+                    accessToken.setExpiresIn(Integer.parseInt(wxMpAccountConfig.getMpAtExpiresIn()));
                 } else {
                     String url = String.format(GET_ACCESS_TOKEN_URL.getUrl(config), config.getAppId(), config.getSecret());
 
-                    if (App.config.isMpUseOutSideAt() && App.config.isMpApiAt()) {
-                        url = App.config.getMpAtApiUrl();
+                    if (wxMpAccountConfig.isMpUseOutSideAt() && wxMpAccountConfig.isMpApiAt()) {
+                        url = wxMpAccountConfig.getMpAtApiUrl();
                     }
                     HttpGet httpGet = new HttpGet(url);
                     if (this.getRequestHttpProxy() != null) {
@@ -79,7 +85,7 @@ public class WeWxMpServiceImpl extends WxMpServiceImpl {
                         String resultContent = new BasicResponseHandler().handleResponse(response);
                         WxError error = WxError.fromJson(resultContent, WxType.MP);
                         if (error.getErrorCode() != 0) {
-                            if (App.config.isMpUseOutSideAt() && App.config.isMpApiAt()) {
+                            if (wxMpAccountConfig.isMpUseOutSideAt() && wxMpAccountConfig.isMpApiAt()) {
                                 error = WxError.builder().errorCode(99).errorMsg("通过接口" + url + "获取AccessToken失败").errorMsgEn("Fail to get AccessToken from:" + url).json(resultContent).build();
                                 throw new WxErrorException(error);
                             } else {

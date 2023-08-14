@@ -16,7 +16,6 @@ import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
 import me.chanjar.weixin.mp.config.impl.WxMpDefaultConfigImpl;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,9 +30,7 @@ import java.util.Map;
  */
 @Slf4j
 public class WxMpTemplateMsgSender implements IMsgSender {
-    public volatile static WxMpDefaultConfigImpl wxMpConfigStorage;
     public volatile WxMpService wxMpService;
-    public volatile static CloseableHttpAsyncClient closeableHttpAsyncClient;
     private WxMpTemplateMsgMaker wxMpTemplateMsgMaker;
 
     private static Map<Integer, WxMpService> wxMpServiceMap = new HashMap<>();
@@ -85,44 +82,6 @@ public class WxMpTemplateMsgSender implements IMsgSender {
     }
 
     /**
-     * 微信公众号配置
-     *
-     * @return WxMpConfigStorage
-     */
-    private static WxMpDefaultConfigImpl wxMpConfigStorage() {
-        WxMpDefaultConfigImpl configStorage = new WxMpDefaultConfigImpl();
-        configStorage.setAppId(App.config.getWechatAppId());
-        configStorage.setSecret(App.config.getWechatAppSecret());
-        configStorage.setToken(App.config.getWechatToken());
-        configStorage.setAesKey(App.config.getWechatAesKey());
-        if (App.config.isMpUseProxy()) {
-            configStorage.setHttpProxyHost(App.config.getMpProxyHost());
-            configStorage.setHttpProxyPort(Integer.parseInt(App.config.getMpProxyPort()));
-            configStorage.setHttpProxyUsername(App.config.getMpProxyUserName());
-            configStorage.setHttpProxyPassword(App.config.getMpProxyPassword());
-        }
-        DefaultApacheHttpClientBuilder clientBuilder = DefaultApacheHttpClientBuilder.get();
-        //从连接池获取链接的超时时间(单位ms)
-        clientBuilder.setConnectionRequestTimeout(10000);
-        //建立链接的超时时间(单位ms)
-        clientBuilder.setConnectionTimeout(5000);
-        //连接池socket超时时间(单位ms)
-        clientBuilder.setSoTimeout(5000);
-        //空闲链接的超时时间(单位ms)
-        clientBuilder.setIdleConnTimeout(60000);
-        //空闲链接的检测周期(单位ms)
-        clientBuilder.setCheckWaitTime(3000);
-        //每路最大连接数
-        clientBuilder.setMaxConnPerHost(App.config.getMaxThreads());
-        //连接池最大连接数
-        clientBuilder.setMaxTotalConn(App.config.getMaxThreads());
-        //HttpClient请求时使用的User Agent
-//        clientBuilder.setUserAgent(..)
-        configStorage.setApacheHttpClientBuilder(clientBuilder);
-        return configStorage;
-    }
-
-    /**
      * 获取微信公众号工具服务
      *
      * @return WxMpService
@@ -144,11 +103,11 @@ public class WxMpTemplateMsgSender implements IMsgSender {
             wxMpConfigStorage.setSecret(wxMpAccountConfig.getAppSecret());
             wxMpConfigStorage.setToken(wxMpAccountConfig.getToken());
             wxMpConfigStorage.setAesKey(wxMpAccountConfig.getAesKey());
-            if (App.config.isMpUseProxy()) {
-                wxMpConfigStorage.setHttpProxyHost(App.config.getMpProxyHost());
-                wxMpConfigStorage.setHttpProxyPort(Integer.parseInt(App.config.getMpProxyPort()));
-                wxMpConfigStorage.setHttpProxyUsername(App.config.getMpProxyUserName());
-                wxMpConfigStorage.setHttpProxyPassword(App.config.getMpProxyPassword());
+            if (wxMpAccountConfig.isMpUseProxy()) {
+                wxMpConfigStorage.setHttpProxyHost(wxMpAccountConfig.getMpProxyHost());
+                wxMpConfigStorage.setHttpProxyPort(Integer.parseInt(wxMpAccountConfig.getMpProxyPort()));
+                wxMpConfigStorage.setHttpProxyUsername(wxMpAccountConfig.getMpProxyUserName());
+                wxMpConfigStorage.setHttpProxyPassword(wxMpAccountConfig.getMpProxyPassword());
             }
             DefaultApacheHttpClientBuilder clientBuilder = DefaultApacheHttpClientBuilder.get();
             //从连接池获取链接的超时时间(单位ms)
@@ -168,7 +127,7 @@ public class WxMpTemplateMsgSender implements IMsgSender {
             //HttpClient请求时使用的User Agent
 //        clientBuilder.setUserAgent(..)
             wxMpConfigStorage.setApacheHttpClientBuilder(clientBuilder);
-            WxMpService wxMpService = new WeWxMpServiceImpl();
+            WxMpService wxMpService = new WeWxMpServiceImpl(wxMpAccountConfig);
             wxMpService.setWxMpConfigStorage(wxMpConfigStorage);
             wxMpServiceMap.put(accountId, wxMpService);
             return wxMpService;
