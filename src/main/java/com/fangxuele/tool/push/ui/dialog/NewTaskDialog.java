@@ -625,7 +625,6 @@ public class NewTaskDialog extends JDialog {
                             latest5RunTimeList.add(DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss"));
                         }
 
-                        // TODO 重启应用时把所有定时任务重新加入到任务队列
                         int isSchedulePush = JOptionPane.showConfirmDialog(App.mainFrame,
                                 "将按" +
                                         task.getCron() +

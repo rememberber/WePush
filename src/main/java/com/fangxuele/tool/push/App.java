@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push;
 
+import cn.hutool.core.thread.ThreadUtil;
 import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.AboutDialog;
@@ -7,6 +8,7 @@ import com.fangxuele.tool.push.ui.dialog.SettingDialog;
 import com.fangxuele.tool.push.ui.form.LoadingForm;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.frame.MainFrame;
+import com.fangxuele.tool.push.ui.listener.TaskListener;
 import com.fangxuele.tool.push.util.ConfigUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.UpgradeUtil;
@@ -96,5 +98,9 @@ public class App {
         mainFrame.remove(loadingPanel);
         Init.fontSizeGuide();
         Init.initTray();
+
+        // 重启应用时把所有定时任务重新加入到任务队列
+        ThreadUtil.execute(TaskListener::addAllScheduledTask);
+
     }
 }

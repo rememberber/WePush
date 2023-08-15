@@ -2,6 +2,8 @@ package com.fangxuele.tool.push.dao;
 
 import com.fangxuele.tool.push.domain.TTask;
 
+import java.util.List;
+
 public interface TTaskMapper {
     int deleteByPrimaryKey(Integer id);
 
@@ -14,4 +16,6 @@ public interface TTaskMapper {
     int updateByPrimaryKeySelective(TTask record);
 
     int updateByPrimaryKey(TTask record);
+
+    List<TTask> selectAll();
 }

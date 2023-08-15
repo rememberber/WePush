@@ -2,6 +2,7 @@ package com.fangxuele.tool.push.ui.listener;
 
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.cron.Scheduler;
+import cn.hutool.cron.task.Task;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TTaskHisMapper;
 import com.fangxuele.tool.push.dao.TTaskMapper;
@@ -10,6 +11,7 @@ import com.fangxuele.tool.push.domain.TTaskHis;
 import com.fangxuele.tool.push.logic.InfinityTaskRunThread;
 import com.fangxuele.tool.push.logic.TaskModeEnum;
 import com.fangxuele.tool.push.logic.TaskRunThread;
+import com.fangxuele.tool.push.logic.TaskTypeEnum;
 import com.fangxuele.tool.push.ui.dialog.InfinityTaskHisDetailDialog;
 import com.fangxuele.tool.push.ui.dialog.NewTaskDialog;
 import com.fangxuele.tool.push.ui.dialog.TaskHisDetailDialog;
@@ -22,6 +24,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -314,5 +317,31 @@ public class TaskListener {
                 TaskForm.initTaskListTable();
             }
         });
+    }
+
+    /**
+     * 重启应用时把所有定时任务重新加入到任务队列
+     */
+    public static void addAllScheduledTask() {
+        List<TTask> tTaskList = taskMapper.selectAll();
+        for (TTask tTask : tTaskList) {
+            if (tTask.getTaskPeriod() == TaskTypeEnum.SCHEDULE_TASK_CODE && StringUtils.isNotBlank(tTask.getCron())) {
+                Scheduler scheduler = new Scheduler();
+                scheduler.setMatchSecond(true);
+                String schedulerId = scheduler.schedule(tTask.getCron(), (Task) () -> {
+                    if (tTask.getTaskMode() == TaskModeEnum.FIX_THREAD_TASK_CODE) {
+                        TaskRunThread taskRunThread = new TaskRunThread(tTask.getId(), 0);
+                        taskRunThread.setFixRateScheduling(true);
+                        taskRunThread.start();
+                    } else if (tTask.getTaskMode() == TaskModeEnum.INFINITY_TASK_CODE) {
+                        InfinityTaskRunThread infinityTaskRunThread = new InfinityTaskRunThread(tTask.getId(), 0);
+                        infinityTaskRunThread.setFixRateScheduling(true);
+                        infinityTaskRunThread.start();
+                    }
+                });
+                scheduler.start();
+                TaskListener.scheduledTaskMap.put(tTask.getId(), scheduler);
+            }
+        }
     }
 }
