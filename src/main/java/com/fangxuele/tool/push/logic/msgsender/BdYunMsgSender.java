@@ -128,7 +128,7 @@ public class BdYunMsgSender implements IMsgSender {
             config.setEndpoint(endPoint);
 
             // 实例化发送客户端
-            smsClient = new SmsClient(config);
+            SmsClient smsClient = new SmsClient(config);
 
             smsClientMap.put(accountId, smsClient);
             return smsClient;

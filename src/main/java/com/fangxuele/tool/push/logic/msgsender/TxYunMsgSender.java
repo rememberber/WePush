@@ -1,7 +1,6 @@
 package com.fangxuele.tool.push.logic.msgsender;
 
 import com.alibaba.fastjson.JSON;
-import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.account.TxYunAccountConfig;
 import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.dao.TMsgMapper;
@@ -41,12 +40,18 @@ public class TxYunMsgSender implements IMsgSender {
 
     private static Map<Integer, SmsSingleSender> smsSingleSenderMap = new HashMap<>();
 
+    private TxYunAccountConfig txYunAccountConfig;
+
 
     public TxYunMsgSender(Integer msgId, Integer dryRun) {
         TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
         txYunMsgMaker = new TxYunMsgMaker(tMsg);
         smsSingleSender = getTxYunSender(tMsg.getAccountId());
         this.dryRun = dryRun;
+
+        TAccount tAccount = accountMapper.selectByPrimaryKey(tMsg.getAccountId());
+        String accountConfig = tAccount.getAccountConfig();
+        txYunAccountConfig = JSON.parseObject(accountConfig, TxYunAccountConfig.class);
     }
 
     public static void removeAccount(Integer account1Id) {
@@ -58,8 +63,7 @@ public class TxYunMsgSender implements IMsgSender {
         SendResult sendResult = new SendResult();
         try {
             int templateId = txYunMsgMaker.getTemplateId();
-            // TODO
-            String smsSign = App.config.getTxyunSign();
+            String smsSign = txYunAccountConfig.getSign();
             String[] params = txYunMsgMaker.makeMsg(msgData);
             String telNum = msgData[0];
             if (dryRun == 1) {

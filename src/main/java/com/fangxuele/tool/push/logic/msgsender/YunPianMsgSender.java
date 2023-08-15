@@ -98,7 +98,7 @@ public class YunPianMsgSender implements IMsgSender {
 
             String yunpianApiKey = yunPianAccountConfig.getApiKey();
 
-            yunpianClient = new YunpianClient(yunpianApiKey).init();
+            YunpianClient yunpianClient = new YunpianClient(yunpianApiKey).init();
 
             yunpianClientMap.put(accountId, yunpianClient);
             return yunpianClient;

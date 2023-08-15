@@ -111,7 +111,7 @@ public class AliYunMsgSender implements IMsgSender {
             clientConfig.setConnectionTimeoutMillis(10000L);
 
             profile.setHttpClientConfig(clientConfig);
-            iAcsClient = new DefaultAcsClient(profile);
+            IAcsClient iAcsClient = new DefaultAcsClient(profile);
 
             acsClientMap.put(accountId, iAcsClient);
 

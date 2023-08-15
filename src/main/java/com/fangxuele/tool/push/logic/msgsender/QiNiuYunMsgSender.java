@@ -101,7 +101,7 @@ public class QiNiuYunMsgSender implements IMsgSender {
             String qiniuSecretKey = qiniuYunAccountConfig.getSecretKey();
             Auth auth = Auth.create(qiniuAccessKey, qiniuSecretKey);
 
-            smsManager = new SmsManager(auth);
+            SmsManager smsManager = new SmsManager(auth);
 
             smsManagerMap.put(accountId, smsManager);
             return smsManager;

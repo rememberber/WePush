@@ -326,7 +326,7 @@ public class HttpMsgSender implements IMsgSender {
 
             ConnectionPool pool = new ConnectionPool(App.config.getMaxThreads(), 10, TimeUnit.MINUTES);
             builder.connectionPool(pool);
-            okHttpClient = builder.build();
+            OkHttpClient okHttpClient = builder.build();
 
             okHttpClientMap.put(accountId, okHttpClient);
             return okHttpClient;
