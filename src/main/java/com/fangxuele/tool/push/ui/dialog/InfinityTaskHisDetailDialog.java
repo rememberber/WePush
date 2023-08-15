@@ -474,7 +474,12 @@ public class InfinityTaskHisDetailDialog extends JDialog {
             String formatBetweenLast = DateUtil.formatBetween(lastTimeMillis, BetweenFormater.Level.SECOND);
             pushLastTimeLabel.setText("".equals(formatBetweenLast) ? "0s" : formatBetweenLast);
 
-            int tps = (tTaskHis.getSuccessCnt() + tTaskHis.getFailCnt()) / (int) (lastTimeMillis / 1000);
+            int tps;
+            if (lastTimeMillis == 0) {
+                tps = 0;
+            } else {
+                tps = (int) ((tTaskHis.getSuccessCnt() + tTaskHis.getFailCnt()) / (lastTimeMillis / 1000));
+            }
             tpsLabel.setText(tps + "");
 
             successFileTextField.setText(tTaskHis.getSuccessFilePath());
