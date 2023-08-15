@@ -139,7 +139,7 @@ public class TaskForm {
         } else {
             JTable taskHisListTable = taskForm.getTaskHisListTable();
             // 清空任务历史列表
-            String[] headerNames2 = {"id", "是否空跑", "开始时间", "结束时间", "总量", "成功", "状态"};
+            String[] headerNames2 = {"id", "是否空跑", "开始时间", "结束时间", "总量", "成功", "失败", "状态"};
             DefaultTableModel model2 = new DefaultTableModel(null, headerNames2);
             taskHisListTable.setModel(model2);
         }
@@ -359,7 +359,7 @@ public class TaskForm {
         JTable taskHisListTable = taskForm.getTaskHisListTable();
 
         // 任务数据列表
-        String[] headerNames = {"id", "是否空跑", "开始时间", "结束时间", "总量", "成功", "状态"};
+        String[] headerNames = {"id", "是否空跑", "开始时间", "结束时间", "总量", "成功", "失败", "状态"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
         taskHisListTable.setModel(model);
 
@@ -369,14 +369,15 @@ public class TaskForm {
 
         List<TTaskHis> taskHisList = taskHisMapper.selectByTaskId(selectedTaskId);
         for (TTaskHis taskHis : taskHisList) {
-            data = new Object[7];
+            data = new Object[8];
             data[0] = taskHis.getId();
             data[1] = taskHis.getDryRun() == 1 ? "空跑" : "否";
             data[2] = taskHis.getStartTime();
             data[3] = taskHis.getEndTime();
             data[4] = taskHis.getTotalCnt();
             data[5] = taskHis.getSuccessCnt();
-            data[6] = TaskStatusEnum.getDescByCode(taskHis.getStatus());
+            data[6] = taskHis.getFailCnt();
+            data[7] = TaskStatusEnum.getDescByCode(taskHis.getStatus());
             model.addRow(data);
         }
         // 隐藏id列
