@@ -58,6 +58,7 @@ public class TxYunMsgSender implements IMsgSender {
         SendResult sendResult = new SendResult();
         try {
             int templateId = txYunMsgMaker.getTemplateId();
+            // TODO
             String smsSign = App.config.getTxyunSign();
             String[] params = txYunMsgMaker.makeMsg(msgData);
             String telNum = msgData[0];
