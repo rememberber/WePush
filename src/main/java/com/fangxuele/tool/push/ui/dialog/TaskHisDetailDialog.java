@@ -8,14 +8,8 @@ import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.dao.TPeopleDataMapper;
-import com.fangxuele.tool.push.dao.TPeopleMapper;
-import com.fangxuele.tool.push.dao.TTaskHisMapper;
-import com.fangxuele.tool.push.dao.TTaskMapper;
-import com.fangxuele.tool.push.domain.TPeople;
-import com.fangxuele.tool.push.domain.TPeopleData;
-import com.fangxuele.tool.push.domain.TTask;
-import com.fangxuele.tool.push.domain.TTaskHis;
+import com.fangxuele.tool.push.dao.*;
+import com.fangxuele.tool.push.domain.*;
 import com.fangxuele.tool.push.logic.TaskRunThread;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.form.MainWindow;
@@ -54,7 +48,6 @@ public class TaskHisDetailDialog extends JDialog {
     private JLabel pushTotalCountLabel;
     private JLabel pushMsgName;
     private JLabel scheduleDetailLabel;
-    private JLabel countPerThread;
     private JLabel pushLeftTimeLabel;
     private JLabel tpsLabel;
     private JButton pushStopButton;
@@ -70,6 +63,7 @@ public class TaskHisDetailDialog extends JDialog {
 
     private static TTaskHisMapper taskHisMapper = MybatisUtil.getSqlSession().getMapper(TTaskHisMapper.class);
     private static TTaskMapper taskMapper = MybatisUtil.getSqlSession().getMapper(TTaskMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
     private static TPeopleMapper peopleMapper = MybatisUtil.getSqlSession().getMapper(TPeopleMapper.class);
     private static TPeopleDataMapper peopleDataMapper = MybatisUtil.getSqlSession().getMapper(TPeopleDataMapper.class);
 
@@ -115,6 +109,7 @@ public class TaskHisDetailDialog extends JDialog {
 
         TTaskHis tTaskHis = taskHisMapper.selectByPrimaryKey(taskHisId);
         TTask tTask = taskMapper.selectByPrimaryKey(tTaskHis.getTaskId());
+        TMsg tMsg = msgMapper.selectByPrimaryKey(tTask.getMessageId());
 
         successToPeopleButton.addActionListener(e -> {
             ThreadUtil.execute(() -> {
@@ -371,6 +366,10 @@ public class TaskHisDetailDialog extends JDialog {
 
         BufferedReader logReader = null;
 
+        pushMsgName.setText(tMsg.getMsgName());
+        pushTotalCountLabel.setText("总量：" + tTaskHis.getTotalCnt());
+        pushTotalProgressBar.setMaximum(tTaskHis.getTotalCnt());
+
         if (taskRunThread != null) {
             try {
                 logReader = new BufferedReader(new FileReader(taskRunThread.getLogFilePath()));
@@ -381,6 +380,8 @@ public class TaskHisDetailDialog extends JDialog {
             BufferedReader finalLogReader = logReader;
 
             ThreadUtil.execAsync(() -> {
+                int totalSentCountBefore = 0;
+
                 while (true) {
                     try {
                         Thread.sleep(500);
@@ -408,21 +409,26 @@ public class TaskHisDetailDialog extends JDialog {
                     }
                     pushStopButton.setEnabled(true);
 
-                    pushSuccessCount.setText(String.valueOf(tTaskHis.getSuccessCnt()));
-                    pushFailCount.setText(String.valueOf(tTaskHis.getFailCnt()));
-                    pushTotalCountLabel.setText(String.valueOf(tTaskHis.getTotalCnt()));
-                    pushTotalProgressBar.setMaximum(tTaskHis.getTotalCnt());
-                    pushTotalProgressBar.setValue(tTaskHis.getSuccessCnt() + tTaskHis.getFailCnt());
-                    // TODO
-//            pushLastTimeLabel.setText(tTaskHis.getLastSendTime());
-//            jvmMemoryLabel.setText(tTaskHis.getJvmMemory());
-//            availableProcessorLabel.setText(tTaskHis.getAvailableProcessor());
-//            pushTotalCountLabel.setText(String.valueOf(tTaskHis.getTotalCnt()));
-//            pushMsgName.setText(tTaskHis.getMsgName());
-//            scheduleDetailLabel.setText(tTaskHis.getScheduleDetail());
-//            countPerThread.setText(String.valueOf(tTaskHis.getCountPerThread()));
-//            pushLeftTimeLabel.setText(tTaskHis.getLeftTime());
-//            tpsLabel.setText(tTaskHis.getTps());
+                    pushSuccessCount.setText(String.valueOf(taskRunThread.getSuccessRecords()));
+                    pushFailCount.setText(String.valueOf(taskRunThread.getFailRecords()));
+
+                    int totalSentCount = taskRunThread.getSuccessRecords().intValue() + taskRunThread.getFailRecords().intValue();
+                    pushTotalProgressBar.setValue(totalSentCount);
+                    long currentTimeMillis = System.currentTimeMillis();
+                    long lastTimeMillis = currentTimeMillis - taskRunThread.getStartTime();
+                    // 耗时
+                    String formatBetweenLast = DateUtil.formatBetween(lastTimeMillis, BetweenFormater.Level.SECOND);
+                    pushLastTimeLabel.setText("".equals(formatBetweenLast) ? "0s" : formatBetweenLast);
+
+                    // 预计剩余
+
+                    long leftTimeMillis = (long) ((double) lastTimeMillis / (totalSentCount) * (tTaskHis.getTotalCnt() - totalSentCount));
+                    String formatBetweenLeft = DateUtil.formatBetween(leftTimeMillis, BetweenFormater.Level.SECOND);
+                    pushLeftTimeLabel.setText("".equals(formatBetweenLeft) ? "0s" : formatBetweenLeft);
+
+                    int tps = (totalSentCount - totalSentCountBefore) * 2;
+                    totalSentCountBefore = totalSentCount;
+                    tpsLabel.setText(tps + "");
                 }
             });
         } else {
@@ -430,19 +436,7 @@ public class TaskHisDetailDialog extends JDialog {
 
             pushSuccessCount.setText(String.valueOf(tTaskHis.getSuccessCnt()));
             pushFailCount.setText(String.valueOf(tTaskHis.getFailCnt()));
-            pushTotalCountLabel.setText("总量：" + tTaskHis.getTotalCnt());
-            pushTotalProgressBar.setMaximum(tTaskHis.getTotalCnt());
             pushTotalProgressBar.setValue(tTaskHis.getSuccessCnt() + tTaskHis.getFailCnt());
-            // TODO
-//            pushLastTimeLabel.setText(tTaskHis.getLastSendTime());
-//            jvmMemoryLabel.setText(tTaskHis.getJvmMemory());
-//            availableProcessorLabel.setText(tTaskHis.getAvailableProcessor());
-//            pushTotalCountLabel.setText(String.valueOf(tTaskHis.getTotalCnt()));
-//            pushMsgName.setText(tTaskHis.getMsgName());
-//            scheduleDetailLabel.setText(tTaskHis.getScheduleDetail());
-//            countPerThread.setText(String.valueOf(tTaskHis.getCountPerThread()));
-//            pushLeftTimeLabel.setText(tTaskHis.getLeftTime());
-//            tpsLabel.setText(tTaskHis.getTps());
 
             long lastTimeMillis = DateUtil.parseDateTime(tTaskHis.getEndTime()).getTime() - DateUtil.parseDateTime(tTaskHis.getStartTime()).getTime();
 
@@ -506,50 +500,50 @@ public class TaskHisDetailDialog extends JDialog {
         panel2.setLayout(new GridLayoutManager(1, 1, new Insets(0, 10, 0, 10), -1, -1));
         panel1.add(panel2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         pushUpPanel = new JPanel();
-        pushUpPanel.setLayout(new GridLayoutManager(7, 10, new Insets(0, 0, 0, 0), -1, -1));
+        pushUpPanel.setLayout(new GridLayoutManager(6, 10, new Insets(0, 0, 0, 0), -1, -1));
         panel2.add(pushUpPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         pushSuccessCount = new JLabel();
         Font pushSuccessCountFont = this.$$$getFont$$$(null, -1, 72, pushSuccessCount.getFont());
         if (pushSuccessCountFont != null) pushSuccessCount.setFont(pushSuccessCountFont);
         pushSuccessCount.setForeground(new Color(-13587376));
         pushSuccessCount.setText("0");
-        pushUpPanel.add(pushSuccessCount, new GridConstraints(0, 0, 7, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushUpPanel.add(pushSuccessCount, new GridConstraints(0, 0, 6, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         pushFailCount = new JLabel();
         Font pushFailCountFont = this.$$$getFont$$$(null, -1, 72, pushFailCount.getFont());
         if (pushFailCountFont != null) pushFailCount.setFont(pushFailCountFont);
         pushFailCount.setForeground(new Color(-2200483));
         pushFailCount.setText("0");
-        pushUpPanel.add(pushFailCount, new GridConstraints(0, 2, 7, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushUpPanel.add(pushFailCount, new GridConstraints(0, 2, 6, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         pushTotalProgressLabel = new JLabel();
         pushTotalProgressLabel.setText("总进度");
-        pushUpPanel.add(pushTotalProgressLabel, new GridConstraints(6, 8, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushUpPanel.add(pushTotalProgressLabel, new GridConstraints(5, 8, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         pushTotalProgressBar = new JProgressBar();
         pushTotalProgressBar.setStringPainted(true);
-        pushUpPanel.add(pushTotalProgressBar, new GridConstraints(6, 9, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushUpPanel.add(pushTotalProgressBar, new GridConstraints(5, 9, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
         label1.setText("成功");
-        pushUpPanel.add(label1, new GridConstraints(3, 1, 2, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushUpPanel.add(label1, new GridConstraints(2, 1, 2, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
         label2.setText("失败");
-        pushUpPanel.add(label2, new GridConstraints(3, 3, 2, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushUpPanel.add(label2, new GridConstraints(2, 3, 2, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JSeparator separator1 = new JSeparator();
         separator1.setOrientation(1);
-        pushUpPanel.add(separator1, new GridConstraints(0, 4, 7, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        pushUpPanel.add(separator1, new GridConstraints(0, 4, 6, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         pushLastTimeLabel = new JLabel();
         pushLastTimeLabel.setEnabled(true);
         Font pushLastTimeLabelFont = this.$$$getFont$$$("Microsoft YaHei UI Light", -1, 36, pushLastTimeLabel.getFont());
         if (pushLastTimeLabelFont != null) pushLastTimeLabel.setFont(pushLastTimeLabelFont);
         pushLastTimeLabel.setForeground(new Color(-6710887));
         pushLastTimeLabel.setText("0s");
-        pushUpPanel.add(pushLastTimeLabel, new GridConstraints(0, 6, 4, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushUpPanel.add(pushLastTimeLabel, new GridConstraints(0, 6, 3, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label3 = new JLabel();
         label3.setHorizontalAlignment(0);
         label3.setHorizontalTextPosition(0);
         label3.setText("耗时");
-        pushUpPanel.add(label3, new GridConstraints(0, 5, 4, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushUpPanel.add(label3, new GridConstraints(0, 5, 3, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JSeparator separator2 = new JSeparator();
         separator2.setOrientation(1);
-        pushUpPanel.add(separator2, new GridConstraints(0, 7, 7, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        pushUpPanel.add(separator2, new GridConstraints(0, 7, 6, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         pushTotalCountLabel = new JLabel();
         pushTotalCountLabel.setText("消息总数：--");
         pushUpPanel.add(pushTotalCountLabel, new GridConstraints(1, 8, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -562,29 +556,22 @@ public class TaskHisDetailDialog extends JDialog {
         scheduleDetailLabel = new JLabel();
         scheduleDetailLabel.setForeground(new Color(-276358));
         scheduleDetailLabel.setText("");
-        pushUpPanel.add(scheduleDetailLabel, new GridConstraints(5, 8, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        countPerThread = new JLabel();
-        countPerThread.setText("平均每个线程分配：--");
-        pushUpPanel.add(countPerThread, new GridConstraints(3, 8, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushUpPanel.add(scheduleDetailLabel, new GridConstraints(4, 8, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label4 = new JLabel();
         label4.setText("预计剩余");
-        pushUpPanel.add(label4, new GridConstraints(4, 5, 2, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushUpPanel.add(label4, new GridConstraints(3, 5, 2, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         pushLeftTimeLabel = new JLabel();
         Font pushLeftTimeLabelFont = this.$$$getFont$$$("Microsoft YaHei UI Light", -1, 36, pushLeftTimeLabel.getFont());
         if (pushLeftTimeLabelFont != null) pushLeftTimeLabel.setFont(pushLeftTimeLabelFont);
         pushLeftTimeLabel.setForeground(new Color(-6710887));
         pushLeftTimeLabel.setText("0s");
-        pushUpPanel.add(pushLeftTimeLabel, new GridConstraints(4, 6, 2, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushUpPanel.add(pushLeftTimeLabel, new GridConstraints(3, 6, 2, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label5 = new JLabel();
         label5.setText("TPS");
-        pushUpPanel.add(label5, new GridConstraints(6, 5, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushUpPanel.add(label5, new GridConstraints(5, 5, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         tpsLabel = new JLabel();
         tpsLabel.setText("0");
-        pushUpPanel.add(tpsLabel, new GridConstraints(6, 6, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label6 = new JLabel();
-        label6.setText("线程数：--");
-        label6.setToolTipText("当前版本受http连接池限制建议不要设置过多线程，推荐100以内");
-        pushUpPanel.add(label6, new GridConstraints(2, 8, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushUpPanel.add(tpsLabel, new GridConstraints(5, 6, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new GridLayoutManager(1, 1, new Insets(0, 10, 0, 10), -1, -1));
         panel1.add(panel3, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
@@ -595,15 +582,15 @@ public class TaskHisDetailDialog extends JDialog {
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new GridLayoutManager(4, 4, new Insets(10, 10, 10, 10), -1, -1));
         panel1.add(panel4, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        final JLabel label6 = new JLabel();
+        label6.setText("成功");
+        panel4.add(label6, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label7 = new JLabel();
-        label7.setText("成功");
-        panel4.add(label7, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        label7.setText("失败");
+        panel4.add(label7, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label8 = new JLabel();
-        label8.setText("失败");
-        panel4.add(label8, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label9 = new JLabel();
-        label9.setText("未发送");
-        panel4.add(label9, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        label8.setText("未发送");
+        panel4.add(label8, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         successFileTextField = new JTextField();
         successFileTextField.setEditable(false);
         panel4.add(successFileTextField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
