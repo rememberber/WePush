@@ -357,7 +357,7 @@
               <editable value="false"/>
             </properties>
           </component>
-          <component id="110fd" class="javax.swing.JButton" binding="打开Button" default-binding="true">
+          <component id="110fd" class="javax.swing.JButton" binding="openSuccessButton">
             <constraints>
               <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -365,7 +365,7 @@
               <text value="打开"/>
             </properties>
           </component>
-          <component id="6898b" class="javax.swing.JButton" binding="打开Button1" default-binding="true">
+          <component id="6898b" class="javax.swing.JButton" binding="openFailButton">
             <constraints>
               <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -373,7 +373,7 @@
               <text value="打开"/>
             </properties>
           </component>
-          <component id="4b635" class="javax.swing.JButton" binding="打开Button2" default-binding="true">
+          <component id="4b635" class="javax.swing.JButton" binding="openNoSendButton">
             <constraints>
               <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>

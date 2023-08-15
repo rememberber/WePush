@@ -65,9 +65,9 @@ public class InfinityTaskHisDetailDialog extends JDialog {
     private JTextField successFileTextField;
     private JTextField failFileTextField;
     private JTextField noSendFileTextField;
-    private JButton 打开Button;
-    private JButton 打开Button1;
-    private JButton 打开Button2;
+    private JButton openSuccessButton;
+    private JButton openFailButton;
+    private JButton openNoSendButton;
     private JButton successToPeopleButton;
     private JButton failToPeopleButton;
     private JButton noSendToPeopleButton;
@@ -338,6 +338,45 @@ public class InfinityTaskHisDetailDialog extends JDialog {
             dispose();
         });
 
+        openSuccessButton.addActionListener(e -> {
+            try {
+                if (StringUtils.isEmpty(tTaskHis.getSuccessFilePath())) {
+                    return;
+                }
+                Desktop.getDesktop().open(new File(tTaskHis.getSuccessFilePath()));
+            } catch (IOException e1) {
+                JOptionPane.showMessageDialog(App.mainFrame, "打开文件失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        });
+
+        openFailButton.addActionListener(e -> {
+            try {
+                if (StringUtils.isEmpty(tTaskHis.getFailFilePath())) {
+                    return;
+                }
+                Desktop.getDesktop().open(new File(tTaskHis.getFailFilePath()));
+            } catch (IOException e1) {
+                JOptionPane.showMessageDialog(App.mainFrame, "打开文件失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        });
+
+        openNoSendButton.addActionListener(e -> {
+            try {
+                if (StringUtils.isEmpty(tTaskHis.getNoSendFilePath())) {
+                    return;
+                }
+                Desktop.getDesktop().open(new File(tTaskHis.getNoSendFilePath()));
+            } catch (IOException e1) {
+                JOptionPane.showMessageDialog(App.mainFrame, "打开文件失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        });
+
         BufferedReader logReader = null;
 
         if (infinityTaskRunThread != null) {
@@ -583,15 +622,15 @@ public class InfinityTaskHisDetailDialog extends JDialog {
         noSendFileTextField = new JTextField();
         noSendFileTextField.setEditable(false);
         panel3.add(noSendFileTextField, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        打开Button = new JButton();
-        打开Button.setText("打开");
-        panel3.add(打开Button, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        打开Button1 = new JButton();
-        打开Button1.setText("打开");
-        panel3.add(打开Button1, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        打开Button2 = new JButton();
-        打开Button2.setText("打开");
-        panel3.add(打开Button2, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        openSuccessButton = new JButton();
+        openSuccessButton.setText("打开");
+        panel3.add(openSuccessButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        openFailButton = new JButton();
+        openFailButton.setText("打开");
+        panel3.add(openFailButton, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        openNoSendButton = new JButton();
+        openNoSendButton.setText("打开");
+        panel3.add(openNoSendButton, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         successToPeopleButton = new JButton();
         successToPeopleButton.setText("创建为人群");
         panel3.add(successToPeopleButton, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
