@@ -12,6 +12,7 @@ import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.UndoUtil;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -79,6 +80,11 @@ public class TaskForm {
 
     public static void init() {
         taskForm = getInstance();
+
+        taskForm.getDeleteButton().setIcon(new FlatSVGIcon("icon/remove.svg"));
+        taskForm.getHisDeleteButton().setIcon(new FlatSVGIcon("icon/remove.svg"));
+        taskForm.getStartButton().setIcon(new FlatSVGIcon("icon/send.svg", 14, 14));
+
         taskForm.getTaskListTable().setRowHeight(UiConsts.TABLE_ROW_HEIGHT);
         taskForm.getTaskHisListTable().setRowHeight(UiConsts.TABLE_ROW_HEIGHT);
         JTableUtil.setTableHeaderLeftAlignment(taskForm.getTaskListTable());
