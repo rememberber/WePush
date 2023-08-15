@@ -1,5 +1,7 @@
 package com.fangxuele.tool.push.ui.dialog;
 
+import cn.hutool.core.date.BetweenFormater;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.json.JSONUtil;
@@ -428,7 +430,7 @@ public class TaskHisDetailDialog extends JDialog {
 
             pushSuccessCount.setText(String.valueOf(tTaskHis.getSuccessCnt()));
             pushFailCount.setText(String.valueOf(tTaskHis.getFailCnt()));
-            pushTotalCountLabel.setText(String.valueOf(tTaskHis.getTotalCnt()));
+            pushTotalCountLabel.setText("总量：" + tTaskHis.getTotalCnt());
             pushTotalProgressBar.setMaximum(tTaskHis.getTotalCnt());
             pushTotalProgressBar.setValue(tTaskHis.getSuccessCnt() + tTaskHis.getFailCnt());
             // TODO
@@ -442,6 +444,14 @@ public class TaskHisDetailDialog extends JDialog {
 //            pushLeftTimeLabel.setText(tTaskHis.getLeftTime());
 //            tpsLabel.setText(tTaskHis.getTps());
 
+            long lastTimeMillis = DateUtil.parseDateTime(tTaskHis.getEndTime()).getTime() - DateUtil.parseDateTime(tTaskHis.getStartTime()).getTime();
+
+            // 耗时
+            String formatBetweenLast = DateUtil.formatBetween(lastTimeMillis, BetweenFormater.Level.SECOND);
+            pushLastTimeLabel.setText("".equals(formatBetweenLast) ? "0s" : formatBetweenLast);
+
+            int tps = (tTaskHis.getSuccessCnt() + tTaskHis.getFailCnt()) / (int) (lastTimeMillis / 1000);
+            tpsLabel.setText(tps + "");
 
             successFileTextField.setText(tTaskHis.getSuccessFilePath());
             failFileTextField.setText(tTaskHis.getFailFilePath());
