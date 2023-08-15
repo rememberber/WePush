@@ -1,5 +1,6 @@
 package com.fangxuele.tool.push.ui.form;
 
+import cn.hutool.core.io.FileUtil;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.*;
 import com.fangxuele.tool.push.domain.TTask;
@@ -89,7 +90,14 @@ public class TaskForm {
         taskForm.getMainSplitPane().setDividerLocation((int) (App.mainFrame.getWidth() / 2));
 
         initTaskListTable();
-//        initTaskHisListTable();
+
+        // 每秒钟刷新一次
+        new Timer(1000, e -> {
+            // 可用处理器核心
+            taskForm.getAvailableProcessorLabel().setText("可用处理器核心：" + Runtime.getRuntime().availableProcessors());
+            // JVM内存占用
+            taskForm.getJvmMemoryLabel().setText("JVM内存占用：" + FileUtil.readableFileSize(Runtime.getRuntime().totalMemory()) + "/" + FileUtil.readableFileSize(Runtime.getRuntime().maxMemory()));
+        }).start();
     }
 
     public static void initTaskListTable() {
