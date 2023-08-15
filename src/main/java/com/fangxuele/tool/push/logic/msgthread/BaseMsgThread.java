@@ -38,17 +38,6 @@ public class BaseMsgThread extends Thread {
 
     public static int msgType;
 
-    /**
-     * 构造函数
-     *
-     * @param start 起始页
-     * @param end   截止页
-     */
-    public BaseMsgThread(int start, int end) {
-        this.startIndex = start;
-        this.endIndex = end;
-    }
-
     public BaseMsgThread(int startIndex, int endIndex, TaskRunThread taskRunThread) {
         this.startIndex = startIndex;
         this.endIndex = endIndex;

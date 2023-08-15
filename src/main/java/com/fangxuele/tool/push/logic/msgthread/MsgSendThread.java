@@ -20,18 +20,6 @@ import org.bouncycastle.util.Arrays;
 public class MsgSendThread extends BaseMsgThread {
 
     private IMsgSender iMsgSender;
-
-    /**
-     * 构造函数
-     *
-     * @param startIndex 起始页
-     * @param endIndex   截止页
-     */
-    public MsgSendThread(int startIndex, int endIndex, IMsgSender iMsgSender) {
-        super(startIndex, endIndex);
-        this.iMsgSender = iMsgSender;
-    }
-
     public MsgSendThread(int startIndex, int endIndex, IMsgSender msgSender, TaskRunThread taskRunThread) {
         super(startIndex, endIndex, taskRunThread);
         this.iMsgSender = msgSender;

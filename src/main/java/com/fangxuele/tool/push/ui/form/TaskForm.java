@@ -54,7 +54,7 @@ public class TaskForm {
     private JLabel corePoolSizeLabel;
     private JLabel maxPoolSizeLabel;
     private JPanel pushUpPanel;
-    private JLabel pushMsgName;
+    private JLabel taskTitle;
     private JSplitPane mainSplitPane;
 
     private static TaskForm taskForm;
@@ -134,6 +134,8 @@ public class TaskForm {
         if (taskListTable.getRowCount() > 0) {
             taskListTable.setRowSelectionInterval(0, 0);
             initTaskHisListTable((Integer) taskListTable.getValueAt(0, 0));
+
+            taskForm.getTaskTitle().setText(taskListTable.getValueAt(0, 1).toString());
         } else {
             JTable taskHisListTable = taskForm.getTaskHisListTable();
             // 清空任务历史列表
@@ -252,12 +254,12 @@ public class TaskForm {
         final JPanel panel6 = new JPanel();
         panel6.setLayout(new GridLayoutManager(5, 1, new Insets(0, 0, 0, 0), -1, -1));
         pushUpPanel.add(panel6, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        pushMsgName = new JLabel();
-        Font pushMsgNameFont = this.$$$getFont$$$(null, -1, 24, pushMsgName.getFont());
-        if (pushMsgNameFont != null) pushMsgName.setFont(pushMsgNameFont);
-        pushMsgName.setForeground(new Color(-276358));
-        pushMsgName.setText("任务标题");
-        panel6.add(pushMsgName, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        taskTitle = new JLabel();
+        Font taskTitleFont = this.$$$getFont$$$(null, -1, 24, taskTitle.getFont());
+        if (taskTitleFont != null) taskTitle.setFont(taskTitleFont);
+        taskTitle.setForeground(new Color(-276358));
+        taskTitle.setText("任务标题");
+        panel6.add(taskTitle, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer3 = new Spacer();
         panel6.add(spacer3, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
