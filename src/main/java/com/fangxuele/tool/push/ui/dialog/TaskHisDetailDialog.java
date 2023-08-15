@@ -370,7 +370,7 @@ public class TaskHisDetailDialog extends JDialog {
         pushTotalCountLabel.setText("总量：" + tTaskHis.getTotalCnt());
         pushTotalProgressBar.setMaximum(tTaskHis.getTotalCnt());
 
-        if (taskRunThread != null) {
+        if (taskRunThread != null && taskRunThread.running) {
             try {
                 logReader = new BufferedReader(new FileReader(taskRunThread.getLogFilePath()));
             } catch (FileNotFoundException e) {
@@ -432,6 +432,7 @@ public class TaskHisDetailDialog extends JDialog {
                 }
             });
         } else {
+
             pushStopButton.setEnabled(false);
 
             pushSuccessCount.setText(String.valueOf(tTaskHis.getSuccessCnt()));

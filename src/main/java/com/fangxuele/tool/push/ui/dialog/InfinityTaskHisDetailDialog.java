@@ -1,19 +1,15 @@
 package com.fangxuele.tool.push.ui.dialog;
 
+import cn.hutool.core.date.BetweenFormater;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.dao.TPeopleDataMapper;
-import com.fangxuele.tool.push.dao.TPeopleMapper;
-import com.fangxuele.tool.push.dao.TTaskHisMapper;
-import com.fangxuele.tool.push.dao.TTaskMapper;
-import com.fangxuele.tool.push.domain.TPeople;
-import com.fangxuele.tool.push.domain.TPeopleData;
-import com.fangxuele.tool.push.domain.TTask;
-import com.fangxuele.tool.push.domain.TTaskHis;
+import com.fangxuele.tool.push.dao.*;
+import com.fangxuele.tool.push.domain.*;
 import com.fangxuele.tool.push.logic.InfinityTaskRunThread;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.form.MainWindow;
@@ -77,6 +73,8 @@ public class InfinityTaskHisDetailDialog extends JDialog {
     private static TPeopleMapper peopleMapper = MybatisUtil.getSqlSession().getMapper(TPeopleMapper.class);
     private static TPeopleDataMapper peopleDataMapper = MybatisUtil.getSqlSession().getMapper(TPeopleDataMapper.class);
 
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
+
     private static final Log logger = LogFactory.get();
 
     private Boolean dialogClosed = false;
@@ -119,6 +117,7 @@ public class InfinityTaskHisDetailDialog extends JDialog {
 
         TTaskHis tTaskHis = taskHisMapper.selectByPrimaryKey(taskHisId);
         TTask tTask = taskMapper.selectByPrimaryKey(tTaskHis.getTaskId());
+        TMsg tmsg = msgMapper.selectByPrimaryKey(tTask.getMessageId());
 
         threadCountSlider.setMaximum(tTask.getMaxThreadCnt());
         threadCountSlider.setValue(tTask.getThreadCnt());
@@ -377,9 +376,23 @@ public class InfinityTaskHisDetailDialog extends JDialog {
             }
         });
 
+        pushStopButton.addActionListener(e -> {
+            int isStop = JOptionPane.showConfirmDialog(App.mainFrame,
+                    "确定停止当前的推送吗？", "确认停止？",
+                    JOptionPane.YES_NO_OPTION);
+            if (isStop == JOptionPane.YES_OPTION) {
+                infinityTaskRunThread.running = false;
+                pushStopButton.setEnabled(false);
+            }
+        });
+
         BufferedReader logReader = null;
 
-        if (infinityTaskRunThread != null) {
+        pushMsgName.setText(tmsg.getMsgName());
+        pushTotalCountLabel.setText("总量：" + tTaskHis.getTotalCnt());
+        pushTotalProgressBar.setMaximum(tTaskHis.getTotalCnt());
+
+        if (infinityTaskRunThread != null && infinityTaskRunThread.isRunning()) {
             try {
                 logReader = new BufferedReader(new FileReader(infinityTaskRunThread.getLogFilePath()));
             } catch (FileNotFoundException e) {
@@ -389,9 +402,11 @@ public class InfinityTaskHisDetailDialog extends JDialog {
             BufferedReader finalLogReader = logReader;
 
             ThreadUtil.execAsync(() -> {
+                int totalSentCountBefore = 0;
+
                 while (true) {
                     try {
-                        Thread.sleep(200);
+                        Thread.sleep(500);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -407,6 +422,8 @@ public class InfinityTaskHisDetailDialog extends JDialog {
                     }
                     if (!infinityTaskRunThread.running || dialogClosed) {
                         try {
+                            pushStopButton.setEnabled(false);
+
                             finalLogReader.close();
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -415,11 +432,50 @@ public class InfinityTaskHisDetailDialog extends JDialog {
                     }
                     pushSuccessCount.setText(String.valueOf(infinityTaskRunThread.getSuccessRecords()));
                     pushFailCount.setText(String.valueOf(infinityTaskRunThread.getFailRecords()));
+
+                    pushStopButton.setEnabled(true);
+
+                    pushSuccessCount.setText(String.valueOf(infinityTaskRunThread.getSuccessRecords()));
+                    pushFailCount.setText(String.valueOf(infinityTaskRunThread.getFailRecords()));
+
+                    int totalSentCount = infinityTaskRunThread.getSuccessRecords().intValue() + infinityTaskRunThread.getFailRecords().intValue();
+                    pushTotalProgressBar.setValue(totalSentCount);
+                    long currentTimeMillis = System.currentTimeMillis();
+                    long lastTimeMillis = currentTimeMillis - infinityTaskRunThread.getStartTime();
+                    // 耗时
+                    String formatBetweenLast = DateUtil.formatBetween(lastTimeMillis, BetweenFormater.Level.SECOND);
+                    pushLastTimeLabel.setText("".equals(formatBetweenLast) ? "0s" : formatBetweenLast);
+
+                    // 预计剩余
+
+                    long leftTimeMillis = (long) ((double) lastTimeMillis / (totalSentCount) * (tTaskHis.getTotalCnt() - totalSentCount));
+                    String formatBetweenLeft = DateUtil.formatBetween(leftTimeMillis, BetweenFormater.Level.SECOND);
+                    pushLeftTimeLabel.setText("".equals(formatBetweenLeft) ? "0s" : formatBetweenLeft);
+
+                    int tps = (totalSentCount - totalSentCountBefore) * 2;
+                    totalSentCountBefore = totalSentCount;
+                    tpsLabel.setText(tps + "");
+
+                    activeThreadCountLabel.setText("活跃线程数：" + infinityTaskRunThread.getThreadPoolExecutor().getActiveCount());
+                    corePoolSizeLabel.setText("核心线程数：" + infinityTaskRunThread.getThreadPoolExecutor().getCorePoolSize());
+                    maxPoolSizeLabel.setText("最大线程数：" + infinityTaskRunThread.getThreadPoolExecutor().getMaximumPoolSize());
                 }
             });
         } else {
+            pushStopButton.setEnabled(false);
+
             pushSuccessCount.setText(String.valueOf(tTaskHis.getSuccessCnt()));
             pushFailCount.setText(String.valueOf(tTaskHis.getFailCnt()));
+            pushTotalProgressBar.setValue(tTaskHis.getSuccessCnt() + tTaskHis.getFailCnt());
+
+            long lastTimeMillis = DateUtil.parseDateTime(tTaskHis.getEndTime()).getTime() - DateUtil.parseDateTime(tTaskHis.getStartTime()).getTime();
+
+            // 耗时
+            String formatBetweenLast = DateUtil.formatBetween(lastTimeMillis, BetweenFormater.Level.SECOND);
+            pushLastTimeLabel.setText("".equals(formatBetweenLast) ? "0s" : formatBetweenLast);
+
+            int tps = (tTaskHis.getSuccessCnt() + tTaskHis.getFailCnt()) / (int) (lastTimeMillis / 1000);
+            tpsLabel.setText(tps + "");
 
             successFileTextField.setText(tTaskHis.getSuccessFilePath());
             failFileTextField.setText(tTaskHis.getFailFilePath());
