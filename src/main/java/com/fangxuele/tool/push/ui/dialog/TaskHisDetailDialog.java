@@ -320,6 +320,16 @@ public class TaskHisDetailDialog extends JDialog {
             dispose();
         });
 
+        pushStopButton.addActionListener(e -> {
+            int isStop = JOptionPane.showConfirmDialog(App.mainFrame,
+                    "确定停止当前的推送吗？", "确认停止？",
+                    JOptionPane.YES_NO_OPTION);
+            if (isStop == JOptionPane.YES_OPTION) {
+                taskRunThread.running = false;
+                pushStopButton.setEnabled(false);
+            }
+        });
+
         BufferedReader logReader = null;
 
         if (taskRunThread != null) {
@@ -349,6 +359,7 @@ public class TaskHisDetailDialog extends JDialog {
                         e.printStackTrace();
                     }
                     if (!taskRunThread.running || dialogClosed) {
+                        pushStopButton.setEnabled(false);
                         try {
                             finalLogReader.close();
                         } catch (IOException e) {
@@ -356,13 +367,44 @@ public class TaskHisDetailDialog extends JDialog {
                         }
                         break;
                     }
-                    pushSuccessCount.setText(String.valueOf(taskRunThread.getSuccessRecords()));
-                    pushFailCount.setText(String.valueOf(taskRunThread.getFailRecords()));
+                    pushStopButton.setEnabled(true);
+
+                    pushSuccessCount.setText(String.valueOf(tTaskHis.getSuccessCnt()));
+                    pushFailCount.setText(String.valueOf(tTaskHis.getFailCnt()));
+                    pushTotalCountLabel.setText(String.valueOf(tTaskHis.getTotalCnt()));
+                    pushTotalProgressBar.setMaximum(tTaskHis.getTotalCnt());
+                    pushTotalProgressBar.setValue(tTaskHis.getSuccessCnt() + tTaskHis.getFailCnt());
+                    // TODO
+//            pushLastTimeLabel.setText(tTaskHis.getLastSendTime());
+//            jvmMemoryLabel.setText(tTaskHis.getJvmMemory());
+//            availableProcessorLabel.setText(tTaskHis.getAvailableProcessor());
+//            pushTotalCountLabel.setText(String.valueOf(tTaskHis.getTotalCnt()));
+//            pushMsgName.setText(tTaskHis.getMsgName());
+//            scheduleDetailLabel.setText(tTaskHis.getScheduleDetail());
+//            countPerThread.setText(String.valueOf(tTaskHis.getCountPerThread()));
+//            pushLeftTimeLabel.setText(tTaskHis.getLeftTime());
+//            tpsLabel.setText(tTaskHis.getTps());
                 }
             });
         } else {
+            pushStopButton.setEnabled(false);
+
             pushSuccessCount.setText(String.valueOf(tTaskHis.getSuccessCnt()));
             pushFailCount.setText(String.valueOf(tTaskHis.getFailCnt()));
+            pushTotalCountLabel.setText(String.valueOf(tTaskHis.getTotalCnt()));
+            pushTotalProgressBar.setMaximum(tTaskHis.getTotalCnt());
+            pushTotalProgressBar.setValue(tTaskHis.getSuccessCnt() + tTaskHis.getFailCnt());
+            // TODO
+//            pushLastTimeLabel.setText(tTaskHis.getLastSendTime());
+//            jvmMemoryLabel.setText(tTaskHis.getJvmMemory());
+//            availableProcessorLabel.setText(tTaskHis.getAvailableProcessor());
+//            pushTotalCountLabel.setText(String.valueOf(tTaskHis.getTotalCnt()));
+//            pushMsgName.setText(tTaskHis.getMsgName());
+//            scheduleDetailLabel.setText(tTaskHis.getScheduleDetail());
+//            countPerThread.setText(String.valueOf(tTaskHis.getCountPerThread()));
+//            pushLeftTimeLabel.setText(tTaskHis.getLeftTime());
+//            tpsLabel.setText(tTaskHis.getTps());
+
 
             successFileTextField.setText(tTaskHis.getSuccessFilePath());
             failFileTextField.setText(tTaskHis.getFailFilePath());
