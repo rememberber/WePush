@@ -411,7 +411,7 @@ public class TaskRunThread extends Thread {
                     }
                 }
             }
-            ThreadUtil.safeSleep(200);
+            ThreadUtil.safeSleep(500);
         }
     }
 
