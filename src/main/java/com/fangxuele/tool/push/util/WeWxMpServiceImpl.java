@@ -36,7 +36,7 @@ public class WeWxMpServiceImpl extends WxMpServiceImpl {
     private WxMpAccountConfig wxMpAccountConfig;
 
     public WeWxMpServiceImpl(WxMpAccountConfig wxMpAccountConfig) {
-        wxMpAccountConfig = wxMpAccountConfig;
+        this.wxMpAccountConfig = wxMpAccountConfig;
     }
 
     @Override
