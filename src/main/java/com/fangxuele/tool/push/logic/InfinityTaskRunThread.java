@@ -195,7 +195,7 @@ public class InfinityTaskRunThread extends Thread {
 
         running = true;
 
-        taskHis.setStatus(20);
+        taskHis.setStatus(TaskStatusEnum.RUNNING_CODE);
         taskHisMapper.updateByPrimaryKey(taskHis);
 
         ConsoleUtil.pushLog(logWriter, "推送开始……");
@@ -284,7 +284,7 @@ public class InfinityTaskRunThread extends Thread {
         ConsoleUtil.pushLog(logWriter, "消息总数：" + totalRecords);
         ConsoleUtil.pushLog(logWriter, "可用处理器核心：" + Runtime.getRuntime().availableProcessors());
 
-        taskHis.setStatus(10);
+        taskHis.setStatus(TaskStatusEnum.INIT_CODE);
 
         String nowDateForSqlite = SqliteUtil.nowDateForSqlite();
         taskHis.setStartTime(nowDateForSqlite);
@@ -332,8 +332,7 @@ public class InfinityTaskRunThread extends Thread {
                 taskHis.setEndTime(SqliteUtil.nowDateForSqlite());
                 taskHis.setSuccessCnt(successRecords.intValue());
                 taskHis.setFailCnt(failRecords.intValue());
-                // TODO
-                taskHis.setStatus(30);
+                taskHis.setStatus(TaskStatusEnum.FINISH_CODE);
 
                 taskHisMapper.updateByPrimaryKey(taskHis);
 

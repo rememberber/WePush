@@ -171,7 +171,7 @@ public class TaskRunThread extends Thread {
 
         running = true;
 
-        taskHis.setStatus(20);
+        taskHis.setStatus(TaskStatusEnum.RUNNING_CODE);
         taskHisMapper.updateByPrimaryKey(taskHis);
 
         ConsoleUtil.pushLog(logWriter, "推送开始……");
@@ -263,7 +263,7 @@ public class TaskRunThread extends Thread {
         // 线程数
         threadCount = tTask.getThreadCnt();
 
-        taskHis.setStatus(10);
+        taskHis.setStatus(TaskStatusEnum.INIT_CODE);
 
         String nowDateForSqlite = SqliteUtil.nowDateForSqlite();
         taskHis.setStartTime(nowDateForSqlite);
@@ -329,8 +329,7 @@ public class TaskRunThread extends Thread {
                 int failCount = sendFailList.size();
                 taskHis.setSuccessCnt(successCount);
                 taskHis.setFailCnt(failCount);
-                // TODO
-                taskHis.setStatus(30);
+                taskHis.setStatus(TaskStatusEnum.FINISH_CODE);
 
                 taskHisMapper.updateByPrimaryKey(taskHis);
 

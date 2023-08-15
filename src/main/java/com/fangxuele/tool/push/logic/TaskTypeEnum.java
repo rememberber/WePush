@@ -29,8 +29,8 @@ public enum TaskTypeEnum {
         this.name = name;
     }
 
-    public static String getName(TaskTypeEnum messageTypeEnum) {
-        return messageTypeEnum.name;
+    public static String getName(TaskTypeEnum taskTypeEnum) {
+        return taskTypeEnum.name;
     }
 
     public static String getDescByCode(Integer taskPeriod) {

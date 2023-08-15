@@ -5,6 +5,7 @@ import com.fangxuele.tool.push.dao.*;
 import com.fangxuele.tool.push.domain.TTask;
 import com.fangxuele.tool.push.domain.TTaskHis;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.logic.TaskStatusEnum;
 import com.fangxuele.tool.push.logic.TaskTypeEnum;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.util.JTableUtil;
@@ -365,7 +366,7 @@ public class TaskForm {
             data[3] = taskHis.getEndTime();
             data[4] = taskHis.getTotalCnt();
             data[5] = taskHis.getSuccessCnt();
-            data[6] = taskHis.getStatus();
+            data[6] = TaskStatusEnum.getDescByCode(taskHis.getStatus());
             model.addRow(data);
         }
         // 隐藏id列
