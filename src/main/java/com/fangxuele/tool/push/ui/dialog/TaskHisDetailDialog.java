@@ -49,8 +49,6 @@ public class TaskHisDetailDialog extends JDialog {
     private JLabel pushTotalProgressLabel;
     private JProgressBar pushTotalProgressBar;
     private JLabel pushLastTimeLabel;
-    private JLabel jvmMemoryLabel;
-    private JLabel availableProcessorLabel;
     private JLabel pushTotalCountLabel;
     private JLabel pushMsgName;
     private JLabel scheduleDetailLabel;
@@ -59,13 +57,13 @@ public class TaskHisDetailDialog extends JDialog {
     private JLabel tpsLabel;
     private JButton pushStopButton;
     private JTextField successFileTextField;
-    private JButton 打开Button;
+    private JButton openSuccessButton;
     private JButton successToPeopleButton;
     private JTextField failFileTextField;
     private JButton failToPeopleButton;
-    private JButton 打开Button1;
+    private JButton openFailButton;
     private JTextField noSendFileTextField;
-    private JButton 打开Button2;
+    private JButton openNoSendButton;
     private JButton noSendToPeopleButton;
 
     private static TTaskHisMapper taskHisMapper = MybatisUtil.getSqlSession().getMapper(TTaskHisMapper.class);
@@ -320,6 +318,45 @@ public class TaskHisDetailDialog extends JDialog {
             dispose();
         });
 
+        openSuccessButton.addActionListener(e -> {
+            try {
+                if (StringUtils.isEmpty(tTaskHis.getSuccessFilePath())) {
+                    return;
+                }
+                Desktop.getDesktop().open(new File(tTaskHis.getSuccessFilePath()));
+            } catch (IOException e1) {
+                JOptionPane.showMessageDialog(App.mainFrame, "打开文件失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        });
+
+        openFailButton.addActionListener(e -> {
+            try {
+                if (StringUtils.isEmpty(tTaskHis.getFailFilePath())) {
+                    return;
+                }
+                Desktop.getDesktop().open(new File(tTaskHis.getFailFilePath()));
+            } catch (IOException e1) {
+                JOptionPane.showMessageDialog(App.mainFrame, "打开文件失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        });
+
+        openNoSendButton.addActionListener(e -> {
+            try {
+                if (StringUtils.isEmpty(tTaskHis.getNoSendFilePath())) {
+                    return;
+                }
+                Desktop.getDesktop().open(new File(tTaskHis.getNoSendFilePath()));
+            } catch (IOException e1) {
+                JOptionPane.showMessageDialog(App.mainFrame, "打开文件失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.error(e1);
+            }
+        });
+
         pushStopButton.addActionListener(e -> {
             int isStop = JOptionPane.showConfirmDialog(App.mainFrame,
                     "确定停止当前的推送吗？", "确认停止？",
@@ -459,35 +496,35 @@ public class TaskHisDetailDialog extends JDialog {
         panel2.setLayout(new GridLayoutManager(1, 1, new Insets(0, 10, 0, 10), -1, -1));
         panel1.add(panel2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         pushUpPanel = new JPanel();
-        pushUpPanel.setLayout(new GridLayoutManager(8, 10, new Insets(0, 0, 0, 0), -1, -1));
+        pushUpPanel.setLayout(new GridLayoutManager(7, 10, new Insets(0, 0, 0, 0), -1, -1));
         panel2.add(pushUpPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         pushSuccessCount = new JLabel();
         Font pushSuccessCountFont = this.$$$getFont$$$(null, -1, 72, pushSuccessCount.getFont());
         if (pushSuccessCountFont != null) pushSuccessCount.setFont(pushSuccessCountFont);
         pushSuccessCount.setForeground(new Color(-13587376));
         pushSuccessCount.setText("0");
-        pushUpPanel.add(pushSuccessCount, new GridConstraints(0, 0, 8, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushUpPanel.add(pushSuccessCount, new GridConstraints(0, 0, 7, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         pushFailCount = new JLabel();
         Font pushFailCountFont = this.$$$getFont$$$(null, -1, 72, pushFailCount.getFont());
         if (pushFailCountFont != null) pushFailCount.setFont(pushFailCountFont);
         pushFailCount.setForeground(new Color(-2200483));
         pushFailCount.setText("0");
-        pushUpPanel.add(pushFailCount, new GridConstraints(0, 2, 8, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushUpPanel.add(pushFailCount, new GridConstraints(0, 2, 7, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         pushTotalProgressLabel = new JLabel();
         pushTotalProgressLabel.setText("总进度");
-        pushUpPanel.add(pushTotalProgressLabel, new GridConstraints(7, 8, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushUpPanel.add(pushTotalProgressLabel, new GridConstraints(6, 8, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         pushTotalProgressBar = new JProgressBar();
         pushTotalProgressBar.setStringPainted(true);
-        pushUpPanel.add(pushTotalProgressBar, new GridConstraints(7, 9, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushUpPanel.add(pushTotalProgressBar, new GridConstraints(6, 9, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
         label1.setText("成功");
-        pushUpPanel.add(label1, new GridConstraints(3, 1, 3, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushUpPanel.add(label1, new GridConstraints(3, 1, 2, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
         label2.setText("失败");
-        pushUpPanel.add(label2, new GridConstraints(3, 3, 3, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushUpPanel.add(label2, new GridConstraints(3, 3, 2, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JSeparator separator1 = new JSeparator();
         separator1.setOrientation(1);
-        pushUpPanel.add(separator1, new GridConstraints(0, 4, 8, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        pushUpPanel.add(separator1, new GridConstraints(0, 4, 7, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         pushLastTimeLabel = new JLabel();
         pushLastTimeLabel.setEnabled(true);
         Font pushLastTimeLabelFont = this.$$$getFont$$$("Microsoft YaHei UI Light", -1, 36, pushLastTimeLabel.getFont());
@@ -502,13 +539,7 @@ public class TaskHisDetailDialog extends JDialog {
         pushUpPanel.add(label3, new GridConstraints(0, 5, 4, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JSeparator separator2 = new JSeparator();
         separator2.setOrientation(1);
-        pushUpPanel.add(separator2, new GridConstraints(0, 7, 8, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        jvmMemoryLabel = new JLabel();
-        jvmMemoryLabel.setText("JVM内存占用：--");
-        pushUpPanel.add(jvmMemoryLabel, new GridConstraints(5, 8, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        availableProcessorLabel = new JLabel();
-        availableProcessorLabel.setText("可用处理器核心：--");
-        pushUpPanel.add(availableProcessorLabel, new GridConstraints(4, 8, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushUpPanel.add(separator2, new GridConstraints(0, 7, 7, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         pushTotalCountLabel = new JLabel();
         pushTotalCountLabel.setText("消息总数：--");
         pushUpPanel.add(pushTotalCountLabel, new GridConstraints(1, 8, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -521,25 +552,25 @@ public class TaskHisDetailDialog extends JDialog {
         scheduleDetailLabel = new JLabel();
         scheduleDetailLabel.setForeground(new Color(-276358));
         scheduleDetailLabel.setText("");
-        pushUpPanel.add(scheduleDetailLabel, new GridConstraints(6, 8, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushUpPanel.add(scheduleDetailLabel, new GridConstraints(5, 8, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         countPerThread = new JLabel();
         countPerThread.setText("平均每个线程分配：--");
         pushUpPanel.add(countPerThread, new GridConstraints(3, 8, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label4 = new JLabel();
         label4.setText("预计剩余");
-        pushUpPanel.add(label4, new GridConstraints(4, 5, 3, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushUpPanel.add(label4, new GridConstraints(4, 5, 2, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         pushLeftTimeLabel = new JLabel();
         Font pushLeftTimeLabelFont = this.$$$getFont$$$("Microsoft YaHei UI Light", -1, 36, pushLeftTimeLabel.getFont());
         if (pushLeftTimeLabelFont != null) pushLeftTimeLabel.setFont(pushLeftTimeLabelFont);
         pushLeftTimeLabel.setForeground(new Color(-6710887));
         pushLeftTimeLabel.setText("0s");
-        pushUpPanel.add(pushLeftTimeLabel, new GridConstraints(4, 6, 3, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushUpPanel.add(pushLeftTimeLabel, new GridConstraints(4, 6, 2, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label5 = new JLabel();
         label5.setText("TPS");
-        pushUpPanel.add(label5, new GridConstraints(7, 5, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushUpPanel.add(label5, new GridConstraints(6, 5, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         tpsLabel = new JLabel();
         tpsLabel.setText("0");
-        pushUpPanel.add(tpsLabel, new GridConstraints(7, 6, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        pushUpPanel.add(tpsLabel, new GridConstraints(6, 6, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label6 = new JLabel();
         label6.setText("线程数：--");
         label6.setToolTipText("当前版本受http连接池限制建议不要设置过多线程，推荐100以内");
@@ -572,15 +603,15 @@ public class TaskHisDetailDialog extends JDialog {
         noSendFileTextField = new JTextField();
         noSendFileTextField.setEditable(false);
         panel4.add(noSendFileTextField, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        打开Button = new JButton();
-        打开Button.setText("打开");
-        panel4.add(打开Button, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        打开Button1 = new JButton();
-        打开Button1.setText("打开");
-        panel4.add(打开Button1, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        打开Button2 = new JButton();
-        打开Button2.setText("打开");
-        panel4.add(打开Button2, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        openSuccessButton = new JButton();
+        openSuccessButton.setText("打开");
+        panel4.add(openSuccessButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        openFailButton = new JButton();
+        openFailButton.setText("打开");
+        panel4.add(openFailButton, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        openNoSendButton = new JButton();
+        openNoSendButton.setText("打开");
+        panel4.add(openNoSendButton, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         successToPeopleButton = new JButton();
         successToPeopleButton.setText("创建为人群");
         panel4.add(successToPeopleButton, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
