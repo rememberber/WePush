@@ -150,6 +150,10 @@ public class TaskListener {
                 Integer selectedTaskId = (Integer) taskForm.getTaskListTable().getValueAt(selectedRow, 0);
 
                 TaskForm.initTaskHisListTable(selectedTaskId);
+
+                TTask tTask = taskMapper.selectByPrimaryKey(selectedTaskId);
+
+                TaskForm.fillSchedulePlan(tTask);
                 super.mousePressed(e);
             }
         });

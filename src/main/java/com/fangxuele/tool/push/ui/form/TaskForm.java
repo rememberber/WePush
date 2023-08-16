@@ -8,6 +8,7 @@ import com.fangxuele.tool.push.dao.*;
 import com.fangxuele.tool.push.domain.TTask;
 import com.fangxuele.tool.push.domain.TTaskHis;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.logic.PeriodTypeEnum;
 import com.fangxuele.tool.push.logic.TaskStatusEnum;
 import com.fangxuele.tool.push.logic.TaskTypeEnum;
 import com.fangxuele.tool.push.ui.UiConsts;
@@ -159,36 +160,56 @@ public class TaskForm {
 
             TTask tTask = taskList.get(0);
 
-            taskForm.getTaskTitle().setText(taskListTable.getValueAt(0, 1).toString());
-            taskForm.getMsgNameLabel().setText("消息名称：" + taskListTable.getValueAt(0, 4).toString());
-            taskForm.getMsgTypeLabel().setText("消息类型：" + taskListTable.getValueAt(0, 2).toString());
-            taskForm.getPeopleNameLabel().setText("人群：" + taskListTable.getValueAt(0, 5).toString());
-
-            if (tTask.getTaskPeriod() == TaskTypeEnum.SCHEDULE_TASK_CODE && StringUtils.isNotBlank(tTask.getCron())) {
-                List<String> latest5RunTimeList = Lists.newArrayList();
-                Date now = new Date();
-                for (int i = 0; i < 5; i++) {
-                    Date date = CronPatternUtil.nextDateAfter(new CronPattern(tTask.getCron()), DateUtils.addDays(now, i), true);
-                    latest5RunTimeList.add(DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss"));
-                }
-                taskForm.getSchedulePlanDetailLabel().setText("执行计划：");
-                taskForm.getPlan1Label().setText(latest5RunTimeList.get(0));
-                taskForm.getPlan2Label().setText(latest5RunTimeList.get(1));
-                taskForm.getPlan3Label().setText(latest5RunTimeList.get(2));
-                taskForm.getPlan4Label().setText(latest5RunTimeList.get(3));
-                taskForm.getPlan5Label().setText(latest5RunTimeList.get(4));
-                taskForm.getPlanToContinueLabel().setText("……");
-            } else {
-                taskForm.getSchedulePlanDetailLabel().setText("执行计划：无");
-
-                hidePlanLabel();
-            }
+            fillSchedulePlan(tTask);
         } else {
             JTable taskHisListTable = taskForm.getTaskHisListTable();
             // 清空任务历史列表
             String[] headerNames2 = {"id", "是否空跑", "开始时间", "结束时间", "总量", "成功", "失败", "状态"};
             DefaultTableModel model2 = new DefaultTableModel(null, headerNames2);
             taskHisListTable.setModel(model2);
+        }
+    }
+
+    public static void fillSchedulePlan(TTask tTask) {
+        taskForm.getTaskTitle().setText(tTask.getTitle());
+        taskForm.getMsgNameLabel().setText("消息名称：" + getMsgName(tTask.getMessageId()));
+        taskForm.getMsgTypeLabel().setText("消息类型：" + MessageTypeEnum.getName(tTask.getMsgType()));
+        taskForm.getPeopleNameLabel().setText("人群：" + peopleMapper.selectByPrimaryKey(tTask.getPeopleId()).getPeopleName());
+
+        if (tTask.getTaskPeriod() == TaskTypeEnum.SCHEDULE_TASK_CODE && StringUtils.isNotBlank(tTask.getCron())) {
+            List<String> latest5RunTimeList = Lists.newArrayList();
+            Date now = new Date();
+            for (int i = 0; i < 5; i++) {
+                if (PeriodTypeEnum.RUN_AT_THIS_TIME_TASK_CODE == tTask.getTaskPeriod()) {
+                    latest5RunTimeList.add(DateFormatUtils.format(DateUtils.addDays(now, i), "yyyy-MM-dd HH:mm:ss"));
+                    break;
+                }
+                if (PeriodTypeEnum.RUN_PER_DAY_TASK_CODE == tTask.getTaskPeriod()) {
+                    Date date = CronPatternUtil.nextDateAfter(new CronPattern("0 0 0 * * ?"), DateUtils.addDays(now, i), true);
+                    latest5RunTimeList.add(DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss"));
+                    continue;
+                }
+                if (PeriodTypeEnum.RUN_PER_WEEK_TASK_CODE == tTask.getTaskPeriod()) {
+                    Date date = CronPatternUtil.nextDateAfter(new CronPattern(tTask.getCron()), DateUtils.addDays(now, i), true);
+                    latest5RunTimeList.add(DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss"));
+                    continue;
+                }
+                if (PeriodTypeEnum.CRON_TASK_CODE == tTask.getTaskPeriod()) {
+                    Date date = CronPatternUtil.nextDateAfter(new CronPattern(tTask.getCron()), DateUtils.addDays(now, i), true);
+                    latest5RunTimeList.add(DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss"));
+                    continue;
+                }
+            }
+            taskForm.getSchedulePlanDetailLabel().setText("执行计划：");
+            taskForm.getPlan1Label().setText(latest5RunTimeList.get(0));
+            taskForm.getPlan2Label().setText(latest5RunTimeList.get(1));
+            taskForm.getPlan3Label().setText(latest5RunTimeList.get(2));
+            taskForm.getPlan4Label().setText(latest5RunTimeList.get(3));
+            taskForm.getPlan5Label().setText(latest5RunTimeList.get(4));
+            taskForm.getPlanToContinueLabel().setText("……");
+        } else {
+            taskForm.getSchedulePlanDetailLabel().setText("执行计划：无");
+            hidePlanLabel();
         }
     }
 

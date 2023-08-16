@@ -322,7 +322,7 @@ public class NewTaskDialog extends JDialog {
                 startPerDayTextField.setText(beforeTTask.getPeriodTime());
             } else if (beforeTTask.getPeriodType() == PeriodTypeEnum.RUN_PER_WEEK_TASK_CODE) {
                 runPerWeekRadioButton.setSelected(true);
-                startPerWeekTextField.setText(beforeTTask.getPeriodTime());
+                startPerWeekTextField.setText(beforeTTask.getPeriodTime().split(",")[1]);
             } else if (beforeTTask.getPeriodType() == PeriodTypeEnum.CRON_TASK_CODE) {
                 cronRadioButton.setSelected(true);
                 cronTextField.setText(beforeTTask.getPeriodTime());
