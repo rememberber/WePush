@@ -623,7 +623,7 @@ public class NewTaskDialog extends JDialog {
                         for (int i = 0; i < 5; i++) {
                             if (PeriodTypeEnum.RUN_AT_THIS_TIME_TASK_CODE == task.getPeriodType()) {
                                 latest5RunTimeList.add(DateFormatUtils.format(DateUtils.addDays(now, i), "yyyy-MM-dd HH:mm:ss"));
-                                break;
+                                continue;
                             }
                             if (PeriodTypeEnum.RUN_PER_DAY_TASK_CODE == task.getPeriodType()) {
                                 Date date = CronPatternUtil.nextDateAfter(new CronPattern("0 0 0 * * ?"), DateUtils.addDays(now, i), true);
