@@ -22,9 +22,9 @@ public enum PeriodTypeEnum {
     private String name;
 
     public static final int RUN_AT_THIS_TIME_TASK_CODE = 1;
-    public static final Integer RUN_PER_DAY_TASK_CODE = 2;
+    public static final int RUN_PER_DAY_TASK_CODE = 2;
     public static final int RUN_PER_WEEK_TASK_CODE = 3;
-    public static final Integer CRON_TASK_CODE = 4;
+    public static final int CRON_TASK_CODE = 4;
 
     PeriodTypeEnum(int code, String name) {
         this.code = code;

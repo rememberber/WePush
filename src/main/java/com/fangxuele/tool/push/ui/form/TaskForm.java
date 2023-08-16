@@ -180,21 +180,21 @@ public class TaskForm {
             List<String> latest5RunTimeList = Lists.newArrayList();
             Date now = new Date();
             for (int i = 0; i < 5; i++) {
-                if (PeriodTypeEnum.RUN_AT_THIS_TIME_TASK_CODE == tTask.getTaskPeriod()) {
+                if (PeriodTypeEnum.RUN_AT_THIS_TIME_TASK_CODE == tTask.getPeriodType()) {
                     latest5RunTimeList.add(DateFormatUtils.format(DateUtils.addDays(now, i), "yyyy-MM-dd HH:mm:ss"));
                     break;
                 }
-                if (PeriodTypeEnum.RUN_PER_DAY_TASK_CODE == tTask.getTaskPeriod()) {
+                if (PeriodTypeEnum.RUN_PER_DAY_TASK_CODE == tTask.getPeriodType()) {
                     Date date = CronPatternUtil.nextDateAfter(new CronPattern("0 0 0 * * ?"), DateUtils.addDays(now, i), true);
                     latest5RunTimeList.add(DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss"));
                     continue;
                 }
-                if (PeriodTypeEnum.RUN_PER_WEEK_TASK_CODE == tTask.getTaskPeriod()) {
-                    Date date = CronPatternUtil.nextDateAfter(new CronPattern(tTask.getCron()), DateUtils.addDays(now, i), true);
+                if (PeriodTypeEnum.RUN_PER_WEEK_TASK_CODE == tTask.getPeriodType()) {
+                    Date date = CronPatternUtil.nextDateAfter(new CronPattern(tTask.getCron()), DateUtils.addDays(now, i * 7), true);
                     latest5RunTimeList.add(DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss"));
                     continue;
                 }
-                if (PeriodTypeEnum.CRON_TASK_CODE == tTask.getTaskPeriod()) {
+                if (PeriodTypeEnum.CRON_TASK_CODE == tTask.getPeriodType()) {
                     Date date = CronPatternUtil.nextDateAfter(new CronPattern(tTask.getCron()), DateUtils.addDays(now, i), true);
                     latest5RunTimeList.add(DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss"));
                     continue;
