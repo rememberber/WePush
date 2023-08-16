@@ -1,6 +1,8 @@
 package com.fangxuele.tool.push.ui.form;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.cron.pattern.CronPattern;
+import cn.hutool.cron.pattern.CronPatternUtil;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.*;
 import com.fangxuele.tool.push.domain.TTask;
@@ -17,12 +19,17 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import lombok.Getter;
+import org.apache.commons.compress.utils.Lists;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.StyleContext;
 import java.awt.*;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -51,12 +58,19 @@ public class TaskForm {
     private JLabel jvmMemoryLabel;
     private JLabel availableProcessorLabel;
     private JLabel scheduleDetailLabel;
-    private JLabel activeThreadCountLabel;
-    private JLabel corePoolSizeLabel;
-    private JLabel maxPoolSizeLabel;
     private JPanel pushUpPanel;
     private JLabel taskTitle;
     private JSplitPane mainSplitPane;
+    private JLabel msgTypeLabel;
+    private JLabel msgNameLabel;
+    private JLabel peopleNameLabel;
+    private JLabel schedulePlanDetailLabel;
+    private JLabel plan1Label;
+    private JLabel plan2Label;
+    private JLabel plan3Label;
+    private JLabel plan4Label;
+    private JLabel plan5Label;
+    private JLabel planToContinueLabel;
 
     private static TaskForm taskForm;
 
@@ -80,6 +94,8 @@ public class TaskForm {
 
     public static void init() {
         taskForm = getInstance();
+
+        hidePlanLabel();
 
         taskForm.getDeleteButton().setIcon(new FlatSVGIcon("icon/remove.svg"));
         taskForm.getHisDeleteButton().setIcon(new FlatSVGIcon("icon/remove.svg"));
@@ -141,7 +157,32 @@ public class TaskForm {
             taskListTable.setRowSelectionInterval(0, 0);
             initTaskHisListTable((Integer) taskListTable.getValueAt(0, 0));
 
+            TTask tTask = taskList.get(0);
+
             taskForm.getTaskTitle().setText(taskListTable.getValueAt(0, 1).toString());
+            taskForm.getMsgNameLabel().setText("消息名称：" + taskListTable.getValueAt(0, 4).toString());
+            taskForm.getMsgTypeLabel().setText("消息类型：" + taskListTable.getValueAt(0, 2).toString());
+            taskForm.getPeopleNameLabel().setText("人群：" + taskListTable.getValueAt(0, 5).toString());
+
+            if (tTask.getTaskPeriod() == TaskTypeEnum.SCHEDULE_TASK_CODE && StringUtils.isNotBlank(tTask.getCron())) {
+                List<String> latest5RunTimeList = Lists.newArrayList();
+                Date now = new Date();
+                for (int i = 0; i < 5; i++) {
+                    Date date = CronPatternUtil.nextDateAfter(new CronPattern(tTask.getCron()), DateUtils.addDays(now, i), true);
+                    latest5RunTimeList.add(DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss"));
+                }
+                taskForm.getSchedulePlanDetailLabel().setText("执行计划：");
+                taskForm.getPlan1Label().setText(latest5RunTimeList.get(0));
+                taskForm.getPlan2Label().setText(latest5RunTimeList.get(1));
+                taskForm.getPlan3Label().setText(latest5RunTimeList.get(2));
+                taskForm.getPlan4Label().setText(latest5RunTimeList.get(3));
+                taskForm.getPlan5Label().setText(latest5RunTimeList.get(4));
+                taskForm.getPlanToContinueLabel().setText("……");
+            } else {
+                taskForm.getSchedulePlanDetailLabel().setText("执行计划：无");
+
+                hidePlanLabel();
+            }
         } else {
             JTable taskHisListTable = taskForm.getTaskHisListTable();
             // 清空任务历史列表
@@ -149,6 +190,15 @@ public class TaskForm {
             DefaultTableModel model2 = new DefaultTableModel(null, headerNames2);
             taskHisListTable.setModel(model2);
         }
+    }
+
+    private static void hidePlanLabel() {
+        taskForm.getPlan1Label().setText("");
+        taskForm.getPlan2Label().setText("");
+        taskForm.getPlan3Label().setText("");
+        taskForm.getPlan4Label().setText("");
+        taskForm.getPlan5Label().setText("");
+        taskForm.getPlanToContinueLabel().setText("");
     }
 
     private static String getTaskType(TTask task) {
@@ -232,31 +282,20 @@ public class TaskForm {
         separator1.setOrientation(1);
         pushUpPanel.add(separator1, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JPanel panel5 = new JPanel();
-        panel5.setLayout(new GridLayoutManager(7, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel5.setLayout(new GridLayoutManager(4, 1, new Insets(0, 0, 0, 0), -1, -1));
         pushUpPanel.add(panel5, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         jvmMemoryLabel = new JLabel();
         jvmMemoryLabel.setText("JVM内存占用：--");
-        panel5.add(jvmMemoryLabel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel5.add(jvmMemoryLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         availableProcessorLabel = new JLabel();
         availableProcessorLabel.setText("可用处理器核心：--");
-        panel5.add(availableProcessorLabel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel5.add(availableProcessorLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         scheduleDetailLabel = new JLabel();
         scheduleDetailLabel.setForeground(new Color(-276358));
         scheduleDetailLabel.setText("");
-        panel5.add(scheduleDetailLabel, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        activeThreadCountLabel = new JLabel();
-        Font activeThreadCountLabelFont = this.$$$getFont$$$(null, Font.BOLD, -1, activeThreadCountLabel.getFont());
-        if (activeThreadCountLabelFont != null) activeThreadCountLabel.setFont(activeThreadCountLabelFont);
-        activeThreadCountLabel.setText("活跃线程数：0");
-        panel5.add(activeThreadCountLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        corePoolSizeLabel = new JLabel();
-        corePoolSizeLabel.setText("核心线程数：0");
-        panel5.add(corePoolSizeLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        maxPoolSizeLabel = new JLabel();
-        maxPoolSizeLabel.setText("最大线程数：0");
-        panel5.add(maxPoolSizeLabel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel5.add(scheduleDetailLabel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
-        panel5.add(spacer2, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        panel5.add(spacer2, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JPanel panel6 = new JPanel();
         panel6.setLayout(new GridLayoutManager(5, 1, new Insets(0, 0, 0, 0), -1, -1));
         pushUpPanel.add(panel6, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -268,41 +307,41 @@ public class TaskForm {
         panel6.add(taskTitle, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer3 = new Spacer();
         panel6.add(spacer3, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        final JLabel label1 = new JLabel();
-        label1.setText("消息类型：");
-        panel6.add(label1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label2 = new JLabel();
-        label2.setText("消息名称：");
-        panel6.add(label2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label3 = new JLabel();
-        label3.setText("人群");
-        panel6.add(label3, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        msgTypeLabel = new JLabel();
+        msgTypeLabel.setText("消息类型：");
+        panel6.add(msgTypeLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        msgNameLabel = new JLabel();
+        msgNameLabel.setText("消息名称：");
+        panel6.add(msgNameLabel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        peopleNameLabel = new JLabel();
+        peopleNameLabel.setText("人群：");
+        panel6.add(peopleNameLabel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel7 = new JPanel();
         panel7.setLayout(new GridLayoutManager(8, 1, new Insets(0, 0, 0, 0), -1, -1));
         pushUpPanel.add(panel7, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        final JLabel label4 = new JLabel();
-        label4.setText("计划执行中");
-        panel7.add(label4, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        schedulePlanDetailLabel = new JLabel();
+        schedulePlanDetailLabel.setText("执行计划：");
+        panel7.add(schedulePlanDetailLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer4 = new Spacer();
         panel7.add(spacer4, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        final JLabel label5 = new JLabel();
-        label5.setText("2023-07-29 16:00:00");
-        panel7.add(label5, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label6 = new JLabel();
-        label6.setText("2023-07-29 17:00:00");
-        panel7.add(label6, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label7 = new JLabel();
-        label7.setText("2023-07-29 18:00:00");
-        panel7.add(label7, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label8 = new JLabel();
-        label8.setText("2023-07-29 19:00:00");
-        panel7.add(label8, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label9 = new JLabel();
-        label9.setText("2023-07-29 20:00:00");
-        panel7.add(label9, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label10 = new JLabel();
-        label10.setText("……");
-        panel7.add(label10, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        plan1Label = new JLabel();
+        plan1Label.setText("");
+        panel7.add(plan1Label, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        plan2Label = new JLabel();
+        plan2Label.setText("");
+        panel7.add(plan2Label, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        plan3Label = new JLabel();
+        plan3Label.setText("");
+        panel7.add(plan3Label, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        plan4Label = new JLabel();
+        plan4Label.setText("");
+        panel7.add(plan4Label, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        plan5Label = new JLabel();
+        plan5Label.setText("");
+        panel7.add(plan5Label, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        planToContinueLabel = new JLabel();
+        planToContinueLabel.setText("……");
+        panel7.add(planToContinueLabel, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JSeparator separator2 = new JSeparator();
         separator2.setOrientation(1);
         pushUpPanel.add(separator2, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
