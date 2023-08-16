@@ -538,7 +538,7 @@ public class NewTaskDialog extends JDialog {
         } else if (runPerDayRadioButton.isSelected()) {
             String startPerDay = startPerDayTextField.getText().replace("；", ";");
             String[] split = startPerDay.split(":");
-            cron = split[2] + " " + split[1] + " " + split[0] + " * * ? ";
+            cron = split[2] + " " + split[1] + " " + split[0] + " * * ?";
         } else if (runPerWeekRadioButton.isSelected()) {
             String startPerWeek = startPerWeekTextField.getText().replace("；", ";");
             String[] split = startPerWeek.split(":");
@@ -622,11 +622,11 @@ public class NewTaskDialog extends JDialog {
                         Date now = new Date();
                         for (int i = 0; i < 5; i++) {
                             if (PeriodTypeEnum.RUN_AT_THIS_TIME_TASK_CODE == task.getPeriodType()) {
-                                latest5RunTimeList.add(DateFormatUtils.format(DateUtils.addDays(now, i), "yyyy-MM-dd HH:mm:ss"));
-                                continue;
+                                latest5RunTimeList.add(tTask.getPeriodTime());
+                                break;
                             }
                             if (PeriodTypeEnum.RUN_PER_DAY_TASK_CODE == task.getPeriodType()) {
-                                Date date = CronPatternUtil.nextDateAfter(new CronPattern("0 0 0 * * ?"), DateUtils.addDays(now, i), true);
+                                Date date = CronPatternUtil.nextDateAfter(new CronPattern(task.getCron()), DateUtils.addDays(now, i), true);
                                 latest5RunTimeList.add(DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss"));
                                 continue;
                             }
@@ -653,7 +653,9 @@ public class NewTaskDialog extends JDialog {
                             if (beforeTTask != null) {
                                 Scheduler scheduler = TaskListener.scheduledTaskMap.get(beforeTTask.getId());
                                 if (scheduler != null) {
-                                    scheduler.stop();
+                                    if (scheduler.isStarted()) {
+                                        scheduler.stop();
+                                    }
                                 }
                             }
 

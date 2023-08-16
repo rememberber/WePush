@@ -181,11 +181,11 @@ public class TaskForm {
             Date now = new Date();
             for (int i = 0; i < 5; i++) {
                 if (PeriodTypeEnum.RUN_AT_THIS_TIME_TASK_CODE == tTask.getPeriodType()) {
-                    latest5RunTimeList.add(DateFormatUtils.format(DateUtils.addDays(now, i), "yyyy-MM-dd HH:mm:ss"));
-                    continue;
+                    latest5RunTimeList.add(tTask.getPeriodTime());
+                    break;
                 }
                 if (PeriodTypeEnum.RUN_PER_DAY_TASK_CODE == tTask.getPeriodType()) {
-                    Date date = CronPatternUtil.nextDateAfter(new CronPattern("0 0 0 * * ?"), DateUtils.addDays(now, i), true);
+                    Date date = CronPatternUtil.nextDateAfter(new CronPattern(tTask.getCron()), DateUtils.addDays(now, i), true);
                     latest5RunTimeList.add(DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss"));
                     continue;
                 }
@@ -201,11 +201,21 @@ public class TaskForm {
                 }
             }
             taskForm.getSchedulePlanDetailLabel().setText("执行计划：");
-            taskForm.getPlan1Label().setText(latest5RunTimeList.get(0));
-            taskForm.getPlan2Label().setText(latest5RunTimeList.get(1));
-            taskForm.getPlan3Label().setText(latest5RunTimeList.get(2));
-            taskForm.getPlan4Label().setText(latest5RunTimeList.get(3));
-            taskForm.getPlan5Label().setText(latest5RunTimeList.get(4));
+            if (latest5RunTimeList.size() > 0) {
+                taskForm.getPlan1Label().setText(latest5RunTimeList.get(0) == null ? "" : latest5RunTimeList.get(0));
+            }
+            if (latest5RunTimeList.size() > 1) {
+                taskForm.getPlan2Label().setText(latest5RunTimeList.get(1) == null ? "" : latest5RunTimeList.get(1));
+            }
+            if (latest5RunTimeList.size() > 2) {
+                taskForm.getPlan3Label().setText(latest5RunTimeList.get(2) == null ? "" : latest5RunTimeList.get(2));
+            }
+            if (latest5RunTimeList.size() > 3) {
+                taskForm.getPlan4Label().setText(latest5RunTimeList.get(3) == null ? "" : latest5RunTimeList.get(3));
+            }
+            if (latest5RunTimeList.size() > 4) {
+                taskForm.getPlan5Label().setText(latest5RunTimeList.get(4) == null ? "" : latest5RunTimeList.get(4));
+            }
             taskForm.getPlanToContinueLabel().setText("……");
         } else {
             taskForm.getSchedulePlanDetailLabel().setText("执行计划：无");
