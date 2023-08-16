@@ -45,7 +45,7 @@
                   <grid row="3" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <icon value="icon/weixin-qrcode.png"/>
+                  <icon value="icon/wx-zanshang.jpg"/>
                   <text value=""/>
                   <toolTipText value="感谢您的鼓励和支持！"/>
                 </properties>
