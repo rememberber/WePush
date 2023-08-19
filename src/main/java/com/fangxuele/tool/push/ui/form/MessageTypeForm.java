@@ -2,6 +2,7 @@ package com.fangxuele.tool.push.ui.form;
 
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -141,6 +142,8 @@ public class MessageTypeForm {
         MessageEditForm.getInstance().getMsgNameField().setText("");
         PeopleManageForm.init();
         PeopleEditForm.init(null);
+
+        messageTypeForm.getKefuPriorityTipsLabel().setIcon(new FlatSVGIcon("icon/help-filling.svg"));
     }
 
     private static void initMessageEditFormLayOut(int msgType) {

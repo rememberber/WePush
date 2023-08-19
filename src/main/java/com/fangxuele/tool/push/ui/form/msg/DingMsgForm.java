@@ -11,6 +11,7 @@ import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.google.common.collect.Maps;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -68,6 +69,8 @@ public class DingMsgForm implements IMsgForm {
     public static Map<String, String> agentIdToAppNameMap = Maps.newHashMap();
 
     public DingMsgForm() {
+        webHookHelpLabel.setIcon(new FlatSVGIcon("icon/help-filling.svg"));
+
         // 消息类型切换事件
         msgTypeComboBox.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {

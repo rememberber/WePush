@@ -11,6 +11,7 @@ import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.UIUtil;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -67,6 +68,10 @@ public class HttpMsgForm implements IMsgForm {
     private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
 
     public HttpMsgForm() {
+        paramAddButton.setIcon(new FlatSVGIcon("icon/add.svg"));
+        cookieAddButton.setIcon(new FlatSVGIcon("icon/add.svg"));
+        headerAddButton.setIcon(new FlatSVGIcon("icon/add.svg"));
+
         paramAddButton.addActionListener(e -> {
             String[] data = new String[2];
             data[0] = getInstance().getParamNameTextField().getText();

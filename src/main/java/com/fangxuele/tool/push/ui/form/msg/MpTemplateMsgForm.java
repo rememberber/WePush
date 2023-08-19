@@ -14,6 +14,7 @@ import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.UIUtil;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.google.common.collect.Maps;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -98,6 +99,8 @@ public class MpTemplateMsgForm implements IMsgForm {
     private static final Pattern BRACE_PATTERN = Pattern.compile("\\{([^{}]+)\\}");
 
     public MpTemplateMsgForm() {
+        templateMsgDataAddButton.setIcon(new FlatSVGIcon("icon/add.svg"));
+
         // 模板数据-添加 按钮事件
         templateMsgDataAddButton.addActionListener(e -> {
             String[] data = new String[3];
