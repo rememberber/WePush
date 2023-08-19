@@ -100,6 +100,7 @@ public class MpTemplateMsgForm implements IMsgForm {
 
     public MpTemplateMsgForm() {
         templateMsgDataAddButton.setIcon(new FlatSVGIcon("icon/add.svg"));
+        refreshTemplateListButton.setIcon(new FlatSVGIcon("icon/refresh.svg"));
 
         // 模板数据-添加 按钮事件
         templateMsgDataAddButton.addActionListener(e -> {
