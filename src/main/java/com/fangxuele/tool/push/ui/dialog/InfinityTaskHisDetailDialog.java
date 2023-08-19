@@ -105,7 +105,7 @@ public class InfinityTaskHisDetailDialog extends JDialog {
         openNoSendButton.setIcon(new FlatSVGIcon("icon/file-open.svg"));
         pushStopButton.setIcon(new FlatSVGIcon("icon/stop.svg"));
 
-        threadTipsLabel.setIcon(new FlatSVGIcon("icon/help-filling.svg"));
+        threadTipsLabel.setIcon(new FlatSVGIcon("icon/help.svg"));
 
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {

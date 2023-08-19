@@ -62,7 +62,7 @@ public class MessageEditForm {
 
         messageEditForm.getMsgSaveButton().setIcon(new FlatSVGIcon("icon/save.svg"));
         messageEditForm.getPreviewMsgButton().setIcon(new FlatSVGIcon("icon/send.svg"));
-        messageEditForm.getPreviewUserHelpLabel().setIcon(new FlatSVGIcon("icon/help-filling.svg"));
+        messageEditForm.getPreviewUserHelpLabel().setIcon(new FlatSVGIcon("icon/help.svg"));
     }
 
     /**
@@ -139,7 +139,7 @@ public class MessageEditForm {
 
         messageEditForm.getMsgSaveButton().setIcon(new FlatSVGIcon("icon/save.svg"));
         messageEditForm.getPreviewMsgButton().setIcon(new FlatSVGIcon("icon/send.svg"));
-        messageEditForm.getPreviewUserHelpLabel().setIcon(new FlatSVGIcon("icon/help-filling.svg"));
+        messageEditForm.getPreviewUserHelpLabel().setIcon(new FlatSVGIcon("icon/help.svg"));
     }
 
     {

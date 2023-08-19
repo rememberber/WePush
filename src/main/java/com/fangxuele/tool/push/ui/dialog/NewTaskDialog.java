@@ -123,7 +123,7 @@ public class NewTaskDialog extends JDialog {
 
         init();
 
-        cronHelpLabel.setIcon(new FlatSVGIcon("icon/help-filling.svg"));
+        cronHelpLabel.setIcon(new FlatSVGIcon("icon/help.svg"));
 
         buttonOK.addActionListener(e -> onOK());
 

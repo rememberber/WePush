@@ -143,7 +143,7 @@ public class MessageTypeForm {
         PeopleManageForm.init();
         PeopleEditForm.init(null);
 
-        messageTypeForm.getKefuPriorityTipsLabel().setIcon(new FlatSVGIcon("icon/help-filling.svg"));
+        messageTypeForm.getKefuPriorityTipsLabel().setIcon(new FlatSVGIcon("icon/help.svg"));
     }
 
     private static void initMessageEditFormLayOut(int msgType) {

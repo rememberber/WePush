@@ -87,9 +87,9 @@ public class WxMpAccountForm implements IAccountForm {
             toggleMpOutSideAccessTokenPanel();
         }
 
-        apiAtTipsLabel.setIcon(new FlatSVGIcon("icon/help-filling.svg"));
-        manualAtTipsLabel.setIcon(new FlatSVGIcon("icon/help-filling.svg"));
-        outSideAtTipsLabel.setIcon(new FlatSVGIcon("icon/help-filling.svg"));
+        apiAtTipsLabel.setIcon(new FlatSVGIcon("icon/help.svg"));
+        manualAtTipsLabel.setIcon(new FlatSVGIcon("icon/help.svg"));
+        outSideAtTipsLabel.setIcon(new FlatSVGIcon("icon/help.svg"));
 
     }
 

@@ -69,7 +69,7 @@ public class DingMsgForm implements IMsgForm {
     public static Map<String, String> agentIdToAppNameMap = Maps.newHashMap();
 
     public DingMsgForm() {
-        webHookHelpLabel.setIcon(new FlatSVGIcon("icon/help-filling.svg"));
+        webHookHelpLabel.setIcon(new FlatSVGIcon("icon/help.svg"));
 
         // 消息类型切换事件
         msgTypeComboBox.addItemListener(e -> {
