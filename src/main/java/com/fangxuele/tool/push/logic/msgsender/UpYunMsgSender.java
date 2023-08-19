@@ -1,14 +1,15 @@
 package com.fangxuele.tool.push.logic.msgsender;
 
-import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.logic.PushControl;
+import com.alibaba.fastjson.JSON;
+import com.fangxuele.tool.push.bean.account.YunPianAccountConfig;
+import com.fangxuele.tool.push.dao.TAccountMapper;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.logic.msgmaker.UpYunMsgMaker;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import okhttp3.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 /**
@@ -24,22 +25,39 @@ public class UpYunMsgSender implements IMsgSender {
     /**
      * 又拍云短信sender
      */
-    public volatile static OkHttpClient okHttpClint;
+    private OkHttpClient okHttpClint;
 
     private UpYunMsgMaker upYunMsgMaker;
 
     private static final String URL = "https://sms-api.upyun.com/api/messages";
 
-    public UpYunMsgSender() {
-        upYunMsgMaker = new UpYunMsgMaker();
+    private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
+
+    private Integer dryRun;
+
+    private YunPianAccountConfig yunPianAccountConfig;
+
+    public UpYunMsgSender(Integer msgId, Integer dryRun) {
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        upYunMsgMaker = new UpYunMsgMaker(tMsg);
         okHttpClint = HttpMsgSender.getOkHttpClient();
+        this.dryRun = dryRun;
+
+        TAccount tAccount = accountMapper.selectByPrimaryKey(tMsg.getAccountId());
+        String accountConfig = tAccount.getAccountConfig();
+        yunPianAccountConfig = JSON.parseObject(accountConfig, YunPianAccountConfig.class);
+    }
+
+    public static void removeAccount(Integer account1Id) {
+        // do nothing
     }
 
     @Override
     public SendResult send(String[] msgData) {
         SendResult sendResult = new SendResult();
         try {
-            String templateId = UpYunMsgMaker.templateId;
+            String templateId = upYunMsgMaker.getTemplateId();
             String[] params = upYunMsgMaker.makeMsg(msgData);
             String telNum = msgData[0];
 
@@ -50,9 +68,9 @@ public class UpYunMsgSender implements IMsgSender {
             formBodyBuilder.add("vars", String.join("|", params));
             RequestBody requestBody = formBodyBuilder.build();
             requestBuilder.url(URL).post(requestBody);
-            requestBuilder.addHeader("Authorization", App.config.getUpAuthorizationToken());
+            requestBuilder.addHeader("Authorization", yunPianAccountConfig.getApiKey());
             Request request = requestBuilder.build();
-            if (PushControl.dryRun) {
+            if (dryRun == 1) {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {

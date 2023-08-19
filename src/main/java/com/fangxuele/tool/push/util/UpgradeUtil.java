@@ -6,13 +6,8 @@ import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.VersionSummary;
-import com.fangxuele.tool.push.dao.TWxAccountMapper;
-import com.fangxuele.tool.push.domain.TWxAccount;
-import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.UpdateInfoDialog;
-import com.fangxuele.tool.push.ui.form.MainWindow;
-import com.fangxuele.tool.push.ui.form.SettingForm;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -40,7 +35,7 @@ public class UpgradeUtil {
         // 从github获取最新版本相关信息
         String versionSummaryJsonContent = HttpUtil.get(UiConsts.CHECK_VERSION_URL);
         if (StringUtils.isEmpty(versionSummaryJsonContent) && !initCheck) {
-            JOptionPane.showMessageDialog(MainWindow.getInstance().getSettingPanel(),
+            JOptionPane.showMessageDialog(App.mainFrame,
                     "检查超时，请关注GitHub Release！", "网络错误",
                     JOptionPane.INFORMATION_MESSAGE);
             return;
@@ -77,7 +72,7 @@ public class UpgradeUtil {
             updateInfoDialog.setVisible(true);
         } else {
             if (!initCheck) {
-                JOptionPane.showMessageDialog(MainWindow.getInstance().getSettingPanel(),
+                JOptionPane.showMessageDialog(App.mainFrame,
                         "当前已经是最新版本！", "恭喜",
                         JOptionPane.INFORMATION_MESSAGE);
             }
@@ -156,73 +151,6 @@ public class UpgradeUtil {
     private static void upgrade(int versionIndex) {
         log.info("执行升级脚本开始，版本索引：{}", versionIndex);
         switch (versionIndex) {
-            case 21:
-                String accountName = "默认账号";
-                TWxAccountMapper wxAccountMapper = MybatisUtil.getSqlSession().getMapper(TWxAccountMapper.class);
-                if (StringUtils.isNotBlank(App.config.getWechatAppId())) {
-                    boolean update = false;
-                    List<TWxAccount> tWxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(UiConsts.WX_ACCOUNT_TYPE_MP, accountName);
-                    if (tWxAccountList.size() > 0) {
-                        update = true;
-                    }
-
-                    TWxAccount tWxAccount = new TWxAccount();
-                    String now = SqliteUtil.nowDateForSqlite();
-                    tWxAccount.setAccountType(UiConsts.WX_ACCOUNT_TYPE_MP);
-                    tWxAccount.setAccountName(accountName);
-                    tWxAccount.setAppId(App.config.getWechatAppId());
-                    tWxAccount.setAppSecret(App.config.getWechatAppSecret());
-                    tWxAccount.setToken(App.config.getWechatToken());
-                    tWxAccount.setAesKey(App.config.getWechatAesKey());
-                    tWxAccount.setModifiedTime(now);
-                    if (update) {
-                        tWxAccount.setId(tWxAccountList.get(0).getId());
-                        wxAccountMapper.updateByPrimaryKeySelective(tWxAccount);
-                    } else {
-                        tWxAccount.setCreateTime(now);
-                        wxAccountMapper.insert(tWxAccount);
-                    }
-
-                    SettingForm.initSwitchMultiAccount();
-                }
-                if (StringUtils.isNotBlank(App.config.getMiniAppAppId())) {
-                    boolean update = false;
-                    List<TWxAccount> tWxAccountList = wxAccountMapper.selectByAccountTypeAndAccountName(UiConsts.WX_ACCOUNT_TYPE_MA, accountName);
-                    if (tWxAccountList.size() > 0) {
-                        update = true;
-                    }
-
-                    TWxAccount tWxAccount = new TWxAccount();
-                    String now = SqliteUtil.nowDateForSqlite();
-                    tWxAccount.setAccountType(UiConsts.WX_ACCOUNT_TYPE_MA);
-                    tWxAccount.setAccountName(accountName);
-                    tWxAccount.setAppId(App.config.getMiniAppAppId());
-                    tWxAccount.setAppSecret(App.config.getMiniAppAppSecret());
-                    tWxAccount.setToken(App.config.getMiniAppToken());
-                    tWxAccount.setAesKey(App.config.getMiniAppAesKey());
-                    tWxAccount.setModifiedTime(now);
-                    if (update) {
-                        tWxAccount.setId(tWxAccountList.get(0).getId());
-                        wxAccountMapper.updateByPrimaryKeySelective(tWxAccount);
-                    } else {
-                        tWxAccount.setCreateTime(now);
-                        wxAccountMapper.insert(tWxAccount);
-                    }
-                    SettingForm.initSwitchMultiAccount();
-                }
-                break;
-            case 26:
-                if (StringUtils.isNotBlank(App.config.getMysqlDatabase())) {
-                    App.config.setMysqlUrl(App.config.getMysqlUrl() + '/' + App.config.getMysqlDatabase());
-                    App.config.save();
-                }
-                break;
-            case 46:
-            case 47:
-            case 48:
-                if(SystemUtil.isJBR()){
-                    App.config.setProps(Init.FONT_SIZE_INIT_PROP,"");
-                }
             default:
         }
         log.info("执行升级脚本结束，版本索引：{}", versionIndex);

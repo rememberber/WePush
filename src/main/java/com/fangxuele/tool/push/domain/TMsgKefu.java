@@ -3,11 +3,6 @@ package com.fangxuele.tool.push.domain;
 import java.io.Serializable;
 
 public class TMsgKefu implements Serializable {
-    private Integer id;
-
-    private Integer msgType;
-
-    private String msgName;
 
     private String kefuMsgType;
 
@@ -27,8 +22,6 @@ public class TMsgKefu implements Serializable {
 
     private String previewUser;
 
-    private Integer wxAccountId;
-
     private String appId;
 
     private String pagePath;
@@ -36,30 +29,6 @@ public class TMsgKefu implements Serializable {
     private String thumbMediaId;
 
     private static final long serialVersionUID = 1L;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getMsgType() {
-        return msgType;
-    }
-
-    public void setMsgType(Integer msgType) {
-        this.msgType = msgType;
-    }
-
-    public String getMsgName() {
-        return msgName;
-    }
-
-    public void setMsgName(String msgName) {
-        this.msgName = msgName == null ? null : msgName.trim();
-    }
 
     public String getKefuMsgType() {
         return kefuMsgType;
@@ -131,14 +100,6 @@ public class TMsgKefu implements Serializable {
 
     public void setPreviewUser(String previewUser) {
         this.previewUser = previewUser == null ? null : previewUser.trim();
-    }
-
-    public Integer getWxAccountId() {
-        return wxAccountId;
-    }
-
-    public void setWxAccountId(Integer wxAccountId) {
-        this.wxAccountId = wxAccountId;
     }
 
     public String getAppId() {

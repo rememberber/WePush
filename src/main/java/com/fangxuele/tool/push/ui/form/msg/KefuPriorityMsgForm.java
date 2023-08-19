@@ -1,10 +1,11 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
-import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.dao.TMsgKefuPriorityMapper;
-import com.fangxuele.tool.push.dao.TTemplateDataMapper;
+import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
+import com.fangxuele.tool.push.bean.TemplateData;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgKefuPriority;
-import com.fangxuele.tool.push.domain.TTemplateData;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
 import com.fangxuele.tool.push.ui.form.MainWindow;
@@ -15,6 +16,7 @@ import com.fangxuele.tool.push.util.SqliteUtil;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,31 +30,29 @@ import java.util.Objects;
  */
 public class KefuPriorityMsgForm implements IMsgForm {
 
-    private static TMsgKefuPriorityMapper msgKefuPriorityMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuPriorityMapper.class);
-    private static TTemplateDataMapper templateDataMapper = MybatisUtil.getSqlSession().getMapper(TTemplateDataMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
 
     private static KefuPriorityMsgForm kefuPriorityMsgForm;
 
     @Override
-    public void init(String msgName) {
+    public void init(Integer msgId) {
         clearAllField();
-        List<TMsgKefuPriority> tMsgKefuPriorityList = msgKefuPriorityMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.KEFU_PRIORITY_CODE, msgName);
-        if (tMsgKefuPriorityList.size() > 0) {
-            TMsgKefuPriority tMsgKefuPriority = tMsgKefuPriorityList.get(0);
-            Integer msgId = tMsgKefuPriority.getId();
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        if (tMsg != null) {
+            TMsgKefuPriority tMsgKefuPriority = JSONUtil.toBean(tMsg.getContent(), TMsgKefuPriority.class);
             MpTemplateMsgForm.getInstance().getMsgTemplateIdTextField().setText(tMsgKefuPriority.getTemplateId());
             MpTemplateMsgForm.getInstance().getMsgTemplateUrlTextField().setText(tMsgKefuPriority.getUrl());
             MpTemplateMsgForm.getInstance().getMsgTemplateMiniAppidTextField().setText(tMsgKefuPriority.getMaAppid());
             MpTemplateMsgForm.getInstance().getMsgTemplateMiniPagePathTextField().setText(tMsgKefuPriority.getMaPagePath());
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
-            messageEditForm.getMsgNameField().setText(tMsgKefuPriority.getMsgName());
-            messageEditForm.getPreviewUserField().setText(tMsgKefuPriority.getPreviewUser());
+            messageEditForm.getMsgNameField().setText(tMsg.getMsgName());
+            messageEditForm.getPreviewUserField().setText(tMsg.getPreviewUser());
 
             String kefuMsgType = tMsgKefuPriority.getKefuMsgType();
             KefuMsgForm.getInstance().getMsgKefuMsgTypeComboBox().setSelectedItem(kefuMsgType);
             if ("文本消息".equals(kefuMsgType)) {
-                KefuMsgForm.getInstance().getContentTextArea().setText(tMsgKefuPriority.getContent());
+                KefuMsgForm.getInstance().getContentTextArea().setText(tMsg.getContent());
             } else if ("图文消息".equals(kefuMsgType)) {
                 KefuMsgForm.getInstance().getMsgKefuMsgTitleTextField().setText(tMsgKefuPriority.getTitle());
             } else if ("小程序卡片消息".equals(kefuMsgType)) {
@@ -67,13 +67,12 @@ public class KefuPriorityMsgForm implements IMsgForm {
 
             KefuMsgForm.switchKefuMsgType(kefuMsgType);
 
-            MpTemplateMsgForm.selectedMsgTemplateId = tMsgKefuPriority.getTemplateId();
             // 模板消息Data表
-            List<TTemplateData> templateDataList = templateDataMapper.selectByMsgTypeAndMsgId(MessageTypeEnum.KEFU_PRIORITY_CODE, msgId);
+            List<TemplateData> templateDataList = tMsgKefuPriority.getTemplateDataList();
             String[] headerNames = {"Name", "Value", "Color", "操作"};
             Object[][] cellData = new String[templateDataList.size()][headerNames.length];
             for (int i = 0; i < templateDataList.size(); i++) {
-                TTemplateData tTemplateData = templateDataList.get(i);
+                TemplateData tTemplateData = templateDataList.get(i);
                 cellData[i][0] = tTemplateData.getName();
                 cellData[i][1] = tTemplateData.getValue();
                 cellData[i][2] = tTemplateData.getColor();
@@ -98,14 +97,14 @@ public class KefuPriorityMsgForm implements IMsgForm {
     }
 
     @Override
-    public void save(String msgName) {
+    public void save(Integer accountId, String msgName) {
         int msgId = 0;
         boolean existSameMsg = false;
 
-        List<TMsgKefuPriority> tMsgKefuPriorityList = msgKefuPriorityMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.KEFU_PRIORITY_CODE, msgName);
-        if (tMsgKefuPriorityList.size() > 0) {
+        TMsg tMsg = msgMapper.selectByUnique(MessageTypeEnum.KEFU_PRIORITY_CODE, accountId, msgName);
+        if (tMsg != null) {
             existSameMsg = true;
-            msgId = tMsgKefuPriorityList.get(0).getId();
+            msgId = tMsg.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -132,9 +131,11 @@ public class KefuPriorityMsgForm implements IMsgForm {
 
             String now = SqliteUtil.nowDateForSqlite();
 
+            TMsg msg = new TMsg();
             TMsgKefuPriority tMsgKefuPriority = new TMsgKefuPriority();
-            tMsgKefuPriority.setMsgType(MessageTypeEnum.KEFU_PRIORITY_CODE);
-            tMsgKefuPriority.setMsgName(msgName);
+            msg.setMsgType(MessageTypeEnum.KEFU_PRIORITY_CODE);
+            msg.setAccountId(accountId);
+            msg.setMsgName(msgName);
             tMsgKefuPriority.setTemplateId(templateId);
             tMsgKefuPriority.setUrl(templateUrl);
             tMsgKefuPriority.setMaAppid(templateMiniAppid);
@@ -145,27 +146,13 @@ public class KefuPriorityMsgForm implements IMsgForm {
             tMsgKefuPriority.setImgUrl(kefuPicUrl);
             tMsgKefuPriority.setDescribe(kefuDesc);
             tMsgKefuPriority.setKefuUrl(kefuUrl);
-            tMsgKefuPriority.setCreateTime(now);
-            tMsgKefuPriority.setModifiedTime(now);
+            msg.setCreateTime(now);
+            msg.setModifiedTime(now);
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
-            tMsgKefuPriority.setPreviewUser(messageEditForm.getPreviewUserField().getText());
-            tMsgKefuPriority.setWxAccountId(App.config.getWxAccountId());
+            msg.setPreviewUser(messageEditForm.getPreviewUserField().getText());
             tMsgKefuPriority.setAppId(kefuAppId);
             tMsgKefuPriority.setPagePath(kefuPagePath);
             tMsgKefuPriority.setThumbMediaId(kefuThumbMediaId);
-
-            if (existSameMsg) {
-                msgKefuPriorityMapper.updateByMsgTypeAndMsgName(tMsgKefuPriority);
-            } else {
-                msgKefuPriorityMapper.insertSelective(tMsgKefuPriority);
-                msgId = tMsgKefuPriority.getId();
-            }
-
-            // 保存模板数据
-            // 如果是覆盖保存，则先清空之前的模板数据
-            if (existSameMsg) {
-                templateDataMapper.deleteByMsgTypeAndMsgId(MessageTypeEnum.KEFU_PRIORITY_CODE, msgId);
-            }
 
             // 如果table为空，则初始化
             if (MpTemplateMsgForm.getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
@@ -176,21 +163,27 @@ public class KefuPriorityMsgForm implements IMsgForm {
             DefaultTableModel tableModel = (DefaultTableModel) MpTemplateMsgForm.getInstance().getTemplateMsgDataTable()
                     .getModel();
             int rowCount = tableModel.getRowCount();
+            List<TemplateData> templateDataList = new ArrayList<>();
             for (int i = 0; i < rowCount; i++) {
                 String name = (String) tableModel.getValueAt(i, 0);
                 String value = (String) tableModel.getValueAt(i, 1);
                 String color = ((String) tableModel.getValueAt(i, 2)).trim();
 
-                TTemplateData tTemplateData = new TTemplateData();
-                tTemplateData.setMsgType(MessageTypeEnum.KEFU_PRIORITY_CODE);
-                tTemplateData.setMsgId(msgId);
+                TemplateData tTemplateData = new TemplateData();
                 tTemplateData.setName(name);
                 tTemplateData.setValue(value);
                 tTemplateData.setColor(color);
-                tTemplateData.setCreateTime(now);
-                tTemplateData.setModifiedTime(now);
 
-                templateDataMapper.insert(tTemplateData);
+                templateDataList.add(tTemplateData);
+            }
+            tMsgKefuPriority.setTemplateDataList(templateDataList);
+
+            msg.setContent(JSON.toJSONString(tMsgKefuPriority));
+            if (existSameMsg) {
+                msg.setId(msgId);
+                msgMapper.updateByPrimaryKeySelective(msg);
+            } else {
+                msgMapper.insertSelective(msg);
             }
 
             JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "保存成功！", "成功",
@@ -208,8 +201,9 @@ public class KefuPriorityMsgForm implements IMsgForm {
     /**
      * 清空所有界面字段
      */
-    public static void clearAllField() {
-        KefuMsgForm.clearAllField();
-        MpTemplateMsgForm.clearAllField();
+    @Override
+    public void clearAllField() {
+        KefuMsgForm.getInstance().clearAllField();
+        MpTemplateMsgForm.getInstance().clearAllField();
     }
 }

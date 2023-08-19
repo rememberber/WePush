@@ -1,15 +1,19 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
-import com.fangxuele.tool.push.bean.HttpMsg;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.fangxuele.tool.push.bean.msg.HttpMsg;
+import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.domain.TMsgHttp;
 import com.fangxuele.tool.push.ui.form.msg.HttpMsgForm;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.velocity.VelocityContext;
 
-import javax.swing.table.DefaultTableModel;
 import java.net.HttpCookie;
 import java.text.ParseException;
 import java.util.HashMap;
@@ -24,76 +28,31 @@ import java.util.List;
  * @since 2019/7/16.
  */
 @Slf4j
+@Getter
 public class HttpMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
-    public static String method;
-    public static String url;
-    public static String body;
-    public static String bodyType;
-    public static List<HttpMsgForm.NameValueObject> paramList;
-    public static List<HttpMsgForm.NameValueObject> headerList;
-    public static List<HttpMsgForm.CookieObject> cookieList;
+    private String method;
+    private String url;
+    private String body;
+    private String bodyType;
+    private List<HttpMsgForm.NameValueObject> paramList;
+    private List<HttpMsgForm.NameValueObject> headerList;
+    private List<HttpMsgForm.CookieObject> cookieList;
 
-    @Override
-    public void prepare() {
-        method = (String) HttpMsgForm.getInstance().getMethodComboBox().getSelectedItem();
-        url = HttpMsgForm.getInstance().getUrlTextField().getText().trim();
-        body = HttpMsgForm.getInstance().getBodyTextArea().getText();
-        bodyType = (String) HttpMsgForm.getInstance().getBodyTypeComboBox().getSelectedItem();
+    public HttpMsgMaker(TMsg tMsg) {
+        TMsgHttp tMsgHttp = JSON.parseObject(tMsg.getContent(), TMsgHttp.class);
 
-        // Params=========================
-        if (HttpMsgForm.getInstance().getParamTable().getModel().getRowCount() == 0) {
-            HttpMsgForm.initParamTable();
-        }
-        DefaultTableModel paramTableModel = (DefaultTableModel) HttpMsgForm.getInstance().getParamTable().getModel();
-        int rowCount = paramTableModel.getRowCount();
-        HttpMsgForm.NameValueObject nameValueObject;
-        paramList = Lists.newArrayList();
-        for (int i = 0; i < rowCount; i++) {
-            String name = ((String) paramTableModel.getValueAt(i, 0)).trim();
-            String value = ((String) paramTableModel.getValueAt(i, 1)).trim();
-            nameValueObject = new HttpMsgForm.NameValueObject();
-            nameValueObject.setName(name);
-            nameValueObject.setValue(value);
-            paramList.add(nameValueObject);
-        }
-        // Headers=========================
-        if (HttpMsgForm.getInstance().getHeaderTable().getModel().getRowCount() == 0) {
-            HttpMsgForm.initHeaderTable();
-        }
-        DefaultTableModel headerTableModel = (DefaultTableModel) HttpMsgForm.getInstance().getHeaderTable().getModel();
-        rowCount = headerTableModel.getRowCount();
-        headerList = Lists.newArrayList();
-        for (int i = 0; i < rowCount; i++) {
-            String name = ((String) headerTableModel.getValueAt(i, 0)).trim();
-            String value = ((String) headerTableModel.getValueAt(i, 1)).trim();
-            nameValueObject = new HttpMsgForm.NameValueObject();
-            nameValueObject.setName(name);
-            nameValueObject.setValue(value);
-            headerList.add(nameValueObject);
-        }
-        // Cookies=========================
-        if (HttpMsgForm.getInstance().getCookieTable().getModel().getRowCount() == 0) {
-            HttpMsgForm.initCookieTable();
-        }
-        DefaultTableModel cookieTableModel = (DefaultTableModel) HttpMsgForm.getInstance().getCookieTable().getModel();
-        rowCount = cookieTableModel.getRowCount();
-        cookieList = Lists.newArrayList();
-        HttpMsgForm.CookieObject cookieObject;
-        for (int i = 0; i < rowCount; i++) {
-            String name = ((String) cookieTableModel.getValueAt(i, 0)).trim();
-            String value = ((String) cookieTableModel.getValueAt(i, 1)).trim();
-            String domain = ((String) cookieTableModel.getValueAt(i, 2)).trim();
-            String path = ((String) cookieTableModel.getValueAt(i, 3)).trim();
-            String expiry = ((String) cookieTableModel.getValueAt(i, 4)).trim();
-            cookieObject = new HttpMsgForm.CookieObject();
-            cookieObject.setName(name);
-            cookieObject.setValue(value);
-            cookieObject.setDomain(domain);
-            cookieObject.setPath(path);
-            cookieObject.setExpiry(expiry);
-            cookieList.add(cookieObject);
-        }
+        method = tMsgHttp.getMethod();
+        url = tMsgHttp.getUrl();
+        body = tMsgHttp.getBody();
+        bodyType = tMsgHttp.getBodyType();
+
+        paramList = JSON.parseObject(tMsgHttp.getParams(), new TypeReference<List<HttpMsgForm.NameValueObject>>() {
+        });
+        headerList = JSON.parseObject(tMsgHttp.getHeaders(), new TypeReference<List<HttpMsgForm.NameValueObject>>() {
+        });
+        cookieList = JSON.parseObject(tMsgHttp.getCookies(), new TypeReference<List<HttpMsgForm.CookieObject>>() {
+        });
     }
 
     @Override

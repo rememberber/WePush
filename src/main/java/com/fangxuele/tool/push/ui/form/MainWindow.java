@@ -25,18 +25,17 @@ import java.util.Locale;
 public class MainWindow {
     private JPanel mainPanel;
     private JTabbedPane tabbedPane;
-    private JPanel aboutPanel;
     private JSplitPane messagePanel;
-    private JPanel memberPanel;
-    private JPanel pushPanel;
-    private JPanel settingPanel;
-    private JPanel schedulePanel;
-    private JPanel pushHisPanel;
     private JPanel messageEditPanel;
     private JPanel messageManagePanel;
     private JPanel messageTypePanel;
-    private JPanel boostPanel;
-    private JPanel infinityPanel;
+    private JSplitPane accountPanel;
+    private JPanel accountManagePanel;
+    private JPanel accountEditPanel;
+    private JSplitPane peoplePanel;
+    private JPanel peopleManagePanel;
+    private JPanel peopleEditPanel;
+    private JPanel taskPanel;
 
     private static MainWindow mainWindow;
 
@@ -61,19 +60,23 @@ public class MainWindow {
         }
 
         mainWindow.getMainPanel().updateUI();
-        mainWindow.getAboutPanel().add(AboutForm.getInstance().getAboutPanel(), GRID_CONSTRAINTS);
-//        mainWindow.getUserCasePanel().add(UserCaseForm.getInstance().getUserCasePanel(), GRID_CONSTRAINTS);
-        mainWindow.getSchedulePanel().add(ScheduleForm.getInstance().getSchedulePanel(), GRID_CONSTRAINTS);
-        mainWindow.getPushHisPanel().add(PushHisForm.getInstance().getPushHisPanel(), GRID_CONSTRAINTS);
-        mainWindow.getSettingPanel().add(SettingForm.getInstance().getSettingPanel(), GRID_CONSTRAINTS);
+
+        if (SystemUtil.isMacOs() && SystemInfo.isMacFullWindowContentSupported) {
+            GridLayoutManager gridLayoutManager = (GridLayoutManager) mainPanel.getLayout();
+            gridLayoutManager.setMargin(new Insets(25, 0, 0, 0));
+        }
+
+        mainWindow.getAccountPanel().setDividerLocation((int) (App.mainFrame.getWidth() / 5));
+        mainWindow.getMessagePanel().setDividerLocation((int) (App.mainFrame.getWidth() / 5));
+        mainWindow.getPeoplePanel().setDividerLocation((int) (App.mainFrame.getWidth() / 5));
+        mainWindow.getAccountManagePanel().add(AccountManageForm.getInstance().getAccountManagePanel(), GRID_CONSTRAINTS);
+        mainWindow.getAccountEditPanel().add(AccountEditForm.getInstance().getAccountEditPanel(), GRID_CONSTRAINTS);
         mainWindow.getMessageEditPanel().add(MessageEditForm.getInstance().getMessageEditPanel(), GRID_CONSTRAINTS);
         mainWindow.getMessageManagePanel().add(MessageManageForm.getInstance().getMessageManagePanel(), GRID_CONSTRAINTS);
-        mainWindow.getMemberPanel().add(MemberForm.getInstance().getMemberPanel(), GRID_CONSTRAINTS);
-        mainWindow.getPushPanel().add(PushForm.getInstance().getPushPanel(), GRID_CONSTRAINTS);
+        mainWindow.getPeopleManagePanel().add(PeopleManageForm.getInstance().getPeopleManagePanel(), GRID_CONSTRAINTS);
+        mainWindow.getPeopleEditPanel().add(PeopleEditForm.getInstance().getMainPanel(), GRID_CONSTRAINTS);
+        mainWindow.getTaskPanel().add(TaskForm.getInstance().getMainPanel(), GRID_CONSTRAINTS);
         mainWindow.getMessageTypePanel().add(MessageTypeForm.getInstance().getMessageTypePanel(), GRID_CONSTRAINTS);
-        mainWindow.getBoostPanel().add(BoostForm.getInstance().getBoostPanel(), GRID_CONSTRAINTS);
-        mainWindow.getInfinityPanel().add(InfinityForm.getInstance().getInfinityPanel(), GRID_CONSTRAINTS);
-        mainWindow.getMessagePanel().setDividerLocation((int) (App.mainFrame.getWidth() / 5.6));
         mainWindow.getMainPanel().updateUI();
     }
 
@@ -101,22 +104,29 @@ public class MainWindow {
         if (tabbedPaneFont != null) tabbedPane.setFont(tabbedPaneFont);
         tabbedPane.setTabLayoutPolicy(1);
         mainPanel.add(tabbedPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));
-        aboutPanel = new JPanel();
-        aboutPanel.setLayout(new GridLayoutManager(1, 1, new Insets(10, 10, 10, 10), -1, -1));
-        aboutPanel.setMinimumSize(new Dimension(-1, -1));
-        tabbedPane.addTab("关于", aboutPanel);
         messageTypePanel = new JPanel();
         messageTypePanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         messageTypePanel.setMinimumSize(new Dimension(-1, -1));
         tabbedPane.addTab("①选择消息类型", messageTypePanel);
+        accountPanel = new JSplitPane();
+        accountPanel.setContinuousLayout(true);
+        accountPanel.setDividerLocation(250);
+        accountPanel.setDividerSize(10);
+        tabbedPane.addTab("②设置账号", accountPanel);
+        accountManagePanel = new JPanel();
+        accountManagePanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        accountPanel.setLeftComponent(accountManagePanel);
+        accountEditPanel = new JPanel();
+        accountEditPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        accountPanel.setRightComponent(accountEditPanel);
         messagePanel = new JSplitPane();
         messagePanel.setContinuousLayout(true);
         messagePanel.setDividerLocation(250);
-        messagePanel.setDividerSize(4);
+        messagePanel.setDividerSize(10);
         messagePanel.setDoubleBuffered(true);
-        messagePanel.setLastDividerLocation(250);
+        messagePanel.setLastDividerLocation(-1);
         messagePanel.setMinimumSize(new Dimension(-1, -1));
-        tabbedPane.addTab("②编辑消息", messagePanel);
+        tabbedPane.addTab("③编辑消息", messagePanel);
         messageEditPanel = new JPanel();
         messageEditPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         messageEditPanel.setMaximumSize(new Dimension(-1, -1));
@@ -129,34 +139,20 @@ public class MainWindow {
         messageManagePanel.setMinimumSize(new Dimension(-1, -1));
         messageManagePanel.setPreferredSize(new Dimension(280, -1));
         messagePanel.setLeftComponent(messageManagePanel);
-        memberPanel = new JPanel();
-        memberPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        memberPanel.setMinimumSize(new Dimension(-1, -1));
-        tabbedPane.addTab("③准备目标用户", memberPanel);
-        pushPanel = new JPanel();
-        pushPanel.setLayout(new GridLayoutManager(1, 1, new Insets(10, 10, 10, 10), -1, -1));
-        pushPanel.setMinimumSize(new Dimension(-1, -1));
-        tabbedPane.addTab("④开始推送", pushPanel);
-        infinityPanel = new JPanel();
-        infinityPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        tabbedPane.addTab("变速模式", infinityPanel);
-        boostPanel = new JPanel();
-        boostPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        tabbedPane.addTab("性能模式", boostPanel);
-        pushHisPanel = new JPanel();
-        pushHisPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        pushHisPanel.setMinimumSize(new Dimension(-1, -1));
-        tabbedPane.addTab("推送历史", pushHisPanel);
-        schedulePanel = new JPanel();
-        schedulePanel.setLayout(new GridLayoutManager(1, 1, new Insets(10, 10, 10, 10), -1, -1));
-        schedulePanel.setMinimumSize(new Dimension(-1, -1));
-        tabbedPane.addTab("计划任务", schedulePanel);
-        settingPanel = new JPanel();
-        settingPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        Font settingPanelFont = this.$$$getFont$$$("Microsoft YaHei UI", -1, -1, settingPanel.getFont());
-        if (settingPanelFont != null) settingPanel.setFont(settingPanelFont);
-        settingPanel.setMinimumSize(new Dimension(-1, -1));
-        tabbedPane.addTab("设置", settingPanel);
+        peoplePanel = new JSplitPane();
+        peoplePanel.setContinuousLayout(true);
+        peoplePanel.setDividerLocation(250);
+        peoplePanel.setDividerSize(10);
+        tabbedPane.addTab("④准备目标人群", peoplePanel);
+        peopleManagePanel = new JPanel();
+        peopleManagePanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        peoplePanel.setLeftComponent(peopleManagePanel);
+        peopleEditPanel = new JPanel();
+        peopleEditPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        peoplePanel.setRightComponent(peopleEditPanel);
+        taskPanel = new JPanel();
+        taskPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        tabbedPane.addTab("⑤推送任务", taskPanel);
     }
 
     /**

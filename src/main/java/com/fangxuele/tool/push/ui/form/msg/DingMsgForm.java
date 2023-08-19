@@ -1,19 +1,17 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
 import cn.hutool.json.JSONUtil;
-import com.fangxuele.tool.push.bean.DingMsg;
-import com.fangxuele.tool.push.dao.TDingAppMapper;
-import com.fangxuele.tool.push.dao.TMsgDingMapper;
-import com.fangxuele.tool.push.domain.TDingApp;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgDing;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.CommonTipsDialog;
-import com.fangxuele.tool.push.ui.dialog.DingAppDialog;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.google.common.collect.Maps;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -28,7 +26,6 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -52,7 +49,6 @@ public class DingMsgForm implements IMsgForm {
     private JLabel urlLabel;
     private JTextField urlTextField;
     private JLabel contentLabel;
-    private JComboBox appNameComboBox;
     private JButton appManageButton;
     private JTextField titleTextField;
     private JTextArea contentTextArea;
@@ -67,25 +63,19 @@ public class DingMsgForm implements IMsgForm {
 
     private static DingMsgForm dingMsgForm;
 
-    private static TMsgDingMapper msgDingMapper = MybatisUtil.getSqlSession().getMapper(TMsgDingMapper.class);
-    private static TDingAppMapper dingAppMapper = MybatisUtil.getSqlSession().getMapper(TDingAppMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
 
     public static Map<String, String> appNameToAgentIdMap = Maps.newHashMap();
     public static Map<String, String> agentIdToAppNameMap = Maps.newHashMap();
 
     public DingMsgForm() {
+        webHookHelpLabel.setIcon(new FlatSVGIcon("icon/help.svg"));
+
         // 消息类型切换事件
         msgTypeComboBox.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 switchDingMsgType(e.getItem().toString());
             }
-        });
-        appManageButton.addActionListener(e -> {
-            DingAppDialog dialog = new DingAppDialog();
-            dialog.renderTable();
-            dialog.pack();
-            dialog.setVisible(true);
-            initAppNameList();
         });
 
         workRadioButton.addChangeListener(e -> {
@@ -123,35 +113,33 @@ public class DingMsgForm implements IMsgForm {
             public void mouseEntered(MouseEvent e) {
                 JLabel label = (JLabel) e.getComponent();
                 label.setCursor(new Cursor(Cursor.HAND_CURSOR));
-                label.setIcon(new ImageIcon(UiConsts.HELP_FOCUSED_ICON));
+                label.setIcon(UiConsts.HELP_FOCUSED_ICON);
                 super.mouseEntered(e);
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 JLabel label = (JLabel) e.getComponent();
-                label.setIcon(new ImageIcon(UiConsts.HELP_ICON));
+                label.setIcon(UiConsts.HELP_ICON);
                 super.mouseExited(e);
             }
         });
     }
 
     @Override
-    public void init(String msgName) {
+    public void init(Integer msgId) {
         clearAllField();
-        initAppNameList();
-        List<TMsgDing> tMsgDingList = msgDingMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.DING_CODE, msgName);
-        if (tMsgDingList.size() > 0) {
-            TMsgDing tMsgDing = tMsgDingList.get(0);
+
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        TMsgDing tMsgDing = JSONUtil.toBean(tMsg.getContent(), TMsgDing.class);
+        if (tMsgDing != null) {
             String dingMsgType = tMsgDing.getDingMsgType();
-            getInstance().getAppNameComboBox().setSelectedItem(agentIdToAppNameMap.get(tMsgDing.getAgentId()));
             getInstance().getMsgTypeComboBox().setSelectedItem(dingMsgType);
-            DingMsg dingMsg = JSONUtil.toBean(tMsgDing.getContent(), DingMsg.class);
-            getInstance().getContentTextArea().setText(dingMsg.getContent());
-            getInstance().getTitleTextField().setText(dingMsg.getTitle());
-            getInstance().getPicUrlTextField().setText(dingMsg.getPicUrl());
-            getInstance().getUrlTextField().setText(dingMsg.getUrl());
-            getInstance().getBtnTxtTextField().setText(dingMsg.getBtnTxt());
+            getInstance().getContentTextArea().setText(tMsgDing.getContent());
+            getInstance().getTitleTextField().setText(tMsgDing.getMsgTitle());
+            getInstance().getPicUrlTextField().setText(tMsgDing.getPicUrl());
+            getInstance().getUrlTextField().setText(tMsgDing.getUrl());
+            getInstance().getBtnTxtTextField().setText(tMsgDing.getBtnTxt());
             getInstance().getWebHookTextField().setText(tMsgDing.getWebHook());
 
             switchDingMsgType(dingMsgType);
@@ -159,26 +147,22 @@ public class DingMsgForm implements IMsgForm {
             switchRadio(tMsgDing.getRadioType());
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
-            messageEditForm.getMsgNameField().setText(tMsgDing.getMsgName());
-            messageEditForm.getPreviewUserField().setText(tMsgDing.getPreviewUser());
+            messageEditForm.getMsgNameField().setText(tMsg.getMsgName());
+            messageEditForm.getPreviewUserField().setText(tMsg.getPreviewUser());
         } else {
             switchDingMsgType("文本消息");
         }
     }
 
     @Override
-    public void save(String msgName) {
+    public void save(Integer accountId, String msgName) {
         boolean existSameMsg = false;
 
-        if (getInstance().getAppNameComboBox().getSelectedItem() == null) {
-            JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "请选择应用！", "成功",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        List<TMsgDing> tMsgDingList = msgDingMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.DING_CODE, msgName);
-        if (tMsgDingList.size() > 0) {
+        Integer msgId = null;
+        TMsg msg = msgMapper.selectByUnique(MessageTypeEnum.DING_CODE, accountId, msgName);
+        if (msg != null) {
             existSameMsg = true;
+            msgId = msg.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -200,23 +184,22 @@ public class DingMsgForm implements IMsgForm {
 
             String now = SqliteUtil.nowDateForSqlite();
 
+            TMsg tMsg = new TMsg();
+            tMsg.setMsgType(MessageTypeEnum.DING_CODE);
+            tMsg.setAccountId(accountId);
+            tMsg.setMsgName(msgName);
             TMsgDing tMsgDing = new TMsgDing();
-            tMsgDing.setMsgType(MessageTypeEnum.DING_CODE);
-            tMsgDing.setMsgName(msgName);
-            tMsgDing.setAgentId(appNameToAgentIdMap.get(getInstance().getAppNameComboBox().getSelectedItem()));
             tMsgDing.setDingMsgType(dingMsgType);
-            DingMsg dingMsg = new DingMsg();
-            dingMsg.setContent(content);
-            dingMsg.setTitle(title);
-            dingMsg.setPicUrl(picUrl);
-            dingMsg.setUrl(url);
-            dingMsg.setBtnTxt(btnTxt);
-            dingMsg.setBtnUrl(btnUrl);
+            tMsgDing.setContent(content);
+            tMsgDing.setMsgTitle(title);
+            tMsgDing.setPicUrl(picUrl);
+            tMsgDing.setUrl(url);
+            tMsgDing.setBtnTxt(btnTxt);
+            tMsgDing.setBtnUrl(btnUrl);
 
-            tMsgDing.setContent(JSONUtil.toJsonStr(dingMsg));
-            tMsgDing.setModifiedTime(now);
+            tMsg.setModifiedTime(now);
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
-            tMsgDing.setPreviewUser(messageEditForm.getPreviewUserField().getText());
+            tMsg.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             if (getInstance().getWorkRadioButton().isSelected()) {
                 tMsgDing.setRadioType("work");
@@ -225,11 +208,14 @@ public class DingMsgForm implements IMsgForm {
             }
             tMsgDing.setWebHook(webHook);
 
+            tMsg.setContent(JSONUtil.toJsonStr(tMsgDing));
+
             if (existSameMsg) {
-                msgDingMapper.updateByMsgTypeAndMsgName(tMsgDing);
+                tMsg.setId(msgId);
+                msgMapper.updateByPrimaryKeySelective(tMsg);
             } else {
-                tMsgDing.setCreateTime(now);
-                msgDingMapper.insertSelective(tMsgDing);
+                tMsg.setCreateTime(now);
+                msgMapper.insertSelective(tMsg);
             }
 
             JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "保存成功！", "成功",
@@ -242,19 +228,6 @@ public class DingMsgForm implements IMsgForm {
             dingMsgForm = new DingMsgForm();
         }
         return dingMsgForm;
-    }
-
-    /**
-     * 初始化应用名称列表
-     */
-    public static void initAppNameList() {
-        List<TDingApp> tDingAppList = dingAppMapper.selectAll();
-        getInstance().getAppNameComboBox().removeAllItems();
-        for (TDingApp tDingApp : tDingAppList) {
-            appNameToAgentIdMap.put(tDingApp.getAppName(), tDingApp.getAgentId());
-            agentIdToAppNameMap.put(tDingApp.getAgentId(), tDingApp.getAppName());
-            getInstance().getAppNameComboBox().addItem(tDingApp.getAppName());
-        }
     }
 
     /**
@@ -337,7 +310,8 @@ public class DingMsgForm implements IMsgForm {
     /**
      * 清空所有界面字段
      */
-    public static void clearAllField() {
+    @Override
+    public void clearAllField() {
         getInstance().getContentTextArea().setText("");
         getInstance().getTitleTextField().setText("");
         getInstance().getPicUrlTextField().setText("");
@@ -413,13 +387,8 @@ public class DingMsgForm implements IMsgForm {
         btnURLLabel.setText("按钮URL");
         dingMsgPanel.add(btnURLLabel, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(2, 4, new Insets(0, 0, 20, 0), -1, -1));
+        panel2.setLayout(new GridLayoutManager(2, 3, new Insets(0, 0, 20, 0), -1, -1));
         dingMsgPanel.add(panel2, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        appNameComboBox = new JComboBox();
-        panel2.add(appNameComboBox, new GridConstraints(0, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        appManageButton = new JButton();
-        appManageButton.setText("应用管理");
-        panel2.add(appManageButton, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         workRadioButton = new JRadioButton();
         workRadioButton.setText("工作通知消息");
         panel2.add(workRadioButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -427,9 +396,8 @@ public class DingMsgForm implements IMsgForm {
         robotRadioButton.setText("群机器人消息");
         panel2.add(robotRadioButton, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         webHookTextField = new JTextField();
-        panel2.add(webHookTextField, new GridConstraints(1, 2, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel2.add(webHookTextField, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         webHookHelpLabel = new JLabel();
-        webHookHelpLabel.setIcon(new ImageIcon(getClass().getResource("/icon/helpButton.png")));
         webHookHelpLabel.setText("webhook");
         panel2.add(webHookHelpLabel, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();

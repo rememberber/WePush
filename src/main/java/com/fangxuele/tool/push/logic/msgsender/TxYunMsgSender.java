@@ -1,12 +1,20 @@
 package com.fangxuele.tool.push.logic.msgsender;
 
-import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.logic.PushControl;
+import com.alibaba.fastjson.JSON;
+import com.fangxuele.tool.push.bean.account.TxYunAccountConfig;
+import com.fangxuele.tool.push.dao.TAccountMapper;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.logic.msgmaker.TxYunMsgMaker;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import com.github.qcloudsms.SmsSingleSender;
 import com.github.qcloudsms.SmsSingleSenderResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <pre>
@@ -21,24 +29,44 @@ public class TxYunMsgSender implements IMsgSender {
     /**
      * 腾讯云短信sender
      */
-    public volatile static SmsSingleSender smsSingleSender;
+    private SmsSingleSender smsSingleSender;
 
     private TxYunMsgMaker txYunMsgMaker;
 
-    public TxYunMsgSender() {
-        txYunMsgMaker = new TxYunMsgMaker();
-        smsSingleSender = getTxYunSender();
+    private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
+
+    private Integer dryRun;
+
+    private static Map<Integer, SmsSingleSender> smsSingleSenderMap = new HashMap<>();
+
+    private TxYunAccountConfig txYunAccountConfig;
+
+
+    public TxYunMsgSender(Integer msgId, Integer dryRun) {
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        txYunMsgMaker = new TxYunMsgMaker(tMsg);
+        smsSingleSender = getTxYunSender(tMsg.getAccountId());
+        this.dryRun = dryRun;
+
+        TAccount tAccount = accountMapper.selectByPrimaryKey(tMsg.getAccountId());
+        String accountConfig = tAccount.getAccountConfig();
+        txYunAccountConfig = JSON.parseObject(accountConfig, TxYunAccountConfig.class);
+    }
+
+    public static void removeAccount(Integer account1Id) {
+        smsSingleSenderMap.remove(account1Id);
     }
 
     @Override
     public SendResult send(String[] msgData) {
         SendResult sendResult = new SendResult();
         try {
-            int templateId = TxYunMsgMaker.templateId;
-            String smsSign = App.config.getTxyunSign();
+            int templateId = txYunMsgMaker.getTemplateId();
+            String smsSign = txYunAccountConfig.getSign();
             String[] params = txYunMsgMaker.makeMsg(msgData);
             String telNum = msgData[0];
-            if (PushControl.dryRun) {
+            if (dryRun == 1) {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
@@ -66,22 +94,21 @@ public class TxYunMsgSender implements IMsgSender {
         return null;
     }
 
-    /**
-     * 获取腾讯云短信发送客户端
-     *
-     * @return SmsSingleSender
-     */
-    private static SmsSingleSender getTxYunSender() {
-        if (smsSingleSender == null) {
-            synchronized (TxYunMsgSender.class) {
-                if (smsSingleSender == null) {
-                    String txyunAppId = App.config.getTxyunAppId();
-                    String txyunAppKey = App.config.getTxyunAppKey();
+    public SmsSingleSender getTxYunSender(Integer accountId) {
+        if (smsSingleSenderMap.containsKey(accountId)) {
+            return smsSingleSenderMap.get(accountId);
+        } else {
+            TAccount tAccount = accountMapper.selectByPrimaryKey(accountId);
+            String accountConfig = tAccount.getAccountConfig();
+            TxYunAccountConfig txYunAccountConfig = JSON.parseObject(accountConfig, TxYunAccountConfig.class);
 
-                    smsSingleSender = new SmsSingleSender(Integer.parseInt(txyunAppId), txyunAppKey);
-                }
-            }
+            String txyunAppId = txYunAccountConfig.getAppId();
+            String txyunAppKey = txYunAccountConfig.getAppKey();
+
+            SmsSingleSender smsSingleSender = new SmsSingleSender(Integer.parseInt(txyunAppId), txyunAppKey);
+
+            smsSingleSenderMap.put(accountId, smsSingleSender);
+            return smsSingleSender;
         }
-        return smsSingleSender;
     }
 }

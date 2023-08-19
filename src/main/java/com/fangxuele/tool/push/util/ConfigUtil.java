@@ -64,6 +64,8 @@ public class ConfigUtil extends ConfigBaseUtil {
 
     private boolean defaultMaxWindow;
 
+    private boolean unifiedBackground;
+
     private Integer maxThreads;
 
     private long pushTotal;
@@ -400,6 +402,14 @@ public class ConfigUtil extends ConfigBaseUtil {
         setting.put("setting.normal", "defaultMaxWindow", String.valueOf(defaultMaxWindow));
     }
 
+    public boolean isUnifiedBackground() {
+        return setting.getBool("unifiedBackground", "setting.normal", true);
+    }
+
+    public void setUnifiedBackground(boolean unifiedBackground) {
+        setting.put("setting.normal", "unifiedBackground", String.valueOf(unifiedBackground));
+    }
+
     public Integer getMaxThreads() {
         return setting.getInt("maxThreads", "setting.normal", 100);
     }
@@ -417,7 +427,7 @@ public class ConfigUtil extends ConfigBaseUtil {
     }
 
     public String getBeforeVersion() {
-        return setting.getStr("beforeVersion", "setting.normal", "v_3.0.0_190516");
+        return setting.getStr("beforeVersion", "setting.normal", "v_0.0.0");
     }
 
     public void setBeforeVersion(String beforeVersion) {
@@ -673,7 +683,7 @@ public class ConfigUtil extends ConfigBaseUtil {
     }
 
     public String getTheme() {
-        return setting.getStr("theme", "setting.appearance", "Flat Dark");
+        return setting.getStr("theme", "setting.appearance", "Flat macOS Dark");
     }
 
     public void setTheme(String theme) {
@@ -683,6 +693,8 @@ public class ConfigUtil extends ConfigBaseUtil {
     public String getFont() {
         if (SystemUtil.isLinuxOs()) {
             return setting.getStr("font", "setting.appearance", "Noto Sans CJK HK");
+        } else if (SystemUtil.isMacOs()) {
+            return setting.getStr("font", "setting.appearance", "PingFang SC");
         } else {
             return setting.getStr("font", "setting.appearance", "微软雅黑");
         }
@@ -693,7 +705,7 @@ public class ConfigUtil extends ConfigBaseUtil {
     }
 
     public int getFontSize() {
-        return setting.getInt("fontSize", "setting.appearance", 13);
+        return setting.getInt("fontSize", "setting.appearance", 12);
     }
 
     public void setFontSize(int fontSize) {

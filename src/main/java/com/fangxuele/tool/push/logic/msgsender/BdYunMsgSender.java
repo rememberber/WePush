@@ -1,16 +1,22 @@
 package com.fangxuele.tool.push.logic.msgsender;
 
+import com.alibaba.fastjson.JSON;
 import com.baidubce.auth.DefaultBceCredentials;
 import com.baidubce.services.sms.SmsClient;
 import com.baidubce.services.sms.SmsClientConfiguration;
 import com.baidubce.services.sms.model.SendMessageV2Request;
 import com.baidubce.services.sms.model.SendMessageV2Response;
-import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.logic.PushControl;
+import com.fangxuele.tool.push.bean.account.BdYunAccountConfig;
+import com.fangxuele.tool.push.dao.TAccountMapper;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.logic.msgmaker.BdYunMsgMaker;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -27,29 +33,48 @@ public class BdYunMsgSender implements IMsgSender {
     /**
      * 百度云短信SmsClient
      */
-    public volatile static SmsClient smsClient;
+    private SmsClient smsClient;
 
     private BdYunMsgMaker bdYunMsgMaker;
 
-    public BdYunMsgSender() {
-        bdYunMsgMaker = new BdYunMsgMaker();
-        smsClient = getBdYunSmsClient();
+    private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
+
+    private Integer dryRun;
+
+    private static Map<Integer, SmsClient> smsClientMap = new HashMap<>();
+
+    private BdYunAccountConfig bdYunAccountConfig;
+
+    public BdYunMsgSender(Integer msgId, Integer dryRun) {
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        bdYunMsgMaker = new BdYunMsgMaker(tMsg);
+        smsClient = getBdYunSmsClient(tMsg.getAccountId());
+        this.dryRun = dryRun;
+
+        TAccount tAccount = accountMapper.selectByPrimaryKey(tMsg.getAccountId());
+        String accountConfig = tAccount.getAccountConfig();
+        bdYunAccountConfig = JSON.parseObject(accountConfig, BdYunAccountConfig.class);
+    }
+
+    public static void removeAccount(Integer accountId) {
+        smsClientMap.remove(accountId);
     }
 
     @Override
     public SendResult send(String[] msgData) {
         SendResult sendResult = new SendResult();
         try {
-            String templateCode = BdYunMsgMaker.templateId;
+            String templateCode = bdYunMsgMaker.getTemplateId();
             Map<String, String> params = bdYunMsgMaker.makeMsg(msgData);
             String phoneNumber = msgData[0];
-            if (PushControl.dryRun) {
+            if (dryRun == 1) {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
                 // 定义请求参数
                 // 发送使用签名的调用ID
-                String invokeId = App.config.getBdInvokeId();
+                String invokeId = bdYunAccountConfig.getBdInvokeId();
 
                 //实例化请求对象
                 SendMessageV2Request request = new SendMessageV2Request();
@@ -82,32 +107,31 @@ public class BdYunMsgSender implements IMsgSender {
         return null;
     }
 
-    /**
-     * 获取百度云短信发送客户端
-     *
-     * @return SmsClient
-     */
-    private static SmsClient getBdYunSmsClient() {
-        if (smsClient == null) {
-            synchronized (BdYunMsgSender.class) {
-                if (smsClient == null) {
-                    // SMS服务域名，可根据环境选择具体域名
-                    String endPoint = App.config.getBdEndPoint();
-                    // 发送账号安全认证的Access Key ID
-                    String accessKeyId = App.config.getBdAccessKeyId();
-                    // 发送账号安全认证的Secret Access Key
-                    String secretAccessKy = App.config.getBdSecretAccessKey();
+    private SmsClient getBdYunSmsClient(Integer accountId) {
+        if (smsClientMap.containsKey(accountId)) {
+            return smsClientMap.get(accountId);
+        } else {
+            TAccount tAccount = accountMapper.selectByPrimaryKey(accountId);
+            String accountConfig = tAccount.getAccountConfig();
+            BdYunAccountConfig bdYunAccountConfig = JSON.parseObject(accountConfig, BdYunAccountConfig.class);
 
-                    // ak、sk等config
-                    SmsClientConfiguration config = new SmsClientConfiguration();
-                    config.setCredentials(new DefaultBceCredentials(accessKeyId, secretAccessKy));
-                    config.setEndpoint(endPoint);
+            // SMS服务域名，可根据环境选择具体域名
+            String endPoint = bdYunAccountConfig.getBdEndPoint();
+            // 发送账号安全认证的Access Key ID
+            String accessKeyId = bdYunAccountConfig.getBdAccessKeyId();
+            // 发送账号安全认证的Secret Access Key
+            String secretAccessKy = bdYunAccountConfig.getBdSecretAccessKey();
 
-                    // 实例化发送客户端
-                    smsClient = new SmsClient(config);
-                }
-            }
+            // ak、sk等config
+            SmsClientConfiguration config = new SmsClientConfiguration();
+            config.setCredentials(new DefaultBceCredentials(accessKeyId, secretAccessKy));
+            config.setEndpoint(endPoint);
+
+            // 实例化发送客户端
+            SmsClient smsClient = new SmsClient(config);
+
+            smsClientMap.put(accountId, smsClient);
+            return smsClient;
         }
-        return smsClient;
     }
 }

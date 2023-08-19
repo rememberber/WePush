@@ -1,7 +1,12 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
-import com.fangxuele.tool.push.logic.msgsender.WxCpMsgSender;
-import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
+import com.alibaba.fastjson.JSON;
+import com.fangxuele.tool.push.bean.account.WxCpAccountConfig;
+import com.fangxuele.tool.push.dao.TAccountMapper;
+import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.domain.TMsgWxCp;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import me.chanjar.weixin.cp.bean.article.NewArticle;
 import me.chanjar.weixin.cp.bean.message.WxCpMessage;
@@ -17,43 +22,41 @@ import org.apache.velocity.VelocityContext;
  */
 public class WxCpMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
-    private static String agentId;
+    private String agentId;
 
-    public static String msgType;
+    private String msgType;
 
-    private static String msgTitle;
+    private String msgTitle;
 
-    private static String picUrl;
+    private String picUrl;
 
-    public static String desc;
+    private String desc;
 
-    public static String url;
+    private String url;
 
-    private static String btnTxt;
+    private String btnTxt;
 
-    private static String msgContent;
+    private String msgContent;
 
-    /**
-     * 准备(界面字段等)
-     */
-    @Override
-    public void prepare() {
-        String agentIdBefore = agentId;
-        String agentIdNow = WxCpMsgForm.appNameToAgentIdMap.get(WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem());
-        synchronized (this) {
-            if (agentIdBefore == null || !agentIdBefore.equals(agentIdNow)) {
-                agentId = agentIdNow;
-                WxCpMsgSender.wxCpConfigStorage = null;
-                WxCpMsgSender.wxCpService = null;
-            }
-        }
-        msgType = (String) WxCpMsgForm.getInstance().getMsgTypeComboBox().getSelectedItem();
-        msgTitle = WxCpMsgForm.getInstance().getTitleTextField().getText();
-        picUrl = WxCpMsgForm.getInstance().getPicUrlTextField().getText().trim();
-        desc = WxCpMsgForm.getInstance().getDescTextField().getText();
-        url = WxCpMsgForm.getInstance().getUrlTextField().getText().trim();
-        btnTxt = WxCpMsgForm.getInstance().getBtnTxtTextField().getText().trim();
-        msgContent = WxCpMsgForm.getInstance().getContentTextArea().getText();
+    private WxCpAccountConfig wxCpAccountConfig;
+
+    private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
+
+    public WxCpMsgMaker(TMsg tMsg) {
+        TMsgWxCp tMsgWxCp = JSON.parseObject(tMsg.getContent(), TMsgWxCp.class);
+
+        TAccount tAccount = accountMapper.selectByPrimaryKey(tMsg.getAccountId());
+        String accountConfig = tAccount.getAccountConfig();
+        wxCpAccountConfig = JSON.parseObject(accountConfig, WxCpAccountConfig.class);
+        agentId = wxCpAccountConfig.getAgentId();
+
+        msgType = tMsgWxCp.getCpMsgType();
+        msgTitle = tMsgWxCp.getTitle();
+        picUrl = tMsgWxCp.getImgUrl();
+        desc = tMsgWxCp.getDescribe();
+        url = tMsgWxCp.getUrl();
+        btnTxt = tMsgWxCp.getBtnTxt();
+        msgContent = tMsgWxCp.getContent();
     }
 
     /**

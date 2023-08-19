@@ -1,13 +1,19 @@
 package com.fangxuele.tool.push.logic.msgsender;
 
+import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaSubscribeMessage;
 import cn.binarywang.wx.miniapp.bean.WxMaTemplateData;
 import cn.binarywang.wx.miniapp.bean.WxMaUniformMessage;
 import cn.binarywang.wx.miniapp.bean.WxMaUniformMessage.MiniProgram;
-import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.logic.PushControl;
+import com.alibaba.fastjson.JSON;
+import com.fangxuele.tool.push.bean.account.WxMaAccountConfig;
+import com.fangxuele.tool.push.dao.TAccountMapper;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.logic.msgmaker.WxMaSubscribeMsgMaker;
 import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
 import org.apache.commons.compress.utils.Lists;
@@ -30,9 +36,26 @@ public class WxUniformMsgSender implements IMsgSender {
 
     private WxMaSubscribeMsgMaker wxMaSubscribeMsgMaker;
 
-    public WxUniformMsgSender() {
-        wxMpTemplateMsgMaker = new WxMpTemplateMsgMaker();
-        wxMaSubscribeMsgMaker = new WxMaSubscribeMsgMaker();
+    private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
+
+    private Integer dryRun;
+
+    private WxMaService wxMaService;
+
+    private WxMaAccountConfig WxMaAccountConfig;
+
+
+    public WxUniformMsgSender(Integer msgId, Integer dryRun) {
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        wxMpTemplateMsgMaker = new WxMpTemplateMsgMaker(tMsg);
+        wxMaSubscribeMsgMaker = new WxMaSubscribeMsgMaker(tMsg);
+        wxMaService = WxMaSubscribeMsgSender.getWxMaService(tMsg.getAccountId());
+        this.dryRun = dryRun;
+
+        TAccount tAccount = accountMapper.selectByPrimaryKey(tMsg.getAccountId());
+        String accountConfig = tAccount.getAccountConfig();
+        WxMaAccountConfig = JSON.parseObject(accountConfig, WxMaAccountConfig.class);
     }
 
     @Override
@@ -47,13 +70,13 @@ public class WxUniformMsgSender implements IMsgSender {
             WxMaUniformMessage wxMaUniformMessage = new WxMaUniformMessage();
             wxMaUniformMessage.setMpTemplateMsg(true);
             wxMaUniformMessage.setToUser(openId);
-            wxMaUniformMessage.setAppid(App.config.getMiniAppAppId());
+            wxMaUniformMessage.setAppid(WxMaAccountConfig.getAppId());
             wxMaUniformMessage.setTemplateId(wxMpTemplateMessage.getTemplateId());
             wxMaUniformMessage.setUrl(wxMpTemplateMessage.getUrl());
             wxMaUniformMessage.setPage(wxMaSubscribeMessage.getPage());
             wxMaUniformMessage.setFormId(msgData[1]);
             MiniProgram miniProgram = new MiniProgram();
-            miniProgram.setAppid(App.config.getMiniAppAppId());
+            miniProgram.setAppid(WxMaAccountConfig.getAppId());
             miniProgram.setPagePath(wxMaSubscribeMessage.getPage());
 
             wxMaUniformMessage.setMiniProgram(miniProgram);
@@ -68,11 +91,11 @@ public class WxUniformMsgSender implements IMsgSender {
             }
             wxMaUniformMessage.setData(wxMaTemplateDataList);
 
-            if (PushControl.dryRun) {
+            if (dryRun == 1) {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
-                WxMaSubscribeMsgSender.getWxMaService().getMsgService().sendUniformMsg(wxMaUniformMessage);
+                wxMaService.getMsgService().sendUniformMsg(wxMaUniformMessage);
             }
         } catch (Exception e) {
             sendResult.setSuccess(false);

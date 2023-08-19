@@ -29,7 +29,9 @@ public enum MessageTypeEnum {
     QI_NIU_YUN(16, "七牛云短信"),
     WX_UNIFORM_MESSAGE(17, "小程序-统一服务消息"),
     MA_SUBSCRIBE(18, "小程序-订阅消息"),
-    MP_SUBSCRIBE(19, "公众号-订阅通知");
+    MP_SUBSCRIBE(19, "公众号-订阅通知"),
+    WX_MP(20, "微信公众号"),
+    WX_MA(21, "微信小程序");
 
     private int code;
 
@@ -57,6 +59,10 @@ public enum MessageTypeEnum {
     MessageTypeEnum(int code, String name) {
         this.code = code;
         this.name = name;
+    }
+
+    public static String getName(MessageTypeEnum messageTypeEnum) {
+        return messageTypeEnum.name;
     }
 
     public static String getName(int code) {
@@ -116,6 +122,12 @@ public enum MessageTypeEnum {
             case 19:
                 name = MP_SUBSCRIBE.name;
                 break;
+            case 20:
+                name = WX_MP.name;
+                break;
+            case 21:
+                name = WX_MA.name;
+                break;
             default:
                 name = "";
         }
@@ -126,17 +138,20 @@ public enum MessageTypeEnum {
         return msgType == MessageTypeEnum.KEFU_CODE
                 || msgType == MessageTypeEnum.KEFU_PRIORITY_CODE
                 || msgType == MessageTypeEnum.MP_TEMPLATE_CODE
-                || msgType == MessageTypeEnum.MP_SUBSCRIBE_CODE;
+                || msgType == MessageTypeEnum.MP_SUBSCRIBE_CODE
+                ;
     }
 
     public static boolean isWxMaType(int msgType) {
         return msgType == MessageTypeEnum.MA_TEMPLATE_CODE
                 || msgType == MessageTypeEnum.MA_SUBSCRIBE_CODE
-                || msgType == MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE;
+                || msgType == MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE
+                ;
     }
 
     public static boolean isWxMaOrMpType(int msgType) {
         return isWxMaType(msgType)
                 || isWxMpType(msgType);
     }
+
 }
