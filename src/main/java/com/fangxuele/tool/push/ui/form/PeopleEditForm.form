@@ -27,7 +27,6 @@
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <icon value="icon/find_dark.png"/>
               <text value="搜索"/>
             </properties>
           </component>
@@ -63,7 +62,6 @@
               <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <icon value="icon/selectall_dark.png"/>
               <text value="清空"/>
             </properties>
           </component>
@@ -72,7 +70,6 @@
               <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <icon value="icon/import_dark.png"/>
               <text value="导入"/>
             </properties>
           </component>
@@ -81,7 +78,6 @@
               <grid row="0" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <icon value="icon/export_dark.png"/>
               <text value="导出"/>
             </properties>
           </component>
@@ -90,7 +86,6 @@
               <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <icon value="icon/remove.png"/>
               <text value="删除"/>
             </properties>
           </component>

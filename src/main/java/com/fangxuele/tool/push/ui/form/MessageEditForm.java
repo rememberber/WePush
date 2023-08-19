@@ -197,15 +197,12 @@ public class MessageEditForm {
         previewUserField.setToolTipText("多个以半角分号分隔");
         panel4.add(previewUserField, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         previewMsgButton = new JButton();
-        previewMsgButton.setIcon(new ImageIcon(getClass().getResource("/icon/send.png")));
         previewMsgButton.setText("预览");
         panel4.add(previewMsgButton, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         msgSaveButton = new JButton();
-        msgSaveButton.setIcon(new ImageIcon(getClass().getResource("/icon/menu-saveall_dark.png")));
         msgSaveButton.setText("保存");
         panel4.add(msgSaveButton, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         previewUserHelpLabel = new JLabel();
-        previewUserHelpLabel.setIcon(new ImageIcon(getClass().getResource("/icon/helpButton.png")));
         previewUserHelpLabel.setText("");
         panel4.add(previewUserHelpLabel, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         msgEditScrollPane = new JScrollPane();

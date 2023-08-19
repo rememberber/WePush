@@ -30,7 +30,6 @@
                 </constraints>
                 <properties>
                   <font style="0"/>
-                  <icon value="icon/import_dark.png"/>
                   <text value="导入选择的标签分组-取并集"/>
                 </properties>
               </component>
@@ -40,7 +39,6 @@
                 </constraints>
                 <properties>
                   <font style="0"/>
-                  <icon value="icon/import_dark.png"/>
                   <text value="导入选择的标签分组-取交集"/>
                 </properties>
               </component>
@@ -50,7 +48,6 @@
                 </constraints>
                 <properties>
                   <font style="0"/>
-                  <icon value="icon/import_dark.png"/>
                   <text value="导入所有关注公众号的用户"/>
                 </properties>
               </component>
@@ -135,7 +132,6 @@
             </constraints>
             <properties>
               <font style="0"/>
-              <icon value="icon/refresh.png"/>
               <text value="刷新"/>
             </properties>
           </component>

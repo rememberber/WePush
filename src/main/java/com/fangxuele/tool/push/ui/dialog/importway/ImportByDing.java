@@ -362,7 +362,6 @@ public class ImportByDing extends JDialog {
         dingImportAllButton = new JButton();
         Font dingImportAllButtonFont = this.$$$getFont$$$(null, Font.PLAIN, -1, dingImportAllButton.getFont());
         if (dingImportAllButtonFont != null) dingImportAllButton.setFont(dingImportAllButtonFont);
-        dingImportAllButton.setIcon(new ImageIcon(getClass().getResource("/icon/import_dark.png")));
         dingImportAllButton.setText("导入通讯录中所有用户");
         panel2.add(dingImportAllButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
@@ -375,14 +374,12 @@ public class ImportByDing extends JDialog {
         dingDeptsRefreshButton = new JButton();
         Font dingDeptsRefreshButtonFont = this.$$$getFont$$$(null, Font.PLAIN, -1, dingDeptsRefreshButton.getFont());
         if (dingDeptsRefreshButtonFont != null) dingDeptsRefreshButton.setFont(dingDeptsRefreshButtonFont);
-        dingDeptsRefreshButton.setIcon(new ImageIcon(getClass().getResource("/icon/refresh.png")));
         dingDeptsRefreshButton.setText("刷新");
         panel3.add(dingDeptsRefreshButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, 1, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
         label1.setText("按部门导入");
         panel3.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         dingDeptsImportButton = new JButton();
-        dingDeptsImportButton.setIcon(new ImageIcon(getClass().getResource("/icon/import_dark.png")));
         dingDeptsImportButton.setText("导入");
         panel3.add(dingDeptsImportButton, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }

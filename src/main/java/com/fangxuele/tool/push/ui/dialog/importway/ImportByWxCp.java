@@ -459,7 +459,6 @@ public class ImportByWxCp extends JDialog {
         wxCpImportAllButton = new JButton();
         Font wxCpImportAllButtonFont = this.$$$getFont$$$(null, Font.PLAIN, -1, wxCpImportAllButton.getFont());
         if (wxCpImportAllButtonFont != null) wxCpImportAllButton.setFont(wxCpImportAllButtonFont);
-        wxCpImportAllButton.setIcon(new ImageIcon(getClass().getResource("/icon/import_dark.png")));
         wxCpImportAllButton.setText("导入通讯录中所有用户");
         panel2.add(wxCpImportAllButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
@@ -476,13 +475,11 @@ public class ImportByWxCp extends JDialog {
         wxCpTagsRefreshButton = new JButton();
         Font wxCpTagsRefreshButtonFont = this.$$$getFont$$$(null, Font.PLAIN, -1, wxCpTagsRefreshButton.getFont());
         if (wxCpTagsRefreshButtonFont != null) wxCpTagsRefreshButton.setFont(wxCpTagsRefreshButtonFont);
-        wxCpTagsRefreshButton.setIcon(new ImageIcon(getClass().getResource("/icon/refresh.png")));
         wxCpTagsRefreshButton.setText("刷新");
         panel3.add(wxCpTagsRefreshButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, 1, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         wxCpDeptsRefreshButton = new JButton();
         Font wxCpDeptsRefreshButtonFont = this.$$$getFont$$$(null, Font.PLAIN, -1, wxCpDeptsRefreshButton.getFont());
         if (wxCpDeptsRefreshButtonFont != null) wxCpDeptsRefreshButton.setFont(wxCpDeptsRefreshButtonFont);
-        wxCpDeptsRefreshButton.setIcon(new ImageIcon(getClass().getResource("/icon/refresh.png")));
         wxCpDeptsRefreshButton.setText("刷新");
         panel3.add(wxCpDeptsRefreshButton, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, 1, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
@@ -492,11 +489,9 @@ public class ImportByWxCp extends JDialog {
         label2.setText("按部门导入");
         panel3.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         wxCpTagsImportButton = new JButton();
-        wxCpTagsImportButton.setIcon(new ImageIcon(getClass().getResource("/icon/import_dark.png")));
         wxCpTagsImportButton.setText("导入");
         panel3.add(wxCpTagsImportButton, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         wxCpDeptsImportButton = new JButton();
-        wxCpDeptsImportButton.setIcon(new ImageIcon(getClass().getResource("/icon/import_dark.png")));
         wxCpDeptsImportButton.setText("导入");
         panel3.add(wxCpDeptsImportButton, new GridConstraints(1, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }

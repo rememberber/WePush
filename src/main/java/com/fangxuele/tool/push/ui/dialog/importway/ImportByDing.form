@@ -30,7 +30,6 @@
                 </constraints>
                 <properties>
                   <font style="0"/>
-                  <icon value="icon/import_dark.png"/>
                   <text value="导入通讯录中所有用户"/>
                 </properties>
               </component>
@@ -60,7 +59,6 @@
             </constraints>
             <properties>
               <font style="0"/>
-              <icon value="icon/refresh.png"/>
               <text value="刷新"/>
             </properties>
           </component>
@@ -77,7 +75,6 @@
               <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <icon value="icon/import_dark.png"/>
               <text value="导入"/>
             </properties>
           </component>

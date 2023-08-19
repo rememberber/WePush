@@ -636,7 +636,6 @@ public class TaskHisDetailDialog extends JDialog {
         panel4.add(noSendToPeopleButton, new GridConstraints(2, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         pushStopButton = new JButton();
         pushStopButton.setEnabled(false);
-        pushStopButton.setIcon(new ImageIcon(getClass().getResource("/icon/suspend.png")));
         pushStopButton.setText("停止");
         panel4.add(pushStopButton, new GridConstraints(3, 2, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }

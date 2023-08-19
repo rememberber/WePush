@@ -645,11 +645,9 @@ public class InfinityTaskHisDetailDialog extends JDialog {
         pushControlPanel.add(sliderValueTextField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(60, -1), null, 0, false));
         pushStopButton = new JButton();
         pushStopButton.setEnabled(false);
-        pushStopButton.setIcon(new ImageIcon(getClass().getResource("/icon/suspend.png")));
         pushStopButton.setText("停止");
         pushControlPanel.add(pushStopButton, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         threadTipsLabel = new JLabel();
-        threadTipsLabel.setIcon(new ImageIcon(getClass().getResource("/icon/helpButton.png")));
         threadTipsLabel.setText("");
         pushControlPanel.add(threadTipsLabel, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         threadCountSlider = new JSlider();

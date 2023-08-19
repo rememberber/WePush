@@ -532,20 +532,17 @@ public class ImportByWxMp extends JDialog {
         memberImportTagButton = new JButton();
         Font memberImportTagButtonFont = this.$$$getFont$$$(null, Font.PLAIN, -1, memberImportTagButton.getFont());
         if (memberImportTagButtonFont != null) memberImportTagButton.setFont(memberImportTagButtonFont);
-        memberImportTagButton.setIcon(new ImageIcon(getClass().getResource("/icon/import_dark.png")));
         memberImportTagButton.setText("导入选择的标签分组-取并集");
         panel2.add(memberImportTagButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         memberImportTagRetainButton = new JButton();
         Font memberImportTagRetainButtonFont = this.$$$getFont$$$(null, Font.PLAIN, -1, memberImportTagRetainButton.getFont());
         if (memberImportTagRetainButtonFont != null)
             memberImportTagRetainButton.setFont(memberImportTagRetainButtonFont);
-        memberImportTagRetainButton.setIcon(new ImageIcon(getClass().getResource("/icon/import_dark.png")));
         memberImportTagRetainButton.setText("导入选择的标签分组-取交集");
         panel2.add(memberImportTagRetainButton, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         memberImportAllButton = new JButton();
         Font memberImportAllButtonFont = this.$$$getFont$$$(null, Font.PLAIN, -1, memberImportAllButton.getFont());
         if (memberImportAllButtonFont != null) memberImportAllButton.setFont(memberImportAllButtonFont);
-        memberImportAllButton.setIcon(new ImageIcon(getClass().getResource("/icon/import_dark.png")));
         memberImportAllButton.setText("导入所有关注公众号的用户");
         panel2.add(memberImportAllButton, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
@@ -579,7 +576,6 @@ public class ImportByWxMp extends JDialog {
         memberImportTagFreshButton = new JButton();
         Font memberImportTagFreshButtonFont = this.$$$getFont$$$(null, Font.PLAIN, -1, memberImportTagFreshButton.getFont());
         if (memberImportTagFreshButtonFont != null) memberImportTagFreshButton.setFont(memberImportTagFreshButtonFont);
-        memberImportTagFreshButton.setIcon(new ImageIcon(getClass().getResource("/icon/refresh.png")));
         memberImportTagFreshButton.setText("刷新");
         panel3.add(memberImportTagFreshButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, 1, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label1 = new JLabel();

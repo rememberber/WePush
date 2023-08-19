@@ -325,7 +325,6 @@
                 </constraints>
                 <properties>
                   <enabled value="false"/>
-                  <icon value="icon/suspend.png"/>
                   <text value="停止"/>
                 </properties>
               </component>

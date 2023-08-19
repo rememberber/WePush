@@ -398,7 +398,6 @@ public class DingMsgForm implements IMsgForm {
         webHookTextField = new JTextField();
         panel2.add(webHookTextField, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         webHookHelpLabel = new JLabel();
-        webHookHelpLabel.setIcon(new ImageIcon(getClass().getResource("/icon/helpButton.png")));
         webHookHelpLabel.setText("webhook");
         panel2.add(webHookHelpLabel, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();

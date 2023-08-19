@@ -188,7 +188,6 @@ public class EmailAccountForm implements IAccountForm {
         final Spacer spacer2 = new Spacer();
         panel2.add(spacer2, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         testMailButton = new JButton();
-        testMailButton.setIcon(new ImageIcon(getClass().getResource("/icon/arrow_right.png")));
         testMailButton.setText("测试");
         panel2.add(testMailButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         mailStartTLSCheckBox = new JCheckBox();

@@ -104,7 +104,6 @@
                   <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <icon value="icon/send.png"/>
                   <text value="预览"/>
                 </properties>
               </component>
@@ -113,7 +112,6 @@
                   <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <icon value="icon/menu-saveall_dark.png"/>
                   <text value="保存"/>
                 </properties>
               </component>
@@ -122,7 +120,6 @@
                   <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <icon value="icon/helpButton.png"/>
                   <text value=""/>
                 </properties>
               </component>

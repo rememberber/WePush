@@ -488,7 +488,6 @@ public class MpTemplateMsgForm implements IMsgForm {
         templateDataColorTextField.setToolTipText("示例值：FF0000");
         templateMsgDataPanel.add(templateDataColorTextField, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         templateMsgDataAddButton = new JButton();
-        templateMsgDataAddButton.setIcon(new ImageIcon(getClass().getResource("/icon/add.png")));
         templateMsgDataAddButton.setText("");
         templateMsgDataPanel.add(templateMsgDataAddButton, new GridConstraints(1, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         templateMsgDataTable = new JTable();
@@ -546,7 +545,6 @@ public class MpTemplateMsgForm implements IMsgForm {
         templateListComboBox = new JComboBox();
         panel2.add(templateListComboBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         refreshTemplateListButton = new JButton();
-        refreshTemplateListButton.setIcon(new ImageIcon(getClass().getResource("/icon/refresh.png")));
         refreshTemplateListButton.setText("刷新");
         panel2.add(refreshTemplateListButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, 1, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         templateContentTextArea = new JTextArea();

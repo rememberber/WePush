@@ -90,8 +90,6 @@ public class Init {
      */
     public static void initTheme() {
         try {
-
-
             switch (App.config.getTheme()) {
                 case "系统默认":
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

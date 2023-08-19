@@ -275,7 +275,6 @@ public class QiNiuYunMsgForm implements IMsgForm {
         templateDataValueTextField = new JTextField();
         templateMsgDataPanel.add(templateDataValueTextField, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         templateMsgDataAddButton = new JButton();
-        templateMsgDataAddButton.setIcon(new ImageIcon(getClass().getResource("/icon/add.png")));
         templateMsgDataAddButton.setText("");
         templateMsgDataPanel.add(templateMsgDataAddButton, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         templateMsgDataTable = new JTable();
