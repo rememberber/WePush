@@ -61,6 +61,11 @@ public class PeopleEditForm {
     public static PeopleEditForm getInstance() {
         if (peopleEditForm == null) {
             peopleEditForm = new PeopleEditForm();
+            peopleEditForm.getClearAllButton().setIcon(new FlatSVGIcon("icon/clear.svg"));
+            peopleEditForm.getDeleteButton().setIcon(new FlatSVGIcon("icon/remove.svg"));
+            peopleEditForm.getImportButton().setIcon(new FlatSVGIcon("icon/import.svg"));
+            peopleEditForm.getExportButton().setIcon(new FlatSVGIcon("icon/export.svg"));
+            peopleEditForm.getSearchButton().setIcon(new FlatSVGIcon("icon/find.svg"));
         }
         return peopleEditForm;
     }
@@ -71,11 +76,6 @@ public class PeopleEditForm {
     public static void init(String selectedPeopleName) {
         peopleEditForm = getInstance();
         peopleEditForm.getMemberTabImportProgressBar().setVisible(false);
-        peopleEditForm.getClearAllButton().setIcon(new FlatSVGIcon("icon/clear.svg"));
-        peopleEditForm.getDeleteButton().setIcon(new FlatSVGIcon("icon/remove.svg"));
-        peopleEditForm.getImportButton().setIcon(new FlatSVGIcon("icon/import.svg"));
-        peopleEditForm.getExportButton().setIcon(new FlatSVGIcon("icon/export.svg"));
-        peopleEditForm.getSearchButton().setIcon(new FlatSVGIcon("icon/find.svg"));
 
         // 设置滚动条速度
 //        peopleEditForm.getAccountEditScrollPane().getVerticalScrollBar().setUnitIncrement(15);

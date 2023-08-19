@@ -54,7 +54,7 @@ public class AliYunMsgForm implements IMsgForm {
     private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
 
     public AliYunMsgForm() {
-        templateMsgDataAddButton.setIcon(new FlatSVGIcon("icon/help.svg"));
+        templateMsgDataAddButton.setIcon(new FlatSVGIcon("icon/add.svg"));
 
         // 模板数据-添加 按钮事件
         templateMsgDataAddButton.addActionListener(e -> {
