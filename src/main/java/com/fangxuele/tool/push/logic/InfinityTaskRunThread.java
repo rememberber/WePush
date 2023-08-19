@@ -361,7 +361,7 @@ public class InfinityTaskRunThread extends Thread {
                     }
                 }
 
-                if (App.trayIcon != null) {
+                if (App.trayIcon != null && SystemUtil.isWindowsOs()) {
                     App.trayIcon.displayMessage("WePush", tTask.getTitle() + " 发送完毕！", TrayIcon.MessageType.INFO);
                 }
 

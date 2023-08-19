@@ -19,6 +19,7 @@ import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.util.StringUtils;
 import com.formdev.flatlaf.util.SystemInfo;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -85,6 +86,11 @@ public class TaskHisDetailDialog extends JDialog {
             GridLayoutManager gridLayoutManager = (GridLayoutManager) contentPane.getLayout();
             gridLayoutManager.setMargin(new Insets(28, 0, 0, 0));
         }
+
+        successToPeopleButton.setIcon(new FlatSVGIcon("icon/people.svg"));
+        failToPeopleButton.setIcon(new FlatSVGIcon("icon/people.svg"));
+        noSendToPeopleButton.setIcon(new FlatSVGIcon("icon/people.svg"));
+
         // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
