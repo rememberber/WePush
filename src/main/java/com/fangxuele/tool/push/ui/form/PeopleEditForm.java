@@ -14,6 +14,7 @@ import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.UndoUtil;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -70,6 +71,12 @@ public class PeopleEditForm {
     public static void init(String selectedPeopleName) {
         peopleEditForm = getInstance();
         peopleEditForm.getMemberTabImportProgressBar().setVisible(false);
+        peopleEditForm.getClearAllButton().setIcon(new FlatSVGIcon("icon/clear.svg"));
+        peopleEditForm.getDeleteButton().setIcon(new FlatSVGIcon("icon/remove.svg"));
+        peopleEditForm.getImportButton().setIcon(new FlatSVGIcon("icon/import.svg"));
+        peopleEditForm.getExportButton().setIcon(new FlatSVGIcon("icon/export.svg"));
+        peopleEditForm.getSearchButton().setIcon(new FlatSVGIcon("icon/find.svg"));
+
         // 设置滚动条速度
 //        peopleEditForm.getAccountEditScrollPane().getVerticalScrollBar().setUnitIncrement(15);
 //        peopleEditForm.getAccountEditScrollPane().getVerticalScrollBar().setDoubleBuffered(true);

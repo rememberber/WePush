@@ -7,6 +7,7 @@ import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TPeople;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.google.common.collect.Maps;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -58,6 +59,9 @@ public class PeopleManageForm {
      */
     public static void init() {
         peopleManageForm = getInstance();
+        peopleManageForm.getDeleteButton().setIcon(new FlatSVGIcon("icon/remove.svg"));
+        peopleManageForm.getCreatePeopleButton().setIcon(new FlatSVGIcon("icon/add.svg"));
+
         initAccountComboBox();
         initPeopleList();
     }

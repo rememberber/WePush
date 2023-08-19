@@ -3,6 +3,7 @@ package com.fangxuele.tool.push.ui.form;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.form.msg.*;
 import com.fangxuele.tool.push.util.UndoUtil;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Getter;
@@ -58,6 +59,10 @@ public class MessageEditForm {
         messageEditForm.getMsgEditScrollPane().getVerticalScrollBar().setDoubleBuffered(true);
 
         MsgFormFactory.getMsgForm().init(msgId);
+
+        messageEditForm.getMsgSaveButton().setIcon(new FlatSVGIcon("icon/save.svg"));
+        messageEditForm.getPreviewMsgButton().setIcon(new FlatSVGIcon("icon/send.svg"));
+        messageEditForm.getPreviewUserHelpLabel().setIcon(new FlatSVGIcon("icon/info.svg"));
     }
 
     /**
@@ -131,6 +136,10 @@ public class MessageEditForm {
             default:
                 break;
         }
+
+        messageEditForm.getMsgSaveButton().setIcon(new FlatSVGIcon("icon/save.svg"));
+        messageEditForm.getPreviewMsgButton().setIcon(new FlatSVGIcon("icon/send.svg"));
+        messageEditForm.getPreviewUserHelpLabel().setIcon(new FlatSVGIcon("icon/help-filling.svg"));
     }
 
     {

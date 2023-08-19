@@ -100,7 +100,12 @@ public class TaskForm {
 
         taskForm.getDeleteButton().setIcon(new FlatSVGIcon("icon/remove.svg"));
         taskForm.getHisDeleteButton().setIcon(new FlatSVGIcon("icon/remove.svg"));
-        taskForm.getStartButton().setIcon(new FlatSVGIcon("icon/send.svg", 14, 14));
+        taskForm.getStartButton().setIcon(new FlatSVGIcon("icon/send.svg"));
+        taskForm.getNewTaskButton().setIcon(new FlatSVGIcon("icon/add.svg"));
+        taskForm.getModifyButton().setIcon(new FlatSVGIcon("icon/modify.svg"));
+        taskForm.getStartDryRunButton().setIcon(new FlatSVGIcon("icon/debug.svg"));
+        taskForm.getTaskHisDetailButton().setIcon(new FlatSVGIcon("icon/detail.svg"));
+        taskForm.getStopButton().setIcon(new FlatSVGIcon("icon/stop.svg"));
 
         taskForm.getTaskListTable().setRowHeight(UiConsts.TABLE_ROW_HEIGHT);
         taskForm.getTaskHisListTable().setRowHeight(UiConsts.TABLE_ROW_HEIGHT);

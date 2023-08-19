@@ -23,6 +23,7 @@ import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
 import com.fangxuele.tool.push.ui.form.PeopleManageForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.opencsv.CSVWriter;
 
 import javax.swing.*;
@@ -71,6 +72,7 @@ public class PeopleEditListener {
 
             JMenuItem menuItem1 = new JMenuItem();
             menuItem1.setText(PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_FILE));
+            menuItem1.setIcon(new FlatSVGIcon("icon/file.svg"));
             menuItem1.addActionListener(e1 -> {
                 String actionCommand = e1.getActionCommand();
                 showImportDialog(actionCommand);
@@ -79,6 +81,7 @@ public class PeopleEditListener {
 
             JMenuItem menuItem2 = new JMenuItem();
             menuItem2.setText(PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_SQL));
+            menuItem2.setIcon(new FlatSVGIcon("icon/data_base.svg"));
             menuItem2.addActionListener(e1 -> {
                 String actionCommand = e1.getActionCommand();
                 showImportDialog(actionCommand);
@@ -88,6 +91,7 @@ public class PeopleEditListener {
             if (MessageTypeEnum.isWxMaOrMpType(msgType)) {
                 JMenuItem menuItem3 = new JMenuItem();
                 menuItem3.setText(PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_WX_MP));
+                menuItem3.setIcon(new FlatSVGIcon("icon/wechat.svg"));
                 menuItem3.addActionListener(e1 -> {
                     String actionCommand = e1.getActionCommand();
                     showImportDialog(actionCommand);
@@ -98,6 +102,7 @@ public class PeopleEditListener {
             if (MessageTypeEnum.WX_CP_CODE == msgType) {
                 JMenuItem menuItem4 = new JMenuItem();
                 menuItem4.setText(PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_WX_CP));
+                menuItem4.setIcon(new FlatSVGIcon("icon/qiwei.svg"));
                 menuItem4.addActionListener(e1 -> {
                     String actionCommand = e1.getActionCommand();
                     showImportDialog(actionCommand);
@@ -108,6 +113,7 @@ public class PeopleEditListener {
             if (MessageTypeEnum.DING_CODE == msgType) {
                 JMenuItem menuItem5 = new JMenuItem();
                 menuItem5.setText(PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_DING));
+                menuItem5.setIcon(new FlatSVGIcon("icon/dingding.svg"));
                 menuItem5.addActionListener(e1 -> {
                     String actionCommand = e1.getActionCommand();
                     showImportDialog(actionCommand);
@@ -118,6 +124,7 @@ public class PeopleEditListener {
             if (MessageTypeEnum.HTTP_CODE == msgType) {
                 JMenuItem menuItem6 = new JMenuItem();
                 menuItem6.setText(PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_NUM));
+                menuItem6.setIcon(new FlatSVGIcon("icon/number.svg"));
                 menuItem6.addActionListener(e1 -> {
                     String actionCommand = e1.getActionCommand();
                     showImportDialog(actionCommand);

@@ -5,6 +5,7 @@ import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -50,6 +51,9 @@ public class AccountManageForm {
      */
     public static void init() {
         accountManageForm = getInstance();
+
+        accountManageForm.getCreateAccountButton().setIcon(new FlatSVGIcon("icon/add.svg"));
+        accountManageForm.getAccountListTableDeleteButton().setIcon(new FlatSVGIcon("icon/remove.svg"));
 
         initMessageList();
     }

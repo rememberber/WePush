@@ -8,6 +8,7 @@ import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.ui.form.msg.MsgFormFactory;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.google.common.collect.Maps;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -63,6 +64,9 @@ public class MessageManageForm {
      */
     public static void init() {
         messageManageForm = getInstance();
+
+        messageManageForm.getCreateMsgButton().setIcon(new FlatSVGIcon("icon/add.svg"));
+        messageManageForm.getMsgHisTableDeleteButton().setIcon(new FlatSVGIcon("icon/remove.svg"));
 
         initAccountComboBox();
 

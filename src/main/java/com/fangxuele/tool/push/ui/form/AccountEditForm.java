@@ -3,6 +3,7 @@ package com.fangxuele.tool.push.ui.form;
 import com.fangxuele.tool.push.ui.form.account.AccountFormFactory;
 import com.fangxuele.tool.push.ui.form.account.IAccountForm;
 import com.fangxuele.tool.push.util.UndoUtil;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -57,6 +58,8 @@ public class AccountEditForm {
         IAccountForm accountForm = AccountFormFactory.getAccountForm();
         accountForm.clear();
         accountForm.init(selectedAccountName);
+
+        accountEditForm.getAccountSaveButton().setIcon(new FlatSVGIcon("icon/save.svg"));
     }
 
     /**
