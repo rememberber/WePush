@@ -1,5 +1,8 @@
 package com.fangxuele.tool.push.ui;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+
+import javax.swing.*;
 import java.awt.*;
 
 /**
@@ -77,14 +80,12 @@ public class UiConsts {
     /**
      * 帮助图标
      */
-    public final static Image HELP_ICON = Toolkit.getDefaultToolkit()
-            .getImage(UiConsts.class.getResource("/icon/helpButton.png"));
+    public final static Icon HELP_ICON = new FlatSVGIcon("icon/help.svg");
 
     /**
      * 帮助图标-focused
      */
-    public final static Image HELP_FOCUSED_ICON = Toolkit.getDefaultToolkit()
-            .getImage(UiConsts.class.getResource("/icon/helpButtonFocused.png"));
+    public final static Icon HELP_FOCUSED_ICON = new FlatSVGIcon("icon/help-filling.svg");
 
     /**
      * 软件版本检查url

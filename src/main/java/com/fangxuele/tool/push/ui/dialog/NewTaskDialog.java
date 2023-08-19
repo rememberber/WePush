@@ -192,14 +192,14 @@ public class NewTaskDialog extends JDialog {
             public void mouseEntered(MouseEvent e) {
                 JLabel label = (JLabel) e.getComponent();
                 label.setCursor(new Cursor(Cursor.HAND_CURSOR));
-                label.setIcon(new ImageIcon(UiConsts.HELP_FOCUSED_ICON));
+                label.setIcon(UiConsts.HELP_FOCUSED_ICON);
                 super.mouseEntered(e);
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 JLabel label = (JLabel) e.getComponent();
-                label.setIcon(new ImageIcon(UiConsts.HELP_ICON));
+                label.setIcon(UiConsts.HELP_ICON);
                 super.mouseExited(e);
             }
         });
