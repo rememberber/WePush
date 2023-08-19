@@ -238,7 +238,11 @@ public class Init {
                 popupMenu.add(openItem);
                 popupMenu.add(exitItem);
 
-                App.trayIcon = new TrayIcon(UiConsts.IMAGE_LOGO_64, "WePush", popupMenu);
+                if (SystemUtil.isWindowsOs()) {
+                    App.trayIcon = new TrayIcon(UiConsts.IMAGE_LOGO_64, "WePush", popupMenu);
+                } else {
+                    App.trayIcon = new TrayIcon(new FlatSVGIcon("icon/icon_push.svg").getImage(), "WePush", popupMenu);
+                }
                 App.trayIcon.setImageAutoSize(true);
 
                 App.trayIcon.addActionListener(e -> {
