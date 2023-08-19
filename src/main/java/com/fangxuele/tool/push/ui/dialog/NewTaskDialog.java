@@ -18,6 +18,7 @@ import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.util.SystemInfo;
 import com.google.common.collect.Maps;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -121,6 +122,8 @@ public class NewTaskDialog extends JDialog {
         getRootPane().setDefaultButton(buttonOK);
 
         init();
+
+        cronHelpLabel.setIcon(new FlatSVGIcon("icon/help-filling.svg"));
 
         buttonOK.addActionListener(e -> onOK());
 

@@ -25,6 +25,7 @@ import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.google.common.collect.Maps;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -71,6 +72,10 @@ public class ImportByDing extends JDialog {
         getRootPane().setDefaultButton(dingImportAllButton);
 
         this.selectedAccountName = selectedAccountName;
+
+        dingDeptsImportButton.setIcon(new FlatSVGIcon("icon/import.svg"));
+        dingImportAllButton.setIcon(new FlatSVGIcon("icon/import.svg"));
+        dingDeptsRefreshButton.setIcon(new FlatSVGIcon("icon/refresh.svg"));
 
         // 钉钉-按部门导入-刷新
         dingDeptsRefreshButton.addActionListener(e -> {

@@ -9,6 +9,7 @@ import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.HikariUtil;
 import com.fangxuele.tool.push.util.ScrollUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.util.SystemInfo;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -101,6 +102,12 @@ public class SettingDialog extends JDialog {
         mysqlUrlTextField.setText(App.config.getMysqlUrl());
         mysqlUserTextField.setText(App.config.getMysqlUser());
         mysqlPasswordField.setText(App.config.getMysqlPassword());
+
+        saveMailButton.setIcon(new FlatSVGIcon("icon/save.svg"));
+        settingDbInfoSaveButton.setIcon(new FlatSVGIcon("icon/save.svg"));
+        maxThreadsSaveButton.setIcon(new FlatSVGIcon("icon/save.svg"));
+        testMailButton.setIcon(new FlatSVGIcon("icon/test.svg"));
+        settingTestDbLinkButton.setIcon(new FlatSVGIcon("icon/test.svg"));
 
         // 监听事件
         // 设置-常规-启动时自动检查更新

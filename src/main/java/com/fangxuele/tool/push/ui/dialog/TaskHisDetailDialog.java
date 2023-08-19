@@ -90,6 +90,10 @@ public class TaskHisDetailDialog extends JDialog {
         successToPeopleButton.setIcon(new FlatSVGIcon("icon/people.svg"));
         failToPeopleButton.setIcon(new FlatSVGIcon("icon/people.svg"));
         noSendToPeopleButton.setIcon(new FlatSVGIcon("icon/people.svg"));
+        openSuccessButton.setIcon(new FlatSVGIcon("icon/file-open.svg"));
+        openFailButton.setIcon(new FlatSVGIcon("icon/file-open.svg"));
+        openNoSendButton.setIcon(new FlatSVGIcon("icon/file-open.svg"));
+        pushStopButton.setIcon(new FlatSVGIcon("icon/stop.svg"));
 
         // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);

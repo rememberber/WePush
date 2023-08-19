@@ -19,6 +19,7 @@ import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.google.common.collect.Maps;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -86,6 +87,12 @@ public class ImportByWxCp extends JDialog {
         getRootPane().setDefaultButton(wxCpImportAllButton);
 
         this.selectedAccountName = selectedAccountName;
+
+        wxCpDeptsImportButton.setIcon(new FlatSVGIcon("icon/import.svg"));
+        wxCpImportAllButton.setIcon(new FlatSVGIcon("icon/import.svg"));
+        wxCpTagsImportButton.setIcon(new FlatSVGIcon("icon/import.svg"));
+        wxCpDeptsRefreshButton.setIcon(new FlatSVGIcon("icon/refresh.svg"));
+        wxCpTagsRefreshButton.setIcon(new FlatSVGIcon("icon/refresh.svg"));
 
         // 企业号-按标签导入-刷新
         wxCpTagsRefreshButton.addActionListener(e -> {

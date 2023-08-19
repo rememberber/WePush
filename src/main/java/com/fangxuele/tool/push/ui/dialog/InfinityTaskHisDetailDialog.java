@@ -19,6 +19,7 @@ import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.util.SystemInfo;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -95,6 +96,16 @@ public class InfinityTaskHisDetailDialog extends JDialog {
         }
         // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+
+        successToPeopleButton.setIcon(new FlatSVGIcon("icon/people.svg"));
+        failToPeopleButton.setIcon(new FlatSVGIcon("icon/people.svg"));
+        noSendToPeopleButton.setIcon(new FlatSVGIcon("icon/people.svg"));
+        openSuccessButton.setIcon(new FlatSVGIcon("icon/file-open.svg"));
+        openFailButton.setIcon(new FlatSVGIcon("icon/file-open.svg"));
+        openNoSendButton.setIcon(new FlatSVGIcon("icon/file-open.svg"));
+        pushStopButton.setIcon(new FlatSVGIcon("icon/stop.svg"));
+
+        threadTipsLabel.setIcon(new FlatSVGIcon("icon/help-filling.svg"));
 
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {

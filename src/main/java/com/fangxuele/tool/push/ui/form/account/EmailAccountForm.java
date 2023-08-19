@@ -10,6 +10,7 @@ import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.UIUtil;
 import com.fangxuele.tool.push.util.UndoUtil;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -49,6 +50,7 @@ public class EmailAccountForm implements IAccountForm {
             instance.getMailUserTextField().setText(emailAccountConfig.getMailUser());
             instance.getMailPasswordField().setText(emailAccountConfig.getMailPassword());
         }
+        testMailButton.setIcon(new FlatSVGIcon("icon/test.svg"));
     }
 
     @Override

@@ -16,6 +16,7 @@ import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -44,6 +45,8 @@ public class ImportByNum extends JDialog {
         getRootPane().setDefaultButton(importFromNumButton);
 
         importFromNumButton.addActionListener(e -> onOK());
+
+        importFromNumButton.setIcon(new FlatSVGIcon("icon/import.svg"));
 
         // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);

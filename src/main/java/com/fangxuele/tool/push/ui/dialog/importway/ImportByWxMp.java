@@ -22,6 +22,7 @@ import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -83,6 +84,11 @@ public class ImportByWxMp extends JDialog {
         getRootPane().setDefaultButton(memberImportAllButton);
 
         this.selectedAccountName = selectedAccountName;
+
+        memberImportAllButton.setIcon(new FlatSVGIcon("icon/import.svg"));
+        memberImportTagButton.setIcon(new FlatSVGIcon("icon/import.svg"));
+        memberImportTagRetainButton.setIcon(new FlatSVGIcon("icon/import.svg"));
+        memberImportTagFreshButton.setIcon(new FlatSVGIcon("icon/refresh.svg"));
 
         // 公众号-导入全员按钮事件
         memberImportAllButton.addActionListener(e -> {

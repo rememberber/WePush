@@ -11,6 +11,7 @@ import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.UIUtil;
 import com.fangxuele.tool.push.util.UndoUtil;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -86,6 +87,9 @@ public class WxMpAccountForm implements IAccountForm {
             toggleMpOutSideAccessTokenPanel();
         }
 
+        apiAtTipsLabel.setIcon(new FlatSVGIcon("icon/help-filling.svg"));
+        manualAtTipsLabel.setIcon(new FlatSVGIcon("icon/help-filling.svg"));
+        outSideAtTipsLabel.setIcon(new FlatSVGIcon("icon/help-filling.svg"));
 
     }
 
