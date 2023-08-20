@@ -53,12 +53,6 @@ public class MainWindow {
 
     public void init() {
         mainWindow = getInstance();
-
-        if (SystemUtil.isMacOs() && SystemInfo.isMacFullWindowContentSupported) {
-            GridLayoutManager gridLayoutManager = (GridLayoutManager) mainPanel.getLayout();
-            gridLayoutManager.setMargin(new Insets(25, 0, 0, 0));
-        }
-
         mainWindow.getMainPanel().updateUI();
 
         if (SystemUtil.isMacOs() && SystemInfo.isMacFullWindowContentSupported) {
