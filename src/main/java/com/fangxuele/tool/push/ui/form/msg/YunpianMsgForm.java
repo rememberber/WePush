@@ -1,6 +1,8 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
-import com.fangxuele.tool.push.dao.TMsgSmsMapper;
+import cn.hutool.json.JSONUtil;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgSms;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.form.MainWindow;
@@ -16,7 +18,6 @@ import javax.swing.border.TitledBorder;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.text.StyleContext;
 import java.awt.*;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -34,29 +35,30 @@ public class YunpianMsgForm implements IMsgForm {
 
     private static YunpianMsgForm yunpianMsgForm;
 
-    private static TMsgSmsMapper msgSmsMapper = MybatisUtil.getSqlSession().getMapper(TMsgSmsMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
 
     @Override
-    public void init(String msgName) {
+    public void init(Integer msgId) {
         clearAllField();
-        List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.YUN_PIAN_CODE, msgName);
-        if (tMsgSmsList.size() > 0) {
-            TMsgSms tMsgSms = tMsgSmsList.get(0);
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        if (tMsg != null) {
+            TMsgSms tMsgSms = JSONUtil.toBean(tMsg.getContent(), TMsgSms.class);
             getInstance().getMsgYunpianMsgContentTextField().setText(tMsgSms.getContent());
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
-            messageEditForm.getMsgNameField().setText(tMsgSms.getMsgName());
-            messageEditForm.getPreviewUserField().setText(tMsgSms.getPreviewUser());
+            messageEditForm.getMsgNameField().setText(tMsg.getMsgName());
+            messageEditForm.getPreviewUserField().setText(tMsg.getPreviewUser());
         }
     }
 
     @Override
-    public void save(String msgName) {
+    public void save(Integer accountId, String msgName) {
         boolean existSameMsg = false;
-
-        List<TMsgSms> tMsgSmsList = msgSmsMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.YUN_PIAN_CODE, msgName);
-        if (tMsgSmsList.size() > 0) {
+        Integer msgId = null;
+        TMsg tMsg = msgMapper.selectByUnique(MessageTypeEnum.YUN_PIAN_CODE, accountId, msgName);
+        if (tMsg != null) {
             existSameMsg = true;
+            msgId = tMsg.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -70,20 +72,24 @@ public class YunpianMsgForm implements IMsgForm {
 
             String now = SqliteUtil.nowDateForSqlite();
 
+            TMsg msg = new TMsg();
             TMsgSms tMsgSms = new TMsgSms();
-            tMsgSms.setMsgType(MessageTypeEnum.YUN_PIAN_CODE);
-            tMsgSms.setMsgName(msgName);
+            msg.setMsgType(MessageTypeEnum.YUN_PIAN_CODE);
+            msg.setAccountId(accountId);
+            msg.setMsgName(msgName);
             tMsgSms.setContent(yunpianMsgContent);
-            tMsgSms.setCreateTime(now);
-            tMsgSms.setModifiedTime(now);
+            msg.setCreateTime(now);
+            msg.setModifiedTime(now);
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
-            tMsgSms.setPreviewUser(messageEditForm.getPreviewUserField().getText());
+            msg.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
+            msg.setContent(JSONUtil.toJsonStr(tMsgSms));
             if (existSameMsg) {
-                msgSmsMapper.updateByMsgTypeAndMsgName(tMsgSms);
+                msg.setId(msgId);
+                msgMapper.updateByPrimaryKeySelective(msg);
             } else {
-                msgSmsMapper.insertSelective(tMsgSms);
+                msgMapper.insertSelective(msg);
             }
 
             JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "保存成功！", "成功",
@@ -101,7 +107,8 @@ public class YunpianMsgForm implements IMsgForm {
     /**
      * 清空所有界面字段
      */
-    public static void clearAllField() {
+    @Override
+    public void clearAllField() {
         getInstance().getMsgYunpianMsgContentTextField().setText("");
     }
 

@@ -1,18 +1,20 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
-import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.dao.TMsgMpTemplateMapper;
-import com.fangxuele.tool.push.dao.TTemplateDataMapper;
+import cn.hutool.json.JSONUtil;
+import com.fangxuele.tool.push.bean.TemplateData;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgMpTemplate;
-import com.fangxuele.tool.push.domain.TTemplateData;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
 import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
 import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
+import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.UIUtil;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.google.common.collect.Maps;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -31,11 +33,8 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.awt.event.ItemEvent;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -75,9 +74,7 @@ public class MpTemplateMsgForm implements IMsgForm {
 
     private static MpTemplateMsgForm mpTemplateMsgForm;
 
-    private static TMsgMpTemplateMapper msgMpTemplateMapper = MybatisUtil.getSqlSession().getMapper(TMsgMpTemplateMapper.class);
-
-    private static TTemplateDataMapper templateDataMapper = MybatisUtil.getSqlSession().getMapper(TTemplateDataMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
 
     /**
      * 账号模板列表
@@ -102,6 +99,9 @@ public class MpTemplateMsgForm implements IMsgForm {
     private static final Pattern BRACE_PATTERN = Pattern.compile("\\{([^{}]+)\\}");
 
     public MpTemplateMsgForm() {
+        templateMsgDataAddButton.setIcon(new FlatSVGIcon("icon/add.svg"));
+        refreshTemplateListButton.setIcon(new FlatSVGIcon("icon/refresh.svg"));
+
         // 模板数据-添加 按钮事件
         templateMsgDataAddButton.addActionListener(e -> {
             String[] data = new String[3];
@@ -153,7 +153,7 @@ public class MpTemplateMsgForm implements IMsgForm {
     }
 
     @Override
-    public void init(String msgName) {
+    public void init(Integer msgId) {
         MpTemplateMsgForm mpTemplateMsgForm = getInstance();
         if (UIUtil.isDarkLaf()) {
             Color bgColor = new Color(43, 43, 43);
@@ -164,11 +164,9 @@ public class MpTemplateMsgForm implements IMsgForm {
 
         clearAllField();
 
-        Integer msgId = 0;
-        List<TMsgMpTemplate> tMsgMpTemplateList = msgMpTemplateMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.MP_TEMPLATE_CODE, msgName);
-        if (tMsgMpTemplateList.size() > 0) {
-            TMsgMpTemplate tMsgMpTemplate = tMsgMpTemplateList.get(0);
-            msgId = tMsgMpTemplate.getId();
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        if (tMsg != null) {
+            TMsgMpTemplate tMsgMpTemplate = JSONUtil.toBean(tMsg.getContent(), TMsgMpTemplate.class);
             selectedMsgTemplateId = tMsgMpTemplate.getTemplateId();
             initTemplateList();
 
@@ -178,25 +176,35 @@ public class MpTemplateMsgForm implements IMsgForm {
             mpTemplateMsgForm.getMsgTemplateMiniPagePathTextField().setText(tMsgMpTemplate.getMaPagePath());
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
-            messageEditForm.getMsgNameField().setText(tMsgMpTemplate.getMsgName());
-            messageEditForm.getPreviewUserField().setText(tMsgMpTemplate.getPreviewUser());
+            messageEditForm.getMsgNameField().setText(tMsg.getMsgName());
+            messageEditForm.getPreviewUserField().setText(tMsg.getPreviewUser());
         } else {
             initTemplateList();
         }
 
         initTemplateDataTable();
-        fillTemplateDataTable(msgId);
+        List<TemplateData> templateDataList;
+        if (tMsg == null) {
+            templateDataList = new ArrayList<>();
+        } else {
+            TMsgMpTemplate tMsgMpTemplate = JSONUtil.toBean(tMsg.getContent(), TMsgMpTemplate.class);
+            templateDataList = tMsgMpTemplate.getTemplateDataList();
+        }
+        if (templateDataList == null) {
+            templateDataList = new ArrayList<>();
+        }
+        fillTemplateDataTable(templateDataList);
     }
 
     @Override
-    public void save(String msgName) {
+    public void save(Integer accountId, String msgName) {
         int msgId = 0;
         boolean existSameMsg = false;
 
-        List<TMsgMpTemplate> tMsgMpTemplateList = msgMpTemplateMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.MP_TEMPLATE_CODE, msgName);
-        if (tMsgMpTemplateList.size() > 0) {
+        TMsg tMsg = msgMapper.selectByUnique(accountId, MessageTypeEnum.MP_TEMPLATE_CODE, msgName);
+        if (tMsg != null) {
             existSameMsg = true;
-            msgId = tMsgMpTemplateList.get(0).getId();
+            msgId = tMsg.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -214,33 +222,20 @@ public class MpTemplateMsgForm implements IMsgForm {
 
             String now = SqliteUtil.nowDateForSqlite();
 
+            TMsg msg = new TMsg();
             TMsgMpTemplate tMsgMpTemplate = new TMsgMpTemplate();
-            tMsgMpTemplate.setMsgType(MessageTypeEnum.MP_TEMPLATE_CODE);
-            tMsgMpTemplate.setMsgName(msgName);
+            msg.setMsgType(MessageTypeEnum.MP_TEMPLATE_CODE);
+            msg.setAccountId(accountId);
+            msg.setMsgName(msgName);
             tMsgMpTemplate.setTemplateId(templateId);
             tMsgMpTemplate.setUrl(templateUrl);
             tMsgMpTemplate.setMaAppid(templateMiniAppid);
             tMsgMpTemplate.setMaPagePath(templateMiniPagePath);
-            tMsgMpTemplate.setCreateTime(now);
-            tMsgMpTemplate.setModifiedTime(now);
+            msg.setCreateTime(now);
+            msg.setModifiedTime(now);
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
-            tMsgMpTemplate.setPreviewUser(messageEditForm.getPreviewUserField().getText());
-            tMsgMpTemplate.setWxAccountId(App.config.getWxAccountId());
-
-            if (existSameMsg) {
-                msgMpTemplateMapper.updateByMsgTypeAndMsgName(tMsgMpTemplate);
-            } else {
-                msgMpTemplateMapper.insertSelective(tMsgMpTemplate);
-                msgId = tMsgMpTemplate.getId();
-            }
-
-            // 保存模板数据
-
-            // 如果是覆盖保存，则先清空之前的模板数据
-            if (existSameMsg) {
-                templateDataMapper.deleteByMsgTypeAndMsgId(MessageTypeEnum.MP_TEMPLATE_CODE, msgId);
-            }
+            msg.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             // 如果table为空，则初始化
             if (getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
@@ -251,21 +246,28 @@ public class MpTemplateMsgForm implements IMsgForm {
             DefaultTableModel tableModel = (DefaultTableModel) getInstance().getTemplateMsgDataTable()
                     .getModel();
             int rowCount = tableModel.getRowCount();
+            List<TemplateData> templateDataList = new ArrayList<>();
             for (int i = 0; i < rowCount; i++) {
                 String name = (String) tableModel.getValueAt(i, 0);
                 String value = (String) tableModel.getValueAt(i, 1);
                 String color = ((String) tableModel.getValueAt(i, 2)).trim();
 
-                TTemplateData tTemplateData = new TTemplateData();
-                tTemplateData.setMsgType(MessageTypeEnum.MP_TEMPLATE_CODE);
-                tTemplateData.setMsgId(msgId);
+                TemplateData tTemplateData = new TemplateData();
                 tTemplateData.setName(name);
                 tTemplateData.setValue(value);
                 tTemplateData.setColor(color);
-                tTemplateData.setCreateTime(now);
-                tTemplateData.setModifiedTime(now);
 
-                templateDataMapper.insert(tTemplateData);
+                templateDataList.add(tTemplateData);
+            }
+
+            tMsgMpTemplate.setTemplateDataList(templateDataList);
+
+            msg.setContent(JSONUtil.toJsonStr(tMsgMpTemplate));
+            if (existSameMsg) {
+                msg.setId(msgId);
+                msgMapper.updateByPrimaryKeySelective(msg);
+            } else {
+                msgMapper.insertSelective(msg);
             }
 
             JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "保存成功！", "成功",
@@ -283,15 +285,14 @@ public class MpTemplateMsgForm implements IMsgForm {
     /**
      * 填充模板参数表Table(从数据库读取)
      *
-     * @param msgId
+     * @param templateDataList
      */
-    public static void fillTemplateDataTable(Integer msgId) {
+    public static void fillTemplateDataTable(List<TemplateData> templateDataList) {
         // 模板消息Data表
-        List<TTemplateData> templateDataList = templateDataMapper.selectByMsgTypeAndMsgId(MessageTypeEnum.MP_TEMPLATE_CODE, msgId);
         String[] headerNames = {"Name", "Value", "Color", "操作"};
         Object[][] cellData = new String[templateDataList.size()][headerNames.length];
         for (int i = 0; i < templateDataList.size(); i++) {
-            TTemplateData tTemplateData = templateDataList.get(i);
+            TemplateData tTemplateData = templateDataList.get(i);
             cellData[i][0] = tTemplateData.getName();
             cellData[i][1] = tTemplateData.getValue();
             cellData[i][2] = tTemplateData.getColor();
@@ -316,7 +317,18 @@ public class MpTemplateMsgForm implements IMsgForm {
         needListenTemplateListComboBox = false;
         try {
             templateMap = Maps.newHashMap();
-            templateList = WxMpTemplateMsgSender.getWxMpService().getTemplateMsgService().getAllPrivateTemplate();
+
+            MessageManageForm messageManageForm = MessageManageForm.getInstance();
+            String selectedAccountName = (String) messageManageForm.getAccountComboBox().getSelectedItem();
+            if (StringUtils.isEmpty(selectedAccountName)) {
+                return;
+            }
+            Integer selectedAccountId = MessageManageForm.accountMap.get(selectedAccountName);
+            if (selectedAccountId == null) {
+                return;
+            }
+
+            templateList = WxMpTemplateMsgSender.getWxMpService(selectedAccountId).getTemplateMsgService().getAllPrivateTemplate();
             getInstance().getTemplateListComboBox().removeAllItems();
             int selectedIndex = 0;
             for (int i = 0; i < templateList.size(); i++) {
@@ -420,7 +432,8 @@ public class MpTemplateMsgForm implements IMsgForm {
     /**
      * 清空所有界面字段
      */
-    public static void clearAllField() {
+    @Override
+    public void clearAllField() {
         clearAllFieldExceptTemplateListAndContent();
         getInstance().getTemplateListComboBox().removeAllItems();
         getInstance().getTemplateContentTextArea().setText("");
@@ -475,7 +488,6 @@ public class MpTemplateMsgForm implements IMsgForm {
         templateDataColorTextField.setToolTipText("示例值：FF0000");
         templateMsgDataPanel.add(templateDataColorTextField, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         templateMsgDataAddButton = new JButton();
-        templateMsgDataAddButton.setIcon(new ImageIcon(getClass().getResource("/icon/add.png")));
         templateMsgDataAddButton.setText("");
         templateMsgDataPanel.add(templateMsgDataAddButton, new GridConstraints(1, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         templateMsgDataTable = new JTable();
@@ -533,7 +545,6 @@ public class MpTemplateMsgForm implements IMsgForm {
         templateListComboBox = new JComboBox();
         panel2.add(templateListComboBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         refreshTemplateListButton = new JButton();
-        refreshTemplateListButton.setIcon(new ImageIcon(getClass().getResource("/icon/refresh.png")));
         refreshTemplateListButton.setText("刷新");
         panel2.add(refreshTemplateListButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, 1, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         templateContentTextArea = new JTextArea();

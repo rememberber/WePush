@@ -1,13 +1,11 @@
 package com.fangxuele.tool.push.domain;
 
+import com.fangxuele.tool.push.bean.TemplateData;
+
 import java.io.Serializable;
+import java.util.List;
 
 public class TMsgWxUniform implements Serializable {
-    private Integer id;
-
-    private Integer msgType;
-
-    private String msgName;
 
     private String mpTemplateId;
 
@@ -23,39 +21,12 @@ public class TMsgWxUniform implements Serializable {
 
     private String emphasisKeyword;
 
-    private String createTime;
+    List<TemplateData> templateDataListMp;
 
-    private String modifiedTime;
-
-    private String previewUser;
-
-    private Integer wxAccountId;
+    List<TemplateData> templateDataListMa;
 
     private static final long serialVersionUID = 1L;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getMsgType() {
-        return msgType;
-    }
-
-    public void setMsgType(Integer msgType) {
-        this.msgType = msgType;
-    }
-
-    public String getMsgName() {
-        return msgName;
-    }
-
-    public void setMsgName(String msgName) {
-        this.msgName = msgName == null ? null : msgName.trim();
-    }
 
     public String getMpTemplateId() {
         return mpTemplateId;
@@ -113,35 +84,19 @@ public class TMsgWxUniform implements Serializable {
         this.emphasisKeyword = emphasisKeyword == null ? null : emphasisKeyword.trim();
     }
 
-    public String getCreateTime() {
-        return createTime;
+    public List<TemplateData> getTemplateDataListMp() {
+        return templateDataListMp;
     }
 
-    public void setCreateTime(String createTime) {
-        this.createTime = createTime == null ? null : createTime.trim();
+    public void setTemplateDataListMp(List<TemplateData> templateDataListMp) {
+        this.templateDataListMp = templateDataListMp;
     }
 
-    public String getModifiedTime() {
-        return modifiedTime;
+    public List<TemplateData> getTemplateDataListMa() {
+        return templateDataListMa;
     }
 
-    public void setModifiedTime(String modifiedTime) {
-        this.modifiedTime = modifiedTime == null ? null : modifiedTime.trim();
-    }
-
-    public String getPreviewUser() {
-        return previewUser;
-    }
-
-    public void setPreviewUser(String previewUser) {
-        this.previewUser = previewUser == null ? null : previewUser.trim();
-    }
-
-    public Integer getWxAccountId() {
-        return wxAccountId;
-    }
-
-    public void setWxAccountId(Integer wxAccountId) {
-        this.wxAccountId = wxAccountId;
+    public void setTemplateDataListMa(List<TemplateData> templateDataListMa) {
+        this.templateDataListMa = templateDataListMa;
     }
 }

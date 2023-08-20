@@ -1,7 +1,9 @@
 package com.fangxuele.tool.push.logic.msgsender;
 
-import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.util.MybatisUtil;
 
 /**
  * <pre>
@@ -13,64 +15,62 @@ import com.fangxuele.tool.push.logic.MessageTypeEnum;
  */
 public class MsgSenderFactory {
 
-    /**
-     * 根据消息类型获取对应的消息发送器
-     *
-     * @return IMsgSender
-     */
-    public static IMsgSender getMsgSender() {
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
+
+    public static IMsgSender getMsgSender(Integer msgId, Integer dryRun) {
         IMsgSender iMsgSender = null;
-        switch (App.config.getMsgType()) {
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        switch (tMsg.getMsgType()) {
             case MessageTypeEnum.MP_TEMPLATE_CODE:
-                iMsgSender = new WxMpTemplateMsgSender();
+                iMsgSender = new WxMpTemplateMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.MA_SUBSCRIBE_CODE:
-                iMsgSender = new WxMaSubscribeMsgSender();
+                iMsgSender = new WxMaSubscribeMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.KEFU_CODE:
-                iMsgSender = new WxKefuMsgSender();
+                iMsgSender = new WxKefuMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.KEFU_PRIORITY_CODE:
-                iMsgSender = new WxKefuPriorMsgSender();
+                iMsgSender = new WxKefuPriorMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE:
-                iMsgSender = new WxUniformMsgSender();
+                iMsgSender = new WxUniformMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.ALI_YUN_CODE:
-                iMsgSender = new AliYunMsgSender();
+                iMsgSender = new AliYunMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.TX_YUN_CODE:
-                iMsgSender = new TxYunMsgSender();
+                iMsgSender = new TxYunMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.HW_YUN_CODE:
-                iMsgSender = new HwYunMsgSender();
+                iMsgSender = new HwYunMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.YUN_PIAN_CODE:
-                iMsgSender = new YunPianMsgSender();
+                iMsgSender = new YunPianMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.EMAIL_CODE:
-                iMsgSender = new MailMsgSender();
+                iMsgSender = new MailMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.WX_CP_CODE:
-                iMsgSender = new WxCpMsgSender();
+                iMsgSender = new WxCpMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.HTTP_CODE:
-                iMsgSender = new HttpMsgSender();
+                iMsgSender = new HttpMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.DING_CODE:
-                iMsgSender = new DingMsgSender();
+                iMsgSender = new DingMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.BD_YUN_CODE:
-                iMsgSender = new BdYunMsgSender();
+                iMsgSender = new BdYunMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.UP_YUN_CODE:
-                iMsgSender = new UpYunMsgSender();
+                iMsgSender = new UpYunMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.QI_NIU_YUN_CODE:
-                iMsgSender = new QiNiuYunMsgSender();
+                iMsgSender = new QiNiuYunMsgSender(msgId, dryRun);
                 break;
             case MessageTypeEnum.MP_SUBSCRIBE_CODE:
-                iMsgSender = new WxMpSubscribeMsgSender();
+                iMsgSender = new WxMpSubscribeMsgSender(msgId, dryRun);
                 break;
             default:
                 break;

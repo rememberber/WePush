@@ -3,53 +3,26 @@ package com.fangxuele.tool.push.domain;
 import java.io.Serializable;
 
 public class TMsgDing implements Serializable {
-    private Integer id;
-
-    private Integer msgType;
-
-    private String msgName;
 
     private String radioType;
 
     private String dingMsgType;
 
-    private String agentId;
-
     private String webHook;
 
     private String content;
 
-    private String createTime;
+    private  String msgTitle;
 
-    private String modifiedTime;
+    private String picUrl;
 
-    private String previewUser;
+    private String url;
+
+    private String btnTxt;
+
+    private String btnUrl;
 
     private static final long serialVersionUID = 1L;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getMsgType() {
-        return msgType;
-    }
-
-    public void setMsgType(Integer msgType) {
-        this.msgType = msgType;
-    }
-
-    public String getMsgName() {
-        return msgName;
-    }
-
-    public void setMsgName(String msgName) {
-        this.msgName = msgName == null ? null : msgName.trim();
-    }
 
     public String getRadioType() {
         return radioType;
@@ -65,14 +38,6 @@ public class TMsgDing implements Serializable {
 
     public void setDingMsgType(String dingMsgType) {
         this.dingMsgType = dingMsgType == null ? null : dingMsgType.trim();
-    }
-
-    public String getAgentId() {
-        return agentId;
-    }
-
-    public void setAgentId(String agentId) {
-        this.agentId = agentId == null ? null : agentId.trim();
     }
 
     public String getWebHook() {
@@ -91,27 +56,43 @@ public class TMsgDing implements Serializable {
         this.content = content == null ? null : content.trim();
     }
 
-    public String getCreateTime() {
-        return createTime;
+    public String getMsgTitle() {
+        return msgTitle;
     }
 
-    public void setCreateTime(String createTime) {
-        this.createTime = createTime == null ? null : createTime.trim();
+    public void setMsgTitle(String msgTitle) {
+        this.msgTitle = msgTitle;
     }
 
-    public String getModifiedTime() {
-        return modifiedTime;
+    public String getPicUrl() {
+        return picUrl;
     }
 
-    public void setModifiedTime(String modifiedTime) {
-        this.modifiedTime = modifiedTime == null ? null : modifiedTime.trim();
+    public void setPicUrl(String picUrl) {
+        this.picUrl = picUrl;
     }
 
-    public String getPreviewUser() {
-        return previewUser;
+    public String getUrl() {
+        return url;
     }
 
-    public void setPreviewUser(String previewUser) {
-        this.previewUser = previewUser == null ? null : previewUser.trim();
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getBtnTxt() {
+        return btnTxt;
+    }
+
+    public void setBtnTxt(String btnTxt) {
+        this.btnTxt = btnTxt;
+    }
+
+    public String getBtnUrl() {
+        return btnUrl;
+    }
+
+    public void setBtnUrl(String btnUrl) {
+        this.btnUrl = btnUrl;
     }
 }

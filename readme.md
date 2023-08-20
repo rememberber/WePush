@@ -7,7 +7,6 @@
 
 [![码云Gitee](https://gitee.com/zhoubochina/WePush/badge/star.svg?theme=blue)](https://gitee.com/zhoubochina/WePush)
 [![GitHub stars](https://img.shields.io/github/stars/rememberber/WePush.svg)](https://github.com/rememberber/WePush)
-[![Build Status](https://travis-ci.org/rememberber/WePush.svg?branch=master)](https://travis-ci.org/rememberber/WePush)
 [![GitHub release](https://img.shields.io/github/release/rememberber/WePush.svg)](https://github.com/rememberber/WePush/releases)
 [![GitHub license](https://img.shields.io/github/license/rememberber/WePush.svg)](https://github.com/rememberber/WePush/blob/master/LICENSE.txt)
 
@@ -58,74 +57,12 @@ Windows • Linux • macOS
 ……
 
 ### 截图速览
-<p align="center">
-  <a href="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20198.png">
-   <img alt="WePush" src="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20198.png">
-  </a>
-</p>  
-<p align="center">
-  <a href="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/wepush-sshot-5.png">
-   <img alt="WePush" src="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/wepush-sshot-5.png">
-  </a>
-</p> 
-<p align="center">
-  <a href="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/wepush-sshot-6.png">
-   <img alt="WePush" src="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/wepush-sshot-6.png">
-  </a>
-</p> 
-<p align="center">
-  <a href="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20199.png">
-   <img alt="WePush" src="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20199.png">
-  </a>
-</p>
-<p align="center">
-  <a href="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20200.png">
-   <img alt="WePush" src="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20200.png">
-  </a>
-</p>
-<p align="center">
-  <a href="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20202.png">
-   <img alt="WePush" src="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20202.png">
-  </a>
-</p>
-<p align="center">
-  <a href="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20204.png">
-   <img alt="WePush" src="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20204.png">
-  </a>
-</p>
-<p align="center">
-  <a href="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20205.png">
-   <img alt="WePush" src="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20205.png">
-  </a>
-</p>
-<p align="center">
-  <a href="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/sshot-10.png">
-   <img alt="WePush" src="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/sshot-10.png">
-  </a>
-</p>
-<p align="center">
-  <a href="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20206.png">
-   <img alt="WePush" src="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20206.png">
-  </a>
-</p>
-<p align="center">
-  <a href="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20207.png">
-   <img alt="WePush" src="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/%E5%9B%BE%E5%83%8F%20207.png">
-  </a>
-</p>
-
-### 更多外观
-<p align="center">
-  <a href="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/Image003.png">
-   <img alt="WePush" src="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/Image003.png">
-  </a>
-</p> 
-<p align="center">
-  <a href="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/Image1.png">
-   <img alt="WePush" src="https://gitee.com/zhoubochina/WePush/raw/master/screen_shoot/Image1.png">
-  </a>
-</p> 
-
+![Overview](assets/screen_shoot/1.png)
+![Overview](assets/screen_shoot/2.png)
+![Overview](assets/screen_shoot/3.png)
+![Overview](assets/screen_shoot/4.png)
+![Overview](assets/screen_shoot/5.png)
+![Overview](assets/screen_shoot/6.png)
 ### 安装文件下载
 
 [WePush下载地址](https://gitee.com/zhoubochina/WePush/releases)  

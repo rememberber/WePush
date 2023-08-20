@@ -13,24 +13,14 @@
         </environment>
     </environments>
     <mappers>
-        <mapper resource="mapper/InitMapper.xml"/>
-        <mapper resource="mapper/TMsgKefuMapper.xml"/>
-        <mapper resource="mapper/TMsgKefuPriorityMapper.xml"/>
-        <mapper resource="mapper/TMsgMaTemplateMapper.xml"/>
-        <mapper resource="mapper/TMsgMpTemplateMapper.xml"/>
-        <mapper resource="mapper/TMsgSmsMapper.xml"/>
-        <mapper resource="mapper/TPushHistoryMapper.xml"/>
-        <mapper resource="mapper/TTemplateDataMapper.xml"/>
         <mapper resource="mapper/TWxMpUserMapper.xml"/>
-        <mapper resource="mapper/TWxAccountMapper.xml"/>
-        <mapper resource="mapper/TMsgMailMapper.xml"/>
-        <mapper resource="mapper/TWxCpAppMapper.xml"/>
-        <mapper resource="mapper/TMsgWxCpMapper.xml"/>
-        <mapper resource="mapper/TMsgHttpMapper.xml"/>
-        <mapper resource="mapper/TMsgDingMapper.xml"/>
-        <mapper resource="mapper/TDingAppMapper.xml"/>
-        <mapper resource="mapper/TMsgWxUniformMapper.xml"/>
-        <mapper resource="mapper/TMsgMaSubscribeMapper.xml"/>
-        <mapper resource="mapper/TMsgMpSubscribeMapper.xml"/>
+        <mapper resource="mapper/TAccountMapper.xml"/>
+        <mapper resource="mapper/TPeopleMapper.xml"/>
+        <mapper resource="mapper/TPeopleDataMapper.xml"/>
+        <mapper resource="mapper/TPeopleImportConfigMapper.xml"/>
+        <mapper resource="mapper/TTaskMapper.xml"/>
+        <mapper resource="mapper/TTaskExtMapper.xml"/>
+        <mapper resource="mapper/TTaskHisMapper.xml"/>
+        <mapper resource="mapper/TMsgMapper.xml"/>
     </mappers>
 </configuration>

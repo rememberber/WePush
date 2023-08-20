@@ -1,10 +1,11 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
 import cn.binarywang.wx.miniapp.constant.WxMaConstants;
+import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
-import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.dao.TMsgKefuMapper;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgKefu;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
@@ -27,7 +28,6 @@ import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.io.File;
-import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -66,7 +66,7 @@ public class KefuMsgForm implements IMsgForm {
     private static final Log logger = LogFactory.get();
     private static KefuMsgForm kefuMsgForm;
 
-    private static TMsgKefuMapper msgKefuMapper = MybatisUtil.getSqlSession().getMapper(TMsgKefuMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
 
     public KefuMsgForm() {
         // 客服消息类型切换事件
@@ -96,11 +96,11 @@ public class KefuMsgForm implements IMsgForm {
     }
 
     @Override
-    public void init(String msgName) {
+    public void init(Integer msgId) {
         clearAllField();
-        List<TMsgKefu> tMsgKefuList = msgKefuMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.KEFU_CODE, msgName);
-        if (tMsgKefuList.size() > 0) {
-            TMsgKefu tMsgKefu = tMsgKefuList.get(0);
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        if (tMsg != null) {
+            TMsgKefu tMsgKefu = JSONUtil.toBean(tMsg.getContent(), TMsgKefu.class);
             String kefuMsgType = tMsgKefu.getKefuMsgType();
             getInstance().getMsgKefuMsgTypeComboBox().setSelectedItem(kefuMsgType);
             if ("文本消息".equals(kefuMsgType)) {
@@ -120,20 +120,21 @@ public class KefuMsgForm implements IMsgForm {
             switchKefuMsgType(kefuMsgType);
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
-            messageEditForm.getMsgNameField().setText(tMsgKefu.getMsgName());
-            messageEditForm.getPreviewUserField().setText(tMsgKefu.getPreviewUser());
+            messageEditForm.getMsgNameField().setText(tMsg.getMsgName());
+            messageEditForm.getPreviewUserField().setText(tMsg.getPreviewUser());
         } else {
             switchKefuMsgType("图文消息");
         }
     }
 
     @Override
-    public void save(String msgName) {
+    public void save(Integer accountId, String msgName) {
         boolean existSameMsg = false;
-
-        List<TMsgKefu> tMsgKefuList = msgKefuMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.KEFU_CODE, msgName);
-        if (tMsgKefuList.size() > 0) {
+        Integer msgId = null;
+        TMsg tMsg = msgMapper.selectByUnique(MessageTypeEnum.KEFU_CODE, accountId, msgName);
+        if (tMsg != null) {
             existSameMsg = true;
+            msgId = tMsg.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -156,9 +157,11 @@ public class KefuMsgForm implements IMsgForm {
 
             String now = SqliteUtil.nowDateForSqlite();
 
+            TMsg msg = new TMsg();
             TMsgKefu tMsgKefu = new TMsgKefu();
-            tMsgKefu.setMsgType(MessageTypeEnum.KEFU_CODE);
-            tMsgKefu.setMsgName(msgName);
+            msg.setMsgType(MessageTypeEnum.KEFU_CODE);
+            msg.setAccountId(accountId);
+            msg.setMsgName(msgName);
             tMsgKefu.setKefuMsgType(kefuMsgType);
             tMsgKefu.setContent(kefuMsgContent);
             tMsgKefu.setTitle(kefuMsgTitle);
@@ -172,13 +175,14 @@ public class KefuMsgForm implements IMsgForm {
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
             tMsgKefu.setPreviewUser(messageEditForm.getPreviewUserField().getText());
-            tMsgKefu.setWxAccountId(App.config.getWxAccountId());
 
+            msg.setContent(JSONUtil.toJsonStr(tMsgKefu));
             if (existSameMsg) {
-                msgKefuMapper.updateByMsgTypeAndMsgName(tMsgKefu);
+                msg.setId(msgId);
+                msgMapper.updateByPrimaryKeySelective(msg);
             } else {
                 tMsgKefu.setCreateTime(now);
-                msgKefuMapper.insertSelective(tMsgKefu);
+                msgMapper.insertSelective(msg);
             }
 
             JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "保存成功！", "成功",
@@ -248,7 +252,8 @@ public class KefuMsgForm implements IMsgForm {
     /**
      * 清空所有界面字段
      */
-    public static void clearAllField() {
+    @Override
+    public void clearAllField() {
         getInstance().getContentTextArea().setText("");
         getInstance().getMsgKefuMsgTitleTextField().setText("");
         getInstance().getMsgKefuPicUrlTextField().setText("");

@@ -42,4 +42,15 @@ public class JTableUtil {
         renderer.setPreferredSize(new Dimension(0, 0));
         table.getTableHeader().setDefaultRenderer(renderer);
     }
+
+    /**
+     * 表头列名居左
+     */
+    public static void setTableHeaderLeftAlignment(JTable table) {
+        DefaultTableCellRenderer hr = (DefaultTableCellRenderer) table.getTableHeader()
+                .getDefaultRenderer();
+        // 表头列名居左
+        hr.setHorizontalAlignment(DefaultTableCellRenderer.LEFT);
+    }
+
 }

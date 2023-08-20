@@ -1,9 +1,9 @@
 package com.fangxuele.tool.push.ui.dialog;
 
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.bean.account.EmailAccountConfig;
 import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.SendResult;
-import com.fangxuele.tool.push.ui.form.SettingForm;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.formdev.flatlaf.util.SystemInfo;
@@ -33,7 +33,9 @@ public class MailTestDialog extends JDialog {
     private JButton buttonCancel;
     private JTextField mailToTextField;
 
-    public MailTestDialog() {
+    private EmailAccountConfig emailAccountConfig;
+
+    private MailTestDialog() {
         super(App.mainFrame, "测试E-Mail服务器设置");
         setContentPane(contentPane);
         setModal(true);
@@ -67,18 +69,23 @@ public class MailTestDialog extends JDialog {
         contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
+    public MailTestDialog(EmailAccountConfig emailAccountConfig) {
+        this();
+        this.emailAccountConfig = emailAccountConfig;
+    }
+
     private void onOK() {
         if (StringUtils.isBlank(mailToTextField.getText())) {
             mailToTextField.grabFocus();
         } else {
             MailMsgSender mailMsgSender = new MailMsgSender();
-            SendResult sendResult = mailMsgSender.sendTestMail(mailToTextField.getText());
+            SendResult sendResult = mailMsgSender.sendTestMail(emailAccountConfig, mailToTextField.getText());
             dispose();
             if (sendResult.isSuccess()) {
-                JOptionPane.showMessageDialog(SettingForm.getInstance().getSettingPanel(), "发送成功！", "成功",
+                JOptionPane.showMessageDialog(App.mainFrame, "发送成功！", "成功",
                         JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(SettingForm.getInstance().getSettingPanel(), "发送失败！\n\n" + sendResult.getInfo(), "失败",
+                JOptionPane.showMessageDialog(App.mainFrame, "发送失败！\n\n" + sendResult.getInfo(), "失败",
                         JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -112,7 +119,7 @@ public class MailTestDialog extends JDialog {
         final Spacer spacer1 = new Spacer();
         panel1.add(spacer1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1, true, false));
+        panel2.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 10, 10), -1, -1, true, false));
         panel1.add(panel2, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonOK = new JButton();
         buttonOK.setText("发送");
@@ -121,7 +128,7 @@ public class MailTestDialog extends JDialog {
         buttonCancel.setText("取消");
         panel2.add(buttonCancel, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(4, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel3.setLayout(new GridLayoutManager(4, 1, new Insets(0, 10, 0, 10), -1, -1));
         contentPane.add(panel3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
         label1.setText("请输入接收测试邮件的邮箱地址：");

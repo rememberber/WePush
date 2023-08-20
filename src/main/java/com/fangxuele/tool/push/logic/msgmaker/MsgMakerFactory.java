@@ -1,6 +1,7 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 
 /**
@@ -18,53 +19,53 @@ public class MsgMakerFactory {
      *
      * @return IMsgMaker
      */
-    public static IMsgMaker getMsgMaker() {
+    public static IMsgMaker getMsgMaker(TMsg tMsg) {
         IMsgMaker iMsgMaker = null;
         switch (App.config.getMsgType()) {
             case MessageTypeEnum.MP_TEMPLATE_CODE:
-                iMsgMaker = new WxMpTemplateMsgMaker();
+                iMsgMaker = new WxMpTemplateMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.MA_SUBSCRIBE_CODE:
-                iMsgMaker = new WxMaSubscribeMsgMaker();
+                iMsgMaker = new WxMaSubscribeMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.KEFU_CODE:
-                iMsgMaker = new WxKefuMsgMaker();
+                iMsgMaker = new WxKefuMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.ALI_YUN_CODE:
-                iMsgMaker = new AliyunMsgMaker();
+                iMsgMaker = new AliyunMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.TX_YUN_CODE:
-                iMsgMaker = new TxYunMsgMaker();
+                iMsgMaker = new TxYunMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.HW_YUN_CODE:
-                iMsgMaker = new HwYunMsgMaker();
+                iMsgMaker = new HwYunMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.YUN_PIAN_CODE:
-                iMsgMaker = new YunPianMsgMaker();
+                iMsgMaker = new YunPianMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.EMAIL_CODE:
-                iMsgMaker = new MailMsgMaker();
+                iMsgMaker = new MailMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.WX_CP_CODE:
-                iMsgMaker = new WxCpMsgMaker();
+                iMsgMaker = new WxCpMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.HTTP_CODE:
-                iMsgMaker = new HttpMsgMaker();
+                iMsgMaker = new HttpMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.DING_CODE:
-                iMsgMaker = new DingMsgMaker();
+                iMsgMaker = new DingMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.BD_YUN_CODE:
-                iMsgMaker = new BdYunMsgMaker();
+                iMsgMaker = new BdYunMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.UP_YUN_CODE:
-                iMsgMaker = new UpYunMsgMaker();
+                iMsgMaker = new UpYunMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.QI_NIU_YUN_CODE:
-                iMsgMaker = new QiNiuYunMsgMaker();
+                iMsgMaker = new QiNiuYunMsgMaker(tMsg);
                 break;
             case MessageTypeEnum.MP_SUBSCRIBE_CODE:
-                iMsgMaker = new WxMpSubscribeMsgMaker();
+                iMsgMaker = new WxMpSubscribeMsgMaker(tMsg);
                 break;
             default:
         }

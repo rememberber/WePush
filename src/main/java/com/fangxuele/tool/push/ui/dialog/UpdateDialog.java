@@ -5,12 +5,16 @@ import cn.hutool.core.io.StreamProgress;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.http.HttpUtil;
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.formdev.flatlaf.util.SystemInfo;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -88,7 +92,25 @@ public class UpdateDialog extends JDialog {
         buttonOK.setEnabled(false);
         ThreadUtil.execute(
                 () -> {
-                    String fileUrl = "http://download.zhoubochina.com/exe/WePush-" + newVersion.replace("v_", "v") + "-x64-Setup.exe";
+                    String fileUrl = "";
+                    // 从github获取最新版本相关信息
+                    String downloadLinkInfo = HttpUtil.get(UiConsts.DOWNLOAD_LINK_INFO_URL);
+                    if (StringUtils.isEmpty(downloadLinkInfo) || downloadLinkInfo.contains("404: Not Found")) {
+                        JOptionPane.showMessageDialog(App.mainFrame,
+                                "获取下载链接失败，请关注Gitee Release！", "网络错误",
+                                JOptionPane.INFORMATION_MESSAGE);
+                        return;
+                    } else {
+                        DocumentContext parse = JsonPath.parse(downloadLinkInfo);
+                        if (SystemUtil.isWindowsOs()) {
+                            fileUrl = parse.read("$.windows");
+                        } else if (SystemUtil.isMacOs()) {
+                            fileUrl = parse.read("$.mac");
+                        } else if (SystemUtil.isLinuxOs()) {
+                            fileUrl = parse.read("$.linux");
+                        }
+                    }
+
                     String fileName = FileUtil.getName(fileUrl);
                     URL url;
                     try {
@@ -163,7 +185,7 @@ public class UpdateDialog extends JDialog {
         contentPane = new JPanel();
         contentPane.setLayout(new GridLayoutManager(2, 1, new Insets(10, 10, 10, 10), -1, -1));
         final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel1.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 10, 10), -1, -1));
         contentPane.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
         panel1.add(spacer1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));

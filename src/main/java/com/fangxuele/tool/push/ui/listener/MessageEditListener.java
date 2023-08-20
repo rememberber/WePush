@@ -3,6 +3,8 @@ package com.fangxuele.tool.push.ui.listener;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.msgsender.HttpSendResult;
@@ -15,8 +17,8 @@ import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.ui.form.msg.DingMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.MsgFormFactory;
-import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
 import com.fangxuele.tool.push.ui.frame.HttpResultFrame;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
@@ -36,12 +38,23 @@ import java.util.List;
 public class MessageEditListener {
     private static final Log logger = LogFactory.get();
 
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
+
     public static void addListeners() {
         JSplitPane messagePanel = MainWindow.getInstance().getMessagePanel();
         MessageEditForm messageEditForm = MessageEditForm.getInstance();
+        MessageManageForm messageManageForm = MessageManageForm.getInstance();
 
         // 保存按钮事件
         messageEditForm.getMsgSaveButton().addActionListener(e -> {
+            String selectedAccountName = (String) messageManageForm.getAccountComboBox().getSelectedItem();
+            Integer selectedAccountId = MessageManageForm.accountMap.get(selectedAccountName);
+            if (StringUtils.isBlank(selectedAccountName)) {
+                JOptionPane.showMessageDialog(messagePanel, "请选择账号！\n\n", "失败",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             String msgName = messageEditForm.getMsgNameField().getText();
             if (StringUtils.isBlank(msgName)) {
                 JOptionPane.showMessageDialog(messagePanel, "请填写消息名称！\n\n", "失败",
@@ -50,7 +63,7 @@ public class MessageEditListener {
             }
 
             try {
-                MsgFormFactory.getMsgForm().save(msgName);
+                MsgFormFactory.getMsgForm().save(selectedAccountId, msgName);
                 MessageManageForm.init();
             } catch (Exception e1) {
                 JOptionPane.showMessageDialog(messagePanel, "保存失败！\n\n" + e1.getMessage(), "失败",
@@ -63,8 +76,19 @@ public class MessageEditListener {
         // 预览按钮事件
         messageEditForm.getPreviewMsgButton().addActionListener(e -> {
             try {
-                if (App.config.getMsgType() != MessageTypeEnum.HTTP_CODE && "".equals(messageEditForm.getPreviewUserField().getText().trim())) {
-                    if (App.config.getMsgType() == MessageTypeEnum.DING_CODE && DingMsgForm.getInstance().getRobotRadioButton().isSelected()) {
+                int selectedRow = messageManageForm.getMsgHistable().getSelectedRow();
+                if (selectedRow < 0) {
+                    JOptionPane.showMessageDialog(messagePanel, "请先保存并选择一条消息！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+
+                Integer selectedMsgId = (Integer) messageManageForm.getMsgHistable().getValueAt(selectedRow, 1);
+
+                TMsg tMsg = msgMapper.selectByPrimaryKey(selectedMsgId);
+
+                if (tMsg.getMsgType() != MessageTypeEnum.HTTP_CODE && "".equals(messageEditForm.getPreviewUserField().getText().trim())) {
+                    if (tMsg.getMsgType() == MessageTypeEnum.DING_CODE && DingMsgForm.getInstance().getRobotRadioButton().isSelected()) {
                         // Do Nothing
                     } else {
                         JOptionPane.showMessageDialog(messagePanel, "预览用户不能为空！", "提示",
@@ -72,7 +96,7 @@ public class MessageEditListener {
                         return;
                     }
                 }
-                if (App.config.getMsgType() == MessageTypeEnum.MA_TEMPLATE_CODE
+                if (tMsg.getMsgType() == MessageTypeEnum.MA_TEMPLATE_CODE
                         && messageEditForm.getPreviewUserField().getText().split(";")[0].length() < 2) {
                     JOptionPane.showMessageDialog(messagePanel, "小程序模板消息预览时，“预览用户openid”输入框里填写openid|formId，\n" +
                                     "示例格式：\n" +
@@ -81,14 +105,7 @@ public class MessageEditListener {
                     return;
                 }
 
-                if (App.config.getMsgType() == MessageTypeEnum.WX_CP_CODE
-                        && WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem() == null) {
-                    JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "请选择应用！", "失败",
-                            JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                List<SendResult> sendResultList = PushControl.preview();
+                List<SendResult> sendResultList = PushControl.preview(tMsg.getId());
                 if (sendResultList != null) {
 
                     StringBuilder tipsBuilder = new StringBuilder();
@@ -104,7 +121,7 @@ public class MessageEditListener {
                     sendResultList.stream().filter(sendResult -> !sendResult.isSuccess())
                             .forEach(sendResult -> tipsBuilder.append("<p>").append(sendResult.getInfo()).append("</p>"));
 
-                    if (App.config.getMsgType() == MessageTypeEnum.HTTP_CODE && totalCount == successCount) {
+                    if (tMsg.getMsgType() == MessageTypeEnum.HTTP_CODE && totalCount == successCount) {
                         HttpSendResult httpSendResult = (HttpSendResult) sendResultList.get(0);
                         HttpResultForm.getInstance().getBodyTextArea().setText(httpSendResult.getBody());
                         HttpResultForm.getInstance().getBodyTextArea().setCaretPosition(0);
@@ -184,14 +201,14 @@ public class MessageEditListener {
             public void mouseEntered(MouseEvent e) {
                 JLabel label = (JLabel) e.getComponent();
                 label.setCursor(new Cursor(Cursor.HAND_CURSOR));
-                label.setIcon(new ImageIcon(UiConsts.HELP_FOCUSED_ICON));
+                label.setIcon(UiConsts.HELP_FOCUSED_ICON);
                 super.mouseEntered(e);
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 JLabel label = (JLabel) e.getComponent();
-                label.setIcon(new ImageIcon(UiConsts.HELP_ICON));
+                label.setIcon(UiConsts.HELP_ICON);
                 super.mouseExited(e);
             }
         });
