@@ -1,9 +1,14 @@
 package com.fangxuele.tool.push.logic.msgsender;
 
 import cn.hutool.json.JSONUtil;
-import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.logic.PushControl;
+import com.alibaba.fastjson.JSON;
+import com.fangxuele.tool.push.bean.account.HwYunAccountConfig;
+import com.fangxuele.tool.push.dao.TAccountMapper;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.logic.msgmaker.HwYunMsgMaker;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -25,11 +30,7 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * <pre>
@@ -45,7 +46,7 @@ public class HwYunMsgSender implements IMsgSender {
     /**
      * CloseableHttpClient
      */
-    public volatile static CloseableHttpClient closeableHttpClient;
+    private CloseableHttpClient closeableHttpClient;
 
     /**
      * 无需修改,用于格式化鉴权头域,给"X-WSSE"参数赋值
@@ -58,9 +59,28 @@ public class HwYunMsgSender implements IMsgSender {
 
     private HwYunMsgMaker hwYunMsgMaker;
 
-    public HwYunMsgSender() {
-        hwYunMsgMaker = new HwYunMsgMaker();
+    private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
+
+    private Integer dryRun;
+
+    private HwYunAccountConfig hwYunAccountConfig;
+
+    public HwYunMsgSender(Integer msgId, Integer dryRun) {
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        hwYunMsgMaker = new HwYunMsgMaker(tMsg);
+        this.dryRun = dryRun;
+
+        TAccount tAccount = accountMapper.selectByPrimaryKey(tMsg.getAccountId());
+        String accountConfig = tAccount.getAccountConfig();
+        hwYunAccountConfig = JSON.parseObject(accountConfig, HwYunAccountConfig.class);
+
         closeableHttpClient = getHttpClient();
+    }
+
+    public static void removeAccount(Integer account1Id) {
+
+        // do nothing
     }
 
     @Override
@@ -68,20 +88,20 @@ public class HwYunMsgSender implements IMsgSender {
         SendResult sendResult = new SendResult();
         try {
             //APP接入地址+接口访问URI
-            String url = App.config.getHwAccessUrl();
+            String url = hwYunAccountConfig.getAccessUrl();
             //APP_Key
-            String appKey = App.config.getHwAppKey();
+            String appKey = hwYunAccountConfig.getAppKey();
             //APP_Secret
-            String appSecret = App.config.getHwAppSecretPassword();
+            String appSecret = hwYunAccountConfig.getAppSecret();
             //国内短信签名通道号或国际/港澳台短信通道号
-            String sender = App.config.getHwSenderCode();
-            String signature = App.config.getHwSignature();
+            String sender = hwYunAccountConfig.getSenderCode();
+            String signature = hwYunAccountConfig.getSignature();
             //模板ID
-            String templateId = HwYunMsgMaker.templateId;
+            String templateId = hwYunMsgMaker.getTemplateId();
             //模板变量
             String templateParas = JSONUtil.toJsonStr(hwYunMsgMaker.makeMsg(msgData));
             String receiver = msgData[0];
-            if (PushControl.dryRun) {
+            if (dryRun == 1) {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
@@ -138,7 +158,7 @@ public class HwYunMsgSender implements IMsgSender {
      *
      * @return CloseableHttpClient
      */
-    private static CloseableHttpClient getHttpClient() {
+    private CloseableHttpClient getHttpClient() {
         if (closeableHttpClient == null) {
             synchronized (HwYunMsgSender.class) {
                 if (closeableHttpClient == null) {

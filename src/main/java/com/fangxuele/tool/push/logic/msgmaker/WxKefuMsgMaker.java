@@ -1,6 +1,8 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
-import com.fangxuele.tool.push.ui.form.msg.KefuMsgForm;
+import com.alibaba.fastjson.JSON;
+import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.domain.TMsgKefu;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
 import org.apache.velocity.VelocityContext;
@@ -15,38 +17,36 @@ import org.apache.velocity.VelocityContext;
  */
 public class WxKefuMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
-    private static String msgKefuMsgType;
+    private String msgKefuMsgType;
 
-    private static String msgKefuMsgTitle;
+    private String msgKefuMsgTitle;
 
-    private static String msgKefuMsgContent;
+    private String msgKefuMsgContent;
 
-    private static String msgKefuPicUrl;
+    private String msgKefuPicUrl;
 
-    private static String msgKefuDesc;
+    private String msgKefuDesc;
 
-    private static String msgKefuUrl;
+    private String msgKefuUrl;
 
-    private static String msgKefuAppid;
+    private String msgKefuAppid;
 
-    private static String msgKefuPagepath;
+    private String msgKefuPagepath;
 
-    private static String msgKefuThumbMediaId;
+    private String msgKefuThumbMediaId;
 
-    /**
-     * 准备(界面字段等)
-     */
-    @Override
-    public void prepare() {
-        msgKefuMsgType = KefuMsgForm.getInstance().getMsgKefuMsgTypeComboBox().getSelectedItem().toString();
-        msgKefuMsgTitle = KefuMsgForm.getInstance().getMsgKefuMsgTitleTextField().getText();
-        msgKefuPicUrl = KefuMsgForm.getInstance().getMsgKefuPicUrlTextField().getText();
-        msgKefuDesc = KefuMsgForm.getInstance().getMsgKefuDescTextField().getText();
-        msgKefuUrl = KefuMsgForm.getInstance().getMsgKefuUrlTextField().getText();
-        msgKefuMsgContent = KefuMsgForm.getInstance().getContentTextArea().getText();
-        msgKefuAppid = KefuMsgForm.getInstance().getMsgKefuAppidTextField().getText();
-        msgKefuPagepath = KefuMsgForm.getInstance().getMsgKefuPagepathTextField().getText();
-        msgKefuThumbMediaId = KefuMsgForm.getInstance().getMsgKefuThumbMediaIdTextField().getText();
+    public WxKefuMsgMaker(TMsg tMsg) {
+        TMsgKefu tMsgKefu = JSON.parseObject(tMsg.getContent(), TMsgKefu.class);
+
+        msgKefuMsgType = tMsgKefu.getKefuMsgType();
+        msgKefuMsgTitle = tMsgKefu.getTitle();
+        msgKefuPicUrl = tMsgKefu.getImgUrl();
+        msgKefuDesc = tMsgKefu.getDescribe();
+        msgKefuUrl = tMsgKefu.getUrl();
+        msgKefuMsgContent = tMsgKefu.getContent();
+        msgKefuAppid = tMsgKefu.getAppId();
+        msgKefuPagepath = tMsgKefu.getPagePath();
+        msgKefuThumbMediaId = tMsgKefu.getThumbMediaId();
     }
 
     /**

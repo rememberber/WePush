@@ -1,6 +1,7 @@
 package com.fangxuele.tool.push.ui.component;
 
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -53,7 +54,7 @@ public class TableInCellButtonColumn extends AbstractCellEditor implements
         }
 
         renderButton.setText("");
-        renderButton.setIcon(new ImageIcon(getClass().getResource("/icon/remove.png")));
+        renderButton.setIcon(new FlatSVGIcon("icon/remove.svg"));
         return renderButton;
     }
 
@@ -61,7 +62,7 @@ public class TableInCellButtonColumn extends AbstractCellEditor implements
     public Component getTableCellEditorComponent(JTable table, Object value,
                                                  boolean isSelected, int row, int column) {
         editButton.setText("");
-        editButton.setIcon(new ImageIcon(getClass().getResource("/icon/remove.png")));
+        editButton.setIcon(new FlatSVGIcon("icon/remove.svg"));
         return editButton;
     }
 

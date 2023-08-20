@@ -1,7 +1,8 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
 import cn.hutool.json.JSONUtil;
-import com.fangxuele.tool.push.dao.TMsgHttpMapper;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgHttp;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.component.TableInCellButtonColumn;
@@ -10,6 +11,7 @@ import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.UIUtil;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -63,9 +65,13 @@ public class HttpMsgForm implements IMsgForm {
 
     private static HttpMsgForm httpMsgForm;
 
-    private static TMsgHttpMapper msgHttpMapper = MybatisUtil.getSqlSession().getMapper(TMsgHttpMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
 
     public HttpMsgForm() {
+        paramAddButton.setIcon(new FlatSVGIcon("icon/add.svg"));
+        cookieAddButton.setIcon(new FlatSVGIcon("icon/add.svg"));
+        headerAddButton.setIcon(new FlatSVGIcon("icon/add.svg"));
+
         paramAddButton.addActionListener(e -> {
             String[] data = new String[2];
             data[0] = getInstance().getParamNameTextField().getText();
@@ -175,96 +181,102 @@ public class HttpMsgForm implements IMsgForm {
     }
 
     @Override
-    public void init(String msgName) {
+    public void init(Integer msgId) {
         clearAllField();
-        List<TMsgHttp> msgHttpList = msgHttpMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.HTTP_CODE, msgName);
-        if (msgHttpList.size() > 0) {
-            TMsgHttp tMsgHttp = msgHttpList.get(0);
-            getInstance().getMethodComboBox().setSelectedItem(tMsgHttp.getMethod());
-            getInstance().getUrlTextField().setText(tMsgHttp.getUrl());
-            getInstance().getBodyTextArea().setText(tMsgHttp.getBody());
-            getInstance().getBodyTypeComboBox().setSelectedItem(tMsgHttp.getBodyType());
-            switchMethod(tMsgHttp.getMethod());
 
-            MessageEditForm messageEditForm = MessageEditForm.getInstance();
-            messageEditForm.getMsgNameField().setText(tMsgHttp.getMsgName());
-            messageEditForm.getPreviewUserField().setText(tMsgHttp.getPreviewUser());
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
 
-            // Params=====================================
-            initParamTable();
-            List<NameValueObject> params = JSONUtil.toList(JSONUtil.parseArray(tMsgHttp.getParams()), NameValueObject.class);
-            String[] headerNames = {"Name", "Value", ""};
-            Object[][] cellData = new String[params.size()][headerNames.length];
-            for (int i = 0; i < params.size(); i++) {
-                NameValueObject nameValueObject = params.get(i);
-                cellData[i][0] = nameValueObject.getName();
-                cellData[i][1] = nameValueObject.getValue();
-            }
-            DefaultTableModel model = new DefaultTableModel(cellData, headerNames);
-            getInstance().getParamTable().setModel(model);
-            TableColumnModel paramTableColumnModel = getInstance().getParamTable().getColumnModel();
-            paramTableColumnModel.getColumn(headerNames.length - 1).
-                    setCellRenderer(new TableInCellButtonColumn(getInstance().getParamTable(), headerNames.length - 1));
-            paramTableColumnModel.getColumn(headerNames.length - 1).
-                    setCellEditor(new TableInCellButtonColumn(getInstance().getParamTable(), headerNames.length - 1));
-
-            // 设置列宽
-            paramTableColumnModel.getColumn(2).setPreferredWidth(46);
-            paramTableColumnModel.getColumn(2).setMaxWidth(46);
-            // Headers=====================================
-            initHeaderTable();
-            List<NameValueObject> headers = JSONUtil.toList(JSONUtil.parseArray(tMsgHttp.getHeaders()), NameValueObject.class);
-            cellData = new String[headers.size()][headerNames.length];
-            for (int i = 0; i < headers.size(); i++) {
-                NameValueObject nameValueObject = headers.get(i);
-                cellData[i][0] = nameValueObject.getName();
-                cellData[i][1] = nameValueObject.getValue();
-            }
-            model = new DefaultTableModel(cellData, headerNames);
-            getInstance().getHeaderTable().setModel(model);
-            TableColumnModel headerTableColumnModel = getInstance().getHeaderTable().getColumnModel();
-            headerTableColumnModel.getColumn(headerNames.length - 1).
-                    setCellRenderer(new TableInCellButtonColumn(getInstance().getHeaderTable(), headerNames.length - 1));
-            headerTableColumnModel.getColumn(headerNames.length - 1).
-                    setCellEditor(new TableInCellButtonColumn(getInstance().getHeaderTable(), headerNames.length - 1));
-
-            // 设置列宽
-            headerTableColumnModel.getColumn(2).setPreferredWidth(46);
-            headerTableColumnModel.getColumn(2).setMaxWidth(46);
-            // Cookies=====================================
-            initCookieTable();
-            List<CookieObject> cookies = JSONUtil.toList(JSONUtil.parseArray(tMsgHttp.getCookies()), CookieObject.class);
-            headerNames = new String[]{"Name", "Value", "Domain", "Path", "Expiry", ""};
-            cellData = new String[cookies.size()][headerNames.length];
-            for (int i = 0; i < cookies.size(); i++) {
-                CookieObject cookieObject = cookies.get(i);
-                cellData[i][0] = cookieObject.getName();
-                cellData[i][1] = cookieObject.getValue();
-                cellData[i][2] = cookieObject.getDomain();
-                cellData[i][3] = cookieObject.getPath();
-                cellData[i][4] = cookieObject.getExpiry();
-            }
-            model = new DefaultTableModel(cellData, headerNames);
-            getInstance().getCookieTable().setModel(model);
-            TableColumnModel cookieTableColumnModel = getInstance().getCookieTable().getColumnModel();
-            cookieTableColumnModel.getColumn(headerNames.length - 1).
-                    setCellRenderer(new TableInCellButtonColumn(getInstance().getCookieTable(), headerNames.length - 1));
-            cookieTableColumnModel.getColumn(headerNames.length - 1).
-                    setCellEditor(new TableInCellButtonColumn(getInstance().getCookieTable(), headerNames.length - 1));
-
-            // 设置列宽
-            cookieTableColumnModel.getColumn(5).setPreferredWidth(46);
-            cookieTableColumnModel.getColumn(5).setMaxWidth(46);
+        if (tMsg == null) {
+            return;
         }
+
+        TMsgHttp tMsgHttp = JSONUtil.toBean(tMsg.getContent(), TMsgHttp.class);
+
+        getInstance().getMethodComboBox().setSelectedItem(tMsgHttp.getMethod());
+        getInstance().getUrlTextField().setText(tMsgHttp.getUrl());
+        getInstance().getBodyTextArea().setText(tMsgHttp.getBody());
+        getInstance().getBodyTypeComboBox().setSelectedItem(tMsgHttp.getBodyType());
+        switchMethod(tMsgHttp.getMethod());
+
+        MessageEditForm messageEditForm = MessageEditForm.getInstance();
+        messageEditForm.getMsgNameField().setText(tMsg.getMsgName());
+        messageEditForm.getPreviewUserField().setText(tMsg.getPreviewUser());
+
+        // Params=====================================
+        initParamTable();
+        List<NameValueObject> params = JSONUtil.toList(JSONUtil.parseArray(tMsgHttp.getParams()), NameValueObject.class);
+        String[] headerNames = {"Name", "Value", ""};
+        Object[][] cellData = new String[params.size()][headerNames.length];
+        for (int i = 0; i < params.size(); i++) {
+            NameValueObject nameValueObject = params.get(i);
+            cellData[i][0] = nameValueObject.getName();
+            cellData[i][1] = nameValueObject.getValue();
+        }
+        DefaultTableModel model = new DefaultTableModel(cellData, headerNames);
+        getInstance().getParamTable().setModel(model);
+        TableColumnModel paramTableColumnModel = getInstance().getParamTable().getColumnModel();
+        paramTableColumnModel.getColumn(headerNames.length - 1).
+                setCellRenderer(new TableInCellButtonColumn(getInstance().getParamTable(), headerNames.length - 1));
+        paramTableColumnModel.getColumn(headerNames.length - 1).
+                setCellEditor(new TableInCellButtonColumn(getInstance().getParamTable(), headerNames.length - 1));
+
+        // 设置列宽
+        paramTableColumnModel.getColumn(2).setPreferredWidth(46);
+        paramTableColumnModel.getColumn(2).setMaxWidth(46);
+        // Headers=====================================
+        initHeaderTable();
+        List<NameValueObject> headers = JSONUtil.toList(JSONUtil.parseArray(tMsgHttp.getHeaders()), NameValueObject.class);
+        cellData = new String[headers.size()][headerNames.length];
+        for (int i = 0; i < headers.size(); i++) {
+            NameValueObject nameValueObject = headers.get(i);
+            cellData[i][0] = nameValueObject.getName();
+            cellData[i][1] = nameValueObject.getValue();
+        }
+        model = new DefaultTableModel(cellData, headerNames);
+        getInstance().getHeaderTable().setModel(model);
+        TableColumnModel headerTableColumnModel = getInstance().getHeaderTable().getColumnModel();
+        headerTableColumnModel.getColumn(headerNames.length - 1).
+                setCellRenderer(new TableInCellButtonColumn(getInstance().getHeaderTable(), headerNames.length - 1));
+        headerTableColumnModel.getColumn(headerNames.length - 1).
+                setCellEditor(new TableInCellButtonColumn(getInstance().getHeaderTable(), headerNames.length - 1));
+
+        // 设置列宽
+        headerTableColumnModel.getColumn(2).setPreferredWidth(46);
+        headerTableColumnModel.getColumn(2).setMaxWidth(46);
+        // Cookies=====================================
+        initCookieTable();
+        List<CookieObject> cookies = JSONUtil.toList(JSONUtil.parseArray(tMsgHttp.getCookies()), CookieObject.class);
+        headerNames = new String[]{"Name", "Value", "Domain", "Path", "Expiry", ""};
+        cellData = new String[cookies.size()][headerNames.length];
+        for (int i = 0; i < cookies.size(); i++) {
+            CookieObject cookieObject = cookies.get(i);
+            cellData[i][0] = cookieObject.getName();
+            cellData[i][1] = cookieObject.getValue();
+            cellData[i][2] = cookieObject.getDomain();
+            cellData[i][3] = cookieObject.getPath();
+            cellData[i][4] = cookieObject.getExpiry();
+        }
+        model = new DefaultTableModel(cellData, headerNames);
+        getInstance().getCookieTable().setModel(model);
+        TableColumnModel cookieTableColumnModel = getInstance().getCookieTable().getColumnModel();
+        cookieTableColumnModel.getColumn(headerNames.length - 1).
+                setCellRenderer(new TableInCellButtonColumn(getInstance().getCookieTable(), headerNames.length - 1));
+        cookieTableColumnModel.getColumn(headerNames.length - 1).
+                setCellEditor(new TableInCellButtonColumn(getInstance().getCookieTable(), headerNames.length - 1));
+
+        // 设置列宽
+        cookieTableColumnModel.getColumn(5).setPreferredWidth(46);
+        cookieTableColumnModel.getColumn(5).setMaxWidth(46);
     }
 
     @Override
-    public void save(String msgName) {
+    public void save(Integer accountId, String msgName) {
         boolean existSameMsg = false;
-
-        List<TMsgHttp> tMsgHttpList = msgHttpMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.HTTP_CODE, msgName);
-        if (tMsgHttpList.size() > 0) {
+        Integer msgId = null;
+        TMsg tMsg = msgMapper.selectByUnique(MessageTypeEnum.HTTP_CODE, accountId, msgName);
+        if (tMsg != null) {
             existSameMsg = true;
+            msgId = tMsg.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -281,17 +293,19 @@ public class HttpMsgForm implements IMsgForm {
             String bodyType = (String) getInstance().getBodyTypeComboBox().getSelectedItem();
             String now = SqliteUtil.nowDateForSqlite();
 
+            TMsg msg = new TMsg();
             TMsgHttp tMsgHttp = new TMsgHttp();
-            tMsgHttp.setMsgType(MessageTypeEnum.HTTP_CODE);
-            tMsgHttp.setMsgName(msgName);
+            msg.setMsgType(MessageTypeEnum.HTTP_CODE);
+            msg.setAccountId(accountId);
+            msg.setMsgName(msgName);
             tMsgHttp.setMethod(method);
             tMsgHttp.setUrl(url);
             tMsgHttp.setBody(body);
             tMsgHttp.setBodyType(bodyType);
-            tMsgHttp.setCreateTime(now);
-            tMsgHttp.setModifiedTime(now);
+            msg.setCreateTime(now);
+            msg.setModifiedTime(now);
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
-            tMsgHttp.setPreviewUser(messageEditForm.getPreviewUserField().getText());
+            msg.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             // =============params
             // 如果table为空，则初始化
@@ -356,10 +370,12 @@ public class HttpMsgForm implements IMsgForm {
             }
             tMsgHttp.setCookies(JSONUtil.toJsonStr(cookies));
 
+            msg.setContent(JSONUtil.toJsonStr(tMsgHttp));
             if (existSameMsg) {
-                msgHttpMapper.updateByMsgTypeAndMsgName(tMsgHttp);
+                msg.setId(msgId);
+                msgMapper.updateByPrimaryKeySelective(msg);
             } else {
-                msgHttpMapper.insertSelective(tMsgHttp);
+                msgMapper.insertSelective(msg);
             }
             JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "保存成功！", "成功",
                     JOptionPane.INFORMATION_MESSAGE);
@@ -377,7 +393,8 @@ public class HttpMsgForm implements IMsgForm {
     /**
      * 清空所有界面字段
      */
-    public static void clearAllField() {
+    @Override
+    public void clearAllField() {
         getInstance().getMethodComboBox().setSelectedIndex(0);
         getInstance().getUrlTextField().setText("");
         getInstance().getParamNameTextField().setText("");
@@ -554,48 +571,46 @@ public class HttpMsgForm implements IMsgForm {
         panel2.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane1.addTab("Params", panel2);
         final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(3, 5, new Insets(5, 5, 0, 0), -1, -1));
+        panel3.setLayout(new GridLayoutManager(3, 3, new Insets(5, 5, 0, 0), -1, -1));
         panel2.add(panel3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         paramNameTextField = new JTextField();
-        panel3.add(paramNameTextField, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel3.add(paramNameTextField, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         paramValueTextField = new JTextField();
-        panel3.add(paramValueTextField, new GridConstraints(1, 2, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel3.add(paramValueTextField, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         paramAddButton = new JButton();
-        paramAddButton.setIcon(new ImageIcon(getClass().getResource("/icon/add.png")));
         paramAddButton.setText("");
-        panel3.add(paramAddButton, new GridConstraints(1, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(paramAddButton, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         paramTable = new JTable();
         paramTable.setRowHeight(36);
-        panel3.add(paramTable, new GridConstraints(2, 0, 1, 5, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+        panel3.add(paramTable, new GridConstraints(2, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
         final JLabel label2 = new JLabel();
         label2.setText("Name");
-        panel3.add(label2, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(label2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label3 = new JLabel();
         label3.setText("Value");
-        panel3.add(label3, new GridConstraints(0, 2, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 1, false));
+        panel3.add(label3, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 1, false));
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane1.addTab("Headers", panel4);
         final JPanel panel5 = new JPanel();
-        panel5.setLayout(new GridLayoutManager(3, 5, new Insets(5, 5, 0, 0), -1, -1));
+        panel5.setLayout(new GridLayoutManager(3, 3, new Insets(5, 5, 0, 0), -1, -1));
         panel4.add(panel5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         headerNameTextField = new JTextField();
-        panel5.add(headerNameTextField, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel5.add(headerNameTextField, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         headerValueTextField5 = new JTextField();
-        panel5.add(headerValueTextField5, new GridConstraints(1, 2, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel5.add(headerValueTextField5, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         headerAddButton = new JButton();
-        headerAddButton.setIcon(new ImageIcon(getClass().getResource("/icon/add.png")));
         headerAddButton.setText("");
-        panel5.add(headerAddButton, new GridConstraints(1, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel5.add(headerAddButton, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         headerTable = new JTable();
         headerTable.setRowHeight(36);
-        panel5.add(headerTable, new GridConstraints(2, 0, 1, 5, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+        panel5.add(headerTable, new GridConstraints(2, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
         final JLabel label4 = new JLabel();
         label4.setText("Name");
-        panel5.add(label4, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel5.add(label4, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label5 = new JLabel();
         label5.setText("Value");
-        panel5.add(label5, new GridConstraints(0, 2, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 1, false));
+        panel5.add(label5, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 1, false));
         final JPanel panel6 = new JPanel();
         panel6.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane1.addTab("Cookies", panel6);
@@ -607,7 +622,6 @@ public class HttpMsgForm implements IMsgForm {
         cookieValueTextField = new JTextField();
         panel7.add(cookieValueTextField, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         cookieAddButton = new JButton();
-        cookieAddButton.setIcon(new ImageIcon(getClass().getResource("/icon/add.png")));
         cookieAddButton.setText("");
         panel7.add(cookieAddButton, new GridConstraints(1, 5, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         cookieTable = new JTable();

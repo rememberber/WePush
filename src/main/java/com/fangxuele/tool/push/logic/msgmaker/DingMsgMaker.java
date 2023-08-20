@@ -1,8 +1,8 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
-import com.fangxuele.tool.push.bean.DingMsg;
-import com.fangxuele.tool.push.logic.msgsender.DingMsgSender;
-import com.fangxuele.tool.push.ui.form.msg.DingMsgForm;
+import com.alibaba.fastjson.JSON;
+import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.domain.TMsgDing;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import org.apache.velocity.VelocityContext;
 
@@ -16,61 +16,36 @@ import org.apache.velocity.VelocityContext;
  */
 public class DingMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
-    public static String agentId;
+    private String msgType;
 
-    public static String msgType;
+    private String msgTitle;
 
-    private static String msgTitle;
+    private String picUrl;
 
-    private static String picUrl;
+    private String url;
 
-    public static String desc;
+    private String btnTxt;
 
-    public static String url;
+    private String btnUrl;
 
-    private static String btnTxt;
+    private String msgContent;
 
-    private static String btnUrl;
+    private String radioType;
 
-    private static String msgContent;
+    private String webHook;
 
-    public static String radioType;
+    public DingMsgMaker(TMsg tMsg) {
+        TMsgDing tMsgDing = JSON.parseObject(tMsg.getContent(), TMsgDing.class);
 
-    public static String webHook;
-
-    /**
-     * 准备(界面字段等)
-     */
-    @Override
-    public void prepare() {
-        String agentIdBefore = agentId;
-        String agentIdNow = DingMsgForm.appNameToAgentIdMap.get(DingMsgForm.getInstance().getAppNameComboBox().getSelectedItem());
-
-        String webHookBefore = webHook;
-        String webHookNow = DingMsgForm.getInstance().getWebHookTextField().getText().trim();
-        synchronized (this) {
-            if (agentIdBefore == null || !agentIdBefore.equals(agentIdNow)) {
-                agentId = agentIdNow;
-                DingMsgSender.accessTokenTimedCache = null;
-                DingMsgSender.defaultDingTalkClient = null;
-            }
-            if (webHookBefore == null || !webHookBefore.equals(webHookNow)) {
-                DingMsgSender.robotClient = null;
-            }
-        }
-        msgType = (String) DingMsgForm.getInstance().getMsgTypeComboBox().getSelectedItem();
-        msgTitle = DingMsgForm.getInstance().getTitleTextField().getText();
-        picUrl = DingMsgForm.getInstance().getPicUrlTextField().getText().trim();
-        url = DingMsgForm.getInstance().getUrlTextField().getText().trim();
-        btnTxt = DingMsgForm.getInstance().getBtnTxtTextField().getText().trim();
-        btnUrl = DingMsgForm.getInstance().getBtnURLTextField().getText().trim();
-        msgContent = DingMsgForm.getInstance().getContentTextArea().getText();
-        if (DingMsgForm.getInstance().getWorkRadioButton().isSelected()) {
-            radioType = "work";
-        } else {
-            radioType = "robot";
-        }
-        webHook = DingMsgForm.getInstance().getWebHookTextField().getText();
+        msgType = tMsgDing.getDingMsgType();
+        msgTitle = tMsgDing.getMsgTitle();
+        picUrl = tMsgDing.getPicUrl();
+        url = tMsgDing.getUrl();
+        btnTxt = tMsgDing.getBtnTxt();
+        btnUrl = tMsgDing.getBtnUrl();
+        msgContent = tMsgDing.getContent();
+        radioType = tMsgDing.getRadioType();
+        webHook = tMsgDing.getWebHook();
     }
 
     /**
@@ -80,16 +55,16 @@ public class DingMsgMaker extends BaseMsgMaker implements IMsgMaker {
      * @return WxMpTemplateMessage
      */
     @Override
-    public DingMsg makeMsg(String[] msgData) {
+    public TMsgDing makeMsg(String[] msgData) {
 
-        DingMsg dingMsg = new DingMsg();
+        TMsgDing dingMsg = new TMsgDing();
         VelocityContext velocityContext = getVelocityContext(msgData);
         if ("markdown消息".equals(msgType)) {
             dingMsg.setContent(msgContent);
         } else {
             dingMsg.setContent(TemplateUtil.evaluate(msgContent, velocityContext));
         }
-        dingMsg.setTitle(TemplateUtil.evaluate(msgTitle, velocityContext));
+        dingMsg.setMsgTitle(TemplateUtil.evaluate(msgTitle, velocityContext));
         dingMsg.setPicUrl(TemplateUtil.evaluate(picUrl, velocityContext));
         dingMsg.setUrl(TemplateUtil.evaluate(url, velocityContext));
         dingMsg.setBtnTxt(TemplateUtil.evaluate(btnTxt, velocityContext));

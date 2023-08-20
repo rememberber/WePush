@@ -1,11 +1,13 @@
 package com.fangxuele.tool.push.logic.msgsender;
 
+import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.dao.TWxCpAppMapper;
-import com.fangxuele.tool.push.domain.TWxCpApp;
-import com.fangxuele.tool.push.logic.PushControl;
+import com.fangxuele.tool.push.bean.account.WxCpAccountConfig;
+import com.fangxuele.tool.push.dao.TAccountMapper;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.logic.msgmaker.WxCpMsgMaker;
-import com.fangxuele.tool.push.ui.form.msg.WxCpMsgForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.util.http.apache.DefaultApacheHttpClientBuilder;
@@ -17,7 +19,8 @@ import me.chanjar.weixin.cp.config.impl.WxCpDefaultConfigImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <pre>
@@ -29,15 +32,25 @@ import java.util.List;
  */
 @Slf4j
 public class WxCpMsgSender implements IMsgSender {
-    public volatile static WxCpDefaultConfigImpl wxCpConfigStorage;
-    public volatile static WxCpService wxCpService;
+    private WxCpService wxCpService;
     private final WxCpMsgMaker wxCpMsgMaker;
 
-    private final static TWxCpAppMapper WX_CP_APP_MAPPER = MybatisUtil.getSqlSession().getMapper(TWxCpAppMapper.class);
+    private static Map<Integer, WxCpService> wxCpServiceMap = new HashMap<>();
 
-    public WxCpMsgSender() {
-        wxCpMsgMaker = new WxCpMsgMaker();
-        wxCpService = getWxCpService();
+    private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
+
+    private Integer dryRun;
+
+    public WxCpMsgSender(Integer msgId, Integer dryRun) {
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        wxCpMsgMaker = new WxCpMsgMaker(tMsg);
+        wxCpService = getWxCpService(tMsg.getAccountId());
+        this.dryRun = dryRun;
+    }
+
+    public static void removeAccount(Integer account1Id) {
+        wxCpServiceMap.remove(account1Id);
     }
 
     @Override
@@ -48,7 +61,7 @@ public class WxCpMsgSender implements IMsgSender {
             String openId = msgData[0];
             WxCpMessage wxCpMessage = wxCpMsgMaker.makeMsg(msgData);
             wxCpMessage.setToUser(openId);
-            if (PushControl.dryRun) {
+            if (dryRun == 1) {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
@@ -76,69 +89,44 @@ public class WxCpMsgSender implements IMsgSender {
         return null;
     }
 
-    /**
-     * 微信企业号配置
-     *
-     * @return WxCpConfigStorage
-     */
-    private static WxCpDefaultConfigImpl wxCpConfigStorage() {
-        WxCpDefaultConfigImpl configStorage = new WxCpDefaultConfigImpl();
-        configStorage.setCorpId(App.config.getWxCpCorpId());
-        String agentId = WxCpMsgForm.appNameToAgentIdMap.get(WxCpMsgForm.getInstance().getAppNameComboBox().getSelectedItem());
-        configStorage.setAgentId(Integer.valueOf(agentId));
+    public static WxCpService getWxCpService(Integer accountId) {
+        if (wxCpServiceMap.containsKey(accountId)) {
+            return wxCpServiceMap.get(accountId);
+        } else {
+            TAccount tAccount = accountMapper.selectByPrimaryKey(accountId);
+            String accountConfig = tAccount.getAccountConfig();
+            WxCpAccountConfig wxCpAccountConfig = JSON.parseObject(accountConfig, WxCpAccountConfig.class);
 
-        List<TWxCpApp> wxCpAppList = WX_CP_APP_MAPPER.selectByAgentId(agentId);
-        if (wxCpAppList.size() > 0) {
-            configStorage.setCorpSecret(wxCpAppList.get(0).getSecret());
-        }
-        if (App.config.isMpUseProxy()) {
-            configStorage.setHttpProxyHost(App.config.getMpProxyHost());
-            configStorage.setHttpProxyPort(Integer.parseInt(App.config.getMpProxyPort()));
-            configStorage.setHttpProxyUsername(App.config.getMpProxyUserName());
-            configStorage.setHttpProxyPassword(App.config.getMpProxyPassword());
-        }
-        DefaultApacheHttpClientBuilder clientBuilder = DefaultApacheHttpClientBuilder.get();
-        //从连接池获取链接的超时时间(单位ms)
-        clientBuilder.setConnectionRequestTimeout(10000);
-        //建立链接的超时时间(单位ms)
-        clientBuilder.setConnectionTimeout(5000);
-        //连接池socket超时时间(单位ms)
-        clientBuilder.setSoTimeout(5000);
-        //空闲链接的超时时间(单位ms)
-        clientBuilder.setIdleConnTimeout(60000);
-        //空闲链接的检测周期(单位ms)
-        clientBuilder.setCheckWaitTime(60000);
-        //每路最大连接数
-        clientBuilder.setMaxConnPerHost(App.config.getMaxThreads());
-        //连接池最大连接数
-        clientBuilder.setMaxTotalConn(App.config.getMaxThreads());
-        //HttpClient请求时使用的User Agent
+            WxCpDefaultConfigImpl configStorage = new WxCpDefaultConfigImpl();
+            configStorage.setCorpId(wxCpAccountConfig.getCorpId());
+            String agentId = wxCpAccountConfig.getAgentId();
+            configStorage.setAgentId(Integer.valueOf(agentId));
+            configStorage.setCorpSecret(wxCpAccountConfig.getSecret());
+            DefaultApacheHttpClientBuilder clientBuilder = DefaultApacheHttpClientBuilder.get();
+            //从连接池获取链接的超时时间(单位ms)
+            clientBuilder.setConnectionRequestTimeout(10000);
+            //建立链接的超时时间(单位ms)
+            clientBuilder.setConnectionTimeout(5000);
+            //连接池socket超时时间(单位ms)
+            clientBuilder.setSoTimeout(5000);
+            //空闲链接的超时时间(单位ms)
+            clientBuilder.setIdleConnTimeout(60000);
+            //空闲链接的检测周期(单位ms)
+            clientBuilder.setCheckWaitTime(60000);
+            //每路最大连接数
+            clientBuilder.setMaxConnPerHost(App.config.getMaxThreads());
+            //连接池最大连接数
+            clientBuilder.setMaxTotalConn(App.config.getMaxThreads());
+            //HttpClient请求时使用的User Agent
 //        clientBuilder.setUserAgent(..)
-        configStorage.setApacheHttpClientBuilder(clientBuilder);
-        return configStorage;
-    }
+            configStorage.setApacheHttpClientBuilder(clientBuilder);
 
-    /**
-     * 获取微信企业号工具服务
-     *
-     * @return WxCpService
-     */
-    public static WxCpService getWxCpService() {
-        if (wxCpConfigStorage == null) {
-            synchronized (WxCpMsgSender.class) {
-                if (wxCpConfigStorage == null) {
-                    wxCpConfigStorage = wxCpConfigStorage();
-                }
-            }
+            WxCpService wxCpService = new WxCpServiceApacheHttpClientImpl();
+            wxCpService.setWxCpConfigStorage(configStorage);
+
+            wxCpServiceMap.put(accountId, wxCpService);
+            return wxCpService;
         }
-        if (wxCpService == null && wxCpConfigStorage != null) {
-            synchronized (PushControl.class) {
-                if (wxCpService == null && wxCpConfigStorage != null) {
-                    wxCpService = new WxCpServiceApacheHttpClientImpl();
-                    wxCpService.setWxCpConfigStorage(wxCpConfigStorage);
-                }
-            }
-        }
-        return wxCpService;
+
     }
 }

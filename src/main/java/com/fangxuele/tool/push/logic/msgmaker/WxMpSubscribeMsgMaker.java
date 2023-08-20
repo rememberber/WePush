@@ -1,13 +1,13 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
+import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.bean.TemplateData;
-import com.fangxuele.tool.push.ui.form.msg.MpSubscribeMsgForm;
+import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.domain.TMsgMpSubscribe;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import me.chanjar.weixin.mp.bean.subscribe.WxMpSubscribeMessage;
-import org.apache.commons.compress.utils.Lists;
 import org.apache.velocity.VelocityContext;
 
-import javax.swing.table.DefaultTableModel;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,45 +22,23 @@ import java.util.Map;
  */
 public class WxMpSubscribeMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
-    public static String templateId;
+    private String templateId;
 
-    private static String templateUrl;
+    private String templateUrl;
 
-    private static String miniAppId;
+    private String miniAppId;
 
-    private static String miniAppPagePath;
+    private String miniAppPagePath;
 
-    public static List<TemplateData> templateDataList;
+    private List<TemplateData> templateDataList;
 
-    /**
-     * 准备(界面字段等)
-     */
-    @Override
-    public void prepare() {
-        templateId = MpSubscribeMsgForm.getInstance().getMsgTemplateIdTextField().getText().trim();
-        templateUrl = MpSubscribeMsgForm.getInstance().getMsgTemplateUrlTextField().getText().trim();
-        miniAppId = MpSubscribeMsgForm.getInstance().getMsgTemplateMiniAppidTextField().getText().trim();
-        miniAppPagePath = MpSubscribeMsgForm.getInstance().getMsgTemplateMiniPagePathTextField().getText().trim();
-
-        if (MpSubscribeMsgForm.getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-            MpSubscribeMsgForm.initTemplateDataTable();
-        }
-
-        DefaultTableModel tableModel = (DefaultTableModel) MpSubscribeMsgForm.getInstance().getTemplateMsgDataTable().getModel();
-        int rowCount = tableModel.getRowCount();
-        TemplateData templateData;
-        templateDataList = Lists.newArrayList();
-        for (int i = 0; i < rowCount; i++) {
-            String name = ((String) tableModel.getValueAt(i, 0)).trim();
-            String value = ((String) tableModel.getValueAt(i, 1)).trim();
-            String color = ((String) tableModel.getValueAt(i, 2)).trim();
-            templateData = new TemplateData();
-            templateData.setName(name);
-            templateData.setValue(value);
-            templateData.setColor(color);
-            templateDataList.add(templateData);
-        }
-
+    public WxMpSubscribeMsgMaker(TMsg tMsg) {
+        TMsgMpSubscribe tMsgMpSubscribe = JSON.parseObject(tMsg.getContent(), TMsgMpSubscribe.class);
+        this.templateId = tMsgMpSubscribe.getTemplateId();
+        this.templateUrl = tMsgMpSubscribe.getUrl();
+        this.miniAppId = tMsgMpSubscribe.getMaAppid();
+        this.miniAppPagePath = tMsgMpSubscribe.getMaPagePath();
+        this.templateDataList = tMsgMpSubscribe.getTemplateDataList();
     }
 
     /**

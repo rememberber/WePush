@@ -12,14 +12,16 @@ public interface IMsgForm {
     /**
      * 初始化界面
      *
-     * @param msgName
+     * @param msgId
      */
-    void init(String msgName);
+    void init(Integer msgId);
 
     /**
      * 保存消息
      *
      * @param msgName
      */
-    void save(String msgName);
+    void save(Integer accountId, String msgName);
+
+    void clearAllField();
 }

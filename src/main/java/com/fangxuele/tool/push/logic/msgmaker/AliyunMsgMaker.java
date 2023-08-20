@@ -1,16 +1,19 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
 import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
 import com.aliyuncs.http.MethodType;
-import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.TemplateData;
-import com.fangxuele.tool.push.ui.form.msg.AliYunMsgForm;
+import com.fangxuele.tool.push.bean.account.AliYunAccountConfig;
+import com.fangxuele.tool.push.dao.TAccountMapper;
+import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.domain.TMsgSms;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.TemplateUtil;
-import org.apache.commons.compress.utils.Lists;
 import org.apache.velocity.VelocityContext;
 
-import javax.swing.table.DefaultTableModel;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,34 +28,22 @@ import java.util.Map;
  */
 public class AliyunMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
-    public static String templateId;
+    private String templateId;
 
-    public static List<TemplateData> templateDataList;
+    private List<TemplateData> templateDataList;
 
-    /**
-     * 准备(界面字段等)
-     */
-    @Override
-    public void prepare() {
-        templateId = AliYunMsgForm.getInstance().getMsgTemplateIdTextField().getText();
+    private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
 
-        if (AliYunMsgForm.getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-            AliYunMsgForm.initTemplateDataTable();
-        }
+    private AliYunAccountConfig aliYunAccountConfig;
 
-        DefaultTableModel tableModel = (DefaultTableModel) AliYunMsgForm.getInstance().getTemplateMsgDataTable().getModel();
-        int rowCount = tableModel.getRowCount();
-        TemplateData templateData;
-        templateDataList = Lists.newArrayList();
-        for (int i = 0; i < rowCount; i++) {
-            String name = ((String) tableModel.getValueAt(i, 0)).trim();
-            String value = ((String) tableModel.getValueAt(i, 1)).trim();
-            templateData = new TemplateData();
-            templateData.setName(name);
-            templateData.setValue(value);
-            templateDataList.add(templateData);
-        }
+    public AliyunMsgMaker(TMsg tMsg) {
+        TMsgSms tMsgSms = JSON.parseObject(tMsg.getContent(), TMsgSms.class);
+        this.templateId = tMsgSms.getTemplateId();
+        this.templateDataList = tMsgSms.getTemplateDataList();
 
+        TAccount tAccount = accountMapper.selectByPrimaryKey(tMsg.getAccountId());
+        String accountConfig = tAccount.getAccountConfig();
+        aliYunAccountConfig = JSON.parseObject(accountConfig, AliYunAccountConfig.class);
     }
 
     /**
@@ -67,7 +58,7 @@ public class AliyunMsgMaker extends BaseMsgMaker implements IMsgMaker {
         //使用post提交
         request.setSysMethod(MethodType.POST);
         //必填:短信签名-可在短信控制台中找到
-        request.setSignName(App.config.getAliyunSign());
+        request.setSignName(aliYunAccountConfig.getSign());
 
         // 模板参数
         Map<String, String> paramMap = new HashMap<>(10);

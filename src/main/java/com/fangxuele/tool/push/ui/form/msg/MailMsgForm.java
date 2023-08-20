@@ -1,6 +1,8 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
-import com.fangxuele.tool.push.dao.TMsgMailMapper;
+import cn.hutool.json.JSONUtil;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgMail;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.ui.form.MainWindow;
@@ -43,7 +45,7 @@ public class MailMsgForm implements IMsgForm {
     private JTextArea mailFilesTextArea;
 
     private static MailMsgForm mailMsgForm;
-    private static TMsgMailMapper msgMailMapper = MybatisUtil.getSqlSession().getMapper(TMsgMailMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
 
     public MailMsgForm() {
         fileExploreButton.addActionListener(e -> {
@@ -83,29 +85,30 @@ public class MailMsgForm implements IMsgForm {
     }
 
     @Override
-    public void init(String msgName) {
+    public void init(Integer msgId) {
         clearAllField();
-        List<TMsgMail> tMsgMailList = msgMailMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.EMAIL_CODE, msgName);
-        if (tMsgMailList.size() > 0) {
-            TMsgMail tMsgMail = tMsgMailList.get(0);
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        if (tMsg != null) {
+            TMsgMail tMsgMail = JSONUtil.toBean(tMsg.getContent(), TMsgMail.class);
             getInstance().getMailTitleTextField().setText(tMsgMail.getTitle());
             getInstance().getMailCcTextField().setText(tMsgMail.getCc());
             getInstance().getMailFilesTextArea().setText(tMsgMail.getFiles());
-            getInstance().getMailContentPane().setText(tMsgMail.getContent());
+            getInstance().getMailContentPane().setText(tMsg.getContent());
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
-            messageEditForm.getMsgNameField().setText(tMsgMail.getMsgName());
-            messageEditForm.getPreviewUserField().setText(tMsgMail.getPreviewUser());
+            messageEditForm.getMsgNameField().setText(tMsg.getMsgName());
+            messageEditForm.getPreviewUserField().setText(tMsg.getPreviewUser());
         }
     }
 
     @Override
-    public void save(String msgName) {
+    public void save(Integer accountId, String msgName) {
         boolean existSameMsg = false;
-
-        List<TMsgMail> tMsgMailList = msgMailMapper.selectByMsgTypeAndMsgName(MessageTypeEnum.EMAIL_CODE, msgName);
-        if (tMsgMailList.size() > 0) {
+        Integer msgId = null;
+        TMsg tMsg = msgMapper.selectByUnique(MessageTypeEnum.EMAIL_CODE, accountId, msgName);
+        if (tMsg != null) {
             existSameMsg = true;
+            msgId = tMsg.getId();
         }
 
         int isCover = JOptionPane.NO_OPTION;
@@ -122,23 +125,27 @@ public class MailMsgForm implements IMsgForm {
 
             String now = SqliteUtil.nowDateForSqlite();
 
+            TMsg msg = new TMsg();
             TMsgMail tMsgMail = new TMsgMail();
-            tMsgMail.setMsgType(MessageTypeEnum.EMAIL_CODE);
-            tMsgMail.setMsgName(msgName);
+            msg.setMsgType(MessageTypeEnum.EMAIL_CODE);
+            msg.setAccountId(accountId);
+            msg.setMsgName(msgName);
             tMsgMail.setTitle(mailTitle);
             tMsgMail.setCc(mailCc);
             tMsgMail.setFiles(mailFiles);
             tMsgMail.setContent(mailContent);
-            tMsgMail.setCreateTime(now);
-            tMsgMail.setModifiedTime(now);
+            msg.setCreateTime(now);
+            msg.setModifiedTime(now);
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
-            tMsgMail.setPreviewUser(messageEditForm.getPreviewUserField().getText());
+            msg.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
+            msg.setContent(JSONUtil.toJsonStr(tMsgMail));
             if (existSameMsg) {
-                msgMailMapper.updateByMsgTypeAndMsgName(tMsgMail);
+                msg.setId(msgId);
+                msgMapper.updateByPrimaryKeySelective(msg);
             } else {
-                msgMailMapper.insertSelective(tMsgMail);
+                msgMapper.insertSelective(msg);
             }
 
             JOptionPane.showMessageDialog(MainWindow.getInstance().getMessagePanel(), "保存成功！", "成功",
@@ -189,7 +196,8 @@ public class MailMsgForm implements IMsgForm {
     /**
      * 清空所有界面字段
      */
-    public static void clearAllField() {
+    @Override
+    public void clearAllField() {
         getInstance().getMailTitleTextField().setText("");
         getInstance().getMailCcTextField().setText("");
         getInstance().getMailFilesTextArea().setText("");

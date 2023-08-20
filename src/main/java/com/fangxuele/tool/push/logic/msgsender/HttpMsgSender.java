@@ -6,26 +6,25 @@ import cn.hutool.http.Header;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.App;
-import com.fangxuele.tool.push.bean.HttpMsg;
-import com.fangxuele.tool.push.logic.PushControl;
-import com.fangxuele.tool.push.logic.PushData;
+import com.fangxuele.tool.push.bean.account.HttpAccountConfig;
+import com.fangxuele.tool.push.bean.msg.HttpMsg;
+import com.fangxuele.tool.push.dao.TAccountMapper;
+import com.fangxuele.tool.push.dao.TMsgMapper;
+import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.logic.msgmaker.HttpMsgMaker;
+import com.fangxuele.tool.push.util.MybatisUtil;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.ConnectionPool;
-import okhttp3.FormBody;
-import okhttp3.HttpUrl;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.net.HttpCookie;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -43,13 +42,28 @@ public class HttpMsgSender implements IMsgSender {
 
     private HttpMsgMaker httpMsgMaker;
 
-    public volatile static OkHttpClient okHttpClient;
+    private static OkHttpClient okHttpClient;
+    private static Map<Integer, OkHttpClient> okHttpClientMap = new HashMap<>();
 
-    public volatile static Proxy proxy;
+    private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
+    private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
 
-    public HttpMsgSender() {
-        httpMsgMaker = new HttpMsgMaker();
-        okHttpClient = getOkHttpClient();
+    private Integer dryRun;
+
+    private HttpAccountConfig httpAccountConfig;
+
+    public HttpMsgSender(Integer msgId, Integer dryRun) {
+        TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
+        httpMsgMaker = new HttpMsgMaker(tMsg);
+        okHttpClient = getOkHttpClient(tMsg.getAccountId());
+        TAccount tAccount = accountMapper.selectByPrimaryKey(tMsg.getAccountId());
+        String accountConfig = tAccount.getAccountConfig();
+        httpAccountConfig = JSON.parseObject(accountConfig, HttpAccountConfig.class);
+        this.dryRun = dryRun;
+    }
+
+    public static void removeAccount(Integer tAccount1Id) {
+        okHttpClientMap.remove(tAccount1Id);
     }
 
     @Override
@@ -68,7 +82,7 @@ public class HttpMsgSender implements IMsgSender {
         try {
             HttpMsg httpMsg = httpMsgMaker.makeMsg(msgData);
             HttpRequest httpRequest;
-            switch (HttpMsgMaker.method) {
+            switch (httpMsgMaker.getMethod()) {
                 case "GET":
                     httpRequest = HttpRequest.get(httpMsg.getUrl());
                     break;
@@ -108,11 +122,12 @@ public class HttpMsgSender implements IMsgSender {
             if (StringUtils.isNotEmpty(httpMsg.getBody())) {
                 httpRequest.body(httpMsg.getBody());
             }
-            if (App.config.isHttpUseProxy()) {
-                httpRequest.setProxy(getProxy());
+            if (httpAccountConfig.isUseProxy()) {
+                Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(httpAccountConfig.getProxyHost(), Integer.parseInt(httpAccountConfig.getProxyPort())));
+                httpRequest.setProxy(proxy);
             }
 
-            if (PushControl.dryRun) {
+            if (dryRun == 1) {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
@@ -168,14 +183,14 @@ public class HttpMsgSender implements IMsgSender {
             Request.Builder requestBuilder = new Request.Builder();
 
             RequestBody requestBody = RequestBody.create("", MediaType.get("text/plain"));
-            if (!"GET".equals(HttpMsgMaker.method) && httpMsg.getParamMap() != null && !httpMsg.getParamMap().isEmpty()) {
+            if (!"GET".equals(httpMsgMaker.getMethod()) && httpMsg.getParamMap() != null && !httpMsg.getParamMap().isEmpty()) {
                 FormBody.Builder formBodyBuilder = new FormBody.Builder();
                 for (Map.Entry<String, Object> paramEntry : httpMsg.getParamMap().entrySet()) {
                     formBodyBuilder.add(paramEntry.getKey(), (String) paramEntry.getValue());
                 }
                 requestBody = formBodyBuilder.build();
-            } else if (!"GET".equals(HttpMsgMaker.method) && StringUtils.isNotEmpty(httpMsg.getBody())) {
-                String bodyType = HttpMsgMaker.bodyType;
+            } else if (!"GET".equals(httpMsgMaker.getMethod()) && StringUtils.isNotEmpty(httpMsg.getBody())) {
+                String bodyType = httpMsgMaker.getBodyType();
                 MediaType mediaType = MediaType.get(bodyType + "; charset=utf-8");
                 requestBody = RequestBody.create(httpMsg.getBody(), mediaType);
             }
@@ -188,7 +203,7 @@ public class HttpMsgSender implements IMsgSender {
             if (httpMsg.getCookies() != null && !httpMsg.getCookies().isEmpty()) {
                 requestBuilder.addHeader(Header.COOKIE.toString(), cookieHeader(httpMsg.getCookies()));
             }
-            switch (HttpMsgMaker.method) {
+            switch (httpMsgMaker.getMethod()) {
                 case "GET":
                     HttpUrl.Builder urlBuilder = HttpUrl.parse(httpMsg.getUrl()).newBuilder();
                     if (httpMsg.getParamMap() != null && !httpMsg.getParamMap().isEmpty()) {
@@ -221,7 +236,7 @@ public class HttpMsgSender implements IMsgSender {
 
             Request request = requestBuilder.build();
 
-            if (PushControl.dryRun) {
+            if (dryRun == 1) {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
@@ -279,33 +294,43 @@ public class HttpMsgSender implements IMsgSender {
         return cookieHeader.toString();
     }
 
-    private static Proxy getProxy() {
-        if (proxy == null) {
-            synchronized (HttpMsgSender.class) {
-                if (proxy == null) {
-                    proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(App.config.getHttpProxyHost(), Integer.parseInt(App.config.getHttpProxyPort())));
-                }
-            }
-        }
-        return proxy;
-    }
-
     public static OkHttpClient getOkHttpClient() {
         if (okHttpClient == null) {
             synchronized (HttpMsgSender.class) {
                 if (okHttpClient == null) {
                     OkHttpClient.Builder builder = new OkHttpClient.Builder();
                     builder.connectTimeout(3, TimeUnit.MINUTES);
-                    if (App.config.isHttpUseProxy()) {
-                        builder.proxy(getProxy());
-                    }
 
-                    ConnectionPool pool = new ConnectionPool(PushData.threadCount, 10, TimeUnit.MINUTES);
+                    ConnectionPool pool = new ConnectionPool(App.config.getMaxThreads(), 10, TimeUnit.MINUTES);
                     builder.connectionPool(pool);
                     okHttpClient = builder.build();
                 }
             }
         }
         return okHttpClient;
+    }
+
+    private OkHttpClient getOkHttpClient(Integer accountId) {
+        if (okHttpClientMap.containsKey(accountId)) {
+            return okHttpClientMap.get(accountId);
+        } else {
+            TAccount tAccount = accountMapper.selectByPrimaryKey(accountId);
+            String accountConfig = tAccount.getAccountConfig();
+            HttpAccountConfig httpAccountConfig = JSON.parseObject(accountConfig, HttpAccountConfig.class);
+            OkHttpClient.Builder builder = new OkHttpClient.Builder();
+            builder.connectTimeout(3, TimeUnit.MINUTES);
+            if (httpAccountConfig.isUseProxy()) {
+                Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(httpAccountConfig.getProxyHost(), Integer.parseInt(httpAccountConfig.getProxyPort())));
+                builder.proxy(proxy);
+            }
+
+            ConnectionPool pool = new ConnectionPool(App.config.getMaxThreads(), 10, TimeUnit.MINUTES);
+            builder.connectionPool(pool);
+            OkHttpClient okHttpClient = builder.build();
+
+            okHttpClientMap.put(accountId, okHttpClient);
+            return okHttpClient;
+        }
+
     }
 }

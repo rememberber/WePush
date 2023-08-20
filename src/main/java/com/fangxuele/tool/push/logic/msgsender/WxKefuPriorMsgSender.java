@@ -13,9 +13,9 @@ public class WxKefuPriorMsgSender implements IMsgSender {
     private WxMpTemplateMsgSender wxMpTemplateMsgSender;
     private WxKefuMsgSender wxKefuMsgSender;
 
-    public WxKefuPriorMsgSender() {
-        wxMpTemplateMsgSender = new WxMpTemplateMsgSender();
-        wxKefuMsgSender = new WxKefuMsgSender();
+    public WxKefuPriorMsgSender(Integer msgId, Integer dryRun) {
+        wxMpTemplateMsgSender = new WxMpTemplateMsgSender(msgId, dryRun);
+        wxKefuMsgSender = new WxKefuMsgSender(msgId, dryRun);
     }
 
     @Override
