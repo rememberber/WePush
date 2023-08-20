@@ -2,7 +2,6 @@ package com.fangxuele.tool.push.ui.frame;
 
 import cn.hutool.core.thread.ThreadUtil;
 import com.fangxuele.tool.push.ui.UiConsts;
-import com.fangxuele.tool.push.ui.component.TopMenuBar;
 import com.fangxuele.tool.push.ui.listener.*;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
@@ -47,10 +46,6 @@ public class MainFrame extends JFrame {
             this.getRootPane().putClientProperty("apple.awt.windowTitleVisible", false);
         }
 
-        TopMenuBar topMenuBar = TopMenuBar.getInstance();
-        topMenuBar.init();
-        setJMenuBar(topMenuBar);
-
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.8, 0.88);
     }
 
@@ -59,14 +54,17 @@ public class MainFrame extends JFrame {
      */
     public void addListeners() {
         ThreadUtil.execute(MessageTypeListener::addListeners);
+        ThreadUtil.execute(AboutListener::addListeners);
         ThreadUtil.execute(HelpListener::addListeners);
-        ThreadUtil.execute(AccountManageListener::addListeners);
-        ThreadUtil.execute(AccountEditListener::addListeners);
-        ThreadUtil.execute(MessageManageListener::addListeners);
+        ThreadUtil.execute(PushHisListener::addListeners);
+        ThreadUtil.execute(SettingListener::addListeners);
         ThreadUtil.execute(MessageEditListener::addListeners);
-        ThreadUtil.execute(PeopleManageListener::addListeners);
-        ThreadUtil.execute(PeopleEditListener::addListeners);
-        ThreadUtil.execute(TaskListener::addListeners);
+        ThreadUtil.execute(MessageManageListener::addListeners);
+        ThreadUtil.execute(MemberListener::addListeners);
+        ThreadUtil.execute(PushListener::addListeners);
+        ThreadUtil.execute(InfinityListener::addListeners);
+        ThreadUtil.execute(BoostListener::addListeners);
+        ThreadUtil.execute(ScheduleListener::addListeners);
         ThreadUtil.execute(TabListener::addListeners);
         ThreadUtil.execute(FrameListener::addListeners);
     }
