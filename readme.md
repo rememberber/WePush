@@ -7,7 +7,6 @@
 
 [![码云Gitee](https://gitee.com/zhoubochina/WePush/badge/star.svg?theme=blue)](https://gitee.com/zhoubochina/WePush)
 [![GitHub stars](https://img.shields.io/github/stars/rememberber/WePush.svg)](https://github.com/rememberber/WePush)
-[![Build Status](https://travis-ci.org/rememberber/WePush.svg?branch=master)](https://travis-ci.org/rememberber/WePush)
 [![GitHub release](https://img.shields.io/github/release/rememberber/WePush.svg)](https://github.com/rememberber/WePush/releases)
 [![GitHub license](https://img.shields.io/github/license/rememberber/WePush.svg)](https://github.com/rememberber/WePush/blob/master/LICENSE.txt)
 
