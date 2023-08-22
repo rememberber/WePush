@@ -62,6 +62,7 @@ Windows • Linux • macOS
 ![Overview](assets/screen_shoot/3.png)
 ![Overview](assets/screen_shoot/4.png)
 ![Overview](assets/screen_shoot/5.png)
+![Overview](assets/screen_shoot/7.png)
 ![Overview](assets/screen_shoot/6.png)
 ### 安装文件下载
 
