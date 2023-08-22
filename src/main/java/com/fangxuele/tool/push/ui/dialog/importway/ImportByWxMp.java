@@ -690,8 +690,6 @@ public class ImportByWxMp extends JDialog {
                     importedCount++;
                 }
 
-                peopleDataMapper.deleteByPeopleId(peopleId);
-
                 while (StringUtils.isNotEmpty(wxMpUserList.getNextOpenid())) {
                     wxMpUserList = wxMpService.getUserService().userList(wxMpUserList.getNextOpenid());
 
@@ -784,6 +782,8 @@ public class ImportByWxMp extends JDialog {
                     tagUserSet.addAll(openIds);
                 }
 
+                peopleDataMapper.deleteByPeopleId(peopleId);
+
                 for (String openId : tagUserSet) {
                     List<String> varData = getVarDatas(this, openId);
 
@@ -861,6 +861,8 @@ public class ImportByWxMp extends JDialog {
                     // 取交集
                     tagUserSet.retainAll(openIds);
                 }
+
+                peopleDataMapper.deleteByPeopleId(peopleId);
 
                 for (String openId : tagUserSet) {
                     List<String> varData = getVarDatas(this, openId);
