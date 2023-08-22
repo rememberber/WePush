@@ -17,10 +17,7 @@ import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.logic.msgthread.MsgSendThread;
 import com.fangxuele.tool.push.ui.UiConsts;
-import com.fangxuele.tool.push.ui.dialog.importway.ImportByFile;
-import com.fangxuele.tool.push.ui.dialog.importway.ImportByNum;
-import com.fangxuele.tool.push.ui.dialog.importway.ImportBySQL;
-import com.fangxuele.tool.push.ui.dialog.importway.ImportByWxMp;
+import com.fangxuele.tool.push.ui.dialog.importway.*;
 import com.fangxuele.tool.push.ui.form.TaskForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
@@ -231,7 +228,8 @@ public class TaskRunThread extends Thread {
                     importByWxMp.reImport();
                     break;
                 case PeopleImportWayEnum.BY_WX_CP_CODE:
-                    // TODO
+                    ImportByWxCp importByWxCp = new ImportByWxCp(tTask.getPeopleId());
+                    importByWxCp.reImport();
                     break;
                 case PeopleImportWayEnum.BY_DING_CODE:
                     // TODO
