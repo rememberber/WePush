@@ -18,6 +18,7 @@ import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.logic.msgthread.MsgSendThread;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.importway.ImportByFile;
+import com.fangxuele.tool.push.ui.dialog.importway.ImportBySQL;
 import com.fangxuele.tool.push.ui.form.TaskForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
@@ -216,7 +217,8 @@ public class TaskRunThread extends Thread {
                     importByFile.reImport();
                     break;
                 case PeopleImportWayEnum.BY_SQL_CODE:
-                    // TODO
+                    ImportBySQL importBySQL = new ImportBySQL(tTask.getPeopleId());
+                    importBySQL.reImport();
                     break;
                 case PeopleImportWayEnum.BY_NUM_CODE:
                     // TODO

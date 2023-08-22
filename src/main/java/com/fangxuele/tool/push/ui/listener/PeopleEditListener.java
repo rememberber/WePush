@@ -314,7 +314,7 @@ public class PeopleEditListener {
             dialog.pack();
             dialog.setVisible(true);
         } else if (PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_SQL).equals(actionCommand)) {
-            ImportBySQL dialog = new ImportBySQL();
+            ImportBySQL dialog = new ImportBySQL(PeopleManageListener.selectedPeopleId);
             dialog.pack();
             dialog.setVisible(true);
         } else if (PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_WX_MP).equals(actionCommand)) {
