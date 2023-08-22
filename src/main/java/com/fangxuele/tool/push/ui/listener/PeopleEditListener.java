@@ -318,7 +318,7 @@ public class PeopleEditListener {
             dialog.pack();
             dialog.setVisible(true);
         } else if (PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_WX_MP).equals(actionCommand)) {
-            ImportByWxMp dialog = new ImportByWxMp(selectedAccountName);
+            ImportByWxMp dialog = new ImportByWxMp(PeopleManageListener.selectedPeopleId);
             dialog.pack();
             dialog.setVisible(true);
         } else if (PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_WX_CP).equals(actionCommand)) {

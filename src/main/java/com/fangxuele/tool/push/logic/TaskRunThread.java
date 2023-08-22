@@ -20,6 +20,7 @@ import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.importway.ImportByFile;
 import com.fangxuele.tool.push.ui.dialog.importway.ImportByNum;
 import com.fangxuele.tool.push.ui.dialog.importway.ImportBySQL;
+import com.fangxuele.tool.push.ui.dialog.importway.ImportByWxMp;
 import com.fangxuele.tool.push.ui.form.TaskForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
@@ -226,7 +227,8 @@ public class TaskRunThread extends Thread {
                     importByNum.reImport();
                     break;
                 case PeopleImportWayEnum.BY_WX_MP_CODE:
-                    // TODO
+                    ImportByWxMp importByWxMp = new ImportByWxMp(tTask.getPeopleId());
+                    importByWxMp.reImport();
                     break;
                 case PeopleImportWayEnum.BY_WX_CP_CODE:
                     // TODO
