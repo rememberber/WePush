@@ -205,7 +205,6 @@ public class TaskRunThread extends Thread {
 
         taskHis.setLogFilePath(logFilePath);
 
-        // TODO 执行前重新导入目标用户
         if (tTask.getTaskPeriod() == TaskTypeEnum.SCHEDULE_TASK_CODE && tTask.getReimportPeople() == 1) {
             // 获取上一次导入方式
             TPeopleImportConfig tPeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(tTask.getPeopleId());
@@ -232,7 +231,8 @@ public class TaskRunThread extends Thread {
                     importByWxCp.reImport();
                     break;
                 case PeopleImportWayEnum.BY_DING_CODE:
-                    // TODO
+                    ImportByDing importByDing = new ImportByDing(tTask.getPeopleId());
+                    importByDing.reImport();
                     break;
                 default:
                     break;

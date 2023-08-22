@@ -14,14 +14,15 @@ import com.dingtalk.api.response.OapiUserSimplelistResponse;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPeopleDataMapper;
 import com.fangxuele.tool.push.dao.TPeopleImportConfigMapper;
+import com.fangxuele.tool.push.dao.TPeopleMapper;
+import com.fangxuele.tool.push.domain.TPeople;
 import com.fangxuele.tool.push.domain.TPeopleData;
 import com.fangxuele.tool.push.domain.TPeopleImportConfig;
 import com.fangxuele.tool.push.logic.PeopleImportWayEnum;
+import com.fangxuele.tool.push.logic.msgsender.DingMsgSender;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.importway.config.DingImportConfig;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
-import com.fangxuele.tool.push.ui.form.account.DingAccountForm;
-import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
@@ -35,7 +36,9 @@ import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.text.StyleContext;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -49,9 +52,12 @@ public class ImportByDing extends JDialog {
 
     private static final Log logger = LogFactory.get();
 
-    private String selectedAccountName;
+    private Integer peopleId;
+
+    private TPeople tPeople;
 
     private static TPeopleDataMapper peopleDataMapper = MybatisUtil.getSqlSession().getMapper(TPeopleDataMapper.class);
+    private static TPeopleMapper peopleMapper = MybatisUtil.getSqlSession().getMapper(TPeopleMapper.class);
     private static TPeopleImportConfigMapper peopleImportConfigMapper = MybatisUtil.getSqlSession().getMapper(TPeopleImportConfigMapper.class);
 
     /**
@@ -64,14 +70,15 @@ public class ImportByDing extends JDialog {
      */
     private static Map<Long, String> wxCpIdToDeptNameMap = Maps.newHashMap();
 
-    public ImportByDing(String selectedAccountName) {
+    public ImportByDing(Integer peopleId) {
         super(App.mainFrame, "通过钉钉通讯录导入");
         setContentPane(contentPane);
         setModal(true);
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.3, 0.2);
         getRootPane().setDefaultButton(dingImportAllButton);
 
-        this.selectedAccountName = selectedAccountName;
+        this.peopleId = peopleId;
+        tPeople = peopleMapper.selectByPrimaryKey(peopleId);
 
         dingDeptsImportButton.setIcon(new FlatSVGIcon("icon/import.svg"));
         dingImportAllButton.setIcon(new FlatSVGIcon("icon/import.svg"));
@@ -87,7 +94,7 @@ public class ImportByDing extends JDialog {
                     DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/department/list");
                     OapiDepartmentListRequest request = new OapiDepartmentListRequest();
                     request.setHttpMethod("GET");
-                    OapiDepartmentListResponse response = client.execute(request, DingAccountForm.getAccessTokenTimedCache(selectedAccountName).get("accessToken"));
+                    OapiDepartmentListResponse response = client.execute(request, DingMsgSender.getAccessTokenTimedCache(tPeople.getAccountId()).get("accessToken"));
                     if (response.getErrcode() != 0) {
                         JOptionPane.showMessageDialog(App.mainFrame, "刷新失败！\n\n" + response.getErrmsg(), "失败",
                                 JOptionPane.ERROR_MESSAGE);
@@ -129,10 +136,10 @@ public class ImportByDing extends JDialog {
                     Long deptId = wxCpDeptNameToIdMap.get(dingDeptsComboBox.getSelectedItem());
 
                     // 保存导入配置
-                    TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
+                    TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(peopleId);
 
                     TPeopleImportConfig tPeopleImportConfig = new TPeopleImportConfig();
-                    tPeopleImportConfig.setPeopleId(PeopleManageListener.selectedPeopleId);
+                    tPeopleImportConfig.setPeopleId(peopleId);
                     tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_DING_CODE));
                     tPeopleImportConfig.setLastDataVersion(dataVersion);
                     tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
@@ -162,7 +169,7 @@ public class ImportByDing extends JDialog {
                     long offset = 0;
                     OapiUserSimplelistResponse response = new OapiUserSimplelistResponse();
                     while (response.getErrcode() == null || response.getUserlist().size() > 0) {
-                        response = client.execute(request, DingAccountForm.getAccessTokenTimedCache(selectedAccountName).get("accessToken"));
+                        response = client.execute(request, DingMsgSender.getAccessTokenTimedCache(tPeople.getAccountId()).get("accessToken"));
                         if (response.getErrcode() != 0) {
                             if (response.getErrcode() == 60011) {
                                 JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + response.getErrmsg() + "\n\n进入开发者后台，在小程序或者微应用详情的「接口权限」模块，点击申请对应的通讯录接口读写权限", "失败",
@@ -179,7 +186,7 @@ public class ImportByDing extends JDialog {
                             String[] dataArray = new String[]{dingUser.getUserid(), dingUser.getName()};
 
                             TPeopleData tPeopleData = new TPeopleData();
-                            tPeopleData.setPeopleId(PeopleManageListener.selectedPeopleId);
+                            tPeopleData.setPeopleId(peopleId);
                             tPeopleData.setPin(dataArray[0]);
                             tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
                             tPeopleData.setAppVersion(UiConsts.APP_VERSION);
@@ -196,7 +203,7 @@ public class ImportByDing extends JDialog {
                         request.setOffset(offset);
                     }
 
-                    PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
+                    PeopleEditForm.initDataTable(peopleId);
 
                     JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
                 } catch (Exception ex) {
@@ -256,10 +263,10 @@ public class ImportByDing extends JDialog {
             String dataVersion = UUID.fastUUID().toString(true);
 
             // 保存导入配置
-            TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
+            TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(peopleId);
 
             TPeopleImportConfig tPeopleImportConfig = new TPeopleImportConfig();
-            tPeopleImportConfig.setPeopleId(PeopleManageListener.selectedPeopleId);
+            tPeopleImportConfig.setPeopleId(peopleId);
             tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_DING_CODE));
             tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
             tPeopleImportConfig.setLastDataVersion(dataVersion);
@@ -289,7 +296,7 @@ public class ImportByDing extends JDialog {
             long offset = 0;
             OapiUserSimplelistResponse response = new OapiUserSimplelistResponse();
             while (response.getErrcode() == null || response.getUserlist().size() > 0) {
-                response = client.execute(request, DingAccountForm.getAccessTokenTimedCache(selectedAccountName).get("accessToken"));
+                response = client.execute(request, DingMsgSender.getAccessTokenTimedCache(tPeople.getAccountId()).get("accessToken"));
                 if (response.getErrcode() != 0) {
                     if (response.getErrcode() == 60011) {
                         JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + response.getErrmsg() + "\n\n进入开发者后台，在小程序或者微应用详情的「接口权限」模块，点击申请对应的通讯录接口读写权限", "失败",
@@ -306,7 +313,7 @@ public class ImportByDing extends JDialog {
                     String[] dataArray = new String[]{dingUser.getUserid(), dingUser.getName()};
 
                     TPeopleData tPeopleData = new TPeopleData();
-                    tPeopleData.setPeopleId(PeopleManageListener.selectedPeopleId);
+                    tPeopleData.setPeopleId(peopleId);
                     tPeopleData.setPin(dataArray[0]);
                     tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
                     tPeopleData.setAppVersion(UiConsts.APP_VERSION);
@@ -323,7 +330,7 @@ public class ImportByDing extends JDialog {
                 request.setOffset(offset);
             }
 
-            PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
+            PeopleEditForm.initDataTable(peopleId);
 
             JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception ex) {
@@ -413,4 +420,171 @@ public class ImportByDing extends JDialog {
         return contentPane;
     }
 
+    public void reImport() {
+        TPeopleImportConfig peopleImportConfig = peopleImportConfigMapper.selectByPeopleId(peopleId);
+        String lastWayConfig = peopleImportConfig.getLastWayConfig();
+        DingImportConfig dingImportConfigBefore = JSONUtil.toBean(lastWayConfig, DingImportConfig.class);
+        if (dingImportConfigBefore == null) {
+            return;
+        }
+
+        try {
+            if (dingImportConfigBefore.getUserType() == 1) {
+                int importedCount = 0;
+
+                String now = SqliteUtil.nowDateForSqlite();
+                String dataVersion = UUID.fastUUID().toString(true);
+
+                // 保存导入配置
+                TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(peopleId);
+
+                TPeopleImportConfig tPeopleImportConfig = new TPeopleImportConfig();
+                tPeopleImportConfig.setPeopleId(peopleId);
+                tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_DING_CODE));
+                tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
+                tPeopleImportConfig.setLastDataVersion(dataVersion);
+                tPeopleImportConfig.setModifiedTime(now);
+
+                DingImportConfig dingImportConfig = new DingImportConfig();
+                dingImportConfig.setUserType(1);
+                tPeopleImportConfig.setLastWayConfig(JSONUtil.toJsonStr(dingImportConfig));
+
+                if (beforePeopleImportConfig != null) {
+                    tPeopleImportConfig.setId(beforePeopleImportConfig.getId());
+                    peopleImportConfigMapper.updateByPrimaryKeySelective(tPeopleImportConfig);
+                } else {
+                    tPeopleImportConfig.setCreateTime(now);
+                    peopleImportConfigMapper.insert(tPeopleImportConfig);
+                }
+
+                // 最小部门id为1
+                // 获取用户
+                DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/user/simplelist");
+                OapiUserSimplelistRequest request = new OapiUserSimplelistRequest();
+                request.setDepartmentId(1L);
+                request.setOffset(0L);
+                request.setSize(100L);
+                request.setHttpMethod("GET");
+
+                long offset = 0;
+                OapiUserSimplelistResponse response = new OapiUserSimplelistResponse();
+
+                peopleDataMapper.deleteByPeopleId(peopleId);
+
+                while (response.getErrcode() == null || response.getUserlist().size() > 0) {
+                    response = client.execute(request, DingMsgSender.getAccessTokenTimedCache(tPeople.getAccountId()).get("accessToken"));
+                    if (response.getErrcode() != 0) {
+                        if (response.getErrcode() == 60011) {
+                            JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + response.getErrmsg() + "\n\n进入开发者后台，在小程序或者微应用详情的「接口权限」模块，点击申请对应的通讯录接口读写权限", "失败",
+                                    JOptionPane.ERROR_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + response.getErrmsg(), "失败", JOptionPane.ERROR_MESSAGE);
+                        }
+
+                        logger.error(response.getErrmsg());
+                        return;
+                    }
+                    List<OapiUserSimplelistResponse.Userlist> userlist = response.getUserlist();
+                    for (OapiUserSimplelistResponse.Userlist dingUser : userlist) {
+                        String[] dataArray = new String[]{dingUser.getUserid(), dingUser.getName()};
+
+                        TPeopleData tPeopleData = new TPeopleData();
+                        tPeopleData.setPeopleId(peopleId);
+                        tPeopleData.setPin(dataArray[0]);
+                        tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
+                        tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                        tPeopleData.setDataVersion(dataVersion);
+                        tPeopleData.setCreateTime(now);
+                        tPeopleData.setModifiedTime(now);
+
+                        peopleDataMapper.insert(tPeopleData);
+
+                        importedCount++;
+                    }
+                    offset += 100;
+                    request.setOffset(offset);
+                }
+            } else if (dingImportConfigBefore.getUserType() == 2) {
+                int importedCount = 0;
+                String now = SqliteUtil.nowDateForSqlite();
+
+                String dataVersion = UUID.fastUUID().toString(true);
+
+                // 获取部门id
+                Long deptId = dingImportConfigBefore.getDeptId();
+
+                // 保存导入配置
+                TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(peopleId);
+
+                TPeopleImportConfig tPeopleImportConfig = new TPeopleImportConfig();
+                tPeopleImportConfig.setPeopleId(peopleId);
+                tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_DING_CODE));
+                tPeopleImportConfig.setLastDataVersion(dataVersion);
+                tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
+                tPeopleImportConfig.setModifiedTime(now);
+
+                DingImportConfig dingImportConfig = new DingImportConfig();
+                dingImportConfig.setUserType(2);
+                dingImportConfig.setDeptId(deptId);
+                tPeopleImportConfig.setLastWayConfig(JSONUtil.toJsonStr(dingImportConfig));
+
+                if (beforePeopleImportConfig != null) {
+                    tPeopleImportConfig.setId(beforePeopleImportConfig.getId());
+                    peopleImportConfigMapper.updateByPrimaryKeySelective(tPeopleImportConfig);
+                } else {
+                    tPeopleImportConfig.setCreateTime(now);
+                    peopleImportConfigMapper.insert(tPeopleImportConfig);
+                }
+
+                // 获取用户
+                DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/user/simplelist");
+                OapiUserSimplelistRequest request = new OapiUserSimplelistRequest();
+                request.setDepartmentId(deptId);
+                request.setOffset(0L);
+                request.setSize(100L);
+                request.setHttpMethod("GET");
+
+                long offset = 0;
+                OapiUserSimplelistResponse response = new OapiUserSimplelistResponse();
+
+                peopleDataMapper.deleteByPeopleId(peopleId);
+
+                while (response.getErrcode() == null || response.getUserlist().size() > 0) {
+                    response = client.execute(request, DingMsgSender.getAccessTokenTimedCache(tPeople.getAccountId()).get("accessToken"));
+                    if (response.getErrcode() != 0) {
+                        if (response.getErrcode() == 60011) {
+                            JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + response.getErrmsg() + "\n\n进入开发者后台，在小程序或者微应用详情的「接口权限」模块，点击申请对应的通讯录接口读写权限", "失败",
+                                    JOptionPane.ERROR_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + response.getErrmsg(), "失败", JOptionPane.ERROR_MESSAGE);
+                        }
+
+                        logger.error(response.getErrmsg());
+                        return;
+                    }
+                    List<OapiUserSimplelistResponse.Userlist> userlist = response.getUserlist();
+                    for (OapiUserSimplelistResponse.Userlist dingUser : userlist) {
+                        String[] dataArray = new String[]{dingUser.getUserid(), dingUser.getName()};
+
+                        TPeopleData tPeopleData = new TPeopleData();
+                        tPeopleData.setPeopleId(peopleId);
+                        tPeopleData.setPin(dataArray[0]);
+                        tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
+                        tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                        tPeopleData.setDataVersion(dataVersion);
+                        tPeopleData.setCreateTime(now);
+                        tPeopleData.setModifiedTime(now);
+
+                        peopleDataMapper.insert(tPeopleData);
+
+                        importedCount++;
+                    }
+                    offset += 100;
+                    request.setOffset(offset);
+                }
+            }
+        } catch (Exception e) {
+            logger.error(ExceptionUtils.getStackTrace(e));
+        }
+    }
 }
