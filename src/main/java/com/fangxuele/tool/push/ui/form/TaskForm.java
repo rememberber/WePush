@@ -7,10 +7,7 @@ import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.*;
 import com.fangxuele.tool.push.domain.TTask;
 import com.fangxuele.tool.push.domain.TTaskHis;
-import com.fangxuele.tool.push.logic.MessageTypeEnum;
-import com.fangxuele.tool.push.logic.PeriodTypeEnum;
-import com.fangxuele.tool.push.logic.TaskStatusEnum;
-import com.fangxuele.tool.push.logic.TaskTypeEnum;
+import com.fangxuele.tool.push.logic.*;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
@@ -72,6 +69,8 @@ public class TaskForm {
     private JLabel plan4Label;
     private JLabel plan5Label;
     private JLabel planToContinueLabel;
+    private JLabel modeLabel;
+    private JLabel threadCntLabel;
 
     private static TaskForm taskForm;
 
@@ -180,6 +179,8 @@ public class TaskForm {
         taskForm.getMsgNameLabel().setText("消息名称：" + getMsgName(tTask.getMessageId()));
         taskForm.getMsgTypeLabel().setText("消息类型：" + MessageTypeEnum.getName(tTask.getMsgType()));
         taskForm.getPeopleNameLabel().setText("人群：" + peopleMapper.selectByPrimaryKey(tTask.getPeopleId()).getPeopleName());
+        taskForm.getModeLabel().setText("模式：" + TaskModeEnum.getDescByCode(tTask.getTaskMode()));
+        taskForm.getThreadCntLabel().setText("线程数：" + tTask.getThreadCnt());
 
         if (tTask.getTaskPeriod() == TaskTypeEnum.SCHEDULE_TASK_CODE && StringUtils.isNotBlank(tTask.getCron())) {
             List<String> latest5RunTimeList = Lists.newArrayList();
@@ -328,7 +329,7 @@ public class TaskForm {
         final Spacer spacer2 = new Spacer();
         panel5.add(spacer2, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JPanel panel6 = new JPanel();
-        panel6.setLayout(new GridLayoutManager(5, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel6.setLayout(new GridLayoutManager(7, 1, new Insets(0, 0, 0, 0), -1, -1));
         pushUpPanel.add(panel6, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         taskTitle = new JLabel();
         Font taskTitleFont = this.$$$getFont$$$(null, -1, 24, taskTitle.getFont());
@@ -337,7 +338,7 @@ public class TaskForm {
         taskTitle.setText("任务标题");
         panel6.add(taskTitle, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer3 = new Spacer();
-        panel6.add(spacer3, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        panel6.add(spacer3, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         msgTypeLabel = new JLabel();
         msgTypeLabel.setText("消息类型：");
         panel6.add(msgTypeLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -347,6 +348,12 @@ public class TaskForm {
         peopleNameLabel = new JLabel();
         peopleNameLabel.setText("人群：");
         panel6.add(peopleNameLabel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        modeLabel = new JLabel();
+        modeLabel.setText("模式：");
+        panel6.add(modeLabel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        threadCntLabel = new JLabel();
+        threadCntLabel.setText("线程数：");
+        panel6.add(threadCntLabel, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel7 = new JPanel();
         panel7.setLayout(new GridLayoutManager(8, 1, new Insets(0, 0, 0, 0), -1, -1));
         pushUpPanel.add(panel7, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
