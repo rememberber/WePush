@@ -24,7 +24,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class ImportByNum extends JDialog {
     private JPanel contentPane;
@@ -37,12 +39,16 @@ public class ImportByNum extends JDialog {
     private static TPeopleDataMapper peopleDataMapper = MybatisUtil.getSqlSession().getMapper(TPeopleDataMapper.class);
     private static TPeopleImportConfigMapper peopleImportConfigMapper = MybatisUtil.getSqlSession().getMapper(TPeopleImportConfigMapper.class);
 
-    public ImportByNum() {
+    private Integer peopleId;
+
+    public ImportByNum(Integer peopleId) {
         super(App.mainFrame, "没有变量，直接按数量发送");
         setContentPane(contentPane);
         setModal(true);
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.2, 0.2);
         getRootPane().setDefaultButton(importFromNumButton);
+
+        this.peopleId = peopleId;
 
         importFromNumButton.addActionListener(e -> onOK());
 
@@ -61,15 +67,27 @@ public class ImportByNum extends JDialog {
     }
 
     private void onOK() {
-        PeopleEditForm peopleEditForm = PeopleEditForm.getInstance();
-        JProgressBar progressBar = peopleEditForm.getMemberTabImportProgressBar();
-        JLabel memberCountLabel = peopleEditForm.getMemberTabCountLabel();
-
         if (StringUtils.isBlank(importNumTextField.getText())) {
             JOptionPane.showMessageDialog(App.mainFrame, "请填写数量！", "提示",
                     JOptionPane.INFORMATION_MESSAGE);
             return;
         }
+
+        Integer num = Integer.valueOf(importNumTextField.getText());
+
+        if (num <= 0) {
+            JOptionPane.showMessageDialog(App.mainFrame, "数量必须大于0！", "提示",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        importFromNum(num, false, false);
+    }
+
+    private void importFromNum(Integer num, Boolean clear, Boolean silence) {
+        PeopleEditForm peopleEditForm = PeopleEditForm.getInstance();
+        JProgressBar progressBar = peopleEditForm.getMemberTabImportProgressBar();
+        JLabel memberCountLabel = peopleEditForm.getMemberTabCountLabel();
 
         int currentImported = 0;
         String now = SqliteUtil.nowDateForSqlite();
@@ -94,9 +112,11 @@ public class ImportByNum extends JDialog {
         }
 
         try {
-            int importNum = Integer.parseInt(importNumTextField.getText());
-            progressBar.setVisible(true);
-            progressBar.setMaximum(importNum);
+            int importNum = num;
+            if (!silence) {
+                progressBar.setVisible(true);
+                progressBar.setMaximum(importNum);
+            }
 
 
             for (int i = 0; i < importNum; i++) {
@@ -115,23 +135,30 @@ public class ImportByNum extends JDialog {
                 peopleDataMapper.insert(tPeopleData);
 
                 currentImported++;
-                memberCountLabel.setText(String.valueOf(currentImported));
+                if (!silence) {
+                    memberCountLabel.setText(String.valueOf(currentImported));
+                }
             }
+            if (!silence) {
+                PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
 
-            PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
-
-            JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
-            dispose();
+                JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+                dispose();
+            }
         } catch (Exception e1) {
-            JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + e1.getMessage(), "失败",
-                    JOptionPane.ERROR_MESSAGE);
+            if (!silence) {
+                JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE);
+            }
             logger.error(e1);
             e1.printStackTrace();
         } finally {
-            progressBar.setMaximum(100);
-            progressBar.setValue(100);
-            progressBar.setIndeterminate(false);
-            progressBar.setVisible(false);
+            if (!silence) {
+                progressBar.setMaximum(100);
+                progressBar.setValue(100);
+                progressBar.setIndeterminate(false);
+                progressBar.setVisible(false);
+            }
         }
     }
 
@@ -187,4 +214,10 @@ public class ImportByNum extends JDialog {
         return contentPane;
     }
 
+    public void reImport() {
+        TPeopleImportConfig tPeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(peopleId);
+        importFromNum(0, true, true);
+        dispose();
+
+    }
 }

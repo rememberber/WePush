@@ -9,16 +9,17 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPeopleDataMapper;
 import com.fangxuele.tool.push.dao.TPeopleImportConfigMapper;
+import com.fangxuele.tool.push.dao.TPeopleMapper;
 import com.fangxuele.tool.push.dao.TWxMpUserMapper;
+import com.fangxuele.tool.push.domain.TPeople;
 import com.fangxuele.tool.push.domain.TPeopleData;
 import com.fangxuele.tool.push.domain.TPeopleImportConfig;
 import com.fangxuele.tool.push.domain.TWxMpUser;
 import com.fangxuele.tool.push.logic.PeopleImportWayEnum;
+import com.fangxuele.tool.push.logic.msgsender.WxMpTemplateMsgSender;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.importway.config.WxMpImportConfig;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
-import com.fangxuele.tool.push.ui.form.account.WxMpAccountForm;
-import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
@@ -65,6 +66,7 @@ public class ImportByWxMp extends JDialog {
     private static final Log logger = LogFactory.get();
 
     private static TPeopleDataMapper peopleDataMapper = MybatisUtil.getSqlSession().getMapper(TPeopleDataMapper.class);
+    private static TPeopleMapper peopleMapper = MybatisUtil.getSqlSession().getMapper(TPeopleMapper.class);
     private static TPeopleImportConfigMapper peopleImportConfigMapper = MybatisUtil.getSqlSession().getMapper(TPeopleImportConfigMapper.class);
     private static TWxMpUserMapper tWxMpUserMapper = MybatisUtil.getSqlSession().getMapper(TWxMpUserMapper.class);
 
@@ -72,18 +74,21 @@ public class ImportByWxMp extends JDialog {
     /**
      * 用于导入多个标签的用户时去重判断
      */
-    public static Set<String> tagUserSet;
+    private Set<String> tagUserSet;
 
-    private String selectedAccountName;
+    private Integer peopleId;
 
-    public ImportByWxMp(String selectedAccountName) {
+    private TPeople tPeople;
+
+    public ImportByWxMp(Integer peopleId) {
         super(App.mainFrame, "通过微信公众平台导入人群");
         setContentPane(contentPane);
         setModal(true);
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.3, 0.3);
         getRootPane().setDefaultButton(memberImportAllButton);
 
-        this.selectedAccountName = selectedAccountName;
+        this.peopleId = peopleId;
+        tPeople = peopleMapper.selectByPrimaryKey(peopleId);
 
         memberImportAllButton.setIcon(new FlatSVGIcon("icon/import.svg"));
         memberImportTagButton.setIcon(new FlatSVGIcon("icon/import.svg"));
@@ -98,7 +103,8 @@ public class ImportByWxMp extends JDialog {
 
         // 公众号-刷新可选的标签按钮事件
         memberImportTagFreshButton.addActionListener(e -> {
-            WxMpService wxMpService = WxMpAccountForm.getWxMpService(selectedAccountName);
+
+            WxMpService wxMpService = WxMpTemplateMsgSender.getWxMpService(tPeople.getAccountId());
             if (wxMpService.getWxMpConfigStorage() == null) {
                 return;
             }
@@ -134,7 +140,7 @@ public class ImportByWxMp extends JDialog {
 
                     long selectedTagId = userTagMap.get(memberImportTagComboBox.getSelectedItem());
                     getMpUserListByTag(this, selectedTagId, false);
-                    PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
+                    PeopleEditForm.initDataTable(peopleId);
                     JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成",
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
@@ -163,7 +169,7 @@ public class ImportByWxMp extends JDialog {
 
                     long selectedTagId = userTagMap.get(memberImportTagComboBox.getSelectedItem());
                     getMpUserListByTag(this, selectedTagId, true);
-                    PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
+                    PeopleEditForm.initDataTable(peopleId);
                     JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成",
                             JOptionPane.INFORMATION_MESSAGE);
                 } else {
@@ -216,7 +222,7 @@ public class ImportByWxMp extends JDialog {
 
         try {
             getMpUserList(dialog);
-            PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
+            PeopleEditForm.initDataTable(peopleId);
             progressBar.setVisible(false);
             JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
         } catch (WxErrorException e1) {
@@ -242,7 +248,7 @@ public class ImportByWxMp extends JDialog {
         progressBar.setVisible(true);
         progressBar.setIndeterminate(true);
 
-        WxMpService wxMpService = WxMpAccountForm.getWxMpService(selectedAccountName);
+        WxMpService wxMpService = WxMpTemplateMsgSender.getWxMpService(tPeople.getAccountId());
         if (wxMpService.getWxMpConfigStorage() == null) {
             return;
         }
@@ -259,10 +265,10 @@ public class ImportByWxMp extends JDialog {
         String dataVersion = UUID.fastUUID().toString(true);
 
         // 保存导入配置
-        TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
+        TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(peopleId);
 
         TPeopleImportConfig tPeopleImportConfig = new TPeopleImportConfig();
-        tPeopleImportConfig.setPeopleId(PeopleManageListener.selectedPeopleId);
+        tPeopleImportConfig.setPeopleId(peopleId);
         tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_WX_MP_CODE));
         tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
         tPeopleImportConfig.setLastDataVersion(dataVersion);
@@ -292,7 +298,7 @@ public class ImportByWxMp extends JDialog {
             List<String> varData = getVarDatas(dialog, openId);
 
             TPeopleData tPeopleData = new TPeopleData();
-            tPeopleData.setPeopleId(PeopleManageListener.selectedPeopleId);
+            tPeopleData.setPeopleId(peopleId);
             tPeopleData.setPin(openId);
             tPeopleData.setVarData(JSONUtil.toJsonStr(varData));
             tPeopleData.setAppVersion(UiConsts.APP_VERSION);
@@ -320,7 +326,7 @@ public class ImportByWxMp extends JDialog {
                 List<String> varData = getVarDatas(dialog, openId);
 
                 TPeopleData tPeopleData = new TPeopleData();
-                tPeopleData.setPeopleId(PeopleManageListener.selectedPeopleId);
+                tPeopleData.setPeopleId(peopleId);
                 tPeopleData.setPin(openId);
                 tPeopleData.setVarData(JSONUtil.toJsonStr(varData));
                 tPeopleData.setAppVersion(UiConsts.APP_VERSION);
@@ -342,7 +348,7 @@ public class ImportByWxMp extends JDialog {
     @NotNull
     private List<String> getVarDatas(ImportByWxMp dialog, String openId) {
         boolean needToGetInfoFromWeiXin = false;
-        WxMpService wxMpService = WxMpAccountForm.getWxMpService(selectedAccountName);
+        WxMpService wxMpService = WxMpTemplateMsgSender.getWxMpService(tPeople.getAccountId());
 
         if (dialog.getImportOptionBasicInfoCheckBox().isSelected() ||
                 dialog.getImportOptionAvatarCheckBox().isSelected()) {
@@ -411,7 +417,7 @@ public class ImportByWxMp extends JDialog {
         progressBar.setVisible(true);
         progressBar.setIndeterminate(true);
 
-        WxMpService wxMpService = WxMpAccountForm.getWxMpService(selectedAccountName);
+        WxMpService wxMpService = WxMpTemplateMsgSender.getWxMpService(tPeople.getAccountId());
         if (wxMpService.getWxMpConfigStorage() == null) {
             return;
         }
@@ -428,10 +434,10 @@ public class ImportByWxMp extends JDialog {
         String dataVersion = UUID.fastUUID().toString(true);
 
         // 保存导入配置
-        TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
+        TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(peopleId);
 
         TPeopleImportConfig tPeopleImportConfig = new TPeopleImportConfig();
-        tPeopleImportConfig.setPeopleId(PeopleManageListener.selectedPeopleId);
+        tPeopleImportConfig.setPeopleId(peopleId);
         tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_WX_MP_CODE));
         tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
         tPeopleImportConfig.setLastDataVersion(dataVersion);
@@ -490,7 +496,7 @@ public class ImportByWxMp extends JDialog {
             List<String> varData = getVarDatas(dialog, openId);
 
             TPeopleData tPeopleData = new TPeopleData();
-            tPeopleData.setPeopleId(PeopleManageListener.selectedPeopleId);
+            tPeopleData.setPeopleId(peopleId);
             tPeopleData.setPin(openId);
             tPeopleData.setVarData(JSONUtil.toJsonStr(varData));
             tPeopleData.setAppVersion(UiConsts.APP_VERSION);
@@ -612,4 +618,271 @@ public class ImportByWxMp extends JDialog {
         return contentPane;
     }
 
+    public void reImport() {
+        TPeopleImportConfig peopleImportConfig = peopleImportConfigMapper.selectByPeopleId(peopleId);
+        String lastWayConfig = peopleImportConfig.getLastWayConfig();
+        WxMpImportConfig wxMpImportConfigBefore = JSONUtil.toBean(lastWayConfig, WxMpImportConfig.class);
+        if (wxMpImportConfigBefore == null) {
+            return;
+        }
+
+        try {
+            //  1:全部，2：标签取并集，3:标签取交集
+            if (wxMpImportConfigBefore.getUserType() == 1) {
+                WxMpService wxMpService = WxMpTemplateMsgSender.getWxMpService(tPeople.getAccountId());
+                if (wxMpService.getWxMpConfigStorage() == null) {
+                    return;
+                }
+
+                WxMpUserList wxMpUserList = wxMpService.getUserService().userList(null);
+
+                logger.info("关注该公众账号的总用户数：" + wxMpUserList.getTotal());
+                logger.info("拉取的OPENID个数：" + wxMpUserList.getCount());
+
+                int importedCount = 0;
+                String now = SqliteUtil.nowDateForSqlite();
+                String dataVersion = UUID.fastUUID().toString(true);
+
+                // 保存导入配置
+                TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(peopleId);
+
+                TPeopleImportConfig tPeopleImportConfig = new TPeopleImportConfig();
+                tPeopleImportConfig.setPeopleId(peopleId);
+                tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_WX_MP_CODE));
+                tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
+                tPeopleImportConfig.setLastDataVersion(dataVersion);
+                tPeopleImportConfig.setModifiedTime(now);
+
+                WxMpImportConfig wxMpImportConfig = new WxMpImportConfig();
+                wxMpImportConfig.setUserType(1);
+                tPeopleImportConfig.setLastWayConfig(JSONUtil.toJsonStr(wxMpImportConfig));
+
+                if (beforePeopleImportConfig != null) {
+                    tPeopleImportConfig.setId(beforePeopleImportConfig.getId());
+                    peopleImportConfigMapper.updateByPrimaryKeySelective(tPeopleImportConfig);
+                } else {
+                    tPeopleImportConfig.setCreateTime(now);
+                    peopleImportConfigMapper.insert(tPeopleImportConfig);
+                }
+
+                if (wxMpUserList.getCount() == 0) {
+                    return;
+                }
+
+                List<String> openIds = wxMpUserList.getOpenids();
+
+                peopleDataMapper.deleteByPeopleId(peopleId);
+
+                for (String openId : openIds) {
+                    List<String> varData = getVarDatas(this, openId);
+
+                    TPeopleData tPeopleData = new TPeopleData();
+                    tPeopleData.setPeopleId(peopleId);
+                    tPeopleData.setPin(openId);
+                    tPeopleData.setVarData(JSONUtil.toJsonStr(varData));
+                    tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                    tPeopleData.setDataVersion(dataVersion);
+                    tPeopleData.setCreateTime(now);
+                    tPeopleData.setModifiedTime(now);
+
+                    peopleDataMapper.insert(tPeopleData);
+
+                    importedCount++;
+                }
+
+                while (StringUtils.isNotEmpty(wxMpUserList.getNextOpenid())) {
+                    wxMpUserList = wxMpService.getUserService().userList(wxMpUserList.getNextOpenid());
+
+                    logger.info("拉取的OPENID个数：" + wxMpUserList.getCount());
+
+                    if (wxMpUserList.getCount() == 0) {
+                        break;
+                    }
+                    openIds = wxMpUserList.getOpenids();
+                    for (String openId : openIds) {
+                        List<String> varData = getVarDatas(this, openId);
+
+                        TPeopleData tPeopleData = new TPeopleData();
+                        tPeopleData.setPeopleId(peopleId);
+                        tPeopleData.setPin(openId);
+                        tPeopleData.setVarData(JSONUtil.toJsonStr(varData));
+                        tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                        tPeopleData.setDataVersion(dataVersion);
+                        tPeopleData.setCreateTime(now);
+                        tPeopleData.setModifiedTime(now);
+
+                        peopleDataMapper.insert(tPeopleData);
+
+                        importedCount++;
+                    }
+                }
+            } else if (wxMpImportConfigBefore.getUserType() == 2) {
+                WxMpService wxMpService = WxMpTemplateMsgSender.getWxMpService(tPeople.getAccountId());
+                if (wxMpService.getWxMpConfigStorage() == null) {
+                    return;
+                }
+
+                WxTagListUser wxTagListUser = wxMpService.getUserTagService().tagListUser(wxMpImportConfigBefore.getTagId(), "");
+
+                logger.info("拉取的OPENID个数：" + wxTagListUser.getCount());
+
+                if (wxTagListUser.getCount() == 0) {
+                    return;
+                }
+
+                String now = SqliteUtil.nowDateForSqlite();
+                String dataVersion = UUID.fastUUID().toString(true);
+
+                // 保存导入配置
+                TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(peopleId);
+
+                TPeopleImportConfig tPeopleImportConfig = new TPeopleImportConfig();
+                tPeopleImportConfig.setPeopleId(peopleId);
+                tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_WX_MP_CODE));
+                tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
+                tPeopleImportConfig.setLastDataVersion(dataVersion);
+                tPeopleImportConfig.setModifiedTime(now);
+
+                WxMpImportConfig wxMpImportConfig = new WxMpImportConfig();
+                wxMpImportConfig.setTagId(wxMpImportConfigBefore.getTagId());
+                wxMpImportConfig.setUserType(2);
+                tPeopleImportConfig.setLastWayConfig(JSONUtil.toJsonStr(wxMpImportConfig));
+
+                if (beforePeopleImportConfig != null) {
+                    tPeopleImportConfig.setId(beforePeopleImportConfig.getId());
+                    peopleImportConfigMapper.updateByPrimaryKeySelective(tPeopleImportConfig);
+                } else {
+                    tPeopleImportConfig.setCreateTime(now);
+                    peopleImportConfigMapper.insert(tPeopleImportConfig);
+                }
+
+                List<String> openIds = wxTagListUser.getData().getOpenidList();
+
+                if (tagUserSet == null) {
+                    tagUserSet = Collections.synchronizedSet(new HashSet<>());
+                    tagUserSet.addAll(openIds);
+                }
+
+                // 无重复并集
+                openIds.removeAll(tagUserSet);
+                tagUserSet.addAll(openIds);
+
+                while (StringUtils.isNotEmpty(wxTagListUser.getNextOpenid())) {
+                    wxTagListUser = wxMpService.getUserTagService().tagListUser(wxMpImportConfigBefore.getTagId(), wxTagListUser.getNextOpenid());
+
+                    logger.info("拉取的OPENID个数：" + wxTagListUser.getCount());
+
+                    if (wxTagListUser.getCount() == 0) {
+                        break;
+                    }
+                    openIds = wxTagListUser.getData().getOpenidList();
+
+                    // 无重复并集
+                    openIds.removeAll(tagUserSet);
+                    tagUserSet.addAll(openIds);
+                }
+
+                peopleDataMapper.deleteByPeopleId(peopleId);
+
+                for (String openId : tagUserSet) {
+                    List<String> varData = getVarDatas(this, openId);
+
+                    TPeopleData tPeopleData = new TPeopleData();
+                    tPeopleData.setPeopleId(peopleId);
+                    tPeopleData.setPin(openId);
+                    tPeopleData.setVarData(JSONUtil.toJsonStr(varData));
+                    tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                    tPeopleData.setDataVersion(dataVersion);
+                    tPeopleData.setCreateTime(now);
+                    tPeopleData.setModifiedTime(now);
+
+                    peopleDataMapper.insert(tPeopleData);
+                }
+            } else if (wxMpImportConfigBefore.getUserType() == 3) {
+                WxMpService wxMpService = WxMpTemplateMsgSender.getWxMpService(tPeople.getAccountId());
+                if (wxMpService.getWxMpConfigStorage() == null) {
+                    return;
+                }
+
+                WxTagListUser wxTagListUser = wxMpService.getUserTagService().tagListUser(wxMpImportConfigBefore.getTagId(), "");
+
+                logger.info("拉取的OPENID个数：" + wxTagListUser.getCount());
+
+                if (wxTagListUser.getCount() == 0) {
+                    return;
+                }
+
+                String now = SqliteUtil.nowDateForSqlite();
+                String dataVersion = UUID.fastUUID().toString(true);
+
+                // 保存导入配置
+                TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(peopleId);
+
+                TPeopleImportConfig tPeopleImportConfig = new TPeopleImportConfig();
+                tPeopleImportConfig.setPeopleId(peopleId);
+                tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_WX_MP_CODE));
+                tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
+                tPeopleImportConfig.setLastDataVersion(dataVersion);
+                tPeopleImportConfig.setModifiedTime(now);
+
+                WxMpImportConfig wxMpImportConfig = new WxMpImportConfig();
+                wxMpImportConfig.setTagId(wxMpImportConfigBefore.getTagId());
+                wxMpImportConfig.setUserType(3);
+                tPeopleImportConfig.setLastWayConfig(JSONUtil.toJsonStr(wxMpImportConfig));
+
+                if (beforePeopleImportConfig != null) {
+                    tPeopleImportConfig.setId(beforePeopleImportConfig.getId());
+                    peopleImportConfigMapper.updateByPrimaryKeySelective(tPeopleImportConfig);
+                } else {
+                    tPeopleImportConfig.setCreateTime(now);
+                    peopleImportConfigMapper.insert(tPeopleImportConfig);
+                }
+
+                List<String> openIds = wxTagListUser.getData().getOpenidList();
+
+                if (tagUserSet == null) {
+                    tagUserSet = Collections.synchronizedSet(new HashSet<>());
+                    tagUserSet.addAll(openIds);
+                }
+
+                // 取交集
+                tagUserSet.retainAll(openIds);
+
+                while (StringUtils.isNotEmpty(wxTagListUser.getNextOpenid())) {
+                    wxTagListUser = wxMpService.getUserTagService().tagListUser(wxMpImportConfigBefore.getTagId(), wxTagListUser.getNextOpenid());
+
+                    logger.info("拉取的OPENID个数：" + wxTagListUser.getCount());
+
+                    if (wxTagListUser.getCount() == 0) {
+                        break;
+                    }
+                    openIds = wxTagListUser.getData().getOpenidList();
+
+                    // 取交集
+                    tagUserSet.retainAll(openIds);
+                }
+
+                peopleDataMapper.deleteByPeopleId(peopleId);
+
+                for (String openId : tagUserSet) {
+                    List<String> varData = getVarDatas(this, openId);
+
+                    TPeopleData tPeopleData = new TPeopleData();
+                    tPeopleData.setPeopleId(peopleId);
+                    tPeopleData.setPin(openId);
+                    tPeopleData.setVarData(JSONUtil.toJsonStr(varData));
+                    tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                    tPeopleData.setDataVersion(dataVersion);
+                    tPeopleData.setCreateTime(now);
+                    tPeopleData.setModifiedTime(now);
+
+                    peopleDataMapper.insert(tPeopleData);
+                }
+            }
+        } catch (Exception e) {
+            logger.error(e);
+        }
+
+        dispose();
+    }
 }

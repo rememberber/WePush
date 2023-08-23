@@ -31,4 +31,12 @@ public enum TaskModeEnum {
         return messageTypeEnum.name;
     }
 
+    public static String getDescByCode(Integer code) {
+        for (TaskModeEnum taskModeEnum : TaskModeEnum.values()) {
+            if (taskModeEnum.code == code) {
+                return taskModeEnum.name;
+            }
+        }
+        return null;
+    }
 }

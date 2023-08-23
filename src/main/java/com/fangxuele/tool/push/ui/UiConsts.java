@@ -19,7 +19,7 @@ public class UiConsts {
      * 软件名称,版本
      */
     public final static String APP_NAME = "WePush";
-    public final static String APP_VERSION = "v_5.0.0";
+    public final static String APP_VERSION = "v_5.0.1";
 
     public static final int TABLE_ROW_HEIGHT = 30;
 
@@ -107,14 +107,5 @@ public class UiConsts {
      */
     public final static String INTRODUCE_QRCODE_URL = "https://gitee.com/zhoubochina/WePush/raw/5.x/assets/files/introduce-wepush-qrcode.png";
 
-    /**
-     * 多账号切换账号类型：公众号
-     */
-    public static final String WX_ACCOUNT_TYPE_MP = "mp";
-
-    /**
-     * 多账号切换账号类型：小程序
-     */
-    public static final String WX_ACCOUNT_TYPE_MA = "ma";
     public static final String DOWNLOAD_LINK_INFO_URL = "https://gitee.com/zhoubochina/WePush/raw/5.x/assets/files/download_links.json";
 }

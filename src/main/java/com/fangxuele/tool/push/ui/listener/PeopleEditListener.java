@@ -314,23 +314,23 @@ public class PeopleEditListener {
             dialog.pack();
             dialog.setVisible(true);
         } else if (PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_SQL).equals(actionCommand)) {
-            ImportBySQL dialog = new ImportBySQL();
+            ImportBySQL dialog = new ImportBySQL(PeopleManageListener.selectedPeopleId);
             dialog.pack();
             dialog.setVisible(true);
         } else if (PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_WX_MP).equals(actionCommand)) {
-            ImportByWxMp dialog = new ImportByWxMp(selectedAccountName);
+            ImportByWxMp dialog = new ImportByWxMp(PeopleManageListener.selectedPeopleId);
             dialog.pack();
             dialog.setVisible(true);
         } else if (PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_WX_CP).equals(actionCommand)) {
-            ImportByWxCp dialog = new ImportByWxCp(selectedAccountName);
+            ImportByWxCp dialog = new ImportByWxCp(PeopleManageListener.selectedPeopleId);
             dialog.pack();
             dialog.setVisible(true);
         } else if (PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_DING).equals(actionCommand)) {
-            ImportByDing dialog = new ImportByDing(selectedAccountName);
+            ImportByDing dialog = new ImportByDing(PeopleManageListener.selectedPeopleId);
             dialog.pack();
             dialog.setVisible(true);
         } else if (PeopleImportWayEnum.getName(PeopleImportWayEnum.BY_NUM).equals(actionCommand)) {
-            ImportByNum dialog = new ImportByNum();
+            ImportByNum dialog = new ImportByNum(PeopleManageListener.selectedPeopleId);
             dialog.pack();
             dialog.setVisible(true);
         }

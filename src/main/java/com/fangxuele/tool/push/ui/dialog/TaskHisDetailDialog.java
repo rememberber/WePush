@@ -415,6 +415,12 @@ public class TaskHisDetailDialog extends JDialog {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+
+                        TTaskHis taskHis = taskHisMapper.selectByPrimaryKey(taskHisId);
+                        successFileTextField.setText(taskHis.getSuccessFilePath());
+                        failFileTextField.setText(taskHis.getFailFilePath());
+                        noSendFileTextField.setText(taskHis.getNoSendFilePath());
+
                         break;
                     }
                     pushStopButton.setEnabled(true);

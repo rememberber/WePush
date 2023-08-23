@@ -17,7 +17,6 @@ import com.fangxuele.tool.push.domain.TPeopleImportConfig;
 import com.fangxuele.tool.push.logic.PeopleImportWayEnum;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
-import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.HikariUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
@@ -30,7 +29,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Set;
@@ -46,17 +47,21 @@ public class ImportBySQL extends JDialog {
     private static TPeopleDataMapper peopleDataMapper = MybatisUtil.getSqlSession().getMapper(TPeopleDataMapper.class);
     private static TPeopleImportConfigMapper peopleImportConfigMapper = MybatisUtil.getSqlSession().getMapper(TPeopleImportConfigMapper.class);
 
-    public ImportBySQL() {
+    private Integer peopleId;
+
+    public ImportBySQL(Integer peopleId) {
         super(App.mainFrame, "通过SQL导入人群");
         setContentPane(contentPane);
         setModal(true);
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.4, 0.4);
         getRootPane().setDefaultButton(importFromSqlButton);
 
+        this.peopleId = peopleId;
+
         importFromSqlButton.setIcon(new FlatSVGIcon("icon/import.svg"));
 
         // 获取上一次导入的配置
-        TPeopleImportConfig tPeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
+        TPeopleImportConfig tPeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(peopleId);
         if (tPeopleImportConfig != null) {
             importFromSqlTextArea.setText(tPeopleImportConfig.getLastSql());
         }
@@ -96,41 +101,44 @@ public class ImportBySQL extends JDialog {
             return;
         }
 
-        ThreadUtil.execute(() -> importFromSql(sql));
+        ThreadUtil.execute(() -> importFromSql(sql, false, false));
 
         dispose();
     }
 
     private void onCancel() {
-        // add your code here if necessary
         dispose();
     }
 
     /**
      * 通过SQL导入
      */
-    public void importFromSql(String querySql) {
+    public void importFromSql(String querySql, Boolean clear, Boolean silence) {
         PeopleEditForm peopleEditForm = PeopleEditForm.getInstance();
-        peopleEditForm.getImportButton().setEnabled(false);
+        if (!silence) {
+            peopleEditForm.getImportButton().setEnabled(false);
+        }
         JProgressBar progressBar = peopleEditForm.getMemberTabImportProgressBar();
         JLabel memberCountLabel = peopleEditForm.getMemberTabCountLabel();
 
         if (StringUtils.isNotEmpty(querySql)) {
             Connection conn = null;
             try {
-                peopleEditForm.getImportButton().setEnabled(false);
-                peopleEditForm.getImportButton().updateUI();
-                progressBar.setVisible(true);
-                progressBar.setIndeterminate(true);
+                if (!silence) {
+                    peopleEditForm.getImportButton().setEnabled(false);
+                    peopleEditForm.getImportButton().updateUI();
+                    progressBar.setVisible(true);
+                    progressBar.setIndeterminate(true);
+                }
 
                 String now = SqliteUtil.nowDateForSqlite();
                 String dataVersion = UUID.fastUUID().toString(true);
 
                 // 保存导入配置
-                TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
+                TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(peopleId);
 
                 TPeopleImportConfig tPeopleImportConfig = new TPeopleImportConfig();
-                tPeopleImportConfig.setPeopleId(PeopleManageListener.selectedPeopleId);
+                tPeopleImportConfig.setPeopleId(peopleId);
                 tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_SQL_CODE));
                 tPeopleImportConfig.setLastSql(querySql);
                 tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
@@ -150,6 +158,11 @@ public class ImportBySQL extends JDialog {
 
                 conn = HikariUtil.getConnection();
                 List<Entity> entityList = SqlExecutor.query(conn, querySql, new EntityListHandler());
+
+                if (clear) {
+                    peopleDataMapper.deleteByPeopleId(peopleId);
+                }
+
                 for (Entity entity : entityList) {
                     Set<String> fieldNames = entity.getFieldNames();
                     String[] msgData = new String[fieldNames.size()];
@@ -160,7 +173,7 @@ public class ImportBySQL extends JDialog {
                     }
 
                     TPeopleData tPeopleData = new TPeopleData();
-                    tPeopleData.setPeopleId(PeopleManageListener.selectedPeopleId);
+                    tPeopleData.setPeopleId(peopleId);
                     tPeopleData.setPin(msgData[0]);
                     tPeopleData.setVarData(JSONUtil.toJsonStr(msgData));
                     tPeopleData.setAppVersion(UiConsts.APP_VERSION);
@@ -169,32 +182,39 @@ public class ImportBySQL extends JDialog {
                     tPeopleData.setModifiedTime(now);
 
                     peopleDataMapper.insert(tPeopleData);
-
                     currentImported++;
-                    memberCountLabel.setText(String.valueOf(currentImported));
+                    if (!silence) {
+                        memberCountLabel.setText(String.valueOf(currentImported));
+                    }
                 }
 
-                PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
+                if (!silence) {
+                    PeopleEditForm.initDataTable(peopleId);
 
-                progressBar.setIndeterminate(false);
-                progressBar.setVisible(false);
-                JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+                    progressBar.setIndeterminate(false);
+                    progressBar.setVisible(false);
+                    JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
 
-                App.config.setMemberSql(querySql);
-                App.config.save();
+                    App.config.setMemberSql(querySql);
+                    App.config.save();
+                }
             } catch (Exception e1) {
-                JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + e1.getMessage(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
+                if (!silence) {
+                    JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + e1.getMessage(), "失败",
+                            JOptionPane.ERROR_MESSAGE);
+                }
                 logger.error(e1);
             } finally {
                 DbUtil.close(conn);
-                peopleEditForm.getImportButton().setEnabled(true);
-                peopleEditForm.getImportButton().updateUI();
-                progressBar.setMaximum(100);
-                progressBar.setValue(100);
-                progressBar.setIndeterminate(false);
-                progressBar.setVisible(false);
-                peopleEditForm.getImportButton().setEnabled(true);
+                if (!silence) {
+                    peopleEditForm.getImportButton().setEnabled(true);
+                    peopleEditForm.getImportButton().updateUI();
+                    progressBar.setMaximum(100);
+                    progressBar.setValue(100);
+                    progressBar.setIndeterminate(false);
+                    progressBar.setVisible(false);
+                    peopleEditForm.getImportButton().setEnabled(true);
+                }
             }
         }
     }
@@ -244,4 +264,9 @@ public class ImportBySQL extends JDialog {
         return contentPane;
     }
 
+    public void reImport() {
+        TPeopleImportConfig tPeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(peopleId);
+        importFromSql(tPeopleImportConfig.getLastSql(), true, true);
+        dispose();
+    }
 }
