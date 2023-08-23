@@ -6,7 +6,7 @@
 
     <groupId>com.fangxuele.tool</groupId>
     <artifactId>WePush</artifactId>
-    <version>5.0.0</version>
+    <version>5.0.1</version>
     <packaging>jar</packaging>
 
     <name>WePush</name>
@@ -449,7 +449,7 @@
 <!--                        <configuration>-->
 <!--                            <platform>windows</platform>-->
 <!--                            <createZipball>true</createZipball>-->
-<!--                            <additionalModules>jdk.crypto.ec</additionalModules>-->
+<!--                            <additionalModules>jdk.crypto.ec,jdk.charsets</additionalModules>-->
 <!--                            &lt;!&ndash;                            <administratorRequired>true</administratorRequired>&ndash;&gt;-->
 <!--                            <winConfig>-->
 
@@ -479,7 +479,7 @@
                     <!--                        <configuration>-->
                     <!--                            <platform>linux</platform>-->
                     <!--                            <createTarball>true</createTarball>-->
-<!--                    <additionalModules>jdk.crypto.ec</additionalModules>-->
+<!--                    <additionalModules>jdk.crypto.ec,jdk.charsets</additionalModules>-->
                     <!--                            <jdkPath>X:\\path\to\linux\jdk</jdkPath>-->
                     <!--                        </configuration>-->
                     <!--                    </execution>-->
@@ -492,7 +492,7 @@
                                                                                     <configuration>
                                                                                         <platform>mac</platform>
                                                                                         <createTarball>true</createTarball>
-                                                                                        <additionalModules>jdk.crypto.ec</additionalModules>
+                                                                                        <additionalModules>jdk.crypto.ec,jdk.charsets</additionalModules>
                                                                                         <customizedJre>false</customizedJre>
                                         <!--                                                <jdkPath>X:\\path\to\mac\jdk</jdkPath>-->
                                                                                     </configuration>

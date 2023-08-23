@@ -8,14 +8,15 @@ import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPeopleDataMapper;
 import com.fangxuele.tool.push.dao.TPeopleImportConfigMapper;
+import com.fangxuele.tool.push.dao.TPeopleMapper;
+import com.fangxuele.tool.push.domain.TPeople;
 import com.fangxuele.tool.push.domain.TPeopleData;
 import com.fangxuele.tool.push.domain.TPeopleImportConfig;
 import com.fangxuele.tool.push.logic.PeopleImportWayEnum;
+import com.fangxuele.tool.push.logic.msgsender.WxCpMsgSender;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.importway.config.WxCpImportConfig;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
-import com.fangxuele.tool.push.ui.form.account.WxCpAccountForm;
-import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
@@ -55,9 +56,12 @@ public class ImportByWxCp extends JDialog {
     private static final Log logger = LogFactory.get();
 
     private static TPeopleDataMapper peopleDataMapper = MybatisUtil.getSqlSession().getMapper(TPeopleDataMapper.class);
+    private static TPeopleMapper peopleMapper = MybatisUtil.getSqlSession().getMapper(TPeopleMapper.class);
     private static TPeopleImportConfigMapper peopleImportConfigMapper = MybatisUtil.getSqlSession().getMapper(TPeopleImportConfigMapper.class);
 
-    private String selectedAccountName;
+    private Integer peopleId;
+
+    private TPeople tPeople;
 
     /**
      * 企业号标签名称->标签ID
@@ -79,14 +83,15 @@ public class ImportByWxCp extends JDialog {
      */
     private static Map<Long, String> wxCpIdToDeptNameMap = Maps.newHashMap();
 
-    public ImportByWxCp(String selectedAccountName) {
+    public ImportByWxCp(Integer peopleId) {
         super(App.mainFrame, "通过微信企业通讯录导入");
         setContentPane(contentPane);
         setModal(true);
         ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.3, 0.2);
         getRootPane().setDefaultButton(wxCpImportAllButton);
 
-        this.selectedAccountName = selectedAccountName;
+        this.peopleId = peopleId;
+        tPeople = peopleMapper.selectByPrimaryKey(peopleId);
 
         wxCpDeptsImportButton.setIcon(new FlatSVGIcon("icon/import.svg"));
         wxCpImportAllButton.setIcon(new FlatSVGIcon("icon/import.svg"));
@@ -101,7 +106,7 @@ public class ImportByWxCp extends JDialog {
 
                 try {
                     // 获取标签列表
-                    List<WxCpTag> wxCpTagList = WxCpAccountForm.getWxCpService(selectedAccountName).getTagService().listAll();
+                    List<WxCpTag> wxCpTagList = WxCpMsgSender.getWxCpService(tPeople.getAccountId()).getTagService().listAll();
                     for (WxCpTag wxCpTag : wxCpTagList) {
                         wxCpTagsComboBox.addItem(wxCpTag.getName());
                         wxCpTagNameToIdMap.put(wxCpTag.getName(), wxCpTag.getId());
@@ -136,10 +141,10 @@ public class ImportByWxCp extends JDialog {
                     String tagId = wxCpTagNameToIdMap.get(wxCpTagsComboBox.getSelectedItem());
 
                     // 保存导入配置
-                    TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
+                    TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(peopleId);
 
                     TPeopleImportConfig tPeopleImportConfig = new TPeopleImportConfig();
-                    tPeopleImportConfig.setPeopleId(PeopleManageListener.selectedPeopleId);
+                    tPeopleImportConfig.setPeopleId(peopleId);
                     tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_WX_CP_CODE));
                     tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
                     tPeopleImportConfig.setLastDataVersion(dataVersion);
@@ -159,7 +164,7 @@ public class ImportByWxCp extends JDialog {
                     }
 
                     // 获取用户
-                    List<WxCpUser> wxCpUsers = WxCpAccountForm.getWxCpService(selectedAccountName).getTagService().listUsersByTagId(tagId);
+                    List<WxCpUser> wxCpUsers = WxCpMsgSender.getWxCpService(tPeople.getAccountId()).getTagService().listUsersByTagId(tagId);
                     for (WxCpUser wxCpUser : wxCpUsers) {
                         Long[] depIds = wxCpUser.getDepartIds();
                         List<String> deptNameList = Lists.newArrayList();
@@ -171,7 +176,7 @@ public class ImportByWxCp extends JDialog {
                         String[] dataArray = new String[]{wxCpUser.getUserId(), wxCpUser.getName(), String.join("/", deptNameList)};
 
                         TPeopleData tPeopleData = new TPeopleData();
-                        tPeopleData.setPeopleId(PeopleManageListener.selectedPeopleId);
+                        tPeopleData.setPeopleId(peopleId);
                         tPeopleData.setPin(dataArray[0]);
                         tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
                         tPeopleData.setAppVersion(UiConsts.APP_VERSION);
@@ -184,7 +189,7 @@ public class ImportByWxCp extends JDialog {
                         importedCount++;
                         memberCountLabel.setText(String.valueOf(importedCount));
                     }
-                    PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
+                    PeopleEditForm.initDataTable(peopleId);
                     JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + ex, "失败",
@@ -205,7 +210,7 @@ public class ImportByWxCp extends JDialog {
 
                 try {
                     // 获取部门列表
-                    List<WxCpDepart> wxCpDepartList = WxCpAccountForm.getWxCpService(selectedAccountName).getDepartmentService().list(null);
+                    List<WxCpDepart> wxCpDepartList = WxCpMsgSender.getWxCpService(tPeople.getAccountId()).getDepartmentService().list(null);
                     for (WxCpDepart wxCpDepart : wxCpDepartList) {
                         wxCpDeptsComboBox.addItem(wxCpDepart.getName());
                         wxCpDeptNameToIdMap.put(wxCpDepart.getName(), wxCpDepart.getId());
@@ -240,10 +245,10 @@ public class ImportByWxCp extends JDialog {
                     Long deptId = wxCpDeptNameToIdMap.get(wxCpDeptsComboBox.getSelectedItem());
 
                     // 保存导入配置
-                    TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
+                    TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(peopleId);
 
                     TPeopleImportConfig tPeopleImportConfig = new TPeopleImportConfig();
-                    tPeopleImportConfig.setPeopleId(PeopleManageListener.selectedPeopleId);
+                    tPeopleImportConfig.setPeopleId(peopleId);
                     tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_WX_CP_CODE));
                     tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
                     tPeopleImportConfig.setLastDataVersion(dataVersion);
@@ -264,7 +269,7 @@ public class ImportByWxCp extends JDialog {
 
 
                     // 获取用户
-                    List<WxCpUser> wxCpUsers = WxCpAccountForm.getWxCpService(selectedAccountName).getUserService().listByDepartment(deptId, true, 0);
+                    List<WxCpUser> wxCpUsers = WxCpMsgSender.getWxCpService(tPeople.getAccountId()).getUserService().listByDepartment(deptId, true, 0);
                     for (WxCpUser wxCpUser : wxCpUsers) {
                         String statusStr = "";
                         if (wxCpUser.getStatus() == 1) {
@@ -284,7 +289,7 @@ public class ImportByWxCp extends JDialog {
                         String[] dataArray = new String[]{wxCpUser.getUserId(), wxCpUser.getName(), wxCpUser.getGender().getGenderName(), wxCpUser.getEmail(), String.join("/", deptNameList), wxCpUser.getPosition(), statusStr};
 
                         TPeopleData tPeopleData = new TPeopleData();
-                        tPeopleData.setPeopleId(PeopleManageListener.selectedPeopleId);
+                        tPeopleData.setPeopleId(peopleId);
                         tPeopleData.setPin(dataArray[0]);
                         tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
                         tPeopleData.setAppVersion(UiConsts.APP_VERSION);
@@ -297,7 +302,7 @@ public class ImportByWxCp extends JDialog {
                         importedCount++;
                         memberCountLabel.setText(String.valueOf(importedCount));
                     }
-                    PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
+                    PeopleEditForm.initDataTable(peopleId);
 
                     JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
                 } catch (Exception ex) {
@@ -356,10 +361,10 @@ public class ImportByWxCp extends JDialog {
             String dataVersion = UUID.fastUUID().toString(true);
 
             // 保存导入配置
-            TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
+            TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(peopleId);
 
             TPeopleImportConfig tPeopleImportConfig = new TPeopleImportConfig();
-            tPeopleImportConfig.setPeopleId(PeopleManageListener.selectedPeopleId);
+            tPeopleImportConfig.setPeopleId(peopleId);
             tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_WX_CP_CODE));
             tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
             tPeopleImportConfig.setLastDataVersion(dataVersion);
@@ -378,7 +383,7 @@ public class ImportByWxCp extends JDialog {
             }
 
             // 获取最小部门id
-            List<WxCpDepart> wxCpDepartList = WxCpAccountForm.getWxCpService(selectedAccountName).getDepartmentService().list(null);
+            List<WxCpDepart> wxCpDepartList = WxCpMsgSender.getWxCpService(tPeople.getAccountId()).getDepartmentService().list(null);
             long minDeptId = Long.MAX_VALUE;
             for (WxCpDepart wxCpDepart : wxCpDepartList) {
                 if (wxCpDepart.getId() < minDeptId) {
@@ -386,7 +391,7 @@ public class ImportByWxCp extends JDialog {
                 }
             }
             // 获取用户
-            List<WxCpUser> wxCpUsers = WxCpAccountForm.getWxCpService(selectedAccountName).getUserService().listByDepartment(minDeptId, true, 0);
+            List<WxCpUser> wxCpUsers = WxCpMsgSender.getWxCpService(tPeople.getAccountId()).getUserService().listByDepartment(minDeptId, true, 0);
             for (WxCpUser wxCpUser : wxCpUsers) {
                 String statusStr = "";
                 if (wxCpUser.getStatus() == 1) {
@@ -406,7 +411,7 @@ public class ImportByWxCp extends JDialog {
                 String[] dataArray = new String[]{wxCpUser.getUserId(), wxCpUser.getName(), wxCpUser.getGender().getGenderName(), wxCpUser.getEmail(), String.join("/", deptNameList), wxCpUser.getPosition(), statusStr};
 
                 TPeopleData tPeopleData = new TPeopleData();
-                tPeopleData.setPeopleId(PeopleManageListener.selectedPeopleId);
+                tPeopleData.setPeopleId(peopleId);
                 tPeopleData.setPin(dataArray[0]);
                 tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
                 tPeopleData.setAppVersion(UiConsts.APP_VERSION);
@@ -420,7 +425,7 @@ public class ImportByWxCp extends JDialog {
                 memberCountLabel.setText(String.valueOf(importedCount));
             }
 
-            PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
+            PeopleEditForm.initDataTable(peopleId);
 
             JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception ex) {
@@ -525,4 +530,216 @@ public class ImportByWxCp extends JDialog {
         return contentPane;
     }
 
+    public void reImport() {
+        TPeopleImportConfig peopleImportConfig = peopleImportConfigMapper.selectByPeopleId(peopleId);
+        String lastWayConfig = peopleImportConfig.getLastWayConfig();
+        WxCpImportConfig wxCpImportConfigBefore = JSONUtil.toBean(lastWayConfig, WxCpImportConfig.class);
+        if (wxCpImportConfigBefore == null) {
+            return;
+        }
+
+        try {
+            if (wxCpImportConfigBefore.getUserType() == 1) {
+                int importedCount = 0;
+                String now = SqliteUtil.nowDateForSqlite();
+                String dataVersion = UUID.fastUUID().toString(true);
+
+                // 保存导入配置
+                TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(peopleId);
+
+                TPeopleImportConfig tPeopleImportConfig = new TPeopleImportConfig();
+                tPeopleImportConfig.setPeopleId(peopleId);
+                tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_WX_CP_CODE));
+                tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
+                tPeopleImportConfig.setLastDataVersion(dataVersion);
+                tPeopleImportConfig.setModifiedTime(now);
+
+                WxCpImportConfig wxCpImportConfig = new WxCpImportConfig();
+                wxCpImportConfig.setUserType(1);
+                tPeopleImportConfig.setLastWayConfig(JSONUtil.toJsonStr(wxCpImportConfig));
+
+                if (beforePeopleImportConfig != null) {
+                    tPeopleImportConfig.setId(beforePeopleImportConfig.getId());
+                    peopleImportConfigMapper.updateByPrimaryKeySelective(tPeopleImportConfig);
+                } else {
+                    tPeopleImportConfig.setCreateTime(now);
+                    peopleImportConfigMapper.insert(tPeopleImportConfig);
+                }
+
+                // 获取最小部门id
+                List<WxCpDepart> wxCpDepartList = WxCpMsgSender.getWxCpService(tPeople.getAccountId()).getDepartmentService().list(null);
+                long minDeptId = Long.MAX_VALUE;
+                for (WxCpDepart wxCpDepart : wxCpDepartList) {
+                    if (wxCpDepart.getId() < minDeptId) {
+                        minDeptId = wxCpDepart.getId();
+                    }
+                }
+                // 获取用户
+                List<WxCpUser> wxCpUsers = WxCpMsgSender.getWxCpService(tPeople.getAccountId()).getUserService().listByDepartment(minDeptId, true, 0);
+
+                peopleDataMapper.deleteByPeopleId(peopleId);
+
+                for (WxCpUser wxCpUser : wxCpUsers) {
+                    String statusStr = "";
+                    if (wxCpUser.getStatus() == 1) {
+                        statusStr = "已关注";
+                    } else if (wxCpUser.getStatus() == 2) {
+                        statusStr = "已冻结";
+                    } else if (wxCpUser.getStatus() == 4) {
+                        statusStr = "未关注";
+                    }
+                    Long[] depIds = wxCpUser.getDepartIds();
+                    List<String> deptNameList = Lists.newArrayList();
+                    if (depIds != null) {
+                        for (Long depId : depIds) {
+                            deptNameList.add(wxCpIdToDeptNameMap.get(depId));
+                        }
+                    }
+                    String[] dataArray = new String[]{wxCpUser.getUserId(), wxCpUser.getName(), wxCpUser.getGender().getGenderName(), wxCpUser.getEmail(), String.join("/", deptNameList), wxCpUser.getPosition(), statusStr};
+
+                    TPeopleData tPeopleData = new TPeopleData();
+                    tPeopleData.setPeopleId(peopleId);
+                    tPeopleData.setPin(dataArray[0]);
+                    tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
+                    tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                    tPeopleData.setDataVersion(dataVersion);
+                    tPeopleData.setCreateTime(now);
+                    tPeopleData.setModifiedTime(now);
+
+                    peopleDataMapper.insert(tPeopleData);
+
+                    importedCount++;
+                }
+            } else if (wxCpImportConfigBefore.getUserType() == 2) {
+                int importedCount = 0;
+                String now = SqliteUtil.nowDateForSqlite();
+                String dataVersion = UUID.fastUUID().toString(true);
+
+                // 获取标签id
+                String tagId = wxCpImportConfigBefore.getTagId();
+
+                // 保存导入配置
+                TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(peopleId);
+
+                TPeopleImportConfig tPeopleImportConfig = new TPeopleImportConfig();
+                tPeopleImportConfig.setPeopleId(peopleId);
+                tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_WX_CP_CODE));
+                tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
+                tPeopleImportConfig.setLastDataVersion(dataVersion);
+                tPeopleImportConfig.setModifiedTime(now);
+
+                WxCpImportConfig wxCpImportConfig = new WxCpImportConfig();
+                wxCpImportConfig.setUserType(2);
+                wxCpImportConfig.setTagId(tagId);
+                tPeopleImportConfig.setLastWayConfig(JSONUtil.toJsonStr(wxCpImportConfig));
+
+                if (beforePeopleImportConfig != null) {
+                    tPeopleImportConfig.setId(beforePeopleImportConfig.getId());
+                    peopleImportConfigMapper.updateByPrimaryKeySelective(tPeopleImportConfig);
+                } else {
+                    tPeopleImportConfig.setCreateTime(now);
+                    peopleImportConfigMapper.insert(tPeopleImportConfig);
+                }
+
+                // 获取用户
+                List<WxCpUser> wxCpUsers = WxCpMsgSender.getWxCpService(tPeople.getAccountId()).getTagService().listUsersByTagId(tagId);
+
+                peopleDataMapper.deleteByPeopleId(peopleId);
+
+                for (WxCpUser wxCpUser : wxCpUsers) {
+                    Long[] depIds = wxCpUser.getDepartIds();
+                    List<String> deptNameList = Lists.newArrayList();
+                    if (depIds != null) {
+                        for (Long depId : depIds) {
+                            deptNameList.add(wxCpIdToDeptNameMap.get(depId));
+                        }
+                    }
+                    String[] dataArray = new String[]{wxCpUser.getUserId(), wxCpUser.getName(), String.join("/", deptNameList)};
+
+                    TPeopleData tPeopleData = new TPeopleData();
+                    tPeopleData.setPeopleId(peopleId);
+                    tPeopleData.setPin(dataArray[0]);
+                    tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
+                    tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                    tPeopleData.setDataVersion(dataVersion);
+                    tPeopleData.setCreateTime(now);
+                    tPeopleData.setModifiedTime(now);
+
+                    peopleDataMapper.insert(tPeopleData);
+
+                    importedCount++;
+                }
+            } else if (wxCpImportConfigBefore.getUserType() == 3) {
+                int importedCount = 0;
+                String now = SqliteUtil.nowDateForSqlite();
+                String dataVersion = UUID.fastUUID().toString(true);
+
+                // 获取部门id
+                Long deptId = wxCpImportConfigBefore.getDepId();
+
+                // 保存导入配置
+                TPeopleImportConfig beforePeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(peopleId);
+
+                TPeopleImportConfig tPeopleImportConfig = new TPeopleImportConfig();
+                tPeopleImportConfig.setPeopleId(peopleId);
+                tPeopleImportConfig.setLastWay(String.valueOf(PeopleImportWayEnum.BY_WX_CP_CODE));
+                tPeopleImportConfig.setAppVersion(UiConsts.APP_VERSION);
+                tPeopleImportConfig.setLastDataVersion(dataVersion);
+                tPeopleImportConfig.setModifiedTime(now);
+
+                WxCpImportConfig wxCpImportConfig = new WxCpImportConfig();
+                wxCpImportConfig.setUserType(3);
+                wxCpImportConfig.setDepId(deptId);
+                tPeopleImportConfig.setLastWayConfig(JSONUtil.toJsonStr(wxCpImportConfig));
+
+                if (beforePeopleImportConfig != null) {
+                    tPeopleImportConfig.setId(beforePeopleImportConfig.getId());
+                    peopleImportConfigMapper.updateByPrimaryKeySelective(tPeopleImportConfig);
+                } else {
+                    tPeopleImportConfig.setCreateTime(now);
+                    peopleImportConfigMapper.insert(tPeopleImportConfig);
+                }
+
+
+                // 获取用户
+                List<WxCpUser> wxCpUsers = WxCpMsgSender.getWxCpService(tPeople.getAccountId()).getUserService().listByDepartment(deptId, true, 0);
+
+                peopleDataMapper.deleteByPeopleId(peopleId);
+
+                for (WxCpUser wxCpUser : wxCpUsers) {
+                    String statusStr = "";
+                    if (wxCpUser.getStatus() == 1) {
+                        statusStr = "已关注";
+                    } else if (wxCpUser.getStatus() == 2) {
+                        statusStr = "已冻结";
+                    } else if (wxCpUser.getStatus() == 4) {
+                        statusStr = "未关注";
+                    }
+                    Long[] depIds = wxCpUser.getDepartIds();
+                    List<String> deptNameList = Lists.newArrayList();
+                    if (depIds != null) {
+                        for (Long depId : depIds) {
+                            deptNameList.add(wxCpIdToDeptNameMap.get(depId));
+                        }
+                    }
+                    String[] dataArray = new String[]{wxCpUser.getUserId(), wxCpUser.getName(), wxCpUser.getGender().getGenderName(), wxCpUser.getEmail(), String.join("/", deptNameList), wxCpUser.getPosition(), statusStr};
+
+                    TPeopleData tPeopleData = new TPeopleData();
+                    tPeopleData.setPeopleId(peopleId);
+                    tPeopleData.setPin(dataArray[0]);
+                    tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
+                    tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                    tPeopleData.setDataVersion(dataVersion);
+                    tPeopleData.setCreateTime(now);
+                    tPeopleData.setModifiedTime(now);
+
+                    peopleDataMapper.insert(tPeopleData);
+
+                    importedCount++;
+                }
+            }
+        } catch (Exception e) {
+            logger.error(ExceptionUtils.getStackTrace(e));
+        }
+    }
 }

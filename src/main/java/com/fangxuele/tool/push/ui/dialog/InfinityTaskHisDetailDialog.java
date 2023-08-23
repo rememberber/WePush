@@ -439,6 +439,12 @@ public class InfinityTaskHisDetailDialog extends JDialog {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+
+                        TTaskHis taskHis = taskHisMapper.selectByPrimaryKey(taskHisId);
+                        successFileTextField.setText(taskHis.getSuccessFilePath());
+                        failFileTextField.setText(taskHis.getFailFilePath());
+                        noSendFileTextField.setText(taskHis.getNoSendFilePath());
+
                         break;
                     }
                     pushSuccessCount.setText(String.valueOf(infinityTaskRunThread.getSuccessRecords()));

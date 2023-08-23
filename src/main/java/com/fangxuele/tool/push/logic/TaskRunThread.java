@@ -17,7 +17,7 @@ import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.logic.msgthread.MsgSendThread;
 import com.fangxuele.tool.push.ui.UiConsts;
-import com.fangxuele.tool.push.ui.dialog.importway.ImportByFile;
+import com.fangxuele.tool.push.ui.dialog.importway.*;
 import com.fangxuele.tool.push.ui.form.TaskForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
@@ -205,7 +205,6 @@ public class TaskRunThread extends Thread {
 
         taskHis.setLogFilePath(logFilePath);
 
-        // TODO 执行前重新导入目标用户
         if (tTask.getTaskPeriod() == TaskTypeEnum.SCHEDULE_TASK_CODE && tTask.getReimportPeople() == 1) {
             // 获取上一次导入方式
             TPeopleImportConfig tPeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(tTask.getPeopleId());
@@ -216,19 +215,24 @@ public class TaskRunThread extends Thread {
                     importByFile.reImport();
                     break;
                 case PeopleImportWayEnum.BY_SQL_CODE:
-                    // TODO
+                    ImportBySQL importBySQL = new ImportBySQL(tTask.getPeopleId());
+                    importBySQL.reImport();
                     break;
                 case PeopleImportWayEnum.BY_NUM_CODE:
-                    // TODO
+                    ImportByNum importByNum = new ImportByNum(tTask.getPeopleId());
+                    importByNum.reImport();
                     break;
                 case PeopleImportWayEnum.BY_WX_MP_CODE:
-                    // TODO
+                    ImportByWxMp importByWxMp = new ImportByWxMp(tTask.getPeopleId());
+                    importByWxMp.reImport();
                     break;
                 case PeopleImportWayEnum.BY_WX_CP_CODE:
-                    // TODO
+                    ImportByWxCp importByWxCp = new ImportByWxCp(tTask.getPeopleId());
+                    importByWxCp.reImport();
                     break;
                 case PeopleImportWayEnum.BY_DING_CODE:
-                    // TODO
+                    ImportByDing importByDing = new ImportByDing(tTask.getPeopleId());
+                    importByDing.reImport();
                     break;
                 default:
                     break;
@@ -410,6 +414,7 @@ public class TaskRunThread extends Thread {
                     if (taskHisListTableRow != -1) {
                         taskForm.getTaskHisListTable().setValueAt(taskHis.getSuccessCnt(), taskHisListTableRow, 5);
                         taskForm.getTaskHisListTable().setValueAt(taskHis.getFailCnt(), taskHisListTableRow, 6);
+                        taskForm.getTaskHisListTable().setValueAt(TaskStatusEnum.getDescByCode(taskHis.getStatus()), taskHisListTableRow, 7);
                     }
                 }
             }

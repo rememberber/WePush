@@ -60,7 +60,10 @@ public class FrameListener {
 
             @Override
             public void windowActivated(WindowEvent e) {
-
+                if (App.config.isDefaultMaxWindow()) {
+                    // 低分辨率下自动最大化窗口
+                    App.mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+                }
             }
         });
 

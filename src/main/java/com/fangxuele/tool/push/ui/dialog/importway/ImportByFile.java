@@ -126,7 +126,9 @@ public class ImportByFile extends JDialog {
      */
     public void importFromFile(String filePath, Boolean clear, Boolean silence) {
         PeopleEditForm peopleEditForm = PeopleEditForm.getInstance();
-        peopleEditForm.getImportButton().setEnabled(false);
+        if (!silence) {
+            peopleEditForm.getImportButton().setEnabled(false);
+        }
         JPanel memberPanel = peopleEditForm.getMainPanel();
         JProgressBar progressBar = peopleEditForm.getMemberTabImportProgressBar();
         JLabel memberCountLabel = peopleEditForm.getMemberTabCountLabel();
@@ -277,9 +279,7 @@ public class ImportByFile extends JDialog {
 
             if (!silence) {
                 PeopleEditForm.initDataTable(peopleId);
-            }
 
-            if (!silence) {
                 progressBar.setIndeterminate(false);
                 progressBar.setVisible(false);
                 JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
