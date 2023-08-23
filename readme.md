@@ -90,18 +90,7 @@ Windows • Linux • macOS
 ### 特别感谢
 [WxJava](https://gitee.com/binary/weixin-java-tools)  
 [Hutool](http://hutool.cn/)  
-[Darcula](https://github.com/bulenkov/Darcula)  
-[BeautyEye](https://gitee.com/jackjiang/beautyeye)  
 [FlatLaf](https://www.formdev.com/flatlaf/)  
-
-### 特别说明
-WePush所使用的图标来源于https://github.com/JetBrains/intellij-community项目  
-版权、专利和许可都归其所有https://github.com/JetBrains/intellij-community/blob/master/LICENSE.txt  
-如有冒犯，请及时通知我删除  
-Icons in WePush are from Project:https://github.com/JetBrains/intellij-community  
-Copy right,patent and license are belong to the "JetBrains/intellij-community"  
-https://github.com/JetBrains/intellij-community/blob/master/LICENSE.txt  
-If there is any offence, please inform me to delete them in time.  
 
 ### 开发&构建
 
