@@ -64,6 +64,7 @@ Windows • Linux • macOS
 ![Overview](assets/screen_shoot/5.png)
 ![Overview](assets/screen_shoot/7.png)
 ![Overview](assets/screen_shoot/6.png)
+![Overview](assets/screen_shoot/theme.png)
 ### 安装文件下载
 
 [WePush下载地址](https://gitee.com/zhoubochina/WePush/releases)  
