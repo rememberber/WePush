@@ -30,8 +30,7 @@ public enum MessageTypeEnum {
     WX_UNIFORM_MESSAGE(17, "小程序-统一服务消息"),
     MA_SUBSCRIBE(18, "小程序-订阅消息"),
     MP_SUBSCRIBE(19, "公众号-订阅通知"),
-    WX_MP(20, "微信公众号"),
-    WX_MA(21, "微信小程序");
+    TX_YUN_3(20, "腾讯云短信3.0");
 
     private int code;
 
@@ -55,6 +54,7 @@ public enum MessageTypeEnum {
     public static final int WX_UNIFORM_MESSAGE_CODE = 17;
     public static final int MA_SUBSCRIBE_CODE = 18;
     public static final int MP_SUBSCRIBE_CODE = 19;
+    public static final int TX_YUN_3_CODE = 20;
 
     MessageTypeEnum(int code, String name) {
         this.code = code;
@@ -123,10 +123,7 @@ public enum MessageTypeEnum {
                 name = MP_SUBSCRIBE.name;
                 break;
             case 20:
-                name = WX_MP.name;
-                break;
-            case 21:
-                name = WX_MA.name;
+                name = TX_YUN_3.name;
                 break;
             default:
                 name = "";

@@ -95,6 +95,10 @@ public class MessageTypeListener {
             App.config.setMsgType(MessageTypeEnum.DING_CODE);
             saveType();
         });
+        messageTypeForm.getTxYun3RadioButton().addActionListener(e -> {
+            App.config.setMsgType(MessageTypeEnum.TX_YUN_3_CODE);
+            saveType();
+        });
 
         messageTypeForm.getKefuPriorityTipsLabel().addMouseListener(new MouseAdapter() {
             @Override
