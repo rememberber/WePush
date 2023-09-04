@@ -42,6 +42,7 @@ public class TxYun3AccountForm implements IAccountForm {
             instance.getSecretKeyTextField().setText(txYun3AccountConfig.getSecretKey());
             instance.getEndPointTextField().setText(txYun3AccountConfig.getEndPoint());
             instance.getRegionTextField().setText(txYun3AccountConfig.getRegion());
+            instance.getSdkAppIdTextField().setText(txYun3AccountConfig.getSdkAppId());
         }
     }
 
@@ -79,6 +80,7 @@ public class TxYun3AccountForm implements IAccountForm {
                 txYun3AccountConfig.setSecretKey(instance.getSecretKeyTextField().getText());
                 txYun3AccountConfig.setEndPoint(instance.getEndPointTextField().getText());
                 txYun3AccountConfig.setRegion(instance.getRegionTextField().getText());
+                txYun3AccountConfig.setSdkAppId(instance.getSdkAppIdTextField().getText());
 
                 tAccount1.setAccountConfig(JSONUtil.toJsonStr(txYun3AccountConfig));
 

@@ -12,4 +12,5 @@ public class TxYun3AccountConfig {
     private String endPoint;
     private String region;
     private String sign;
+    private String sdkAppId;
 }
