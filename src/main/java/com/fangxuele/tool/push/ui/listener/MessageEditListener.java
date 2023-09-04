@@ -175,6 +175,7 @@ public class MessageEditListener {
                     fillParaName = "预览消息用户的UserId(如果是聊天机器人消息，填写需要@ 的用户的手机号，如果@所有人 可不填写)";
                     paraDemo = "manager9115|manager9116|manager9117";
                 } else if (msgType == MessageTypeEnum.ALI_YUN_CODE || msgType == MessageTypeEnum.TX_YUN_CODE
+                        || msgType == MessageTypeEnum.TX_YUN_3_CODE
                         || msgType == MessageTypeEnum.HW_YUN_CODE || msgType == MessageTypeEnum.BD_YUN_CODE
                         || msgType == MessageTypeEnum.UP_YUN_CODE || msgType == MessageTypeEnum.YUN_PIAN_CODE
                         || msgType == MessageTypeEnum.QI_NIU_YUN_CODE) {

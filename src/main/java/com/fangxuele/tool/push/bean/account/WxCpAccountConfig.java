@@ -11,4 +11,6 @@ public class WxCpAccountConfig {
     private String appName;
     private String agentId;
     private String secret;
+    private Boolean privateDep;
+    private String baseApiUrl;
 }

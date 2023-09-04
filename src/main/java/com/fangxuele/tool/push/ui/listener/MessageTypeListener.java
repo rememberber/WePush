@@ -59,6 +59,10 @@ public class MessageTypeListener {
             App.config.setMsgType(MessageTypeEnum.TX_YUN_CODE);
             saveType();
         });
+        messageTypeForm.getTxYun3RadioButton().addActionListener(e -> {
+            App.config.setMsgType(MessageTypeEnum.TX_YUN_3_CODE);
+            saveType();
+        });
         messageTypeForm.getQiniuRadioButton().addActionListener(e -> {
             App.config.setMsgType(MessageTypeEnum.QI_NIU_YUN_CODE);
             saveType();
@@ -93,6 +97,10 @@ public class MessageTypeListener {
         });
         messageTypeForm.getDingRadioButton().addActionListener(e -> {
             App.config.setMsgType(MessageTypeEnum.DING_CODE);
+            saveType();
+        });
+        messageTypeForm.getTxYun3RadioButton().addActionListener(e -> {
+            App.config.setMsgType(MessageTypeEnum.TX_YUN_3_CODE);
             saveType();
         });
 
