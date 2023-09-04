@@ -29,8 +29,11 @@ public class WxCpAccountForm implements IAccountForm {
     private JTextField appNameTextField;
     private JTextField agentIdTextField;
     private JTextField secretTextField;
+    private JCheckBox privateDepCheckBox;
+    private JTextField baseApiUrlTextField;
+    private JLabel baseApiUrlLabel;
 
-    private static WxCpAccountForm wxMpAccountForm;
+    private static WxCpAccountForm wxCpAccountForm;
 
     public volatile static WxCpDefaultConfigImpl wxCpConfigStorage;
     public volatile static WxCpService wxCpService;
@@ -46,6 +49,15 @@ public class WxCpAccountForm implements IAccountForm {
             instance.getAppNameTextField().setText(wxCpAccountConfig.getAppName());
             instance.getAgentIdTextField().setText(wxCpAccountConfig.getAgentId());
             instance.getSecretTextField().setText(wxCpAccountConfig.getSecret());
+            instance.getPrivateDepCheckBox().setSelected(wxCpAccountConfig.getPrivateDep());
+            instance.getBaseApiUrlTextField().setText(wxCpAccountConfig.getBaseApiUrl());
+            if (wxCpAccountConfig.getPrivateDep()) {
+                instance.getBaseApiUrlTextField().setVisible(true);
+                instance.getBaseApiUrlLabel().setVisible(true);
+            } else {
+                instance.getBaseApiUrlTextField().setVisible(false);
+                instance.getBaseApiUrlLabel().setVisible(false);
+            }
         }
     }
 
@@ -82,6 +94,8 @@ public class WxCpAccountForm implements IAccountForm {
                 wxCpAccountConfig.setAppName(instance.getAppNameTextField().getText());
                 wxCpAccountConfig.setAgentId(instance.getAgentIdTextField().getText());
                 wxCpAccountConfig.setSecret(instance.getSecretTextField().getText());
+                wxCpAccountConfig.setPrivateDep(instance.getPrivateDepCheckBox().isSelected());
+                wxCpAccountConfig.setBaseApiUrl(instance.getBaseApiUrlTextField().getText());
 
                 tAccount1.setAccountConfig(JSONUtil.toJsonStr(wxCpAccountConfig));
 
@@ -113,11 +127,20 @@ public class WxCpAccountForm implements IAccountForm {
     }
 
     public static WxCpAccountForm getInstance() {
-        if (wxMpAccountForm == null) {
-            wxMpAccountForm = new WxCpAccountForm();
+        if (wxCpAccountForm == null) {
+            wxCpAccountForm = new WxCpAccountForm();
+            wxCpAccountForm.getPrivateDepCheckBox().addChangeListener(e -> {
+                if (wxCpAccountForm.getPrivateDepCheckBox().isSelected()) {
+                    wxCpAccountForm.getBaseApiUrlTextField().setVisible(true);
+                    wxCpAccountForm.getBaseApiUrlLabel().setVisible(true);
+                } else {
+                    wxCpAccountForm.getBaseApiUrlTextField().setVisible(false);
+                    wxCpAccountForm.getBaseApiUrlLabel().setVisible(false);
+                }
+            });
         }
-        UndoUtil.register(wxMpAccountForm);
-        return wxMpAccountForm;
+        UndoUtil.register(wxCpAccountForm);
+        return wxCpAccountForm;
     }
 
     {
@@ -138,10 +161,10 @@ public class WxCpAccountForm implements IAccountForm {
         mainPanel = new JPanel();
         mainPanel.setLayout(new GridLayoutManager(1, 1, new Insets(10, 5, 0, 0), -1, -1));
         final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(5, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel1.setLayout(new GridLayoutManager(7, 2, new Insets(0, 0, 0, 0), -1, -1));
         mainPanel.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
-        panel1.add(spacer1, new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        panel1.add(spacer1, new GridConstraints(6, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
         label1.setText("应用名称");
         panel1.add(label1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -162,6 +185,14 @@ public class WxCpAccountForm implements IAccountForm {
         panel1.add(label4, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         corpIdTextField = new JTextField();
         panel1.add(corpIdTextField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        privateDepCheckBox = new JCheckBox();
+        privateDepCheckBox.setText("私有化部署");
+        panel1.add(privateDepCheckBox, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        baseApiUrlTextField = new JTextField();
+        panel1.add(baseApiUrlTextField, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        baseApiUrlLabel = new JLabel();
+        baseApiUrlLabel.setText("私有BaseApiUrl");
+        panel1.add(baseApiUrlLabel, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

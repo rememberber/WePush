@@ -6,7 +6,7 @@
 
     <groupId>com.fangxuele.tool</groupId>
     <artifactId>WePush</artifactId>
-    <version>5.0.1</version>
+    <version>5.0.2</version>
     <packaging>jar</packaging>
 
     <name>WePush</name>
@@ -37,8 +37,8 @@
         <yunpian-java-sdk.version>1.2.7</yunpian-java-sdk.version>
         <velocity-engine-core.version>2.3</velocity-engine-core.version>
         <lombok.version>1.18.20</lombok.version>
-        <mybatis.version>3.5.7</mybatis.version>
-        <sqlite-jdbc.version>3.36.0.3</sqlite-jdbc.version>
+        <mybatis.version>3.5.13</mybatis.version>
+        <sqlite-jdbc.version>3.42.0.1</sqlite-jdbc.version>
         <junit.version>4.13.1</junit.version>
         <httpasyncclient.version>4.1.4</httpasyncclient.version>
         <HikariCP.version>3.4.5</HikariCP.version>
@@ -51,6 +51,7 @@
         <flatlaf-extras.version>3.2</flatlaf-extras.version>
         <flatlaf-intellij-themes.version>3.2</flatlaf-intellij-themes.version>
         <json-path.version>2.6.0</json-path.version>
+        <tencentcloud-sdk-java.version>3.1.847</tencentcloud-sdk-java.version>
     </properties>
 
     <dependencies>
@@ -425,6 +426,12 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>com.tencentcloudapi</groupId>
+            <artifactId>tencentcloud-sdk-java</artifactId>
+            <version>${tencentcloud-sdk-java.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -440,36 +447,36 @@
                     <generateInstaller>true</generateInstaller>
                 </configuration>
                 <executions>
-<!--                    <execution>-->
-<!--                        <id>bundling-for-windows</id>-->
-<!--                        <phase>package</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>package</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <platform>windows</platform>-->
-<!--                            <createZipball>true</createZipball>-->
-<!--                            <additionalModules>jdk.crypto.ec,jdk.charsets</additionalModules>-->
-<!--                            &lt;!&ndash;                            <administratorRequired>true</administratorRequired>&ndash;&gt;-->
-<!--                            <winConfig>-->
+                    <execution>
+                        <id>bundling-for-windows</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                        <configuration>
+                            <platform>windows</platform>
+                            <createZipball>true</createZipball>
+                            <additionalModules>jdk.crypto.ec,jdk.charsets</additionalModules>
+                            <!--                            <administratorRequired>true</administratorRequired>-->
+                            <winConfig>
 
-<!--                                &lt;!&ndash; general properties &ndash;&gt;-->
-<!--                                <generateSetup>true</generateSetup>-->
-<!--                                <generateMsi>true</generateMsi>-->
-<!--                                <generateMsm>true</generateMsm>-->
+                                <!-- general properties -->
+                                <generateSetup>true</generateSetup>
+                                <generateMsi>true</generateMsi>
+                                <generateMsm>true</generateMsm>
 
-<!--                                &lt;!&ndash; setup generation properties &ndash;&gt;-->
-<!--                                <setupMode>installForAllUsers</setupMode>-->
-<!--                                <createDesktopIconTask>true</createDesktopIconTask>-->
-<!--                                <disableDirPage>false</disableDirPage>-->
-<!--                                <disableFinishedPage>false</disableFinishedPage>-->
-<!--                                <setupLanguages>-->
-<!--                                    <english>compiler:Default.isl</english>-->
-<!--                                    &lt;!&ndash;                                    <spanish>compiler:Languages\Chinese.isl</spanish>&ndash;&gt;-->
-<!--                                </setupLanguages>-->
-<!--                            </winConfig>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
+                                <!-- setup generation properties -->
+                                <setupMode>installForAllUsers</setupMode>
+                                <createDesktopIconTask>true</createDesktopIconTask>
+                                <disableDirPage>false</disableDirPage>
+                                <disableFinishedPage>false</disableFinishedPage>
+                                <setupLanguages>
+                                    <english>compiler:Default.isl</english>
+                                    <!--                                    <spanish>compiler:Languages\Chinese.isl</spanish>-->
+                                </setupLanguages>
+                            </winConfig>
+                        </configuration>
+                    </execution>
                     <!--                    <execution>-->
                     <!--                        <id>bundling-for-linux</id>-->
                     <!--                        <phase>package</phase>-->
@@ -483,20 +490,20 @@
                     <!--                            <jdkPath>X:\\path\to\linux\jdk</jdkPath>-->
                     <!--                        </configuration>-->
                     <!--                    </execution>-->
-                                                                                <execution>
-                                                                                    <id>bundling-for-mac</id>
-                                                                                    <phase>package</phase>
-                                                                                    <goals>
-                                                                                        <goal>package</goal>
-                                                                                    </goals>
-                                                                                    <configuration>
-                                                                                        <platform>mac</platform>
-                                                                                        <createTarball>true</createTarball>
-                                                                                        <additionalModules>jdk.crypto.ec,jdk.charsets</additionalModules>
-                                                                                        <customizedJre>false</customizedJre>
-                                        <!--                                                <jdkPath>X:\\path\to\mac\jdk</jdkPath>-->
-                                                                                    </configuration>
-                                                                                </execution>
+<!--                                                                                <execution>-->
+<!--                                                                                    <id>bundling-for-mac</id>-->
+<!--                                                                                    <phase>package</phase>-->
+<!--                                                                                    <goals>-->
+<!--                                                                                        <goal>package</goal>-->
+<!--                                                                                    </goals>-->
+<!--                                                                                    <configuration>-->
+<!--                                                                                        <platform>mac</platform>-->
+<!--                                                                                        <createTarball>true</createTarball>-->
+<!--                                                                                        <additionalModules>jdk.crypto.ec,jdk.charsets</additionalModules>-->
+<!--                                                                                        <customizedJre>false</customizedJre>-->
+<!--                                        &lt;!&ndash;                                                <jdkPath>X:\\path\to\mac\jdk</jdkPath>&ndash;&gt;-->
+<!--                                                                                    </configuration>-->
+<!--                                                                                </execution>-->
                 </executions>
             </plugin>
 
@@ -505,36 +512,6 @@
                 <artifactId>maven-install-plugin</artifactId>
                 <version>2.5.2</version>
                 <executions>
-                    <execution>
-                        <id>install-beautyeye</id>
-                        <phase>clean</phase>
-                        <configuration>
-                            <file>lib/beautyeye_lnf.jar</file>
-                            <groupId>com.beautyeye</groupId>
-                            <artifactId>beautyeye-lnf</artifactId>
-                            <version>1.0</version>
-                            <packaging>jar</packaging>
-                            <generatePom>true</generatePom>
-                        </configuration>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>install-darcula</id>
-                        <phase>clean</phase>
-                        <configuration>
-                            <file>lib/darcula.jar</file>
-                            <groupId>com.darcula</groupId>
-                            <artifactId>darcula-lnf</artifactId>
-                            <version>1.0</version>
-                            <packaging>jar</packaging>
-                            <generatePom>true</generatePom>
-                        </configuration>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                    </execution>
                     <execution>
                         <id>install-taobao-sdk-auto</id>
                         <phase>clean</phase>

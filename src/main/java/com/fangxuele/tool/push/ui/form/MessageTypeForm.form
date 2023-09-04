@@ -3,7 +3,7 @@
   <grid id="27dc6" binding="messageTypePanel" layout-manager="GridLayoutManager" row-count="2" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
-      <xy x="20" y="20" width="826" height="614"/>
+      <xy x="20" y="20" width="826" height="761"/>
     </constraints>
     <properties>
       <autoscrolls value="false"/>
@@ -19,7 +19,7 @@
         </properties>
         <border type="empty"/>
         <children>
-          <grid id="c7ec0" binding="msgTypeListPanel" layout-manager="GridLayoutManager" row-count="23" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="c7ec0" binding="msgTypeListPanel" layout-manager="GridLayoutManager" row-count="24" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="10" left="0" bottom="0" right="0"/>
             <constraints/>
             <properties>
@@ -95,9 +95,17 @@
                   <text value="腾讯云短信"/>
                 </properties>
               </component>
+              <component id="6b1ff" class="javax.swing.JRadioButton" binding="txYun3RadioButton">
+                <constraints>
+                  <grid row="12" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="腾讯云短信3.0"/>
+                </properties>
+              </component>
               <component id="845d8" class="javax.swing.JRadioButton" binding="yunPianRadioButton">
                 <constraints>
-                  <grid row="14" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="15" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text value="云片网短信"/>
@@ -105,7 +113,7 @@
               </component>
               <component id="15067" class="javax.swing.JRadioButton" binding="网易云信短信RadioButton" default-binding="true">
                 <constraints>
-                  <grid row="18" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="19" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <enabled value="false"/>
@@ -114,7 +122,7 @@
               </component>
               <component id="aecfe" class="javax.swing.JRadioButton" binding="榛子云短信RadioButton" default-binding="true">
                 <constraints>
-                  <grid row="19" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="20" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <enabled value="false"/>
@@ -123,7 +131,7 @@
               </component>
               <component id="94dd8" class="javax.swing.JRadioButton" binding="luosimao短信RadioButton" default-binding="true">
                 <constraints>
-                  <grid row="20" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="21" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <enabled value="false"/>
@@ -132,7 +140,7 @@
               </component>
               <component id="f582c" class="javax.swing.JRadioButton" binding="极光短信RadioButton" default-binding="true">
                 <constraints>
-                  <grid row="21" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="22" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <enabled value="false"/>
@@ -141,7 +149,7 @@
               </component>
               <component id="ac160" class="javax.swing.JRadioButton" binding="极光推送RadioButton" default-binding="true">
                 <constraints>
-                  <grid row="22" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="23" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <enabled value="false"/>
@@ -158,7 +166,7 @@
               </component>
               <component id="c9ddb" class="javax.swing.JRadioButton" binding="eMailRadioButton">
                 <constraints>
-                  <grid row="17" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="18" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <enabled value="true"/>
@@ -199,7 +207,7 @@
               </component>
               <component id="fddfa" class="javax.swing.JRadioButton" binding="hwYunRadioButton">
                 <constraints>
-                  <grid row="12" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="13" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <enabled value="true"/>
@@ -208,7 +216,7 @@
               </component>
               <component id="93d99" class="javax.swing.JRadioButton" binding="bdYunRadioButton">
                 <constraints>
-                  <grid row="13" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="14" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <enabled value="true"/>
@@ -217,7 +225,7 @@
               </component>
               <component id="63100" class="javax.swing.JRadioButton" binding="upYunRadioButton">
                 <constraints>
-                  <grid row="15" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="16" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <enabled value="true"/>
@@ -226,7 +234,7 @@
               </component>
               <component id="b537f" class="javax.swing.JRadioButton" binding="qiniuRadioButton">
                 <constraints>
-                  <grid row="16" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="17" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <enabled value="true"/>

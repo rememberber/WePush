@@ -46,7 +46,7 @@ public class FrameListener {
 
             @Override
             public void windowClosing(WindowEvent e) {
-                mainFrame.dispose();
+                mainFrame.setExtendedState(JFrame.ICONIFIED);
                 if (!App.config.isCloseToTray()) {
                     App.sqlSession.close();
                     mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

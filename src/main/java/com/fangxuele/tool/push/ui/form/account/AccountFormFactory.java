@@ -38,6 +38,9 @@ public class AccountFormFactory {
             case MessageTypeEnum.TX_YUN_CODE:
                 iAccountForm = TxYunAccountForm.getInstance();
                 break;
+            case MessageTypeEnum.TX_YUN_3_CODE:
+                iAccountForm = TxYun3AccountForm.getInstance();
+                break;
             case MessageTypeEnum.HW_YUN_CODE:
                 iAccountForm = HwYunAccountForm.getInstance();
                 break;

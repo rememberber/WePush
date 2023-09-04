@@ -121,6 +121,10 @@ public class WxCpMsgSender implements IMsgSender {
 //        clientBuilder.setUserAgent(..)
             configStorage.setApacheHttpClientBuilder(clientBuilder);
 
+            if (wxCpAccountConfig.getPrivateDep()) {
+                configStorage.setBaseApiUrl(wxCpAccountConfig.getBaseApiUrl());
+            }
+
             WxCpService wxCpService = new WxCpServiceApacheHttpClientImpl();
             wxCpService.setWxCpConfigStorage(configStorage);
 
