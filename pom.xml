@@ -37,8 +37,8 @@
         <yunpian-java-sdk.version>1.2.7</yunpian-java-sdk.version>
         <velocity-engine-core.version>2.3</velocity-engine-core.version>
         <lombok.version>1.18.20</lombok.version>
-        <mybatis.version>3.5.7</mybatis.version>
-        <sqlite-jdbc.version>3.43.0.0</sqlite-jdbc.version>
+        <mybatis.version>3.5.13</mybatis.version>
+        <sqlite-jdbc.version>3.42.0.1</sqlite-jdbc.version>
         <junit.version>4.13.1</junit.version>
         <httpasyncclient.version>4.1.4</httpasyncclient.version>
         <HikariCP.version>3.4.5</HikariCP.version>
