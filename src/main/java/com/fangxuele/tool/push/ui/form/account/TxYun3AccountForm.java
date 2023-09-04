@@ -28,14 +28,14 @@ public class TxYun3AccountForm implements IAccountForm {
     private JTextField regionTextField;
     private JTextField sdkAppIdTextField;
 
-    private static TxYun3AccountForm wxMpAccountForm;
+    private static TxYun3AccountForm txYun3AccountForm;
 
     @Override
     public void init(String accountName) {
+        TxYun3AccountForm instance = getInstance();
         if (StringUtils.isNotEmpty(accountName)) {
             TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
 
-            TxYun3AccountForm instance = getInstance();
             TxYun3AccountConfig txYun3AccountConfig = JSONUtil.toBean(tAccount.getAccountConfig(), TxYun3AccountConfig.class);
             instance.getSignTextField().setText(txYun3AccountConfig.getSign());
             instance.getSecretIdTextField().setText(txYun3AccountConfig.getSecretId());
@@ -43,6 +43,9 @@ public class TxYun3AccountForm implements IAccountForm {
             instance.getEndPointTextField().setText(txYun3AccountConfig.getEndPoint());
             instance.getRegionTextField().setText(txYun3AccountConfig.getRegion());
             instance.getSdkAppIdTextField().setText(txYun3AccountConfig.getSdkAppId());
+        } else {
+            instance.getEndPointTextField().setText("sms.tencentcloudapi.com");
+            instance.getRegionTextField().setText("ap-guangzhou");
         }
     }
 
@@ -112,11 +115,11 @@ public class TxYun3AccountForm implements IAccountForm {
     }
 
     public static TxYun3AccountForm getInstance() {
-        if (wxMpAccountForm == null) {
-            wxMpAccountForm = new TxYun3AccountForm();
+        if (txYun3AccountForm == null) {
+            txYun3AccountForm = new TxYun3AccountForm();
         }
-        UndoUtil.register(wxMpAccountForm);
-        return wxMpAccountForm;
+        UndoUtil.register(txYun3AccountForm);
+        return txYun3AccountForm;
     }
 
     {

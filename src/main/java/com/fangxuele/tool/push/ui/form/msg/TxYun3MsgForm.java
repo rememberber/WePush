@@ -136,7 +136,7 @@ public class TxYun3MsgForm implements IMsgForm {
         int msgId = 0;
         boolean existSameMsg = false;
 
-        TMsg tMsg = msgMapper.selectByUnique(MessageTypeEnum.TX_YUN_CODE, accountId, msgName);
+        TMsg tMsg = msgMapper.selectByUnique(MessageTypeEnum.TX_YUN_3_CODE, accountId, msgName);
         if (tMsg != null) {
             existSameMsg = true;
             msgId = tMsg.getId();
@@ -156,7 +156,7 @@ public class TxYun3MsgForm implements IMsgForm {
 
             TMsg msg = new TMsg();
             TMsgSms tMsgSms = new TMsgSms();
-            msg.setMsgType(MessageTypeEnum.TX_YUN_CODE);
+            msg.setMsgType(MessageTypeEnum.TX_YUN_3_CODE);
             msg.setAccountId(accountId);
             msg.setMsgName(msgName);
             tMsgSms.setTemplateId(templateId);
