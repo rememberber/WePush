@@ -5,9 +5,7 @@ import com.fangxuele.tool.push.ui.form.MainWindow;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.event.*;
 
 import static com.fangxuele.tool.push.App.mainFrame;
 
@@ -64,6 +62,40 @@ public class FrameListener {
                     // 低分辨率下自动最大化窗口
                     App.mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
                 }
+            }
+        });
+
+        // 鼠标双击最大化/还原
+        App.mainFrame.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2 && !e.isConsumed()) {
+                    if (App.mainFrame.getExtendedState() == JFrame.MAXIMIZED_BOTH) {
+                        App.mainFrame.setExtendedState(JFrame.NORMAL);
+                    } else {
+                        App.mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+                    }
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
             }
         });
 
