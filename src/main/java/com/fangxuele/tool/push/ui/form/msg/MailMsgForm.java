@@ -93,7 +93,7 @@ public class MailMsgForm implements IMsgForm {
             getInstance().getMailTitleTextField().setText(tMsgMail.getTitle());
             getInstance().getMailCcTextField().setText(tMsgMail.getCc());
             getInstance().getMailFilesTextArea().setText(tMsgMail.getFiles());
-            getInstance().getMailContentPane().setText(tMsg.getContent());
+            getInstance().getMailContentPane().setText(tMsgMail.getContent());
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
             messageEditForm.getMsgNameField().setText(tMsg.getMsgName());
