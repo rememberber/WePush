@@ -706,8 +706,6 @@ public class NewTaskDialog extends JDialog {
 
                 TaskForm.initTaskListTable();
 
-                JOptionPane.showMessageDialog(this, "保存成功！", "提示",
-                        JOptionPane.INFORMATION_MESSAGE);
                 dispose();
             } catch (Exception e) {
                 log.error("保存任务异常:{}", ExceptionUtils.getStackTrace(e));
