@@ -15,10 +15,10 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
 
-        <java.version>17</java.version>
+        <java.version>21</java.version>
         <logback.version>1.2.3</logback.version>
         <weixin-java-mp.version>4.4.0</weixin-java-mp.version>
         <weixin-java-cp.version>4.4.0</weixin-java-cp.version>
@@ -440,7 +440,7 @@
             <plugin>
                 <groupId>io.github.fvarrui</groupId>
                 <artifactId>javapackager</artifactId>
-                <version>1.7.2</version>
+                <version>1.7.4</version>
                 <configuration>
                     <bundleJre>true</bundleJre>
                     <mainClass>com.fangxuele.tool.push.App</mainClass>
