@@ -129,6 +129,9 @@ public class WxCpAccountForm implements IAccountForm {
     public static WxCpAccountForm getInstance() {
         if (wxCpAccountForm == null) {
             wxCpAccountForm = new WxCpAccountForm();
+            wxCpAccountForm.getPrivateDepCheckBox().setSelected(false);
+            wxCpAccountForm.getBaseApiUrlTextField().setVisible(false);
+            wxCpAccountForm.getBaseApiUrlLabel().setVisible(false);
             wxCpAccountForm.getPrivateDepCheckBox().addChangeListener(e -> {
                 if (wxCpAccountForm.getPrivateDepCheckBox().isSelected()) {
                     wxCpAccountForm.getBaseApiUrlTextField().setVisible(true);
