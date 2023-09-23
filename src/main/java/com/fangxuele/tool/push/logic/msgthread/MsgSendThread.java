@@ -34,6 +34,9 @@ public class MsgSendThread extends BaseMsgThread {
             initCurrentThread();
             TTask tTask = taskRunThread.getTTask();
 
+            // 间隔推送
+            boolean isIntervalPush = tTask.getIntervalPush() != null && tTask.getIntervalPush() == 1 && tTask.getIntervalTime() != null;
+
             for (int i = 0; i < list.size(); i++) {
                 if (!taskRunThread.running) {
                     // 停止
@@ -41,7 +44,7 @@ public class MsgSendThread extends BaseMsgThread {
                 }
 
                 // 间隔推送
-                if (tTask.getIntervalPush() != null && tTask.getIntervalPush() == 1 && i > 0 && tTask.getIntervalTime() != null) {
+                if (isIntervalPush) {
                     Thread.sleep(tTask.getIntervalTime() * 1000);
                 }
 
