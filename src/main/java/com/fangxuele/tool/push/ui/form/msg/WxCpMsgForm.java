@@ -225,6 +225,7 @@ public class WxCpMsgForm implements IMsgForm {
         getInstance().getDescTextField().setText("");
         getInstance().getUrlTextField().setText("");
         getInstance().getBtnTxtTextField().setText("");
+        switchCpMsgType(msgTypeComboBox.getSelectedItem().toString());
     }
 
     {
