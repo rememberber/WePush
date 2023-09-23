@@ -222,7 +222,7 @@ public class Init {
                 popupMenu.setFont(App.mainFrame.getContentPane().getFont());
 
                 MenuItem openItem = new MenuItem("WePush");
-                MenuItem exitItem = new MenuItem("退出");
+                MenuItem exitItem = new MenuItem("Exit");
 
                 openItem.addActionListener(e -> {
                     App.mainFrame.setExtendedState(JFrame.NORMAL);
