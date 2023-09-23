@@ -36,7 +36,7 @@
         <qcloudsms.version>1.0.6</qcloudsms.version>
         <yunpian-java-sdk.version>1.2.7</yunpian-java-sdk.version>
         <velocity-engine-core.version>2.3</velocity-engine-core.version>
-        <lombok.version>1.18.20</lombok.version>
+        <lombok.version>1.18.30</lombok.version>
         <mybatis.version>3.5.13</mybatis.version>
         <sqlite-jdbc.version>3.42.0.1</sqlite-jdbc.version>
         <junit.version>4.13.1</junit.version>
