@@ -334,7 +334,9 @@ public class NewTaskDialog extends JDialog {
             }
         }
         intervalPushCheckBox.setSelected(beforeTTask.getIntervalPush() != null && beforeTTask.getIntervalPush() == 1);
-        intervalTextField.setText(String.valueOf(beforeTTask.getIntervalTime()));
+        if (beforeTTask.getIntervalTime() != null) {
+            intervalTextField.setText(String.valueOf(beforeTTask.getIntervalTime()));
+        }
         reimportCheckBox.setSelected(beforeTTask.getReimportPeople() != null && beforeTTask.getReimportPeople() == 1);
         sendPushResultCheckBox.setSelected(beforeTTask.getResultAlert() != null && beforeTTask.getResultAlert() == 1);
         mailResultToTextField.setText(beforeTTask.getAlertEmails());
@@ -623,7 +625,9 @@ public class NewTaskDialog extends JDialog {
                 task.setAlertEmails(mailResultToTextField.getText().trim());
                 task.setSaveResult(saveResponseBodyCheckBox.isSelected() ? 1 : 0);
                 task.setIntervalPush(intervalPushCheckBox.isSelected() ? 1 : 0);
-                task.setIntervalTime(Integer.parseInt(intervalTextField.getText().trim()));
+                if (StringUtils.isNotBlank(intervalTextField.getText())) {
+                    task.setIntervalTime(Integer.parseInt(intervalTextField.getText().trim()));
+                }
                 task.setModifiedTime(nowDateForSqlite);
 
                 // 如果是定时任务
