@@ -68,6 +68,9 @@ public class MsgSendThread extends BaseMsgThread {
             currentThreadFinish();
         } catch (Exception e) {
             logger.error(ExceptionUtils.getStackTrace(e));
+        } finally {
+            // 线程结束，处理完毕的线程数+1
+            taskRunThread.finishedThreadCount.incrementAndGet();
         }
     }
 
