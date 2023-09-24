@@ -81,6 +81,8 @@ public class NewTaskDialog extends JDialog {
     private JCheckBox saveResponseBodyCheckBox;
     private JPanel otherPanel;
     private JTextField maxThreadCntTextField;
+    private JCheckBox intervalPushCheckBox;
+    private JTextField intervalTextField;
 
     private static TTaskMapper taskMapper = MybatisUtil.getSqlSession().getMapper(TTaskMapper.class);
     private static TTaskExtMapper taskExtMapper = MybatisUtil.getSqlSession().getMapper(TTaskExtMapper.class);
@@ -330,6 +332,10 @@ public class NewTaskDialog extends JDialog {
                 cronRadioButton.setSelected(true);
                 cronTextField.setText(beforeTTask.getPeriodTime());
             }
+        }
+        intervalPushCheckBox.setSelected(beforeTTask.getIntervalPush() != null && beforeTTask.getIntervalPush() == 1);
+        if (beforeTTask.getIntervalTime() != null) {
+            intervalTextField.setText(String.valueOf(beforeTTask.getIntervalTime()));
         }
         reimportCheckBox.setSelected(beforeTTask.getReimportPeople() != null && beforeTTask.getReimportPeople() == 1);
         sendPushResultCheckBox.setSelected(beforeTTask.getResultAlert() != null && beforeTTask.getResultAlert() == 1);
@@ -618,6 +624,10 @@ public class NewTaskDialog extends JDialog {
                 task.setResultAlert(sendPushResultCheckBox.isSelected() ? 1 : 0);
                 task.setAlertEmails(mailResultToTextField.getText().trim());
                 task.setSaveResult(saveResponseBodyCheckBox.isSelected() ? 1 : 0);
+                task.setIntervalPush(intervalPushCheckBox.isSelected() ? 1 : 0);
+                if (StringUtils.isNotBlank(intervalTextField.getText())) {
+                    task.setIntervalTime(Integer.parseInt(intervalTextField.getText().trim()));
+                }
                 task.setModifiedTime(nowDateForSqlite);
 
                 // 如果是定时任务
@@ -706,8 +716,6 @@ public class NewTaskDialog extends JDialog {
 
                 TaskForm.initTaskListTable();
 
-                JOptionPane.showMessageDialog(this, "保存成功！", "提示",
-                        JOptionPane.INFORMATION_MESSAGE);
                 dispose();
             } catch (Exception e) {
                 log.error("保存任务异常:{}", ExceptionUtils.getStackTrace(e));
@@ -911,7 +919,7 @@ public class NewTaskDialog extends JDialog {
         peopleComboBox = new JComboBox();
         panel4.add(peopleComboBox, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel5 = new JPanel();
-        panel5.setLayout(new GridLayoutManager(3, 1, new Insets(10, 10, 10, 10), -1, -1));
+        panel5.setLayout(new GridLayoutManager(4, 1, new Insets(10, 10, 10, 10), -1, -1));
         panel3.add(panel5, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         panel5.setBorder(BorderFactory.createTitledBorder(null, "运行规则", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, panel5.getFont()), null));
         schedulePanel = new JPanel();
@@ -1019,16 +1027,29 @@ public class NewTaskDialog extends JDialog {
         maxThreadCntTextField = new JTextField();
         panel7.add(maxThreadCntTextField, new GridConstraints(0, 6, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(60, -1), null, 0, false));
         final JPanel panel8 = new JPanel();
-        panel8.setLayout(new GridLayoutManager(2, 2, new Insets(10, 10, 10, 10), -1, -1));
-        panel3.add(panel8, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        panel8.setBorder(BorderFactory.createTitledBorder(null, "告警和通知", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, panel8.getFont()), null));
+        panel8.setLayout(new GridLayoutManager(1, 4, new Insets(0, 0, 0, 0), -1, -1));
+        panel5.add(panel8, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        intervalPushCheckBox = new JCheckBox();
+        intervalPushCheckBox.setText("间隔发送");
+        panel8.add(intervalPushCheckBox, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final Spacer spacer5 = new Spacer();
+        panel8.add(spacer5, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        intervalTextField = new JTextField();
+        panel8.add(intervalTextField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(60, -1), null, 0, false));
+        final JLabel label15 = new JLabel();
+        label15.setText("秒");
+        panel8.add(label15, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JPanel panel9 = new JPanel();
+        panel9.setLayout(new GridLayoutManager(2, 2, new Insets(10, 10, 10, 10), -1, -1));
+        panel3.add(panel9, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel9.setBorder(BorderFactory.createTitledBorder(null, "告警和通知", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, panel9.getFont()), null));
         sendPushResultCheckBox = new JCheckBox();
         sendPushResultCheckBox.setText("将推送结果发送邮件给（多个以分号分隔）：");
-        panel8.add(sendPushResultCheckBox, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final Spacer spacer5 = new Spacer();
-        panel8.add(spacer5, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        panel9.add(sendPushResultCheckBox, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final Spacer spacer6 = new Spacer();
+        panel9.add(spacer6, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         mailResultToTextField = new JTextField();
-        panel8.add(mailResultToTextField, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel9.add(mailResultToTextField, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         otherPanel = new JPanel();
         otherPanel.setLayout(new GridLayoutManager(1, 2, new Insets(10, 10, 10, 10), -1, -1));
         panel3.add(otherPanel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -1036,8 +1057,8 @@ public class NewTaskDialog extends JDialog {
         saveResponseBodyCheckBox = new JCheckBox();
         saveResponseBodyCheckBox.setText("保存请求返回的Body");
         otherPanel.add(saveResponseBodyCheckBox, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final Spacer spacer6 = new Spacer();
-        otherPanel.add(spacer6, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        final Spacer spacer7 = new Spacer();
+        otherPanel.add(spacer7, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
     }
 
     /**

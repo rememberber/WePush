@@ -76,7 +76,7 @@ public class WxCpMsgForm implements IMsgForm {
             TMsgWxCp tMsgWxCp = JSONUtil.toBean(tMsg.getContent(), TMsgWxCp.class);
             String cpMsgType = tMsgWxCp.getCpMsgType();
             getInstance().getMsgTypeComboBox().setSelectedItem(cpMsgType);
-            getInstance().getContentTextArea().setText(tMsg.getContent());
+            getInstance().getContentTextArea().setText(tMsgWxCp.getContent());
             getInstance().getTitleTextField().setText(tMsgWxCp.getTitle());
             getInstance().getPicUrlTextField().setText(tMsgWxCp.getImgUrl());
             getInstance().getDescTextField().setText(tMsgWxCp.getDescribe());
@@ -225,6 +225,7 @@ public class WxCpMsgForm implements IMsgForm {
         getInstance().getDescTextField().setText("");
         getInstance().getUrlTextField().setText("");
         getInstance().getBtnTxtTextField().setText("");
+        switchCpMsgType(msgTypeComboBox.getSelectedItem().toString());
     }
 
     {

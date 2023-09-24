@@ -37,6 +37,10 @@ public class TTask implements Serializable {
 
     private Integer saveResult;
 
+    private Integer intervalPush;
+
+    private Integer intervalTime;
+
     private String remark;
 
     private String createTime;
@@ -179,6 +183,22 @@ public class TTask implements Serializable {
 
     public void setSaveResult(Integer saveResult) {
         this.saveResult = saveResult;
+    }
+
+    public Integer getIntervalPush() {
+        return intervalPush;
+    }
+
+    public void setIntervalPush(Integer intervalPush) {
+        this.intervalPush = intervalPush;
+    }
+
+    public Integer getIntervalTime() {
+        return intervalTime;
+    }
+
+    public void setIntervalTime(Integer intervalTime) {
+        this.intervalTime = intervalTime;
     }
 
     public String getRemark() {

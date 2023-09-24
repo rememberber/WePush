@@ -37,7 +37,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.stream.Collectors;
 
@@ -68,6 +68,11 @@ public class TaskRunThread extends Thread {
      * 发送失败数
      */
     public LongAdder failRecords = new LongAdder();
+
+    /**
+     * 处理完毕的线程数
+     */
+    public AtomicInteger finishedThreadCount = new AtomicInteger(0);
 
     /**
      * 停止标志
@@ -177,11 +182,11 @@ public class TaskRunThread extends Thread {
         ConsoleUtil.pushLog(logWriter, "推送开始……");
         // 消息数据分片以及线程纷发
         tMsg = msgMapper.selectByPrimaryKey(tTask.getMessageId());
-        ThreadPoolExecutor threadPoolExecutor = shardingAndMsgThread(tMsg);
+        shardingAndMsgThread(tMsg);
 
         taskRunThreadMap.put(taskHis.getId(), this);
         // 时间监控
-        timeMonitor(threadPoolExecutor);
+        timeMonitor();
 
         resetLocalData();
 
@@ -289,9 +294,7 @@ public class TaskRunThread extends Thread {
     /**
      * 消息数据分片以及线程纷发
      */
-    private ThreadPoolExecutor shardingAndMsgThread(TMsg tMsg) {
-        int maxThreadPoolSize = tTask.getThreadCnt();
-        ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(maxThreadPoolSize, maxThreadPoolSize);
+    private void shardingAndMsgThread(TMsg tMsg) {
         MsgSendThread msgSendThread;
         // 每个线程分配
         int perThread = (int) (totalRecords / threadCount) + 1;
@@ -309,24 +312,18 @@ public class TaskRunThread extends Thread {
             IMsgSender msgSender = MsgSenderFactory.getMsgSender(tMsg.getId(), dryRun);
             msgSendThread = new MsgSendThread(startIndex, endIndex, msgSender, this);
 
-            msgSendThread.setName("T-" + i);
-
-            threadPoolExecutor.execute(msgSendThread);
+            Thread.ofVirtual().name("T-" + i).start(msgSendThread);
         }
-        threadPoolExecutor.shutdown();
         ConsoleUtil.pushLog(logWriter, "所有线程宝宝启动完毕……");
-        return threadPoolExecutor;
     }
 
     /**
      * 时间监控
-     *
-     * @param threadPoolExecutor
      */
-    private void timeMonitor(ThreadPoolExecutor threadPoolExecutor) {
+    private void timeMonitor() {
         // 计时
         while (true) {
-            if (threadPoolExecutor.isTerminated()) {
+            if (finishedThreadCount.get() == threadCount) {
                 taskHis.setEndTime(SqliteUtil.nowDateForSqlite());
 
                 int successCount = sendSuccessList.size();
@@ -440,6 +437,7 @@ public class TaskRunThread extends Thread {
         running = false;
         successRecords.reset();
         failRecords.reset();
+        finishedThreadCount.set(0);
         threadCount = 0;
         toSendList = Collections.synchronizedList(new LinkedList<>());
         sendSuccessList = Collections.synchronizedList(new LinkedList<>());

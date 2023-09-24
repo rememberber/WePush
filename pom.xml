@@ -6,7 +6,7 @@
 
     <groupId>com.fangxuele.tool</groupId>
     <artifactId>WePush</artifactId>
-    <version>5.0.2</version>
+    <version>5.0.3</version>
     <packaging>jar</packaging>
 
     <name>WePush</name>
@@ -15,10 +15,10 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
 
-        <java.version>1.8</java.version>
+        <java.version>21</java.version>
         <logback.version>1.2.3</logback.version>
         <weixin-java-mp.version>4.4.0</weixin-java-mp.version>
         <weixin-java-cp.version>4.4.0</weixin-java-cp.version>
@@ -36,7 +36,7 @@
         <qcloudsms.version>1.0.6</qcloudsms.version>
         <yunpian-java-sdk.version>1.2.7</yunpian-java-sdk.version>
         <velocity-engine-core.version>2.3</velocity-engine-core.version>
-        <lombok.version>1.18.20</lombok.version>
+        <lombok.version>1.18.30</lombok.version>
         <mybatis.version>3.5.13</mybatis.version>
         <sqlite-jdbc.version>3.42.0.1</sqlite-jdbc.version>
         <junit.version>4.13.1</junit.version>
@@ -47,9 +47,9 @@
         <aliyun-java-sdk-dysmsapi.version>1.1.0</aliyun-java-sdk-dysmsapi.version>
         <bce-java-sdk.version>0.10.134</bce-java-sdk.version>
         <qiniu-java-sdk.version>7.3.0</qiniu-java-sdk.version>
-        <flatlaf.version>3.2</flatlaf.version>
-        <flatlaf-extras.version>3.2</flatlaf-extras.version>
-        <flatlaf-intellij-themes.version>3.2</flatlaf-intellij-themes.version>
+        <flatlaf.version>3.2.1</flatlaf.version>
+        <flatlaf-extras.version>3.2.1</flatlaf-extras.version>
+        <flatlaf-intellij-themes.version>3.2.1</flatlaf-intellij-themes.version>
         <json-path.version>2.6.0</json-path.version>
         <tencentcloud-sdk-java.version>3.1.847</tencentcloud-sdk-java.version>
     </properties>
@@ -440,70 +440,68 @@
             <plugin>
                 <groupId>io.github.fvarrui</groupId>
                 <artifactId>javapackager</artifactId>
-                <version>1.7.2</version>
+                <version>1.7.4</version>
                 <configuration>
                     <bundleJre>true</bundleJre>
                     <mainClass>com.fangxuele.tool.push.App</mainClass>
                     <generateInstaller>true</generateInstaller>
                 </configuration>
                 <executions>
-                    <execution>
-                        <id>bundling-for-windows</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>package</goal>
-                        </goals>
-                        <configuration>
-                            <platform>windows</platform>
-                            <createZipball>true</createZipball>
-                            <additionalModules>jdk.crypto.ec,jdk.charsets</additionalModules>
-                            <!--                            <administratorRequired>true</administratorRequired>-->
-                            <winConfig>
+<!--                    <execution>-->
+<!--                        <id>bundling-for-windows</id>-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>package</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <platform>windows</platform>-->
+<!--                            <createZipball>true</createZipball>-->
+<!--                            <additionalModules>jdk.crypto.ec,jdk.charsets</additionalModules>-->
+<!--                            &lt;!&ndash;                            <administratorRequired>true</administratorRequired>&ndash;&gt;-->
+<!--                            <winConfig>-->
 
-                                <!-- general properties -->
-                                <generateSetup>true</generateSetup>
-                                <generateMsi>true</generateMsi>
-                                <generateMsm>true</generateMsm>
+<!--                                &lt;!&ndash; general properties &ndash;&gt;-->
+<!--                                <generateSetup>true</generateSetup>-->
+<!--                                <generateMsi>true</generateMsi>-->
+<!--                                <generateMsm>true</generateMsm>-->
 
-                                <!-- setup generation properties -->
-                                <setupMode>installForAllUsers</setupMode>
-                                <createDesktopIconTask>true</createDesktopIconTask>
-                                <disableDirPage>false</disableDirPage>
-                                <disableFinishedPage>false</disableFinishedPage>
-                                <setupLanguages>
-                                    <english>compiler:Default.isl</english>
-                                    <!--                                    <spanish>compiler:Languages\Chinese.isl</spanish>-->
-                                </setupLanguages>
-                            </winConfig>
-                        </configuration>
-                    </execution>
-                    <!--                    <execution>-->
-                    <!--                        <id>bundling-for-linux</id>-->
-                    <!--                        <phase>package</phase>-->
-                    <!--                        <goals>-->
-                    <!--                            <goal>package</goal>-->
-                    <!--                        </goals>-->
-                    <!--                        <configuration>-->
-                    <!--                            <platform>linux</platform>-->
-                    <!--                            <createTarball>true</createTarball>-->
+<!--                                &lt;!&ndash; setup generation properties &ndash;&gt;-->
+<!--                                <setupMode>installForAllUsers</setupMode>-->
+<!--                                <createDesktopIconTask>true</createDesktopIconTask>-->
+<!--                                <disableDirPage>false</disableDirPage>-->
+<!--                                <disableFinishedPage>false</disableFinishedPage>-->
+<!--                                <setupLanguages>-->
+<!--                                    <english>compiler:Default.isl</english>-->
+<!--                                    &lt;!&ndash;                                    <spanish>compiler:Languages\Chinese.isl</spanish>&ndash;&gt;-->
+<!--                                </setupLanguages>-->
+<!--                            </winConfig>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                                        <execution>-->
+<!--                                            <id>bundling-for-linux</id>-->
+<!--                                            <phase>package</phase>-->
+<!--                                            <goals>-->
+<!--                                                <goal>package</goal>-->
+<!--                                            </goals>-->
+<!--                                            <configuration>-->
+<!--                                                <platform>linux</platform>-->
+<!--                                                <createTarball>true</createTarball>-->
 <!--                    <additionalModules>jdk.crypto.ec,jdk.charsets</additionalModules>-->
-                    <!--                            <jdkPath>X:\\path\to\linux\jdk</jdkPath>-->
-                    <!--                        </configuration>-->
-                    <!--                    </execution>-->
-<!--                                                                                <execution>-->
-<!--                                                                                    <id>bundling-for-mac</id>-->
-<!--                                                                                    <phase>package</phase>-->
-<!--                                                                                    <goals>-->
-<!--                                                                                        <goal>package</goal>-->
-<!--                                                                                    </goals>-->
-<!--                                                                                    <configuration>-->
-<!--                                                                                        <platform>mac</platform>-->
-<!--                                                                                        <createTarball>true</createTarball>-->
-<!--                                                                                        <additionalModules>jdk.crypto.ec,jdk.charsets</additionalModules>-->
-<!--                                                                                        <customizedJre>false</customizedJre>-->
-<!--                                        &lt;!&ndash;                                                <jdkPath>X:\\path\to\mac\jdk</jdkPath>&ndash;&gt;-->
-<!--                                                                                    </configuration>-->
-<!--                                                                                </execution>-->
+<!--                                            </configuration>-->
+<!--                                        </execution>-->
+                                                                                <execution>
+                                                                                    <id>bundling-for-mac</id>
+                                                                                    <phase>package</phase>
+                                                                                    <goals>
+                                                                                        <goal>package</goal>
+                                                                                    </goals>
+                                                                                    <configuration>
+                                                                                        <platform>mac</platform>
+                                                                                        <createTarball>true</createTarball>
+                                                                                        <additionalModules>jdk.crypto.ec,jdk.charsets</additionalModules>
+                                                                                        <customizedJre>false</customizedJre>
+                                                                                    </configuration>
+                                                                                </execution>
                 </executions>
             </plugin>
 
