@@ -19,6 +19,8 @@
         <result column="result_alert" jdbcType="INTEGER" property="resultAlert"/>
         <result column="alert_emails" jdbcType="VARCHAR" property="alertEmails"/>
         <result column="save_result" jdbcType="INTEGER" property="saveResult"/>
+        <result column="interval_push" jdbcType="INTEGER" property="intervalPush"/>
+        <result column="interval_time" jdbcType="INTEGER" property="intervalTime"/>
         <result column="remark" jdbcType="VARCHAR" property="remark"/>
         <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
         <result column="modified_time" jdbcType="VARCHAR" property="modifiedTime"/>
@@ -26,6 +28,7 @@
     <sql id="Base_Column_List">
         id, title, msg_type, account_id, message_id, people_id, task_mode, task_period, period_type,
         period_time, cron, thread_cnt, max_thread_cnt, reimport_people, result_alert, alert_emails, save_result,
+        interval_push, interval_time,
         remark, create_time, modified_time
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -49,7 +52,8 @@
         task_mode, task_period, period_type,
         period_time, cron, thread_cnt, max_thread_cnt,
         reimport_people, result_alert, alert_emails,
-        save_result, remark, create_time,
+        save_result, interval_push, interval_time,
+        remark, create_time,
         modified_time)
         values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{msgType,jdbcType=INTEGER},
         #{accountId,jdbcType=INTEGER}, #{messageId,jdbcType=INTEGER}, #{peopleId,jdbcType=INTEGER},
@@ -57,7 +61,9 @@
         #{periodTime,jdbcType=VARCHAR}, #{cron,jdbcType=VARCHAR}, #{threadCnt,jdbcType=INTEGER},
         #{maxThreadCnt,jdbcType=INTEGER},
         #{reimportPeople,jdbcType=INTEGER}, #{resultAlert,jdbcType=INTEGER}, #{alertEmails,jdbcType=VARCHAR},
-        #{saveResult,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR},
+        #{saveResult,jdbcType=INTEGER},
+        #{intervalPush,jdbcType=INTEGER}, #{intervalTime,jdbcType=INTEGER},
+        #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR},
         #{modifiedTime,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TTask">
@@ -113,6 +119,12 @@
             </if>
             <if test="saveResult != null">
                 save_result,
+            </if>
+            <if test="intervalPush != null">
+                interval_push,
+            </if>
+            <if test="intervalTime != null">
+                interval_time,
             </if>
             <if test="remark != null">
                 remark,
@@ -176,6 +188,12 @@
             <if test="saveResult != null">
                 #{saveResult,jdbcType=INTEGER},
             </if>
+            <if test="intervalPush != null">
+                #{intervalPush,jdbcType=INTEGER},
+            </if>
+            <if test="intervalTime != null">
+                #{intervalTime,jdbcType=INTEGER},
+            </if>
             <if test="remark != null">
                 #{remark,jdbcType=VARCHAR},
             </if>
@@ -238,6 +256,12 @@
             <if test="saveResult != null">
                 save_result = #{saveResult,jdbcType=INTEGER},
             </if>
+            <if test="intervalPush != null">
+                interval_push = #{intervalPush,jdbcType=INTEGER},
+            </if>
+            <if test="intervalTime != null">
+                interval_time = #{intervalTime,jdbcType=INTEGER},
+            </if>
             <if test="remark != null">
                 remark = #{remark,jdbcType=VARCHAR},
             </if>
@@ -268,6 +292,8 @@
         result_alert = #{resultAlert,jdbcType=INTEGER},
         alert_emails = #{alertEmails,jdbcType=VARCHAR},
         save_result = #{saveResult,jdbcType=INTEGER},
+        interval_push = #{intervalPush,jdbcType=INTEGER},
+        interval_time = #{intervalTime,jdbcType=INTEGER},
         remark = #{remark,jdbcType=VARCHAR},
         create_time = #{createTime,jdbcType=VARCHAR},
         modified_time = #{modifiedTime,jdbcType=VARCHAR}

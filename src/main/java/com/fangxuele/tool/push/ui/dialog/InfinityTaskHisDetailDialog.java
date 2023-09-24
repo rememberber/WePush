@@ -82,7 +82,7 @@ public class InfinityTaskHisDetailDialog extends JDialog {
 
     public InfinityTaskHisDetailDialog() {
         super(App.mainFrame, "执行详情");
-        ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.5, 0.64);
+        ComponentUtil.setPreferSizeAndLocateToCenter(this, 0.68, 0.64);
         setContentPane(contentPane);
         setModal(true);
 

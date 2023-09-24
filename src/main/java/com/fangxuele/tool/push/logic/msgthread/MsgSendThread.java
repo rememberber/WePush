@@ -1,6 +1,7 @@
 package com.fangxuele.tool.push.logic.msgthread;
 
 import cn.hutool.json.JSONUtil;
+import com.fangxuele.tool.push.domain.TTask;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.TaskRunThread;
 import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
@@ -20,6 +21,7 @@ import org.bouncycastle.util.Arrays;
 public class MsgSendThread extends BaseMsgThread {
 
     private IMsgSender iMsgSender;
+
     public MsgSendThread(int startIndex, int endIndex, IMsgSender msgSender, TaskRunThread taskRunThread) {
         super(startIndex, endIndex, taskRunThread);
         this.iMsgSender = msgSender;
@@ -30,6 +32,10 @@ public class MsgSendThread extends BaseMsgThread {
         try {
             // 初始化当前线程
             initCurrentThread();
+            TTask tTask = taskRunThread.getTTask();
+
+            // 间隔推送
+            boolean isIntervalPush = tTask.getIntervalPush() != null && tTask.getIntervalPush() == 1 && tTask.getIntervalTime() != null;
 
             for (int i = 0; i < list.size(); i++) {
                 if (!taskRunThread.running) {
@@ -37,11 +43,16 @@ public class MsgSendThread extends BaseMsgThread {
                     return;
                 }
 
+                // 间隔推送
+                if (isIntervalPush) {
+                    Thread.sleep(tTask.getIntervalTime() * 1000);
+                }
+
                 // 本条消息所需的数据
                 String[] msgData = list.get(i);
                 SendResult sendResult = iMsgSender.send(msgData);
 
-                if (taskRunThread.getTTask().getMsgType() == MessageTypeEnum.HTTP_CODE && taskRunThread.getTTask().getSaveResult() == 1) {
+                if (tTask.getMsgType() == MessageTypeEnum.HTTP_CODE && tTask.getSaveResult() == 1) {
                     String body = sendResult.getInfo() == null ? "" : sendResult.getInfo();
                     msgData = Arrays.append(msgData, body);
                 }
@@ -68,6 +79,9 @@ public class MsgSendThread extends BaseMsgThread {
             currentThreadFinish();
         } catch (Exception e) {
             logger.error(ExceptionUtils.getStackTrace(e));
+        } finally {
+            // 线程结束，处理完毕的线程数+1
+            taskRunThread.finishedThreadCount.incrementAndGet();
         }
     }
 
