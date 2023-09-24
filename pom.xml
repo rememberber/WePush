@@ -477,32 +477,31 @@
 <!--                            </winConfig>-->
 <!--                        </configuration>-->
 <!--                    </execution>-->
-                                        <execution>
-                                            <id>bundling-for-linux</id>
-                                            <phase>package</phase>
-                                            <goals>
-                                                <goal>package</goal>
-                                            </goals>
-                                            <configuration>
-                                                <platform>linux</platform>
-                                                <createTarball>true</createTarball>
-                    <additionalModules>jdk.crypto.ec,jdk.charsets</additionalModules>
-                                            </configuration>
-                                        </execution>
-<!--                                                                                <execution>-->
-<!--                                                                                    <id>bundling-for-mac</id>-->
-<!--                                                                                    <phase>package</phase>-->
-<!--                                                                                    <goals>-->
-<!--                                                                                        <goal>package</goal>-->
-<!--                                                                                    </goals>-->
-<!--                                                                                    <configuration>-->
-<!--                                                                                        <platform>mac</platform>-->
-<!--                                                                                        <createTarball>true</createTarball>-->
-<!--                                                                                        <additionalModules>jdk.crypto.ec,jdk.charsets</additionalModules>-->
-<!--                                                                                        <customizedJre>false</customizedJre>-->
-<!--                                        &lt;!&ndash;                                                <jdkPath>X:\\path\to\mac\jdk</jdkPath>&ndash;&gt;-->
-<!--                                                                                    </configuration>-->
-<!--                                                                                </execution>-->
+<!--                                        <execution>-->
+<!--                                            <id>bundling-for-linux</id>-->
+<!--                                            <phase>package</phase>-->
+<!--                                            <goals>-->
+<!--                                                <goal>package</goal>-->
+<!--                                            </goals>-->
+<!--                                            <configuration>-->
+<!--                                                <platform>linux</platform>-->
+<!--                                                <createTarball>true</createTarball>-->
+<!--                    <additionalModules>jdk.crypto.ec,jdk.charsets</additionalModules>-->
+<!--                                            </configuration>-->
+<!--                                        </execution>-->
+                                                                                <execution>
+                                                                                    <id>bundling-for-mac</id>
+                                                                                    <phase>package</phase>
+                                                                                    <goals>
+                                                                                        <goal>package</goal>
+                                                                                    </goals>
+                                                                                    <configuration>
+                                                                                        <platform>mac</platform>
+                                                                                        <createTarball>true</createTarball>
+                                                                                        <additionalModules>jdk.crypto.ec,jdk.charsets</additionalModules>
+                                                                                        <customizedJre>false</customizedJre>
+                                                                                    </configuration>
+                                                                                </execution>
                 </executions>
             </plugin>
 
