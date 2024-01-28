@@ -20,9 +20,9 @@
 
         <java.version>21</java.version>
         <logback.version>1.2.3</logback.version>
-        <weixin-java-mp.version>4.4.0</weixin-java-mp.version>
-        <weixin-java-cp.version>4.4.0</weixin-java-cp.version>
-        <weixin-java-miniapp.version>4.4.0</weixin-java-miniapp.version>
+        <weixin-java-mp.version>4.6.0</weixin-java-mp.version>
+        <weixin-java-cp.version>4.6.0</weixin-java-cp.version>
+        <weixin-java-miniapp.version>4.6.0</weixin-java-miniapp.version>
         <emoji-java.version>5.1.1</emoji-java.version>
         <hutool-all.version>5.6.4</hutool-all.version>
         <opencsv.version>5.2</opencsv.version>
@@ -47,9 +47,9 @@
         <aliyun-java-sdk-dysmsapi.version>1.1.0</aliyun-java-sdk-dysmsapi.version>
         <bce-java-sdk.version>0.10.134</bce-java-sdk.version>
         <qiniu-java-sdk.version>7.3.0</qiniu-java-sdk.version>
-        <flatlaf.version>3.2.1</flatlaf.version>
-        <flatlaf-extras.version>3.2.1</flatlaf-extras.version>
-        <flatlaf-intellij-themes.version>3.2.1</flatlaf-intellij-themes.version>
+        <flatlaf.version>3.3</flatlaf.version>
+        <flatlaf-extras.version>3.3</flatlaf-extras.version>
+        <flatlaf-intellij-themes.version>3.3</flatlaf-intellij-themes.version>
         <json-path.version>2.6.0</json-path.version>
         <tencentcloud-sdk-java.version>3.1.847</tencentcloud-sdk-java.version>
     </properties>
