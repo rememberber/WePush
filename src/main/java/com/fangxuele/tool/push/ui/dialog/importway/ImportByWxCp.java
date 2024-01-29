@@ -286,7 +286,11 @@ public class ImportByWxCp extends JDialog {
                                 deptNameList.add(wxCpIdToDeptNameMap.get(depId));
                             }
                         }
-                        String[] dataArray = new String[]{wxCpUser.getUserId(), wxCpUser.getName(), wxCpUser.getGender().getGenderName(), wxCpUser.getEmail(), String.join("/", deptNameList), wxCpUser.getPosition(), statusStr};
+                        String[] dataArray = new String[]{wxCpUser.getUserId(),
+                                wxCpUser.getName(),
+                                wxCpUser.getGender() == null ? "" : wxCpUser.getGender().getGenderName(),
+                                wxCpUser.getEmail(),
+                                String.join("/", deptNameList), wxCpUser.getPosition(), statusStr};
 
                         TPeopleData tPeopleData = new TPeopleData();
                         tPeopleData.setPeopleId(peopleId);
@@ -408,7 +412,13 @@ public class ImportByWxCp extends JDialog {
                         deptNameList.add(wxCpIdToDeptNameMap.get(depId));
                     }
                 }
-                String[] dataArray = new String[]{wxCpUser.getUserId(), wxCpUser.getName(), wxCpUser.getGender().getGenderName(), wxCpUser.getEmail(), String.join("/", deptNameList), wxCpUser.getPosition(), statusStr};
+                String[] dataArray = new String[]{wxCpUser.getUserId(),
+                        wxCpUser.getName(),
+                        wxCpUser.getGender() == null ? "" : wxCpUser.getGender().getGenderName(),
+                        wxCpUser.getEmail(),
+                        String.join("/", deptNameList),
+                        wxCpUser.getPosition(),
+                        statusStr};
 
                 TPeopleData tPeopleData = new TPeopleData();
                 tPeopleData.setPeopleId(peopleId);
@@ -595,7 +605,13 @@ public class ImportByWxCp extends JDialog {
                             deptNameList.add(wxCpIdToDeptNameMap.get(depId));
                         }
                     }
-                    String[] dataArray = new String[]{wxCpUser.getUserId(), wxCpUser.getName(), wxCpUser.getGender().getGenderName(), wxCpUser.getEmail(), String.join("/", deptNameList), wxCpUser.getPosition(), statusStr};
+                    String[] dataArray = new String[]{wxCpUser.getUserId(),
+                            wxCpUser.getName(),
+                            wxCpUser.getGender() == null ? "" : wxCpUser.getGender().getGenderName(),
+                            wxCpUser.getEmail(),
+                            String.join("/", deptNameList),
+                            wxCpUser.getPosition(),
+                            statusStr};
 
                     TPeopleData tPeopleData = new TPeopleData();
                     tPeopleData.setPeopleId(peopleId);
@@ -722,7 +738,13 @@ public class ImportByWxCp extends JDialog {
                             deptNameList.add(wxCpIdToDeptNameMap.get(depId));
                         }
                     }
-                    String[] dataArray = new String[]{wxCpUser.getUserId(), wxCpUser.getName(), wxCpUser.getGender().getGenderName(), wxCpUser.getEmail(), String.join("/", deptNameList), wxCpUser.getPosition(), statusStr};
+                    String[] dataArray = new String[]{wxCpUser.getUserId(),
+                            wxCpUser.getName(),
+                            wxCpUser.getGender() == null ? "" : wxCpUser.getGender().getGenderName(),
+                            wxCpUser.getEmail(),
+                            String.join("/", deptNameList),
+                            wxCpUser.getPosition(),
+                            statusStr};
 
                     TPeopleData tPeopleData = new TPeopleData();
                     tPeopleData.setPeopleId(peopleId);
