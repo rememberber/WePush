@@ -5,7 +5,7 @@
 # WePush 
 > 专注批量推送的小而美的工具  
 
-[![码云Gitee](https://gitee.com/zhoubochina/WePush/badge/star.svg?theme=blue)](https://gitee.com/zhoubochina/WePush)
+[![star](https://gitee.com/zhoubochina/WePush/badge/star.svg?theme=gvp)](https://gitee.com/zhoubochina/WePush/stargazers)
 [![GitHub stars](https://img.shields.io/github/stars/rememberber/WePush.svg)](https://github.com/rememberber/WePush)
 [![GitHub release](https://img.shields.io/github/release/rememberber/WePush.svg)](https://github.com/rememberber/WePush/releases)
 [![GitHub license](https://img.shields.io/github/license/rememberber/WePush.svg)](https://github.com/rememberber/WePush/blob/master/LICENSE.txt)
