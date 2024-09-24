@@ -5,10 +5,12 @@
 # WePush 
 > 专注批量推送的小而美的工具  
 
-[![码云Gitee](https://gitee.com/zhoubochina/WePush/badge/star.svg?theme=blue)](https://gitee.com/zhoubochina/WePush)
+[![star](https://gitee.com/zhoubochina/WePush/badge/star.svg?theme=gvp)](https://gitee.com/zhoubochina/WePush/stargazers)
 [![GitHub stars](https://img.shields.io/github/stars/rememberber/WePush.svg)](https://github.com/rememberber/WePush)
 [![GitHub release](https://img.shields.io/github/release/rememberber/WePush.svg)](https://github.com/rememberber/WePush/releases)
 [![GitHub license](https://img.shields.io/github/license/rememberber/WePush.svg)](https://github.com/rememberber/WePush/blob/master/LICENSE.txt)
+
+<a href="https://hellogithub.com/repository/dd22b383e37a4dedb7d2774363796c74" target="_blank"><img src="https://api.hellogithub.com/v1/widgets/recommend.svg?rid=dd22b383e37a4dedb7d2774363796c74&claim_uid=0UhXFJvP9ndHtiB" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 
 ## 支持的平台
 Windows • Linux • macOS
