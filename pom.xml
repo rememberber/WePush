@@ -28,7 +28,7 @@
         <opencsv.version>5.2</opencsv.version>
         <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
         <forms_rt.version>7.0.3</forms_rt.version>
-        <fastjson.version>1.2.74</fastjson.version>
+        <fastjson.version>1.2.83</fastjson.version>
         <sun-mail.version>1.6.2</sun-mail.version>
         <aliyun-java-sdk-core.version>4.4.2</aliyun-java-sdk-core.version>
         <poi.version>4.1.2</poi.version>
