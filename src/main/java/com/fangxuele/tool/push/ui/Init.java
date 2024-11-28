@@ -7,7 +7,6 @@ import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.dialog.FontSizeAdjustDialog;
 import com.fangxuele.tool.push.ui.form.*;
 import com.fangxuele.tool.push.util.SystemUtil;
-import com.fangxuele.tool.push.util.UIUtil;
 import com.fangxuele.tool.push.util.UpgradeUtil;
 import com.formdev.flatlaf.*;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
@@ -58,7 +57,7 @@ public class Init {
 
             // Mac等高分辨率屏幕字号初始化
             if (SystemUtil.isMacOs()) {
-                fontSize = 13;
+                fontSize = 12;
             } else {
                 fontSize = 12;
             }
