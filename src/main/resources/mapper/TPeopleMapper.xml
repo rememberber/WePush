@@ -26,7 +26,7 @@
         from t_people
         where id = #{id,jdbcType=INTEGER}
     </delete>
-    <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TPeople" keyProperty="id" useGeneratedKeys="true">
+    <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TPeople">
         insert into t_people (id, msg_type, account_id,
                               people_name, app_version, remark,
                               create_time, modified_time)
