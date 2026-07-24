@@ -11,7 +11,7 @@ import com.fangxuele.tool.push.util.UpgradeUtil;
 import com.formdev.flatlaf.*;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.intellijthemes.*;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatGitHubDarkIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTGitHubDarkIJTheme;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import org.apache.commons.lang3.StringUtils;
@@ -131,7 +131,7 @@ public class Init {
                     FlatHighContrastIJTheme.setup();
                     break;
                 case "GitHub Dark":
-                    FlatGitHubDarkIJTheme.setup();
+                    FlatMTGitHubDarkIJTheme.setup();
                     break;
                 case "Xcode-Dark":
                     FlatXcodeDarkIJTheme.setup();
