@@ -46,7 +46,10 @@
         delete from t_task
         where id = #{id,jdbcType=INTEGER}
     </delete>
-    <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TTask" keyProperty="id" useGeneratedKeys="true">
+    <insert id="insert" parameterType="com.fangxuele.tool.push.domain.TTask">
+        <selectKey keyProperty="id" resultType="java.lang.Integer" order="AFTER">
+            SELECT last_insert_rowid()
+        </selectKey>
         insert into t_task (id, title, msg_type,
         account_id, message_id, people_id,
         task_mode, task_period, period_type,
