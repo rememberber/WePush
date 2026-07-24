@@ -20,6 +20,7 @@ import com.fangxuele.tool.push.ui.form.PeopleEditForm;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
+import com.fangxuele.tool.push.util.UiThreadUtil;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.google.common.collect.Maps;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -100,25 +101,28 @@ public class ImportByWxCp extends JDialog {
         wxCpTagsRefreshButton.setIcon(new FlatSVGIcon("icon/refresh.svg"));
 
         // 企业号-按标签导入-刷新
-        wxCpTagsRefreshButton.addActionListener(e -> {
-            ThreadUtil.execute(() -> {
-                wxCpTagsComboBox.removeAllItems();
-
-                try {
-                    // 获取标签列表
-                    List<WxCpTag> wxCpTagList = WxCpMsgSender.getWxCpService(tPeople.getAccountId()).getTagService().listAll();
-                    for (WxCpTag wxCpTag : wxCpTagList) {
-                        wxCpTagsComboBox.addItem(wxCpTag.getName());
-                        wxCpTagNameToIdMap.put(wxCpTag.getName(), wxCpTag.getId());
-                        wxCpIdToTagNameMap.put(wxCpTag.getId(), wxCpTag.getName());
-                    }
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(App.mainFrame, "刷新失败！\n\n" + ex, "失败",
-                            JOptionPane.ERROR_MESSAGE);
-                    logger.error(ex.toString());
+        wxCpTagsRefreshButton.addActionListener(e -> ThreadUtil.execute(() -> {
+            try {
+                // 获取标签列表
+                List<WxCpTag> wxCpTagList = WxCpMsgSender.getWxCpService(tPeople.getAccountId()).getTagService().listAll();
+                List<String> tagNames = Lists.newArrayList();
+                for (WxCpTag wxCpTag : wxCpTagList) {
+                    tagNames.add(wxCpTag.getName());
+                    wxCpTagNameToIdMap.put(wxCpTag.getName(), wxCpTag.getId());
+                    wxCpIdToTagNameMap.put(wxCpTag.getId(), wxCpTag.getName());
                 }
-            });
-        });
+                UiThreadUtil.runOnUi(() -> {
+                    wxCpTagsComboBox.removeAllItems();
+                    for (String tagName : tagNames) {
+                        wxCpTagsComboBox.addItem(tagName);
+                    }
+                });
+            } catch (Exception ex) {
+                UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "刷新失败！\n\n" + ex, "失败",
+                        JOptionPane.ERROR_MESSAGE));
+                logger.error(ex.toString());
+            }
+        }));
 
         // 企业号-按标签导入-导入
         wxCpTagsImportButton.addActionListener(e -> {
@@ -131,8 +135,10 @@ public class ImportByWxCp extends JDialog {
                     return;
                 }
                 try {
-                    progressBar.setVisible(true);
-                    progressBar.setIndeterminate(true);
+                    UiThreadUtil.runOnUi(() -> {
+                        progressBar.setVisible(true);
+                        progressBar.setIndeterminate(true);
+                    });
                     int importedCount = 0;
                     String now = SqliteUtil.nowDateForSqlite();
                     String dataVersion = UUID.fastUUID().toString(true);
@@ -187,42 +193,50 @@ public class ImportByWxCp extends JDialog {
                         peopleDataMapper.insert(tPeopleData);
 
                         importedCount++;
-                        memberCountLabel.setText(String.valueOf(importedCount));
+                        int count = importedCount;
+                        UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
                     }
-                    PeopleEditForm.initDataTable(peopleId);
-                    JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+                    UiThreadUtil.runOnUi(() -> {
+                        PeopleEditForm.initDataTable(peopleId);
+                        JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+                    });
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + ex, "失败",
-                            JOptionPane.ERROR_MESSAGE);
+                    UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + ex, "失败",
+                            JOptionPane.ERROR_MESSAGE));
                     logger.error(ex.toString());
                 } finally {
-                    progressBar.setIndeterminate(false);
-                    progressBar.setVisible(false);
+                    UiThreadUtil.runOnUi(() -> {
+                        progressBar.setIndeterminate(false);
+                        progressBar.setVisible(false);
+                    });
                 }
 
             });
         });
 
         // 企业号-按部门导入-刷新
-        wxCpDeptsRefreshButton.addActionListener(e -> {
-            ThreadUtil.execute(() -> {
-                wxCpDeptsComboBox.removeAllItems();
-
-                try {
-                    // 获取部门列表
-                    List<WxCpDepart> wxCpDepartList = WxCpMsgSender.getWxCpService(tPeople.getAccountId()).getDepartmentService().list(null);
-                    for (WxCpDepart wxCpDepart : wxCpDepartList) {
-                        wxCpDeptsComboBox.addItem(wxCpDepart.getName());
-                        wxCpDeptNameToIdMap.put(wxCpDepart.getName(), wxCpDepart.getId());
-                        wxCpIdToDeptNameMap.put(wxCpDepart.getId(), wxCpDepart.getName());
-                    }
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(App.mainFrame, "刷新失败！\n\n" + ex, "失败",
-                            JOptionPane.ERROR_MESSAGE);
-                    logger.error(ex.toString());
+        wxCpDeptsRefreshButton.addActionListener(e -> ThreadUtil.execute(() -> {
+            try {
+                // 获取部门列表
+                List<WxCpDepart> wxCpDepartList = WxCpMsgSender.getWxCpService(tPeople.getAccountId()).getDepartmentService().list(null);
+                List<String> deptNames = Lists.newArrayList();
+                for (WxCpDepart wxCpDepart : wxCpDepartList) {
+                    deptNames.add(wxCpDepart.getName());
+                    wxCpDeptNameToIdMap.put(wxCpDepart.getName(), wxCpDepart.getId());
+                    wxCpIdToDeptNameMap.put(wxCpDepart.getId(), wxCpDepart.getName());
                 }
-            });
-        });
+                UiThreadUtil.runOnUi(() -> {
+                    wxCpDeptsComboBox.removeAllItems();
+                    for (String deptName : deptNames) {
+                        wxCpDeptsComboBox.addItem(deptName);
+                    }
+                });
+            } catch (Exception ex) {
+                UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "刷新失败！\n\n" + ex, "失败",
+                        JOptionPane.ERROR_MESSAGE));
+                logger.error(ex.toString());
+            }
+        }));
 
         // 企业号-按部门导入-导入
         wxCpDeptsImportButton.addActionListener(e -> {
@@ -235,8 +249,10 @@ public class ImportByWxCp extends JDialog {
                     return;
                 }
                 try {
-                    progressBar.setVisible(true);
-                    progressBar.setIndeterminate(true);
+                    UiThreadUtil.runOnUi(() -> {
+                        progressBar.setVisible(true);
+                        progressBar.setIndeterminate(true);
+                    });
                     int importedCount = 0;
                     String now = SqliteUtil.nowDateForSqlite();
                     String dataVersion = UUID.fastUUID().toString(true);
@@ -304,18 +320,22 @@ public class ImportByWxCp extends JDialog {
                         peopleDataMapper.insert(tPeopleData);
 
                         importedCount++;
-                        memberCountLabel.setText(String.valueOf(importedCount));
+                        int count = importedCount;
+                        UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
                     }
-                    PeopleEditForm.initDataTable(peopleId);
-
-                    JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+                    UiThreadUtil.runOnUi(() -> {
+                        PeopleEditForm.initDataTable(peopleId);
+                        JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+                    });
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + ex, "失败",
-                            JOptionPane.ERROR_MESSAGE);
+                    UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + ex, "失败",
+                            JOptionPane.ERROR_MESSAGE));
                     logger.error(ex.toString());
                 } finally {
-                    progressBar.setIndeterminate(false);
-                    progressBar.setVisible(false);
+                    UiThreadUtil.runOnUi(() -> {
+                        progressBar.setIndeterminate(false);
+                        progressBar.setVisible(false);
+                    });
                 }
 
             });
@@ -358,8 +378,10 @@ public class ImportByWxCp extends JDialog {
         JLabel memberCountLabel = peopleEditForm.getMemberTabCountLabel();
 
         try {
-            progressBar.setVisible(true);
-            progressBar.setIndeterminate(true);
+            UiThreadUtil.runOnUi(() -> {
+                progressBar.setVisible(true);
+                progressBar.setIndeterminate(true);
+            });
             int importedCount = 0;
             String now = SqliteUtil.nowDateForSqlite();
             String dataVersion = UUID.fastUUID().toString(true);
@@ -432,19 +454,23 @@ public class ImportByWxCp extends JDialog {
                 peopleDataMapper.insert(tPeopleData);
 
                 importedCount++;
-                memberCountLabel.setText(String.valueOf(importedCount));
+                int count = importedCount;
+                UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
             }
 
-            PeopleEditForm.initDataTable(peopleId);
-
-            JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+            UiThreadUtil.runOnUi(() -> {
+                PeopleEditForm.initDataTable(peopleId);
+                JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+            });
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + ex, "失败",
-                    JOptionPane.ERROR_MESSAGE);
+            UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + ex, "失败",
+                    JOptionPane.ERROR_MESSAGE));
             logger.error(ExceptionUtils.getStackTrace(ex));
         } finally {
-            progressBar.setIndeterminate(false);
-            progressBar.setVisible(false);
+            UiThreadUtil.runOnUi(() -> {
+                progressBar.setIndeterminate(false);
+                progressBar.setVisible(false);
+            });
         }
     }
 

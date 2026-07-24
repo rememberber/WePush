@@ -21,6 +21,7 @@ import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.HikariUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
+import com.fangxuele.tool.push.util.UiThreadUtil;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -116,7 +117,7 @@ public class ImportBySQL extends JDialog {
     public void importFromSql(String querySql, Boolean clear, Boolean silence) {
         PeopleEditForm peopleEditForm = PeopleEditForm.getInstance();
         if (!silence) {
-            peopleEditForm.getImportButton().setEnabled(false);
+            UiThreadUtil.runOnUi(() -> peopleEditForm.getImportButton().setEnabled(false));
         }
         JProgressBar progressBar = peopleEditForm.getMemberTabImportProgressBar();
         JLabel memberCountLabel = peopleEditForm.getMemberTabCountLabel();
@@ -125,10 +126,12 @@ public class ImportBySQL extends JDialog {
             Connection conn = null;
             try {
                 if (!silence) {
-                    peopleEditForm.getImportButton().setEnabled(false);
-                    peopleEditForm.getImportButton().updateUI();
-                    progressBar.setVisible(true);
-                    progressBar.setIndeterminate(true);
+                    UiThreadUtil.runOnUi(() -> {
+                        peopleEditForm.getImportButton().setEnabled(false);
+                        peopleEditForm.getImportButton().updateUI();
+                        progressBar.setVisible(true);
+                        progressBar.setIndeterminate(true);
+                    });
                 }
 
                 String now = SqliteUtil.nowDateForSqlite();
@@ -184,36 +187,40 @@ public class ImportBySQL extends JDialog {
                     peopleDataMapper.insert(tPeopleData);
                     currentImported++;
                     if (!silence) {
-                        memberCountLabel.setText(String.valueOf(currentImported));
+                        int count = currentImported;
+                        UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
                     }
                 }
 
                 if (!silence) {
-                    PeopleEditForm.initDataTable(peopleId);
-
-                    progressBar.setIndeterminate(false);
-                    progressBar.setVisible(false);
-                    JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+                    UiThreadUtil.runOnUi(() -> {
+                        PeopleEditForm.initDataTable(peopleId);
+                        progressBar.setIndeterminate(false);
+                        progressBar.setVisible(false);
+                        JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+                    });
 
                     App.config.setMemberSql(querySql);
                     App.config.save();
                 }
             } catch (Exception e1) {
                 if (!silence) {
-                    JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + e1.getMessage(), "失败",
-                            JOptionPane.ERROR_MESSAGE);
+                    UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + e1.getMessage(), "失败",
+                            JOptionPane.ERROR_MESSAGE));
                 }
                 logger.error(e1);
             } finally {
                 DbUtil.close(conn);
                 if (!silence) {
-                    peopleEditForm.getImportButton().setEnabled(true);
-                    peopleEditForm.getImportButton().updateUI();
-                    progressBar.setMaximum(100);
-                    progressBar.setValue(100);
-                    progressBar.setIndeterminate(false);
-                    progressBar.setVisible(false);
-                    peopleEditForm.getImportButton().setEnabled(true);
+                    UiThreadUtil.runOnUi(() -> {
+                        peopleEditForm.getImportButton().setEnabled(true);
+                        peopleEditForm.getImportButton().updateUI();
+                        progressBar.setMaximum(100);
+                        progressBar.setValue(100);
+                        progressBar.setIndeterminate(false);
+                        progressBar.setVisible(false);
+                        peopleEditForm.getImportButton().setEnabled(true);
+                    });
                 }
             }
         }

@@ -2,6 +2,7 @@ package com.fangxuele.tool.push.ui.form;
 
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.UiConsts;
+import com.fangxuele.tool.push.util.UiThreadUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Getter;
@@ -61,18 +62,19 @@ public class AboutForm {
     }
 
     /**
-     * 初始化二维码
+     * 初始化二维码（网络 I/O 在后台，回填图标回 EDT）
      */
     private void initQrCode() {
-        try {
-            URL url = new URL(UiConsts.QR_CODE_URL);
-            BufferedImage image = ImageIO.read(url);
-            qrCodeLabel.setIcon(new ImageIcon(image));
-        } catch (IOException e) {
-            e.printStackTrace();
-            log.error(ExceptionUtils.getStackTrace(e));
-        }
-
+        UiThreadUtil.runOffUi(() -> {
+            try {
+                URL url = new URL(UiConsts.QR_CODE_URL);
+                BufferedImage image = ImageIO.read(url);
+                UiThreadUtil.runOnUi(() -> qrCodeLabel.setIcon(new ImageIcon(image)));
+            } catch (IOException e) {
+                e.printStackTrace();
+                log.error(ExceptionUtils.getStackTrace(e));
+            }
+        });
     }
 
     {

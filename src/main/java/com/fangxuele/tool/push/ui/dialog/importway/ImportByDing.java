@@ -26,6 +26,7 @@ import com.fangxuele.tool.push.ui.form.PeopleEditForm;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
+import com.fangxuele.tool.push.util.UiThreadUtil;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.google.common.collect.Maps;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -39,6 +40,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -85,34 +87,37 @@ public class ImportByDing extends JDialog {
         dingDeptsRefreshButton.setIcon(new FlatSVGIcon("icon/refresh.svg"));
 
         // 钉钉-按部门导入-刷新
-        dingDeptsRefreshButton.addActionListener(e -> {
-            ThreadUtil.execute(() -> {
-                dingDeptsComboBox.removeAllItems();
-
-                try {
-                    // 获取部门列表
-                    DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/department/list");
-                    OapiDepartmentListRequest request = new OapiDepartmentListRequest();
-                    request.setHttpMethod("GET");
-                    OapiDepartmentListResponse response = client.execute(request, DingMsgSender.getAccessTokenTimedCache(tPeople.getAccountId()).get("accessToken"));
-                    if (response.getErrcode() != 0) {
-                        JOptionPane.showMessageDialog(App.mainFrame, "刷新失败！\n\n" + response.getErrmsg(), "失败",
-                                JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    List<OapiDepartmentListResponse.Department> departmentList = response.getDepartment();
-                    for (OapiDepartmentListResponse.Department department : departmentList) {
-                        dingDeptsComboBox.addItem(department.getName());
-                        wxCpDeptNameToIdMap.put(department.getName(), department.getId());
-                        wxCpIdToDeptNameMap.put(department.getId(), department.getName());
-                    }
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(App.mainFrame, "刷新失败！\n\n" + ex, "失败",
-                            JOptionPane.ERROR_MESSAGE);
-                    logger.error(ExceptionUtils.getStackTrace(ex));
+        dingDeptsRefreshButton.addActionListener(e -> ThreadUtil.execute(() -> {
+            try {
+                // 获取部门列表
+                DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/department/list");
+                OapiDepartmentListRequest request = new OapiDepartmentListRequest();
+                request.setHttpMethod("GET");
+                OapiDepartmentListResponse response = client.execute(request, DingMsgSender.getAccessTokenTimedCache(tPeople.getAccountId()).get("accessToken"));
+                if (response.getErrcode() != 0) {
+                    UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "刷新失败！\n\n" + response.getErrmsg(), "失败",
+                            JOptionPane.ERROR_MESSAGE));
+                    return;
                 }
-            });
-        });
+                List<OapiDepartmentListResponse.Department> departmentList = response.getDepartment();
+                List<String> deptNames = new ArrayList<>();
+                for (OapiDepartmentListResponse.Department department : departmentList) {
+                    deptNames.add(department.getName());
+                    wxCpDeptNameToIdMap.put(department.getName(), department.getId());
+                    wxCpIdToDeptNameMap.put(department.getId(), department.getName());
+                }
+                UiThreadUtil.runOnUi(() -> {
+                    dingDeptsComboBox.removeAllItems();
+                    for (String deptName : deptNames) {
+                        dingDeptsComboBox.addItem(deptName);
+                    }
+                });
+            } catch (Exception ex) {
+                UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "刷新失败！\n\n" + ex, "失败",
+                        JOptionPane.ERROR_MESSAGE));
+                logger.error(ExceptionUtils.getStackTrace(ex));
+            }
+        }));
 
         // 钉钉-按部门导入-导入
         dingDeptsImportButton.addActionListener(e -> {
@@ -125,8 +130,10 @@ public class ImportByDing extends JDialog {
                     return;
                 }
                 try {
-                    progressBar.setVisible(true);
-                    progressBar.setIndeterminate(true);
+                    UiThreadUtil.runOnUi(() -> {
+                        progressBar.setVisible(true);
+                        progressBar.setIndeterminate(true);
+                    });
                     int importedCount = 0;
                     String now = SqliteUtil.nowDateForSqlite();
 
@@ -171,11 +178,12 @@ public class ImportByDing extends JDialog {
                     while (response.getErrcode() == null || response.getUserlist().size() > 0) {
                         response = client.execute(request, DingMsgSender.getAccessTokenTimedCache(tPeople.getAccountId()).get("accessToken"));
                         if (response.getErrcode() != 0) {
+                            final String errMsg = response.getErrmsg();
                             if (response.getErrcode() == 60011) {
-                                JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + response.getErrmsg() + "\n\n进入开发者后台，在小程序或者微应用详情的「接口权限」模块，点击申请对应的通讯录接口读写权限", "失败",
-                                        JOptionPane.ERROR_MESSAGE);
+                                UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + errMsg + "\n\n进入开发者后台，在小程序或者微应用详情的「接口权限」模块，点击申请对应的通讯录接口读写权限", "失败",
+                                        JOptionPane.ERROR_MESSAGE));
                             } else {
-                                JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + response.getErrmsg(), "失败", JOptionPane.ERROR_MESSAGE);
+                                UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + errMsg, "失败", JOptionPane.ERROR_MESSAGE));
                             }
 
                             logger.error(response.getErrmsg());
@@ -197,22 +205,26 @@ public class ImportByDing extends JDialog {
                             peopleDataMapper.insert(tPeopleData);
 
                             importedCount++;
-                            memberCountLabel.setText(String.valueOf(importedCount));
+                            int count = importedCount;
+                            UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
                         }
                         offset += 100;
                         request.setOffset(offset);
                     }
 
-                    PeopleEditForm.initDataTable(peopleId);
-
-                    JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+                    UiThreadUtil.runOnUi(() -> {
+                        PeopleEditForm.initDataTable(peopleId);
+                        JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+                    });
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + ex, "失败",
-                            JOptionPane.ERROR_MESSAGE);
+                    UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + ex, "失败",
+                            JOptionPane.ERROR_MESSAGE));
                     logger.error(ex.toString());
                 } finally {
-                    progressBar.setIndeterminate(false);
-                    progressBar.setVisible(false);
+                    UiThreadUtil.runOnUi(() -> {
+                        progressBar.setIndeterminate(false);
+                        progressBar.setVisible(false);
+                    });
                 }
 
             });
@@ -255,8 +267,10 @@ public class ImportByDing extends JDialog {
         JLabel memberCountLabel = instance.getMemberTabCountLabel();
 
         try {
-            progressBar.setVisible(true);
-            progressBar.setIndeterminate(true);
+            UiThreadUtil.runOnUi(() -> {
+                progressBar.setVisible(true);
+                progressBar.setIndeterminate(true);
+            });
             int importedCount = 0;
 
             String now = SqliteUtil.nowDateForSqlite();
@@ -298,11 +312,12 @@ public class ImportByDing extends JDialog {
             while (response.getErrcode() == null || response.getUserlist().size() > 0) {
                 response = client.execute(request, DingMsgSender.getAccessTokenTimedCache(tPeople.getAccountId()).get("accessToken"));
                 if (response.getErrcode() != 0) {
+                    final String errMsg = response.getErrmsg();
                     if (response.getErrcode() == 60011) {
-                        JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + response.getErrmsg() + "\n\n进入开发者后台，在小程序或者微应用详情的「接口权限」模块，点击申请对应的通讯录接口读写权限", "失败",
-                                JOptionPane.ERROR_MESSAGE);
+                        UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + errMsg + "\n\n进入开发者后台，在小程序或者微应用详情的「接口权限」模块，点击申请对应的通讯录接口读写权限", "失败",
+                                JOptionPane.ERROR_MESSAGE));
                     } else {
-                        JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + response.getErrmsg(), "失败", JOptionPane.ERROR_MESSAGE);
+                        UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + errMsg, "失败", JOptionPane.ERROR_MESSAGE));
                     }
 
                     logger.error(response.getErrmsg());
@@ -324,22 +339,26 @@ public class ImportByDing extends JDialog {
                     peopleDataMapper.insert(tPeopleData);
 
                     importedCount++;
-                    memberCountLabel.setText(String.valueOf(importedCount));
+                    int count = importedCount;
+                    UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
                 }
                 offset += 100;
                 request.setOffset(offset);
             }
 
-            PeopleEditForm.initDataTable(peopleId);
-
-            JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+            UiThreadUtil.runOnUi(() -> {
+                PeopleEditForm.initDataTable(peopleId);
+                JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+            });
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + ex, "失败",
-                    JOptionPane.ERROR_MESSAGE);
+            UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + ex, "失败",
+                    JOptionPane.ERROR_MESSAGE));
             logger.error(ExceptionUtils.getStackTrace(ex));
         } finally {
-            progressBar.setIndeterminate(false);
-            progressBar.setVisible(false);
+            UiThreadUtil.runOnUi(() -> {
+                progressBar.setIndeterminate(false);
+                progressBar.setVisible(false);
+            });
         }
     }
 

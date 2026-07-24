@@ -23,6 +23,7 @@ import com.fangxuele.tool.push.util.ConsoleUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
+import com.fangxuele.tool.push.util.UiThreadUtil;
 import com.opencsv.CSVWriter;
 import lombok.Getter;
 import lombok.Setter;
@@ -281,14 +282,16 @@ public class TaskRunThread extends Thread {
 
         taskHisMapper.insert(taskHis);
 
-        TaskForm taskForm = TaskForm.getInstance();
-        int selectedRow = taskForm.getTaskListTable().getSelectedRow();
-        if (selectedRow > -1) {
-            Integer selectedTaskId = (Integer) taskForm.getTaskListTable().getValueAt(selectedRow, 0);
-            if (selectedTaskId.equals(taskId)) {
-                TaskForm.initTaskHisListTable(taskId);
+        UiThreadUtil.runOnUi(() -> {
+            TaskForm taskForm = TaskForm.getInstance();
+            int selectedRow = taskForm.getTaskListTable().getSelectedRow();
+            if (selectedRow > -1) {
+                Integer selectedTaskId = (Integer) taskForm.getTaskListTable().getValueAt(selectedRow, 0);
+                if (selectedTaskId.equals(taskId)) {
+                    TaskForm.initTaskHisListTable(taskId);
+                }
             }
-        }
+        });
     }
 
     /**
@@ -334,30 +337,7 @@ public class TaskRunThread extends Thread {
 
                 taskHisMapper.updateByPrimaryKey(taskHis);
 
-                TaskForm taskForm = TaskForm.getInstance();
-                int selectedRow = taskForm.getTaskListTable().getSelectedRow();
-                if (selectedRow > -1) {
-                    Integer selectedTaskId = (Integer) taskForm.getTaskListTable().getValueAt(selectedRow, 0);
-                    if (selectedTaskId.equals(taskId)) {
-                        // 遍历TaskListTable找到taskHisId对应的行号
-                        int taskHisId = taskHis.getId();
-                        int taskHisListTableRows = taskForm.getTaskHisListTable().getRowCount();
-                        int taskHisListTableRow = -1;
-                        for (int i = 0; i < taskHisListTableRows; i++) {
-                            int taskHisIdInTable = (int) taskForm.getTaskHisListTable().getValueAt(i, 0);
-                            if (taskHisId == taskHisIdInTable) {
-                                taskHisListTableRow = i;
-                                break;
-                            }
-                        }
-                        if (taskHisListTableRow != -1) {
-                            taskForm.getTaskHisListTable().setValueAt(TaskStatusEnum.getDescByCode(taskHis.getStatus()), taskHisListTableRow, 7);
-                            taskForm.getTaskHisListTable().setValueAt(taskHis.getSuccessCnt(), taskHisListTableRow, 5);
-                            taskForm.getTaskHisListTable().setValueAt(taskHis.getFailCnt(), taskHisListTableRow, 6);
-                            taskForm.getTaskHisListTable().setValueAt(taskHis.getEndTime(), taskHisListTableRow, 3);
-                        }
-                    }
-                }
+                UiThreadUtil.runOnUi(() -> updateTaskHisTableUi(true));
 
                 if (App.trayIcon != null && SystemUtil.isWindowsOs()) {
                     App.trayIcon.displayMessage("WePush", tTask.getTitle() + " 发送完毕！", TrayIcon.MessageType.INFO);
@@ -392,30 +372,42 @@ public class TaskRunThread extends Thread {
             taskHis.setSuccessCnt(successRecords.intValue());
             taskHis.setFailCnt(failRecords.intValue());
 
-            TaskForm taskForm = TaskForm.getInstance();
-            int selectedRow = taskForm.getTaskListTable().getSelectedRow();
-            if (selectedRow > -1) {
-                Integer selectedTaskId = (Integer) taskForm.getTaskListTable().getValueAt(selectedRow, 0);
-                if (selectedTaskId.equals(taskId)) {
-                    // 遍历TaskListTable找到taskHisId对应的行号
-                    int taskHisId = taskHis.getId();
-                    int taskHisListTableRows = taskForm.getTaskHisListTable().getRowCount();
-                    int taskHisListTableRow = -1;
-                    for (int i = 0; i < taskHisListTableRows; i++) {
-                        int taskHisIdInTable = (int) taskForm.getTaskHisListTable().getValueAt(i, 0);
-                        if (taskHisId == taskHisIdInTable) {
-                            taskHisListTableRow = i;
-                            break;
-                        }
-                    }
-                    if (taskHisListTableRow != -1) {
-                        taskForm.getTaskHisListTable().setValueAt(taskHis.getSuccessCnt(), taskHisListTableRow, 5);
-                        taskForm.getTaskHisListTable().setValueAt(taskHis.getFailCnt(), taskHisListTableRow, 6);
-                        taskForm.getTaskHisListTable().setValueAt(TaskStatusEnum.getDescByCode(taskHis.getStatus()), taskHisListTableRow, 7);
-                    }
-                }
-            }
+            UiThreadUtil.runOnUi(() -> updateTaskHisTableUi(false));
             ThreadUtil.safeSleep(500);
+        }
+    }
+
+    /**
+     * 在 EDT 上刷新任务历史表格行
+     */
+    private void updateTaskHisTableUi(boolean finished) {
+        TaskForm taskForm = TaskForm.getInstance();
+        int selectedRow = taskForm.getTaskListTable().getSelectedRow();
+        if (selectedRow < 0) {
+            return;
+        }
+        Integer selectedTaskId = (Integer) taskForm.getTaskListTable().getValueAt(selectedRow, 0);
+        if (!selectedTaskId.equals(taskId)) {
+            return;
+        }
+        int taskHisId = taskHis.getId();
+        int taskHisListTableRows = taskForm.getTaskHisListTable().getRowCount();
+        int taskHisListTableRow = -1;
+        for (int i = 0; i < taskHisListTableRows; i++) {
+            int taskHisIdInTable = (int) taskForm.getTaskHisListTable().getValueAt(i, 0);
+            if (taskHisId == taskHisIdInTable) {
+                taskHisListTableRow = i;
+                break;
+            }
+        }
+        if (taskHisListTableRow == -1) {
+            return;
+        }
+        taskForm.getTaskHisListTable().setValueAt(taskHis.getSuccessCnt(), taskHisListTableRow, 5);
+        taskForm.getTaskHisListTable().setValueAt(taskHis.getFailCnt(), taskHisListTableRow, 6);
+        taskForm.getTaskHisListTable().setValueAt(TaskStatusEnum.getDescByCode(taskHis.getStatus()), taskHisListTableRow, 7);
+        if (finished) {
+            taskForm.getTaskHisListTable().setValueAt(taskHis.getEndTime(), taskHisListTableRow, 3);
         }
     }
 

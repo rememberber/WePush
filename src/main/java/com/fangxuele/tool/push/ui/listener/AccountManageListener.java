@@ -7,6 +7,7 @@ import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.ui.form.*;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.UiThreadUtil;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -44,37 +45,44 @@ public class AccountManageListener {
         });
 
         // 账号管理-删除
-        AccountManageForm.getInstance().getAccountListTableDeleteButton().addActionListener(e -> ThreadUtil.execute(() -> {
-            try {
-                int[] selectedRows = accountListTable.getSelectedRows();
-
-                if (selectedRows.length == 0) {
-                    JOptionPane.showMessageDialog(accountPanel, "请至少选择一个！", "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    int isDelete = JOptionPane.showConfirmDialog(accountPanel, "确认删除？", "确认",
-                            JOptionPane.YES_NO_OPTION);
-                    if (isDelete == JOptionPane.YES_OPTION) {
-                        DefaultTableModel tableModel = (DefaultTableModel) accountListTable
-                                .getModel();
-                        int msgType = App.config.getMsgType();
-
-                        for (int i = selectedRows.length; i > 0; i--) {
-                            int selectedRow = accountListTable.getSelectedRow();
-                            String accountName = (String) tableModel.getValueAt(selectedRow, 0);
-                            accountMapper.deleteByMsgTypeAndAccountName(msgType, accountName);
-                            tableModel.removeRow(selectedRow);
+        AccountManageForm.getInstance().getAccountListTableDeleteButton().addActionListener(e -> {
+            int[] selectedRows = accountListTable.getSelectedRows();
+            if (selectedRows.length == 0) {
+                JOptionPane.showMessageDialog(accountPanel, "请至少选择一个！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+            int isDelete = JOptionPane.showConfirmDialog(accountPanel, "确认删除？", "确认",
+                    JOptionPane.YES_NO_OPTION);
+            if (isDelete != JOptionPane.YES_OPTION) {
+                return;
+            }
+            DefaultTableModel tableModel = (DefaultTableModel) accountListTable.getModel();
+            int msgType = App.config.getMsgType();
+            int[] rowsToDelete = selectedRows.clone();
+            String[] accountNames = new String[rowsToDelete.length];
+            for (int i = 0; i < rowsToDelete.length; i++) {
+                accountNames[i] = (String) tableModel.getValueAt(rowsToDelete[i], 0);
+            }
+            ThreadUtil.execute(() -> {
+                try {
+                    for (String accountName : accountNames) {
+                        accountMapper.deleteByMsgTypeAndAccountName(msgType, accountName);
+                    }
+                    UiThreadUtil.runOnUi(() -> {
+                        for (int i = rowsToDelete.length - 1; i >= 0; i--) {
+                            tableModel.removeRow(rowsToDelete[i]);
                         }
                         AccountEditForm.init(null);
                         PeopleManageForm.init();
-                    }
+                    });
+                } catch (Exception e1) {
+                    UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(accountPanel, "删除失败！\n\n" + e1.getMessage(), "失败",
+                            JOptionPane.ERROR_MESSAGE));
+                    logger.error(e1);
                 }
-            } catch (Exception e1) {
-                JOptionPane.showMessageDialog(accountPanel, "删除失败！\n\n" + e1.getMessage(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
-                logger.error(e1);
-            }
-        }));
+            });
+        });
 
         // 编辑账号-新建
         AccountManageForm.getInstance().getCreateAccountButton().addActionListener(e -> {

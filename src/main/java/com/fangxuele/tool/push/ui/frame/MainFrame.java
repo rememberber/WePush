@@ -1,6 +1,5 @@
 package com.fangxuele.tool.push.ui.frame;
 
-import cn.hutool.core.thread.ThreadUtil;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.component.TopMenuBar;
 import com.fangxuele.tool.push.ui.listener.*;
@@ -55,20 +54,20 @@ public class MainFrame extends JFrame {
     }
 
     /**
-     * 添加事件监听
+     * 添加事件监听（须在 EDT 调用）
      */
     public void addListeners() {
-        ThreadUtil.execute(AboutListener::addListeners);
-        ThreadUtil.execute(MessageTypeListener::addListeners);
-        ThreadUtil.execute(HelpListener::addListeners);
-        ThreadUtil.execute(AccountManageListener::addListeners);
-        ThreadUtil.execute(AccountEditListener::addListeners);
-        ThreadUtil.execute(MessageManageListener::addListeners);
-        ThreadUtil.execute(MessageEditListener::addListeners);
-        ThreadUtil.execute(PeopleManageListener::addListeners);
-        ThreadUtil.execute(PeopleEditListener::addListeners);
-        ThreadUtil.execute(TaskListener::addListeners);
-        ThreadUtil.execute(TabListener::addListeners);
-        ThreadUtil.execute(FrameListener::addListeners);
+        AboutListener.addListeners();
+        MessageTypeListener.addListeners();
+        HelpListener.addListeners();
+        AccountManageListener.addListeners();
+        AccountEditListener.addListeners();
+        MessageManageListener.addListeners();
+        MessageEditListener.addListeners();
+        PeopleManageListener.addListeners();
+        PeopleEditListener.addListeners();
+        TaskListener.addListeners();
+        TabListener.addListeners();
+        FrameListener.addListeners();
     }
 }

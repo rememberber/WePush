@@ -6,6 +6,7 @@ import com.fangxuele.tool.push.logic.msgsender.MailMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.SendResult;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
+import com.fangxuele.tool.push.util.UiThreadUtil;
 import com.formdev.flatlaf.util.SystemInfo;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -78,16 +79,22 @@ public class MailTestDialog extends JDialog {
         if (StringUtils.isBlank(mailToTextField.getText())) {
             mailToTextField.grabFocus();
         } else {
-            MailMsgSender mailMsgSender = new MailMsgSender();
-            SendResult sendResult = mailMsgSender.sendTestMail(emailAccountConfig, mailToTextField.getText());
-            dispose();
-            if (sendResult.isSuccess()) {
-                JOptionPane.showMessageDialog(App.mainFrame, "发送成功！", "成功",
-                        JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(App.mainFrame, "发送失败！\n\n" + sendResult.getInfo(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
-            }
+            String mailTo = mailToTextField.getText();
+            buttonOK.setEnabled(false);
+            UiThreadUtil.runOffUi(() -> {
+                MailMsgSender mailMsgSender = new MailMsgSender();
+                SendResult sendResult = mailMsgSender.sendTestMail(emailAccountConfig, mailTo);
+                UiThreadUtil.runOnUi(() -> {
+                    dispose();
+                    if (sendResult.isSuccess()) {
+                        JOptionPane.showMessageDialog(App.mainFrame, "发送成功！", "成功",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(App.mainFrame, "发送失败！\n\n" + sendResult.getInfo(), "失败",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+                });
+            });
         }
     }
 

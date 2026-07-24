@@ -35,9 +35,9 @@ public class UpgradeUtil {
         // 从github获取最新版本相关信息
         String versionSummaryJsonContent = HttpUtil.get(UiConsts.CHECK_VERSION_URL);
         if (StringUtils.isEmpty(versionSummaryJsonContent) && !initCheck) {
-            JOptionPane.showMessageDialog(App.mainFrame,
+            UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame,
                     "检查超时，请关注GitHub Release！", "网络错误",
-                    JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.INFORMATION_MESSAGE));
             return;
         }
         versionSummaryJsonContent = versionSummaryJsonContent.replace("\n", "");
@@ -65,16 +65,18 @@ public class UpgradeUtil {
             }
             String versionLog = versionLogBuilder.toString();
 
-            UpdateInfoDialog updateInfoDialog = new UpdateInfoDialog();
-            updateInfoDialog.setHtmlText(versionLog);
-            updateInfoDialog.setNewVersion(newVersion);
-            updateInfoDialog.pack();
-            updateInfoDialog.setVisible(true);
+            UiThreadUtil.runOnUi(() -> {
+                UpdateInfoDialog updateInfoDialog = new UpdateInfoDialog();
+                updateInfoDialog.setHtmlText(versionLog);
+                updateInfoDialog.setNewVersion(newVersion);
+                updateInfoDialog.pack();
+                updateInfoDialog.setVisible(true);
+            });
         } else {
             if (!initCheck) {
-                JOptionPane.showMessageDialog(App.mainFrame,
+                UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame,
                         "当前已经是最新版本！", "恭喜",
-                        JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.INFORMATION_MESSAGE));
             }
         }
     }

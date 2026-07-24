@@ -16,6 +16,7 @@ import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
+import com.fangxuele.tool.push.util.UiThreadUtil;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -81,7 +82,8 @@ public class ImportByNum extends JDialog {
             return;
         }
 
-        importFromNum(num, false, false);
+        UiThreadUtil.runOffUi(() -> importFromNum(num, false, false));
+        dispose();
     }
 
     private void importFromNum(Integer num, Boolean clear, Boolean silence) {
@@ -114,10 +116,11 @@ public class ImportByNum extends JDialog {
         try {
             int importNum = num;
             if (!silence) {
-                progressBar.setVisible(true);
-                progressBar.setMaximum(importNum);
+                UiThreadUtil.runOnUi(() -> {
+                    progressBar.setVisible(true);
+                    progressBar.setMaximum(importNum);
+                });
             }
-
 
             for (int i = 0; i < importNum; i++) {
                 String[] array = new String[1];
@@ -136,28 +139,31 @@ public class ImportByNum extends JDialog {
 
                 currentImported++;
                 if (!silence) {
-                    memberCountLabel.setText(String.valueOf(currentImported));
+                    int count = currentImported;
+                    UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
                 }
             }
             if (!silence) {
-                PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
-
-                JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
-                dispose();
+                UiThreadUtil.runOnUi(() -> {
+                    PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
+                    JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+                });
             }
         } catch (Exception e1) {
             if (!silence) {
-                JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + e1.getMessage(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
+                UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE));
             }
             logger.error(e1);
             e1.printStackTrace();
         } finally {
             if (!silence) {
-                progressBar.setMaximum(100);
-                progressBar.setValue(100);
-                progressBar.setIndeterminate(false);
-                progressBar.setVisible(false);
+                UiThreadUtil.runOnUi(() -> {
+                    progressBar.setMaximum(100);
+                    progressBar.setValue(100);
+                    progressBar.setIndeterminate(false);
+                    progressBar.setVisible(false);
+                });
             }
         }
     }

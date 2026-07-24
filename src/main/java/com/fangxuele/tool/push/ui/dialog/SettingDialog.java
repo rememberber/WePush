@@ -9,6 +9,7 @@ import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.HikariUtil;
 import com.fangxuele.tool.push.util.ScrollUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
+import com.fangxuele.tool.push.util.UiThreadUtil;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.util.SystemInfo;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -201,47 +202,54 @@ public class SettingDialog extends JDialog {
 
         // mysql数据库-测试链接
         settingTestDbLinkButton.addActionListener(e -> {
-            HikariDataSource hikariDataSource = null;
-            try {
-                String dbUrl = mysqlUrlTextField.getText();
-                String dbUser = mysqlUserTextField.getText();
-                String dbPassword = new String(mysqlPasswordField.getPassword());
-                if (StringUtils.isBlank(dbUrl)) {
-                    mysqlUrlTextField.grabFocus();
-                    return;
-                }
-                if (StringUtils.isBlank(dbUser)) {
-                    mysqlUserTextField.grabFocus();
-                    return;
-                }
-                if (StringUtils.isBlank(dbPassword)) {
-                    mysqlPasswordField.grabFocus();
-                    return;
-                }
-                hikariDataSource = new HikariDataSource();
-                hikariDataSource.setJdbcUrl("jdbc:mysql://" + dbUrl);
-                hikariDataSource.setUsername(dbUser);
-                hikariDataSource.setPassword(dbPassword);
-                if (hikariDataSource.getConnection() == null) {
-                    JOptionPane.showMessageDialog(this, "连接失败", "失败",
-                            JOptionPane.ERROR_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(this, "连接成功！", "成功",
-                            JOptionPane.INFORMATION_MESSAGE);
-                }
-            } catch (Exception e1) {
-                JOptionPane.showMessageDialog(this, "连接失败！\n\n" + e1.getMessage(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
-                logger.error(e1);
-            } finally {
-                if (hikariDataSource != null) {
-                    try {
-                        hikariDataSource.close();
-                    } catch (Exception e2) {
-                        logger.error(e2);
-                    }
-                }
+            String dbUrl = mysqlUrlTextField.getText();
+            String dbUser = mysqlUserTextField.getText();
+            String dbPassword = new String(mysqlPasswordField.getPassword());
+            if (StringUtils.isBlank(dbUrl)) {
+                mysqlUrlTextField.grabFocus();
+                return;
             }
+            if (StringUtils.isBlank(dbUser)) {
+                mysqlUserTextField.grabFocus();
+                return;
+            }
+            if (StringUtils.isBlank(dbPassword)) {
+                mysqlPasswordField.grabFocus();
+                return;
+            }
+            settingTestDbLinkButton.setEnabled(false);
+            UiThreadUtil.runOffUi(() -> {
+                HikariDataSource hikariDataSource = null;
+                try {
+                    hikariDataSource = new HikariDataSource();
+                    hikariDataSource.setJdbcUrl("jdbc:mysql://" + dbUrl);
+                    hikariDataSource.setUsername(dbUser);
+                    hikariDataSource.setPassword(dbPassword);
+                    boolean connected = hikariDataSource.getConnection() != null;
+                    UiThreadUtil.runOnUi(() -> {
+                        if (connected) {
+                            JOptionPane.showMessageDialog(this, "连接成功！", "成功",
+                                    JOptionPane.INFORMATION_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(this, "连接失败", "失败",
+                                    JOptionPane.ERROR_MESSAGE);
+                        }
+                    });
+                } catch (Exception e1) {
+                    UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(this, "连接失败！\n\n" + e1.getMessage(), "失败",
+                            JOptionPane.ERROR_MESSAGE));
+                    logger.error(e1);
+                } finally {
+                    if (hikariDataSource != null) {
+                        try {
+                            hikariDataSource.close();
+                        } catch (Exception e2) {
+                            logger.error(e2);
+                        }
+                    }
+                    UiThreadUtil.runOnUi(() -> settingTestDbLinkButton.setEnabled(true));
+                }
+            });
         });
 
         // mysql数据库-保存

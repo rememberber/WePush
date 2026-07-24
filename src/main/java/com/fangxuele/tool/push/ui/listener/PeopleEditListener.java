@@ -2,7 +2,6 @@ package com.fangxuele.tool.push.ui.listener;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
@@ -23,6 +22,7 @@ import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
 import com.fangxuele.tool.push.ui.form.PeopleManageForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.UiThreadUtil;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.opencsv.CSVWriter;
 
@@ -168,119 +168,115 @@ public class PeopleEditListener {
 
         // 清空按钮
         peopleEditForm.getClearAllButton().addActionListener(e -> {
-
-            try {
-                if (PeopleManageListener.selectedPeopleId == null) {
-                    JOptionPane.showMessageDialog(mainPanel, "请先选择一个人群!", "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    return;
-                }
-
-                int isDelete = JOptionPane.showConfirmDialog(mainPanel, "确认清空？", "确认",
-                        JOptionPane.YES_NO_OPTION);
-                if (isDelete == JOptionPane.YES_OPTION) {
-                    peopleDataMapper.deleteByPeopleId(PeopleManageListener.selectedPeopleId);
-
-                    PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
-                }
-            } catch (Exception e1) {
-                JOptionPane.showMessageDialog(mainPanel, "清空失败！\n\n" + e1.getMessage(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
-                logger.error(e1);
+            if (PeopleManageListener.selectedPeopleId == null) {
+                JOptionPane.showMessageDialog(mainPanel, "请先选择一个人群!", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
             }
+
+            int isDelete = JOptionPane.showConfirmDialog(mainPanel, "确认清空？", "确认",
+                    JOptionPane.YES_NO_OPTION);
+            if (isDelete != JOptionPane.YES_OPTION) {
+                return;
+            }
+            Integer peopleId = PeopleManageListener.selectedPeopleId;
+            UiThreadUtil.runOffUi(() -> {
+                try {
+                    peopleDataMapper.deleteByPeopleId(peopleId);
+                    UiThreadUtil.runOnUi(() -> PeopleEditForm.initDataTable(peopleId));
+                } catch (Exception e1) {
+                    UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(mainPanel, "清空失败！\n\n" + e1.getMessage(), "失败",
+                            JOptionPane.ERROR_MESSAGE));
+                    logger.error(e1);
+                }
+            });
         });
 
         // 导出按钮
-        peopleEditForm.getExportButton().addActionListener(e -> ThreadUtil.execute(() -> {
-            BigExcelWriter writer;
-            try {
-                if (PeopleManageListener.selectedPeopleId == null) {
-                    JOptionPane.showMessageDialog(mainPanel, "请先选择一个人群!", "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    return;
-                }
+        peopleEditForm.getExportButton().addActionListener(e -> {
+            if (PeopleManageListener.selectedPeopleId == null) {
+                JOptionPane.showMessageDialog(mainPanel, "请先选择一个人群!", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+            Integer peopleId = PeopleManageListener.selectedPeopleId;
+            ExportDialog.showDialog();
+            if (!ExportDialog.confirm) {
+                return;
+            }
+            int fileType = ExportDialog.fileType;
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            int approve = fileChooser.showOpenDialog(mainPanel);
+            if (approve != JFileChooser.APPROVE_OPTION) {
+                return;
+            }
+            String exportPath = fileChooser.getSelectedFile().getAbsolutePath();
 
-                List<TPeopleData> peopleDataList = peopleDataMapper.selectByPeopleId(PeopleManageListener.selectedPeopleId);
-                if (peopleDataList.size() > 0) {
-                    ExportDialog.showDialog();
-                    if (ExportDialog.confirm) {
-                        JFileChooser fileChooser = new JFileChooser();
-                        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                        int approve = fileChooser.showOpenDialog(mainPanel);
-                        String exportPath;
-                        if (approve == JFileChooser.APPROVE_OPTION) {
-                            exportPath = fileChooser.getSelectedFile().getAbsolutePath();
-                        } else {
-                            return;
+            UiThreadUtil.runOffUi(() -> {
+                try {
+                    List<TPeopleData> peopleDataList = peopleDataMapper.selectByPeopleId(peopleId);
+                    if (peopleDataList.isEmpty()) {
+                        UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(mainPanel, "所选人群无数据", "提示",
+                                JOptionPane.INFORMATION_MESSAGE));
+                        return;
+                    }
+
+                    TPeople tPeople = peopleMapper.selectByPrimaryKey(peopleId);
+                    String nowTime = DateUtil.now().replace(":", "_").replace(" ", "_");
+                    String fileName = "MemberExport_" + MessageTypeEnum.getName(App.config.getMsgType()) + "_" + tPeople.getPeopleName() + "_" + nowTime;
+                    String fileFullName = exportPath + File.separator + fileName;
+                    if (fileType == ExportDialog.EXCEL) {
+                        fileFullName += ".xlsx";
+                        BigExcelWriter writer = ExcelUtil.getBigWriter(fileFullName);
+                        writer.merge(JSONUtil.toList(peopleDataList.get(0).getVarData(), String.class).size() - 1, "人群数据列表导出");
+                        for (TPeopleData tPeopleData : peopleDataList) {
+                            writer.writeRow(JSONUtil.toList(tPeopleData.getVarData(), String.class));
                         }
-
-                        TPeople tPeople = peopleMapper.selectByPrimaryKey(PeopleManageListener.selectedPeopleId);
-
-                        String nowTime = DateUtil.now().replace(":", "_").replace(" ", "_");
-                        String fileName = "MemberExport_" + MessageTypeEnum.getName(App.config.getMsgType()) + "_" + tPeople.getPeopleName() + "_" + nowTime;
-                        String fileFullName = exportPath + File.separator + fileName;
-                        if (ExportDialog.fileType == ExportDialog.EXCEL) {
-                            fileFullName += ".xlsx";
-                            //通过工具类创建writer
-                            writer = ExcelUtil.getBigWriter(fileFullName);
-                            //合并单元格后的标题行，使用默认标题样式
-                            writer.merge(JSONUtil.toList(peopleDataList.get(0).getVarData(), String.class).size() - 1, "人群数据列表导出");
-                            //一次性写出内容，强制输出标题
-                            for (TPeopleData tPeopleData : peopleDataList) {
-                                String varData = tPeopleData.getVarData();
-                                writer.writeRow(JSONUtil.toList(varData, String.class));
-                            }
-                            writer.flush();
-                        } else if (ExportDialog.fileType == ExportDialog.CSV) {
-                            fileFullName += ".csv";
-                            CSVWriter csvWriter = new CSVWriter(new FileWriter(FileUtil.touch(fileFullName)));
-
-                            for (TPeopleData tPeopleData : peopleDataList) {
-                                String varData = tPeopleData.getVarData();
-                                JSONArray jsonArray = JSONUtil.parseArray(varData);
-                                String[] nextLine = new String[jsonArray.size()];
-                                nextLine = jsonArray.toArray(nextLine);
-                                csvWriter.writeNext(nextLine);
-                            }
-
-                            csvWriter.flush();
-                            csvWriter.close();
-                        } else if (ExportDialog.fileType == ExportDialog.TXT) {
-                            fileFullName += ".txt";
-                            FileWriter fileWriter = new FileWriter(fileFullName);
-
-                            int size = peopleDataList.size();
-                            for (int i = 0; i < size; i++) {
-                                String varData = peopleDataList.get(i).getVarData();
-                                List<String> row = JSONUtil.toList(varData, String.class);
-                                fileWriter.append(String.join("|", row));
-                                if (i < size - 1) {
-                                    fileWriter.append(StrUtil.CRLF);
-                                }
-                            }
-
-                            fileWriter.flush();
-                            fileWriter.close();
+                        writer.flush();
+                    } else if (fileType == ExportDialog.CSV) {
+                        fileFullName += ".csv";
+                        CSVWriter csvWriter = new CSVWriter(new FileWriter(FileUtil.touch(fileFullName)));
+                        for (TPeopleData tPeopleData : peopleDataList) {
+                            JSONArray jsonArray = JSONUtil.parseArray(tPeopleData.getVarData());
+                            String[] nextLine = new String[jsonArray.size()];
+                            nextLine = jsonArray.toArray(nextLine);
+                            csvWriter.writeNext(nextLine);
                         }
+                        csvWriter.flush();
+                        csvWriter.close();
+                    } else if (fileType == ExportDialog.TXT) {
+                        fileFullName += ".txt";
+                        FileWriter fileWriter = new FileWriter(fileFullName);
+                        int size = peopleDataList.size();
+                        for (int i = 0; i < size; i++) {
+                            List<String> row = JSONUtil.toList(peopleDataList.get(i).getVarData(), String.class);
+                            fileWriter.append(String.join("|", row));
+                            if (i < size - 1) {
+                                fileWriter.append(StrUtil.CRLF);
+                            }
+                        }
+                        fileWriter.flush();
+                        fileWriter.close();
+                    }
+
+                    String finalFileFullName = fileFullName;
+                    UiThreadUtil.runOnUi(() -> {
                         JOptionPane.showMessageDialog(mainPanel, "导出成功！", "提示",
                                 JOptionPane.INFORMATION_MESSAGE);
                         try {
-                            Desktop desktop = Desktop.getDesktop();
-                            desktop.open(FileUtil.file(fileFullName));
+                            Desktop.getDesktop().open(FileUtil.file(finalFileFullName));
                         } catch (Exception e2) {
                             logger.error(e2);
                         }
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(mainPanel, "所选人群无数据", "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
+                    });
+                } catch (Exception e1) {
+                    UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(mainPanel, "导出失败！\n\n" + e1.getMessage(), "失败",
+                            JOptionPane.ERROR_MESSAGE));
+                    logger.error(e1);
                 }
-            } catch (Exception e1) {
-                JOptionPane.showMessageDialog(mainPanel, "导出失败！\n\n" + e1.getMessage(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
-                logger.error(e1);
-            }
-        }));
+            });
+        });
 
         // 搜索按钮
         peopleEditForm.getSearchButton().addActionListener(e -> searchEvent());

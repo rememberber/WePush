@@ -19,6 +19,7 @@ import com.fangxuele.tool.push.ui.form.msg.DingMsgForm;
 import com.fangxuele.tool.push.ui.form.msg.MsgFormFactory;
 import com.fangxuele.tool.push.ui.frame.HttpResultFrame;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.UiThreadUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
@@ -75,77 +76,83 @@ public class MessageEditListener {
 
         // 预览按钮事件
         messageEditForm.getPreviewMsgButton().addActionListener(e -> {
-            try {
-                int selectedRow = messageManageForm.getMsgHistable().getSelectedRow();
-                if (selectedRow < 0) {
-                    JOptionPane.showMessageDialog(messagePanel, "请先保存并选择一条消息！", "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    return;
-                }
+            int selectedRow = messageManageForm.getMsgHistable().getSelectedRow();
+            if (selectedRow < 0) {
+                JOptionPane.showMessageDialog(messagePanel, "请先保存并选择一条消息！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
 
-                Integer selectedMsgId = (Integer) messageManageForm.getMsgHistable().getValueAt(selectedRow, 1);
+            Integer selectedMsgId = (Integer) messageManageForm.getMsgHistable().getValueAt(selectedRow, 1);
+            String previewUserText = messageEditForm.getPreviewUserField().getText();
+            boolean dingRobotSelected = DingMsgForm.getInstance().getRobotRadioButton().isSelected();
 
-                TMsg tMsg = msgMapper.selectByPrimaryKey(selectedMsgId);
+            UiThreadUtil.runOffUi(() -> {
+                try {
+                    TMsg tMsg = msgMapper.selectByPrimaryKey(selectedMsgId);
 
-                if (tMsg.getMsgType() != MessageTypeEnum.HTTP_CODE && "".equals(messageEditForm.getPreviewUserField().getText().trim())) {
-                    if (tMsg.getMsgType() == MessageTypeEnum.DING_CODE && DingMsgForm.getInstance().getRobotRadioButton().isSelected()) {
-                        // Do Nothing
-                    } else {
-                        JOptionPane.showMessageDialog(messagePanel, "预览用户不能为空！", "提示",
-                                JOptionPane.INFORMATION_MESSAGE);
+                    if (tMsg.getMsgType() != MessageTypeEnum.HTTP_CODE && "".equals(previewUserText.trim())) {
+                        if (!(tMsg.getMsgType() == MessageTypeEnum.DING_CODE && dingRobotSelected)) {
+                            UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(messagePanel, "预览用户不能为空！", "提示",
+                                    JOptionPane.INFORMATION_MESSAGE));
+                            return;
+                        }
+                    }
+                    if (tMsg.getMsgType() == MessageTypeEnum.MA_TEMPLATE_CODE
+                            && previewUserText.split(";")[0].length() < 2) {
+                        UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(messagePanel, "小程序模板消息预览时，“预览用户openid”输入框里填写openid|formId，\n" +
+                                        "示例格式：\n" +
+                                        "opd-aswadfasdfasdfasdf|fi291834543", "提示",
+                                JOptionPane.INFORMATION_MESSAGE));
                         return;
                     }
-                }
-                if (tMsg.getMsgType() == MessageTypeEnum.MA_TEMPLATE_CODE
-                        && messageEditForm.getPreviewUserField().getText().split(";")[0].length() < 2) {
-                    JOptionPane.showMessageDialog(messagePanel, "小程序模板消息预览时，“预览用户openid”输入框里填写openid|formId，\n" +
-                                    "示例格式：\n" +
-                                    "opd-aswadfasdfasdfasdf|fi291834543", "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    return;
-                }
 
-                List<SendResult> sendResultList = PushControl.preview(tMsg.getId());
-                if (sendResultList != null) {
+                    List<SendResult> sendResultList = PushControl.preview(tMsg.getId());
+                    if (sendResultList != null) {
+                        StringBuilder tipsBuilder = new StringBuilder();
+                        int totalCount = previewUserText.split(";").length;
+                        long successCount = sendResultList.stream().filter(SendResult::isSuccess).count();
+                        if (totalCount == successCount) {
+                            tipsBuilder.append("<h1>发送预览消息成功！</h1>");
+                        } else if (successCount == 0) {
+                            tipsBuilder.append("<h2>发送预览消息失败！</h2>");
+                        } else {
+                            tipsBuilder.append("<h2>有部分预览消息发送失败！</h2>");
+                        }
+                        sendResultList.stream().filter(sendResult -> !sendResult.isSuccess())
+                                .forEach(sendResult -> tipsBuilder.append("<p>").append(sendResult.getInfo()).append("</p>"));
 
-                    StringBuilder tipsBuilder = new StringBuilder();
-                    int totalCount = messageEditForm.getPreviewUserField().getText().split(";").length;
-                    long successCount = sendResultList.stream().filter(SendResult::isSuccess).count();
-                    if (totalCount == successCount) {
-                        tipsBuilder.append("<h1>发送预览消息成功！</h1>");
-                    } else if (successCount == 0) {
-                        tipsBuilder.append("<h2>发送预览消息失败！</h2>");
-                    } else {
-                        tipsBuilder.append("<h2>有部分预览消息发送失败！</h2>");
+                        String tipsHtml = tipsBuilder.toString();
+                        boolean showHttpResult = tMsg.getMsgType() == MessageTypeEnum.HTTP_CODE && totalCount == successCount;
+                        HttpSendResult httpSendResult = showHttpResult ? (HttpSendResult) sendResultList.get(0) : null;
+
+                        UiThreadUtil.runOnUi(() -> {
+                            if (showHttpResult) {
+                                HttpResultForm.getInstance().getBodyTextArea().setText(httpSendResult.getBody());
+                                HttpResultForm.getInstance().getBodyTextArea().setCaretPosition(0);
+                                HttpResultForm.getInstance().getHeadersTextArea().setText(httpSendResult.getHeaders());
+                                HttpResultForm.getInstance().getHeadersTextArea().setCaretPosition(0);
+                                HttpResultForm.getInstance().getCookiesTextArea().setText(httpSendResult.getCookies());
+                                HttpResultForm.getInstance().getCookiesTextArea().setCaretPosition(0);
+                                HttpResultFrame.showResultWindow();
+                            } else {
+                                CommonTipsDialog dialog = new CommonTipsDialog();
+                                dialog.setHtmlText(tipsHtml);
+                                dialog.pack();
+                                dialog.setVisible(true);
+                            }
+                        });
+
+                        // 保存累计推送总数
+                        App.config.setPushTotal(App.config.getPushTotal() + successCount);
+                        App.config.save();
                     }
-                    sendResultList.stream().filter(sendResult -> !sendResult.isSuccess())
-                            .forEach(sendResult -> tipsBuilder.append("<p>").append(sendResult.getInfo()).append("</p>"));
-
-                    if (tMsg.getMsgType() == MessageTypeEnum.HTTP_CODE && totalCount == successCount) {
-                        HttpSendResult httpSendResult = (HttpSendResult) sendResultList.get(0);
-                        HttpResultForm.getInstance().getBodyTextArea().setText(httpSendResult.getBody());
-                        HttpResultForm.getInstance().getBodyTextArea().setCaretPosition(0);
-                        HttpResultForm.getInstance().getHeadersTextArea().setText(httpSendResult.getHeaders());
-                        HttpResultForm.getInstance().getHeadersTextArea().setCaretPosition(0);
-                        HttpResultForm.getInstance().getCookiesTextArea().setText(httpSendResult.getCookies());
-                        HttpResultForm.getInstance().getCookiesTextArea().setCaretPosition(0);
-                        HttpResultFrame.showResultWindow();
-                    } else {
-                        CommonTipsDialog dialog = new CommonTipsDialog();
-                        dialog.setHtmlText(tipsBuilder.toString());
-                        dialog.pack();
-                        dialog.setVisible(true);
-                    }
-
-                    // 保存累计推送总数
-                    App.config.setPushTotal(App.config.getPushTotal() + successCount);
-                    App.config.save();
+                } catch (Exception e1) {
+                    UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(messagePanel, "发送预览消息失败！\n\n" + e1.getMessage(), "失败",
+                            JOptionPane.ERROR_MESSAGE));
+                    logger.error(e1);
                 }
-            } catch (Exception e1) {
-                JOptionPane.showMessageDialog(messagePanel, "发送预览消息失败！\n\n" + e1.getMessage(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
-                logger.error(e1);
-            }
+            });
         });
 
         messageEditForm.getPreviewUserHelpLabel().addMouseListener(new MouseAdapter() {

@@ -1,6 +1,5 @@
 package com.fangxuele.tool.push.ui;
 
-import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
@@ -174,19 +173,18 @@ public class Init {
     }
 
     /**
-     * 初始化所有tab
+     * 初始化所有tab（须在 EDT 调用）
      */
     public static void initAllTab() {
         MessageTypeForm.init();
-        ThreadUtil.execute(AboutForm::init);
-        ThreadUtil.execute(HelpForm::init);
-//        ThreadUtil.execute(UserCaseForm::init);
-        ThreadUtil.execute(AccountManageForm::init);
-        ThreadUtil.execute(() -> AccountEditForm.init(null));
-        ThreadUtil.execute(MessageManageForm::init);
-        ThreadUtil.execute(PeopleManageForm::init);
-        ThreadUtil.execute(() -> PeopleEditForm.init(null));
-        ThreadUtil.execute(TaskForm::init);
+        AboutForm.init();
+        HelpForm.init();
+        AccountManageForm.init();
+        AccountEditForm.init(null);
+        MessageManageForm.init();
+        PeopleManageForm.init();
+        PeopleEditForm.init(null);
+        TaskForm.init();
 
         // 检查新版版
         if (App.config.isAutoCheckUpdate()) {

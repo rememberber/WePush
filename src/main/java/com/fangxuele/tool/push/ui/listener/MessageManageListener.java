@@ -7,6 +7,7 @@ import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.*;
 import com.fangxuele.tool.push.ui.form.*;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.UiThreadUtil;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -44,36 +45,41 @@ public class MessageManageListener {
         });
 
         // 历史消息管理-删除
-        MessageManageForm.getInstance().getMsgHisTableDeleteButton().addActionListener(e -> ThreadUtil.execute(() -> {
-            try {
-                int[] selectedRows = msgHistable.getSelectedRows();
-
-                if (selectedRows.length == 0) {
-                    JOptionPane.showMessageDialog(messagePanel, "请至少选择一个！", "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    int isDelete = JOptionPane.showConfirmDialog(messagePanel, "确认删除？", "确认",
-                            JOptionPane.YES_NO_OPTION);
-                    if (isDelete == JOptionPane.YES_OPTION) {
-                        DefaultTableModel tableModel = (DefaultTableModel) msgHistable
-                                .getModel();
-                        int msgType = App.config.getMsgType();
-
-                        for (int i = selectedRows.length; i > 0; i--) {
-                            int selectedRow = msgHistable.getSelectedRow();
-                            Integer msgId = (Integer) tableModel.getValueAt(selectedRow, 1);
-                            msgMapper.deleteByPrimaryKey(msgId);
-
-                            tableModel.removeRow(selectedRow);
-                        }
-                    }
-                }
-            } catch (Exception e1) {
-                JOptionPane.showMessageDialog(messagePanel, "删除失败！\n\n" + e1.getMessage(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
-                logger.error(e1);
+        MessageManageForm.getInstance().getMsgHisTableDeleteButton().addActionListener(e -> {
+            int[] selectedRows = msgHistable.getSelectedRows();
+            if (selectedRows.length == 0) {
+                JOptionPane.showMessageDialog(messagePanel, "请至少选择一个！", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
             }
-        }));
+            int isDelete = JOptionPane.showConfirmDialog(messagePanel, "确认删除？", "确认",
+                    JOptionPane.YES_NO_OPTION);
+            if (isDelete != JOptionPane.YES_OPTION) {
+                return;
+            }
+            DefaultTableModel tableModel = (DefaultTableModel) msgHistable.getModel();
+            int[] rowsToDelete = selectedRows.clone();
+            Integer[] msgIds = new Integer[rowsToDelete.length];
+            for (int i = 0; i < rowsToDelete.length; i++) {
+                msgIds[i] = (Integer) tableModel.getValueAt(rowsToDelete[i], 1);
+            }
+            ThreadUtil.execute(() -> {
+                try {
+                    for (Integer msgId : msgIds) {
+                        msgMapper.deleteByPrimaryKey(msgId);
+                    }
+                    UiThreadUtil.runOnUi(() -> {
+                        for (int i = rowsToDelete.length - 1; i >= 0; i--) {
+                            tableModel.removeRow(rowsToDelete[i]);
+                        }
+                    });
+                } catch (Exception e1) {
+                    UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(messagePanel, "删除失败！\n\n" + e1.getMessage(), "失败",
+                            JOptionPane.ERROR_MESSAGE));
+                    logger.error(e1);
+                }
+            });
+        });
 
         // 编辑消息-新建
         MessageManageForm.getInstance().getCreateMsgButton().addActionListener(e -> {

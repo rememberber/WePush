@@ -23,6 +23,7 @@ import com.fangxuele.tool.push.ui.form.PeopleEditForm;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
+import com.fangxuele.tool.push.util.UiThreadUtil;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -103,30 +104,37 @@ public class ImportByWxMp extends JDialog {
 
         // 公众号-刷新可选的标签按钮事件
         memberImportTagFreshButton.addActionListener(e -> {
-
             WxMpService wxMpService = WxMpTemplateMsgSender.getWxMpService(tPeople.getAccountId());
             if (wxMpService.getWxMpConfigStorage() == null) {
                 return;
             }
-
-            try {
-                List<WxUserTag> wxUserTagList = wxMpService.getUserTagService().tagGet();
-
-                memberImportTagComboBox.removeAllItems();
-                userTagMap = new HashMap<>();
-
-                for (WxUserTag wxUserTag : wxUserTagList) {
-                    String item = wxUserTag.getName() + "/" + wxUserTag.getCount() + "用户";
-                    memberImportTagComboBox.addItem(item);
-                    userTagMap.put(item, wxUserTag.getId());
+            memberImportTagFreshButton.setEnabled(false);
+            UiThreadUtil.runOffUi(() -> {
+                try {
+                    List<WxUserTag> wxUserTagList = wxMpService.getUserTagService().tagGet();
+                    Map<String, Long> newUserTagMap = new HashMap<>();
+                    List<String> items = new ArrayList<>();
+                    for (WxUserTag wxUserTag : wxUserTagList) {
+                        String item = wxUserTag.getName() + "/" + wxUserTag.getCount() + "用户";
+                        items.add(item);
+                        newUserTagMap.put(item, wxUserTag.getId());
+                    }
+                    UiThreadUtil.runOnUi(() -> {
+                        memberImportTagComboBox.removeAllItems();
+                        userTagMap = newUserTagMap;
+                        for (String item : items) {
+                            memberImportTagComboBox.addItem(item);
+                        }
+                    });
+                } catch (WxErrorException e1) {
+                    UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "刷新失败！\n\n" + e1.getMessage(), "失败",
+                            JOptionPane.ERROR_MESSAGE));
+                    logger.error(e1);
+                    e1.printStackTrace();
+                } finally {
+                    UiThreadUtil.runOnUi(() -> memberImportTagFreshButton.setEnabled(true));
                 }
-
-            } catch (WxErrorException e1) {
-                JOptionPane.showMessageDialog(App.mainFrame, "刷新失败！\n\n" + e1.getMessage(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
-                logger.error(e1);
-                e1.printStackTrace();
-            }
+            });
         });
 
         // 公众号-导入选择的标签分组用户按钮事件(取并集)
@@ -140,21 +148,25 @@ public class ImportByWxMp extends JDialog {
 
                     long selectedTagId = userTagMap.get(memberImportTagComboBox.getSelectedItem());
                     getMpUserListByTag(this, selectedTagId, false);
-                    PeopleEditForm.initDataTable(peopleId);
-                    JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成",
-                            JOptionPane.INFORMATION_MESSAGE);
+                    UiThreadUtil.runOnUi(() -> {
+                        PeopleEditForm.initDataTable(peopleId);
+                        JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    });
                 } else {
-                    JOptionPane.showMessageDialog(App.mainFrame, "请先选择需要导入的标签！", "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
+                    UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "请先选择需要导入的标签！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE));
                 }
             } catch (WxErrorException e1) {
-                JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + e1.getMessage(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
+                UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE));
                 logger.error(e1);
             } finally {
-                progressBar.setIndeterminate(false);
-                progressBar.setValue(progressBar.getMaximum());
-                progressBar.setVisible(false);
+                UiThreadUtil.runOnUi(() -> {
+                    progressBar.setIndeterminate(false);
+                    progressBar.setValue(progressBar.getMaximum());
+                    progressBar.setVisible(false);
+                });
             }
         }));
 
@@ -169,22 +181,26 @@ public class ImportByWxMp extends JDialog {
 
                     long selectedTagId = userTagMap.get(memberImportTagComboBox.getSelectedItem());
                     getMpUserListByTag(this, selectedTagId, true);
-                    PeopleEditForm.initDataTable(peopleId);
-                    JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成",
-                            JOptionPane.INFORMATION_MESSAGE);
+                    UiThreadUtil.runOnUi(() -> {
+                        PeopleEditForm.initDataTable(peopleId);
+                        JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    });
                 } else {
-                    JOptionPane.showMessageDialog(App.mainFrame, "请先选择需要导入的标签！", "提示",
-                            JOptionPane.INFORMATION_MESSAGE);
+                    UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "请先选择需要导入的标签！", "提示",
+                            JOptionPane.INFORMATION_MESSAGE));
                 }
             } catch (WxErrorException e1) {
-                JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + e1.getMessage(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
+                UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE));
                 logger.error(e1);
                 e1.printStackTrace();
             } finally {
-                progressBar.setIndeterminate(false);
-                progressBar.setValue(progressBar.getMaximum());
-                progressBar.setVisible(false);
+                UiThreadUtil.runOnUi(() -> {
+                    progressBar.setIndeterminate(false);
+                    progressBar.setValue(progressBar.getMaximum());
+                    progressBar.setVisible(false);
+                });
             }
         }));
 
@@ -218,22 +234,26 @@ public class ImportByWxMp extends JDialog {
     public void importWxAll(ImportByWxMp dialog) {
         PeopleEditForm instance = PeopleEditForm.getInstance();
         JProgressBar progressBar = instance.getMemberTabImportProgressBar();
-        instance.getImportButton().setEnabled(false);
+        UiThreadUtil.runOnUi(() -> instance.getImportButton().setEnabled(false));
 
         try {
             getMpUserList(dialog);
-            PeopleEditForm.initDataTable(peopleId);
-            progressBar.setVisible(false);
-            JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+            UiThreadUtil.runOnUi(() -> {
+                PeopleEditForm.initDataTable(peopleId);
+                progressBar.setVisible(false);
+                JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+            });
         } catch (WxErrorException e1) {
-            JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + e1.getMessage(), "失败",
-                    JOptionPane.ERROR_MESSAGE);
+            UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + e1.getMessage(), "失败",
+                    JOptionPane.ERROR_MESSAGE));
             logger.error(e1);
             e1.printStackTrace();
         } finally {
-            progressBar.setIndeterminate(false);
-            progressBar.setVisible(false);
-            instance.getImportButton().setEnabled(true);
+            UiThreadUtil.runOnUi(() -> {
+                progressBar.setIndeterminate(false);
+                progressBar.setVisible(false);
+                instance.getImportButton().setEnabled(true);
+            });
         }
     }
 
@@ -245,8 +265,10 @@ public class ImportByWxMp extends JDialog {
         JProgressBar progressBar = instance.getMemberTabImportProgressBar();
         JLabel memberCountLabel = instance.getMemberTabCountLabel();
 
-        progressBar.setVisible(true);
-        progressBar.setIndeterminate(true);
+        UiThreadUtil.runOnUi(() -> {
+            progressBar.setVisible(true);
+            progressBar.setIndeterminate(true);
+        });
 
         WxMpService wxMpService = WxMpTemplateMsgSender.getWxMpService(tPeople.getAccountId());
         if (wxMpService.getWxMpConfigStorage() == null) {
@@ -258,8 +280,11 @@ public class ImportByWxMp extends JDialog {
         logger.info("关注该公众账号的总用户数：" + wxMpUserList.getTotal());
         logger.info("拉取的OPENID个数：" + wxMpUserList.getCount());
 
-        progressBar.setIndeterminate(false);
-        progressBar.setMaximum((int) wxMpUserList.getTotal());
+        int total = (int) wxMpUserList.getTotal();
+        UiThreadUtil.runOnUi(() -> {
+            progressBar.setIndeterminate(false);
+            progressBar.setMaximum(total);
+        });
         int importedCount = 0;
         String now = SqliteUtil.nowDateForSqlite();
         String dataVersion = UUID.fastUUID().toString(true);
@@ -287,8 +312,11 @@ public class ImportByWxMp extends JDialog {
         }
 
         if (wxMpUserList.getCount() == 0) {
-            memberCountLabel.setText(String.valueOf(importedCount));
-            progressBar.setValue(importedCount);
+            int count = importedCount;
+            UiThreadUtil.runOnUi(() -> {
+                memberCountLabel.setText(String.valueOf(count));
+                progressBar.setValue(count);
+            });
             return;
         }
 
@@ -309,8 +337,11 @@ public class ImportByWxMp extends JDialog {
             peopleDataMapper.insert(tPeopleData);
 
             importedCount++;
-            memberCountLabel.setText(String.valueOf(importedCount));
-            progressBar.setValue(importedCount);
+            int count = importedCount;
+            UiThreadUtil.runOnUi(() -> {
+                memberCountLabel.setText(String.valueOf(count));
+                progressBar.setValue(count);
+            });
         }
 
         while (StringUtils.isNotEmpty(wxMpUserList.getNextOpenid())) {
@@ -337,12 +368,16 @@ public class ImportByWxMp extends JDialog {
                 peopleDataMapper.insert(tPeopleData);
 
                 importedCount++;
-                memberCountLabel.setText(String.valueOf(importedCount));
-                progressBar.setValue(importedCount);
+                int count = importedCount;
+                UiThreadUtil.runOnUi(() -> {
+                    memberCountLabel.setText(String.valueOf(count));
+                    progressBar.setValue(count);
+                });
             }
         }
 
-        progressBar.setValue((int) wxMpUserList.getTotal());
+        int finalTotal = total;
+        UiThreadUtil.runOnUi(() -> progressBar.setValue(finalTotal));
     }
 
     @NotNull
@@ -414,8 +449,10 @@ public class ImportByWxMp extends JDialog {
         PeopleEditForm instance = PeopleEditForm.getInstance();
         JProgressBar progressBar = instance.getMemberTabImportProgressBar();
 
-        progressBar.setVisible(true);
-        progressBar.setIndeterminate(true);
+        UiThreadUtil.runOnUi(() -> {
+            progressBar.setVisible(true);
+            progressBar.setIndeterminate(true);
+        });
 
         WxMpService wxMpService = WxMpTemplateMsgSender.getWxMpService(tPeople.getAccountId());
         if (wxMpService.getWxMpConfigStorage() == null) {
@@ -507,8 +544,10 @@ public class ImportByWxMp extends JDialog {
             peopleDataMapper.insert(tPeopleData);
         }
 
-        progressBar.setIndeterminate(false);
-        progressBar.setValue(progressBar.getMaximum());
+        UiThreadUtil.runOnUi(() -> {
+            progressBar.setIndeterminate(false);
+            progressBar.setValue(progressBar.getMaximum());
+        });
 
     }
 

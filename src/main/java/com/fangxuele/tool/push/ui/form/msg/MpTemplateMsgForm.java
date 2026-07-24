@@ -14,6 +14,7 @@ import com.fangxuele.tool.push.ui.form.MessageManageForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.UIUtil;
+import com.fangxuele.tool.push.util.UiThreadUtil;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.google.common.collect.Maps;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -311,44 +312,56 @@ public class MpTemplateMsgForm implements IMsgForm {
     }
 
     /**
-     * 初始化模板列表ComboBox
+     * 初始化模板列表ComboBox（网络拉取离 EDT，回填 Combo 回 EDT）
      */
     public static void initTemplateList() {
         needListenTemplateListComboBox = false;
-        try {
-            templateMap = Maps.newHashMap();
-
-            MessageManageForm messageManageForm = MessageManageForm.getInstance();
-            String selectedAccountName = (String) messageManageForm.getAccountComboBox().getSelectedItem();
-            if (StringUtils.isEmpty(selectedAccountName)) {
-                return;
-            }
-            Integer selectedAccountId = MessageManageForm.accountMap.get(selectedAccountName);
-            if (selectedAccountId == null) {
-                return;
-            }
-
-            templateList = WxMpTemplateMsgSender.getWxMpService(selectedAccountId).getTemplateMsgService().getAllPrivateTemplate();
-            getInstance().getTemplateListComboBox().removeAllItems();
-            int selectedIndex = 0;
-            for (int i = 0; i < templateList.size(); i++) {
-                WxMpTemplate wxMpTemplate = templateList.get(i);
-                getInstance().getTemplateListComboBox().addItem(wxMpTemplate.getTitle());
-                templateMap.put(wxMpTemplate.getTemplateId(), wxMpTemplate);
-                if (wxMpTemplate.getTemplateId().equals(selectedMsgTemplateId)) {
-                    selectedIndex = i;
-                }
-            }
-
-            if (getInstance().getTemplateListComboBox().getItemCount() > 0) {
-                getInstance().getTemplateListComboBox().setSelectedIndex(selectedIndex);
-                fillWxTemplateContentToField();
-            }
-
-        } catch (Exception e) {
-            log.error(e.toString());
+        MessageManageForm messageManageForm = MessageManageForm.getInstance();
+        String selectedAccountName = (String) messageManageForm.getAccountComboBox().getSelectedItem();
+        if (StringUtils.isEmpty(selectedAccountName)) {
+            needListenTemplateListComboBox = true;
+            return;
         }
-        needListenTemplateListComboBox = true;
+        Integer selectedAccountId = MessageManageForm.accountMap.get(selectedAccountName);
+        if (selectedAccountId == null) {
+            needListenTemplateListComboBox = true;
+            return;
+        }
+
+        UiThreadUtil.runOffUi(() -> {
+            try {
+                List<WxMpTemplate> fetchedList = WxMpTemplateMsgSender.getWxMpService(selectedAccountId).getTemplateMsgService().getAllPrivateTemplate();
+                Map<String, WxMpTemplate> fetchedMap = Maps.newHashMap();
+                for (WxMpTemplate wxMpTemplate : fetchedList) {
+                    fetchedMap.put(wxMpTemplate.getTemplateId(), wxMpTemplate);
+                }
+                templateList = fetchedList;
+                templateMap = fetchedMap;
+
+                int selectedIndex = 0;
+                for (int i = 0; i < templateList.size(); i++) {
+                    if (templateList.get(i).getTemplateId().equals(selectedMsgTemplateId)) {
+                        selectedIndex = i;
+                        break;
+                    }
+                }
+                int finalSelectedIndex = selectedIndex;
+                UiThreadUtil.runOnUi(() -> {
+                    getInstance().getTemplateListComboBox().removeAllItems();
+                    for (WxMpTemplate wxMpTemplate : templateList) {
+                        getInstance().getTemplateListComboBox().addItem(wxMpTemplate.getTitle());
+                    }
+                    if (getInstance().getTemplateListComboBox().getItemCount() > 0) {
+                        getInstance().getTemplateListComboBox().setSelectedIndex(finalSelectedIndex);
+                        fillWxTemplateContentToField();
+                    }
+                    needListenTemplateListComboBox = true;
+                });
+            } catch (Exception e) {
+                log.error(e.toString());
+                needListenTemplateListComboBox = true;
+            }
+        });
     }
 
     /**

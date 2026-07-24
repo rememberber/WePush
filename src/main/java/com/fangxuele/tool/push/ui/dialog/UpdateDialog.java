@@ -8,6 +8,7 @@ import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
+import com.fangxuele.tool.push.util.UiThreadUtil;
 import com.formdev.flatlaf.util.SystemInfo;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -96,9 +97,9 @@ public class UpdateDialog extends JDialog {
                     // 从github获取最新版本相关信息
                     String downloadLinkInfo = HttpUtil.get(UiConsts.DOWNLOAD_LINK_INFO_URL);
                     if (StringUtils.isEmpty(downloadLinkInfo) || downloadLinkInfo.contains("404: Not Found")) {
-                        JOptionPane.showMessageDialog(App.mainFrame,
+                        UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame,
                                 "获取下载链接失败，请关注Gitee Release！", "网络错误",
-                                JOptionPane.INFORMATION_MESSAGE);
+                                JOptionPane.INFORMATION_MESSAGE));
                         return;
                     } else {
                         DocumentContext parse = JsonPath.parse(downloadLinkInfo);
@@ -118,7 +119,7 @@ public class UpdateDialog extends JDialog {
                         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                         //获取相应的文件长度
                         int fileLength = urlConnection.getContentLength();
-                        progressBarDownload.setMaximum(fileLength);
+                        UiThreadUtil.runOnUi(() -> progressBarDownload.setMaximum(fileLength));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -133,19 +134,23 @@ public class UpdateDialog extends JDialog {
 
                         @Override
                         public void start() {
-                            statusLabel.setText("开始下载。。。。");
+                            UiThreadUtil.runOnUi(() -> statusLabel.setText("开始下载。。。。"));
                         }
 
                         @Override
                         public void progress(long progressSize) {
-                            progressBarDownload.setValue((int) progressSize);
-                            statusLabel.setText("已下载：" + FileUtil.readableFileSize(progressSize));
+                            UiThreadUtil.runOnUi(() -> {
+                                progressBarDownload.setValue((int) progressSize);
+                                statusLabel.setText("已下载：" + FileUtil.readableFileSize(progressSize));
+                            });
                         }
 
                         @Override
                         public void finish() {
-                            statusLabel.setText("下载完成！");
-                            buttonOK.setEnabled(true);
+                            UiThreadUtil.runOnUi(() -> {
+                                statusLabel.setText("下载完成！");
+                                buttonOK.setEnabled(true);
+                            });
                         }
                     });
                 }

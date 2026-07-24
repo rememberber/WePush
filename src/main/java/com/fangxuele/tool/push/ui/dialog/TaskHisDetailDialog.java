@@ -19,6 +19,7 @@ import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
+import com.fangxuele.tool.push.util.UiThreadUtil;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.util.StringUtils;
 import com.formdev.flatlaf.util.SystemInfo;
@@ -127,7 +128,7 @@ public class TaskHisDetailDialog extends JDialog {
                 JProgressBar memberTabImportProgressBar = peopleEditForm.getMemberTabImportProgressBar();
                 CSVReader reader = null;
                 try {
-                    MainWindow.getInstance().getTabbedPane().setSelectedIndex(3);
+                    UiThreadUtil.runOnUi(() -> MainWindow.getInstance().getTabbedPane().setSelectedIndex(3));
 
                     TPeople tPeopleToSave = new TPeople();
                     tPeopleToSave.setMsgType(tTask.getMsgType());
@@ -140,8 +141,10 @@ public class TaskHisDetailDialog extends JDialog {
 
                     peopleMapper.insert(tPeopleToSave);
 
-                    memberTabImportProgressBar.setVisible(true);
-                    memberTabImportProgressBar.setIndeterminate(true);
+                    UiThreadUtil.runOnUi(() -> {
+                        memberTabImportProgressBar.setVisible(true);
+                        memberTabImportProgressBar.setIndeterminate(true);
+                    });
                     File msgTemplateDataFile = new File(tTaskHis.getSuccessFilePath());
                     if (msgTemplateDataFile.exists()) {
                         // 可以解决中文乱码问题
@@ -161,19 +164,21 @@ public class TaskHisDetailDialog extends JDialog {
                             peopleDataMapper.insert(tPeopleData);
                         }
                     }
-                    PeopleManageForm.initPeopleList();
+                    UiThreadUtil.runOnUi(() -> PeopleManageForm.initPeopleList());
 
-                    JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成",
-                            JOptionPane.INFORMATION_MESSAGE);
+                    UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成",
+                            JOptionPane.INFORMATION_MESSAGE));
                 } catch (Exception e1) {
-                    JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + e1.getMessage(), "失败",
-                            JOptionPane.ERROR_MESSAGE);
+                    UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + e1.getMessage(), "失败",
+                            JOptionPane.ERROR_MESSAGE));
                     logger.error(e1);
                 } finally {
-                    memberTabImportProgressBar.setMaximum(100);
-                    memberTabImportProgressBar.setValue(100);
-                    memberTabImportProgressBar.setIndeterminate(false);
-                    memberTabImportProgressBar.setVisible(false);
+                    UiThreadUtil.runOnUi(() -> {
+                        memberTabImportProgressBar.setMaximum(100);
+                        memberTabImportProgressBar.setValue(100);
+                        memberTabImportProgressBar.setIndeterminate(false);
+                        memberTabImportProgressBar.setVisible(false);
+                    });
                     if (reader != null) {
                         try {
                             reader.close();
@@ -195,7 +200,7 @@ public class TaskHisDetailDialog extends JDialog {
                 JProgressBar memberTabImportProgressBar = peopleEditForm.getMemberTabImportProgressBar();
                 CSVReader reader = null;
                 try {
-                    MainWindow.getInstance().getTabbedPane().setSelectedIndex(3);
+                    UiThreadUtil.runOnUi(() -> MainWindow.getInstance().getTabbedPane().setSelectedIndex(3));
 
                     TPeople tPeopleToSave = new TPeople();
                     tPeopleToSave.setMsgType(tTask.getMsgType());
@@ -208,8 +213,10 @@ public class TaskHisDetailDialog extends JDialog {
 
                     peopleMapper.insert(tPeopleToSave);
 
-                    memberTabImportProgressBar.setVisible(true);
-                    memberTabImportProgressBar.setIndeterminate(true);
+                    UiThreadUtil.runOnUi(() -> {
+                        memberTabImportProgressBar.setVisible(true);
+                        memberTabImportProgressBar.setIndeterminate(true);
+                    });
                     File msgTemplateDataFile = new File(tTaskHis.getFailFilePath());
                     if (msgTemplateDataFile.exists()) {
                         // 可以解决中文乱码问题
@@ -229,19 +236,21 @@ public class TaskHisDetailDialog extends JDialog {
                             peopleDataMapper.insert(tPeopleData);
                         }
                     }
-                    PeopleManageForm.initPeopleList();
+                    UiThreadUtil.runOnUi(() -> PeopleManageForm.initPeopleList());
 
-                    JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成",
-                            JOptionPane.INFORMATION_MESSAGE);
+                    UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成",
+                            JOptionPane.INFORMATION_MESSAGE));
                 } catch (Exception e1) {
-                    JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + e1.getMessage(), "失败",
-                            JOptionPane.ERROR_MESSAGE);
+                    UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + e1.getMessage(), "失败",
+                            JOptionPane.ERROR_MESSAGE));
                     logger.error(e1);
                 } finally {
-                    memberTabImportProgressBar.setMaximum(100);
-                    memberTabImportProgressBar.setValue(100);
-                    memberTabImportProgressBar.setIndeterminate(false);
-                    memberTabImportProgressBar.setVisible(false);
+                    UiThreadUtil.runOnUi(() -> {
+                        memberTabImportProgressBar.setMaximum(100);
+                        memberTabImportProgressBar.setValue(100);
+                        memberTabImportProgressBar.setIndeterminate(false);
+                        memberTabImportProgressBar.setVisible(false);
+                    });
                     if (reader != null) {
                         try {
                             reader.close();
@@ -263,7 +272,7 @@ public class TaskHisDetailDialog extends JDialog {
                 JProgressBar memberTabImportProgressBar = peopleEditForm.getMemberTabImportProgressBar();
                 CSVReader reader = null;
                 try {
-                    MainWindow.getInstance().getTabbedPane().setSelectedIndex(3);
+                    UiThreadUtil.runOnUi(() -> MainWindow.getInstance().getTabbedPane().setSelectedIndex(3));
 
                     TPeople tPeopleToSave = new TPeople();
                     tPeopleToSave.setMsgType(tTask.getMsgType());
@@ -276,8 +285,10 @@ public class TaskHisDetailDialog extends JDialog {
 
                     peopleMapper.insert(tPeopleToSave);
 
-                    memberTabImportProgressBar.setVisible(true);
-                    memberTabImportProgressBar.setIndeterminate(true);
+                    UiThreadUtil.runOnUi(() -> {
+                        memberTabImportProgressBar.setVisible(true);
+                        memberTabImportProgressBar.setIndeterminate(true);
+                    });
                     File msgTemplateDataFile = new File(tTaskHis.getNoSendFilePath());
                     if (msgTemplateDataFile.exists()) {
                         // 可以解决中文乱码问题
@@ -297,19 +308,21 @@ public class TaskHisDetailDialog extends JDialog {
                             peopleDataMapper.insert(tPeopleData);
                         }
                     }
-                    PeopleManageForm.initPeopleList();
+                    UiThreadUtil.runOnUi(() -> PeopleManageForm.initPeopleList());
 
-                    JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成",
-                            JOptionPane.INFORMATION_MESSAGE);
+                    UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成",
+                            JOptionPane.INFORMATION_MESSAGE));
                 } catch (Exception e1) {
-                    JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + e1.getMessage(), "失败",
-                            JOptionPane.ERROR_MESSAGE);
+                    UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + e1.getMessage(), "失败",
+                            JOptionPane.ERROR_MESSAGE));
                     logger.error(e1);
                 } finally {
-                    memberTabImportProgressBar.setMaximum(100);
-                    memberTabImportProgressBar.setValue(100);
-                    memberTabImportProgressBar.setIndeterminate(false);
-                    memberTabImportProgressBar.setVisible(false);
+                    UiThreadUtil.runOnUi(() -> {
+                        memberTabImportProgressBar.setMaximum(100);
+                        memberTabImportProgressBar.setValue(100);
+                        memberTabImportProgressBar.setIndeterminate(false);
+                        memberTabImportProgressBar.setVisible(false);
+                    });
                     if (reader != null) {
                         try {
                             reader.close();
@@ -399,17 +412,20 @@ public class TaskHisDetailDialog extends JDialog {
                         e.printStackTrace();
                     }
 
+                    String line = null;
                     try {
-                        String line = finalLogReader.readLine();
-                        if (line != null) {
-                            textArea1.append(line + "\n");
-                            textArea1.setCaretPosition(textArea1.getText().length());
-                        }
+                        line = finalLogReader.readLine();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    if (line != null) {
+                        String finalLine = line;
+                        UiThreadUtil.runOnUi(() -> {
+                            textArea1.append(finalLine + "\n");
+                            textArea1.setCaretPosition(textArea1.getText().length());
+                        });
+                    }
                     if (!taskRunThread.running || dialogClosed) {
-                        pushStopButton.setEnabled(false);
                         try {
                             finalLogReader.close();
                         } catch (IOException e) {
@@ -417,34 +433,39 @@ public class TaskHisDetailDialog extends JDialog {
                         }
 
                         TTaskHis taskHis = taskHisMapper.selectByPrimaryKey(taskHisId);
-                        successFileTextField.setText(taskHis.getSuccessFilePath());
-                        failFileTextField.setText(taskHis.getFailFilePath());
-                        noSendFileTextField.setText(taskHis.getNoSendFilePath());
+                        UiThreadUtil.runOnUi(() -> {
+                            pushStopButton.setEnabled(false);
+                            successFileTextField.setText(taskHis.getSuccessFilePath());
+                            failFileTextField.setText(taskHis.getFailFilePath());
+                            noSendFileTextField.setText(taskHis.getNoSendFilePath());
+                        });
 
                         break;
                     }
-                    pushStopButton.setEnabled(true);
-
-                    pushSuccessCount.setText(String.valueOf(taskRunThread.getSuccessRecords()));
-                    pushFailCount.setText(String.valueOf(taskRunThread.getFailRecords()));
 
                     int totalSentCount = taskRunThread.getSuccessRecords().intValue() + taskRunThread.getFailRecords().intValue();
-                    pushTotalProgressBar.setValue(totalSentCount);
                     long currentTimeMillis = System.currentTimeMillis();
                     long lastTimeMillis = currentTimeMillis - taskRunThread.getStartTime();
-                    // 耗时
                     String formatBetweenLast = DateUtil.formatBetween(lastTimeMillis, BetweenFormater.Level.SECOND);
-                    pushLastTimeLabel.setText("".equals(formatBetweenLast) ? "0s" : formatBetweenLast);
-
-                    // 预计剩余
-
                     long leftTimeMillis = (long) ((double) lastTimeMillis / (totalSentCount) * (tTaskHis.getTotalCnt() - totalSentCount));
                     String formatBetweenLeft = DateUtil.formatBetween(leftTimeMillis, BetweenFormater.Level.SECOND);
-                    pushLeftTimeLabel.setText("".equals(formatBetweenLeft) ? "0s" : formatBetweenLeft);
-
                     int tps = (totalSentCount - totalSentCountBefore) * 2;
                     totalSentCountBefore = totalSentCount;
-                    tpsLabel.setText(tps + "");
+                    String successText = String.valueOf(taskRunThread.getSuccessRecords());
+                    String failText = String.valueOf(taskRunThread.getFailRecords());
+                    String lastTimeText = "".equals(formatBetweenLast) ? "0s" : formatBetweenLast;
+                    String leftTimeText = "".equals(formatBetweenLeft) ? "0s" : formatBetweenLeft;
+                    String tpsText = tps + "";
+                    int progressValue = totalSentCount;
+                    UiThreadUtil.runOnUi(() -> {
+                        pushStopButton.setEnabled(true);
+                        pushSuccessCount.setText(successText);
+                        pushFailCount.setText(failText);
+                        pushTotalProgressBar.setValue(progressValue);
+                        pushLastTimeLabel.setText(lastTimeText);
+                        pushLeftTimeLabel.setText(leftTimeText);
+                        tpsLabel.setText(tpsText);
+                    });
                 }
             });
         } else {

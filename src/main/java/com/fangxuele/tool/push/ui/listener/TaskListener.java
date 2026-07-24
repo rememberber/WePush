@@ -17,6 +17,7 @@ import com.fangxuele.tool.push.ui.dialog.NewTaskDialog;
 import com.fangxuele.tool.push.ui.dialog.TaskHisDetailDialog;
 import com.fangxuele.tool.push.ui.form.TaskForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.UiThreadUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
@@ -202,50 +203,25 @@ public class TaskListener {
             }
 
             Integer taskHisId = (Integer) taskForm.getTaskHisListTable().getValueAt(selectedRow, 0);
+            int selectedTaskRow = taskForm.getTaskListTable().getSelectedRow();
+            Integer selectedTaskId = selectedTaskRow >= 0
+                    ? (Integer) taskForm.getTaskListTable().getValueAt(selectedTaskRow, 0) : null;
 
             int isDelete = JOptionPane.showConfirmDialog(App.mainFrame,
                     "确定删除当前的任务记录吗？", "确认删除？",
                     JOptionPane.YES_NO_OPTION);
-            if (isDelete == JOptionPane.YES_OPTION) {
-
-                TTaskHis tTaskHis = taskHisMapper.selectByPrimaryKey(taskHisId);
-
-                // 删除文件
-                String successFilePath = tTaskHis.getSuccessFilePath();
-                if (StringUtils.isNotBlank(successFilePath)) {
-                    File successFile = new File(successFilePath);
-                    if (successFile.exists()) {
-                        successFile.delete();
-                    }
-                }
-                String failFilePath = tTaskHis.getFailFilePath();
-                if (StringUtils.isNotBlank(failFilePath)) {
-                    File failFile = new File(failFilePath);
-                    if (failFile.exists()) {
-                        failFile.delete();
-                    }
-                }
-                String noSendFilePath = tTaskHis.getNoSendFilePath();
-                if (StringUtils.isNotBlank(noSendFilePath)) {
-                    File noSendFile = new File(noSendFilePath);
-                    if (noSendFile.exists()) {
-                        noSendFile.delete();
-                    }
-                }
-                String logFilePath = tTaskHis.getLogFilePath();
-                if (StringUtils.isNotBlank(logFilePath)) {
-                    File logFile = new File(logFilePath);
-                    if (logFile.exists()) {
-                        logFile.delete();
-                    }
-                }
-
-                taskHisMapper.deleteByPrimaryKey(taskHisId);
-
-                int selectedTaskRow = taskForm.getTaskListTable().getSelectedRow();
-                Integer selectedTaskId = (Integer) taskForm.getTaskListTable().getValueAt(selectedTaskRow, 0);
-                TaskForm.initTaskHisListTable(selectedTaskId);
+            if (isDelete != JOptionPane.YES_OPTION) {
+                return;
             }
+
+            UiThreadUtil.runOffUi(() -> {
+                TTaskHis tTaskHis = taskHisMapper.selectByPrimaryKey(taskHisId);
+                deleteTaskHisFiles(tTaskHis);
+                taskHisMapper.deleteByPrimaryKey(taskHisId);
+                if (selectedTaskId != null) {
+                    UiThreadUtil.runOnUi(() -> TaskForm.initTaskHisListTable(selectedTaskId));
+                }
+            });
         });
 
         taskForm.getDeleteButton().addActionListener(e -> {
@@ -261,42 +237,16 @@ public class TaskListener {
             int isDelete = JOptionPane.showConfirmDialog(App.mainFrame,
                     "确定删除当前的任务吗？", "确认删除？",
                     JOptionPane.YES_NO_OPTION);
-            if (isDelete == JOptionPane.YES_OPTION) {
-                // 删除任务历史记录
+            if (isDelete != JOptionPane.YES_OPTION) {
+                return;
+            }
+
+            UiThreadUtil.runOffUi(() -> {
                 taskHisMapper.selectByTaskId(taskId).forEach(tTaskHis -> {
-                    // 删除文件
-                    String successFilePath = tTaskHis.getSuccessFilePath();
-                    if (StringUtils.isNotBlank(successFilePath)) {
-                        File successFile = new File(successFilePath);
-                        if (successFile.exists()) {
-                            successFile.delete();
-                        }
-                    }
-                    String failFilePath = tTaskHis.getFailFilePath();
-                    if (StringUtils.isNotBlank(failFilePath)) {
-                        File failFile = new File(failFilePath);
-                        if (failFile.exists()) {
-                            failFile.delete();
-                        }
-                    }
-                    String noSendFilePath = tTaskHis.getNoSendFilePath();
-                    if (StringUtils.isNotBlank(noSendFilePath)) {
-                        File noSendFile = new File(noSendFilePath);
-                        if (noSendFile.exists()) {
-                            noSendFile.delete();
-                        }
-                    }
-                    String logFilePath = tTaskHis.getLogFilePath();
-                    if (StringUtils.isNotBlank(logFilePath)) {
-                        File logFile = new File(logFilePath);
-                        if (logFile.exists()) {
-                            logFile.delete();
-                        }
-                    }
+                    deleteTaskHisFiles(tTaskHis);
                     taskHisMapper.deleteByPrimaryKey(tTaskHis.getId());
                 });
 
-                // 删除定时任务
                 Scheduler scheduler = scheduledTaskMap.get(taskId);
                 if (scheduler != null) {
                     scheduler.stop();
@@ -318,9 +268,29 @@ public class TaskListener {
                 InfinityTaskRunThread.infinityTaskRunThreadMap.remove(taskId);
 
                 taskMapper.deleteByPrimaryKey(taskId);
-                TaskForm.initTaskListTable();
-            }
+                UiThreadUtil.runOnUi(TaskForm::initTaskListTable);
+            });
         });
+    }
+
+    private static void deleteTaskHisFiles(TTaskHis tTaskHis) {
+        if (tTaskHis == null) {
+            return;
+        }
+        deleteFileQuietly(tTaskHis.getSuccessFilePath());
+        deleteFileQuietly(tTaskHis.getFailFilePath());
+        deleteFileQuietly(tTaskHis.getNoSendFilePath());
+        deleteFileQuietly(tTaskHis.getLogFilePath());
+    }
+
+    private static void deleteFileQuietly(String path) {
+        if (StringUtils.isBlank(path)) {
+            return;
+        }
+        File file = new File(path);
+        if (file.exists()) {
+            file.delete();
+        }
     }
 
     /**

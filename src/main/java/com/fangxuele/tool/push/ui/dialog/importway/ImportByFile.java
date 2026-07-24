@@ -20,6 +20,7 @@ import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.FileCharSetUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
+import com.fangxuele.tool.push.util.UiThreadUtil;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -127,7 +128,7 @@ public class ImportByFile extends JDialog {
     public void importFromFile(String filePath, Boolean clear, Boolean silence) {
         PeopleEditForm peopleEditForm = PeopleEditForm.getInstance();
         if (!silence) {
-            peopleEditForm.getImportButton().setEnabled(false);
+            UiThreadUtil.runOnUi(() -> peopleEditForm.getImportButton().setEnabled(false));
         }
         JPanel memberPanel = peopleEditForm.getMainPanel();
         JProgressBar progressBar = peopleEditForm.getMemberTabImportProgressBar();
@@ -136,9 +137,11 @@ public class ImportByFile extends JDialog {
         File file = new File(filePath);
         if (!file.exists()) {
             if (!silence) {
-                JOptionPane.showMessageDialog(memberPanel, filePath + "\n该文件不存在！", "文件不存在",
-                        JOptionPane.ERROR_MESSAGE);
-                peopleEditForm.getImportButton().setEnabled(true);
+                UiThreadUtil.runOnUi(() -> {
+                    JOptionPane.showMessageDialog(memberPanel, filePath + "\n该文件不存在！", "文件不存在",
+                            JOptionPane.ERROR_MESSAGE);
+                    peopleEditForm.getImportButton().setEnabled(true);
+                });
             } else {
                 logger.warn("该文件不存在");
             }
@@ -155,8 +158,10 @@ public class ImportByFile extends JDialog {
 
         try {
             if (!silence) {
-                progressBar.setVisible(true);
-                progressBar.setIndeterminate(true);
+                UiThreadUtil.runOnUi(() -> {
+                    progressBar.setVisible(true);
+                    progressBar.setIndeterminate(true);
+                });
             }
             String fileNameLowerCase = file.getName().toLowerCase();
             TPeopleData tPeopleData;
@@ -205,7 +210,8 @@ public class ImportByFile extends JDialog {
                     peopleDataMapper.insert(tPeopleData);
                     currentImported++;
                     if (!silence) {
-                        memberCountLabel.setText(String.valueOf(currentImported));
+                        int count = currentImported;
+                        UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
                     }
                 }
             } else if (fileNameLowerCase.endsWith(".xlsx") || fileNameLowerCase.endsWith(".xls")) {
@@ -235,7 +241,8 @@ public class ImportByFile extends JDialog {
                         peopleDataMapper.insert(tPeopleData);
                         currentImported++;
                         if (!silence) {
-                            memberCountLabel.setText(String.valueOf(currentImported));
+                            int count = currentImported;
+                            UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
                         }
                     }
                 }
@@ -263,14 +270,17 @@ public class ImportByFile extends JDialog {
                     peopleDataMapper.insert(tPeopleData);
                     currentImported++;
                     if (!silence) {
-                        memberCountLabel.setText(String.valueOf(currentImported));
+                        int count = currentImported;
+                        UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
                     }
                 }
             } else {
                 if (!silence) {
-                    JOptionPane.showMessageDialog(memberPanel, "不支持该格式的文件！", "文件格式不支持",
-                            JOptionPane.ERROR_MESSAGE);
-                    peopleEditForm.getImportButton().setEnabled(true);
+                    UiThreadUtil.runOnUi(() -> {
+                        JOptionPane.showMessageDialog(memberPanel, "不支持该格式的文件！", "文件格式不支持",
+                                JOptionPane.ERROR_MESSAGE);
+                        peopleEditForm.getImportButton().setEnabled(true);
+                    });
                 } else {
                     logger.warn("不支持该格式的文件");
                 }
@@ -278,26 +288,29 @@ public class ImportByFile extends JDialog {
             }
 
             if (!silence) {
-                PeopleEditForm.initDataTable(peopleId);
-
-                progressBar.setIndeterminate(false);
-                progressBar.setVisible(false);
-                JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+                UiThreadUtil.runOnUi(() -> {
+                    PeopleEditForm.initDataTable(peopleId);
+                    progressBar.setIndeterminate(false);
+                    progressBar.setVisible(false);
+                    JOptionPane.showMessageDialog(memberPanel, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
+                });
             }
         } catch (Exception e1) {
             if (!silence) {
-                JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + e1.getMessage(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
+                UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(memberPanel, "导入失败！\n\n" + e1.getMessage(), "失败",
+                        JOptionPane.ERROR_MESSAGE));
             }
             logger.error(e1);
             e1.printStackTrace();
         } finally {
             if (!silence) {
-                progressBar.setMaximum(100);
-                progressBar.setValue(100);
-                progressBar.setIndeterminate(false);
-                progressBar.setVisible(false);
-                peopleEditForm.getImportButton().setEnabled(true);
+                UiThreadUtil.runOnUi(() -> {
+                    progressBar.setMaximum(100);
+                    progressBar.setValue(100);
+                    progressBar.setIndeterminate(false);
+                    progressBar.setVisible(false);
+                    peopleEditForm.getImportButton().setEnabled(true);
+                });
             }
             if (reader != null) {
                 try {

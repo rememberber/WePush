@@ -18,6 +18,7 @@ import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
+import com.fangxuele.tool.push.util.UiThreadUtil;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.util.SystemInfo;
 import com.google.common.collect.Maps;
@@ -595,114 +596,104 @@ public class NewTaskDialog extends JDialog {
     }
 
     private void onOK() {
-        String title = this.titleTextField.getText().trim();
-        TTask tTask = taskExtMapper.selectByTitle(title);
-        if (tTask != null && beforeTTask == null) {
-            JOptionPane.showMessageDialog(this, "存在同名任务！", "提示",
-                    JOptionPane.INFORMATION_MESSAGE);
-            return;
-        } else {
-            try {
-                // 非空校验
-                if (nullCheck()) return;
+        try {
+            // 非空校验（EDT）
+            if (nullCheck()) {
+                return;
+            }
 
-                String nowDateForSqlite = SqliteUtil.nowDateForSqlite();
-                TTask task = new TTask();
-                task.setTitle(title);
-                task.setMsgType(msgTypeMap.get((String) msgTypeComboBox.getSelectedItem()));
-                task.setAccountId(accountMap.get((String) accountComboBox.getSelectedItem()));
-                task.setMessageId(messageMap.get((String) msgComboBox.getSelectedItem()));
-                task.setPeopleId(peopleMap.get((String) peopleComboBox.getSelectedItem()));
-                task.setTaskMode(getTaskMode());
-                task.setThreadCnt(Integer.parseInt(threadCntTextField.getText().trim()));
-                task.setMaxThreadCnt(Integer.parseInt(maxThreadCntTextField.getText().trim()));
-                task.setTaskPeriod(getTaskPeriod());
-                task.setPeriodType(getPeriodType());
-                task.setPeriodTime(getPeriodTime());
-                task.setCron(getCron());
-                task.setReimportPeople(reimportCheckBox.isSelected() ? 1 : 0);
-                task.setResultAlert(sendPushResultCheckBox.isSelected() ? 1 : 0);
-                task.setAlertEmails(mailResultToTextField.getText().trim());
-                task.setSaveResult(saveResponseBodyCheckBox.isSelected() ? 1 : 0);
-                task.setIntervalPush(intervalPushCheckBox.isSelected() ? 1 : 0);
-                if (StringUtils.isNotBlank(intervalTextField.getText())) {
-                    task.setIntervalTime(Integer.parseInt(intervalTextField.getText().trim()));
+            String title = this.titleTextField.getText().trim();
+            String nowDateForSqlite = SqliteUtil.nowDateForSqlite();
+            TTask task = new TTask();
+            task.setTitle(title);
+            task.setMsgType(msgTypeMap.get((String) msgTypeComboBox.getSelectedItem()));
+            task.setAccountId(accountMap.get((String) accountComboBox.getSelectedItem()));
+            task.setMessageId(messageMap.get((String) msgComboBox.getSelectedItem()));
+            task.setPeopleId(peopleMap.get((String) peopleComboBox.getSelectedItem()));
+            task.setTaskMode(getTaskMode());
+            task.setThreadCnt(Integer.parseInt(threadCntTextField.getText().trim()));
+            task.setMaxThreadCnt(Integer.parseInt(maxThreadCntTextField.getText().trim()));
+            task.setTaskPeriod(getTaskPeriod());
+            task.setPeriodType(getPeriodType());
+            task.setPeriodTime(getPeriodTime());
+            task.setCron(getCron());
+            task.setReimportPeople(reimportCheckBox.isSelected() ? 1 : 0);
+            task.setResultAlert(sendPushResultCheckBox.isSelected() ? 1 : 0);
+            task.setAlertEmails(mailResultToTextField.getText().trim());
+            task.setSaveResult(saveResponseBodyCheckBox.isSelected() ? 1 : 0);
+            task.setIntervalPush(intervalPushCheckBox.isSelected() ? 1 : 0);
+            if (StringUtils.isNotBlank(intervalTextField.getText())) {
+                task.setIntervalTime(Integer.parseInt(intervalTextField.getText().trim()));
+            }
+            task.setModifiedTime(nowDateForSqlite);
+
+            final boolean scheduleTask = task.getTaskPeriod() == TaskTypeEnum.SCHEDULE_TASK_CODE;
+            if (scheduleTask) {
+                List<String> latest5RunTimeList = Lists.newArrayList();
+                Date now = new Date();
+                for (int i = 0; i < 5; i++) {
+                    if (PeriodTypeEnum.RUN_AT_THIS_TIME_TASK_CODE == task.getPeriodType()) {
+                        latest5RunTimeList.add(task.getPeriodTime());
+                        break;
+                    }
+                    if (PeriodTypeEnum.RUN_PER_DAY_TASK_CODE == task.getPeriodType()) {
+                        Date date = CronPatternUtil.nextDateAfter(new CronPattern(task.getCron()), DateUtils.addDays(now, i), true);
+                        latest5RunTimeList.add(DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss"));
+                        continue;
+                    }
+                    if (PeriodTypeEnum.RUN_PER_WEEK_TASK_CODE == task.getPeriodType()) {
+                        Date date = CronPatternUtil.nextDateAfter(new CronPattern(task.getCron()), DateUtils.addDays(now, i * 7), true);
+                        latest5RunTimeList.add(DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss"));
+                        continue;
+                    }
+                    if (PeriodTypeEnum.CRON_TASK_CODE == task.getPeriodType()) {
+                        Date date = CronPatternUtil.nextDateAfter(new CronPattern(task.getCron()), DateUtils.addDays(now, i), true);
+                        latest5RunTimeList.add(DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss"));
+                    }
                 }
-                task.setModifiedTime(nowDateForSqlite);
 
-                // 如果是定时任务
-                if (task.getTaskPeriod() == TaskTypeEnum.SCHEDULE_TASK_CODE) {
-                    {
-                        List<String> latest5RunTimeList = Lists.newArrayList();
-                        Date now = new Date();
-                        for (int i = 0; i < 5; i++) {
-                            if (PeriodTypeEnum.RUN_AT_THIS_TIME_TASK_CODE == task.getPeriodType()) {
-                                latest5RunTimeList.add(tTask.getPeriodTime());
-                                break;
-                            }
-                            if (PeriodTypeEnum.RUN_PER_DAY_TASK_CODE == task.getPeriodType()) {
-                                Date date = CronPatternUtil.nextDateAfter(new CronPattern(task.getCron()), DateUtils.addDays(now, i), true);
-                                latest5RunTimeList.add(DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss"));
-                                continue;
-                            }
-                            if (PeriodTypeEnum.RUN_PER_WEEK_TASK_CODE == task.getPeriodType()) {
-                                Date date = CronPatternUtil.nextDateAfter(new CronPattern(task.getCron()), DateUtils.addDays(now, i * 7), true);
-                                latest5RunTimeList.add(DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss"));
-                                continue;
-                            }
-                            if (PeriodTypeEnum.CRON_TASK_CODE == task.getPeriodType()) {
-                                Date date = CronPatternUtil.nextDateAfter(new CronPattern(task.getCron()), DateUtils.addDays(now, i), true);
-                                latest5RunTimeList.add(DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss"));
-                                continue;
-                            }
+                int isSchedulePush = JOptionPane.showConfirmDialog(App.mainFrame,
+                        "将按" +
+                                task.getCron() +
+                                "表达式触发推送\n\n" +
+                                "最近5次运行时间:\n" +
+                                String.join("\n", latest5RunTimeList), "确认定时推送？",
+                        JOptionPane.YES_NO_OPTION);
+                if (isSchedulePush != JOptionPane.YES_OPTION || StringUtils.isEmpty(task.getCron())) {
+                    return;
+                }
+            }
+
+            buttonOK.setEnabled(false);
+            saveTaskAsync(task, title, nowDateForSqlite, scheduleTask);
+        } catch (Exception e) {
+            log.error("保存任务异常:{}", ExceptionUtils.getStackTrace(e));
+            JOptionPane.showMessageDialog(this, "保存失败！\n" + e.getMessage(), "失败",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void saveTaskAsync(TTask task, String title, String nowDateForSqlite, boolean scheduleTask) {
+        UiThreadUtil.runOffUi(() -> {
+            try {
+                TTask sameTitleTask = taskExtMapper.selectByTitle(title);
+                if (sameTitleTask != null && beforeTTask == null) {
+                    UiThreadUtil.runOnUi(() -> {
+                        buttonOK.setEnabled(true);
+                        JOptionPane.showMessageDialog(this, "存在同名任务！", "提示",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    });
+                    return;
+                }
+
+                if (beforeTTask != null) {
+                    Scheduler oldScheduler = TaskListener.scheduledTaskMap.get(beforeTTask.getId());
+                    if (oldScheduler != null) {
+                        if (oldScheduler.isStarted()) {
+                            oldScheduler.stop();
                         }
-
-                        int isSchedulePush = JOptionPane.showConfirmDialog(App.mainFrame,
-                                "将按" +
-                                        task.getCron() +
-                                        "表达式触发推送\n\n" +
-                                        "最近5次运行时间:\n" +
-                                        String.join("\n", latest5RunTimeList), "确认定时推送？",
-                                JOptionPane.YES_NO_OPTION);
-                        if (isSchedulePush == JOptionPane.YES_OPTION && StringUtils.isNotEmpty(task.getCron())) {
-                            if (beforeTTask != null) {
-                                Scheduler scheduler = TaskListener.scheduledTaskMap.get(beforeTTask.getId());
-                                if (scheduler != null) {
-                                    if (scheduler.isStarted()) {
-                                        scheduler.stop();
-                                    }
-                                }
-                            }
-
-                            // 支持秒级别定时任务
-                            Scheduler scheduler = new Scheduler();
-                            scheduler.setMatchSecond(true);
-                            String schedulerId = scheduler.schedule(task.getCron(), (Task) () -> {
-                                if (task.getTaskMode() == TaskModeEnum.FIX_THREAD_TASK_CODE) {
-                                    TaskRunThread taskRunThread = new TaskRunThread(task.getId(), 0);
-                                    taskRunThread.setFixRateScheduling(true);
-                                    taskRunThread.start();
-                                } else if (task.getTaskMode() == TaskModeEnum.INFINITY_TASK_CODE) {
-                                    InfinityTaskRunThread infinityTaskRunThread = new InfinityTaskRunThread(task.getId(), 0);
-                                    infinityTaskRunThread.setFixRateScheduling(true);
-                                    infinityTaskRunThread.start();
-                                }
-                            });
-                            scheduler.start();
-                            TaskListener.scheduledTaskMap.put(task.getId(), scheduler);
-                        } else {
-                            return;
-                        }
+                        TaskListener.scheduledTaskMap.remove(beforeTTask.getId());
                     }
-                } else {
-                    if (beforeTTask != null) {
-                        Scheduler scheduler = TaskListener.scheduledTaskMap.get(beforeTTask.getId());
-                        if (scheduler != null) {
-                            scheduler.stop();
-                            TaskListener.scheduledTaskMap.remove(beforeTTask.getId());
-                        }
-                    }
-
                 }
 
                 if (beforeTTask == null) {
@@ -714,16 +705,37 @@ public class NewTaskDialog extends JDialog {
                     taskMapper.updateByPrimaryKey(task);
                 }
 
-                TaskForm.initTaskListTable();
+                if (scheduleTask) {
+                    Scheduler scheduler = new Scheduler();
+                    scheduler.setMatchSecond(true);
+                    scheduler.schedule(task.getCron(), (Task) () -> {
+                        if (task.getTaskMode() == TaskModeEnum.FIX_THREAD_TASK_CODE) {
+                            TaskRunThread taskRunThread = new TaskRunThread(task.getId(), 0);
+                            taskRunThread.setFixRateScheduling(true);
+                            taskRunThread.start();
+                        } else if (task.getTaskMode() == TaskModeEnum.INFINITY_TASK_CODE) {
+                            InfinityTaskRunThread infinityTaskRunThread = new InfinityTaskRunThread(task.getId(), 0);
+                            infinityTaskRunThread.setFixRateScheduling(true);
+                            infinityTaskRunThread.start();
+                        }
+                    });
+                    scheduler.start();
+                    TaskListener.scheduledTaskMap.put(task.getId(), scheduler);
+                }
 
-                dispose();
+                UiThreadUtil.runOnUi(() -> {
+                    TaskForm.initTaskListTable();
+                    dispose();
+                });
             } catch (Exception e) {
                 log.error("保存任务异常:{}", ExceptionUtils.getStackTrace(e));
-                JOptionPane.showMessageDialog(this, "保存失败！\n" + e.getMessage(), "失败",
-                        JOptionPane.ERROR_MESSAGE);
+                UiThreadUtil.runOnUi(() -> {
+                    buttonOK.setEnabled(true);
+                    JOptionPane.showMessageDialog(this, "保存失败！\n" + e.getMessage(), "失败",
+                            JOptionPane.ERROR_MESSAGE);
+                });
             }
-        }
-
+        });
     }
 
     private boolean nullCheck() {
