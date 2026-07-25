@@ -487,8 +487,6 @@
                                     <macConfig>
                                         <macStartup>${packaging.mac.startup}</macStartup>
                                     </macConfig>
-                                    <additionalModules>jdk.crypto.ec,jdk.charsets</additionalModules>
-                                    <customizedJre>false</customizedJre>
                                     <additionalResources>
                                         <additionalResource>${name}.l4j.ini</additionalResource>
                                     </additionalResources>
@@ -527,8 +525,6 @@
                                     <macConfig>
                                         <macStartup>${packaging.mac.startup}</macStartup>
                                     </macConfig>
-                                    <additionalModules>jdk.crypto.ec,jdk.charsets</additionalModules>
-                                    <customizedJre>false</customizedJre>
                                     <additionalResources>
                                         <additionalResource>${name}.l4j.ini</additionalResource>
                                     </additionalResources>
@@ -567,8 +563,6 @@
                                     <macConfig>
                                         <macStartup>${packaging.mac.startup}</macStartup>
                                     </macConfig>
-                                    <additionalModules>jdk.crypto.ec,jdk.charsets</additionalModules>
-                                    <customizedJre>false</customizedJre>
                                     <additionalResources>
                                         <additionalResource>${name}.l4j.ini</additionalResource>
                                     </additionalResources>
@@ -603,7 +597,6 @@
                                 <configuration>
                                     <platform>windows</platform>
                                     <createZipball>true</createZipball>
-                                    <additionalModules>jdk.crypto.ec,jdk.charsets</additionalModules>
                                     <additionalResources>
                                         <additionalResource>${name}.l4j.ini</additionalResource>
                                     </additionalResources>
@@ -638,7 +631,6 @@
                                 <configuration>
                                     <platform>linux</platform>
                                     <createTarball>true</createTarball>
-                                    <additionalModules>jdk.crypto.ec,jdk.charsets</additionalModules>
                                     <additionalResources>
                                         <additionalResource>${name}.l4j.ini</additionalResource>
                                     </additionalResources>
@@ -708,9 +700,12 @@
                     <outputDirectory>${packaging.outputDirectory}</outputDirectory>
                     <displayName>${project.name}</displayName>
                     <bundleJre>true</bundleJre>
+                    <!-- OkHttp 5 / okio 多平台构件会导致 jdeps 解析失败，统一打包完整 JRE -->
+                    <customizedJre>false</customizedJre>
                     <jdkPath>${packaging.jdkPath}</jdkPath>
                     <mainClass>com.fangxuele.tool.push.App</mainClass>
                     <generateInstaller>true</generateInstaller>
+                    <additionalModules>jdk.crypto.ec,jdk.charsets</additionalModules>
                 </configuration>
             </plugin>
 
