@@ -21,18 +21,21 @@ public class MsgInfinitySendThread extends Thread {
 
     private InfinityTaskRunThread infinityTaskRunThread;
 
-    public MsgInfinitySendThread(IMsgSender msgSender, InfinityTaskRunThread infinityTaskRunThread) {
-        this.iMsgSender = msgSender;
-        infinityTaskRunThread.activeThreadConcurrentLinkedQueue.offer(this.getName());
-        infinityTaskRunThread.threadStatusMap.put(this.getName(), true);
+    private final String workerName;
+
+    public MsgInfinitySendThread(IMsgSender msgSender, InfinityTaskRunThread infinityTaskRunThread, String workerName) {
+        super(workerName);
+        this.workerName = workerName;
         this.iMsgSender = msgSender;
         this.infinityTaskRunThread = infinityTaskRunThread;
+        infinityTaskRunThread.activeThreadConcurrentLinkedQueue.offer(workerName);
+        infinityTaskRunThread.threadStatusMap.put(workerName, true);
     }
 
     @Override
     public void run() {
 
-        while (infinityTaskRunThread.running && infinityTaskRunThread.threadStatusMap.get(this.getName()) && !infinityTaskRunThread.toSendConcurrentLinkedQueue.isEmpty()) {
+        while (infinityTaskRunThread.running && Boolean.TRUE.equals(infinityTaskRunThread.threadStatusMap.get(workerName)) && !infinityTaskRunThread.toSendConcurrentLinkedQueue.isEmpty()) {
             String[] msgData = infinityTaskRunThread.toSendConcurrentLinkedQueue.poll();
             if (msgData == null) {
                 continue;
@@ -58,7 +61,7 @@ public class MsgInfinitySendThread extends Thread {
             // 已处理+1
             infinityTaskRunThread.increaseProcessed();
         }
-        infinityTaskRunThread.activeThreadConcurrentLinkedQueue.remove(this.getName());
-        infinityTaskRunThread.threadStatusMap.put(this.getName(), false);
+        infinityTaskRunThread.activeThreadConcurrentLinkedQueue.remove(workerName);
+        infinityTaskRunThread.threadStatusMap.put(workerName, false);
     }
 }

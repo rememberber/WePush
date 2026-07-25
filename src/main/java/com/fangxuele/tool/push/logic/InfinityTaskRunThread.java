@@ -36,7 +36,7 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
@@ -162,7 +162,17 @@ public class InfinityTaskRunThread extends Thread {
 
     public static Map<Integer, InfinityTaskRunThread> infinityTaskRunThreadMap = new ConcurrentHashMap<>();
 
-    private ThreadPoolExecutor threadPoolExecutor;
+    /**
+     * 当前目标并发线程数（可由滑动条动态调整）
+     */
+    private volatile int targetThreadCount;
+
+    /**
+     * 最大并发线程数
+     */
+    private int maxThreadCount;
+
+    private final AtomicInteger virtualThreadSeq = new AtomicInteger();
 
     private static TPeopleImportConfigMapper peopleImportConfigMapper = MybatisUtil.getSqlSession().getMapper(TPeopleImportConfigMapper.class);
 
@@ -197,16 +207,16 @@ public class InfinityTaskRunThread extends Thread {
 
         ConsoleUtil.pushLog(logWriter, "推送开始……");
         ConsoleUtil.pushLog(logWriter, "推送过程中可随时拖拽下方滑动条调整线程数量，以达到最佳推送速度。");
-        // 线程池初始化
+        // 虚拟线程并发初始化
         tMsg = msgMapper.selectByPrimaryKey(tTask.getMessageId());
 
-        int initCorePoolSize = tTask.getThreadCnt();
-        threadPoolExecutor = ThreadUtil.newExecutor(initCorePoolSize, tTask.getMaxThreadCnt());
-        adjustThreadCount(threadPoolExecutor, initCorePoolSize);
+        maxThreadCount = tTask.getMaxThreadCnt();
+        int initThreadCount = tTask.getThreadCnt();
+        adjustThreadCount(initThreadCount);
 
         infinityTaskRunThreadMap.put(taskHis.getId(), this);
         // 时间监控
-        timeMonitor(threadPoolExecutor);
+        timeMonitor();
 
         resetLocalData();
 
@@ -304,27 +314,45 @@ public class InfinityTaskRunThread extends Thread {
     }
 
 
-    synchronized public void adjustThreadCount(ThreadPoolExecutor threadPoolExecutor, int targetCount) {
-        IMsgSender msgSender;
-        MsgInfinitySendThread msgInfinitySendThread;
+    /**
+     * 动态调整并发虚拟线程数量
+     *
+     * @param targetCount 目标线程数
+     */
+    synchronized public void adjustThreadCount(int targetCount) {
+        if (targetCount < 0) {
+            targetCount = 0;
+        }
+        if (maxThreadCount > 0 && targetCount > maxThreadCount) {
+            targetCount = maxThreadCount;
+        }
+        this.targetThreadCount = targetCount;
+
         while (activeThreadConcurrentLinkedQueue.size() < targetCount) {
-            msgSender = MsgSenderFactory.getMsgSender(tMsg.getId(), dryRun);
-            msgInfinitySendThread = new MsgInfinitySendThread(msgSender, this);
-            threadPoolExecutor.execute(msgInfinitySendThread);
+            IMsgSender msgSender = MsgSenderFactory.getMsgSender(tMsg.getId(), dryRun);
+            String workerName = "IT-" + virtualThreadSeq.incrementAndGet();
+            MsgInfinitySendThread msgInfinitySendThread = new MsgInfinitySendThread(msgSender, this, workerName);
+            Thread.ofVirtual().name(workerName).start(msgInfinitySendThread);
         }
         while (activeThreadConcurrentLinkedQueue.size() > targetCount) {
             String threadName = activeThreadConcurrentLinkedQueue.poll();
-            threadStatusMap.put(threadName, false);
+            if (threadName != null) {
+                threadStatusMap.put(threadName, false);
+            }
         }
-        threadPoolExecutor.setCorePoolSize(targetCount);
+    }
+
+    /**
+     * 当前活跃（仍在调度中的）线程数
+     */
+    public int getActiveThreadCount() {
+        return activeThreadConcurrentLinkedQueue.size();
     }
 
     /**
      * 时间监控
-     *
-     * @param threadPoolExecutor
      */
-    private void timeMonitor(ThreadPoolExecutor threadPoolExecutor) {
+    private void timeMonitor() {
         // 计时
         while (true) {
             if ((!running && activeThreadConcurrentLinkedQueue.isEmpty()) || toSendConcurrentLinkedQueue.isEmpty()) {
@@ -353,7 +381,6 @@ public class InfinityTaskRunThread extends Thread {
                 } catch (IOException e) {
                     logger.error(e);
                 } finally {
-                    threadPoolExecutor.shutdown();
                     ConsoleUtil.pushLog(logWriter, "推送结束！");
                 }
 

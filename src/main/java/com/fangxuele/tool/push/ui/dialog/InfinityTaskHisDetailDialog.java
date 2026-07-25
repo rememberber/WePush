@@ -140,8 +140,8 @@ public class InfinityTaskHisDetailDialog extends JDialog {
             JSlider slider = (JSlider) e.getSource();
             int finalValue = slider.getValue();
             sliderValueTextField.setText(String.valueOf(finalValue));
-            if (infinityTaskRunThread != null && infinityTaskRunThread.getThreadPoolExecutor() != null && infinityTaskRunThread.isRunning()) {
-                UiThreadUtil.runOffUi(() -> infinityTaskRunThread.adjustThreadCount(infinityTaskRunThread.getThreadPoolExecutor(), finalValue));
+            if (infinityTaskRunThread != null && infinityTaskRunThread.isRunning()) {
+                UiThreadUtil.runOffUi(() -> infinityTaskRunThread.adjustThreadCount(finalValue));
             }
         });
 
@@ -486,9 +486,9 @@ public class InfinityTaskHisDetailDialog extends JDialog {
                     String leftTimeText = "".equals(formatBetweenLeft) ? "0s" : formatBetweenLeft;
                     String tpsText = tps + "";
                     int progressValue = totalSentCount;
-                    String activeThreadText = "活跃线程数：" + infinityTaskRunThread.getThreadPoolExecutor().getActiveCount();
-                    String corePoolText = "核心线程数：" + infinityTaskRunThread.getThreadPoolExecutor().getCorePoolSize();
-                    String maxPoolText = "最大线程数：" + infinityTaskRunThread.getThreadPoolExecutor().getMaximumPoolSize();
+                    String activeThreadText = "活跃线程数：" + infinityTaskRunThread.getActiveThreadCount();
+                    String corePoolText = "核心线程数：" + infinityTaskRunThread.getTargetThreadCount();
+                    String maxPoolText = "最大线程数：" + infinityTaskRunThread.getMaxThreadCount();
                     UiThreadUtil.runOnUi(() -> {
                         pushStopButton.setEnabled(true);
                         pushSuccessCount.setText(successText);
