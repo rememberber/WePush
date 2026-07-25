@@ -209,7 +209,7 @@ public class ImportByFile extends JDialog {
 
                     peopleDataMapper.insert(tPeopleData);
                     currentImported++;
-                    if (!silence) {
+                    if (!silence && UiThreadUtil.shouldUpdateImportProgress(currentImported)) {
                         int count = currentImported;
                         UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
                     }
@@ -240,7 +240,7 @@ public class ImportByFile extends JDialog {
 
                         peopleDataMapper.insert(tPeopleData);
                         currentImported++;
-                        if (!silence) {
+                        if (!silence && UiThreadUtil.shouldUpdateImportProgress(currentImported)) {
                             int count = currentImported;
                             UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
                         }
@@ -269,7 +269,7 @@ public class ImportByFile extends JDialog {
 
                     peopleDataMapper.insert(tPeopleData);
                     currentImported++;
-                    if (!silence) {
+                    if (!silence && UiThreadUtil.shouldUpdateImportProgress(currentImported)) {
                         int count = currentImported;
                         UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
                     }

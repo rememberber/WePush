@@ -9,8 +9,11 @@ import com.fangxuele.tool.push.domain.TTask;
 import com.fangxuele.tool.push.domain.TTaskHis;
 import com.fangxuele.tool.push.logic.*;
 import com.fangxuele.tool.push.ui.UiConsts;
+import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.domain.TPeople;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.UiThreadUtil;
 import com.fangxuele.tool.push.util.UndoUtil;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -27,9 +30,11 @@ import javax.swing.plaf.FontUIResource;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.StyleContext;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * <pre>
@@ -81,6 +86,10 @@ public class TaskForm {
 
     private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
 
+    private static final AtomicInteger taskListLoadSeq = new AtomicInteger(0);
+
+    private static final AtomicInteger taskHisListLoadSeq = new AtomicInteger(0);
+
     private TaskForm() {
         UndoUtil.register(this);
     }
@@ -128,57 +137,52 @@ public class TaskForm {
     }
 
     public static void initTaskListTable() {
-        JTable taskListTable = taskForm.getTaskListTable();
+        final int loadSeq = taskListLoadSeq.incrementAndGet();
+        UiThreadUtil.runOffUi(() -> {
+            List<TTask> taskList = taskExtMapper.selectAll();
+            List<Object[]> rows = new ArrayList<>(taskList.size());
+            for (TTask task : taskList) {
+                Object[] data = new Object[6];
+                data[0] = task.getId();
+                data[1] = task.getTitle();
+                data[2] = MessageTypeEnum.getName(task.getMsgType());
+                data[3] = getTaskType(task);
+                data[4] = getMsgName(task.getMessageId());
+                data[5] = getPeopleName(task.getPeopleId());
+                rows.add(data);
+            }
+            UiThreadUtil.runOnUi(() -> {
+                if (loadSeq != taskListLoadSeq.get()) {
+                    return;
+                }
+                JTable taskListTable = taskForm.getTaskListTable();
+                String[] headerNames = {"id", "任务名称", "消息类型", "周期", "消息名称", "人群"};
+                DefaultTableModel model = new DefaultTableModel(null, headerNames);
+                taskListTable.setModel(model);
+                taskListTable.getTableHeader().setReorderingAllowed(false);
+                for (Object[] row : rows) {
+                    model.addRow(row);
+                }
+                JTableUtil.hideColumn(taskListTable, 0);
 
-        // 任务数据列表
-        String[] headerNames = {"id", "任务名称", "消息类型", "周期", "消息名称", "人群"};
-        DefaultTableModel model = new DefaultTableModel(null, headerNames);
-        taskListTable.setModel(model);
-
-        taskListTable.getTableHeader().setReorderingAllowed(false);
-
-        Object[] data;
-
-        List<TTask> taskList = taskExtMapper.selectAll();
-        for (TTask task : taskList) {
-            data = new Object[6];
-            data[0] = task.getId();
-            data[1] = task.getTitle();
-            data[2] = MessageTypeEnum.getName(task.getMsgType());
-            data[3] = getTaskType(task);
-            data[4] = getMsgName(task.getMessageId());
-            data[5] = peopleMapper.selectByPrimaryKey(task.getPeopleId()).getPeopleName();
-            model.addRow(data);
-        }
-        // 隐藏id列
-        JTableUtil.hideColumn(taskListTable, 0);
-
-        // 设置列宽
-//        TableColumnModel tableColumnModel = taskListTable.getColumnModel();
-//        tableColumnModel.getColumn(3).setMaxWidth(60);
-
-        // 如果有数据，则默认选中第一行
-        if (taskListTable.getRowCount() > 0) {
-            taskListTable.setRowSelectionInterval(0, 0);
-            initTaskHisListTable((Integer) taskListTable.getValueAt(0, 0));
-
-            TTask tTask = taskList.get(0);
-
-            fillSchedulePlan(tTask);
-        } else {
-            JTable taskHisListTable = taskForm.getTaskHisListTable();
-            // 清空任务历史列表
-            String[] headerNames2 = {"id", "是否空跑", "开始时间", "结束时间", "总量", "成功", "失败", "状态"};
-            DefaultTableModel model2 = new DefaultTableModel(null, headerNames2);
-            taskHisListTable.setModel(model2);
-        }
+                if (taskListTable.getRowCount() > 0) {
+                    taskListTable.setRowSelectionInterval(0, 0);
+                    initTaskHisListTable((Integer) taskListTable.getValueAt(0, 0));
+                    fillSchedulePlan(taskList.get(0));
+                } else {
+                    JTable taskHisListTable = taskForm.getTaskHisListTable();
+                    String[] headerNames2 = {"id", "是否空跑", "开始时间", "结束时间", "总量", "成功", "失败", "状态"};
+                    taskHisListTable.setModel(new DefaultTableModel(null, headerNames2));
+                }
+            });
+        });
     }
 
     public static void fillSchedulePlan(TTask tTask) {
         taskForm.getTaskTitle().setText(tTask.getTitle());
         taskForm.getMsgNameLabel().setText("消息名称：" + getMsgName(tTask.getMessageId()));
         taskForm.getMsgTypeLabel().setText("消息类型：" + MessageTypeEnum.getName(tTask.getMsgType()));
-        taskForm.getPeopleNameLabel().setText("人群：" + peopleMapper.selectByPrimaryKey(tTask.getPeopleId()).getPeopleName());
+        taskForm.getPeopleNameLabel().setText("人群：" + getPeopleName(tTask.getPeopleId()));
         taskForm.getModeLabel().setText("模式：" + TaskModeEnum.getDescByCode(tTask.getTaskMode()));
         taskForm.getThreadCntLabel().setText("线程数：" + tTask.getThreadCnt());
 
@@ -247,8 +251,13 @@ public class TaskForm {
     }
 
     private static String getMsgName(Integer messageId) {
-        String msgName = msgMapper.selectByPrimaryKey(messageId).getMsgName();
-        return msgName;
+        TMsg msg = msgMapper.selectByPrimaryKey(messageId);
+        return msg == null ? "" : msg.getMsgName();
+    }
+
+    private static String getPeopleName(Integer peopleId) {
+        TPeople people = peopleMapper.selectByPrimaryKey(peopleId);
+        return people == null ? "" : people.getPeopleName();
     }
 
     {
@@ -436,40 +445,39 @@ public class TaskForm {
     }
 
     public static void initTaskHisListTable(Integer selectedTaskId) {
-        JTable taskHisListTable = taskForm.getTaskHisListTable();
-
-        // 任务数据列表
-        String[] headerNames = {"id", "是否空跑", "开始时间", "结束时间", "总量", "成功", "失败", "状态"};
-        DefaultTableModel model = new DefaultTableModel(null, headerNames);
-        taskHisListTable.setModel(model);
-
-        taskHisListTable.getTableHeader().setReorderingAllowed(false);
-
-        Object[] data;
-
-        List<TTaskHis> taskHisList = taskHisMapper.selectByTaskId(selectedTaskId);
-        for (TTaskHis taskHis : taskHisList) {
-            data = new Object[8];
-            data[0] = taskHis.getId();
-            data[1] = taskHis.getDryRun() == 1 ? "空跑" : "否";
-            data[2] = taskHis.getStartTime();
-            data[3] = taskHis.getEndTime();
-            data[4] = taskHis.getTotalCnt();
-            data[5] = taskHis.getSuccessCnt();
-            data[6] = taskHis.getFailCnt();
-            data[7] = TaskStatusEnum.getDescByCode(taskHis.getStatus());
-            model.addRow(data);
-        }
-        // 隐藏id列
-        JTableUtil.hideColumn(taskHisListTable, 0);
-        // 设置列宽
-//        TableColumnModel tableColumnModel = taskHisListTable.getColumnModel();
-//        tableColumnModel.getColumn(1).setMaxWidth(50);
-//        tableColumnModel.getColumn(6).setMaxWidth(50);
-
-        // 如果有数据，则默认选中第一行
-        if (taskHisListTable.getRowCount() > 0) {
-            taskHisListTable.setRowSelectionInterval(0, 0);
-        }
+        final int loadSeq = taskHisListLoadSeq.incrementAndGet();
+        UiThreadUtil.runOffUi(() -> {
+            List<TTaskHis> taskHisList = taskHisMapper.selectByTaskId(selectedTaskId);
+            List<Object[]> rows = new ArrayList<>(taskHisList.size());
+            for (TTaskHis taskHis : taskHisList) {
+                Object[] data = new Object[8];
+                data[0] = taskHis.getId();
+                data[1] = taskHis.getDryRun() == 1 ? "空跑" : "否";
+                data[2] = taskHis.getStartTime();
+                data[3] = taskHis.getEndTime();
+                data[4] = taskHis.getTotalCnt();
+                data[5] = taskHis.getSuccessCnt();
+                data[6] = taskHis.getFailCnt();
+                data[7] = TaskStatusEnum.getDescByCode(taskHis.getStatus());
+                rows.add(data);
+            }
+            UiThreadUtil.runOnUi(() -> {
+                if (loadSeq != taskHisListLoadSeq.get()) {
+                    return;
+                }
+                JTable taskHisListTable = taskForm.getTaskHisListTable();
+                String[] headerNames = {"id", "是否空跑", "开始时间", "结束时间", "总量", "成功", "失败", "状态"};
+                DefaultTableModel model = new DefaultTableModel(null, headerNames);
+                taskHisListTable.setModel(model);
+                taskHisListTable.getTableHeader().setReorderingAllowed(false);
+                for (Object[] row : rows) {
+                    model.addRow(row);
+                }
+                JTableUtil.hideColumn(taskHisListTable, 0);
+                if (taskHisListTable.getRowCount() > 0) {
+                    taskHisListTable.setRowSelectionInterval(0, 0);
+                }
+            });
+        });
     }
 }

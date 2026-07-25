@@ -90,9 +90,10 @@ public class MessageManageListener {
 
         // 切换账号事件
         MessageManageForm.getInstance().getAccountComboBox().addItemListener(e -> {
+            if (MessageManageForm.accountSwitchComboBoxListenIgnore) {
+                return;
+            }
             if (e.getStateChange() == ItemEvent.SELECTED) {
-                String accountName = e.getItem().toString();
-
                 MessageManageForm.initMessageList();
             }
         });

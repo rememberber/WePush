@@ -11,6 +11,8 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
 import java.io.File;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -30,6 +32,11 @@ public class MybatisUtil {
     private static SqlSession sqlSession = null;
 
     /**
+     * 共享 SqlSession 的全局锁（SqlSession 非线程安全）
+     */
+    private static final Object SESSION_LOCK = new Object();
+
+    /**
      * 是否需要初始化
      */
     private static boolean needInit = false;
@@ -46,7 +53,9 @@ public class MybatisUtil {
             Properties properties = new Properties();
             properties.setProperty("url", "jdbc:sqlite:" + dbFile.getAbsolutePath());
             SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream, properties);
-            sqlSession = sqlSessionFactory.openSession(true);
+            // 全局仅一个 SqlSession：用同步代理串行化所有访问，避免多线程
+            // ExecutionPlaceholder ClassCastException
+            sqlSession = threadSafeSession(sqlSessionFactory.openSession(true));
             inputStream.close();
 
             initTables();
@@ -61,6 +70,51 @@ public class MybatisUtil {
 
     public static SqlSession getSqlSession() {
         return sqlSession;
+    }
+
+    /**
+     * 包装 SqlSession。注意：getMapper() 返回的 Mapper 绑定的是原始 Session，
+     * 必须再包装 Mapper，否则多线程仍会绕过锁直接打到同一 Executor。
+     */
+    private static SqlSession threadSafeSession(SqlSession delegate) {
+        return (SqlSession) Proxy.newProxyInstance(
+                SqlSession.class.getClassLoader(),
+                new Class<?>[]{SqlSession.class},
+                (proxy, method, args) -> {
+                    if ("getMapper".equals(method.getName()) && args != null && args.length == 1 && args[0] instanceof Class) {
+                        Object mapper = invokeQuietly(delegate, method, args);
+                        return threadSafeMapper(mapper, (Class<?>) args[0]);
+                    }
+                    return invokeSynced(delegate, method, args);
+                });
+    }
+
+    private static Object threadSafeMapper(Object mapper, Class<?> mapperType) {
+        return Proxy.newProxyInstance(
+                mapperType.getClassLoader(),
+                new Class<?>[]{mapperType},
+                (proxy, method, args) -> invokeSynced(mapper, method, args));
+    }
+
+    private static Object invokeSynced(Object target, java.lang.reflect.Method method, Object[] args) throws Throwable {
+        synchronized (SESSION_LOCK) {
+            return invokeQuietly(target, method, args);
+        }
+    }
+
+    private static Object invokeQuietly(Object target, java.lang.reflect.Method method, Object[] args) throws Throwable {
+        try {
+            return method.invoke(target, args);
+        } catch (InvocationTargetException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof RuntimeException) {
+                throw (RuntimeException) cause;
+            }
+            if (cause instanceof Error) {
+                throw (Error) cause;
+            }
+            throw cause != null ? cause : e;
+        }
     }
 
     /**

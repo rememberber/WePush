@@ -193,8 +193,10 @@ public class ImportByWxCp extends JDialog {
                         peopleDataMapper.insert(tPeopleData);
 
                         importedCount++;
-                        int count = importedCount;
-                        UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
+                        if (UiThreadUtil.shouldUpdateImportProgress(importedCount)) {
+                            int count = importedCount;
+                            UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
+                        }
                     }
                     UiThreadUtil.runOnUi(() -> {
                         PeopleEditForm.initDataTable(peopleId);
@@ -320,8 +322,10 @@ public class ImportByWxCp extends JDialog {
                         peopleDataMapper.insert(tPeopleData);
 
                         importedCount++;
-                        int count = importedCount;
-                        UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
+                        if (UiThreadUtil.shouldUpdateImportProgress(importedCount)) {
+                            int count = importedCount;
+                            UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
+                        }
                     }
                     UiThreadUtil.runOnUi(() -> {
                         PeopleEditForm.initDataTable(peopleId);
@@ -454,8 +458,10 @@ public class ImportByWxCp extends JDialog {
                 peopleDataMapper.insert(tPeopleData);
 
                 importedCount++;
-                int count = importedCount;
-                UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
+                if (UiThreadUtil.shouldUpdateImportProgress(importedCount)) {
+                    int count = importedCount;
+                    UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
+                }
             }
 
             UiThreadUtil.runOnUi(() -> {

@@ -7,6 +7,7 @@ import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TPeople;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.UiThreadUtil;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.google.common.collect.Maps;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -17,8 +18,10 @@ import lombok.Getter;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * <pre>
@@ -44,6 +47,10 @@ public class PeopleManageForm {
     private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
     private static TPeopleMapper peopleMapper = MybatisUtil.getSqlSession().getMapper(TPeopleMapper.class);
 
+    private static final AtomicInteger accountComboLoadSeq = new AtomicInteger(0);
+
+    private static final AtomicInteger peopleListLoadSeq = new AtomicInteger(0);
+
     private PeopleManageForm() {
     }
 
@@ -63,47 +70,56 @@ public class PeopleManageForm {
         peopleManageForm.getCreatePeopleButton().setIcon(new FlatSVGIcon("icon/add.svg"));
 
         initAccountComboBox();
-        initPeopleList();
     }
 
     private static void initAccountComboBox() {
-        accountMap = Maps.newHashMap();
-        peopleManageForm.getAccountComboBox().removeAllItems();
         int msgType = App.config.getMsgType();
-        List<TAccount> tAccountList = accountMapper.selectByMsgType(msgType);
-        for (TAccount tAccount : tAccountList) {
-            String accountName = tAccount.getAccountName();
-            Integer accountId = tAccount.getId();
-            peopleManageForm.getAccountComboBox().addItem(accountName);
-            accountMap.put(accountName, accountId);
-        }
+        final int loadSeq = accountComboLoadSeq.incrementAndGet();
+        UiThreadUtil.runOffUi(() -> {
+            List<TAccount> tAccountList = accountMapper.selectByMsgType(msgType);
+            UiThreadUtil.runOnUi(() -> {
+                if (loadSeq != accountComboLoadSeq.get()) {
+                    return;
+                }
+                accountMap = Maps.newHashMap();
+                peopleManageForm.getAccountComboBox().removeAllItems();
+                for (TAccount tAccount : tAccountList) {
+                    String accountName = tAccount.getAccountName();
+                    peopleManageForm.getAccountComboBox().addItem(accountName);
+                    accountMap.put(accountName, tAccount.getId());
+                }
+                initPeopleList();
+            });
+        });
     }
 
     public static void initPeopleList() {
-        // 人群列表
-        String[] headerNames = {"人群名称", "id"};
-        DefaultTableModel model = new DefaultTableModel(null, headerNames);
-        peopleManageForm.getPeopleListTable().setModel(model);
-        // 隐藏表头
-        JTableUtil.hideTableHeader(peopleManageForm.getPeopleListTable());
-
         int msgType = App.config.getMsgType();
         String selectedAccountName = (String) peopleManageForm.getAccountComboBox().getSelectedItem();
-        Integer selectedAccountId = accountMap.get(selectedAccountName);
+        Integer selectedAccountId = accountMap == null ? null : accountMap.get(selectedAccountName);
+        final int loadSeq = peopleListLoadSeq.incrementAndGet();
 
-        Object[] data;
-
-        List<TPeople> tPeopleList = peopleMapper.selectByMsgTypeAndAccountId(String.valueOf(msgType), selectedAccountId);
-        for (TPeople tPeople : tPeopleList) {
-            data = new Object[2];
-            data[0] = tPeople.getPeopleName();
-            data[1] = tPeople.getId();
-            model.addRow(data);
-        }
-        // 隐藏id列
-        JTableUtil.hideColumn(peopleManageForm.getPeopleListTable(), 1);
-
-        PeopleEditForm.clearAll();
+        UiThreadUtil.runOffUi(() -> {
+            List<TPeople> tPeopleList = peopleMapper.selectByMsgTypeAndAccountId(String.valueOf(msgType), selectedAccountId);
+            List<Object[]> rows = new ArrayList<>(tPeopleList.size());
+            for (TPeople tPeople : tPeopleList) {
+                rows.add(new Object[]{tPeople.getPeopleName(), tPeople.getId()});
+            }
+            UiThreadUtil.runOnUi(() -> {
+                if (loadSeq != peopleListLoadSeq.get()) {
+                    return;
+                }
+                String[] headerNames = {"人群名称", "id"};
+                DefaultTableModel model = new DefaultTableModel(null, headerNames);
+                peopleManageForm.getPeopleListTable().setModel(model);
+                JTableUtil.hideTableHeader(peopleManageForm.getPeopleListTable());
+                for (Object[] row : rows) {
+                    model.addRow(row);
+                }
+                JTableUtil.hideColumn(peopleManageForm.getPeopleListTable(), 1);
+                PeopleEditForm.clearAll();
+            });
+        });
     }
 
     {

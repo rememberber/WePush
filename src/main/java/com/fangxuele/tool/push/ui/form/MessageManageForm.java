@@ -8,6 +8,7 @@ import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.ui.form.msg.MsgFormFactory;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.UiThreadUtil;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.google.common.collect.Maps;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -18,8 +19,10 @@ import lombok.Getter;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * <pre>
@@ -49,6 +52,10 @@ public class MessageManageForm {
 
     public static boolean accountSwitchComboBoxListenIgnore = false;
 
+    private static final AtomicInteger accountComboLoadSeq = new AtomicInteger(0);
+
+    private static final AtomicInteger messageListLoadSeq = new AtomicInteger(0);
+
     private MessageManageForm() {
     }
 
@@ -68,53 +75,61 @@ public class MessageManageForm {
         messageManageForm.getCreateMsgButton().setIcon(new FlatSVGIcon("icon/add.svg"));
         messageManageForm.getMsgHisTableDeleteButton().setIcon(new FlatSVGIcon("icon/remove.svg"));
 
-        initAccountComboBox();
-
-        initMessageList();
-
         MessageEditForm.getInstance().getMsgNameField().setText("");
         MsgFormFactory.getMsgForm().clearAllField();
+
+        initAccountComboBox();
     }
 
     private static void initAccountComboBox() {
-        accountMap = Maps.newHashMap();
-        messageManageForm.getAccountComboBox().removeAllItems();
         int msgType = App.config.getMsgType();
-        List<TAccount> tAccountList = accountMapper.selectByMsgType(msgType);
-        for (TAccount tAccount : tAccountList) {
-            String accountName = tAccount.getAccountName();
-            Integer accountId = tAccount.getId();
-            messageManageForm.getAccountComboBox().addItem(accountName);
-            accountMap.put(accountName, accountId);
-        }
+        final int loadSeq = accountComboLoadSeq.incrementAndGet();
+        UiThreadUtil.runOffUi(() -> {
+            List<TAccount> tAccountList = accountMapper.selectByMsgType(msgType);
+            UiThreadUtil.runOnUi(() -> {
+                if (loadSeq != accountComboLoadSeq.get()) {
+                    return;
+                }
+                accountMap = Maps.newHashMap();
+                accountSwitchComboBoxListenIgnore = true;
+                messageManageForm.getAccountComboBox().removeAllItems();
+                for (TAccount tAccount : tAccountList) {
+                    String accountName = tAccount.getAccountName();
+                    messageManageForm.getAccountComboBox().addItem(accountName);
+                    accountMap.put(accountName, tAccount.getId());
+                }
+                accountSwitchComboBoxListenIgnore = false;
+                initMessageList();
+            });
+        });
     }
 
     public static void initMessageList() {
-        // 历史消息管理
-        String[] headerNames = {"消息名称", "ID"};
-        DefaultTableModel model = new DefaultTableModel(null, headerNames);
-        messageManageForm.getMsgHistable().setModel(model);
-        // 隐藏表头
-        JTableUtil.hideTableHeader(messageManageForm.getMsgHistable());
-
         int msgType = App.config.getMsgType();
-
         String selectedAccountName = (String) messageManageForm.getAccountComboBox().getSelectedItem();
-        Integer selectedAccountId = accountMap.get(selectedAccountName);
+        Integer selectedAccountId = accountMap == null ? null : accountMap.get(selectedAccountName);
+        final int loadSeq = messageListLoadSeq.incrementAndGet();
 
-        Object[] data;
-
-        List<TMsg> tMsgList = msgMapper.selectByMsgTypeAndAccountId(msgType, selectedAccountId);
-        for (TMsg tMsg : tMsgList) {
-            data = new Object[2];
-            data[0] = tMsg.getMsgName();
-            data[1] = tMsg.getId();
-            model.addRow(data);
-        }
-
-        // 隐藏id列
-        JTableUtil.hideColumn(messageManageForm.getMsgHistable(), 1);
-
+        UiThreadUtil.runOffUi(() -> {
+            List<TMsg> tMsgList = msgMapper.selectByMsgTypeAndAccountId(msgType, selectedAccountId);
+            List<Object[]> rows = new ArrayList<>(tMsgList.size());
+            for (TMsg tMsg : tMsgList) {
+                rows.add(new Object[]{tMsg.getMsgName(), tMsg.getId()});
+            }
+            UiThreadUtil.runOnUi(() -> {
+                if (loadSeq != messageListLoadSeq.get()) {
+                    return;
+                }
+                String[] headerNames = {"消息名称", "ID"};
+                DefaultTableModel model = new DefaultTableModel(null, headerNames);
+                messageManageForm.getMsgHistable().setModel(model);
+                JTableUtil.hideTableHeader(messageManageForm.getMsgHistable());
+                for (Object[] row : rows) {
+                    model.addRow(row);
+                }
+                JTableUtil.hideColumn(messageManageForm.getMsgHistable(), 1);
+            });
+        });
     }
 
     {

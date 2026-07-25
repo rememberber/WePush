@@ -205,8 +205,10 @@ public class ImportByDing extends JDialog {
                             peopleDataMapper.insert(tPeopleData);
 
                             importedCount++;
-                            int count = importedCount;
-                            UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
+                            if (UiThreadUtil.shouldUpdateImportProgress(importedCount)) {
+                                int count = importedCount;
+                                UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
+                            }
                         }
                         offset += 100;
                         request.setOffset(offset);
@@ -339,8 +341,10 @@ public class ImportByDing extends JDialog {
                     peopleDataMapper.insert(tPeopleData);
 
                     importedCount++;
-                    int count = importedCount;
-                    UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
+                    if (UiThreadUtil.shouldUpdateImportProgress(importedCount)) {
+                        int count = importedCount;
+                        UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
+                    }
                 }
                 offset += 100;
                 request.setOffset(offset);

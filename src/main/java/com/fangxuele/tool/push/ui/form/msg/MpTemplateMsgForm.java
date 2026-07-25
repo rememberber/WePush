@@ -36,6 +36,7 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -96,6 +97,11 @@ public class MpTemplateMsgForm implements IMsgForm {
      * 是否需要监听模板列表ComboBox
      */
     public static boolean needListenTemplateListComboBox = false;
+
+    /**
+     * 模板列表异步拉取序号，用于丢弃过期的回填结果
+     */
+    private static final AtomicInteger templateListFetchSeq = new AtomicInteger(0);
 
     private static final Pattern BRACE_PATTERN = Pattern.compile("\\{([^{}]+)\\}");
 
@@ -328,27 +334,35 @@ public class MpTemplateMsgForm implements IMsgForm {
             return;
         }
 
+        final int fetchSeq = templateListFetchSeq.incrementAndGet();
+        final String expectedTemplateId = selectedMsgTemplateId;
         UiThreadUtil.runOffUi(() -> {
             try {
                 List<WxMpTemplate> fetchedList = WxMpTemplateMsgSender.getWxMpService(selectedAccountId).getTemplateMsgService().getAllPrivateTemplate();
+                if (fetchSeq != templateListFetchSeq.get()) {
+                    return;
+                }
                 Map<String, WxMpTemplate> fetchedMap = Maps.newHashMap();
                 for (WxMpTemplate wxMpTemplate : fetchedList) {
                     fetchedMap.put(wxMpTemplate.getTemplateId(), wxMpTemplate);
                 }
-                templateList = fetchedList;
-                templateMap = fetchedMap;
 
                 int selectedIndex = 0;
-                for (int i = 0; i < templateList.size(); i++) {
-                    if (templateList.get(i).getTemplateId().equals(selectedMsgTemplateId)) {
+                for (int i = 0; i < fetchedList.size(); i++) {
+                    if (fetchedList.get(i).getTemplateId().equals(expectedTemplateId)) {
                         selectedIndex = i;
                         break;
                     }
                 }
                 int finalSelectedIndex = selectedIndex;
                 UiThreadUtil.runOnUi(() -> {
+                    if (fetchSeq != templateListFetchSeq.get()) {
+                        return;
+                    }
+                    templateList = fetchedList;
+                    templateMap = fetchedMap;
                     getInstance().getTemplateListComboBox().removeAllItems();
-                    for (WxMpTemplate wxMpTemplate : templateList) {
+                    for (WxMpTemplate wxMpTemplate : fetchedList) {
                         getInstance().getTemplateListComboBox().addItem(wxMpTemplate.getTitle());
                     }
                     if (getInstance().getTemplateListComboBox().getItemCount() > 0) {
@@ -359,7 +373,9 @@ public class MpTemplateMsgForm implements IMsgForm {
                 });
             } catch (Exception e) {
                 log.error(e.toString());
-                needListenTemplateListComboBox = true;
+                if (fetchSeq == templateListFetchSeq.get()) {
+                    UiThreadUtil.runOnUi(() -> needListenTemplateListComboBox = true);
+                }
             }
         });
     }

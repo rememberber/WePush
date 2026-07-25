@@ -107,7 +107,7 @@ public class MessageEditListener {
                         return;
                     }
 
-                    List<SendResult> sendResultList = PushControl.preview(tMsg.getId());
+                    List<SendResult> sendResultList = PushControl.preview(tMsg.getId(), previewUserText);
                     if (sendResultList != null) {
                         StringBuilder tipsBuilder = new StringBuilder();
                         int totalCount = previewUserText.split(";").length;

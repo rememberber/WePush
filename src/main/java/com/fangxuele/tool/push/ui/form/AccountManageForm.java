@@ -5,6 +5,7 @@ import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.UiThreadUtil;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -14,7 +15,9 @@ import lombok.Getter;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * <pre>
@@ -35,6 +38,8 @@ public class AccountManageForm {
     private static AccountManageForm accountManageForm;
 
     private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
+
+    private static final AtomicInteger accountListLoadSeq = new AtomicInteger(0);
 
     private AccountManageForm() {
     }
@@ -59,23 +64,27 @@ public class AccountManageForm {
     }
 
     public static void initMessageList() {
-        // 历史消息管理
-        String[] headerNames = {"账户名称"};
-        DefaultTableModel model = new DefaultTableModel(null, headerNames);
-        accountManageForm.getAccountListTable().setModel(model);
-        // 隐藏表头
-        JTableUtil.hideTableHeader(accountManageForm.getAccountListTable());
-
         int msgType = App.config.getMsgType();
-
-        Object[] data;
-
-        List<TAccount> tAccountList = accountMapper.selectByMsgType(msgType);
-        for (TAccount tAccount : tAccountList) {
-            data = new Object[1];
-            data[0] = tAccount.getAccountName();
-            model.addRow(data);
-        }
+        final int loadSeq = accountListLoadSeq.incrementAndGet();
+        UiThreadUtil.runOffUi(() -> {
+            List<TAccount> tAccountList = accountMapper.selectByMsgType(msgType);
+            List<String> accountNames = new ArrayList<>(tAccountList.size());
+            for (TAccount tAccount : tAccountList) {
+                accountNames.add(tAccount.getAccountName());
+            }
+            UiThreadUtil.runOnUi(() -> {
+                if (loadSeq != accountListLoadSeq.get()) {
+                    return;
+                }
+                String[] headerNames = {"账户名称"};
+                DefaultTableModel model = new DefaultTableModel(null, headerNames);
+                accountManageForm.getAccountListTable().setModel(model);
+                JTableUtil.hideTableHeader(accountManageForm.getAccountListTable());
+                for (String accountName : accountNames) {
+                    model.addRow(new Object[]{accountName});
+                }
+            });
+        });
     }
 
     {

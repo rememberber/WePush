@@ -13,6 +13,7 @@ import com.fangxuele.tool.push.logic.PeopleImportWayEnum;
 import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
 import com.fangxuele.tool.push.util.JTableUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.UiThreadUtil;
 import com.fangxuele.tool.push.util.UndoUtil;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -24,7 +25,9 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * PeopleEditForm
@@ -48,6 +51,8 @@ public class PeopleEditForm {
     private JLabel lastImportWayLabel;
 
     private static PeopleEditForm peopleEditForm;
+
+    private static final AtomicInteger dataTableLoadSeq = new AtomicInteger(0);
 
     private static TPeopleMapper peopleMapper = MybatisUtil.getSqlSession().getMapper(TPeopleMapper.class);
     private static TPeopleDataMapper peopleDataMapper = MybatisUtil.getSqlSession().getMapper(TPeopleDataMapper.class);
@@ -84,48 +89,65 @@ public class PeopleEditForm {
     }
 
     /**
-     * 初始化人群数据列表
+     * 初始化人群数据列表（查库离 EDT，回填回 EDT）
      *
      * @param peopleId
      */
     public static void initDataTable(int peopleId) {
-
-        // -----init Info
-
-        TPeople tPeople = peopleMapper.selectByPrimaryKey(peopleId);
-        if (tPeople != null) {
-            // peopleName
-            String peopleName = tPeople.getPeopleName();
-            peopleEditForm.getPeopleNameLabel().setText(peopleName);
-
-            // count
+        final int loadSeq = dataTableLoadSeq.incrementAndGet();
+        UiThreadUtil.runOffUi(() -> {
+            TPeople tPeople = peopleMapper.selectByPrimaryKey(peopleId);
             Long totalCount = peopleDataMapper.countByPeopleId(peopleId);
-            if (totalCount != null) {
-                peopleEditForm.getMemberTabCountLabel().setText(String.valueOf(totalCount));
+            TAccount tAccount = null;
+            TPeopleImportConfig tPeopleImportConfig = null;
+            String msgTypeName = null;
+            if (tPeople != null) {
+                tAccount = accountMapper.selectByPrimaryKey(tPeople.getAccountId());
+                msgTypeName = MessageTypeEnum.getName(tPeople.getMsgType());
+                tPeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(peopleId);
+            }
+            List<TPeopleData> peopleDataList = peopleDataMapper.selectByPeopleIdLimit20(peopleId);
+            List<Object[]> rows = new ArrayList<>(peopleDataList.size());
+            for (TPeopleData peopleData : peopleDataList) {
+                rows.add(new Object[]{peopleData.getPin(), peopleData.getVarData(), peopleData.getId()});
             }
 
-            // account
-            Integer accountId = tPeople.getAccountId();
-            TAccount tAccount = accountMapper.selectByPrimaryKey(accountId);
-            if (tAccount != null) {
-                peopleEditForm.getPeopleAccountLabel().setText(tAccount.getAccountName());
-            }
-
-            // msgType
-            Integer msgType = tPeople.getMsgType();
-            String msgTypeName = MessageTypeEnum.getName(msgType);
-            peopleEditForm.getPeopleMsgTypeLabel().setText(msgTypeName);
-
-            // 上一次导入方式
-            TPeopleImportConfig tPeopleImportConfig = peopleImportConfigMapper.selectByPeopleId(peopleId);
-            if (tPeopleImportConfig != null) {
-                peopleEditForm.getLastImportWayLabel().setText(PeopleImportWayEnum.getName(Integer.parseInt(tPeopleImportConfig.getLastWay())));
-            }
-        }
-
-        // -----init Table
-        List<TPeopleData> peopleDataList = peopleDataMapper.selectByPeopleIdLimit20(peopleId);
-        initPeopleDataTable(peopleDataList);
+            final TPeople peopleRef = tPeople;
+            final TAccount accountRef = tAccount;
+            final TPeopleImportConfig importConfigRef = tPeopleImportConfig;
+            final String msgTypeNameRef = msgTypeName;
+            final Long totalCountRef = totalCount;
+            UiThreadUtil.runOnUi(() -> {
+                if (loadSeq != dataTableLoadSeq.get()) {
+                    return;
+                }
+                if (peopleRef != null) {
+                    peopleEditForm.getPeopleNameLabel().setText(peopleRef.getPeopleName());
+                    if (totalCountRef != null) {
+                        peopleEditForm.getMemberTabCountLabel().setText(String.valueOf(totalCountRef));
+                    }
+                    if (accountRef != null) {
+                        peopleEditForm.getPeopleAccountLabel().setText(accountRef.getAccountName());
+                    }
+                    peopleEditForm.getPeopleMsgTypeLabel().setText(msgTypeNameRef);
+                    if (importConfigRef != null) {
+                        peopleEditForm.getLastImportWayLabel().setText(
+                                PeopleImportWayEnum.getName(Integer.parseInt(importConfigRef.getLastWay())));
+                    }
+                }
+                JTable memberListTable = peopleEditForm.getMemberListTable();
+                String[] headerNames = {"PIN", "VarData", "id"};
+                DefaultTableModel model = new DefaultTableModel(null, headerNames);
+                memberListTable.setModel(model);
+                for (Object[] row : rows) {
+                    model.addRow(row);
+                }
+                JTableUtil.hideColumn(memberListTable, 2);
+                TableColumnModel tableColumnModel = memberListTable.getColumnModel();
+                tableColumnModel.getColumn(0).setPreferredWidth(peopleEditForm.getImportButton().getWidth() * 3);
+                tableColumnModel.getColumn(0).setMaxWidth(peopleEditForm.getImportButton().getWidth() * 3);
+            });
+        });
     }
 
     public static void initPeopleDataTable(List<TPeopleData> peopleDataList) {
