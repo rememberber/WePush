@@ -90,6 +90,11 @@ public class MessageEditListener {
             UiThreadUtil.runOffUi(() -> {
                 try {
                     TMsg tMsg = msgMapper.selectByPrimaryKey(selectedMsgId);
+                    if (tMsg == null) {
+                        UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(messagePanel, "消息不存在，请重新选择！", "提示",
+                                JOptionPane.INFORMATION_MESSAGE));
+                        return;
+                    }
 
                     if (tMsg.getMsgType() != MessageTypeEnum.HTTP_CODE && "".equals(previewUserText.trim())) {
                         if (!(tMsg.getMsgType() == MessageTypeEnum.DING_CODE && dingRobotSelected)) {
@@ -108,47 +113,55 @@ public class MessageEditListener {
                     }
 
                     List<SendResult> sendResultList = PushControl.preview(tMsg.getId(), previewUserText);
-                    if (sendResultList != null) {
-                        StringBuilder tipsBuilder = new StringBuilder();
-                        int totalCount = previewUserText.split(";").length;
-                        long successCount = sendResultList.stream().filter(SendResult::isSuccess).count();
-                        if (totalCount == successCount) {
-                            tipsBuilder.append("<h1>发送预览消息成功！</h1>");
-                        } else if (successCount == 0) {
-                            tipsBuilder.append("<h2>发送预览消息失败！</h2>");
-                        } else {
-                            tipsBuilder.append("<h2>有部分预览消息发送失败！</h2>");
-                        }
-                        sendResultList.stream().filter(sendResult -> !sendResult.isSuccess())
-                                .forEach(sendResult -> tipsBuilder.append("<p>").append(sendResult.getInfo()).append("</p>"));
-
-                        String tipsHtml = tipsBuilder.toString();
-                        boolean showHttpResult = tMsg.getMsgType() == MessageTypeEnum.HTTP_CODE && totalCount == successCount;
-                        HttpSendResult httpSendResult = showHttpResult ? (HttpSendResult) sendResultList.get(0) : null;
-
-                        UiThreadUtil.runOnUi(() -> {
-                            if (showHttpResult) {
-                                HttpResultForm.getInstance().getBodyTextArea().setText(httpSendResult.getBody());
-                                HttpResultForm.getInstance().getBodyTextArea().setCaretPosition(0);
-                                HttpResultForm.getInstance().getHeadersTextArea().setText(httpSendResult.getHeaders());
-                                HttpResultForm.getInstance().getHeadersTextArea().setCaretPosition(0);
-                                HttpResultForm.getInstance().getCookiesTextArea().setText(httpSendResult.getCookies());
-                                HttpResultForm.getInstance().getCookiesTextArea().setCaretPosition(0);
-                                HttpResultFrame.showResultWindow();
-                            } else {
-                                CommonTipsDialog dialog = new CommonTipsDialog();
-                                dialog.setHtmlText(tipsHtml);
-                                dialog.pack();
-                                dialog.setVisible(true);
-                            }
-                        });
-
-                        // 保存累计推送总数
-                        App.config.setPushTotal(App.config.getPushTotal() + successCount);
-                        App.config.save();
+                    if (sendResultList == null) {
+                        UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(messagePanel, "不支持的消息类型或发送器初始化失败！", "失败",
+                                JOptionPane.ERROR_MESSAGE));
+                        return;
                     }
+
+                    StringBuilder tipsBuilder = new StringBuilder();
+                    int totalCount = sendResultList.size();
+                    long successCount = sendResultList.stream().filter(SendResult::isSuccess).count();
+                    if (totalCount == 0) {
+                        tipsBuilder.append("<h2>发送预览消息失败！</h2><p>没有可发送的预览目标</p>");
+                    } else if (totalCount == successCount) {
+                        tipsBuilder.append("<h1>发送预览消息成功！</h1>");
+                    } else if (successCount == 0) {
+                        tipsBuilder.append("<h2>发送预览消息失败！</h2>");
+                    } else {
+                        tipsBuilder.append("<h2>有部分预览消息发送失败！</h2>");
+                    }
+                    sendResultList.stream().filter(sendResult -> !sendResult.isSuccess())
+                            .forEach(sendResult -> tipsBuilder.append("<p>").append(sendResult.getInfo()).append("</p>"));
+
+                    String tipsHtml = tipsBuilder.toString();
+                    boolean showHttpResult = tMsg.getMsgType() == MessageTypeEnum.HTTP_CODE
+                            && totalCount > 0 && totalCount == successCount;
+                    HttpSendResult httpSendResult = showHttpResult ? (HttpSendResult) sendResultList.get(0) : null;
+
+                    UiThreadUtil.runOnUi(() -> {
+                        if (showHttpResult) {
+                            HttpResultForm.getInstance().getBodyTextArea().setText(httpSendResult.getBody());
+                            HttpResultForm.getInstance().getBodyTextArea().setCaretPosition(0);
+                            HttpResultForm.getInstance().getHeadersTextArea().setText(httpSendResult.getHeaders());
+                            HttpResultForm.getInstance().getHeadersTextArea().setCaretPosition(0);
+                            HttpResultForm.getInstance().getCookiesTextArea().setText(httpSendResult.getCookies());
+                            HttpResultForm.getInstance().getCookiesTextArea().setCaretPosition(0);
+                            HttpResultFrame.showResultWindow();
+                        } else {
+                            CommonTipsDialog dialog = new CommonTipsDialog();
+                            dialog.setHtmlText(tipsHtml);
+                            dialog.pack();
+                            dialog.setVisible(true);
+                        }
+                    });
+
+                    // 保存累计推送总数
+                    App.config.setPushTotal(App.config.getPushTotal() + successCount);
+                    App.config.save();
                 } catch (Exception e1) {
-                    UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(messagePanel, "发送预览消息失败！\n\n" + e1.getMessage(), "失败",
+                    String errMsg = e1.getMessage() != null ? e1.getMessage() : e1.toString();
+                    UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(messagePanel, "发送预览消息失败！\n\n" + errMsg, "失败",
                             JOptionPane.ERROR_MESSAGE));
                     logger.error(e1);
                 }
