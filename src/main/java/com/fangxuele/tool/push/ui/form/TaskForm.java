@@ -151,6 +151,9 @@ public class TaskForm {
                 data[5] = getPeopleName(task.getPeopleId());
                 rows.add(data);
             }
+            final TTask firstTask = taskList.isEmpty() ? null : taskList.get(0);
+            final String firstMsgName = firstTask == null ? "" : getMsgName(firstTask.getMessageId());
+            final String firstPeopleName = firstTask == null ? "" : getPeopleName(firstTask.getPeopleId());
             UiThreadUtil.runOnUi(() -> {
                 if (loadSeq != taskListLoadSeq.get()) {
                     return;
@@ -165,10 +168,10 @@ public class TaskForm {
                 }
                 JTableUtil.hideColumn(taskListTable, 0);
 
-                if (taskListTable.getRowCount() > 0) {
+                if (taskListTable.getRowCount() > 0 && firstTask != null) {
                     taskListTable.setRowSelectionInterval(0, 0);
                     initTaskHisListTable((Integer) taskListTable.getValueAt(0, 0));
-                    fillSchedulePlan(taskList.get(0));
+                    fillSchedulePlan(firstTask, firstMsgName, firstPeopleName);
                 } else {
                     JTable taskHisListTable = taskForm.getTaskHisListTable();
                     String[] headerNames2 = {"id", "是否空跑", "开始时间", "结束时间", "总量", "成功", "失败", "状态"};
@@ -178,11 +181,32 @@ public class TaskForm {
         });
     }
 
-    public static void fillSchedulePlan(TTask tTask) {
+    /**
+     * 在后台查库后回填任务计划（供异步加载使用）。
+     */
+    public static void loadAndFillSchedulePlan(Integer taskId) {
+        if (taskId == null) {
+            return;
+        }
+        UiThreadUtil.runOffUi(() -> {
+            TTask tTask = taskMapper.selectByPrimaryKey(taskId);
+            if (tTask == null) {
+                return;
+            }
+            String msgName = getMsgName(tTask.getMessageId());
+            String peopleName = getPeopleName(tTask.getPeopleId());
+            UiThreadUtil.runOnUi(() -> fillSchedulePlan(tTask, msgName, peopleName));
+        });
+    }
+
+    /**
+     * 回填任务计划详情。msgName/peopleName 须由调用方在非 EDT 查好后传入。
+     */
+    public static void fillSchedulePlan(TTask tTask, String msgName, String peopleName) {
         taskForm.getTaskTitle().setText(tTask.getTitle());
-        taskForm.getMsgNameLabel().setText("消息名称：" + getMsgName(tTask.getMessageId()));
+        taskForm.getMsgNameLabel().setText("消息名称：" + (msgName == null ? "" : msgName));
         taskForm.getMsgTypeLabel().setText("消息类型：" + MessageTypeEnum.getName(tTask.getMsgType()));
-        taskForm.getPeopleNameLabel().setText("人群：" + getPeopleName(tTask.getPeopleId()));
+        taskForm.getPeopleNameLabel().setText("人群：" + (peopleName == null ? "" : peopleName));
         taskForm.getModeLabel().setText("模式：" + TaskModeEnum.getDescByCode(tTask.getTaskMode()));
         taskForm.getThreadCntLabel().setText("线程数：" + tTask.getThreadCnt());
 

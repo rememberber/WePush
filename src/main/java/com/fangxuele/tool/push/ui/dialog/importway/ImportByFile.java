@@ -288,7 +288,9 @@ public class ImportByFile extends JDialog {
             }
 
             if (!silence) {
+                int finalCount = currentImported;
                 UiThreadUtil.runOnUi(() -> {
+                    memberCountLabel.setText(String.valueOf(finalCount));
                     PeopleEditForm.initDataTable(peopleId);
                     progressBar.setIndeterminate(false);
                     progressBar.setVisible(false);

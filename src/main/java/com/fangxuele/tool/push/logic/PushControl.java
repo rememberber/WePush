@@ -6,6 +6,7 @@ import com.fangxuele.tool.push.logic.msgsender.IMsgSender;
 import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.logic.msgsender.SendResult;
 import com.fangxuele.tool.push.ui.dialog.importway.ImportByFile;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,14 +29,21 @@ public class PushControl {
 
     /**
      * 发送预览消息。previewUserText 须由调用方在 EDT 上读取后传入，避免后台线程访问 Swing。
-     * 分割逻辑需与原行为一致：空字符串仍会生成一条预览数据（HTTP / 钉钉机器人等依赖此行为）。
+     * 跳过空分段（如尾部分号）；若过滤后为空，仍保留一条空数据以兼容 HTTP / 钉钉机器人。
      */
     public static List<SendResult> preview(Integer tMsgId, String previewUserText) {
         List<SendResult> sendResultList = new ArrayList<>();
         List<String[]> msgDataList = new ArrayList<>();
         String users = previewUserText == null ? "" : previewUserText;
         for (String data : users.split(";")) {
+            if (StringUtils.isEmpty(data)) {
+                continue;
+            }
             msgDataList.add(data.split(ImportByFile.TXT_FILE_DATA_SEPERATOR_REGEX));
+        }
+        // "" / ";;;" 等全空输入：仍发送一次
+        if (msgDataList.isEmpty()) {
+            msgDataList.add("".split(ImportByFile.TXT_FILE_DATA_SEPERATOR_REGEX));
         }
 
         // 准备消息构造器

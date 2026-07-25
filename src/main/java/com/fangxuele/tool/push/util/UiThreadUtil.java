@@ -1,6 +1,6 @@
 package com.fangxuele.tool.push.util;
 
-import javax.swing.*;
+import javax.swing.SwingUtilities;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 

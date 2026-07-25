@@ -214,7 +214,9 @@ public class ImportByDing extends JDialog {
                         request.setOffset(offset);
                     }
 
+                    int finalCount = importedCount;
                     UiThreadUtil.runOnUi(() -> {
+                        memberCountLabel.setText(String.valueOf(finalCount));
                         PeopleEditForm.initDataTable(peopleId);
                         JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
                     });
@@ -350,7 +352,9 @@ public class ImportByDing extends JDialog {
                 request.setOffset(offset);
             }
 
+            int finalCount = importedCount;
             UiThreadUtil.runOnUi(() -> {
+                memberCountLabel.setText(String.valueOf(finalCount));
                 PeopleEditForm.initDataTable(peopleId);
                 JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
             });

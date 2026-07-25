@@ -148,13 +148,13 @@ public class TaskListener {
             @Override
             public void mousePressed(MouseEvent e) {
                 int selectedRow = taskForm.getTaskListTable().getSelectedRow();
+                if (selectedRow < 0) {
+                    return;
+                }
                 Integer selectedTaskId = (Integer) taskForm.getTaskListTable().getValueAt(selectedRow, 0);
 
                 TaskForm.initTaskHisListTable(selectedTaskId);
-
-                TTask tTask = taskMapper.selectByPrimaryKey(selectedTaskId);
-
-                TaskForm.fillSchedulePlan(tTask);
+                TaskForm.loadAndFillSchedulePlan(selectedTaskId);
                 super.mousePressed(e);
             }
         });

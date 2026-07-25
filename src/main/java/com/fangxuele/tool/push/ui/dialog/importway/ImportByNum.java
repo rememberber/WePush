@@ -144,7 +144,9 @@ public class ImportByNum extends JDialog {
                 }
             }
             if (!silence) {
+                int finalCount = currentImported;
                 UiThreadUtil.runOnUi(() -> {
+                    memberCountLabel.setText(String.valueOf(finalCount));
                     PeopleEditForm.initDataTable(PeopleManageListener.selectedPeopleId);
                     JOptionPane.showMessageDialog(App.mainFrame, "导入完成！", "完成", JOptionPane.INFORMATION_MESSAGE);
                 });
