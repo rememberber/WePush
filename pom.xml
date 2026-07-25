@@ -14,12 +14,13 @@
 
     <repositories>
         <repository>
-            <id>alimaven</id>
-            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+            <id>wepush-lib</id>
+            <name>WePush vendored libraries</name>
+            <url>file://${project.basedir}/lib-repo</url>
         </repository>
         <repository>
-            <id>mvnrepository.com</id>
-            <url>https://mvnrepository.com</url>
+            <id>alimaven</id>
+            <url>https://maven.aliyun.com/repository/public</url>
         </repository>
         <repository>
             <id>jitpack.io</id>
@@ -713,88 +714,6 @@
                 </configuration>
             </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>2.5.2</version>
-                <executions>
-                    <execution>
-                        <id>install-taobao-sdk-auto</id>
-                        <phase>clean</phase>
-                        <configuration>
-                            <file>lib/taobao-sdk-java-auto.jar</file>
-                            <groupId>com.taobao</groupId>
-                            <artifactId>taobao-sdk-java-auto</artifactId>
-                            <version>1.0.0</version>
-                            <packaging>jar</packaging>
-                            <generatePom>true</generatePom>
-                        </configuration>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>install-cpdetector</id>
-                        <phase>clean</phase>
-                        <configuration>
-                            <file>lib/cpdetector_1.0.10.jar</file>
-                            <groupId>net.sourceforge.cpdetector</groupId>
-                            <artifactId>cpdetector</artifactId>
-                            <version>1.0.10</version>
-                            <packaging>jar</packaging>
-                            <generatePom>true</generatePom>
-                        </configuration>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>install-antlr</id>
-                        <phase>clean</phase>
-                        <configuration>
-                            <file>lib/antlr-2.7.4.jar</file>
-                            <groupId>net.sourceforge.cpdetector</groupId>
-                            <artifactId>antlr</artifactId>
-                            <version>2.7.4</version>
-                            <packaging>jar</packaging>
-                            <generatePom>true</generatePom>
-                        </configuration>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>install-chardet</id>
-                        <phase>clean</phase>
-                        <configuration>
-                            <file>lib/chardet-1.0.jar</file>
-                            <groupId>net.sourceforge.cpdetector</groupId>
-                            <artifactId>chardet</artifactId>
-                            <version>1.0.0</version>
-                            <packaging>jar</packaging>
-                            <generatePom>true</generatePom>
-                        </configuration>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>install-jargs</id>
-                        <phase>clean</phase>
-                        <configuration>
-                            <file>lib/jargs-1.0.jar</file>
-                            <groupId>net.sourceforge.cpdetector</groupId>
-                            <artifactId>jargs</artifactId>
-                            <version>1.0.0</version>
-                            <packaging>jar</packaging>
-                            <generatePom>true</generatePom>
-                        </configuration>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.mybatis.generator</groupId>
                 <artifactId>mybatis-generator-maven-plugin</artifactId>

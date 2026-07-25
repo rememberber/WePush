@@ -44,7 +44,10 @@
 
 ## 本地打包
 
+`lib/` 中的私有依赖需先同步到项目内 Maven 仓库（CI 会自动执行）：
+
 ```bash
+python3 scripts/install_local_deps.py
 python3 scripts/prepare_jdks.py --targets mac-arm64
 mvn clean package -Pmac-apple-silicon -Dmaven.test.skip=true
 ```
