@@ -49,6 +49,7 @@ public class App {
             System.setProperty("apple.awt.application.name", UiConsts.APP_NAME);
             System.setProperty("com.apple.mrj.application.apple.menu.about.name", UiConsts.APP_NAME);
             System.setProperty("apple.awt.application.appearance", "system");
+            System.setProperty("apple.awt.enableTemplateImages", "true");
             System.setProperty("flatlaf.useRoundedPopupBorder", "true");
 
             FlatDesktop.setAboutHandler(() -> UiThreadUtil.runOnUi(() -> {
