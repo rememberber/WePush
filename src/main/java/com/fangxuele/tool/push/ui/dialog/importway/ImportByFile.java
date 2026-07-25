@@ -6,7 +6,6 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
-import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPeopleDataMapper;
@@ -19,6 +18,7 @@ import com.fangxuele.tool.push.ui.form.PeopleEditForm;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.FileCharSetUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.PeopleDataBatchInserter;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.UiThreadUtil;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
@@ -34,7 +34,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.util.List;
 
 public class ImportByFile extends JDialog {
     private JPanel contentPane;
@@ -196,38 +195,75 @@ public class ImportByFile extends JDialog {
                     peopleDataMapper.deleteByPeopleId(peopleId);
                 }
 
-                String[] nextLine;
-                while (peopleId != null && (nextLine = reader.readNext()) != null) {
-                    tPeopleData = new TPeopleData();
-                    tPeopleData.setPeopleId(peopleId);
-                    tPeopleData.setPin(nextLine[0]);
-                    tPeopleData.setVarData(JSONUtil.toJsonStr(nextLine));
-                    tPeopleData.setAppVersion(UiConsts.APP_VERSION);
-                    tPeopleData.setDataVersion(dataVersion);
-                    tPeopleData.setCreateTime(now);
-                    tPeopleData.setModifiedTime(now);
+                try (PeopleDataBatchInserter batcher = new PeopleDataBatchInserter(peopleDataMapper)) {
+                    String[] nextLine;
+                    while (peopleId != null && (nextLine = reader.readNext()) != null) {
+                        tPeopleData = new TPeopleData();
+                        tPeopleData.setPeopleId(peopleId);
+                        tPeopleData.setPin(nextLine[0]);
+                        tPeopleData.setVarData(JSONUtil.toJsonStr(nextLine));
+                        tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                        tPeopleData.setDataVersion(dataVersion);
+                        tPeopleData.setCreateTime(now);
+                        tPeopleData.setModifiedTime(now);
 
-                    peopleDataMapper.insert(tPeopleData);
-                    currentImported++;
-                    if (!silence && UiThreadUtil.shouldUpdateImportProgress(currentImported)) {
-                        int count = currentImported;
-                        UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
+                        batcher.add(tPeopleData);
+                        currentImported++;
+                        if (!silence && UiThreadUtil.shouldUpdateImportProgress(currentImported)) {
+                            int count = currentImported;
+                            UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
+                        }
                     }
                 }
             } else if (fileNameLowerCase.endsWith(".xlsx") || fileNameLowerCase.endsWith(".xls")) {
-                ExcelReader excelReader = ExcelUtil.getReader(file);
-                List<List<Object>> readAll = excelReader.read(1, Integer.MAX_VALUE);
+                if (clear) {
+                    peopleDataMapper.deleteByPeopleId(peopleId);
+                }
+
+                // SAX 流式读取，避免整表进内存
+                try (PeopleDataBatchInserter batcher = new PeopleDataBatchInserter(peopleDataMapper)) {
+                    final int[] imported = {0};
+                    final boolean silenceImport = silence;
+                    ExcelUtil.readBySax(file, 0, (sheetIndex, rowIndex, rowList) -> {
+                        if (rowIndex == 0 || rowList == null || rowList.isEmpty()) {
+                            return;
+                        }
+                        String[] nextLine = new String[rowList.size()];
+                        for (int i = 0; i < rowList.size(); i++) {
+                            Object cell = rowList.get(i);
+                            nextLine[i] = cell == null ? "" : cell.toString();
+                        }
+
+                        TPeopleData rowData = new TPeopleData();
+                        rowData.setPeopleId(peopleId);
+                        rowData.setPin(nextLine[0]);
+                        rowData.setVarData(JSONUtil.toJsonStr(nextLine));
+                        rowData.setAppVersion(UiConsts.APP_VERSION);
+                        rowData.setDataVersion(dataVersion);
+                        rowData.setCreateTime(now);
+                        rowData.setModifiedTime(now);
+
+                        batcher.add(rowData);
+                        imported[0]++;
+                        if (!silenceImport && UiThreadUtil.shouldUpdateImportProgress(imported[0])) {
+                            int count = imported[0];
+                            UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
+                        }
+                    });
+                    currentImported = imported[0];
+                }
+            } else if (fileNameLowerCase.endsWith(".txt")) {
+                fileReader = new FileReader(file, FileCharSetUtil.getCharSetName(file));
+                BufferedReader br = fileReader.getReader();
 
                 if (clear) {
                     peopleDataMapper.deleteByPeopleId(peopleId);
                 }
 
-                for (List<Object> objects : readAll) {
-                    if (objects != null && objects.size() > 0) {
-                        String[] nextLine = new String[objects.size()];
-                        for (int i = 0; i < objects.size(); i++) {
-                            nextLine[i] = objects.get(i).toString();
-                        }
+                try (PeopleDataBatchInserter batcher = new PeopleDataBatchInserter(peopleDataMapper)) {
+                    String line;
+                    while (peopleId != null && (line = br.readLine()) != null) {
+                        String[] nextLine = line.split(TXT_FILE_DATA_SEPERATOR_REGEX);
 
                         tPeopleData = new TPeopleData();
                         tPeopleData.setPeopleId(peopleId);
@@ -238,40 +274,12 @@ public class ImportByFile extends JDialog {
                         tPeopleData.setCreateTime(now);
                         tPeopleData.setModifiedTime(now);
 
-                        peopleDataMapper.insert(tPeopleData);
+                        batcher.add(tPeopleData);
                         currentImported++;
                         if (!silence && UiThreadUtil.shouldUpdateImportProgress(currentImported)) {
                             int count = currentImported;
                             UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
                         }
-                    }
-                }
-            } else if (fileNameLowerCase.endsWith(".txt")) {
-                fileReader = new FileReader(file, FileCharSetUtil.getCharSetName(file));
-                BufferedReader br = fileReader.getReader();
-
-                if (clear) {
-                    peopleDataMapper.deleteByPeopleId(peopleId);
-                }
-
-                String line;
-                while (peopleId != null && (line = br.readLine()) != null) {
-                    String[] nextLine = line.split(TXT_FILE_DATA_SEPERATOR_REGEX);
-
-                    tPeopleData = new TPeopleData();
-                    tPeopleData.setPeopleId(peopleId);
-                    tPeopleData.setPin(nextLine[0]);
-                    tPeopleData.setVarData(JSONUtil.toJsonStr(nextLine));
-                    tPeopleData.setAppVersion(UiConsts.APP_VERSION);
-                    tPeopleData.setDataVersion(dataVersion);
-                    tPeopleData.setCreateTime(now);
-                    tPeopleData.setModifiedTime(now);
-
-                    peopleDataMapper.insert(tPeopleData);
-                    currentImported++;
-                    if (!silence && UiThreadUtil.shouldUpdateImportProgress(currentImported)) {
-                        int count = currentImported;
-                        UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
                     }
                 }
             } else {

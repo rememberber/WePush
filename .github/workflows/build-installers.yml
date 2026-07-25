@@ -1,0 +1,436 @@
+name: Build installers
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Target(s) to build
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - mac-intel
+          - mac-apple-silicon
+          - windows-x64
+          - linux-x64
+      release_tag:
+        description: 'Existing Git tag / Release tag to append assets to during a manual run (for example: v5.0.5)'
+        required: false
+        default: ""
+        type: string
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  validate-release:
+    name: Validate Java release metadata
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.release.outputs.version }}
+      title: ${{ steps.release.outputs.title }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Validate tag and all Java version sources
+        id: release
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            tag="${{ github.ref_name }}"
+          elif [ -n "${{ inputs.release_tag }}" ]; then
+            tag="${{ inputs.release_tag }}"
+          else
+            version="$(python -c 'import xml.etree.ElementTree as ET; root=ET.parse("pom.xml").getroot(); print(root.find("{http://maven.apache.org/POM/4.0.0}version").text.strip())')"
+            tag="v${version}"
+          fi
+          python -u scripts/manage_releases.py validate-java \
+            --project-root . \
+            --tag "$tag" \
+            --body-output release-notes/java.md \
+            --github-output "$GITHUB_OUTPUT"
+
+      - name: Test release tooling
+        run: python -m unittest scripts.test_manage_releases scripts.test_generate_download_links scripts.test_collect_release_assets
+
+  package-mac-apple-silicon:
+    needs: validate-release
+    if: github.event_name != 'workflow_dispatch' || inputs.target == 'all' || inputs.target == 'mac-apple-silicon'
+    name: macOS Apple Silicon
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up Maven JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Cache repository-local JDKs
+        uses: actions/cache@v4
+        with:
+          path: |
+            jdks
+            downloads/jdks
+          key: ${{ runner.os }}-${{ runner.arch }}-jdks-v1-${{ hashFiles('scripts/prepare_jdks.py') }}
+
+      - name: Prepare packaging JDK
+        run: python -u scripts/prepare_jdks.py --targets mac-arm64
+
+      - name: Build installer
+        run: mvn --batch-mode --no-transfer-progress clean package -Pmac-apple-silicon -Dmaven.test.skip=true
+
+      - name: Stage release assets
+        run: >-
+          python -u scripts/collect_release_assets.py
+          --source-dir target/mac-apple-silicon
+          --output-dir dist/mac-apple-silicon
+          --target-label mac-apple-silicon
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mac-apple-silicon
+          path: |
+            dist/mac-apple-silicon
+          if-no-files-found: error
+          retention-days: 14
+
+  package-windows-x64:
+    needs: validate-release
+    if: github.event_name != 'workflow_dispatch' || inputs.target == 'all' || inputs.target == 'windows-x64'
+    name: Windows x64
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up Maven JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Cache repository-local JDKs
+        uses: actions/cache@v4
+        with:
+          path: |
+            jdks
+            downloads/jdks
+          key: ${{ runner.os }}-${{ runner.arch }}-jdks-v1-${{ hashFiles('scripts/prepare_jdks.py') }}
+
+      - name: Prepare packaging JDK
+        run: python -u scripts/prepare_jdks.py --targets windows-x64
+
+      - name: Build installer
+        shell: cmd
+        run: mvn --batch-mode --no-transfer-progress clean package -Pwindows-x64 -Dmaven.test.skip=true
+
+      - name: Stage release assets
+        run: >-
+          python -u scripts/collect_release_assets.py
+          --source-dir target/windows-x64
+          --output-dir dist/windows-x64
+          --target-label windows-x64
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-x64
+          path: |
+            dist/windows-x64
+          if-no-files-found: error
+          retention-days: 14
+
+  package-linux-x64:
+    needs: validate-release
+    if: github.event_name != 'workflow_dispatch' || inputs.target == 'all' || inputs.target == 'linux-x64'
+    name: Linux x64
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up Maven JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Cache repository-local JDKs
+        uses: actions/cache@v4
+        with:
+          path: |
+            jdks
+            downloads/jdks
+          key: ${{ runner.os }}-${{ runner.arch }}-jdks-v1-${{ hashFiles('scripts/prepare_jdks.py') }}
+
+      - name: Prepare packaging JDK
+        run: python -u scripts/prepare_jdks.py --targets linux-x64
+
+      - name: Build installer
+        run: mvn --batch-mode --no-transfer-progress clean package -Plinux-x64 -Dmaven.test.skip=true
+
+      - name: Stage release assets
+        run: >-
+          python -u scripts/collect_release_assets.py
+          --source-dir target/linux-x64
+          --output-dir dist/linux-x64
+          --target-label linux-x64
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-x64
+          path: |
+            dist/linux-x64
+          if-no-files-found: error
+          retention-days: 14
+
+  package-mac-intel:
+    needs: validate-release
+    if: github.event_name != 'workflow_dispatch' || inputs.target == 'all' || inputs.target == 'mac-intel'
+    name: macOS Intel
+    runs-on: macos-14
+    # Prefer macos Intel runners when available; fall back to apple silicon host for packaging profile only when needed.
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up Maven JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Cache repository-local JDKs
+        uses: actions/cache@v4
+        with:
+          path: |
+            jdks
+            downloads/jdks
+          key: ${{ runner.os }}-${{ runner.arch }}-jdks-v1-${{ hashFiles('scripts/prepare_jdks.py') }}
+
+      - name: Prepare packaging JDK
+        run: python -u scripts/prepare_jdks.py --targets mac-x64
+
+      - name: Build installer
+        run: mvn --batch-mode --no-transfer-progress clean package -Pmac-intel -Dmaven.test.skip=true
+
+      - name: Stage release assets
+        run: >-
+          python -u scripts/collect_release_assets.py
+          --source-dir target/mac-intel
+          --output-dir dist/mac-intel
+          --target-label mac-intel
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mac-intel
+          path: |
+            dist/mac-intel
+          if-no-files-found: error
+          retention-days: 14
+
+  release:
+    name: Publish GitHub Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs:
+      - validate-release
+      - package-mac-apple-silicon
+      - package-mac-intel
+      - package-windows-x64
+      - package-linux-x64
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout release tag
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Render Java release notes
+        run: >-
+          python -u scripts/manage_releases.py validate-java
+          --project-root .
+          --tag "${{ github.ref_name }}"
+          --body-output release-notes/java.md
+
+      - name: Download packaged artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+
+      - name: Prepare release upload files
+        run: |
+          mkdir -p release-upload
+          while IFS= read -r -d '' file; do
+            rel="${file#release-assets/}"
+            dest="release-upload/${rel}"
+            mkdir -p "$(dirname "$dest")"
+            cp "$file" "$dest"
+          done < <(find release-assets -type f ! -name '*.jar' -print0)
+          find release-upload -type f -print
+          if [ -z "$(find release-upload -type f -print -quit)" ]; then
+            echo "No release assets found after excluding .jar files" >&2
+            exit 1
+          fi
+
+      - name: Publish release assets
+        uses: softprops/action-gh-release@v3
+        with:
+          name: ${{ needs.validate-release.outputs.title }}
+          body_path: release-notes/java.md
+          prerelease: false
+          make_latest: true
+          fail_on_unmatched_files: true
+          files: release-upload/**/*
+
+  release-manual-assets:
+    name: Append assets to existing GitHub Release
+    if: ${{ always() && github.event_name == 'workflow_dispatch' && inputs.release_tag != '' && (needs.package-mac-apple-silicon.result == 'success' || needs.package-mac-intel.result == 'success' || needs.package-windows-x64.result == 'success' || needs.package-linux-x64.result == 'success') }}
+    needs:
+      - validate-release
+      - package-mac-apple-silicon
+      - package-mac-intel
+      - package-windows-x64
+      - package-linux-x64
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download packaged artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+
+      - name: Prepare release upload files
+        run: |
+          mkdir -p release-upload
+          while IFS= read -r -d '' file; do
+            rel="${file#release-assets/}"
+            dest="release-upload/${rel}"
+            mkdir -p "$(dirname "$dest")"
+            cp "$file" "$dest"
+          done < <(find release-assets -type f ! -name '*.jar' -print0)
+          find release-upload -type f -print
+          if [ -z "$(find release-upload -type f -print -quit)" ]; then
+            echo "No release assets found after excluding .jar files" >&2
+            exit 1
+          fi
+
+      - name: Append assets to release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ inputs.release_tag }}
+          fail_on_unmatched_files: true
+          files: release-upload/**/*
+
+  publish-download-links:
+    name: Update download_links.json on master
+    if: >-
+      ${{
+        always() && (
+          (startsWith(github.ref, 'refs/tags/v') && needs.release.result == 'success') ||
+          (github.event_name == 'workflow_dispatch' && inputs.release_tag != '' && needs.release-manual-assets.result == 'success')
+        )
+      }}
+    needs:
+      - validate-release
+      - package-mac-apple-silicon
+      - package-mac-intel
+      - package-windows-x64
+      - package-linux-x64
+      - release
+      - release-manual-assets
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Resolve release tag
+        id: release
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tag=${{ inputs.release_tag }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout master
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 1
+
+      - name: Download packaged artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+
+      - name: Generate download_links.json
+        run: |
+          ARGS=(
+            --assets-dir release-assets
+            --tag "${{ steps.release.outputs.tag }}"
+            --output download_links.json
+            --merge-existing
+          )
+          python -u scripts/generate_download_links.py "${ARGS[@]}"
+
+      - name: Commit and push download_links.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add download_links.json
+          if git diff --staged --quiet; then
+            echo "download_links.json is already up to date"
+            exit 0
+          fi
+          git commit -m "chore: update download_links.json for ${{ steps.release.outputs.tag }}"
+          git push

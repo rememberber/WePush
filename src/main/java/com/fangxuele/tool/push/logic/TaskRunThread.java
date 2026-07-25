@@ -4,11 +4,9 @@ import cn.hutool.core.date.BetweenFormatter;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.thread.ThreadUtil;
-import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.*;
 import com.fangxuele.tool.push.domain.*;
@@ -27,7 +25,6 @@ import com.fangxuele.tool.push.util.UiThreadUtil;
 import com.opencsv.CSVWriter;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 import java.awt.*;
@@ -40,7 +37,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.LongAdder;
-import java.util.stream.Collectors;
 
 /**
  * <pre>
@@ -250,15 +246,14 @@ public class TaskRunThread extends Thread {
 
         startTime = System.currentTimeMillis();
 
-        // 拷贝准备的目标用户
+        // 拷贝准备的目标用户（预分配容量，尽快释放 ORM 行对象）
         List<TPeopleData> tPeopleData = peopleDataMapper.selectByPeopleId(tTask.getPeopleId());
-
-        tPeopleData.forEach(peopleData -> {
-            String varData = peopleData.getVarData();
-            String[] strings = JSON.parseObject(varData, new TypeReference<String[]>() {
-            });
-            toSendList.add(strings);
-        });
+        List<String[]> prepared = new ArrayList<>(tPeopleData.size());
+        for (TPeopleData peopleData : tPeopleData) {
+            prepared.add(JSON.parseObject(peopleData.getVarData(), String[].class));
+        }
+        tPeopleData.clear();
+        toSendList = Collections.synchronizedList(prepared);
         // 总记录数
         totalRecords = toSendList.size();
 
@@ -358,7 +353,7 @@ public class TaskRunThread extends Thread {
                 // 关闭logWriter
                 if (logWriter != null) {
                     try {
-                        logWriter.flush();
+                        ConsoleUtil.flushLog(logWriter);
                         logWriter.close();
                     } catch (IOException e) {
                         logger.error(e);
@@ -431,9 +426,9 @@ public class TaskRunThread extends Thread {
         failRecords.reset();
         finishedThreadCount.set(0);
         threadCount = 0;
-        toSendList = Collections.synchronizedList(new LinkedList<>());
-        sendSuccessList = Collections.synchronizedList(new LinkedList<>());
-        sendFailList = Collections.synchronizedList(new LinkedList<>());
+        toSendList = Collections.synchronizedList(new ArrayList<>());
+        sendSuccessList = Collections.synchronizedList(new ArrayList<>());
+        sendFailList = Collections.synchronizedList(new ArrayList<>());
         startTime = 0L;
         endTime = 0;
     }
@@ -471,25 +466,8 @@ public class TaskRunThread extends Thread {
             App.config.save();
         }
 
-        // 保存未发送
-        for (String[] str : sendSuccessList) {
-            if (msgType == MessageTypeEnum.HTTP_CODE && tTask.getSaveResult() == 1) {
-                str = ArrayUtils.remove(str, str.length - 1);
-                String[] finalStr = str;
-                toSendList = toSendList.stream().filter(strings -> !JSONUtil.toJsonStr(strings).equals(JSONUtil.toJsonStr(finalStr))).collect(Collectors.toList());
-            } else {
-                toSendList.remove(str);
-            }
-        }
-        for (String[] str : sendFailList) {
-            if (msgType == MessageTypeEnum.HTTP_CODE && tTask.getSaveResult() == 1) {
-                str = ArrayUtils.remove(str, str.length - 1);
-                String[] finalStr = str;
-                toSendList = toSendList.stream().filter(strings -> !JSONUtil.toJsonStr(strings).equals(JSONUtil.toJsonStr(finalStr))).collect(Collectors.toList());
-            } else {
-                toSendList.remove(str);
-            }
-        }
+        boolean httpSaveResult = msgType == MessageTypeEnum.HTTP_CODE && tTask.getSaveResult() == 1;
+        toSendList = PushResultUtil.computeUnsent(toSendList, sendSuccessList, sendFailList, httpSaveResult);
 
         if (toSendList.size() > 0) {
             File unSendFile = new File(SystemUtil.CONFIG_HOME + "data" + File.separator +

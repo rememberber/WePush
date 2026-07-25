@@ -58,6 +58,13 @@ public class MybatisUtil {
             sqlSession = threadSafeSession(sqlSessionFactory.openSession(true));
             inputStream.close();
 
+            // WAL + busy_timeout：缩短写锁等待，导入/推送进度写库时更不易卡死
+            try {
+                applySqlitePragmas();
+            } catch (SQLException e) {
+                log.warn("enable sqlite WAL failed", e);
+            }
+
             initTables();
         } catch (Exception e) {
             log.error("get sqlSession error!", e);
@@ -153,5 +160,14 @@ public class MybatisUtil {
         stmt.executeUpdate(sql);
         stmt.close();
         connection.close();
+    }
+
+    private static void applySqlitePragmas() throws SQLException {
+        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + dbFile.getAbsolutePath());
+             Statement stmt = connection.createStatement()) {
+            stmt.execute("PRAGMA journal_mode=WAL");
+            stmt.execute("PRAGMA synchronous=NORMAL");
+            stmt.execute("PRAGMA busy_timeout=5000");
+        }
     }
 }

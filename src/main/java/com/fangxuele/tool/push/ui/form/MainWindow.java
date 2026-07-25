@@ -1,6 +1,7 @@
 package com.fangxuele.tool.push.ui.form;
 
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.ui.component.UpdateInstallPromptPanel;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.formdev.flatlaf.util.SystemInfo;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -56,10 +57,14 @@ public class MainWindow {
         mainWindow = getInstance();
         mainWindow.getMainPanel().updateUI();
 
+        // 主区域：页签 + 底部「新版本已就绪」安装提示
+        mainPanel.removeAll();
+        mainPanel.setLayout(new BorderLayout());
         if (SystemUtil.isMacOs() && SystemInfo.isMacFullWindowContentSupported) {
-            GridLayoutManager gridLayoutManager = (GridLayoutManager) mainPanel.getLayout();
-            gridLayoutManager.setMargin(new Insets(25, 0, 0, 0));
+            mainPanel.setBorder(BorderFactory.createEmptyBorder(25, 0, 0, 0));
         }
+        mainPanel.add(tabbedPane, BorderLayout.CENTER);
+        mainPanel.add(new UpdateInstallPromptPanel(), BorderLayout.SOUTH);
 
         mainWindow.getAboutPanel().add(AboutForm.getInstance().getAboutPanel(), GRID_CONSTRAINTS);
         mainWindow.getAccountPanel().setDividerLocation((int) (App.mainFrame.getWidth() / 5));

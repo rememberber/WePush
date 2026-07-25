@@ -45,10 +45,10 @@ public class TxYunMsgMaker extends BaseMsgMaker implements IMsgMaker {
     public String[] makeMsg(String[] msgData) {
 
         VelocityContext velocityContext = getVelocityContext(msgData);
-        for (int i = 0; i < paramList.size(); i++) {
-            paramList.set(i, TemplateUtil.evaluate(paramList.get(i), velocityContext));
-        }
         String[] paramArray = new String[paramList.size()];
-        return paramList.toArray(paramArray);
+        for (int i = 0; i < paramList.size(); i++) {
+            paramArray[i] = TemplateUtil.evaluate(paramList.get(i), velocityContext);
+        }
+        return paramArray;
     }
 }

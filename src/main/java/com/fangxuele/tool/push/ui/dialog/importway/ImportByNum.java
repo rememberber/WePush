@@ -15,6 +15,7 @@ import com.fangxuele.tool.push.ui.form.PeopleEditForm;
 import com.fangxuele.tool.push.ui.listener.PeopleManageListener;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.PeopleDataBatchInserter;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.UiThreadUtil;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
@@ -122,25 +123,27 @@ public class ImportByNum extends JDialog {
                 });
             }
 
-            for (int i = 0; i < importNum; i++) {
-                String[] array = new String[1];
-                array[0] = String.valueOf(i);
+            try (PeopleDataBatchInserter batcher = new PeopleDataBatchInserter(peopleDataMapper)) {
+                for (int i = 0; i < importNum; i++) {
+                    String[] array = new String[1];
+                    array[0] = String.valueOf(i);
 
-                TPeopleData tPeopleData = new TPeopleData();
-                tPeopleData.setPeopleId(PeopleManageListener.selectedPeopleId);
-                tPeopleData.setPin(array[0]);
-                tPeopleData.setVarData(JSONUtil.toJsonStr(array));
-                tPeopleData.setAppVersion(UiConsts.APP_VERSION);
-                tPeopleData.setDataVersion(dataVersion);
-                tPeopleData.setCreateTime(now);
-                tPeopleData.setModifiedTime(now);
+                    TPeopleData tPeopleData = new TPeopleData();
+                    tPeopleData.setPeopleId(PeopleManageListener.selectedPeopleId);
+                    tPeopleData.setPin(array[0]);
+                    tPeopleData.setVarData(JSONUtil.toJsonStr(array));
+                    tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                    tPeopleData.setDataVersion(dataVersion);
+                    tPeopleData.setCreateTime(now);
+                    tPeopleData.setModifiedTime(now);
 
-                peopleDataMapper.insert(tPeopleData);
+                    batcher.add(tPeopleData);
 
-                currentImported++;
-                if (!silence && UiThreadUtil.shouldUpdateImportProgress(currentImported)) {
-                    int count = currentImported;
-                    UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
+                    currentImported++;
+                    if (!silence && UiThreadUtil.shouldUpdateImportProgress(currentImported)) {
+                        int count = currentImported;
+                        UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
+                    }
                 }
             }
             if (!silence) {

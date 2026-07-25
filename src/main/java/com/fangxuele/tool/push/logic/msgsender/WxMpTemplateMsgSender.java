@@ -9,6 +9,7 @@ import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.TemplateUtil;
 import com.fangxuele.tool.push.util.WeWxMpServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.util.http.apache.DefaultApacheHttpClientBuilder;
@@ -134,6 +135,7 @@ public class WxMpTemplateMsgSender implements IMsgSender {
 
     public static void removeAccount(Integer accountId) {
         wxMpServiceMap.remove(accountId);
+        TemplateUtil.clearNickNameCache();
     }
 
 }

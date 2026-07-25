@@ -17,6 +17,7 @@ import com.fangxuele.tool.push.ui.form.PeopleEditForm;
 import com.fangxuele.tool.push.ui.form.PeopleManageForm;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.PeopleDataBatchInserter;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.fangxuele.tool.push.util.UiThreadUtil;
@@ -152,16 +153,18 @@ public class TaskHisDetailDialog extends JDialog {
                         reader = new CSVReader(new InputStreamReader(in, StandardCharsets.UTF_8));
                         String[] nextLine;
                         TPeopleData tPeopleData;
-                        while ((nextLine = reader.readNext()) != null) {
-                            tPeopleData = new TPeopleData();
-                            tPeopleData.setPeopleId(tPeopleToSave.getId());
-                            tPeopleData.setPin(nextLine[0]);
-                            tPeopleData.setVarData(JSONUtil.toJsonStr(nextLine));
-                            tPeopleData.setAppVersion(UiConsts.APP_VERSION);
-                            tPeopleData.setCreateTime(now);
-                            tPeopleData.setModifiedTime(now);
+                        try (PeopleDataBatchInserter batcher = new PeopleDataBatchInserter(peopleDataMapper)) {
+                            while ((nextLine = reader.readNext()) != null) {
+                                tPeopleData = new TPeopleData();
+                                tPeopleData.setPeopleId(tPeopleToSave.getId());
+                                tPeopleData.setPin(nextLine[0]);
+                                tPeopleData.setVarData(JSONUtil.toJsonStr(nextLine));
+                                tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                                tPeopleData.setCreateTime(now);
+                                tPeopleData.setModifiedTime(now);
 
-                            peopleDataMapper.insert(tPeopleData);
+                                batcher.add(tPeopleData);
+                            }
                         }
                     }
                     UiThreadUtil.runOnUi(() -> PeopleManageForm.initPeopleList());
@@ -224,16 +227,18 @@ public class TaskHisDetailDialog extends JDialog {
                         reader = new CSVReader(new InputStreamReader(in, StandardCharsets.UTF_8));
                         String[] nextLine;
                         TPeopleData tPeopleData;
-                        while ((nextLine = reader.readNext()) != null) {
-                            tPeopleData = new TPeopleData();
-                            tPeopleData.setPeopleId(tPeopleToSave.getId());
-                            tPeopleData.setPin(nextLine[0]);
-                            tPeopleData.setVarData(JSONUtil.toJsonStr(nextLine));
-                            tPeopleData.setAppVersion(UiConsts.APP_VERSION);
-                            tPeopleData.setCreateTime(now);
-                            tPeopleData.setModifiedTime(now);
+                        try (PeopleDataBatchInserter batcher = new PeopleDataBatchInserter(peopleDataMapper)) {
+                            while ((nextLine = reader.readNext()) != null) {
+                                tPeopleData = new TPeopleData();
+                                tPeopleData.setPeopleId(tPeopleToSave.getId());
+                                tPeopleData.setPin(nextLine[0]);
+                                tPeopleData.setVarData(JSONUtil.toJsonStr(nextLine));
+                                tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                                tPeopleData.setCreateTime(now);
+                                tPeopleData.setModifiedTime(now);
 
-                            peopleDataMapper.insert(tPeopleData);
+                                batcher.add(tPeopleData);
+                            }
                         }
                     }
                     UiThreadUtil.runOnUi(() -> PeopleManageForm.initPeopleList());
@@ -296,16 +301,18 @@ public class TaskHisDetailDialog extends JDialog {
                         reader = new CSVReader(new InputStreamReader(in, StandardCharsets.UTF_8));
                         String[] nextLine;
                         TPeopleData tPeopleData;
-                        while ((nextLine = reader.readNext()) != null) {
-                            tPeopleData = new TPeopleData();
-                            tPeopleData.setPeopleId(tPeopleToSave.getId());
-                            tPeopleData.setPin(nextLine[0]);
-                            tPeopleData.setVarData(JSONUtil.toJsonStr(nextLine));
-                            tPeopleData.setAppVersion(UiConsts.APP_VERSION);
-                            tPeopleData.setCreateTime(now);
-                            tPeopleData.setModifiedTime(now);
+                        try (PeopleDataBatchInserter batcher = new PeopleDataBatchInserter(peopleDataMapper)) {
+                            while ((nextLine = reader.readNext()) != null) {
+                                tPeopleData = new TPeopleData();
+                                tPeopleData.setPeopleId(tPeopleToSave.getId());
+                                tPeopleData.setPin(nextLine[0]);
+                                tPeopleData.setVarData(JSONUtil.toJsonStr(nextLine));
+                                tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                                tPeopleData.setCreateTime(now);
+                                tPeopleData.setModifiedTime(now);
 
-                            peopleDataMapper.insert(tPeopleData);
+                                batcher.add(tPeopleData);
+                            }
                         }
                     }
                     UiThreadUtil.runOnUi(() -> PeopleManageForm.initPeopleList());

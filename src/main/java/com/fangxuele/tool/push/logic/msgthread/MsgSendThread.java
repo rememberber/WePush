@@ -37,7 +37,7 @@ public class MsgSendThread extends BaseMsgThread {
             // 间隔推送
             boolean isIntervalPush = tTask.getIntervalPush() != null && tTask.getIntervalPush() == 1 && tTask.getIntervalTime() != null;
 
-            for (int i = 0; i < list.size(); i++) {
+            for (String[] rawMsgData : list) {
                 if (!taskRunThread.running) {
                     // 停止
                     return;
@@ -49,7 +49,7 @@ public class MsgSendThread extends BaseMsgThread {
                 }
 
                 // 本条消息所需的数据
-                String[] msgData = list.get(i);
+                String[] msgData = rawMsgData;
                 SendResult sendResult = iMsgSender.send(msgData);
 
                 if (tTask.getMsgType() == MessageTypeEnum.HTTP_CODE && tTask.getSaveResult() == 1) {
@@ -71,7 +71,7 @@ public class MsgSendThread extends BaseMsgThread {
                     taskRunThread.sendFailList.add(msgData);
 
                     // 失败异常信息输出控制台
-                    ConsoleUtil.pushLog(taskRunThread.getLogWriter(), "发送失败:" + sendResult.getInfo() + ";msgData:" + JSONUtil.toJsonPrettyStr(msgData));
+                    ConsoleUtil.pushLog(taskRunThread.getLogWriter(), "发送失败:" + sendResult.getInfo() + ";msgData:" + JSONUtil.toJsonStr(msgData));
                 }
             }
 

@@ -47,9 +47,10 @@ public class QiNiuYunMsgMaker extends BaseMsgMaker implements IMsgMaker {
     public Map<String, String> makeMsg(String[] msgData) {
 
         VelocityContext velocityContext = getVelocityContext(msgData);
+        Map<String, String> evaluated = new HashMap<>(paramMap.size());
         for (Map.Entry<String, String> entry : paramMap.entrySet()) {
-            entry.setValue(TemplateUtil.evaluate(entry.getValue(), velocityContext));
+            evaluated.put(entry.getKey(), TemplateUtil.evaluate(entry.getValue(), velocityContext));
         }
-        return paramMap;
+        return evaluated;
     }
 }

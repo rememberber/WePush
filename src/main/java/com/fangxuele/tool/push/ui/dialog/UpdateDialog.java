@@ -7,8 +7,10 @@ import cn.hutool.http.HttpUtil;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.util.ComponentUtil;
+import com.fangxuele.tool.push.util.DownloadLinkSelector;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.fangxuele.tool.push.util.UiThreadUtil;
+import com.fangxuele.tool.push.util.UpdateDownloadManager;
 import com.formdev.flatlaf.util.SystemInfo;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -82,7 +84,7 @@ public class UpdateDialog extends JDialog {
         buttonDownloadFromWeb.addActionListener(e -> {
             Desktop desktop = Desktop.getDesktop();
             try {
-                desktop.browse(new URI("https://gitee.com/zhoubochina/WePush/releases"));
+                desktop.browse(new URI("https://github.com/rememberber/WePush/releases"));
             } catch (IOException | URISyntaxException ex) {
                 ex.printStackTrace();
             }
@@ -93,33 +95,31 @@ public class UpdateDialog extends JDialog {
         buttonOK.setEnabled(false);
         ThreadUtil.execute(
                 () -> {
-                    String fileUrl = "";
-                    // 从github获取最新版本相关信息
+                    String fileUrl;
                     String downloadLinkInfo = HttpUtil.get(UiConsts.DOWNLOAD_LINK_INFO_URL);
                     if (StringUtils.isEmpty(downloadLinkInfo) || downloadLinkInfo.contains("404: Not Found")) {
                         UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame,
-                                "获取下载链接失败，请关注Gitee Release！", "网络错误",
+                                "获取下载链接失败，请关注 GitHub Release！", "网络错误",
                                 JOptionPane.INFORMATION_MESSAGE));
                         return;
                     } else {
                         DocumentContext parse = JsonPath.parse(downloadLinkInfo);
-                        if (SystemUtil.isWindowsOs()) {
-                            fileUrl = parse.read("$.windows");
-                        } else if (SystemUtil.isMacOs()) {
-                            fileUrl = parse.read("$.mac");
-                        } else if (SystemUtil.isLinuxOs()) {
-                            fileUrl = parse.read("$.linux");
-                        }
+                        fileUrl = DownloadLinkSelector.select(parse);
+                    }
+
+                    if (StringUtils.isBlank(fileUrl)) {
+                        UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame,
+                                "未找到适合当前系统的下载链接，请关注 GitHub Release！", "网络错误",
+                                JOptionPane.INFORMATION_MESSAGE));
+                        return;
                     }
 
                     String fileName = FileUtil.getName(fileUrl);
-                    URL url;
                     try {
-                        url = new URL(fileUrl);
+                        URL url = new URL(fileUrl);
                         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                        //获取相应的文件长度
                         int fileLength = urlConnection.getContentLength();
-                        UiThreadUtil.runOnUi(() -> progressBarDownload.setMaximum(fileLength));
+                        UiThreadUtil.runOnUi(() -> progressBarDownload.setMaximum(Math.max(fileLength, 0)));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -134,13 +134,13 @@ public class UpdateDialog extends JDialog {
 
                         @Override
                         public void start() {
-                            UiThreadUtil.runOnUi(() -> statusLabel.setText("开始下载。。。。"));
+                            UiThreadUtil.runOnUi(() -> statusLabel.setText("开始下载……"));
                         }
 
                         @Override
                         public void progress(long progressSize) {
                             UiThreadUtil.runOnUi(() -> {
-                                progressBarDownload.setValue((int) progressSize);
+                                progressBarDownload.setValue((int) Math.min(Integer.MAX_VALUE, progressSize));
                                 statusLabel.setText("已下载：" + FileUtil.readableFileSize(progressSize));
                             });
                         }
@@ -159,16 +159,14 @@ public class UpdateDialog extends JDialog {
 
     private void onOK() {
         try {
-            Desktop.getDesktop().open(downLoadFile);
-            dispose();
-            System.exit(0);
-        } catch (IOException e) {
+            UpdateDownloadManager.openPackageAndExit(downLoadFile);
+        } catch (Exception e) {
             e.printStackTrace();
+            JOptionPane.showMessageDialog(this, e.getMessage(), "失败", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void onCancel() {
-        // add your code here if necessary
         dispose();
     }
 

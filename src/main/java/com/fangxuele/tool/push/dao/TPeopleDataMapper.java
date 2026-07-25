@@ -10,6 +10,8 @@ public interface TPeopleDataMapper {
 
     int insert(TPeopleData record);
 
+    int insertBatch(@Param("list") List<TPeopleData> list);
+
     int insertSelective(TPeopleData record);
 
     TPeopleData selectByPrimaryKey(Integer id);

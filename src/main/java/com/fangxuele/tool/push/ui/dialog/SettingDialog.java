@@ -32,6 +32,7 @@ public class SettingDialog extends JDialog {
     private JPanel contentPane;
     private JScrollPane settingScrollPane;
     private JCheckBox autoCheckUpdateCheckBox;
+    private JCheckBox autoDownloadUpdateCheckBox;
     private JCheckBox useTrayCheckBox;
     private JCheckBox closeToTrayCheckBox;
     private JCheckBox defaultMaxWindowCheckBox;
@@ -85,6 +86,7 @@ public class SettingDialog extends JDialog {
 
         // 常规
         autoCheckUpdateCheckBox.setSelected(App.config.isAutoCheckUpdate());
+        autoDownloadUpdateCheckBox.setSelected(App.config.isAutoDownloadUpdate());
         useTrayCheckBox.setSelected(App.config.isUseTray());
         closeToTrayCheckBox.setSelected(App.config.isCloseToTray());
         defaultMaxWindowCheckBox.setSelected(App.config.isDefaultMaxWindow());
@@ -114,6 +116,11 @@ public class SettingDialog extends JDialog {
         // 设置-常规-启动时自动检查更新
         autoCheckUpdateCheckBox.addActionListener(e -> {
             App.config.setAutoCheckUpdate(autoCheckUpdateCheckBox.isSelected());
+            App.config.save();
+        });
+        // 设置-常规-自动静默下载新版
+        autoDownloadUpdateCheckBox.addActionListener(e -> {
+            App.config.setAutoDownloadUpdate(autoDownloadUpdateCheckBox.isSelected());
             App.config.save();
         });
         // 设置-常规-显示系统托盘图标
@@ -309,24 +316,27 @@ public class SettingDialog extends JDialog {
         panel3.setLayout(new GridLayoutManager(3, 1, new Insets(20, 20, 0, 20), -1, -1));
         panel2.add(panel3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(600, -1), null, 0, false));
         final JPanel panel4 = new JPanel();
-        panel4.setLayout(new GridLayoutManager(5, 1, new Insets(15, 15, 10, 0), -1, -1));
+        panel4.setLayout(new GridLayoutManager(6, 1, new Insets(15, 15, 10, 0), -1, -1));
         panel3.add(panel4, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         panel4.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "常规", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, panel4.getFont()), null));
         autoCheckUpdateCheckBox = new JCheckBox();
         autoCheckUpdateCheckBox.setText("自动检查更新");
         panel4.add(autoCheckUpdateCheckBox, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        autoDownloadUpdateCheckBox = new JCheckBox();
+        autoDownloadUpdateCheckBox.setText("自动静默下载新版");
+        panel4.add(autoDownloadUpdateCheckBox, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         useTrayCheckBox = new JCheckBox();
         useTrayCheckBox.setText("显示系统托盘图标");
-        panel4.add(useTrayCheckBox, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel4.add(useTrayCheckBox, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         closeToTrayCheckBox = new JCheckBox();
         closeToTrayCheckBox.setText("关闭窗口时最小化到系统托盘");
-        panel4.add(closeToTrayCheckBox, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel4.add(closeToTrayCheckBox, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         defaultMaxWindowCheckBox = new JCheckBox();
         defaultMaxWindowCheckBox.setText("默认最大化窗口");
-        panel4.add(defaultMaxWindowCheckBox, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel4.add(defaultMaxWindowCheckBox, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel5 = new JPanel();
         panel5.setLayout(new GridLayoutManager(1, 4, new Insets(0, 0, 0, 0), -1, -1));
-        panel4.add(panel5, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel4.add(panel5, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
         label1.setText("最大线程数");
         panel5.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));

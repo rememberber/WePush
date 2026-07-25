@@ -3,3 +3,8 @@
 /.idea/
 /logs/
 .DS_Store
+
+# Packaging JDK cache
+/jdks/
+/downloads/
+/dist/

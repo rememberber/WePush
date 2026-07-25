@@ -20,6 +20,7 @@ import com.fangxuele.tool.push.ui.form.PeopleEditForm;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.HikariUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.PeopleDataBatchInserter;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.UiThreadUtil;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
@@ -166,29 +167,31 @@ public class ImportBySQL extends JDialog {
                     peopleDataMapper.deleteByPeopleId(peopleId);
                 }
 
-                for (Entity entity : entityList) {
-                    Set<String> fieldNames = entity.getFieldNames();
-                    String[] msgData = new String[fieldNames.size()];
-                    int i = 0;
-                    for (String fieldName : fieldNames) {
-                        msgData[i] = entity.getStr(fieldName);
-                        i++;
-                    }
+                try (PeopleDataBatchInserter batcher = new PeopleDataBatchInserter(peopleDataMapper)) {
+                    for (Entity entity : entityList) {
+                        Set<String> fieldNames = entity.getFieldNames();
+                        String[] msgData = new String[fieldNames.size()];
+                        int i = 0;
+                        for (String fieldName : fieldNames) {
+                            msgData[i] = entity.getStr(fieldName);
+                            i++;
+                        }
 
-                    TPeopleData tPeopleData = new TPeopleData();
-                    tPeopleData.setPeopleId(peopleId);
-                    tPeopleData.setPin(msgData[0]);
-                    tPeopleData.setVarData(JSONUtil.toJsonStr(msgData));
-                    tPeopleData.setAppVersion(UiConsts.APP_VERSION);
-                    tPeopleData.setDataVersion(dataVersion);
-                    tPeopleData.setCreateTime(now);
-                    tPeopleData.setModifiedTime(now);
+                        TPeopleData tPeopleData = new TPeopleData();
+                        tPeopleData.setPeopleId(peopleId);
+                        tPeopleData.setPin(msgData[0]);
+                        tPeopleData.setVarData(JSONUtil.toJsonStr(msgData));
+                        tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                        tPeopleData.setDataVersion(dataVersion);
+                        tPeopleData.setCreateTime(now);
+                        tPeopleData.setModifiedTime(now);
 
-                    peopleDataMapper.insert(tPeopleData);
-                    currentImported++;
-                    if (!silence && UiThreadUtil.shouldUpdateImportProgress(currentImported)) {
-                        int count = currentImported;
-                        UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
+                        batcher.add(tPeopleData);
+                        currentImported++;
+                        if (!silence && UiThreadUtil.shouldUpdateImportProgress(currentImported)) {
+                            int count = currentImported;
+                            UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
+                        }
                     }
                 }
 

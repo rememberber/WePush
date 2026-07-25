@@ -88,24 +88,32 @@ public class UiConsts {
     public final static Icon HELP_FOCUSED_ICON = new FlatSVGIcon("icon/help-filling.svg");
 
     /**
+     * GitHub raw（master）基础地址
+     */
+    public final static String GITHUB_RAW_MASTER_URL = "https://raw.githubusercontent.com/rememberber/WePush/master/";
+
+    /**
      * 软件版本检查url
      */
-    public final static String CHECK_VERSION_URL = "https://gitee.com/zhoubochina/WePush/raw/5.x/src/main/resources/version_summary.json";
+    public final static String CHECK_VERSION_URL = GITHUB_RAW_MASTER_URL + "src/main/resources/version_summary.json";
 
     /**
      * 用户案例url
      */
-    public final static String USER_CASE_URL = "https://gitee.com/zhoubochina/WePush/raw/5.x/assets/files/user_case.json";
+    public final static String USER_CASE_URL = GITHUB_RAW_MASTER_URL + "assets/files/user_case.json";
 
     /**
      * 二维码url
      */
-    public final static String QR_CODE_URL = "https://gitee.com/zhoubochina/WePush/raw/5.x/assets/files/wx-zanshang.jpg";
+    public final static String QR_CODE_URL = GITHUB_RAW_MASTER_URL + "assets/files/wx-zanshang.jpg";
 
     /**
      * 介绍二维码URL
      */
-    public final static String INTRODUCE_QRCODE_URL = "https://gitee.com/zhoubochina/WePush/raw/5.x/assets/files/introduce-wepush-qrcode.png";
+    public final static String INTRODUCE_QRCODE_URL = GITHUB_RAW_MASTER_URL + "assets/files/introduce-wepush-qrcode.png";
 
-    public static final String DOWNLOAD_LINK_INFO_URL = "https://gitee.com/zhoubochina/WePush/raw/5.x/assets/files/download_links.json";
+    /**
+     * 各平台安装包下载链接清单（CI 发布后回写到 master）
+     */
+    public static final String DOWNLOAD_LINK_INFO_URL = GITHUB_RAW_MASTER_URL + "download_links.json";
 }

@@ -22,6 +22,7 @@ import com.fangxuele.tool.push.ui.dialog.importway.config.WxMpImportConfig;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.PeopleDataBatchInserter;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.UiThreadUtil;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
@@ -340,39 +341,7 @@ public class ImportByWxMp extends JDialog {
 
         List<String> openIds = wxMpUserList.getOpenids();
 
-        for (String openId : openIds) {
-            List<String> varData = getVarDatas(openId, importBasicInfo, importAvatar);
-
-            TPeopleData tPeopleData = new TPeopleData();
-            tPeopleData.setPeopleId(peopleId);
-            tPeopleData.setPin(openId);
-            tPeopleData.setVarData(JSONUtil.toJsonStr(varData));
-            tPeopleData.setAppVersion(UiConsts.APP_VERSION);
-            tPeopleData.setDataVersion(dataVersion);
-            tPeopleData.setCreateTime(now);
-            tPeopleData.setModifiedTime(now);
-
-            peopleDataMapper.insert(tPeopleData);
-
-            importedCount++;
-            if (UiThreadUtil.shouldUpdateImportProgress(importedCount)) {
-                int count = importedCount;
-                UiThreadUtil.runOnUi(() -> {
-                    memberCountLabel.setText(String.valueOf(count));
-                    progressBar.setValue(count);
-                });
-            }
-        }
-
-        while (StringUtils.isNotEmpty(wxMpUserList.getNextOpenid())) {
-            wxMpUserList = wxMpService.getUserService().userList(wxMpUserList.getNextOpenid());
-
-            logger.info("拉取的OPENID个数：" + wxMpUserList.getCount());
-
-            if (wxMpUserList.getCount() == 0) {
-                break;
-            }
-            openIds = wxMpUserList.getOpenids();
+        try (PeopleDataBatchInserter batcher = new PeopleDataBatchInserter(peopleDataMapper)) {
             for (String openId : openIds) {
                 List<String> varData = getVarDatas(openId, importBasicInfo, importAvatar);
 
@@ -385,7 +354,7 @@ public class ImportByWxMp extends JDialog {
                 tPeopleData.setCreateTime(now);
                 tPeopleData.setModifiedTime(now);
 
-                peopleDataMapper.insert(tPeopleData);
+                batcher.add(tPeopleData);
 
                 importedCount++;
                 if (UiThreadUtil.shouldUpdateImportProgress(importedCount)) {
@@ -394,6 +363,40 @@ public class ImportByWxMp extends JDialog {
                         memberCountLabel.setText(String.valueOf(count));
                         progressBar.setValue(count);
                     });
+                }
+            }
+
+            while (StringUtils.isNotEmpty(wxMpUserList.getNextOpenid())) {
+                wxMpUserList = wxMpService.getUserService().userList(wxMpUserList.getNextOpenid());
+
+                logger.info("拉取的OPENID个数：" + wxMpUserList.getCount());
+
+                if (wxMpUserList.getCount() == 0) {
+                    break;
+                }
+                openIds = wxMpUserList.getOpenids();
+                for (String openId : openIds) {
+                    List<String> varData = getVarDatas(openId, importBasicInfo, importAvatar);
+
+                    TPeopleData tPeopleData = new TPeopleData();
+                    tPeopleData.setPeopleId(peopleId);
+                    tPeopleData.setPin(openId);
+                    tPeopleData.setVarData(JSONUtil.toJsonStr(varData));
+                    tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                    tPeopleData.setDataVersion(dataVersion);
+                    tPeopleData.setCreateTime(now);
+                    tPeopleData.setModifiedTime(now);
+
+                    batcher.add(tPeopleData);
+
+                    importedCount++;
+                    if (UiThreadUtil.shouldUpdateImportProgress(importedCount)) {
+                        int count = importedCount;
+                        UiThreadUtil.runOnUi(() -> {
+                            memberCountLabel.setText(String.valueOf(count));
+                            progressBar.setValue(count);
+                        });
+                    }
                 }
             }
         }
@@ -552,23 +555,25 @@ public class ImportByWxMp extends JDialog {
 
         int importedCount = 0;
         JLabel memberCountLabel = instance.getMemberTabCountLabel();
-        for (String openId : tagUserSet) {
-            List<String> varData = getVarDatas(openId, importBasicInfo, importAvatar);
+        try (PeopleDataBatchInserter batcher = new PeopleDataBatchInserter(peopleDataMapper)) {
+            for (String openId : tagUserSet) {
+                List<String> varData = getVarDatas(openId, importBasicInfo, importAvatar);
 
-            TPeopleData tPeopleData = new TPeopleData();
-            tPeopleData.setPeopleId(peopleId);
-            tPeopleData.setPin(openId);
-            tPeopleData.setVarData(JSONUtil.toJsonStr(varData));
-            tPeopleData.setAppVersion(UiConsts.APP_VERSION);
-            tPeopleData.setDataVersion(dataVersion);
-            tPeopleData.setCreateTime(now);
-            tPeopleData.setModifiedTime(now);
+                TPeopleData tPeopleData = new TPeopleData();
+                tPeopleData.setPeopleId(peopleId);
+                tPeopleData.setPin(openId);
+                tPeopleData.setVarData(JSONUtil.toJsonStr(varData));
+                tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                tPeopleData.setDataVersion(dataVersion);
+                tPeopleData.setCreateTime(now);
+                tPeopleData.setModifiedTime(now);
 
-            peopleDataMapper.insert(tPeopleData);
-            importedCount++;
-            if (UiThreadUtil.shouldUpdateImportProgress(importedCount)) {
-                int count = importedCount;
-                UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
+                batcher.add(tPeopleData);
+                importedCount++;
+                if (UiThreadUtil.shouldUpdateImportProgress(importedCount)) {
+                    int count = importedCount;
+                    UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
+                }
             }
         }
 
@@ -742,32 +747,7 @@ public class ImportByWxMp extends JDialog {
 
                 peopleDataMapper.deleteByPeopleId(peopleId);
 
-                for (String openId : openIds) {
-                    List<String> varData = getVarDatas(openId, false, false);
-
-                    TPeopleData tPeopleData = new TPeopleData();
-                    tPeopleData.setPeopleId(peopleId);
-                    tPeopleData.setPin(openId);
-                    tPeopleData.setVarData(JSONUtil.toJsonStr(varData));
-                    tPeopleData.setAppVersion(UiConsts.APP_VERSION);
-                    tPeopleData.setDataVersion(dataVersion);
-                    tPeopleData.setCreateTime(now);
-                    tPeopleData.setModifiedTime(now);
-
-                    peopleDataMapper.insert(tPeopleData);
-
-                    importedCount++;
-                }
-
-                while (StringUtils.isNotEmpty(wxMpUserList.getNextOpenid())) {
-                    wxMpUserList = wxMpService.getUserService().userList(wxMpUserList.getNextOpenid());
-
-                    logger.info("拉取的OPENID个数：" + wxMpUserList.getCount());
-
-                    if (wxMpUserList.getCount() == 0) {
-                        break;
-                    }
-                    openIds = wxMpUserList.getOpenids();
+                try (PeopleDataBatchInserter batcher = new PeopleDataBatchInserter(peopleDataMapper)) {
                     for (String openId : openIds) {
                         List<String> varData = getVarDatas(openId, false, false);
 
@@ -780,9 +760,36 @@ public class ImportByWxMp extends JDialog {
                         tPeopleData.setCreateTime(now);
                         tPeopleData.setModifiedTime(now);
 
-                        peopleDataMapper.insert(tPeopleData);
+                        batcher.add(tPeopleData);
 
                         importedCount++;
+                    }
+
+                    while (StringUtils.isNotEmpty(wxMpUserList.getNextOpenid())) {
+                        wxMpUserList = wxMpService.getUserService().userList(wxMpUserList.getNextOpenid());
+
+                        logger.info("拉取的OPENID个数：" + wxMpUserList.getCount());
+
+                        if (wxMpUserList.getCount() == 0) {
+                            break;
+                        }
+                        openIds = wxMpUserList.getOpenids();
+                        for (String openId : openIds) {
+                            List<String> varData = getVarDatas(openId, false, false);
+
+                            TPeopleData tPeopleData = new TPeopleData();
+                            tPeopleData.setPeopleId(peopleId);
+                            tPeopleData.setPin(openId);
+                            tPeopleData.setVarData(JSONUtil.toJsonStr(varData));
+                            tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                            tPeopleData.setDataVersion(dataVersion);
+                            tPeopleData.setCreateTime(now);
+                            tPeopleData.setModifiedTime(now);
+
+                            batcher.add(tPeopleData);
+
+                            importedCount++;
+                        }
                     }
                 }
             } else if (wxMpImportConfigBefore.getUserType() == 2) {
@@ -853,19 +860,21 @@ public class ImportByWxMp extends JDialog {
 
                 peopleDataMapper.deleteByPeopleId(peopleId);
 
-                for (String openId : tagUserSet) {
-                    List<String> varData = getVarDatas(openId, false, false);
+                try (PeopleDataBatchInserter batcher = new PeopleDataBatchInserter(peopleDataMapper)) {
+                    for (String openId : tagUserSet) {
+                        List<String> varData = getVarDatas(openId, false, false);
 
-                    TPeopleData tPeopleData = new TPeopleData();
-                    tPeopleData.setPeopleId(peopleId);
-                    tPeopleData.setPin(openId);
-                    tPeopleData.setVarData(JSONUtil.toJsonStr(varData));
-                    tPeopleData.setAppVersion(UiConsts.APP_VERSION);
-                    tPeopleData.setDataVersion(dataVersion);
-                    tPeopleData.setCreateTime(now);
-                    tPeopleData.setModifiedTime(now);
+                        TPeopleData tPeopleData = new TPeopleData();
+                        tPeopleData.setPeopleId(peopleId);
+                        tPeopleData.setPin(openId);
+                        tPeopleData.setVarData(JSONUtil.toJsonStr(varData));
+                        tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                        tPeopleData.setDataVersion(dataVersion);
+                        tPeopleData.setCreateTime(now);
+                        tPeopleData.setModifiedTime(now);
 
-                    peopleDataMapper.insert(tPeopleData);
+                        batcher.add(tPeopleData);
+                    }
                 }
             } else if (wxMpImportConfigBefore.getUserType() == 3) {
                 WxMpService wxMpService = WxMpTemplateMsgSender.getWxMpService(tPeople.getAccountId());
@@ -933,19 +942,21 @@ public class ImportByWxMp extends JDialog {
 
                 peopleDataMapper.deleteByPeopleId(peopleId);
 
-                for (String openId : tagUserSet) {
-                    List<String> varData = getVarDatas(openId, false, false);
+                try (PeopleDataBatchInserter batcher = new PeopleDataBatchInserter(peopleDataMapper)) {
+                    for (String openId : tagUserSet) {
+                        List<String> varData = getVarDatas(openId, false, false);
 
-                    TPeopleData tPeopleData = new TPeopleData();
-                    tPeopleData.setPeopleId(peopleId);
-                    tPeopleData.setPin(openId);
-                    tPeopleData.setVarData(JSONUtil.toJsonStr(varData));
-                    tPeopleData.setAppVersion(UiConsts.APP_VERSION);
-                    tPeopleData.setDataVersion(dataVersion);
-                    tPeopleData.setCreateTime(now);
-                    tPeopleData.setModifiedTime(now);
+                        TPeopleData tPeopleData = new TPeopleData();
+                        tPeopleData.setPeopleId(peopleId);
+                        tPeopleData.setPin(openId);
+                        tPeopleData.setVarData(JSONUtil.toJsonStr(varData));
+                        tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                        tPeopleData.setDataVersion(dataVersion);
+                        tPeopleData.setCreateTime(now);
+                        tPeopleData.setModifiedTime(now);
 
-                    peopleDataMapper.insert(tPeopleData);
+                        batcher.add(tPeopleData);
+                    }
                 }
             }
         } catch (Exception e) {

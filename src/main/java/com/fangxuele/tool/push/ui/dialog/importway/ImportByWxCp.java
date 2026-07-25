@@ -19,6 +19,7 @@ import com.fangxuele.tool.push.ui.dialog.importway.config.WxCpImportConfig;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.PeopleDataBatchInserter;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.UiThreadUtil;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
@@ -171,31 +172,33 @@ public class ImportByWxCp extends JDialog {
 
                     // 获取用户
                     List<WxCpUser> wxCpUsers = WxCpMsgSender.getWxCpService(tPeople.getAccountId()).getTagService().listUsersByTagId(tagId);
-                    for (WxCpUser wxCpUser : wxCpUsers) {
-                        Long[] depIds = wxCpUser.getDepartIds();
-                        List<String> deptNameList = Lists.newArrayList();
-                        if (depIds != null) {
-                            for (Long depId : depIds) {
-                                deptNameList.add(wxCpIdToDeptNameMap.get(depId));
+                    try (PeopleDataBatchInserter batcher = new PeopleDataBatchInserter(peopleDataMapper)) {
+                        for (WxCpUser wxCpUser : wxCpUsers) {
+                            Long[] depIds = wxCpUser.getDepartIds();
+                            List<String> deptNameList = Lists.newArrayList();
+                            if (depIds != null) {
+                                for (Long depId : depIds) {
+                                    deptNameList.add(wxCpIdToDeptNameMap.get(depId));
+                                }
                             }
-                        }
-                        String[] dataArray = new String[]{wxCpUser.getUserId(), wxCpUser.getName(), String.join("/", deptNameList)};
+                            String[] dataArray = new String[]{wxCpUser.getUserId(), wxCpUser.getName(), String.join("/", deptNameList)};
 
-                        TPeopleData tPeopleData = new TPeopleData();
-                        tPeopleData.setPeopleId(peopleId);
-                        tPeopleData.setPin(dataArray[0]);
-                        tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
-                        tPeopleData.setAppVersion(UiConsts.APP_VERSION);
-                        tPeopleData.setDataVersion(dataVersion);
-                        tPeopleData.setCreateTime(now);
-                        tPeopleData.setModifiedTime(now);
+                            TPeopleData tPeopleData = new TPeopleData();
+                            tPeopleData.setPeopleId(peopleId);
+                            tPeopleData.setPin(dataArray[0]);
+                            tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
+                            tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                            tPeopleData.setDataVersion(dataVersion);
+                            tPeopleData.setCreateTime(now);
+                            tPeopleData.setModifiedTime(now);
 
-                        peopleDataMapper.insert(tPeopleData);
+                            batcher.add(tPeopleData);
 
-                        importedCount++;
-                        if (UiThreadUtil.shouldUpdateImportProgress(importedCount)) {
-                            int count = importedCount;
-                            UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
+                            importedCount++;
+                            if (UiThreadUtil.shouldUpdateImportProgress(importedCount)) {
+                                int count = importedCount;
+                                UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
+                            }
                         }
                     }
                     int finalCount = importedCount;
@@ -290,43 +293,45 @@ public class ImportByWxCp extends JDialog {
 
                     // 获取用户
                     List<WxCpUser> wxCpUsers = WxCpMsgSender.getWxCpService(tPeople.getAccountId()).getUserService().listByDepartment(deptId, true, 0);
-                    for (WxCpUser wxCpUser : wxCpUsers) {
-                        String statusStr = "";
-                        if (wxCpUser.getStatus() == 1) {
-                            statusStr = "已关注";
-                        } else if (wxCpUser.getStatus() == 2) {
-                            statusStr = "已冻结";
-                        } else if (wxCpUser.getStatus() == 4) {
-                            statusStr = "未关注";
-                        }
-                        Long[] depIds = wxCpUser.getDepartIds();
-                        List<String> deptNameList = Lists.newArrayList();
-                        if (depIds != null) {
-                            for (Long depId : depIds) {
-                                deptNameList.add(wxCpIdToDeptNameMap.get(depId));
+                    try (PeopleDataBatchInserter batcher = new PeopleDataBatchInserter(peopleDataMapper)) {
+                        for (WxCpUser wxCpUser : wxCpUsers) {
+                            String statusStr = "";
+                            if (wxCpUser.getStatus() == 1) {
+                                statusStr = "已关注";
+                            } else if (wxCpUser.getStatus() == 2) {
+                                statusStr = "已冻结";
+                            } else if (wxCpUser.getStatus() == 4) {
+                                statusStr = "未关注";
                             }
-                        }
-                        String[] dataArray = new String[]{wxCpUser.getUserId(),
-                                wxCpUser.getName(),
-                                wxCpUser.getGender() == null ? "" : wxCpUser.getGender().getGenderName(),
-                                wxCpUser.getEmail(),
-                                String.join("/", deptNameList), wxCpUser.getPosition(), statusStr};
+                            Long[] depIds = wxCpUser.getDepartIds();
+                            List<String> deptNameList = Lists.newArrayList();
+                            if (depIds != null) {
+                                for (Long depId : depIds) {
+                                    deptNameList.add(wxCpIdToDeptNameMap.get(depId));
+                                }
+                            }
+                            String[] dataArray = new String[]{wxCpUser.getUserId(),
+                                    wxCpUser.getName(),
+                                    wxCpUser.getGender() == null ? "" : wxCpUser.getGender().getGenderName(),
+                                    wxCpUser.getEmail(),
+                                    String.join("/", deptNameList), wxCpUser.getPosition(), statusStr};
 
-                        TPeopleData tPeopleData = new TPeopleData();
-                        tPeopleData.setPeopleId(peopleId);
-                        tPeopleData.setPin(dataArray[0]);
-                        tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
-                        tPeopleData.setAppVersion(UiConsts.APP_VERSION);
-                        tPeopleData.setDataVersion(dataVersion);
-                        tPeopleData.setCreateTime(now);
-                        tPeopleData.setModifiedTime(now);
+                            TPeopleData tPeopleData = new TPeopleData();
+                            tPeopleData.setPeopleId(peopleId);
+                            tPeopleData.setPin(dataArray[0]);
+                            tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
+                            tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                            tPeopleData.setDataVersion(dataVersion);
+                            tPeopleData.setCreateTime(now);
+                            tPeopleData.setModifiedTime(now);
 
-                        peopleDataMapper.insert(tPeopleData);
+                            batcher.add(tPeopleData);
 
-                        importedCount++;
-                        if (UiThreadUtil.shouldUpdateImportProgress(importedCount)) {
-                            int count = importedCount;
-                            UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
+                            importedCount++;
+                            if (UiThreadUtil.shouldUpdateImportProgress(importedCount)) {
+                                int count = importedCount;
+                                UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
+                            }
                         }
                     }
                     int finalCount = importedCount;
@@ -426,45 +431,47 @@ public class ImportByWxCp extends JDialog {
             }
             // 获取用户
             List<WxCpUser> wxCpUsers = WxCpMsgSender.getWxCpService(tPeople.getAccountId()).getUserService().listByDepartment(minDeptId, true, 0);
-            for (WxCpUser wxCpUser : wxCpUsers) {
-                String statusStr = "";
-                if (wxCpUser.getStatus() == 1) {
-                    statusStr = "已关注";
-                } else if (wxCpUser.getStatus() == 2) {
-                    statusStr = "已冻结";
-                } else if (wxCpUser.getStatus() == 4) {
-                    statusStr = "未关注";
-                }
-                Long[] depIds = wxCpUser.getDepartIds();
-                List<String> deptNameList = Lists.newArrayList();
-                if (depIds != null) {
-                    for (Long depId : depIds) {
-                        deptNameList.add(wxCpIdToDeptNameMap.get(depId));
+            try (PeopleDataBatchInserter batcher = new PeopleDataBatchInserter(peopleDataMapper)) {
+                for (WxCpUser wxCpUser : wxCpUsers) {
+                    String statusStr = "";
+                    if (wxCpUser.getStatus() == 1) {
+                        statusStr = "已关注";
+                    } else if (wxCpUser.getStatus() == 2) {
+                        statusStr = "已冻结";
+                    } else if (wxCpUser.getStatus() == 4) {
+                        statusStr = "未关注";
                     }
-                }
-                String[] dataArray = new String[]{wxCpUser.getUserId(),
-                        wxCpUser.getName(),
-                        wxCpUser.getGender() == null ? "" : wxCpUser.getGender().getGenderName(),
-                        wxCpUser.getEmail(),
-                        String.join("/", deptNameList),
-                        wxCpUser.getPosition(),
-                        statusStr};
+                    Long[] depIds = wxCpUser.getDepartIds();
+                    List<String> deptNameList = Lists.newArrayList();
+                    if (depIds != null) {
+                        for (Long depId : depIds) {
+                            deptNameList.add(wxCpIdToDeptNameMap.get(depId));
+                        }
+                    }
+                    String[] dataArray = new String[]{wxCpUser.getUserId(),
+                            wxCpUser.getName(),
+                            wxCpUser.getGender() == null ? "" : wxCpUser.getGender().getGenderName(),
+                            wxCpUser.getEmail(),
+                            String.join("/", deptNameList),
+                            wxCpUser.getPosition(),
+                            statusStr};
 
-                TPeopleData tPeopleData = new TPeopleData();
-                tPeopleData.setPeopleId(peopleId);
-                tPeopleData.setPin(dataArray[0]);
-                tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
-                tPeopleData.setAppVersion(UiConsts.APP_VERSION);
-                tPeopleData.setDataVersion(dataVersion);
-                tPeopleData.setCreateTime(now);
-                tPeopleData.setModifiedTime(now);
+                    TPeopleData tPeopleData = new TPeopleData();
+                    tPeopleData.setPeopleId(peopleId);
+                    tPeopleData.setPin(dataArray[0]);
+                    tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
+                    tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                    tPeopleData.setDataVersion(dataVersion);
+                    tPeopleData.setCreateTime(now);
+                    tPeopleData.setModifiedTime(now);
 
-                peopleDataMapper.insert(tPeopleData);
+                    batcher.add(tPeopleData);
 
-                importedCount++;
-                if (UiThreadUtil.shouldUpdateImportProgress(importedCount)) {
-                    int count = importedCount;
-                    UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
+                    importedCount++;
+                    if (UiThreadUtil.shouldUpdateImportProgress(importedCount)) {
+                        int count = importedCount;
+                        UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
+                    }
                 }
             }
 
@@ -627,42 +634,44 @@ public class ImportByWxCp extends JDialog {
 
                 peopleDataMapper.deleteByPeopleId(peopleId);
 
-                for (WxCpUser wxCpUser : wxCpUsers) {
-                    String statusStr = "";
-                    if (wxCpUser.getStatus() == 1) {
-                        statusStr = "已关注";
-                    } else if (wxCpUser.getStatus() == 2) {
-                        statusStr = "已冻结";
-                    } else if (wxCpUser.getStatus() == 4) {
-                        statusStr = "未关注";
-                    }
-                    Long[] depIds = wxCpUser.getDepartIds();
-                    List<String> deptNameList = Lists.newArrayList();
-                    if (depIds != null) {
-                        for (Long depId : depIds) {
-                            deptNameList.add(wxCpIdToDeptNameMap.get(depId));
+                try (PeopleDataBatchInserter batcher = new PeopleDataBatchInserter(peopleDataMapper)) {
+                    for (WxCpUser wxCpUser : wxCpUsers) {
+                        String statusStr = "";
+                        if (wxCpUser.getStatus() == 1) {
+                            statusStr = "已关注";
+                        } else if (wxCpUser.getStatus() == 2) {
+                            statusStr = "已冻结";
+                        } else if (wxCpUser.getStatus() == 4) {
+                            statusStr = "未关注";
                         }
+                        Long[] depIds = wxCpUser.getDepartIds();
+                        List<String> deptNameList = Lists.newArrayList();
+                        if (depIds != null) {
+                            for (Long depId : depIds) {
+                                deptNameList.add(wxCpIdToDeptNameMap.get(depId));
+                            }
+                        }
+                        String[] dataArray = new String[]{wxCpUser.getUserId(),
+                                wxCpUser.getName(),
+                                wxCpUser.getGender() == null ? "" : wxCpUser.getGender().getGenderName(),
+                                wxCpUser.getEmail(),
+                                String.join("/", deptNameList),
+                                wxCpUser.getPosition(),
+                                statusStr};
+
+                        TPeopleData tPeopleData = new TPeopleData();
+                        tPeopleData.setPeopleId(peopleId);
+                        tPeopleData.setPin(dataArray[0]);
+                        tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
+                        tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                        tPeopleData.setDataVersion(dataVersion);
+                        tPeopleData.setCreateTime(now);
+                        tPeopleData.setModifiedTime(now);
+
+                        batcher.add(tPeopleData);
+
+                        importedCount++;
                     }
-                    String[] dataArray = new String[]{wxCpUser.getUserId(),
-                            wxCpUser.getName(),
-                            wxCpUser.getGender() == null ? "" : wxCpUser.getGender().getGenderName(),
-                            wxCpUser.getEmail(),
-                            String.join("/", deptNameList),
-                            wxCpUser.getPosition(),
-                            statusStr};
-
-                    TPeopleData tPeopleData = new TPeopleData();
-                    tPeopleData.setPeopleId(peopleId);
-                    tPeopleData.setPin(dataArray[0]);
-                    tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
-                    tPeopleData.setAppVersion(UiConsts.APP_VERSION);
-                    tPeopleData.setDataVersion(dataVersion);
-                    tPeopleData.setCreateTime(now);
-                    tPeopleData.setModifiedTime(now);
-
-                    peopleDataMapper.insert(tPeopleData);
-
-                    importedCount++;
                 }
             } else if (wxCpImportConfigBefore.getUserType() == 2) {
                 int importedCount = 0;
@@ -700,28 +709,30 @@ public class ImportByWxCp extends JDialog {
 
                 peopleDataMapper.deleteByPeopleId(peopleId);
 
-                for (WxCpUser wxCpUser : wxCpUsers) {
-                    Long[] depIds = wxCpUser.getDepartIds();
-                    List<String> deptNameList = Lists.newArrayList();
-                    if (depIds != null) {
-                        for (Long depId : depIds) {
-                            deptNameList.add(wxCpIdToDeptNameMap.get(depId));
+                try (PeopleDataBatchInserter batcher = new PeopleDataBatchInserter(peopleDataMapper)) {
+                    for (WxCpUser wxCpUser : wxCpUsers) {
+                        Long[] depIds = wxCpUser.getDepartIds();
+                        List<String> deptNameList = Lists.newArrayList();
+                        if (depIds != null) {
+                            for (Long depId : depIds) {
+                                deptNameList.add(wxCpIdToDeptNameMap.get(depId));
+                            }
                         }
+                        String[] dataArray = new String[]{wxCpUser.getUserId(), wxCpUser.getName(), String.join("/", deptNameList)};
+
+                        TPeopleData tPeopleData = new TPeopleData();
+                        tPeopleData.setPeopleId(peopleId);
+                        tPeopleData.setPin(dataArray[0]);
+                        tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
+                        tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                        tPeopleData.setDataVersion(dataVersion);
+                        tPeopleData.setCreateTime(now);
+                        tPeopleData.setModifiedTime(now);
+
+                        batcher.add(tPeopleData);
+
+                        importedCount++;
                     }
-                    String[] dataArray = new String[]{wxCpUser.getUserId(), wxCpUser.getName(), String.join("/", deptNameList)};
-
-                    TPeopleData tPeopleData = new TPeopleData();
-                    tPeopleData.setPeopleId(peopleId);
-                    tPeopleData.setPin(dataArray[0]);
-                    tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
-                    tPeopleData.setAppVersion(UiConsts.APP_VERSION);
-                    tPeopleData.setDataVersion(dataVersion);
-                    tPeopleData.setCreateTime(now);
-                    tPeopleData.setModifiedTime(now);
-
-                    peopleDataMapper.insert(tPeopleData);
-
-                    importedCount++;
                 }
             } else if (wxCpImportConfigBefore.getUserType() == 3) {
                 int importedCount = 0;
@@ -760,42 +771,44 @@ public class ImportByWxCp extends JDialog {
 
                 peopleDataMapper.deleteByPeopleId(peopleId);
 
-                for (WxCpUser wxCpUser : wxCpUsers) {
-                    String statusStr = "";
-                    if (wxCpUser.getStatus() == 1) {
-                        statusStr = "已关注";
-                    } else if (wxCpUser.getStatus() == 2) {
-                        statusStr = "已冻结";
-                    } else if (wxCpUser.getStatus() == 4) {
-                        statusStr = "未关注";
-                    }
-                    Long[] depIds = wxCpUser.getDepartIds();
-                    List<String> deptNameList = Lists.newArrayList();
-                    if (depIds != null) {
-                        for (Long depId : depIds) {
-                            deptNameList.add(wxCpIdToDeptNameMap.get(depId));
+                try (PeopleDataBatchInserter batcher = new PeopleDataBatchInserter(peopleDataMapper)) {
+                    for (WxCpUser wxCpUser : wxCpUsers) {
+                        String statusStr = "";
+                        if (wxCpUser.getStatus() == 1) {
+                            statusStr = "已关注";
+                        } else if (wxCpUser.getStatus() == 2) {
+                            statusStr = "已冻结";
+                        } else if (wxCpUser.getStatus() == 4) {
+                            statusStr = "未关注";
                         }
+                        Long[] depIds = wxCpUser.getDepartIds();
+                        List<String> deptNameList = Lists.newArrayList();
+                        if (depIds != null) {
+                            for (Long depId : depIds) {
+                                deptNameList.add(wxCpIdToDeptNameMap.get(depId));
+                            }
+                        }
+                        String[] dataArray = new String[]{wxCpUser.getUserId(),
+                                wxCpUser.getName(),
+                                wxCpUser.getGender() == null ? "" : wxCpUser.getGender().getGenderName(),
+                                wxCpUser.getEmail(),
+                                String.join("/", deptNameList),
+                                wxCpUser.getPosition(),
+                                statusStr};
+
+                        TPeopleData tPeopleData = new TPeopleData();
+                        tPeopleData.setPeopleId(peopleId);
+                        tPeopleData.setPin(dataArray[0]);
+                        tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
+                        tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                        tPeopleData.setDataVersion(dataVersion);
+                        tPeopleData.setCreateTime(now);
+                        tPeopleData.setModifiedTime(now);
+
+                        batcher.add(tPeopleData);
+
+                        importedCount++;
                     }
-                    String[] dataArray = new String[]{wxCpUser.getUserId(),
-                            wxCpUser.getName(),
-                            wxCpUser.getGender() == null ? "" : wxCpUser.getGender().getGenderName(),
-                            wxCpUser.getEmail(),
-                            String.join("/", deptNameList),
-                            wxCpUser.getPosition(),
-                            statusStr};
-
-                    TPeopleData tPeopleData = new TPeopleData();
-                    tPeopleData.setPeopleId(peopleId);
-                    tPeopleData.setPin(dataArray[0]);
-                    tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
-                    tPeopleData.setAppVersion(UiConsts.APP_VERSION);
-                    tPeopleData.setDataVersion(dataVersion);
-                    tPeopleData.setCreateTime(now);
-                    tPeopleData.setModifiedTime(now);
-
-                    peopleDataMapper.insert(tPeopleData);
-
-                    importedCount++;
                 }
             }
         } catch (Exception e) {

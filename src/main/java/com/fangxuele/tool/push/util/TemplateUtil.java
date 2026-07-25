@@ -10,6 +10,8 @@ import org.apache.velocity.app.VelocityEngine;
 
 import java.io.StringWriter;
 import java.util.Date;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <pre>
@@ -21,7 +23,12 @@ import java.util.Date;
  */
 public class TemplateUtil {
 
-    private static VelocityEngine velocityEngine;
+    private static final VelocityEngine velocityEngine;
+
+    /**
+     * openId → nickname，避免推送热路径每条同步打微信 API。
+     */
+    private static final Map<String, String> NICK_NAME_CACHE = new ConcurrentHashMap<>();
 
     static {
         velocityEngine = new VelocityEngine();
@@ -31,13 +38,7 @@ public class TemplateUtil {
     public static String evaluate(String content, VelocityContext velocityContext) {
 
         if (content.contains("NICK_NAME")) {
-            WxMpService wxMpService = WxMpTemplateMsgSender.getWxMpService();
-            String nickName = "";
-            try {
-                nickName = wxMpService.getUserService().userInfo(velocityContext.get(PushControl.TEMPLATE_VAR_PREFIX + "0").toString()).getNickname();
-            } catch (WxErrorException e) {
-                e.printStackTrace();
-            }
+            String nickName = resolveNickName(velocityContext);
             velocityContext.put("NICK_NAME", nickName);
         }
 
@@ -51,5 +52,33 @@ public class TemplateUtil {
         velocityEngine.evaluate(velocityContext, writer, "", content);
 
         return writer.toString();
+    }
+
+    private static String resolveNickName(VelocityContext velocityContext) {
+        Object openIdObj = velocityContext.get(PushControl.TEMPLATE_VAR_PREFIX + "0");
+        if (openIdObj == null) {
+            return "";
+        }
+        String openId = openIdObj.toString();
+        if (openId.isEmpty()) {
+            return "";
+        }
+        return NICK_NAME_CACHE.computeIfAbsent(openId, id -> {
+            try {
+                WxMpService wxMpService = WxMpTemplateMsgSender.getWxMpService();
+                return wxMpService.getUserService().userInfo(id).getNickname();
+            } catch (WxErrorException e) {
+                return "";
+            } catch (Exception e) {
+                return "";
+            }
+        });
+    }
+
+    /**
+     * 账号切换等场景可清空缓存。
+     */
+    public static void clearNickNameCache() {
+        NICK_NAME_CACHE.clear();
     }
 }

@@ -34,6 +34,18 @@
                 #{remark,jdbcType=VARCHAR},
                 #{createTime,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=VARCHAR})
     </insert>
+    <insert id="insertBatch">
+        insert into t_people_data (people_id, pin,
+                                   var_data, app_version, data_version, remark,
+                                   create_time, modified_time)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.peopleId,jdbcType=INTEGER}, #{item.pin,jdbcType=VARCHAR},
+             #{item.varData,jdbcType=VARCHAR}, #{item.appVersion,jdbcType=VARCHAR},
+             #{item.dataVersion,jdbcType=VARCHAR}, #{item.remark,jdbcType=VARCHAR},
+             #{item.createTime,jdbcType=VARCHAR}, #{item.modifiedTime,jdbcType=VARCHAR})
+        </foreach>
+    </insert>
     <insert id="insertSelective" parameterType="com.fangxuele.tool.push.domain.TPeopleData">
         insert into t_people_data
         <trim prefix="(" suffix=")" suffixOverrides=",">

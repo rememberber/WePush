@@ -1,6 +1,5 @@
 package com.fangxuele.tool.push.ui.listener;
 
-import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
@@ -42,7 +41,7 @@ public class AboutListener {
                 super.mousePressed(e);
                 Desktop desktop = Desktop.getDesktop();
                 try {
-                    desktop.browse(new URI("https://gitee.com/zhoubochina/WePush"));
+                    desktop.browse(new URI("https://github.com/rememberber/WePush"));
                 } catch (IOException | URISyntaxException e1) {
                     e1.printStackTrace();
                 }
@@ -61,7 +60,7 @@ public class AboutListener {
             @Override
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
-                ThreadUtil.execute(() -> UpgradeUtil.checkUpdate(false));
+                UpgradeUtil.checkUpdate(false);
             }
 
             @Override

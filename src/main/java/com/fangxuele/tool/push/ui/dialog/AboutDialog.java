@@ -114,7 +114,7 @@ public class AboutDialog extends JDialog {
             @Override
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
-                ThreadUtil.execute(() -> UpgradeUtil.checkUpdate(false));
+                UpgradeUtil.checkUpdate(false);
             }
 
             @Override

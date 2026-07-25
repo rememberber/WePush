@@ -60,6 +60,14 @@ public class ConfigUtil extends ConfigBaseUtil {
         setting.put("setting.normal", "autoCheckUpdate", String.valueOf(autoCheckUpdate));
     }
 
+    public boolean isAutoDownloadUpdate() {
+        return setting.getBool("autoDownloadUpdate", "setting.normal", true);
+    }
+
+    public void setAutoDownloadUpdate(boolean autoDownloadUpdate) {
+        setting.put("setting.normal", "autoDownloadUpdate", String.valueOf(autoDownloadUpdate));
+    }
+
     public boolean isUseTray() {
         return setting.getBool("useTray", "setting.normal", true);
     }

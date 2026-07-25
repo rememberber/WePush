@@ -47,7 +47,7 @@ public class MsgInfinitySendThread extends Thread {
                     infinityTaskRunThread.increaseFail();
                     // 保存发送失败
                     infinityTaskRunThread.sendFailList.add(msgData);
-                    ConsoleUtil.pushLog(infinityTaskRunThread.getLogWriter(), "发送失败:" + sendResult.getInfo() + ";msgData:" + JSONUtil.toJsonPrettyStr(msgData));
+                    ConsoleUtil.pushLog(infinityTaskRunThread.getLogWriter(), "发送失败:" + sendResult.getInfo() + ";msgData:" + JSONUtil.toJsonStr(msgData));
                 }
             } catch (Exception e) {
                 infinityTaskRunThread.increaseFail();

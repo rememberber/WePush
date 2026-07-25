@@ -5,7 +5,6 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.Header;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
-import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.account.HttpAccountConfig;
@@ -152,13 +151,6 @@ public class HttpMsgSender implements IMsgSender {
 
         String body = httpResponse.body();
         sendResult.setInfo(body);
-        if (body != null && body.startsWith("{") && body.endsWith("}")) {
-            try {
-                body = JSONUtil.toJsonPrettyStr(body);
-            } catch (Exception e) {
-                log.error(e.toString());
-            }
-        }
         sendResult.setBody(body);
 
         StringBuilder cookiesBuilder = StrUtil.builder();
@@ -252,13 +244,6 @@ public class HttpMsgSender implements IMsgSender {
                     responseBody = response.body().string();
                 }
                 sendResult.setInfo(responseBody);
-                if (responseBody.startsWith("{") && responseBody.endsWith("}")) {
-                    try {
-                        responseBody = JSONUtil.toJsonPrettyStr(responseBody);
-                    } catch (Exception e) {
-                        log.error(e.toString());
-                    }
-                }
                 sendResult.setBody(responseBody);
 
                 sendResult.setHeaders(response.headers().toString());

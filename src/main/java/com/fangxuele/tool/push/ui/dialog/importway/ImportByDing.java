@@ -25,6 +25,7 @@ import com.fangxuele.tool.push.ui.dialog.importway.config.DingImportConfig;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
 import com.fangxuele.tool.push.util.ComponentUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.PeopleDataBatchInserter;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.UiThreadUtil;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
@@ -175,43 +176,45 @@ public class ImportByDing extends JDialog {
 
                     long offset = 0;
                     OapiUserSimplelistResponse response = new OapiUserSimplelistResponse();
-                    while (response.getErrcode() == null || response.getUserlist().size() > 0) {
-                        response = client.execute(request, DingMsgSender.getAccessTokenTimedCache(tPeople.getAccountId()).get("accessToken"));
-                        if (response.getErrcode() != 0) {
-                            final String errMsg = response.getErrmsg();
-                            if (response.getErrcode() == 60011) {
-                                UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + errMsg + "\n\n进入开发者后台，在小程序或者微应用详情的「接口权限」模块，点击申请对应的通讯录接口读写权限", "失败",
-                                        JOptionPane.ERROR_MESSAGE));
-                            } else {
-                                UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + errMsg, "失败", JOptionPane.ERROR_MESSAGE));
+                    try (PeopleDataBatchInserter batcher = new PeopleDataBatchInserter(peopleDataMapper)) {
+                        while (response.getErrcode() == null || response.getUserlist().size() > 0) {
+                            response = client.execute(request, DingMsgSender.getAccessTokenTimedCache(tPeople.getAccountId()).get("accessToken"));
+                            if (response.getErrcode() != 0) {
+                                final String errMsg = response.getErrmsg();
+                                if (response.getErrcode() == 60011) {
+                                    UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + errMsg + "\n\n进入开发者后台，在小程序或者微应用详情的「接口权限」模块，点击申请对应的通讯录接口读写权限", "失败",
+                                            JOptionPane.ERROR_MESSAGE));
+                                } else {
+                                    UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + errMsg, "失败", JOptionPane.ERROR_MESSAGE));
+                                }
+
+                                logger.error(response.getErrmsg());
+                                return;
                             }
+                            List<OapiUserSimplelistResponse.Userlist> userlist = response.getUserlist();
+                            for (OapiUserSimplelistResponse.Userlist dingUser : userlist) {
+                                String[] dataArray = new String[]{dingUser.getUserid(), dingUser.getName()};
 
-                            logger.error(response.getErrmsg());
-                            return;
-                        }
-                        List<OapiUserSimplelistResponse.Userlist> userlist = response.getUserlist();
-                        for (OapiUserSimplelistResponse.Userlist dingUser : userlist) {
-                            String[] dataArray = new String[]{dingUser.getUserid(), dingUser.getName()};
+                                TPeopleData tPeopleData = new TPeopleData();
+                                tPeopleData.setPeopleId(peopleId);
+                                tPeopleData.setPin(dataArray[0]);
+                                tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
+                                tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                                tPeopleData.setDataVersion(dataVersion);
+                                tPeopleData.setCreateTime(now);
+                                tPeopleData.setModifiedTime(now);
 
-                            TPeopleData tPeopleData = new TPeopleData();
-                            tPeopleData.setPeopleId(peopleId);
-                            tPeopleData.setPin(dataArray[0]);
-                            tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
-                            tPeopleData.setAppVersion(UiConsts.APP_VERSION);
-                            tPeopleData.setDataVersion(dataVersion);
-                            tPeopleData.setCreateTime(now);
-                            tPeopleData.setModifiedTime(now);
+                                batcher.add(tPeopleData);
 
-                            peopleDataMapper.insert(tPeopleData);
-
-                            importedCount++;
-                            if (UiThreadUtil.shouldUpdateImportProgress(importedCount)) {
-                                int count = importedCount;
-                                UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
+                                importedCount++;
+                                if (UiThreadUtil.shouldUpdateImportProgress(importedCount)) {
+                                    int count = importedCount;
+                                    UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
+                                }
                             }
+                            offset += 100;
+                            request.setOffset(offset);
                         }
-                        offset += 100;
-                        request.setOffset(offset);
                     }
 
                     int finalCount = importedCount;
@@ -313,43 +316,45 @@ public class ImportByDing extends JDialog {
 
             long offset = 0;
             OapiUserSimplelistResponse response = new OapiUserSimplelistResponse();
-            while (response.getErrcode() == null || response.getUserlist().size() > 0) {
-                response = client.execute(request, DingMsgSender.getAccessTokenTimedCache(tPeople.getAccountId()).get("accessToken"));
-                if (response.getErrcode() != 0) {
-                    final String errMsg = response.getErrmsg();
-                    if (response.getErrcode() == 60011) {
-                        UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + errMsg + "\n\n进入开发者后台，在小程序或者微应用详情的「接口权限」模块，点击申请对应的通讯录接口读写权限", "失败",
-                                JOptionPane.ERROR_MESSAGE));
-                    } else {
-                        UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + errMsg, "失败", JOptionPane.ERROR_MESSAGE));
+            try (PeopleDataBatchInserter batcher = new PeopleDataBatchInserter(peopleDataMapper)) {
+                while (response.getErrcode() == null || response.getUserlist().size() > 0) {
+                    response = client.execute(request, DingMsgSender.getAccessTokenTimedCache(tPeople.getAccountId()).get("accessToken"));
+                    if (response.getErrcode() != 0) {
+                        final String errMsg = response.getErrmsg();
+                        if (response.getErrcode() == 60011) {
+                            UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + errMsg + "\n\n进入开发者后台，在小程序或者微应用详情的「接口权限」模块，点击申请对应的通讯录接口读写权限", "失败",
+                                    JOptionPane.ERROR_MESSAGE));
+                        } else {
+                            UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + errMsg, "失败", JOptionPane.ERROR_MESSAGE));
+                        }
+
+                        logger.error(response.getErrmsg());
+                        return;
                     }
+                    List<OapiUserSimplelistResponse.Userlist> userlist = response.getUserlist();
+                    for (OapiUserSimplelistResponse.Userlist dingUser : userlist) {
+                        String[] dataArray = new String[]{dingUser.getUserid(), dingUser.getName()};
 
-                    logger.error(response.getErrmsg());
-                    return;
-                }
-                List<OapiUserSimplelistResponse.Userlist> userlist = response.getUserlist();
-                for (OapiUserSimplelistResponse.Userlist dingUser : userlist) {
-                    String[] dataArray = new String[]{dingUser.getUserid(), dingUser.getName()};
+                        TPeopleData tPeopleData = new TPeopleData();
+                        tPeopleData.setPeopleId(peopleId);
+                        tPeopleData.setPin(dataArray[0]);
+                        tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
+                        tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                        tPeopleData.setDataVersion(dataVersion);
+                        tPeopleData.setCreateTime(now);
+                        tPeopleData.setModifiedTime(now);
 
-                    TPeopleData tPeopleData = new TPeopleData();
-                    tPeopleData.setPeopleId(peopleId);
-                    tPeopleData.setPin(dataArray[0]);
-                    tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
-                    tPeopleData.setAppVersion(UiConsts.APP_VERSION);
-                    tPeopleData.setDataVersion(dataVersion);
-                    tPeopleData.setCreateTime(now);
-                    tPeopleData.setModifiedTime(now);
+                        batcher.add(tPeopleData);
 
-                    peopleDataMapper.insert(tPeopleData);
-
-                    importedCount++;
-                    if (UiThreadUtil.shouldUpdateImportProgress(importedCount)) {
-                        int count = importedCount;
-                        UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
+                        importedCount++;
+                        if (UiThreadUtil.shouldUpdateImportProgress(importedCount)) {
+                            int count = importedCount;
+                            UiThreadUtil.runOnUi(() -> memberCountLabel.setText(String.valueOf(count)));
+                        }
                     }
+                    offset += 100;
+                    request.setOffset(offset);
                 }
-                offset += 100;
-                request.setOffset(offset);
             }
 
             int finalCount = importedCount;
@@ -498,38 +503,40 @@ public class ImportByDing extends JDialog {
 
                 peopleDataMapper.deleteByPeopleId(peopleId);
 
-                while (response.getErrcode() == null || response.getUserlist().size() > 0) {
-                    response = client.execute(request, DingMsgSender.getAccessTokenTimedCache(tPeople.getAccountId()).get("accessToken"));
-                    if (response.getErrcode() != 0) {
-                        if (response.getErrcode() == 60011) {
-                            JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + response.getErrmsg() + "\n\n进入开发者后台，在小程序或者微应用详情的「接口权限」模块，点击申请对应的通讯录接口读写权限", "失败",
-                                    JOptionPane.ERROR_MESSAGE);
-                        } else {
-                            JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + response.getErrmsg(), "失败", JOptionPane.ERROR_MESSAGE);
+                try (PeopleDataBatchInserter batcher = new PeopleDataBatchInserter(peopleDataMapper)) {
+                    while (response.getErrcode() == null || response.getUserlist().size() > 0) {
+                        response = client.execute(request, DingMsgSender.getAccessTokenTimedCache(tPeople.getAccountId()).get("accessToken"));
+                        if (response.getErrcode() != 0) {
+                            if (response.getErrcode() == 60011) {
+                                JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + response.getErrmsg() + "\n\n进入开发者后台，在小程序或者微应用详情的「接口权限」模块，点击申请对应的通讯录接口读写权限", "失败",
+                                        JOptionPane.ERROR_MESSAGE);
+                            } else {
+                                JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + response.getErrmsg(), "失败", JOptionPane.ERROR_MESSAGE);
+                            }
+
+                            logger.error(response.getErrmsg());
+                            return;
                         }
+                        List<OapiUserSimplelistResponse.Userlist> userlist = response.getUserlist();
+                        for (OapiUserSimplelistResponse.Userlist dingUser : userlist) {
+                            String[] dataArray = new String[]{dingUser.getUserid(), dingUser.getName()};
 
-                        logger.error(response.getErrmsg());
-                        return;
+                            TPeopleData tPeopleData = new TPeopleData();
+                            tPeopleData.setPeopleId(peopleId);
+                            tPeopleData.setPin(dataArray[0]);
+                            tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
+                            tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                            tPeopleData.setDataVersion(dataVersion);
+                            tPeopleData.setCreateTime(now);
+                            tPeopleData.setModifiedTime(now);
+
+                            batcher.add(tPeopleData);
+
+                            importedCount++;
+                        }
+                        offset += 100;
+                        request.setOffset(offset);
                     }
-                    List<OapiUserSimplelistResponse.Userlist> userlist = response.getUserlist();
-                    for (OapiUserSimplelistResponse.Userlist dingUser : userlist) {
-                        String[] dataArray = new String[]{dingUser.getUserid(), dingUser.getName()};
-
-                        TPeopleData tPeopleData = new TPeopleData();
-                        tPeopleData.setPeopleId(peopleId);
-                        tPeopleData.setPin(dataArray[0]);
-                        tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
-                        tPeopleData.setAppVersion(UiConsts.APP_VERSION);
-                        tPeopleData.setDataVersion(dataVersion);
-                        tPeopleData.setCreateTime(now);
-                        tPeopleData.setModifiedTime(now);
-
-                        peopleDataMapper.insert(tPeopleData);
-
-                        importedCount++;
-                    }
-                    offset += 100;
-                    request.setOffset(offset);
                 }
             } else if (dingImportConfigBefore.getUserType() == 2) {
                 int importedCount = 0;
@@ -576,38 +583,40 @@ public class ImportByDing extends JDialog {
 
                 peopleDataMapper.deleteByPeopleId(peopleId);
 
-                while (response.getErrcode() == null || response.getUserlist().size() > 0) {
-                    response = client.execute(request, DingMsgSender.getAccessTokenTimedCache(tPeople.getAccountId()).get("accessToken"));
-                    if (response.getErrcode() != 0) {
-                        if (response.getErrcode() == 60011) {
-                            JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + response.getErrmsg() + "\n\n进入开发者后台，在小程序或者微应用详情的「接口权限」模块，点击申请对应的通讯录接口读写权限", "失败",
-                                    JOptionPane.ERROR_MESSAGE);
-                        } else {
-                            JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + response.getErrmsg(), "失败", JOptionPane.ERROR_MESSAGE);
+                try (PeopleDataBatchInserter batcher = new PeopleDataBatchInserter(peopleDataMapper)) {
+                    while (response.getErrcode() == null || response.getUserlist().size() > 0) {
+                        response = client.execute(request, DingMsgSender.getAccessTokenTimedCache(tPeople.getAccountId()).get("accessToken"));
+                        if (response.getErrcode() != 0) {
+                            if (response.getErrcode() == 60011) {
+                                JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + response.getErrmsg() + "\n\n进入开发者后台，在小程序或者微应用详情的「接口权限」模块，点击申请对应的通讯录接口读写权限", "失败",
+                                        JOptionPane.ERROR_MESSAGE);
+                            } else {
+                                JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + response.getErrmsg(), "失败", JOptionPane.ERROR_MESSAGE);
+                            }
+
+                            logger.error(response.getErrmsg());
+                            return;
                         }
+                        List<OapiUserSimplelistResponse.Userlist> userlist = response.getUserlist();
+                        for (OapiUserSimplelistResponse.Userlist dingUser : userlist) {
+                            String[] dataArray = new String[]{dingUser.getUserid(), dingUser.getName()};
 
-                        logger.error(response.getErrmsg());
-                        return;
+                            TPeopleData tPeopleData = new TPeopleData();
+                            tPeopleData.setPeopleId(peopleId);
+                            tPeopleData.setPin(dataArray[0]);
+                            tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
+                            tPeopleData.setAppVersion(UiConsts.APP_VERSION);
+                            tPeopleData.setDataVersion(dataVersion);
+                            tPeopleData.setCreateTime(now);
+                            tPeopleData.setModifiedTime(now);
+
+                            batcher.add(tPeopleData);
+
+                            importedCount++;
+                        }
+                        offset += 100;
+                        request.setOffset(offset);
                     }
-                    List<OapiUserSimplelistResponse.Userlist> userlist = response.getUserlist();
-                    for (OapiUserSimplelistResponse.Userlist dingUser : userlist) {
-                        String[] dataArray = new String[]{dingUser.getUserid(), dingUser.getName()};
-
-                        TPeopleData tPeopleData = new TPeopleData();
-                        tPeopleData.setPeopleId(peopleId);
-                        tPeopleData.setPin(dataArray[0]);
-                        tPeopleData.setVarData(JSONUtil.toJsonStr(dataArray));
-                        tPeopleData.setAppVersion(UiConsts.APP_VERSION);
-                        tPeopleData.setDataVersion(dataVersion);
-                        tPeopleData.setCreateTime(now);
-                        tPeopleData.setModifiedTime(now);
-
-                        peopleDataMapper.insert(tPeopleData);
-
-                        importedCount++;
-                    }
-                    offset += 100;
-                    request.setOffset(offset);
                 }
             }
         } catch (Exception e) {
