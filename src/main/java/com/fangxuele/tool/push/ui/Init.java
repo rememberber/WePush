@@ -234,11 +234,8 @@ public class Init {
                 popupMenu.add(openItem);
                 popupMenu.add(exitItem);
 
-                if (SystemUtil.isWindowsOs()) {
-                    App.trayIcon = new TrayIcon(UiConsts.IMAGE_LOGO_64, "WePush", popupMenu);
-                } else {
-                    App.trayIcon = new TrayIcon(new FlatSVGIcon("icon/icon_push.svg").getImage(), "WePush", popupMenu);
-                }
+                // 托盘统一使用无背景的专用图标，避免 Windows 下显示 Logo 的灰色圆形底。
+                App.trayIcon = new TrayIcon(new FlatSVGIcon("icon/icon_push.svg").getImage(), "WePush", popupMenu);
                 App.trayIcon.setImageAutoSize(true);
 
                 App.trayIcon.addActionListener(e -> {
