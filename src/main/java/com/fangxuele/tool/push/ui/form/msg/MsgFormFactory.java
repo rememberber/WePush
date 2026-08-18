@@ -53,6 +53,9 @@ public class MsgFormFactory {
             case MessageTypeEnum.QI_NIU_YUN_CODE:
                 iMsgForm = QiNiuYunMsgForm.getInstance();
                 break;
+            case MessageTypeEnum.NETEASE_YUN_XIN_CODE:
+                iMsgForm = NeteaseYunXinMsgForm.getInstance();
+                break;
             case MessageTypeEnum.UP_YUN_CODE:
                 iMsgForm = UpYunMsgForm.getInstance();
                 break;

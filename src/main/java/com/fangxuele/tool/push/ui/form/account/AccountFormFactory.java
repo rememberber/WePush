@@ -68,6 +68,9 @@ public class AccountFormFactory {
             case MessageTypeEnum.QI_NIU_YUN_CODE:
                 iAccountForm = QiniuYunAccountForm.getInstance();
                 break;
+            case MessageTypeEnum.NETEASE_YUN_XIN_CODE:
+                iAccountForm = NeteaseYunXinAccountForm.getInstance();
+                break;
             default:
                 break;
         }

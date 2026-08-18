@@ -106,6 +106,9 @@ public class MessageTypeForm {
             case MessageTypeEnum.QI_NIU_YUN_CODE:
                 messageTypeForm.getQiniuRadioButton().setSelected(true);
                 break;
+            case MessageTypeEnum.NETEASE_YUN_XIN_CODE:
+                messageTypeForm.get网易云信短信RadioButton().setSelected(true);
+                break;
             case MessageTypeEnum.YUN_PIAN_CODE:
                 messageTypeForm.getYunPianRadioButton().setSelected(true);
                 break;
@@ -235,7 +238,7 @@ public class MessageTypeForm {
         yunPianRadioButton.setText("云片网短信");
         msgTypeListPanel.add(yunPianRadioButton, new GridConstraints(15, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         网易云信短信RadioButton = new JRadioButton();
-        网易云信短信RadioButton.setEnabled(false);
+        网易云信短信RadioButton.setEnabled(true);
         网易云信短信RadioButton.setText("网易云信短信");
         msgTypeListPanel.add(网易云信短信RadioButton, new GridConstraints(19, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         榛子云短信RadioButton = new JRadioButton();
