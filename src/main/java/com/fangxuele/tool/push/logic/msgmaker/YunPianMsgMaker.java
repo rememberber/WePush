@@ -4,11 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgSms;
 import com.fangxuele.tool.push.util.TemplateUtil;
-import com.yunpian.sdk.YunpianClient;
 import org.apache.velocity.VelocityContext;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * <pre>
@@ -31,14 +27,11 @@ public class YunPianMsgMaker extends BaseMsgMaker implements IMsgMaker {
      * 组织云片网短信消息
      *
      * @param msgData 消息信息
-     * @return Map
+     * @return 短信内容
      */
     @Override
-    public Map<String, String> makeMsg(String[] msgData) {
-        Map<String, String> params = new HashMap<>(2);
+    public String makeMsg(String[] msgData) {
         VelocityContext velocityContext = getVelocityContext(msgData);
-        String text = TemplateUtil.evaluate(msgYunpianMsgContent, velocityContext);
-        params.put(YunpianClient.TEXT, text);
-        return params;
+        return TemplateUtil.evaluate(msgYunpianMsgContent, velocityContext);
     }
 }

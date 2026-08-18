@@ -1,9 +1,6 @@
 package com.fangxuele.tool.push.logic.msgmaker;
 
-import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
-import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
-import com.aliyuncs.http.MethodType;
 import com.fangxuele.tool.push.bean.TemplateData;
 import com.fangxuele.tool.push.bean.account.AliYunAccountConfig;
 import com.fangxuele.tool.push.dao.TAccountMapper;
@@ -50,15 +47,17 @@ public class AliyunMsgMaker extends BaseMsgMaker implements IMsgMaker {
      * 组织阿里云短信消息
      *
      * @param msgData 消息信息
-     * @return SendSmsRequest
+     * @return SendSms业务参数（SignName/TemplateCode/TemplateParam）
      */
     @Override
-    public SendSmsRequest makeMsg(String[] msgData) {
-        SendSmsRequest request = new SendSmsRequest();
-        //使用post提交
-        request.setSysMethod(MethodType.POST);
+    public Map<String, String> makeMsg(String[] msgData) {
+        Map<String, String> params = new HashMap<>(10);
+
         //必填:短信签名-可在短信控制台中找到
-        request.setSignName(aliYunAccountConfig.getSign());
+        params.put("SignName", aliYunAccountConfig.getSign());
+
+        // 短信模板ID，传入的模板必须是在阿里阿里云短信中的可用模板。示例：SMS_585014
+        params.put("TemplateCode", templateId);
 
         // 模板参数
         Map<String, String> paramMap = new HashMap<>(10);
@@ -68,11 +67,8 @@ public class AliyunMsgMaker extends BaseMsgMaker implements IMsgMaker {
             paramMap.put(templateData.getName(), TemplateUtil.evaluate(templateData.getValue(), velocityContext));
         }
 
-        request.setTemplateParam(JSONUtil.parseFromMap(paramMap).toJSONString(0));
+        params.put("TemplateParam", JSON.toJSONString(paramMap));
 
-        // 短信模板ID，传入的模板必须是在阿里阿里云短信中的可用模板。示例：SMS_585014
-        request.setTemplateCode(templateId);
-
-        return request;
+        return params;
     }
 }

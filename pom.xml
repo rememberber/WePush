@@ -50,11 +50,8 @@
         <forms_rt.version>7.0.3</forms_rt.version>
         <fastjson.version>1.2.74</fastjson.version>
         <sun-mail.version>1.6.2</sun-mail.version>
-        <aliyun-java-sdk-core.version>4.4.2</aliyun-java-sdk-core.version>
         <poi.version>4.1.2</poi.version>
         <AppleJavaExtensions.version>1.4</AppleJavaExtensions.version>
-        <qcloudsms.version>1.0.6</qcloudsms.version>
-        <yunpian-java-sdk.version>1.2.7</yunpian-java-sdk.version>
         <velocity-engine-core.version>2.3</velocity-engine-core.version>
         <lombok.version>1.18.44</lombok.version>
         <mybatis.version>3.5.19</mybatis.version>
@@ -64,14 +61,10 @@
         <HikariCP.version>3.4.5</HikariCP.version>
         <quartz.version>2.3.2</quartz.version>
         <okhttp.version>5.4.0</okhttp.version>
-        <aliyun-java-sdk-dysmsapi.version>1.1.0</aliyun-java-sdk-dysmsapi.version>
-        <bce-java-sdk.version>0.10.134</bce-java-sdk.version>
-        <qiniu-java-sdk.version>7.3.0</qiniu-java-sdk.version>
         <flatlaf.version>3.7.2</flatlaf.version>
         <flatlaf-extras.version>3.7.2</flatlaf-extras.version>
         <flatlaf-intellij-themes.version>3.7.2</flatlaf-intellij-themes.version>
         <json-path.version>2.6.0</json-path.version>
-        <tencentcloud-sdk-java.version>3.1.847</tencentcloud-sdk-java.version>
     </properties>
 
     <dependencies>
@@ -178,12 +171,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>aliyun-java-sdk-core</artifactId>
-            <version>${aliyun-java-sdk-core.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>${poi.version}</version>
@@ -193,56 +180,6 @@
             <groupId>com.apple</groupId>
             <artifactId>AppleJavaExtensions</artifactId>
             <version>${AppleJavaExtensions.version}</version>
-        </dependency>
-
-        <!--腾讯云-->
-        <dependency>
-            <groupId>com.github.qcloudsms</groupId>
-            <artifactId>qcloudsms</artifactId>
-            <version>${qcloudsms.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-codec</artifactId>
-                    <groupId>commons-codec</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>httpclient</artifactId>
-                    <groupId>org.apache.httpcomponents</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <!--云片网-->
-        <dependency>
-            <groupId>com.yunpian.sdk</groupId>
-            <artifactId>yunpian-java-sdk</artifactId>
-            <version>${yunpian-java-sdk.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>slf4j-api</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>httpmime</artifactId>
-                    <groupId>org.apache.httpcomponents</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>httpclient</artifactId>
-                    <groupId>org.apache.httpcomponents</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>httpcore</artifactId>
-                    <groupId>org.apache.httpcomponents</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>gson</artifactId>
-                    <groupId>com.google.code.gson</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>httpasyncclient</artifactId>
-                    <groupId>org.apache.httpcomponents</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!--文件字符集格式检测-->
@@ -314,110 +251,6 @@
             <version>${okhttp.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>aliyun-java-sdk-dysmsapi</artifactId>
-            <version>${aliyun-java-sdk-dysmsapi.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.baidubce</groupId>
-            <artifactId>bce-java-sdk</artifactId>
-            <version>${bce-java-sdk.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>slf4j-api</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>logback-classic</artifactId>
-                    <groupId>ch.qos.logback</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>logback-core</artifactId>
-                    <groupId>ch.qos.logback</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>guava</artifactId>
-                    <groupId>com.google.guava</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-beanutils</artifactId>
-                    <groupId>commons-beanutils</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-codec</artifactId>
-                    <groupId>commons-codec</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-collections</artifactId>
-                    <groupId>commons-collections</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-io</artifactId>
-                    <groupId>commons-io</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-lang</artifactId>
-                    <groupId>commons-lang</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jaxb-api</artifactId>
-                    <groupId>javax.xml.bind</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>log4j</artifactId>
-                    <groupId>log4j</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-compress</artifactId>
-                    <groupId>org.apache.commons</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-lang3</artifactId>
-                    <groupId>org.apache.commons</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>commons-math3</artifactId>
-                    <groupId>org.apache.commons</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>httpasyncclient</artifactId>
-                    <groupId>org.apache.httpcomponents</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>httpclient</artifactId>
-                    <groupId>org.apache.httpcomponents</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jcl-over-slf4j</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>slf4j-log4j12</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>hbase-client</artifactId>
-                    <groupId>org.apache.hbase</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>bcprov-jdk15on</artifactId>
-                    <groupId>org.bouncycastle</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>com.qiniu</groupId>
-            <artifactId>qiniu-java-sdk</artifactId>
-            <version>${qiniu-java-sdk.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.formdev</groupId>
             <artifactId>flatlaf</artifactId>
             <version>${flatlaf.version}</version>
@@ -445,12 +278,6 @@
                     <groupId>org.slf4j</groupId>
                 </exclusion>
             </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>com.tencentcloudapi</groupId>
-            <artifactId>tencentcloud-sdk-java</artifactId>
-            <version>${tencentcloud-sdk-java.version}</version>
         </dependency>
 
     </dependencies>

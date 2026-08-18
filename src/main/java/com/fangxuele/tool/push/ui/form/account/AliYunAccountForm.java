@@ -1,10 +1,6 @@
 package com.fangxuele.tool.push.ui.form.account;
 
 import cn.hutool.json.JSONUtil;
-import com.aliyuncs.DefaultAcsClient;
-import com.aliyuncs.IAcsClient;
-import com.aliyuncs.http.HttpClientConfig;
-import com.aliyuncs.profile.DefaultProfile;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.account.AliYunAccountConfig;
 import com.fangxuele.tool.push.domain.TAccount;
@@ -32,11 +28,6 @@ public class AliYunAccountForm implements IAccountForm {
     private JTextField accessKeySecretTextField;
 
     private static AliYunAccountForm wxMpAccountForm;
-
-    /**
-     * 阿里云短信client
-     */
-    public volatile static IAcsClient iAcsClient;
 
     @Override
     public void init(String accountName) {
@@ -119,48 +110,6 @@ public class AliYunAccountForm implements IAccountForm {
         }
         UndoUtil.register(wxMpAccountForm);
         return wxMpAccountForm;
-    }
-
-    /**
-     * 获取阿里云短信发送客户端
-     *
-     * @return IAcsClient
-     */
-    private static IAcsClient getAliyunIAcsClient(String accountName) {
-        invalidAccount();
-
-        if (iAcsClient == null) {
-            synchronized (AliYunMsgSender.class) {
-                if (iAcsClient == null) {
-                    TAccount tAccount = accountMapper.selectByMsgTypeAndAccountName(App.config.getMsgType(), accountName);
-                    if (tAccount == null) {
-                        log.error("未获取到对应的微信公众号账号配置:{}", accountName);
-                    }
-
-                    AliYunAccountConfig aliYunAccountConfig = JSONUtil.toBean(tAccount.getAccountConfig(), AliYunAccountConfig.class);
-
-                    String aliyunAccessKeyId = aliYunAccountConfig.getAccessKeyId();
-                    String aliyunAccessKeySecret = aliYunAccountConfig.getAccessKeySecret();
-
-                    // 创建DefaultAcsClient实例并初始化
-                    DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", aliyunAccessKeyId, aliyunAccessKeySecret);
-
-                    // 多个SDK client共享一个连接池，此处设置该连接池的参数，
-                    // 比如每个host的最大连接数，超时时间等
-                    HttpClientConfig clientConfig = HttpClientConfig.getDefault();
-                    clientConfig.setMaxRequestsPerHost(App.config.getMaxThreads());
-                    clientConfig.setConnectionTimeoutMillis(10000L);
-
-                    profile.setHttpClientConfig(clientConfig);
-                    iAcsClient = new DefaultAcsClient(profile);
-                }
-            }
-        }
-        return iAcsClient;
-    }
-
-    public static void invalidAccount() {
-        iAcsClient = null;
     }
 
     {
