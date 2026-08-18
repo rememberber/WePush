@@ -115,6 +115,9 @@ public class MessageEditForm {
             case MessageTypeEnum.NETEASE_YUN_XIN_CODE:
                 messageEditForm.getMsgEditorPanel().add(NeteaseYunXinMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
                 break;
+            case MessageTypeEnum.ZHENZI_YUN_CODE:
+                messageEditForm.getMsgEditorPanel().add(ZhenziYunMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
+                break;
             case MessageTypeEnum.UP_YUN_CODE:
                 messageEditForm.getMsgEditorPanel().add(UpYunMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
                 break;

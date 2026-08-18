@@ -71,6 +71,10 @@ public class MessageTypeListener {
             App.config.setMsgType(MessageTypeEnum.NETEASE_YUN_XIN_CODE);
             saveType();
         });
+        messageTypeForm.get榛子云短信RadioButton().addActionListener(e -> {
+            App.config.setMsgType(MessageTypeEnum.ZHENZI_YUN_CODE);
+            saveType();
+        });
         messageTypeForm.getBdYunRadioButton().addActionListener(e -> {
             App.config.setMsgType(MessageTypeEnum.BD_YUN_CODE);
             saveType();

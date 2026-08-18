@@ -42,6 +42,9 @@ public class MsgSenderFactory {
             case MessageTypeEnum.NETEASE_YUN_XIN_CODE:
                 iMsgSender = new NeteaseYunXinMsgSender(msgId, dryRun);
                 break;
+            case MessageTypeEnum.ZHENZI_YUN_CODE:
+                iMsgSender = new ZhenziYunMsgSender(msgId, dryRun);
+                break;
             case MessageTypeEnum.TX_YUN_CODE:
                 iMsgSender = new TxYunMsgSender(msgId, dryRun);
                 break;

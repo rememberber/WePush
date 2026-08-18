@@ -71,6 +71,9 @@ public class AccountFormFactory {
             case MessageTypeEnum.NETEASE_YUN_XIN_CODE:
                 iAccountForm = NeteaseYunXinAccountForm.getInstance();
                 break;
+            case MessageTypeEnum.ZHENZI_YUN_CODE:
+                iAccountForm = ZhenziYunAccountForm.getInstance();
+                break;
             default:
                 break;
         }
