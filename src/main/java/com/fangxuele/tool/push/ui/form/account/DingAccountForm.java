@@ -1,8 +1,6 @@
 package com.fangxuele.tool.push.ui.form.account;
 
-import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.json.JSONUtil;
-import com.dingtalk.api.DefaultDingTalkClient;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.account.DingAccountConfig;
 import com.fangxuele.tool.push.domain.TAccount;
@@ -31,10 +29,6 @@ public class DingAccountForm implements IAccountForm {
     private JTextField appKeyTextField;
 
     private static DingAccountForm wxMpAccountForm;
-
-    public volatile static DefaultDingTalkClient defaultDingTalkClient;
-    public volatile static DefaultDingTalkClient robotClient;
-    public static TimedCache<String, String> accessTokenTimedCache;
 
     @Override
     public void init(String accountName) {
@@ -119,12 +113,6 @@ public class DingAccountForm implements IAccountForm {
         }
         UndoUtil.register(wxMpAccountForm);
         return wxMpAccountForm;
-    }
-
-    public static void invalidAccount() {
-        accessTokenTimedCache = null;
-        defaultDingTalkClient = null;
-        robotClient = null;
     }
 
     {

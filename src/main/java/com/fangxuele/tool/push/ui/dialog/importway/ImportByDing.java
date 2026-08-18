@@ -5,12 +5,8 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
-import com.dingtalk.api.DefaultDingTalkClient;
-import com.dingtalk.api.DingTalkClient;
-import com.dingtalk.api.request.OapiDepartmentListRequest;
-import com.dingtalk.api.request.OapiUserSimplelistRequest;
-import com.dingtalk.api.response.OapiDepartmentListResponse;
-import com.dingtalk.api.response.OapiUserSimplelistResponse;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TPeopleDataMapper;
 import com.fangxuele.tool.push.dao.TPeopleImportConfigMapper;
@@ -24,6 +20,7 @@ import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.importway.config.DingImportConfig;
 import com.fangxuele.tool.push.ui.form.PeopleEditForm;
 import com.fangxuele.tool.push.util.ComponentUtil;
+import com.fangxuele.tool.push.util.DingTalkApiUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.PeopleDataBatchInserter;
 import com.fangxuele.tool.push.util.SqliteUtil;
@@ -91,21 +88,20 @@ public class ImportByDing extends JDialog {
         dingDeptsRefreshButton.addActionListener(e -> ThreadUtil.execute(() -> {
             try {
                 // 获取部门列表
-                DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/department/list");
-                OapiDepartmentListRequest request = new OapiDepartmentListRequest();
-                request.setHttpMethod("GET");
-                OapiDepartmentListResponse response = client.execute(request, DingMsgSender.getAccessTokenTimedCache(tPeople.getAccountId()).get("accessToken"));
-                if (response.getErrcode() != 0) {
-                    UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "刷新失败！\n\n" + response.getErrmsg(), "失败",
+                String accessToken = DingMsgSender.getAccessTokenTimedCache(tPeople.getAccountId()).get("accessToken");
+                JSONObject response = DingTalkApiUtil.get("https://oapi.dingtalk.com/department/list?access_token=" + accessToken);
+                if (response.getIntValue("errcode") != 0) {
+                    UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "刷新失败！\n\n" + response.getString("errmsg"), "失败",
                             JOptionPane.ERROR_MESSAGE));
                     return;
                 }
-                List<OapiDepartmentListResponse.Department> departmentList = response.getDepartment();
+                JSONArray departmentList = response.getJSONArray("department");
                 List<String> deptNames = new ArrayList<>();
-                for (OapiDepartmentListResponse.Department department : departmentList) {
-                    deptNames.add(department.getName());
-                    wxCpDeptNameToIdMap.put(department.getName(), department.getId());
-                    wxCpIdToDeptNameMap.put(department.getId(), department.getName());
+                for (int i = 0; i < departmentList.size(); i++) {
+                    JSONObject department = departmentList.getJSONObject(i);
+                    deptNames.add(department.getString("name"));
+                    wxCpDeptNameToIdMap.put(department.getString("name"), department.getLong("id"));
+                    wxCpIdToDeptNameMap.put(department.getLong("id"), department.getString("name"));
                 }
                 UiThreadUtil.runOnUi(() -> {
                     dingDeptsComboBox.removeAllItems();
@@ -167,33 +163,32 @@ public class ImportByDing extends JDialog {
                     }
 
                     // 获取用户
-                    DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/user/simplelist");
-                    OapiUserSimplelistRequest request = new OapiUserSimplelistRequest();
-                    request.setDepartmentId(deptId);
-                    request.setOffset(0L);
-                    request.setSize(100L);
-                    request.setHttpMethod("GET");
+                    String accessToken = DingMsgSender.getAccessTokenTimedCache(tPeople.getAccountId()).get("accessToken");
 
                     long offset = 0;
-                    OapiUserSimplelistResponse response = new OapiUserSimplelistResponse();
                     try (PeopleDataBatchInserter batcher = new PeopleDataBatchInserter(peopleDataMapper)) {
-                        while (response.getErrcode() == null || response.getUserlist().size() > 0) {
-                            response = client.execute(request, DingMsgSender.getAccessTokenTimedCache(tPeople.getAccountId()).get("accessToken"));
-                            if (response.getErrcode() != 0) {
-                                final String errMsg = response.getErrmsg();
-                                if (response.getErrcode() == 60011) {
+                        while (true) {
+                            JSONObject response = DingTalkApiUtil.get("https://oapi.dingtalk.com/user/simplelist?access_token=" + accessToken
+                                    + "&department_id=" + deptId + "&offset=" + offset + "&size=100");
+                            if (response.getIntValue("errcode") != 0) {
+                                final String errMsg = response.getString("errmsg");
+                                if (response.getIntValue("errcode") == 60011) {
                                     UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + errMsg + "\n\n进入开发者后台，在小程序或者微应用详情的「接口权限」模块，点击申请对应的通讯录接口读写权限", "失败",
                                             JOptionPane.ERROR_MESSAGE));
                                 } else {
                                     UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + errMsg, "失败", JOptionPane.ERROR_MESSAGE));
                                 }
 
-                                logger.error(response.getErrmsg());
+                                logger.error(response.getString("errmsg"));
                                 return;
                             }
-                            List<OapiUserSimplelistResponse.Userlist> userlist = response.getUserlist();
-                            for (OapiUserSimplelistResponse.Userlist dingUser : userlist) {
-                                String[] dataArray = new String[]{dingUser.getUserid(), dingUser.getName()};
+                            JSONArray userlist = response.getJSONArray("userlist");
+                            if (userlist == null || userlist.isEmpty()) {
+                                break;
+                            }
+                            for (int i = 0; i < userlist.size(); i++) {
+                                JSONObject dingUser = userlist.getJSONObject(i);
+                                String[] dataArray = new String[]{dingUser.getString("userid"), dingUser.getString("name")};
 
                                 TPeopleData tPeopleData = new TPeopleData();
                                 tPeopleData.setPeopleId(peopleId);
@@ -213,7 +208,6 @@ public class ImportByDing extends JDialog {
                                 }
                             }
                             offset += 100;
-                            request.setOffset(offset);
                         }
                     }
 
@@ -307,33 +301,32 @@ public class ImportByDing extends JDialog {
 
             // 最小部门id为1
             // 获取用户
-            DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/user/simplelist");
-            OapiUserSimplelistRequest request = new OapiUserSimplelistRequest();
-            request.setDepartmentId(1L);
-            request.setOffset(0L);
-            request.setSize(100L);
-            request.setHttpMethod("GET");
+            String accessToken = DingMsgSender.getAccessTokenTimedCache(tPeople.getAccountId()).get("accessToken");
 
             long offset = 0;
-            OapiUserSimplelistResponse response = new OapiUserSimplelistResponse();
             try (PeopleDataBatchInserter batcher = new PeopleDataBatchInserter(peopleDataMapper)) {
-                while (response.getErrcode() == null || response.getUserlist().size() > 0) {
-                    response = client.execute(request, DingMsgSender.getAccessTokenTimedCache(tPeople.getAccountId()).get("accessToken"));
-                    if (response.getErrcode() != 0) {
-                        final String errMsg = response.getErrmsg();
-                        if (response.getErrcode() == 60011) {
+                while (true) {
+                    JSONObject response = DingTalkApiUtil.get("https://oapi.dingtalk.com/user/simplelist?access_token=" + accessToken
+                            + "&department_id=1&offset=" + offset + "&size=100");
+                    if (response.getIntValue("errcode") != 0) {
+                        final String errMsg = response.getString("errmsg");
+                        if (response.getIntValue("errcode") == 60011) {
                             UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + errMsg + "\n\n进入开发者后台，在小程序或者微应用详情的「接口权限」模块，点击申请对应的通讯录接口读写权限", "失败",
                                     JOptionPane.ERROR_MESSAGE));
                         } else {
                             UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + errMsg, "失败", JOptionPane.ERROR_MESSAGE));
                         }
 
-                        logger.error(response.getErrmsg());
+                        logger.error(response.getString("errmsg"));
                         return;
                     }
-                    List<OapiUserSimplelistResponse.Userlist> userlist = response.getUserlist();
-                    for (OapiUserSimplelistResponse.Userlist dingUser : userlist) {
-                        String[] dataArray = new String[]{dingUser.getUserid(), dingUser.getName()};
+                    JSONArray userlist = response.getJSONArray("userlist");
+                    if (userlist == null || userlist.isEmpty()) {
+                        break;
+                    }
+                    for (int i = 0; i < userlist.size(); i++) {
+                        JSONObject dingUser = userlist.getJSONObject(i);
+                        String[] dataArray = new String[]{dingUser.getString("userid"), dingUser.getString("name")};
 
                         TPeopleData tPeopleData = new TPeopleData();
                         tPeopleData.setPeopleId(peopleId);
@@ -353,7 +346,6 @@ public class ImportByDing extends JDialog {
                         }
                     }
                     offset += 100;
-                    request.setOffset(offset);
                 }
             }
 
@@ -491,35 +483,34 @@ public class ImportByDing extends JDialog {
 
                 // 最小部门id为1
                 // 获取用户
-                DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/user/simplelist");
-                OapiUserSimplelistRequest request = new OapiUserSimplelistRequest();
-                request.setDepartmentId(1L);
-                request.setOffset(0L);
-                request.setSize(100L);
-                request.setHttpMethod("GET");
+                String accessToken = DingMsgSender.getAccessTokenTimedCache(tPeople.getAccountId()).get("accessToken");
 
                 long offset = 0;
-                OapiUserSimplelistResponse response = new OapiUserSimplelistResponse();
 
                 peopleDataMapper.deleteByPeopleId(peopleId);
 
                 try (PeopleDataBatchInserter batcher = new PeopleDataBatchInserter(peopleDataMapper)) {
-                    while (response.getErrcode() == null || response.getUserlist().size() > 0) {
-                        response = client.execute(request, DingMsgSender.getAccessTokenTimedCache(tPeople.getAccountId()).get("accessToken"));
-                        if (response.getErrcode() != 0) {
-                            if (response.getErrcode() == 60011) {
-                                JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + response.getErrmsg() + "\n\n进入开发者后台，在小程序或者微应用详情的「接口权限」模块，点击申请对应的通讯录接口读写权限", "失败",
+                    while (true) {
+                        JSONObject response = DingTalkApiUtil.get("https://oapi.dingtalk.com/user/simplelist?access_token=" + accessToken
+                                + "&department_id=1&offset=" + offset + "&size=100");
+                        if (response.getIntValue("errcode") != 0) {
+                            if (response.getIntValue("errcode") == 60011) {
+                                JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + response.getString("errmsg") + "\n\n进入开发者后台，在小程序或者微应用详情的「接口权限」模块，点击申请对应的通讯录接口读写权限", "失败",
                                         JOptionPane.ERROR_MESSAGE);
                             } else {
-                                JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + response.getErrmsg(), "失败", JOptionPane.ERROR_MESSAGE);
+                                JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + response.getString("errmsg"), "失败", JOptionPane.ERROR_MESSAGE);
                             }
 
-                            logger.error(response.getErrmsg());
+                            logger.error(response.getString("errmsg"));
                             return;
                         }
-                        List<OapiUserSimplelistResponse.Userlist> userlist = response.getUserlist();
-                        for (OapiUserSimplelistResponse.Userlist dingUser : userlist) {
-                            String[] dataArray = new String[]{dingUser.getUserid(), dingUser.getName()};
+                        JSONArray userlist = response.getJSONArray("userlist");
+                        if (userlist == null || userlist.isEmpty()) {
+                            break;
+                        }
+                        for (int i = 0; i < userlist.size(); i++) {
+                            JSONObject dingUser = userlist.getJSONObject(i);
+                            String[] dataArray = new String[]{dingUser.getString("userid"), dingUser.getString("name")};
 
                             TPeopleData tPeopleData = new TPeopleData();
                             tPeopleData.setPeopleId(peopleId);
@@ -535,7 +526,6 @@ public class ImportByDing extends JDialog {
                             importedCount++;
                         }
                         offset += 100;
-                        request.setOffset(offset);
                     }
                 }
             } else if (dingImportConfigBefore.getUserType() == 2) {
@@ -571,35 +561,34 @@ public class ImportByDing extends JDialog {
                 }
 
                 // 获取用户
-                DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/user/simplelist");
-                OapiUserSimplelistRequest request = new OapiUserSimplelistRequest();
-                request.setDepartmentId(deptId);
-                request.setOffset(0L);
-                request.setSize(100L);
-                request.setHttpMethod("GET");
+                String accessToken = DingMsgSender.getAccessTokenTimedCache(tPeople.getAccountId()).get("accessToken");
 
                 long offset = 0;
-                OapiUserSimplelistResponse response = new OapiUserSimplelistResponse();
 
                 peopleDataMapper.deleteByPeopleId(peopleId);
 
                 try (PeopleDataBatchInserter batcher = new PeopleDataBatchInserter(peopleDataMapper)) {
-                    while (response.getErrcode() == null || response.getUserlist().size() > 0) {
-                        response = client.execute(request, DingMsgSender.getAccessTokenTimedCache(tPeople.getAccountId()).get("accessToken"));
-                        if (response.getErrcode() != 0) {
-                            if (response.getErrcode() == 60011) {
-                                JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + response.getErrmsg() + "\n\n进入开发者后台，在小程序或者微应用详情的「接口权限」模块，点击申请对应的通讯录接口读写权限", "失败",
+                    while (true) {
+                        JSONObject response = DingTalkApiUtil.get("https://oapi.dingtalk.com/user/simplelist?access_token=" + accessToken
+                                + "&department_id=" + deptId + "&offset=" + offset + "&size=100");
+                        if (response.getIntValue("errcode") != 0) {
+                            if (response.getIntValue("errcode") == 60011) {
+                                JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + response.getString("errmsg") + "\n\n进入开发者后台，在小程序或者微应用详情的「接口权限」模块，点击申请对应的通讯录接口读写权限", "失败",
                                         JOptionPane.ERROR_MESSAGE);
                             } else {
-                                JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + response.getErrmsg(), "失败", JOptionPane.ERROR_MESSAGE);
+                                JOptionPane.showMessageDialog(App.mainFrame, "导入失败！\n\n" + response.getString("errmsg"), "失败", JOptionPane.ERROR_MESSAGE);
                             }
 
-                            logger.error(response.getErrmsg());
+                            logger.error(response.getString("errmsg"));
                             return;
                         }
-                        List<OapiUserSimplelistResponse.Userlist> userlist = response.getUserlist();
-                        for (OapiUserSimplelistResponse.Userlist dingUser : userlist) {
-                            String[] dataArray = new String[]{dingUser.getUserid(), dingUser.getName()};
+                        JSONArray userlist = response.getJSONArray("userlist");
+                        if (userlist == null || userlist.isEmpty()) {
+                            break;
+                        }
+                        for (int i = 0; i < userlist.size(); i++) {
+                            JSONObject dingUser = userlist.getJSONObject(i);
+                            String[] dataArray = new String[]{dingUser.getString("userid"), dingUser.getString("name")};
 
                             TPeopleData tPeopleData = new TPeopleData();
                             tPeopleData.setPeopleId(peopleId);
@@ -615,7 +604,6 @@ public class ImportByDing extends JDialog {
                             importedCount++;
                         }
                         offset += 100;
-                        request.setOffset(offset);
                     }
                 }
             }

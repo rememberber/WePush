@@ -3,36 +3,29 @@ package com.fangxuele.tool.push.logic.msgsender;
 import cn.hutool.cache.CacheUtil;
 import cn.hutool.cache.impl.TimedCache;
 import com.alibaba.fastjson.JSON;
-import com.dingtalk.api.DefaultDingTalkClient;
-import com.dingtalk.api.DingTalkClient;
-import com.dingtalk.api.request.OapiGettokenRequest;
-import com.dingtalk.api.request.OapiMessageCorpconversationAsyncsendV2Request;
-import com.dingtalk.api.request.OapiRobotSendRequest;
-import com.dingtalk.api.response.OapiGettokenResponse;
-import com.dingtalk.api.response.OapiMessageCorpconversationAsyncsendV2Response;
-import com.dingtalk.api.response.OapiRobotSendResponse;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.fangxuele.tool.push.bean.account.DingAccountConfig;
 import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.dao.TMsgMapper;
 import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgDing;
-import com.fangxuele.tool.push.logic.PushControl;
 import com.fangxuele.tool.push.logic.msgmaker.DingMsgMaker;
+import com.fangxuele.tool.push.util.DingTalkApiUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
-import com.taobao.api.ApiException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
+import java.net.URLEncoder;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
  * <pre>
  * 钉钉消息发送器
+ * 接口文档：https://open.dingtalk.com/document/orgapp-server/asynchronous-sending-of-enterprise-session-messages
  * </pre>
  *
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
@@ -40,8 +33,16 @@ import java.util.Map;
  */
 @Slf4j
 public class DingMsgSender implements IMsgSender {
-    private DefaultDingTalkClient defaultDingTalkClient;
-    private DefaultDingTalkClient robotClient;
+    /**
+     * 获取access_token接口地址
+     */
+    private static final String GET_TOKEN_URL = "https://oapi.dingtalk.com/gettoken";
+
+    /**
+     * 工作通知消息接口地址
+     */
+    private static final String WORK_MSG_URL = "https://oapi.dingtalk.com/topapi/message/corpconversation/asyncsend_v2";
+
     private TimedCache<String, String> accessTokenTimedCache;
     private DingMsgMaker dingMsgMaker;
 
@@ -57,6 +58,7 @@ public class DingMsgSender implements IMsgSender {
     private TAccount tAccount;
 
     private TMsgDing tMsgDing;
+
 
     public DingMsgSender(Integer msgId, Integer dryRun) {
         TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
@@ -90,25 +92,24 @@ public class DingMsgSender implements IMsgSender {
         try {
             String userId = msgData[0];
 
-            OapiMessageCorpconversationAsyncsendV2Request request2 = new OapiMessageCorpconversationAsyncsendV2Request();
-            request2.setUseridList(userId);
-            request2.setAgentId(Long.valueOf(dingAccountConfig.getAgentId()));
-            request2.setToAllUser(false);
-
             TMsgDing dingMsg = dingMsgMaker.makeMsg(msgData);
-            OapiMessageCorpconversationAsyncsendV2Request.Msg msg = getMsg(dingMsg);
-            request2.setMsg(msg);
 
             if (dryRun == 1) {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
-                DefaultDingTalkClient defaultDingTalkClient = getDefaultDingTalkClient();
-                OapiMessageCorpconversationAsyncsendV2Response response2 = defaultDingTalkClient.execute(request2, getAccessTokenTimedCache(tAccount.getId()).get("accessToken"));
-                if (response2.getErrcode() != 0) {
+                JSONObject requestJson = new JSONObject();
+                requestJson.put("userid_list", userId);
+                requestJson.put("agent_id", Long.valueOf(dingAccountConfig.getAgentId()));
+                requestJson.put("to_all_user", false);
+                requestJson.put("msg", buildWorkMsg(dingMsg));
+
+                String accessToken = getAccessTokenTimedCache(tAccount.getId()).get("accessToken");
+                JSONObject response = DingTalkApiUtil.postJson(WORK_MSG_URL + "?access_token=" + accessToken, requestJson);
+                if (response.getIntValue("errcode") != 0) {
                     sendResult.setSuccess(false);
-                    sendResult.setInfo(response2.getErrmsg());
-                    log.error(response2.getErrmsg());
+                    sendResult.setInfo(response.getString("errmsg"));
+                    log.error(response.getString("errmsg"));
                     return sendResult;
                 }
             }
@@ -127,56 +128,55 @@ public class DingMsgSender implements IMsgSender {
         SendResult sendResult = new SendResult();
 
         try {
-            DingTalkClient client = getRobotClient();
-            OapiRobotSendRequest request2 = new OapiRobotSendRequest();
             TMsgDing dingMsg = dingMsgMaker.makeMsg(msgData);
+            JSONObject requestJson = new JSONObject();
             if ("文本消息".equals(tMsgDing.getDingMsgType())) {
-                request2.setMsgtype("text");
-                OapiRobotSendRequest.Text text = new OapiRobotSendRequest.Text();
-                text.setContent(dingMsg.getContent());
-                request2.setText(text);
-                OapiRobotSendRequest.At at = new OapiRobotSendRequest.At();
+                requestJson.put("msgtype", "text");
+                JSONObject text = new JSONObject();
+                text.put("content", dingMsg.getContent());
+                requestJson.put("text", text);
+                JSONObject at = new JSONObject();
                 if (msgData != null && StringUtils.isNotBlank(msgData[0])) {
-                    List<String> mobiles = Lists.newArrayList();
-                    mobiles.add(msgData[0]);
-                    at.setAtMobiles(mobiles);
+                    JSONArray atMobiles = new JSONArray();
+                    atMobiles.add(msgData[0]);
+                    at.put("atMobiles", atMobiles);
                 } else {
-                    at.setIsAtAll("true");
+                    at.put("isAtAll", true);
                 }
-                request2.setAt(at);
+                requestJson.put("at", at);
             } else if ("链接消息".equals(tMsgDing.getDingMsgType())) {
-                request2.setMsgtype("link");
-                OapiRobotSendRequest.Link link = new OapiRobotSendRequest.Link();
-                link.setMessageUrl(dingMsg.getUrl());
-                link.setPicUrl(dingMsg.getPicUrl());
-                link.setTitle(dingMsg.getMsgTitle());
-                link.setText(dingMsg.getContent());
-                request2.setLink(link);
+                requestJson.put("msgtype", "link");
+                JSONObject link = new JSONObject();
+                link.put("messageUrl", dingMsg.getUrl());
+                link.put("picUrl", dingMsg.getPicUrl());
+                link.put("title", dingMsg.getMsgTitle());
+                link.put("text", dingMsg.getContent());
+                requestJson.put("link", link);
             } else if ("markdown消息".equals(tMsgDing.getDingMsgType())) {
-                request2.setMsgtype("markdown");
-                OapiRobotSendRequest.Markdown markdown = new OapiRobotSendRequest.Markdown();
-                markdown.setTitle(dingMsg.getMsgTitle());
-                markdown.setText(dingMsg.getContent());
-                request2.setMarkdown(markdown);
+                requestJson.put("msgtype", "markdown");
+                JSONObject markdown = new JSONObject();
+                markdown.put("title", dingMsg.getMsgTitle());
+                markdown.put("text", dingMsg.getContent());
+                requestJson.put("markdown", markdown);
             } else if ("卡片消息".equals(tMsgDing.getDingMsgType())) {
-                request2.setMsgtype("actionCard");
-                OapiRobotSendRequest.Actioncard actionCard = new OapiRobotSendRequest.Actioncard();
-                actionCard.setTitle(dingMsg.getMsgTitle());
-                actionCard.setText(dingMsg.getContent());
-                actionCard.setSingleTitle(dingMsg.getBtnTxt());
-                actionCard.setSingleURL(dingMsg.getBtnUrl());
-                request2.setActionCard(actionCard);
+                requestJson.put("msgtype", "actionCard");
+                JSONObject actionCard = new JSONObject();
+                actionCard.put("title", dingMsg.getMsgTitle());
+                actionCard.put("text", dingMsg.getContent());
+                actionCard.put("singleTitle", dingMsg.getBtnTxt());
+                actionCard.put("singleURL", dingMsg.getBtnUrl());
+                requestJson.put("actionCard", actionCard);
             }
 
             if (dryRun == 1) {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
-                OapiRobotSendResponse response2 = client.execute(request2);
-                if (response2.getErrcode() != 0) {
+                JSONObject response = DingTalkApiUtil.postJson(tMsgDing.getWebHook(), requestJson);
+                if (response.getIntValue("errcode") != 0) {
                     sendResult.setSuccess(false);
-                    sendResult.setInfo(response2.getErrmsg());
-                    log.error(response2.getErrmsg());
+                    sendResult.setInfo(response.getString("errmsg"));
+                    log.error(response.getString("errmsg"));
                     return sendResult;
                 }
             }
@@ -191,31 +191,38 @@ public class DingMsgSender implements IMsgSender {
         return sendResult;
     }
 
-    private OapiMessageCorpconversationAsyncsendV2Request.Msg getMsg(TMsgDing dingMsg) {
-        OapiMessageCorpconversationAsyncsendV2Request.Msg msg = new OapiMessageCorpconversationAsyncsendV2Request.Msg();
+    /**
+     * 组装工作通知消息体
+     */
+    private JSONObject buildWorkMsg(TMsgDing dingMsg) {
+        JSONObject msg = new JSONObject();
         if ("文本消息".equals(tMsgDing.getDingMsgType())) {
-            msg.setMsgtype("text");
-            msg.setText(new OapiMessageCorpconversationAsyncsendV2Request.Text());
-            msg.getText().setContent(dingMsg.getContent());
+            msg.put("msgtype", "text");
+            JSONObject text = new JSONObject();
+            text.put("content", dingMsg.getContent());
+            msg.put("text", text);
         } else if ("链接消息".equals(tMsgDing.getDingMsgType())) {
-            msg.setMsgtype("link");
-            msg.setLink(new OapiMessageCorpconversationAsyncsendV2Request.Link());
-            msg.getLink().setTitle(dingMsg.getMsgTitle());
-            msg.getLink().setText(dingMsg.getContent());
-            msg.getLink().setMessageUrl(dingMsg.getUrl());
-            msg.getLink().setPicUrl(dingMsg.getPicUrl());
+            msg.put("msgtype", "link");
+            JSONObject link = new JSONObject();
+            link.put("title", dingMsg.getMsgTitle());
+            link.put("text", dingMsg.getContent());
+            link.put("messageUrl", dingMsg.getUrl());
+            link.put("picUrl", dingMsg.getPicUrl());
+            msg.put("link", link);
         } else if ("markdown消息".equals(tMsgDing.getDingMsgType())) {
-            msg.setMsgtype("markdown");
-            msg.setMarkdown(new OapiMessageCorpconversationAsyncsendV2Request.Markdown());
-            msg.getMarkdown().setText(dingMsg.getContent());
-            msg.getMarkdown().setTitle(dingMsg.getMsgTitle());
+            msg.put("msgtype", "markdown");
+            JSONObject markdown = new JSONObject();
+            markdown.put("text", dingMsg.getContent());
+            markdown.put("title", dingMsg.getMsgTitle());
+            msg.put("markdown", markdown);
         } else if ("卡片消息".equals(tMsgDing.getDingMsgType())) {
-            msg.setMsgtype("action_card");
-            msg.setActionCard(new OapiMessageCorpconversationAsyncsendV2Request.ActionCard());
-            msg.getActionCard().setTitle(dingMsg.getMsgTitle());
-            msg.getActionCard().setMarkdown(dingMsg.getContent());
-            msg.getActionCard().setSingleTitle(dingMsg.getBtnTxt());
-            msg.getActionCard().setSingleUrl(dingMsg.getBtnUrl());
+            msg.put("msgtype", "action_card");
+            JSONObject actionCard = new JSONObject();
+            actionCard.put("title", dingMsg.getMsgTitle());
+            actionCard.put("markdown", dingMsg.getContent());
+            actionCard.put("single_title", dingMsg.getBtnTxt());
+            actionCard.put("single_url", dingMsg.getBtnUrl());
+            msg.put("action_card", actionCard);
         }
         return msg;
     }
@@ -223,28 +230,6 @@ public class DingMsgSender implements IMsgSender {
     @Override
     public SendResult asyncSend(String[] msgData) {
         return null;
-    }
-
-    public DefaultDingTalkClient getDefaultDingTalkClient() {
-        if (defaultDingTalkClient == null) {
-            synchronized (PushControl.class) {
-                if (defaultDingTalkClient == null) {
-                    defaultDingTalkClient = new DefaultDingTalkClient("https://oapi.dingtalk.com/topapi/message/corpconversation/asyncsend_v2");
-                }
-            }
-        }
-        return defaultDingTalkClient;
-    }
-
-    public DefaultDingTalkClient getRobotClient() {
-        if (robotClient == null) {
-            synchronized (PushControl.class) {
-                if (robotClient == null) {
-                    robotClient = new DefaultDingTalkClient(tMsgDing.getWebHook());
-                }
-            }
-        }
-        return robotClient;
     }
 
     public static TimedCache<String, String> getAccessTokenTimedCache(Integer accountId) {
@@ -255,22 +240,23 @@ public class DingMsgSender implements IMsgSender {
             String accountConfig = tAccount.getAccountConfig();
             DingAccountConfig dingAccountConfig = JSON.parseObject(accountConfig, DingAccountConfig.class);
 
-            DefaultDingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/gettoken");
-            OapiGettokenRequest request = new OapiGettokenRequest();
-            request.setAppkey(dingAccountConfig.getAppKey());
-            request.setAppsecret(dingAccountConfig.getAppSecret());
-            request.setHttpMethod("GET");
-            OapiGettokenResponse response = null;
             try {
-                response = client.execute(request);
-            } catch (ApiException e) {
-                e.printStackTrace();
-            }
-            TimedCache<String, String> accessTokenTimedCache = CacheUtil.newTimedCache((response.getExpiresIn() - 60) * 1000);
-            accessTokenTimedCache.put("accessToken", response.getAccessToken());
+                String url = GET_TOKEN_URL + "?appkey=" + URLEncoder.encode(dingAccountConfig.getAppKey(), "UTF-8")
+                        + "&appsecret=" + URLEncoder.encode(dingAccountConfig.getAppSecret(), "UTF-8");
+                JSONObject response = DingTalkApiUtil.get(url);
+                if (response.getIntValue("errcode") != 0) {
+                    log.error("获取钉钉accessToken失败：{}", response.getString("errmsg"));
+                    throw new RuntimeException("获取钉钉accessToken失败：" + response.getString("errmsg"));
+                }
+                TimedCache<String, String> accessTokenTimedCache = CacheUtil.newTimedCache((response.getLongValue("expires_in") - 60) * 1000);
+                accessTokenTimedCache.put("accessToken", response.getString("access_token"));
 
-            timedCacheMap.put(accountId, accessTokenTimedCache);
-            return accessTokenTimedCache;
+                timedCacheMap.put(accountId, accessTokenTimedCache);
+                return accessTokenTimedCache;
+            } catch (Exception e) {
+                log.error(ExceptionUtils.getStackTrace(e));
+                throw new RuntimeException(e);
+            }
         }
 
     }

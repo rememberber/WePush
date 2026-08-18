@@ -43,7 +43,6 @@
         <weixin-java-mp.version>4.8.0</weixin-java-mp.version>
         <weixin-java-cp.version>4.8.0</weixin-java-cp.version>
         <weixin-java-miniapp.version>4.8.0</weixin-java-miniapp.version>
-        <emoji-java.version>5.1.1</emoji-java.version>
         <hutool-all.version>5.6.4</hutool-all.version>
         <opencsv.version>5.2</opencsv.version>
         <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
@@ -122,12 +121,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.vdurmont</groupId>
-            <artifactId>emoji-java</artifactId>
-            <version>${emoji-java.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
             <version>${hutool-all.version}</version>
@@ -201,11 +194,6 @@
         <dependency>
             <groupId>net.sourceforge.cpdetector</groupId>
             <artifactId>jargs</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.taobao</groupId>
-            <artifactId>taobao-sdk-java-auto</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
