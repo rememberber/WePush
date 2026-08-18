@@ -46,6 +46,9 @@ public class MsgMakerFactory {
             case MessageTypeEnum.JIGUANG_CODE:
                 iMsgMaker = new JiguangMsgMaker(tMsg);
                 break;
+            case MessageTypeEnum.JIGUANG_PUSH_CODE:
+                iMsgMaker = new JiguangPushMsgMaker(tMsg);
+                break;
             case MessageTypeEnum.TX_YUN_CODE:
                 iMsgMaker = new TxYunMsgMaker(tMsg);
                 break;

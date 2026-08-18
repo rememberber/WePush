@@ -118,6 +118,9 @@ public class MessageTypeForm {
             case MessageTypeEnum.JIGUANG_CODE:
                 messageTypeForm.get极光短信RadioButton().setSelected(true);
                 break;
+            case MessageTypeEnum.JIGUANG_PUSH_CODE:
+                messageTypeForm.get极光推送RadioButton().setSelected(true);
+                break;
             case MessageTypeEnum.YUN_PIAN_CODE:
                 messageTypeForm.getYunPianRadioButton().setSelected(true);
                 break;
@@ -263,7 +266,7 @@ public class MessageTypeForm {
         极光短信RadioButton.setText("极光短信");
         msgTypeListPanel.add(极光短信RadioButton, new GridConstraints(22, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         极光推送RadioButton = new JRadioButton();
-        极光推送RadioButton.setEnabled(false);
+        极光推送RadioButton.setEnabled(true);
         极光推送RadioButton.setText("极光推送");
         msgTypeListPanel.add(极光推送RadioButton, new GridConstraints(23, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         kefuPriorityTipsLabel = new JLabel();

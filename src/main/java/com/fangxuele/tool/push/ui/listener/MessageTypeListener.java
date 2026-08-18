@@ -83,6 +83,10 @@ public class MessageTypeListener {
             App.config.setMsgType(MessageTypeEnum.JIGUANG_CODE);
             saveType();
         });
+        messageTypeForm.get极光推送RadioButton().addActionListener(e -> {
+            App.config.setMsgType(MessageTypeEnum.JIGUANG_PUSH_CODE);
+            saveType();
+        });
         messageTypeForm.getBdYunRadioButton().addActionListener(e -> {
             App.config.setMsgType(MessageTypeEnum.BD_YUN_CODE);
             saveType();

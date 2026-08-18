@@ -80,6 +80,9 @@ public class AccountFormFactory {
             case MessageTypeEnum.JIGUANG_CODE:
                 iAccountForm = JiguangAccountForm.getInstance();
                 break;
+            case MessageTypeEnum.JIGUANG_PUSH_CODE:
+                iAccountForm = JiguangPushAccountForm.getInstance();
+                break;
             default:
                 break;
         }

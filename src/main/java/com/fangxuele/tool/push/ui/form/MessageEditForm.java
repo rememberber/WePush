@@ -124,6 +124,9 @@ public class MessageEditForm {
             case MessageTypeEnum.JIGUANG_CODE:
                 messageEditForm.getMsgEditorPanel().add(JiguangMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
                 break;
+            case MessageTypeEnum.JIGUANG_PUSH_CODE:
+                messageEditForm.getMsgEditorPanel().add(JiguangPushMsgForm.getInstance().getPushMsgPanel(), gridConstraintsRow0);
+                break;
             case MessageTypeEnum.UP_YUN_CODE:
                 messageEditForm.getMsgEditorPanel().add(UpYunMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
                 break;

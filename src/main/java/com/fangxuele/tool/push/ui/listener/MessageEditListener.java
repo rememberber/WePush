@@ -205,6 +205,9 @@ public class MessageEditListener {
                         || msgType == MessageTypeEnum.JIGUANG_CODE) {
                     fillParaName = "预览消息用户的手机号";
                     paraDemo = "13910733521;13910733522";
+                } else if (msgType == MessageTypeEnum.JIGUANG_PUSH_CODE) {
+                    fillParaName = "预览用户的别名（alias）或RegistrationId（与消息的目标类型对应）";
+                    paraDemo = "alias1;alias2";
                 }
                 StringBuilder tipsBuilder = new StringBuilder();
                 tipsBuilder.append("<h1>如何填写？</h1>");
