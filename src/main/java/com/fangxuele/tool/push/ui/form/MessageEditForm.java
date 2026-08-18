@@ -118,6 +118,9 @@ public class MessageEditForm {
             case MessageTypeEnum.ZHENZI_YUN_CODE:
                 messageEditForm.getMsgEditorPanel().add(ZhenziYunMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
                 break;
+            case MessageTypeEnum.LUOSIMAO_CODE:
+                messageEditForm.getMsgEditorPanel().add(LuosimaoMsgForm.getInstance().getLuosimaoMsgPanel(), gridConstraintsRow0);
+                break;
             case MessageTypeEnum.UP_YUN_CODE:
                 messageEditForm.getMsgEditorPanel().add(UpYunMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
                 break;

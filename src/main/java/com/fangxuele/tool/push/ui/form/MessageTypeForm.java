@@ -112,6 +112,9 @@ public class MessageTypeForm {
             case MessageTypeEnum.ZHENZI_YUN_CODE:
                 messageTypeForm.get榛子云短信RadioButton().setSelected(true);
                 break;
+            case MessageTypeEnum.LUOSIMAO_CODE:
+                messageTypeForm.getLuosimao短信RadioButton().setSelected(true);
+                break;
             case MessageTypeEnum.YUN_PIAN_CODE:
                 messageTypeForm.getYunPianRadioButton().setSelected(true);
                 break;
@@ -249,7 +252,7 @@ public class MessageTypeForm {
         榛子云短信RadioButton.setText("榛子云短信");
         msgTypeListPanel.add(榛子云短信RadioButton, new GridConstraints(20, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         luosimao短信RadioButton = new JRadioButton();
-        luosimao短信RadioButton.setEnabled(false);
+        luosimao短信RadioButton.setEnabled(true);
         luosimao短信RadioButton.setText("Luosimao短信");
         msgTypeListPanel.add(luosimao短信RadioButton, new GridConstraints(21, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         极光短信RadioButton = new JRadioButton();

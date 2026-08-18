@@ -40,6 +40,9 @@ public class MsgMakerFactory {
             case MessageTypeEnum.ZHENZI_YUN_CODE:
                 iMsgMaker = new ZhenziYunMsgMaker(tMsg);
                 break;
+            case MessageTypeEnum.LUOSIMAO_CODE:
+                iMsgMaker = new LuosimaoMsgMaker(tMsg);
+                break;
             case MessageTypeEnum.TX_YUN_CODE:
                 iMsgMaker = new TxYunMsgMaker(tMsg);
                 break;

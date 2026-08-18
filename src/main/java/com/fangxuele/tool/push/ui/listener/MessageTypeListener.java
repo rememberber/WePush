@@ -75,6 +75,10 @@ public class MessageTypeListener {
             App.config.setMsgType(MessageTypeEnum.ZHENZI_YUN_CODE);
             saveType();
         });
+        messageTypeForm.getLuosimao短信RadioButton().addActionListener(e -> {
+            App.config.setMsgType(MessageTypeEnum.LUOSIMAO_CODE);
+            saveType();
+        });
         messageTypeForm.getBdYunRadioButton().addActionListener(e -> {
             App.config.setMsgType(MessageTypeEnum.BD_YUN_CODE);
             saveType();

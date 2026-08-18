@@ -32,7 +32,8 @@ public enum MessageTypeEnum {
     MA_SUBSCRIBE(18, "小程序-订阅消息"),
     MP_SUBSCRIBE(19, "公众号-订阅通知"),
     TX_YUN_3(20, "腾讯云短信3.0"),
-    ZHENZI_YUN(21, "榛子云短信");
+    ZHENZI_YUN(21, "榛子云短信"),
+    LUOSIMAO(22, "Luosimao短信");
 
     private int code;
 
@@ -59,6 +60,7 @@ public enum MessageTypeEnum {
     public static final int MP_SUBSCRIBE_CODE = 19;
     public static final int TX_YUN_3_CODE = 20;
     public static final int ZHENZI_YUN_CODE = 21;
+    public static final int LUOSIMAO_CODE = 22;
 
     MessageTypeEnum(int code, String name) {
         this.code = code;
@@ -134,6 +136,9 @@ public enum MessageTypeEnum {
                 break;
             case 21:
                 name = ZHENZI_YUN.name;
+                break;
+            case 22:
+                name = LUOSIMAO.name;
                 break;
             default:
                 name = "";
