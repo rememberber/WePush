@@ -48,6 +48,9 @@ public class MsgSenderFactory {
             case MessageTypeEnum.LUOSIMAO_CODE:
                 iMsgSender = new LuosimaoMsgSender(msgId, dryRun);
                 break;
+            case MessageTypeEnum.JIGUANG_CODE:
+                iMsgSender = new JiguangMsgSender(msgId, dryRun);
+                break;
             case MessageTypeEnum.TX_YUN_CODE:
                 iMsgSender = new TxYunMsgSender(msgId, dryRun);
                 break;

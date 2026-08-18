@@ -201,7 +201,8 @@ public class MessageEditListener {
                         || msgType == MessageTypeEnum.QI_NIU_YUN_CODE
                         || msgType == MessageTypeEnum.NETEASE_YUN_XIN_CODE
                         || msgType == MessageTypeEnum.ZHENZI_YUN_CODE
-                        || msgType == MessageTypeEnum.LUOSIMAO_CODE) {
+                        || msgType == MessageTypeEnum.LUOSIMAO_CODE
+                        || msgType == MessageTypeEnum.JIGUANG_CODE) {
                     fillParaName = "预览消息用户的手机号";
                     paraDemo = "13910733521;13910733522";
                 }

@@ -455,6 +455,10 @@ public class NewTaskDialog extends JDialog {
         msgTypeMapReverse.put(MessageTypeEnum.LUOSIMAO_CODE, MessageTypeEnum.getName(MessageTypeEnum.LUOSIMAO));
         this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.LUOSIMAO));
 
+        msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.JIGUANG), MessageTypeEnum.JIGUANG_CODE);
+        msgTypeMapReverse.put(MessageTypeEnum.JIGUANG_CODE, MessageTypeEnum.getName(MessageTypeEnum.JIGUANG));
+        this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.JIGUANG));
+
         msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.EMAIL), MessageTypeEnum.EMAIL_CODE);
         msgTypeMapReverse.put(MessageTypeEnum.EMAIL_CODE, MessageTypeEnum.getName(MessageTypeEnum.EMAIL));
         this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.EMAIL));

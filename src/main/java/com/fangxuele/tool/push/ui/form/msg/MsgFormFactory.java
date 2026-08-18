@@ -62,6 +62,9 @@ public class MsgFormFactory {
             case MessageTypeEnum.LUOSIMAO_CODE:
                 iMsgForm = LuosimaoMsgForm.getInstance();
                 break;
+            case MessageTypeEnum.JIGUANG_CODE:
+                iMsgForm = JiguangMsgForm.getInstance();
+                break;
             case MessageTypeEnum.UP_YUN_CODE:
                 iMsgForm = UpYunMsgForm.getInstance();
                 break;

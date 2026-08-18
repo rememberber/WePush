@@ -77,6 +77,9 @@ public class AccountFormFactory {
             case MessageTypeEnum.LUOSIMAO_CODE:
                 iAccountForm = LuosimaoAccountForm.getInstance();
                 break;
+            case MessageTypeEnum.JIGUANG_CODE:
+                iAccountForm = JiguangAccountForm.getInstance();
+                break;
             default:
                 break;
         }
