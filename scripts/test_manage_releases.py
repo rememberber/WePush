@@ -14,18 +14,18 @@ class ManageReleasesTests(unittest.TestCase):
 
     def test_java_release_requires_aligned_sources(self) -> None:
         project_root = Path(__file__).resolve().parents[1]
-        info = java_release_info(project_root, "v5.0.7")
-        self.assertEqual(info.version, "5.0.7")
-        self.assertEqual(info.app_version, "v_5.0.7")
-        self.assertEqual(info.title, "WePush 5.0.7")
+        info = java_release_info(project_root, "v5.0.8")
+        self.assertEqual(info.version, "5.0.8")
+        self.assertEqual(info.app_version, "v_5.0.8")
+        self.assertEqual(info.title, "WePush 5.0.8")
         self.assertFalse(info.prerelease)
         self.assertEqual(release_outputs(info)["make_latest"], "true")
-        self.assertIn("虚拟线程", info.notes)
+        self.assertIn("极光", info.notes)
 
     def test_java_release_rejects_wrong_tag(self) -> None:
         project_root = Path(__file__).resolve().parents[1]
         with self.assertRaisesRegex(ValueError, "Java tag must be"):
-            java_release_info(project_root, "v_5.0.7")
+            java_release_info(project_root, "v_5.0.8")
 
     def test_java_release_rejects_missing_notes(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
