@@ -1,6 +1,6 @@
 {
-  "windows": "https://github.com/rememberber/WePush/releases/download/v5.0.8/WePush-5.0.8-windows-x64.exe",
-  "macSilicon": "https://github.com/rememberber/WePush/releases/download/v5.0.8/WePush-5.0.8-mac-apple-silicon.dmg",
-  "mac": "https://github.com/rememberber/WePush/releases/download/v5.0.8/WePush-5.0.8-mac-intel.dmg",
-  "linux": "https://github.com/rememberber/WePush/releases/download/v5.0.8/WePush-5.0.8-linux-x64.deb"
+  "windows": "https://github.com/rememberber/WePush/releases/download/v5.0.9/WePush-5.0.9-windows-x64.exe",
+  "macSilicon": "https://github.com/rememberber/WePush/releases/download/v5.0.9/WePush-5.0.9-mac-apple-silicon.dmg",
+  "mac": "https://github.com/rememberber/WePush/releases/download/v5.0.9/WePush-5.0.9-mac-intel.dmg",
+  "linux": "https://github.com/rememberber/WePush/releases/download/v5.0.9/WePush-5.0.9-linux-x64.deb"
 }
