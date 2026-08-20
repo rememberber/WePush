@@ -86,7 +86,10 @@
                 <preferred-size width="150" height="-1"/>
               </grid>
             </constraints>
-            <properties/>
+            <properties>
+              <lineWrap value="true"/>
+              <wrapStyleWord value="true"/>
+            </properties>
           </component>
           <component id="39835" class="javax.swing.JLabel" binding="urlLabel">
             <constraints>
@@ -128,7 +131,10 @@
                 <preferred-size width="150" height="50"/>
               </grid>
             </constraints>
-            <properties/>
+            <properties>
+              <lineWrap value="true"/>
+              <wrapStyleWord value="true"/>
+            </properties>
           </component>
           <component id="eb70a" class="javax.swing.JLabel" binding="btnTxtLabel">
             <constraints>

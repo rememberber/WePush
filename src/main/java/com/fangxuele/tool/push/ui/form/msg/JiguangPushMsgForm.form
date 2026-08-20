@@ -93,7 +93,10 @@
                 <preferred-size width="0" height="100"/>
               </grid>
             </constraints>
-            <properties/>
+            <properties>
+              <lineWrap value="true"/>
+              <wrapStyleWord value="true"/>
+            </properties>
           </component>
         </children>
       </grid>
@@ -139,7 +142,10 @@
                 <preferred-size width="150" height="-1"/>
               </grid>
             </constraints>
-            <properties/>
+            <properties>
+              <lineWrap value="true"/>
+              <wrapStyleWord value="true"/>
+            </properties>
           </component>
           <component id="c3" class="javax.swing.JButton" binding="extrasAddButton">
             <constraints>

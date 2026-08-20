@@ -44,7 +44,10 @@
                     <preferred-size width="150" height="-1"/>
                   </grid>
                 </constraints>
-                <properties/>
+                <properties>
+                  <lineWrap value="true"/>
+                  <wrapStyleWord value="true"/>
+                </properties>
               </component>
               <component id="26b48" class="javax.swing.JButton" binding="templateMsgDataAddButton">
                 <constraints>

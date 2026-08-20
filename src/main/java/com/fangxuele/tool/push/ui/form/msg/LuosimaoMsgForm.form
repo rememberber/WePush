@@ -25,6 +25,8 @@
             <properties>
               <autoscrolls value="false"/>
               <preferredSize width="0" height="200"/>
+              <lineWrap value="true"/>
+              <wrapStyleWord value="true"/>
             </properties>
           </component>
         </children>

@@ -34,7 +34,10 @@
                 <children>
                   <component id="bd1eb" class="javax.swing.JTextArea" binding="bodyTextArea">
                     <constraints/>
-                    <properties/>
+                    <properties>
+                      <lineWrap value="true"/>
+                      <wrapStyleWord value="true"/>
+                    </properties>
                   </component>
                 </children>
               </scrollpane>
@@ -57,7 +60,10 @@
                 <children>
                   <component id="63785" class="javax.swing.JTextArea" binding="headersTextArea">
                     <constraints/>
-                    <properties/>
+                    <properties>
+                      <lineWrap value="true"/>
+                      <wrapStyleWord value="true"/>
+                    </properties>
                   </component>
                 </children>
               </scrollpane>
@@ -80,7 +86,10 @@
                 <children>
                   <component id="df14b" class="javax.swing.JTextArea" binding="cookiesTextArea">
                     <constraints/>
-                    <properties/>
+                    <properties>
+                      <lineWrap value="true"/>
+                      <wrapStyleWord value="true"/>
+                    </properties>
                   </component>
                 </children>
               </scrollpane>

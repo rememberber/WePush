@@ -98,7 +98,10 @@
         <children>
           <component id="c50ad" class="javax.swing.JTextArea" binding="mailFilesTextArea">
             <constraints/>
-            <properties/>
+            <properties>
+              <lineWrap value="true"/>
+              <wrapStyleWord value="true"/>
+            </properties>
           </component>
         </children>
       </scrollpane>

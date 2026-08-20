@@ -339,7 +339,10 @@
                         <preferred-size width="150" height="50"/>
                       </grid>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <lineWrap value="true"/>
+                      <wrapStyleWord value="true"/>
+                    </properties>
                   </component>
                   <component id="6c97c" class="javax.swing.JComboBox" binding="bodyTypeComboBox">
                     <constraints>

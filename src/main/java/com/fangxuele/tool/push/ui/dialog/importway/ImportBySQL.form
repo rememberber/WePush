@@ -63,7 +63,10 @@
                 <preferred-size width="40" height="50"/>
               </grid>
             </constraints>
-            <properties/>
+            <properties>
+              <lineWrap value="true"/>
+              <wrapStyleWord value="true"/>
+            </properties>
           </component>
         </children>
       </grid>
