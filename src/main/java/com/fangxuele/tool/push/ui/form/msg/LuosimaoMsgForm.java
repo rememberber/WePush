@@ -134,10 +134,10 @@ public class LuosimaoMsgForm implements IMsgForm {
         luosimaoMsgPanel.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         panel1.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "短信内容编辑", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, panel1.getFont()), null));
         msgLuosimaoContentTextField = new JTextArea();
-        msgLuosimaoContentTextField.setLineWrap(true);
-        msgLuosimaoContentTextField.setWrapStyleWord(true);
         msgLuosimaoContentTextField.setAutoscrolls(false);
+        msgLuosimaoContentTextField.setLineWrap(true);
         msgLuosimaoContentTextField.setPreferredSize(new Dimension(0, 200));
+        msgLuosimaoContentTextField.setWrapStyleWord(true);
         panel1.add(msgLuosimaoContentTextField, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
     }
 
