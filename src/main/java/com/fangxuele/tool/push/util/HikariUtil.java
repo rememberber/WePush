@@ -61,12 +61,12 @@ public class HikariUtil {
             synchronized (HikariUtil.class) {
                 if (hikariDataSource == null || hikariDataSource.isClosed()) {
                     String dbType = App.config.getDbType();
-                    String mysqlUrl = App.config.getMysqlUrl();
-                    String mysqlUser = App.config.getMysqlUser();
-                    String mysqlPassword = App.config.getMysqlPassword();
+                    String dbUrl = App.config.getMysqlUrl();
+                    String dbUser = App.config.getMysqlUser();
+                    String dbPassword = App.config.getMysqlPassword();
 
                     hikariDataSource = new HikariDataSource();
-                    configureDataSource(hikariDataSource, dbType, mysqlUrl, mysqlUser, mysqlPassword);
+                    configureDataSource(hikariDataSource, dbType, dbUrl, dbUser, dbPassword);
                 }
             }
         }

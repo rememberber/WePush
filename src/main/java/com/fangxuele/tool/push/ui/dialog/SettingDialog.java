@@ -108,7 +108,6 @@ public class SettingDialog extends JDialog {
         mysqlPasswordField.setText(App.config.getMysqlPassword());
 
         // 数据库类型
-        dbTypeComboBox = new JComboBox<>(new String[]{HikariUtil.DB_TYPE_MYSQL, HikariUtil.DB_TYPE_SQL_SERVER});
         dbTypeComboBox.setSelectedItem(App.config.getDbType());
 
         saveMailButton.setIcon(new FlatSVGIcon("icon/save.svg"));
