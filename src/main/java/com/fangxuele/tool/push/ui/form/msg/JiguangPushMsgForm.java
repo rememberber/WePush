@@ -44,7 +44,7 @@ public class JiguangPushMsgForm implements IMsgForm {
     private JTextField titleTextField;
     private JTextArea contentTextArea;
     private JTextField extrasNameTextField;
-    private JTextField extrasValueTextField;
+    private JTextArea extrasValueTextField;
     private JButton extrasAddButton;
     private JTable extrasTable;
 
@@ -328,7 +328,9 @@ public class JiguangPushMsgForm implements IMsgForm {
         panel4.add(label4, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         extrasNameTextField = new JTextField();
         panel4.add(extrasNameTextField, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        extrasValueTextField = new JTextField();
+        extrasValueTextField = new JTextArea();
+        extrasValueTextField.setLineWrap(true);
+        extrasValueTextField.setWrapStyleWord(true);
         panel4.add(extrasValueTextField, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         extrasAddButton = new JButton();
         extrasAddButton.setText("");

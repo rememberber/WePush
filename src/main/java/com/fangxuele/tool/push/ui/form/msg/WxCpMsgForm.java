@@ -43,7 +43,7 @@ public class WxCpMsgForm implements IMsgForm {
     private JLabel picUrlLabel;
     private JTextField picUrlTextField;
     private JLabel descLabel;
-    private JTextField descTextField;
+    private JTextArea descTextField;
     private JLabel urlLabel;
     private JTextField urlTextField;
     private JLabel contentLabel;
@@ -273,7 +273,9 @@ public class WxCpMsgForm implements IMsgForm {
         descLabel = new JLabel();
         descLabel.setText("描述");
         wxCpMsgPanel.add(descLabel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        descTextField = new JTextField();
+        descTextField = new JTextArea();
+        descTextField.setLineWrap(true);
+        descTextField.setWrapStyleWord(true);
         wxCpMsgPanel.add(descTextField, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         urlLabel = new JLabel();
         urlLabel.setText("跳转URL");

@@ -36,7 +36,7 @@
                   <toolTipText value="当消息类型是模板消息时的示例：first或者keyword1或者remark之类的"/>
                 </properties>
               </component>
-              <component id="514d7" class="javax.swing.JTextField" binding="templateDataValueTextField">
+              <component id="514d7" class="javax.swing.JTextArea" binding="templateDataValueTextField">
                 <constraints>
                   <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
