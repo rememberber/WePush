@@ -232,6 +232,11 @@ public class SettingDialog extends JDialog {
                     hikariDataSource.setJdbcUrl("jdbc:mysql://" + dbUrl);
                     hikariDataSource.setUsername(dbUser);
                     hikariDataSource.setPassword(dbPassword);
+                    hikariDataSource.addDataSourceProperty("useSSL", "false");
+                    hikariDataSource.addDataSourceProperty("autoReconnect", "true");
+                    hikariDataSource.addDataSourceProperty("serverTimezone", "UTC");
+                    hikariDataSource.addDataSourceProperty("characterEncoding", "utf-8");
+                    hikariDataSource.addDataSourceProperty("allowPublicKeyRetrieval", "true");
                     boolean connected = hikariDataSource.getConnection() != null;
                     UiThreadUtil.runOnUi(() -> {
                         if (connected) {
