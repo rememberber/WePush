@@ -577,6 +577,8 @@ public class MpTemplateMsgForm implements IMsgForm {
         refreshTemplateListButton.setText("刷新");
         panel2.add(refreshTemplateListButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, 1, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         templateContentTextArea = new JTextArea();
+        templateContentTextArea.setLineWrap(true);
+        templateContentTextArea.setWrapStyleWord(true);
         templateContentTextArea.setEditable(false);
         panel2.add(templateContentTextArea, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
         templateMsgNameLabel.setLabelFor(templateDataNameTextField);
