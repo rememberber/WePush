@@ -36,6 +36,11 @@ public class HikariUtil {
                     hikariDataSource.setJdbcUrl("jdbc:mysql://" + mysqlUrl);
                     hikariDataSource.setUsername(mysqlUser);
                     hikariDataSource.setPassword(mysqlPassword);
+                    hikariDataSource.addDataSourceProperty("useSSL", "false");
+                    hikariDataSource.addDataSourceProperty("autoReconnect", "true");
+                    hikariDataSource.addDataSourceProperty("serverTimezone", "UTC");
+                    hikariDataSource.addDataSourceProperty("characterEncoding", "utf-8");
+                    hikariDataSource.addDataSourceProperty("allowPublicKeyRetrieval", "true");
                 }
             }
         }
