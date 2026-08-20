@@ -80,7 +80,7 @@
               <text value="描述"/>
             </properties>
           </component>
-          <component id="b21c7" class="javax.swing.JTextField" binding="descTextField">
+          <component id="b21c7" class="javax.swing.JTextArea" binding="descTextField">
             <constraints>
               <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>

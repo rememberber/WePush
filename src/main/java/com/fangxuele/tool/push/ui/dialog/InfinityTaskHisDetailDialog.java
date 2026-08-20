@@ -576,6 +576,8 @@ public class InfinityTaskHisDetailDialog extends JDialog {
         final JScrollPane scrollPane1 = new JScrollPane();
         panel1.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         consoleTextArea = new JTextArea();
+        consoleTextArea.setLineWrap(true);
+        consoleTextArea.setWrapStyleWord(true);
         scrollPane1.setViewportView(consoleTextArea);
         pushUpPanel = new JPanel();
         pushUpPanel.setLayout(new GridLayoutManager(4, 9, new Insets(10, 10, 0, 10), -1, -1));
