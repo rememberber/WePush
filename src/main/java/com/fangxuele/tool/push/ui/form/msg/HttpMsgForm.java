@@ -651,8 +651,6 @@ public class HttpMsgForm implements IMsgForm {
         panel9.setLayout(new GridLayoutManager(2, 2, new Insets(5, 0, 0, 0), -1, -1));
         panel8.add(panel9, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         bodyTextArea = new JTextArea();
-        bodyTextArea.setLineWrap(true);
-        bodyTextArea.setWrapStyleWord(true);
         panel9.add(bodyTextArea, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
         bodyTypeComboBox = new JComboBox();
         final DefaultComboBoxModel defaultComboBoxModel2 = new DefaultComboBoxModel();

@@ -253,8 +253,6 @@ public class MailMsgForm implements IMsgForm {
         final JScrollPane scrollPane1 = new JScrollPane();
         mailPanel.add(scrollPane1, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(-1, 60), null, 0, false));
         mailFilesTextArea = new JTextArea();
-        mailFilesTextArea.setLineWrap(true);
-        mailFilesTextArea.setWrapStyleWord(true);
         scrollPane1.setViewportView(mailFilesTextArea);
     }
 

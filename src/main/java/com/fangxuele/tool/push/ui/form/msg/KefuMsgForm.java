@@ -335,8 +335,6 @@ public class KefuMsgForm implements IMsgForm {
         contentLabel.setText("内容");
         kefuMsgPanel.add(contentLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_NORTHWEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         contentTextArea = new JTextArea();
-        contentTextArea.setLineWrap(true);
-        contentTextArea.setWrapStyleWord(true);
         kefuMsgPanel.add(contentTextArea, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
         thumbMediaPanel = new JPanel();
         thumbMediaPanel.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));

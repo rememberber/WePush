@@ -1,10 +1,14 @@
 package com.fangxuele.tool.push.ui.listener;
 
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.ui.Init;
 import com.fangxuele.tool.push.ui.form.MainWindow;
+import com.fangxuele.tool.push.util.SystemUtil;
+import com.fangxuele.tool.push.util.UiThreadUtil;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.desktop.AppReopenedListener;
 import java.awt.event.*;
 
 import static com.fangxuele.tool.push.App.mainFrame;
@@ -20,53 +24,26 @@ import static com.fangxuele.tool.push.App.mainFrame;
 public class FrameListener {
 
     public static void addListeners() {
-        mainFrame.addWindowListener(new WindowListener() {
-
-            @Override
-            public void windowOpened(WindowEvent e) {
-
-            }
-
-            @Override
-            public void windowIconified(WindowEvent e) {
-
-            }
-
-            @Override
-            public void windowDeiconified(WindowEvent e) {
-
-            }
-
-            @Override
-            public void windowDeactivated(WindowEvent e) {
-
-            }
-
+        mainFrame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                mainFrame.setExtendedState(JFrame.ICONIFIED);
                 if (!App.config.isCloseToTray()) {
-                    App.sqlSession.close();
-                    mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    Init.shutdown();
+                    return;
                 }
-            }
-
-            @Override
-            public void windowClosed(WindowEvent e) {
-
-            }
-
-            @Override
-            public void windowActivated(WindowEvent e) {
-                if (App.config.isDefaultMaxWindow()) {
-                    // 低分辨率下自动最大化窗口
-                    App.mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+                // macOS 红灯应对窗口 hide。WINDOW_CLOSING 里 ICONIFIED 会让红绿灯卡住。
+                if (SystemUtil.isMacOs()) {
+                    SwingUtilities.invokeLater(() -> mainFrame.setVisible(false));
+                } else {
+                    mainFrame.setExtendedState(JFrame.ICONIFIED);
                 }
             }
         });
 
+        addMacReopenHandler();
+
         // 鼠标双击最大化/还原
-        App.mainFrame.addMouseListener(new MouseListener() {
+        App.mainFrame.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2 && !e.isConsumed()) {
@@ -77,28 +54,30 @@ public class FrameListener {
                     }
                 }
             }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-
-            }
         });
 
         MainWindow.getInstance().getMainPanel().registerKeyboardAction(e -> mainFrame.setExtendedState(Frame.ICONIFIED), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
+    }
+
+    private static void addMacReopenHandler() {
+        if (!SystemUtil.isMacOs() || !Desktop.isDesktopSupported()) {
+            return;
+        }
+        Desktop desktop = Desktop.getDesktop();
+        if (!desktop.isSupported(Desktop.Action.APP_EVENT_REOPENED)) {
+            return;
+        }
+        desktop.addAppEventListener((AppReopenedListener) e -> UiThreadUtil.runOnUi(FrameListener::restoreMainFrame));
+    }
+
+    private static void restoreMainFrame() {
+        mainFrame.setVisible(true);
+        if (App.config.isDefaultMaxWindow()) {
+            mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        } else if ((mainFrame.getExtendedState() & JFrame.ICONIFIED) != 0) {
+            mainFrame.setExtendedState(JFrame.NORMAL);
+        }
+        mainFrame.toFront();
+        mainFrame.requestFocus();
     }
 }
