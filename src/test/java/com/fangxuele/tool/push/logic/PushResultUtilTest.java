@@ -93,6 +93,6 @@ public class PushResultUtilTest {
 
         assertEquals(size / 2, result.size());
         // Should complete in well under 1 second with O(n) approach
-        assertTrue("computeUnsent took too long: " + elapsed + "ms", elapsed < 5000);
+        assertTrue("computeUnsent took too long: " + elapsed + "ms", elapsed < 1000);
     }
 }

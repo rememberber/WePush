@@ -80,7 +80,7 @@ public class PeopleDataBatchInserterTest {
             TPeopleData data = new TPeopleData();
             batcher.add(data);
         }
-        // 3 in buffer, none flushed yet
+        // 3 in buffer (not yet flushed), getInsertedCount includes buffered items
         assertEquals(3, batcher.getInsertedCount());
 
         for (int i = 0; i < 3; i++) {
