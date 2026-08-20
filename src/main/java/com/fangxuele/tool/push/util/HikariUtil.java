@@ -19,6 +19,38 @@ import java.sql.SQLException;
 public class HikariUtil {
     private volatile static HikariDataSource hikariDataSource;
 
+    public static final String DB_TYPE_MYSQL = "MySQL";
+    public static final String DB_TYPE_SQL_SERVER = "SQL Server";
+
+    /**
+     * 根据数据库类型构建JDBC URL
+     */
+    public static String buildJdbcUrl(String dbType, String dbUrl) {
+        if (DB_TYPE_SQL_SERVER.equals(dbType)) {
+            return "jdbc:sqlserver://" + dbUrl;
+        }
+        return "jdbc:mysql://" + dbUrl;
+    }
+
+    /**
+     * 根据数据库类型设置数据源属性
+     */
+    public static void configureDataSource(HikariDataSource ds, String dbType, String dbUrl, String dbUser, String dbPassword) {
+        ds.setJdbcUrl(buildJdbcUrl(dbType, dbUrl));
+        ds.setUsername(dbUser);
+        ds.setPassword(dbPassword);
+        if (DB_TYPE_SQL_SERVER.equals(dbType)) {
+            ds.addDataSourceProperty("encrypt", "false");
+            ds.addDataSourceProperty("trustServerCertificate", "true");
+        } else {
+            ds.addDataSourceProperty("useSSL", "false");
+            ds.addDataSourceProperty("autoReconnect", "true");
+            ds.addDataSourceProperty("serverTimezone", "UTC");
+            ds.addDataSourceProperty("characterEncoding", "utf-8");
+            ds.addDataSourceProperty("allowPublicKeyRetrieval", "true");
+        }
+    }
+
     /**
      * 获取数据源
      *
@@ -28,19 +60,13 @@ public class HikariUtil {
         if (hikariDataSource == null || hikariDataSource.isClosed()) {
             synchronized (HikariUtil.class) {
                 if (hikariDataSource == null || hikariDataSource.isClosed()) {
-                    String mysqlUrl = App.config.getMysqlUrl();
-                    String mysqlUser = App.config.getMysqlUser();
-                    String mysqlPassword = App.config.getMysqlPassword();
+                    String dbType = App.config.getDbType();
+                    String dbUrl = App.config.getMysqlUrl();
+                    String dbUser = App.config.getMysqlUser();
+                    String dbPassword = App.config.getMysqlPassword();
 
                     hikariDataSource = new HikariDataSource();
-                    hikariDataSource.setJdbcUrl("jdbc:mysql://" + mysqlUrl);
-                    hikariDataSource.setUsername(mysqlUser);
-                    hikariDataSource.setPassword(mysqlPassword);
-                    hikariDataSource.addDataSourceProperty("useSSL", "false");
-                    hikariDataSource.addDataSourceProperty("autoReconnect", "true");
-                    hikariDataSource.addDataSourceProperty("serverTimezone", "UTC");
-                    hikariDataSource.addDataSourceProperty("characterEncoding", "utf-8");
-                    hikariDataSource.addDataSourceProperty("allowPublicKeyRetrieval", "true");
+                    configureDataSource(hikariDataSource, dbType, dbUrl, dbUser, dbPassword);
                 }
             }
         }
