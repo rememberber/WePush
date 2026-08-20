@@ -8,6 +8,7 @@ import lombok.Data;
 @Data
 public class HttpAccountConfig {
     private boolean useProxy;
+    private String proxyType;
     private String proxyHost;
     private String proxyPort;
     private String proxyUserName;

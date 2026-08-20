@@ -12,6 +12,7 @@ public class WxMaAccountConfig {
     private String token;
     private String aesKey;
     private boolean maUseProxy;
+    private String maProxyType;
     private String maProxyHost;
     private String maProxyPort;
     private String maProxyUserName;
