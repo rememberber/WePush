@@ -12,6 +12,7 @@ public class WxMpAccountConfig {
     private String token;
     private String aesKey;
     private boolean mpUseProxy;
+    private String mpProxyType;
     private String mpProxyHost;
     private String mpProxyPort;
     private String mpProxyUserName;

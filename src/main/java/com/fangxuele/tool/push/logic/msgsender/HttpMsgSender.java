@@ -15,6 +15,7 @@ import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.logic.msgmaker.HttpMsgMaker;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.ProxyUtil;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
@@ -122,7 +123,7 @@ public class HttpMsgSender implements IMsgSender {
                 httpRequest.body(httpMsg.getBody());
             }
             if (httpAccountConfig.isUseProxy()) {
-                Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(httpAccountConfig.getProxyHost(), Integer.parseInt(httpAccountConfig.getProxyPort())));
+                Proxy proxy = new Proxy(ProxyUtil.getProxyType(httpAccountConfig.getProxyType()), new InetSocketAddress(httpAccountConfig.getProxyHost(), Integer.parseInt(httpAccountConfig.getProxyPort())));
                 httpRequest.setProxy(proxy);
             }
 
@@ -305,7 +306,7 @@ public class HttpMsgSender implements IMsgSender {
             OkHttpClient.Builder builder = new OkHttpClient.Builder();
             builder.connectTimeout(3, TimeUnit.MINUTES);
             if (httpAccountConfig.isUseProxy()) {
-                Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(httpAccountConfig.getProxyHost(), Integer.parseInt(httpAccountConfig.getProxyPort())));
+                Proxy proxy = new Proxy(ProxyUtil.getProxyType(httpAccountConfig.getProxyType()), new InetSocketAddress(httpAccountConfig.getProxyHost(), Integer.parseInt(httpAccountConfig.getProxyPort())));
                 builder.proxy(proxy);
             }
 
