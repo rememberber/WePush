@@ -180,6 +180,14 @@ public class ConfigUtil extends ConfigBaseUtil {
         setting.put("setting.mail", "mailUseSSL", String.valueOf(mailUseSSL));
     }
 
+    public String getDbType() {
+        return setting.getStr("dbType", "setting.mysql", "MySQL");
+    }
+
+    public void setDbType(String dbType) {
+        setting.put("setting.mysql", "dbType", dbType);
+    }
+
     public String getMysqlUrl() {
         return setting.getStr("url", "setting.mysql", "");
     }

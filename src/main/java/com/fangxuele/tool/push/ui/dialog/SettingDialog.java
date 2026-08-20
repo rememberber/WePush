@@ -52,6 +52,7 @@ public class SettingDialog extends JDialog {
     private JPasswordField mysqlPasswordField;
     private JButton settingTestDbLinkButton;
     private JButton settingDbInfoSaveButton;
+    private JComboBox<String> dbTypeComboBox;
 
     private static final Log logger = LogFactory.get();
 
@@ -105,6 +106,10 @@ public class SettingDialog extends JDialog {
         mysqlUrlTextField.setText(App.config.getMysqlUrl());
         mysqlUserTextField.setText(App.config.getMysqlUser());
         mysqlPasswordField.setText(App.config.getMysqlPassword());
+
+        // 数据库类型
+        dbTypeComboBox = new JComboBox<>(new String[]{HikariUtil.DB_TYPE_MYSQL, HikariUtil.DB_TYPE_SQL_SERVER});
+        dbTypeComboBox.setSelectedItem(App.config.getDbType());
 
         saveMailButton.setIcon(new FlatSVGIcon("icon/save.svg"));
         settingDbInfoSaveButton.setIcon(new FlatSVGIcon("icon/save.svg"));
@@ -207,8 +212,9 @@ public class SettingDialog extends JDialog {
             }
         });
 
-        // mysql数据库-测试链接
+        // 数据库-测试链接
         settingTestDbLinkButton.addActionListener(e -> {
+            String dbType = (String) dbTypeComboBox.getSelectedItem();
             String dbUrl = mysqlUrlTextField.getText();
             String dbUser = mysqlUserTextField.getText();
             String dbPassword = new String(mysqlPasswordField.getPassword());
@@ -229,14 +235,7 @@ public class SettingDialog extends JDialog {
                 HikariDataSource hikariDataSource = null;
                 try {
                     hikariDataSource = new HikariDataSource();
-                    hikariDataSource.setJdbcUrl("jdbc:mysql://" + dbUrl);
-                    hikariDataSource.setUsername(dbUser);
-                    hikariDataSource.setPassword(dbPassword);
-                    hikariDataSource.addDataSourceProperty("useSSL", "false");
-                    hikariDataSource.addDataSourceProperty("autoReconnect", "true");
-                    hikariDataSource.addDataSourceProperty("serverTimezone", "UTC");
-                    hikariDataSource.addDataSourceProperty("characterEncoding", "utf-8");
-                    hikariDataSource.addDataSourceProperty("allowPublicKeyRetrieval", "true");
+                    HikariUtil.configureDataSource(hikariDataSource, dbType, dbUrl, dbUser, dbPassword);
                     boolean connected = hikariDataSource.getConnection() != null;
                     UiThreadUtil.runOnUi(() -> {
                         if (connected) {
@@ -264,9 +263,10 @@ public class SettingDialog extends JDialog {
             });
         });
 
-        // mysql数据库-保存
+        // 数据库-保存
         settingDbInfoSaveButton.addActionListener(e -> {
             try {
+                App.config.setDbType((String) dbTypeComboBox.getSelectedItem());
                 App.config.setMysqlUrl(mysqlUrlTextField.getText());
                 App.config.setMysqlUser(mysqlUserTextField.getText());
                 App.config.setMysqlPassword(new String(mysqlPasswordField.getPassword()));
@@ -400,27 +400,32 @@ public class SettingDialog extends JDialog {
         mailPasswordField = new JPasswordField();
         panel6.add(mailPasswordField, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         final JPanel panel8 = new JPanel();
-        panel8.setLayout(new GridLayoutManager(4, 2, new Insets(15, 15, 10, 0), -1, -1));
+        panel8.setLayout(new GridLayoutManager(5, 2, new Insets(15, 15, 10, 0), -1, -1));
         panel3.add(panel8, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        panel8.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "MySQL数据库", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, panel8.getFont()), null));
+        panel8.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "外部数据库", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, panel8.getFont()), null));
+        final JLabel labelDbType = new JLabel();
+        labelDbType.setText("数据库类型");
+        panel8.add(labelDbType, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        dbTypeComboBox = new JComboBox<>(new String[]{HikariUtil.DB_TYPE_MYSQL, HikariUtil.DB_TYPE_SQL_SERVER});
+        panel8.add(dbTypeComboBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         final JLabel label7 = new JLabel();
         label7.setText("数据库地址");
-        panel8.add(label7, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel8.add(label7, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         mysqlUrlTextField = new JTextField();
-        panel8.add(mysqlUrlTextField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, new Dimension(300, -1), new Dimension(300, -1), null, 0, false));
+        panel8.add(mysqlUrlTextField, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, new Dimension(300, -1), new Dimension(300, -1), null, 0, false));
         final JLabel label8 = new JLabel();
         label8.setText("用户名");
-        panel8.add(label8, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel8.add(label8, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         mysqlUserTextField = new JTextField();
-        panel8.add(mysqlUserTextField, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel8.add(mysqlUserTextField, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         final JLabel label9 = new JLabel();
         label9.setText("密码");
-        panel8.add(label9, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel8.add(label9, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         mysqlPasswordField = new JPasswordField();
-        panel8.add(mysqlPasswordField, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel8.add(mysqlPasswordField, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         final JPanel panel9 = new JPanel();
         panel9.setLayout(new GridLayoutManager(2, 3, new Insets(0, 0, 0, 0), -1, -1));
-        panel8.add(panel9, new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel8.add(panel9, new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         settingTestDbLinkButton = new JButton();
         settingTestDbLinkButton.setText("测试连接");
         panel9.add(settingTestDbLinkButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
