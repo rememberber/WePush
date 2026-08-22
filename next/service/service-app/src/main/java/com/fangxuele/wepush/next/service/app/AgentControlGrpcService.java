@@ -6,18 +6,25 @@ import com.fangxuele.wepush.next.agent.protocol.v1.AgentControlServiceGrpc;
 import com.fangxuele.wepush.next.agent.protocol.v1.AgentToService;
 import com.fangxuele.wepush.next.agent.protocol.v1.ServiceToAgent;
 import com.fangxuele.wepush.next.service.application.AgentApplicationService;
+import com.fangxuele.wepush.next.service.application.RemoteRunCoordinator;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 final class AgentControlGrpcService extends AgentControlServiceGrpc.AgentControlServiceImplBase {
     private final AgentApplicationService agents;
-    private final ConcurrentHashMap<String, AgentStream> streams = new ConcurrentHashMap<>();
+    private final AgentStreamGateway streams;
+    private final RemoteRunCoordinator remoteRuns;
+    private final boolean remoteExecution;
 
-    AgentControlGrpcService(AgentApplicationService agents) {
+    AgentControlGrpcService(AgentApplicationService agents, AgentStreamGateway streams,
+                            RemoteRunCoordinator remoteRuns, boolean remoteExecution) {
         this.agents = agents;
+        this.streams = streams;
+        this.remoteRuns = remoteRuns;
+        this.remoteExecution = remoteExecution;
     }
 
     @Override
@@ -41,17 +48,29 @@ final class AgentControlGrpcService extends AgentControlServiceGrpc.AgentControl
                 AgentFrames.AgentToService frame = AgentProtoMapper.fromProto(value);
                 if (connection == null) {
                     connection = agents.connect(frame);
-                    AgentStream previous = streams.put(frame.agentId().value(), this);
-                    if (previous != null && previous != this) previous.replaced();
+                    streams.register(connection, this::send, this::replaced);
                     responses.onNext(AgentProtoMapper.toProto(connection.welcome()));
+                    if (remoteExecution) remoteRuns.recoverPending();
                 } else {
-                    agents.accept(connection, frame);
+                    AtomicReference<AgentFrames.ServicePayload> response = new AtomicReference<>();
+                    agents.accept(connection, frame, payload -> {
+                        if (remoteExecution) {
+                            remoteRuns.accept(connection.registration(), payload).ifPresent(response::set);
+                        }
+                    });
+                    if (response.get() != null
+                            && !streams.send(connection.registration().id(), response.get())) {
+                        throw new IllegalStateException("Agent response stream is unavailable");
+                    }
                 }
             } catch (AgentApplicationService.AgentProtocolProblem problem) {
                 fail(Status.FAILED_PRECONDITION.withDescription(
                         problem.code() + ": " + problem.getMessage()));
             } catch (IllegalArgumentException problem) {
                 fail(Status.INVALID_ARGUMENT.withDescription(problem.getMessage()));
+            } catch (RemoteRunCoordinator.RemoteProtocolProblem problem) {
+                fail(Status.FAILED_PRECONDITION.withDescription(
+                        problem.code() + ": " + problem.getMessage()));
             } catch (IllegalStateException problem) {
                 fail(Status.ABORTED.withDescription(problem.getMessage()));
             } catch (RuntimeException problem) {
@@ -78,11 +97,17 @@ final class AgentControlGrpcService extends AgentControlServiceGrpc.AgentControl
             terminate(false, status);
         }
 
+        private synchronized void send(AgentFrames.ServiceToAgent frame) {
+            if (terminated.get()) throw new IllegalStateException("Agent stream is terminated");
+            responses.onNext(AgentProtoMapper.toProto(frame));
+        }
+
         private void terminate(boolean complete, Status failure) {
             if (!terminated.compareAndSet(false, true)) return;
             if (connection != null) {
-                streams.remove(connection.registration().id(), this);
+                streams.unregister(connection);
                 agents.disconnect(connection);
+                if (remoteExecution) remoteRuns.disconnected(connection.registration());
             }
             if (complete) responses.onCompleted();
             else if (failure != null) responses.onError(failure.asRuntimeException());

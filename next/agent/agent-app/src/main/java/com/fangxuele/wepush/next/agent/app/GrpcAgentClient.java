@@ -54,7 +54,8 @@ final class GrpcAgentClient implements AutoCloseable {
         stub = configured;
     }
 
-    void runSession(AgentRuntime runtime, List<ProviderCapability> capabilities)
+    void runSession(AgentRuntime runtime, RemoteAgentRunExecutor remoteRuns,
+                    List<ProviderCapability> capabilities)
             throws InterruptedException {
         CountDownLatch ended = new CountDownLatch(1);
         AtomicReference<Throwable> failure = new AtomicReference<>();
@@ -72,6 +73,9 @@ final class GrpcAgentClient implements AutoCloseable {
                     if (result == InboundSequenceResult.GAP) {
                         throw new IllegalStateException("Service sequence gap at " + frame.sequence());
                     }
+                    if (result == InboundSequenceResult.DUPLICATE) return;
+                    RemoteAgentRunExecutor.AgentFrameSender sender = outbound -> send(requests.get(),
+                            AgentProtoMapper.toProto(outbound), sendLock);
                     if (frame.payload() instanceof AgentFrames.Welcome welcome
                             && welcomed.compareAndSet(false, true)) {
                         heartbeat.set(heartbeatExecutor.scheduleWithFixedDelay(() -> {
@@ -82,6 +86,10 @@ final class GrpcAgentClient implements AutoCloseable {
                                 if (current != null) current.onError(problem);
                             }
                         }, welcome.heartbeatSeconds(), welcome.heartbeatSeconds(), TimeUnit.SECONDS));
+                    } else if (frame.payload() instanceof AgentFrames.LeaseOffer offer) {
+                        remoteRuns.offer(offer, sender);
+                    } else if (frame.payload() instanceof AgentFrames.RunCommand command) {
+                        remoteRuns.command(command, sender);
                     }
                 } catch (RuntimeException problem) {
                     StreamObserver<AgentToService> current = requests.get();

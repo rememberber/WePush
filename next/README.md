@@ -62,6 +62,16 @@ Agent 默认主动连接 `127.0.0.1:19090` 的 gRPC 双向控制流，发送 Hel
 
 Service 的 gRPC 端口默认只绑定回环地址。通过 `WEPUSH_AGENT_GRPC_ADDRESS` 暴露到非回环地址时，必须同时设置 `WEPUSH_AGENT_GRPC_TOKEN`，否则 Service 拒绝启动。正式生产身份基线仍是 ADR 规定的 mTLS，当前 Token 是 Bootstrap/首期部署机制。
 
+要把 Run 交给独立 Agent 执行，Service 使用以下配置启动：
+
+```bash
+WEPUSH_EXECUTION_MODE=remote \
+WEPUSH_AGENT_PUBLIC_BASE_URL=http://127.0.0.1:18990 \
+java -jar service/service-app/target/wepush-next-service.jar
+```
+
+远端模式会按 Provider ID/版本和可用容量选择在线 Agent，持久化带 Epoch/Fencing Token 的 Lease。Agent 校验冻结 Execution Spec 与 Audience 的 SHA-256 后 ACK，随后使用同一 Core Engine 执行，并经 gRPC 回传事件、Item Result、命令确认和 Run Summary。当前加密 Secret Envelope 仍在后续安全里程碑中，因此远端模式现阶段只支持不读取 Secret 的 Provider 配置（包括 HTTP Provider Dry Run 和 `auth.type=NONE`）；不会把 Secret 降级为明文下发。
+
 ## Java SDK
 
 远程 SDK 只依赖公开 `service-api`，不依赖 Core、Engine 或具体 Provider：
@@ -82,8 +92,8 @@ try (var client = WePushClient.builder()
 ## 当前开发基线
 
 - Core API、Provider SPI、虚拟线程 Engine 与 HTTP Provider。
-- Agent Protocol、Protobuf/gRPC 双向控制流、Sequence/Fencing Runtime、持久 Journal 与常驻 Agent 包。
-- Service 分层、SQLite/Flyway、控制面 CRUD、Agent 注册/心跳、信封加密 Secret Store、Result/Command/Artifact 持久化、本地 Artifact Store、Run 幂等创建、SSE 与内嵌执行器。
+- Agent Protocol、Protobuf/gRPC 双向控制流、Sequence/Fencing Runtime、持久 Journal、远端 Core 执行适配与常驻 Agent 包。
+- Service 分层、SQLite/Flyway、控制面 CRUD、Agent 注册/心跳/持久 Lease、信封加密 Secret Store、Result/Command/Artifact 持久化、本地 Artifact Store、Run 幂等创建、SSE，以及可切换的内嵌/远端执行器。
 - 独立远程 Java SDK 和 TypeScript API Client。
 - React WebUI、可视化 Account/Message/Audience/Job 创建闭环、可控制运行中心、动态 API 文档、Electron 安全外壳和共享前端 packages。
 - 架构、单元、契约、Service 冒烟与 Account→Run→Engine→Provider 纵向测试。

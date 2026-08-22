@@ -86,6 +86,16 @@ public final class JdbcAgentRepository implements AgentRepository {
     }
 
     @Override
+    public void advanceServiceSequence(String agentId, String sessionId, long lastServiceSequence) {
+        int changed = jdbc.update("""
+                UPDATE agent_registration
+                SET last_service_sequence = ?, version = version + 1
+                WHERE id = ? AND session_id = ? AND status != 'OFFLINE'
+                """, lastServiceSequence, agentId, sessionId);
+        requireCurrentSession(changed, agentId);
+    }
+
+    @Override
     public void disconnect(String agentId, String sessionId, Instant disconnectedAt) {
         jdbc.update("""
                 UPDATE agent_registration

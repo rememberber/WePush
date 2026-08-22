@@ -19,6 +19,8 @@ management:
 
 wepush:
   mode: ${WEPUSH_MODE:standalone}
+  execution:
+    mode: ${WEPUSH_EXECUTION_MODE:embedded}
   database:
     path: ${WEPUSH_DATABASE_PATH:.local/data/wepush-next.db}
   secret:
@@ -31,6 +33,10 @@ wepush:
     retention-initial-delay: ${WEPUSH_RETENTION_INITIAL_DELAY:PT1M}
     retention-interval: ${WEPUSH_RETENTION_INTERVAL:PT1H}
   agent:
+    public-base-url: ${WEPUSH_AGENT_PUBLIC_BASE_URL:http://127.0.0.1:18990}
+    lease-offer-ttl: ${WEPUSH_AGENT_LEASE_OFFER_TTL:PT1M}
+    lease-scan-interval: ${WEPUSH_AGENT_LEASE_SCAN_INTERVAL:PT10S}
+    recovery-grace: ${WEPUSH_AGENT_RECOVERY_GRACE:PT30S}
     grpc:
       address: ${WEPUSH_AGENT_GRPC_ADDRESS:127.0.0.1}
       port: ${WEPUSH_AGENT_GRPC_PORT:19090}

@@ -87,7 +87,8 @@ final class AgentLeaseRegistry {
         if (current == null || !current.fence().sameAuthority(fence)) {
             throw new StaleLeaseException("lease fencing authority is stale or unknown");
         }
-        if (!now.equals(Instant.MIN) && !current.expiresAt().isAfter(now)) {
+        if (!now.equals(Instant.MIN) && current.state() != LeaseState.RUNNING
+                && !current.expiresAt().isAfter(now)) {
             throw new StaleLeaseException("lease has expired");
         }
         return current;

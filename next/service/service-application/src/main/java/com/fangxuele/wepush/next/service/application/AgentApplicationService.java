@@ -9,6 +9,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public final class AgentApplicationService {
     public static final int PROTOCOL_VERSION = 1;
@@ -66,7 +67,13 @@ public final class AgentApplicationService {
     }
 
     public void accept(Connection connection, AgentFrames.AgentToService frame) {
+        accept(connection, frame, _payload -> { });
+    }
+
+    public void accept(Connection connection, AgentFrames.AgentToService frame,
+                       Consumer<AgentFrames.AgentPayload> processor) {
         Objects.requireNonNull(connection, "connection");
+        Objects.requireNonNull(processor, "processor");
         if (!connection.registration().id().equals(frame.agentId().value())) {
             throw new AgentProtocolProblem("AGENT_ID_CHANGED", "Agent identity changed inside one stream");
         }
@@ -79,6 +86,7 @@ public final class AgentApplicationService {
         if (frame.payload() instanceof AgentFrames.Hello) {
             throw new AgentProtocolProblem("HELLO_REPEATED", "Hello is only valid as the first frame");
         }
+        processor.accept(frame.payload());
         Instant now = clock.instant();
         if (frame.payload() instanceof AgentFrames.Heartbeat heartbeat) {
             AgentRegistration.Status status = switch (heartbeat.state()) {
@@ -101,6 +109,17 @@ public final class AgentApplicationService {
                     connection.registration().sessionId(), frame.sequence(), now));
         }
         connection.lastAgentSequence = frame.sequence();
+    }
+
+    public synchronized AgentFrames.ServiceToAgent next(Connection connection,
+                                                        AgentFrames.ServicePayload payload) {
+        Objects.requireNonNull(connection, "connection");
+        Objects.requireNonNull(payload, "payload");
+        long sequence = connection.lastServiceSequence + 1;
+        transactions.required(() -> agents.advanceServiceSequence(connection.registration().id(),
+                connection.registration().sessionId(), sequence));
+        connection.lastServiceSequence = sequence;
+        return new AgentFrames.ServiceToAgent(sequence, payload);
     }
 
     public void disconnect(Connection connection) {
@@ -136,11 +155,13 @@ public final class AgentApplicationService {
         private final AgentRegistration registration;
         private final AgentFrames.ServiceToAgent welcome;
         private long lastAgentSequence;
+        private long lastServiceSequence;
 
         private Connection(AgentRegistration registration, AgentFrames.ServiceToAgent welcome) {
             this.registration = registration;
             this.welcome = welcome;
             this.lastAgentSequence = registration.lastAgentSequence();
+            this.lastServiceSequence = welcome.sequence();
         }
 
         public AgentRegistration registration() { return registration; }

@@ -157,6 +157,21 @@ public final class AgentRuntime implements AutoCloseable {
                 currentLeases));
     }
 
+    public synchronized AgentFrames.AgentToService events(
+            LeaseFence fence, long firstEventSequence, List<byte[]> events) {
+        return next(new AgentFrames.EventBatch(fence, firstEventSequence, events));
+    }
+
+    public synchronized AgentFrames.AgentToService commandAcknowledged(
+            String commandId, LeaseFence fence, String outcome, String detail) {
+        return next(new AgentFrames.CommandAck(commandId, fence, outcome, detail));
+    }
+
+    public synchronized AgentFrames.AgentToService completed(
+            LeaseFence fence, byte[] summary, List<String> artifactReferences) {
+        return next(new AgentFrames.RunCompleted(fence, summary, artifactReferences));
+    }
+
     public synchronized AgentJournalState journalState() {
         return new AgentJournalState(lastAgentSequence, lastServiceSequence, leases.snapshot());
     }

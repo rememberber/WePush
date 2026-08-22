@@ -1,5 +1,6 @@
 package com.fangxuele.wepush.next.agent.app;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fangxuele.wepush.next.agent.protocol.AgentId;
 import com.fangxuele.wepush.next.agent.protocol.ProviderCapability;
 import com.fangxuele.wepush.next.agent.runtime.AgentRuntime;
@@ -53,14 +54,16 @@ public final class WePushNextAgentApplication {
                 new DefaultExecutionEngine(providers),
                 new FileAgentJournal(journalPath));
              GrpcAgentClient client = new GrpcAgentClient(
-                     serviceHost, servicePort, plaintext, token, 1_048_576)) {
+                     serviceHost, servicePort, plaintext, token, 1_048_576);
+             RemoteAgentRunExecutor remoteRuns = new RemoteAgentRunExecutor(
+                     runtime, new ObjectMapper().findAndRegisterModules(), token)) {
             System.out.printf(
                     "WePush Next Agent starting: id=%s service=%s:%d providers=%d maximumRuns=%d%n",
                     configuredId, serviceHost, servicePort, capabilities.size(), maximumRuns);
             long backoffMillis = 1_000;
             while (running.get()) {
                 try {
-                    client.runSession(runtime, capabilities);
+                    client.runSession(runtime, remoteRuns, capabilities);
                     backoffMillis = 1_000;
                 } catch (GrpcAgentClient.AgentConnectionException problem) {
                     if (!running.get()) break;

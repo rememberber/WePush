@@ -5,6 +5,7 @@ import com.fangxuele.wepush.next.service.application.ProviderCatalogQuery;
 import com.fangxuele.wepush.next.service.application.ProviderRegistry;
 import com.fangxuele.wepush.next.service.application.ArtifactApplicationService;
 import com.fangxuele.wepush.next.service.application.AgentApplicationService;
+import com.fangxuele.wepush.next.service.application.AgentControlGateway;
 import com.fangxuele.wepush.next.service.application.ArtifactStore;
 import com.fangxuele.wepush.next.service.application.AccountApplicationService;
 import com.fangxuele.wepush.next.service.application.AudienceApplicationService;
@@ -18,12 +19,14 @@ import com.fangxuele.wepush.next.service.application.RunCommandGateway;
 import com.fangxuele.wepush.next.service.application.RunDispatcher;
 import com.fangxuele.wepush.next.service.application.CursorCodec;
 import com.fangxuele.wepush.next.service.application.RunResultApplicationService;
+import com.fangxuele.wepush.next.service.application.RemoteRunCoordinator;
 import com.fangxuele.wepush.next.service.application.SecretApplicationService;
 import com.fangxuele.wepush.next.service.application.SecretStore;
 import com.fangxuele.wepush.next.service.application.TransactionRunner;
 import com.fangxuele.wepush.next.service.domain.AccountRepository;
 import com.fangxuele.wepush.next.service.domain.ArtifactRepository;
 import com.fangxuele.wepush.next.service.domain.AgentRepository;
+import com.fangxuele.wepush.next.service.domain.AgentLeaseRepository;
 import com.fangxuele.wepush.next.service.domain.AudienceRepository;
 import com.fangxuele.wepush.next.service.domain.JobRepository;
 import com.fangxuele.wepush.next.service.domain.MessageRepository;
@@ -35,6 +38,7 @@ import com.fangxuele.wepush.next.service.infrastructure.JacksonJsonCodec;
 import com.fangxuele.wepush.next.service.infrastructure.JdbcAccountRepository;
 import com.fangxuele.wepush.next.service.infrastructure.JdbcArtifactRepository;
 import com.fangxuele.wepush.next.service.infrastructure.JdbcAgentRepository;
+import com.fangxuele.wepush.next.service.infrastructure.JdbcAgentLeaseRepository;
 import com.fangxuele.wepush.next.service.infrastructure.JdbcAudienceRepository;
 import com.fangxuele.wepush.next.service.infrastructure.JdbcJobRepository;
 import com.fangxuele.wepush.next.service.infrastructure.JdbcMessageRepository;
@@ -56,6 +60,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -125,6 +130,11 @@ class ServiceComposition {
     @Bean
     AgentRepository agentRepository(JdbcTemplate jdbc, ObjectMapper mapper, Flyway flyway) {
         return new JdbcAgentRepository(jdbc, mapper);
+    }
+
+    @Bean
+    AgentLeaseRepository agentLeaseRepository(JdbcTemplate jdbc, Flyway flyway) {
+        return new JdbcAgentLeaseRepository(jdbc);
     }
 
     @Bean
@@ -205,8 +215,14 @@ class ServiceComposition {
     }
 
     @Bean
-    ApplicationRunner recoverPendingRuns(StandaloneRunExecutor executor) {
-        return arguments -> executor.recoverPending();
+    ApplicationRunner recoverPendingRuns(
+            StandaloneRunExecutor embedded, RemoteRunCoordinator remote,
+            @Value("${wepush.execution.mode:embedded}") String mode) {
+        return arguments -> {
+            if ("embedded".equalsIgnoreCase(mode)) embedded.recoverPending();
+            else if ("remote".equalsIgnoreCase(mode)) remote.recoverPending();
+            else throw new IllegalArgumentException("wepush.execution.mode must be embedded or remote");
+        };
     }
 
     @Bean
@@ -278,8 +294,46 @@ class ServiceComposition {
     }
 
     @Bean
-    AgentControlGrpcService agentControlGrpcService(AgentApplicationService agents) {
-        return new AgentControlGrpcService(agents);
+    AgentStreamGateway agentStreamGateway(AgentApplicationService agents) {
+        return new AgentStreamGateway(agents);
+    }
+
+    @Bean
+    RemoteRunCoordinator remoteRunCoordinator(
+            RunRepository runs, RunResultRepository results, AudienceRepository audiences,
+            AgentRepository agents, AgentLeaseRepository leases, AgentControlGateway gateway,
+            JsonCodec json, ResourceIdGenerator ids, TransactionRunner transactions,
+            LocalRunEventHub events, Clock clock,
+            @Value("${wepush.agent.public-base-url:http://127.0.0.1:18990}") String publicBaseUrl,
+            @Value("${wepush.agent.lease-offer-ttl:PT1M}") Duration offerTtl,
+            @Value("${wepush.agent.recovery-grace:PT30S}") Duration recoveryGrace) {
+        return new RemoteRunCoordinator(runs, results, audiences, agents, leases, gateway,
+                json, ids, transactions, events, clock, publicBaseUrl, offerTtl, recoveryGrace);
+    }
+
+    @Bean
+    @Primary
+    RunDispatcher runDispatcher(StandaloneRunExecutor embedded, RemoteRunCoordinator remote,
+                                @Value("${wepush.execution.mode:embedded}") String mode) {
+        if ("embedded".equalsIgnoreCase(mode)) return embedded::dispatch;
+        if ("remote".equalsIgnoreCase(mode)) return remote::dispatch;
+        throw new IllegalArgumentException("wepush.execution.mode must be embedded or remote");
+    }
+
+    @Bean
+    @Primary
+    RunCommandGateway runCommandGateway(StandaloneRunExecutor embedded, RemoteRunCoordinator remote,
+                                        @Value("${wepush.execution.mode:embedded}") String mode) {
+        if ("embedded".equalsIgnoreCase(mode)) return embedded::submit;
+        if ("remote".equalsIgnoreCase(mode)) return remote::submit;
+        throw new IllegalArgumentException("wepush.execution.mode must be embedded or remote");
+    }
+
+    @Bean
+    AgentControlGrpcService agentControlGrpcService(
+            AgentApplicationService agents, AgentStreamGateway streams, RemoteRunCoordinator remoteRuns,
+            @Value("${wepush.execution.mode:embedded}") String mode) {
+        return new AgentControlGrpcService(agents, streams, remoteRuns, "remote".equalsIgnoreCase(mode));
     }
 
     @Bean
@@ -311,4 +365,5 @@ class ServiceComposition {
     ProviderCatalogQuery providerCatalogQuery(ProviderRegistry registry) {
         return new ProviderCatalogQuery(registry);
     }
+
 }

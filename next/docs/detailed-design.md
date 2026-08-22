@@ -922,6 +922,8 @@ Service 根据 Agent 能力和容量主动发送 `LeaseOffer`，其中包含：
 
 Agent 下载并校验 Snapshot 后发送 `LeaseAck`。未在 Ack Deadline 内确认的 Offer 失效；Service 只有在校验 Agent、Lease、Epoch 和 Fencing Token 后才允许 Run 进入 `RUNNING`。
 
+当前 SQLite 纵向实现可通过 `wepush.execution.mode=remote` 启用该链路：`agent_lease` 保存会话归属、Epoch、Fencing Token、状态和最后连续 Event Sequence；Execution Spec 与 Audience 由受 Agent Token 保护的 `/internal/agent/v1/leases/{leaseId}/...` JSON API 提供，并在 Offer 中携带 SHA-256。生产版 Presigned Artifact 与加密 Secret Envelope 仍按本章后续设计演进，未完成前禁止明文下发 Secret。
+
 ### 19.4 Fencing 和重连
 
 每次重新分配 Lease 都递增 `epoch` 并生成新的不透明 Fencing Token。所有 LeaseAck、Heartbeat Lease、EventBatch、CommandAck 和 RunCompleted 都携带 `leaseId + epoch + fencingToken`，旧 Epoch 写入一律拒绝。
@@ -2017,6 +2019,8 @@ Next CI 使用 `next/**` 路径过滤，Classic 和 Next 互不依赖对方构�
 - Enrollment、身份、gRPC Connect、Heartbeat、LeaseOffer/LeaseAck 和 EventBatch/EventAck。
 - Fencing Token 与 Agent Journal。
 - Agent 失联和恢复测试。
+
+当前进度：Hello/Heartbeat、持久 Lease/Fence、Snapshot/Audience 下载校验、远端 Core 执行、EventBatch/EventAck、RunCommand/CommandAck、RunCompleted 和重复 Event Batch 去重已形成 SQLite 纵向闭环；Enrollment/mTLS、加密 Secret Envelope、磁盘 Event Outbox、Artifact 上传和进程重启续跑仍未完成。
 
 ### 44.6 Iteration 6：产品化
 

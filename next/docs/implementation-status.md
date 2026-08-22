@@ -10,11 +10,12 @@
 React / Electron / Java SDK
           ↓ HTTP + SSE
 Spring Boot Service API ←── gRPC 双向控制流 ──→ Remote Agent
-                                                  （Hello / Heartbeat / Reconnect）
+                  │        Lease / Event / Command        ↓
+                  │                                  Core Engine
           ↓ 应用事务
 SQLite + Flyway ─── Artifact Metadata ─── Local File Artifact Store
           ↓ Run Snapshot
-Embedded Core Engine
+Embedded Core Engine（embedded）或 Remote Core Engine（remote）
           ↓
 HTTP Provider（支持 Dry Run）
 ```
@@ -49,6 +50,8 @@ HTTP Provider（支持 Dry Run）
 - Agent 注册表持久化会话、平台、Provider 能力、容量、双向 Sequence 与最后心跳。
 - 独立 gRPC Server 默认绑定 `127.0.0.1:19090`；非回环绑定强制 Bootstrap Token，静默超过三个心跳周期自动标记离线。
 - 同一 Agent 的新连接会替换旧连接，旧会话后续写入由 Session ID Fence 拒绝。
+- SQLite 持久化 Agent Lease、Epoch、Fencing Token、会话归属、Event Cursor 和完成状态；同一 Run 同时只允许一个活跃 Lease。
+- `wepush.execution.mode=embedded|remote` 在组合根选择执行路径，默认保持 `embedded`。
 
 ### 2.3 公开 API
 
@@ -96,7 +99,14 @@ HTTP Provider（支持 Dry Run）
 - Agent 按 Welcome 周期发送 Heartbeat，断线后以 1 秒至 30 秒指数退避并加入随机抖动重连。
 - Agent 的双向 Sequence 和 Lease Fence 使用原子替换的本地文件 Journal 持久化，进程重启后延续。
 - gRPC Server 与 Client 均设置消息上限、Keepalive 和超时；Bootstrap Token 通过固定时间比较校验。
-- 当前里程碑完成的是注册、会话、心跳、离线检测和管理可视化；Lease Offer、远端执行和事件批次仍由后续里程碑接通。
+- Service 按 Provider 精确版本和可用容量选择在线 Agent，发送带 Epoch、Fencing Token、期限、Snapshot/Audience URL 与 SHA-256 的 Lease Offer。
+- Execution Spec 与 Audience 使用受 Agent Token 保护的内部 HTTP API 下载；Agent 只有在下载和哈希校验成功后才发送 Lease Ack。
+- Agent 把冻结文档转换成 Core `RunExecutionSpec` / `RecipientSource`，与内嵌模式复用同一 Engine 和 Provider 行为。
+- Core Event 和批量 Item Result 编码为连续 Agent Event Batch；Service 原子落库后返回 Event Ack，重放同一批次不会重复结果或事件。
+- Pause、Resume、Cancel、ChangeConcurrency 可由 Service 经活跃 Lease 发送到远端 `RunHandle`，Agent 返回 Command Ack。
+- Run Summary 经 `RunCompleted` 回传，Service 校验 Fence 后原子完成 Lease 与 Run，并产生 `RUN_FINALIZED`。
+- Offer 过期、发送失败或 Agent 断线会使 Lease 进入 `EXPIRED` / `LOST`，Run 进入 `RECOVERING`；运行中断线默认保留 30 秒恢复宽限期，避免立即无条件重发。
+- 当前远端 Secret Envelope 尚未实现加密封装；远端执行明确拒绝 Secret 解析，只支持无需 Secret 的配置，不会明文降级。
 
 ## 3. 当前数据库表
 
@@ -115,6 +125,7 @@ HTTP Provider（支持 Dry Run）
 | `run_command` | 幂等运行命令、处理状态和确认结果 |
 | `artifact_record` | Artifact 状态、文件定位、校验值、保留期和保护标记 |
 | `agent_registration` | Agent 会话、能力、容量、双向 Sequence 和心跳状态 |
+| `agent_lease` | Run/Agent 会话归属、Epoch、Fencing Token、Event Cursor 和租约状态 |
 | `flyway_schema_history` | 数据库迁移历史 |
 
 ## 4. 已验证行为
@@ -133,6 +144,8 @@ HTTP Provider（支持 Dry Run）
 - pnpm 类型检查、Vitest、Vite Web 构建和 Electron TypeScript 构建。
 - 真实 gRPC 双向流完成 Token 认证、Hello/Welcome、Heartbeat、HTTP 查询 ONLINE，以及流关闭后 OFFLINE 的端到端验证。
 - Protobuf 与领域帧双向映射、Agent 文件 Journal 原子持久化通过单元测试。
+- Agent 远端适配器通过 Execution Spec/Audience 下载与哈希校验，使用真实 Core + HTTP Provider 完成两条 Dry Run 并回传结果。
+- Service 远端 gRPC 集成覆盖 Lease Ack、受保护文档、命令投递、Event Ack、重复批次去重、Item Result 落库和 Run Summary 终态收敛。
 
 ## 5. 下一阶段边界
 
@@ -142,7 +155,8 @@ HTTP Provider（支持 Dry Run）
 - Server 模式的 S3-compatible Artifact Store、Presigned/Multipart 上传，以及完整 Provider 响应体的 7 天策略。
 - Message、Audience 和 Job 的编辑、修订对比、CSV 导入和正式发送确认体验。
 - API 文档页面的通用 POST/PUT/PATCH 请求编辑器。
-- Agent Lease Offer/Ack、Artifact 下载、远端 Engine 执行、Event Batch/Command Ack 和 Run Summary；当前 gRPC 已完成连接与心跳，Run 执行仍是 Standalone Embedded 模式。
+- Agent Event Outbox 的磁盘持久化、断点重传和进程重启后的运行恢复；当前 Event Cursor 在 Service 持久化，Agent 运行期按序发送。
+- Agent 加密 Secret Envelope、Artifact Presigned 上传与完整性提交；当前远端模式只允许无需 Secret/Artifact 的执行配置。
 - Agent 正式 Enrollment、证书轮换与 mTLS；当前 Token 只作为本地/Bootstrap 安全机制。
 - PostgreSQL Server 模式、多实例调度、Outbox 和高可用。
 - 身份认证、RBAC、审计事件及正式多 Workspace 管理 API。

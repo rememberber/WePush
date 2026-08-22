@@ -16,6 +16,8 @@ public interface AgentRepository {
 
     void advanceSequence(String agentId, String sessionId, long lastAgentSequence, Instant lastSeenAt);
 
+    void advanceServiceSequence(String agentId, String sessionId, long lastServiceSequence);
+
     void disconnect(String agentId, String sessionId, Instant disconnectedAt);
 
     int expireSilent(Instant lastSeenBefore, Instant disconnectedAt);
