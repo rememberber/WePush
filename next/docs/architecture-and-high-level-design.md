@@ -1,10 +1,10 @@
 # WePush Next 架构与概要设计
 
-- 文档状态：草案
-- 文档版本：0.1
+- 文档状态：已接受基线
+- 文档版本：0.2
 - 日期：2026-08-22
 - 适用范围：`next/`
-- 关联决策：[ADR-0001：Classic 与 Next 双轨独立发展](adr/0001-dual-track-development.md)
+- 关联决策：见 [ADR 索引](adr/README.md)
 
 ## 1. 文档目的
 
@@ -36,7 +36,7 @@ WePush Next 的目标是从单机桌面推送工具发展为同时支持本地�
 - 不追求与 Classic 的内部代码、数据模型或 UI 实现兼容。
 - 不要求首个版本迁移 Classic 的全部消息类型。
 - 不承诺外部消息渠道的严格 Exactly Once 语义。
-- 不在首期实现 Service 控制面的多节点高可用。
+- Standalone 首个版本不要求多节点；正式 Server 模式按 PostgreSQL 控制面高可用基线建设。
 - 不在首期建设通用工作流编排平台。
 - 不在 Core 中实现用户、权限、租户、HTTP API 或数据库管理。
 - 不要求 WebUI 与 Desktop UI 使用完全相同的外壳技术，但应尽量共享前端能力。
@@ -210,18 +210,22 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-    UI[WebUI / SDK] --> Service[Service]
-    Service --> PostgreSQL[(PostgreSQL)]
-    Service --> ObjectStore[(对象或共享制品存储)]
-    Agent1[Agent A] --> Service
-    Agent2[Agent B] --> Service
-    Agent3[Agent C] --> Service
+    UI[WebUI / SDK] --> LB[HTTP/2 负载均衡器]
+    Agent1[Agent A] --> LB
+    Agent2[Agent B] --> LB
+    Agent3[Agent C] --> LB
+    LB --> Service1[Service A]
+    LB --> Service2[Service B]
+    Service1 --> PostgreSQL[(PostgreSQL 18 HA)]
+    Service2 --> PostgreSQL
+    Service1 --> ObjectStore[(S3-compatible Artifact Store)]
+    Service2 --> ObjectStore
     Agent1 --> Channels[外部渠道]
     Agent2 --> Channels
     Agent3 --> Channels
 ```
 
-远程 Agent 主动向 Service 建立出站连接或发起长轮询，便于跨防火墙部署。首期只保证单 Service 节点；控制面高可用需要后续 ADR。
+远程 Agent 主动通过负载均衡器建立出站 gRPC 双向流，便于跨防火墙部署。正式 Server HA 至少包含两个无状态 Service 实例；PostgreSQL 是业务和协调状态的事实源，对象制品不得依赖某个 Service 的本地磁盘。具体约束见 [ADR-0006](adr/0006-postgresql-control-plane-ha.md)。
 
 ### 9.3 Embedded 模式
 
@@ -329,6 +333,8 @@ Core 通过 `RunEventSink` 输出结构化事件，例如：
 
 Provider 实例应按账号和执行上下文创建，禁止使用可变全局单例保存 Token、连接和运行进度。连接池可以共享，但必须具有明确的关闭和隔离策略。
 
+外部 Provider 使用 PF4J 3.15.x 发现，每个插件使用独立 ClassLoader 隔离私有厂商 SDK。正式环境仅装载清单与 Ed25519 签名均通过验证的版本。更新采用版本化目录、Agent Drain、重启、验证和激活流程，多 Agent 场景滚动执行；不在 JVM 内热替换正在使用的 Provider。ClassLoader 隔离不是恶意代码沙箱，非受信插件需要未来的独立进程 Runner。详见 [ADR-0005](adr/0005-provider-plugin-lifecycle.md)。
+
 ## 12. Agent 概要设计
 
 ### 12.1 职责
@@ -348,16 +354,17 @@ Provider 实例应按账号和执行上下文创建，禁止使用可变全局�
 sequenceDiagram
     participant A as Agent
     participant S as Service
-    A->>S: 注册并上报能力
-    loop 心跳/领取任务
-        A->>S: claim(agentId, capacity)
-        S-->>A: lease + executionSpec
+    A->>S: Connect + Hello（gRPC 双向流）
+    S-->>A: Welcome + 协议窗口
+    loop 心跳/调度
+        A->>S: Heartbeat(capacity, providers)
+        S-->>A: LeaseOffer + executionSpecRef
+        A->>S: LeaseAck(epoch, fencingToken)
     end
-    A->>S: acknowledge(leaseId)
     A->>A: Core 执行
     loop 运行期间
-        A->>S: heartbeat + event batch
-        S-->>A: commands
+        A->>S: Heartbeat + EventBatch
+        S-->>A: EventAck + RunCommand
     end
     A->>S: complete(summary, artifacts)
 ```
@@ -369,7 +376,9 @@ sequenceDiagram
 
 ### 12.3 Agent 与 Service 协议
 
-首期使用带版本号的 HTTPS JSON 协议和长轮询，路径与公共 API 隔离，例如 `/internal/agent/v1`。未来是否使用 gRPC 或双向流，需要单独 ADR，不影响 Core 接口。
+远程 Agent 的长期控制协议固定为 HTTP/2 上的 gRPC 双向流，契约使用 Protobuf。连接承载 Hello、心跳、能力、Lease、命令、事件确认和终态；每个方向具有单调 Sequence，Lease 仍使用 Epoch 和 Fencing Token。
+
+Enrollment 和凭据轮换使用 HTTPS REST；WebUI、Desktop UI 和远程 SDK 的 Run 实时事件使用 SSE；大体积 Artifact 通过短期签名 HTTPS URL 传输。正式远程 Agent 不发布长轮询过渡协议，也不默认使用 WebSocket。详见 [ADR-0004](adr/0004-agent-communication-protocol.md)。
 
 ## 13. Service 概要设计
 
@@ -381,7 +390,7 @@ sequenceDiagram
 - `service-infrastructure`：数据库、Secret、Artifact、Agent 通信等适配器。
 - `service-app`：Web 框架、配置、启动和部署入口。
 
-建议以 Java 21 和 Spring Boot 作为首期 Service 基线，数据库迁移使用显式版本化迁移工具。具体框架版本由创建工程时确定并通过 BOM 统一管理。
+Service 基线固定为 Java 21 和 Spring Boot 4.1.x，初始实现版本为 4.1.1；数据库迁移使用显式版本化迁移工具，依赖版本由 BOM 统一管理。Spring 只存在于 Service App、Web 和 Infrastructure 层，不进入 Core、Provider SPI、Agent Runtime、Java SDK 或 Embedded SDK。详见 [ADR-0002](adr/0002-technology-baseline.md)。
 
 ### 13.2 主要领域对象
 
@@ -431,13 +440,13 @@ stateDiagram-v2
 - 每次调度触发创建独立 Run 和 Run Snapshot。
 - 明确时区和夏令时行为。
 - 支持错过触发策略：跳过、立即补一次或按限制补偿。
-- 首期单 Service 节点运行调度器；未来多节点需要数据库锁或独立调度协调机制。
+- Standalone 由单 Service 调度；Server HA 由持有 PostgreSQL Session Advisory Lock 的实例运行 Schedule Scanner，连接失效即释放领导权。
 
 ## 14. 对外 API 设计
 
 ### 14.1 基本约定
 
-- API 前缀：`/api/v1`。
+- API 前缀：`/api/v1`；Workspace 业务资源前缀为 `/api/v1/workspaces/{workspaceId}`。
 - OpenAPI 作为公开契约和 SDK 生成来源。
 - 资源标识使用不透明 ID，建议 UUID 或 UUIDv7。
 - 创建 Run 等非幂等操作支持 `Idempotency-Key`。
@@ -451,32 +460,32 @@ stateDiagram-v2
 GET    /api/v1/providers
 GET    /api/v1/providers/{providerId}/schemas
 
-POST   /api/v1/accounts
-GET    /api/v1/accounts
-POST   /api/v1/accounts/{id}/test
+POST   /api/v1/workspaces/{workspaceId}/accounts
+GET    /api/v1/workspaces/{workspaceId}/accounts
+POST   /api/v1/workspaces/{workspaceId}/accounts/{id}/test
 
-POST   /api/v1/messages
-POST   /api/v1/audiences
-POST   /api/v1/audiences/{id}/snapshots
+POST   /api/v1/workspaces/{workspaceId}/messages
+POST   /api/v1/workspaces/{workspaceId}/audiences
+POST   /api/v1/workspaces/{workspaceId}/audiences/{id}/snapshots
 
-POST   /api/v1/jobs
-POST   /api/v1/jobs/{id}/runs
-POST   /api/v1/schedules
+POST   /api/v1/workspaces/{workspaceId}/jobs
+POST   /api/v1/workspaces/{workspaceId}/jobs/{id}/runs
+POST   /api/v1/workspaces/{workspaceId}/schedules
 
-GET    /api/v1/runs/{id}
-POST   /api/v1/runs/{id}/commands/cancel
-POST   /api/v1/runs/{id}/commands/pause
-POST   /api/v1/runs/{id}/commands/resume
-POST   /api/v1/runs/{id}/commands/concurrency
-GET    /api/v1/runs/{id}/events
-GET    /api/v1/runs/{id}/artifacts
+GET    /api/v1/workspaces/{workspaceId}/runs/{id}
+POST   /api/v1/workspaces/{workspaceId}/runs/{id}/commands/cancel
+POST   /api/v1/workspaces/{workspaceId}/runs/{id}/commands/pause
+POST   /api/v1/workspaces/{workspaceId}/runs/{id}/commands/resume
+POST   /api/v1/workspaces/{workspaceId}/runs/{id}/commands/concurrency
+GET    /api/v1/workspaces/{workspaceId}/runs/{id}/events
+GET    /api/v1/workspaces/{workspaceId}/runs/{id}/artifacts
 ```
 
 ### 14.3 实时事件
 
 运行监控首期采用 Server-Sent Events。客户端可以携带事件游标或 `Last-Event-ID` 断线续传；历史事件仍可通过普通分页 API 查询。
 
-命令通过 REST 提交，事件通过 SSE 下发。只有出现明确的双向低延迟需求时才引入 WebSocket。
+命令通过 REST 提交，事件通过 SSE 下发。浏览器端不默认引入 WebSocket。
 
 ### 14.4 交互式 API 文档
 
@@ -527,7 +536,7 @@ Service 提供：
 
 动态表单由 Provider Schema 驱动。JSON Schema 负责数据类型和校验，UI Schema 负责分组、顺序、控件提示和 WePush 扩展控件。
 
-前端采用 TypeScript SPA。React、Vue 等具体框架在实现前通过 ADR 选定。
+前端固定采用 TypeScript 6.0.x、Vite 8.1.x 和 React 19.2.x，以 Node.js 24 LTS、pnpm 和单一 Lockfile 管理工程。样式采用 Tailwind CSS；shadcn/ui 只在能降低复杂组件成本时按需引入，复制进仓库的组件源码由项目自行维护。WebUI 是纯 SPA，正式运行不依赖 Node.js 服务端。详见 [ADR-0002](adr/0002-technology-baseline.md)。
 
 ## 17. Desktop UI 概要设计
 
@@ -541,14 +550,14 @@ Desktop UI 是 Service API 的薄客户端，不直接依赖 Core 或数据库�
 - 尽量复用 WebUI 页面、Schema 渲染器和 API 客户端。
 - 本地连接使用回环地址和短期引导凭据，避免无认证端口。
 
-Desktop 外壳技术以及是否复用完整 WebUI，需要单独 ADR。该选择不得改变 Desktop 只能通过 Service API 访问业务能力的边界。
+Desktop 外壳固定为 Electron 43.x，并复用 WebUI 的 React 页面、Schema Renderer、API Client 和设计 Token。Main、Preload、Renderer 严格分层；Renderer 禁用 Node.js 集成，启用 Context Isolation 和 Sandbox，只通过最小白名单 IPC 使用桌面能力。该选择不改变 Desktop 只能通过 Service API 访问业务能力的边界。详见 [ADR-0002](adr/0002-technology-baseline.md)。
 
 ## 18. 数据与存储设计
 
 ### 18.1 数据库
 
 - Standalone 默认 SQLite。
-- Server 模式推荐 PostgreSQL。
+- Server 模式固定使用 PostgreSQL 18.x；数据库自身复制、故障转移和备份由托管数据库或独立运维方案负责。
 - 通过 Repository Port 隔离数据库实现，但不以支持任意数据库为目标。
 - 所有 Schema 变化必须使用版本化迁移，不允许运行时拼接临时升级逻辑。
 - 数据库事务以应用用例为边界，不共享全局 Session。
@@ -562,15 +571,17 @@ Artifact Store 保存：
 - 可选 Provider 响应体。
 - 大体积日志和导出文件。
 
-Standalone 使用本地目录；Server 模式可以使用共享文件系统或对象存储。数据库保存 Artifact 元数据、校验值、大小和定位信息。
+Standalone 默认使用 `LocalFileArtifactStore`；Server 默认使用受控 S3-compatible API 的 `S3ArtifactStore`。Agent 使用 Service 签发的短期 Presigned URL 直传，数据库保存元数据、SHA-256、大小、状态和对象键。对象键按 Workspace 分区；保留期由 Service 清理任务执行，对象存储 Lifecycle 只作兜底。详见 [ADR-0007](adr/0007-artifact-store-and-retention.md)。
 
 ### 18.3 Secret Store
 
-- 数据库只保存加密值或 Secret 引用。
-- 主密钥不与密文存放在同一数据库中。
-- Standalone 可使用操作系统凭据存储或受保护的本地主密钥。
-- Server 模式支持环境注入、文件密钥或外部 Secret Manager 适配器。
+- 默认实现为 `LocalEnvelopeSecretStore`，每个 Secret 使用独立随机 DEK 和 AES-256-GCM 加密，AAD 绑定 Workspace、Secret ID、类型和版本。
+- 数据库保存密文、Nonce、加密后的 DEK 和主密钥版本；主密钥只来自独立受保护文件或显式外部注入。
+- Standalone 首启可创建仅当前用户可读的主密钥文件；Server 不得静默生成新主密钥，缺失或权限不安全时 Fail Closed。
+- `SecretStore` 保持 Port，可扩展 Vault、云 KMS 和操作系统凭据存储适配器；Electron `safeStorage` 不作为 Service 默认实现。
 - Agent 只在执行期间获取最小范围 Secret，并在内存中短期持有。
+
+密钥轮换默认只重包裹 DEK，不重写业务密文。详见 [ADR-0003](adr/0003-default-secret-store.md)。
 
 ## 19. 安全设计
 
@@ -584,7 +595,7 @@ Standalone 使用本地目录；Server 模式可以使用共享文件系统或�
 - HTTP Provider 对目标地址提供可配置的 SSRF 防护策略。
 - API 调试功能遵循当前用户权限，不提供绕过权限的内部调用通道。
 
-首期可以是单租户实例，但领域对象应保留所有者或工作空间边界，避免未来引入多租户时无法隔离数据。
+Workspace 逻辑多租户进入正式 Server 产品范围；Standalone 自动使用隐藏的 Default Workspace。Account、Secret、Message、Audience、Job、Schedule、Run、Artifact、Agent Pool 和 API Token 均必须归属 Workspace，所有 Repository、唯一索引、缓存键和授权检查显式携带 `workspaceId`。首期不建设公共 SaaS 的计费、自助注册或恶意租户物理隔离。详见 [ADR-0008](adr/0008-workspace-multitenancy-scope.md)。
 
 ## 20. 可观测性
 
@@ -637,7 +648,7 @@ Run 的状态摘要、事件和结果制品允许短暂最终一致，但终态�
 | 架构测试 | 禁止依赖、包边界、Core 纯净性 |
 | Provider 契约测试 | Schema、配置校验、错误分类、Dry Run |
 | API 契约测试 | OpenAPI、错误模型、兼容性和 SDK 生成 |
-| 集成测试 | SQLite、PostgreSQL、Artifact、Secret、SSE |
+| 集成测试 | SQLite、PostgreSQL 18、S3-compatible Artifact、Secret、SSE、Agent gRPC |
 | 故障测试 | Agent 失联、Service 重启、租约到期、重复上报 |
 | 性能测试 | 大受众流式处理、并发、内存上限和事件聚合 |
 | E2E 测试 | WebUI/SDK 创建任务到结果下载完整链路 |
@@ -704,7 +715,7 @@ Run 的状态摘要、事件和结果制品允许短暂最终一致，但终态�
 
 - 增加 PostgreSQL、远程 Agent 和租约恢复。
 - 增加 Agent 管理、RBAC、审计和远程 TLS。
-- 评估共享 Artifact Store 和控制面高可用。
+- 落实 S3-compatible Artifact Store 和 PostgreSQL 控制面高可用。
 
 ### 阶段 E：Provider 扩展
 
@@ -712,19 +723,18 @@ Run 的状态摘要、事件和结果制品允许短暂最终一致，但终态�
 - 为每个 Provider 建立契约测试和模拟服务。
 - 完善 Schema 组件库和 Provider 开发文档。
 
-## 28. 待单独 ADR 的事项
+## 28. 已接受的架构决策
 
-- WebUI 前端框架和组件库。
-- Desktop UI 外壳技术。
-- Service Web 框架的最终版本基线。
-- Secret Store 默认实现。
-- Agent 长轮询、SSE、WebSocket 或 gRPC 的长期协议。
-- Provider 插件的发现、隔离和热更新机制。
-- PostgreSQL Server 模式下的控制面高可用。
-- Artifact Store 的对象存储协议和保留策略。
-- 多租户是否进入正式产品范围。
+- [ADR-0001：Classic 与 Next 双轨独立发展](adr/0001-dual-track-development.md)
+- [ADR-0002：Service、WebUI 与 Desktop 技术基线](adr/0002-technology-baseline.md)
+- [ADR-0003：默认 Secret Store](adr/0003-default-secret-store.md)
+- [ADR-0004：Agent 长期通信协议](adr/0004-agent-communication-protocol.md)
+- [ADR-0005：Provider 插件发现、隔离和更新](adr/0005-provider-plugin-lifecycle.md)
+- [ADR-0006：PostgreSQL Server 模式控制面高可用](adr/0006-postgresql-control-plane-ha.md)
+- [ADR-0007：Artifact Store 协议和保留策略](adr/0007-artifact-store-and-retention.md)
+- [ADR-0008：Workspace 多租户范围](adr/0008-workspace-multitenancy-scope.md)
 
-在 ADR 完成前，实现可以采用本文建议的首期方案，但不得把未决技术细节泄漏到 Core API 和公开领域模型中。
+这些决策是 Next 初始实现的正式基线。外部 KMS 的具体厂商适配、非受信 Provider 的进程级沙箱、公共 SaaS 能力和跨地域控制面不在本轮基线内；需要进入范围时再新增 ADR，不得通过临时代码隐式引入。
 
 ## 29. 架构验收条件
 

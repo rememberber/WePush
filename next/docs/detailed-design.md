@@ -1,11 +1,11 @@
 # WePush Next 详细设计
 
-- 文档状态：草案
-- 文档版本：0.1
+- 文档状态：已接受基线，随实现演进
+- 文档版本：0.2
 - 日期：2026-08-22
 - 适用范围：`next/`
 - 上位文档：[WePush Next 架构与概要设计](architecture-and-high-level-design.md)
-- 关联决策：[ADR-0001：Classic 与 Next 双轨独立发展](adr/0001-dual-track-development.md)
+- 关联决策：见 [ADR 索引](adr/README.md)
 
 ## 1. 文档目的
 
@@ -19,20 +19,25 @@
 |---|---|
 | Java | Java 21 |
 | 构建 | `next/pom.xml` 独立 Maven 聚合工程 |
-| Service | Spring Boot 独立应用 |
-| API | HTTPS REST，公开前缀 `/api/v1` |
+| Service | Java 21、Spring Boot 4.1.x，初始版本 4.1.1 |
+| API | HTTPS REST；Workspace 资源前缀 `/api/v1/workspaces/{workspaceId}` |
 | 实时事件 | Server-Sent Events |
 | API 契约 | Contract First OpenAPI 3.1 |
 | Provider 配置 | JSON Schema 2020-12 + UI Schema |
-| Agent 协议 | `/internal/agent/v1` HTTPS JSON + 长轮询 |
+| WebUI | TypeScript 6.0.x、Vite 8.1.x、React 19.2.x、Tailwind CSS、按需 shadcn/ui |
+| Desktop | Electron 43.x，复用 WebUI Renderer |
+| Agent 协议 | HTTP/2 + Protobuf + gRPC 双向流；Enrollment 使用 HTTPS REST |
+| Provider 插件 | PF4J 3.15.x、签名包、ClassLoader 隔离、滚动重启更新 |
 | Standalone 数据库 | SQLite |
-| Server 数据库 | PostgreSQL |
-| 大对象 | Artifact Store，本地文件或对象存储适配器 |
+| Server 数据库 | PostgreSQL 18.x；至少两个无状态 Service 实例构成正式 HA |
+| Secret | `LocalEnvelopeSecretStore`，AES-256-GCM 信封加密 |
+| 大对象 | Standalone 本地文件；Server 使用 S3-compatible Artifact Store |
+| 租户边界 | Workspace 逻辑多租户进入正式 Server 范围 |
 | 投递语义 | At Least Once；支持时使用 Provider 幂等键 |
 | 单机执行 | Service 内嵌 Agent |
 | 分布式执行 | 远程 Agent 主动连接 Service |
 
-前端框架、Desktop 外壳、插件热更新、外部 Secret Manager 和控制面高可用仍需单独 ADR。
+上述基线分别由 [ADR-0002](adr/0002-technology-baseline.md) 至 [ADR-0008](adr/0008-workspace-multitenancy-scope.md) 固化。外部 Secret Manager、公共 SaaS 和非受信插件进程沙箱是可选扩展，不影响首期基线。
 
 ## 3. 命名与代码约定
 
@@ -687,17 +692,30 @@ x-wepush-capability         依赖的 Provider 能力
 
 UI 校验结果不能替代 Service 校验。
 
-## 15. Provider 发现和装载
+## 15. Provider 发现、隔离和更新
 
-首期采用启动时静态发现：
+### 15.1 发现
 
-- Java `ServiceLoader` 发现 `ProviderFactory`。
-- `agent-app` 或 `service-app` 的发行包显式包含允许的 Provider JAR。
-- 启动时校验重复 `providerId`、SPI 版本和 Schema。
-- Provider 清单和校验失败原因写入启动日志与健康信息。
-- 首期不支持运行时热替换；新增或升级 Provider 需要重启 Agent。
+- 外部 Provider 插件使用 PF4J 3.15.x；Provider SPI 作为 Extension Point，Core Engine 不依赖 PF4J。
+- Agent App 的 `ProviderCatalogAdapter` 把 PF4J Extension 转换为 Core 的 `ProviderFactory`。
+- 内置 Provider 作为系统 Extension 进入相同 Catalog，避免执行路径出现两套语义。
+- Agent 启动时扫描 `plugins/<pluginId>/<version>/`，校验 `plugin.json`、SPI 兼容范围、文件 SHA-256 和 Ed25519 签名，再装载被激活的版本。
+- 重复 Provider ID、缺失 Schema、签名失败或 SPI 不兼容时，插件进入 `REJECTED`，原因写入健康状态和审计日志。
 
-未来若需要第三方插件隔离、签名和热更新，必须新增 ADR 和独立 ClassLoader 安全设计。
+插件包固定包含实现 JAR、Descriptor、JSON Schema、UI Schema、图标、许可证和签名清单。正式发行默认只接受受信发布者签名的包；未签名包仅能在显式 Developer Mode 中装载。
+
+### 15.2 隔离
+
+- 每个插件使用独立 PF4J ClassLoader；JDK、Provider SPI、Core API 和统一日志 API 由 Parent ClassLoader 提供。
+- 插件私有的厂商 SDK 和三方依赖由插件 ClassLoader 加载，插件不得打包 SPI/Core API 的重复副本。
+- Provider 不能直接访问 Service Repository、Spring Bean 或其他 Workspace 数据。
+- ClassLoader 只解决依赖冲突，不构成恶意代码沙箱。非受信插件必须通过未来的独立进程 Provider Runner 执行。
+
+### 15.3 更新和回滚
+
+更新按 `STAGED → VERIFIED → DRAINING → RESTARTING → ACTIVE` 推进：先下载到版本目录并验证，再停止向目标 Agent 分配新 Run，等待或按策略处理现有 Run，重启 Agent 后验证能力清单，最后激活新版本。多 Agent 环境逐台滚动；旧版本保留到回滚窗口结束。
+
+不在 JVM 内卸载、替换正在使用的 Provider ClassLoader。Run Snapshot 固定 Provider ID、版本和 Schema 版本；只有存在兼容 Agent 时才调度新 Run。详见 [ADR-0005](adr/0005-provider-plugin-lifecycle.md)。
 
 ## 16. 首个 HTTP Provider 详细设计
 
@@ -767,10 +785,10 @@ HTTP Provider 用于验证完整纵向链路。
 ```text
 AgentRuntime
 ├── AgentIdentityStore
-├── AgentClient
+├── GrpcAgentClient
 ├── RegistrationManager
 ├── HeartbeatLoop
-├── ClaimLoop
+├── AgentControlStream
 ├── LeaseSupervisor
 ├── RunExecutor
 ├── CommandInbox
@@ -848,102 +866,88 @@ Authorization: Enrollment <one-time-token>
 - Agent Token 与用户 API Token 使用不同签发域、权限和过期策略。
 - Agent Credential 支持轮换和吊销。
 
-## 19. Agent 心跳、领取和租约协议
+## 19. Agent gRPC 控制流和租约协议
 
-### 19.1 心跳
+### 19.1 服务契约
 
-```http
-POST /internal/agent/v1/agents/{agentId}/heartbeat
-```
+正式契约位于 `agent/agent-protocol/src/main/proto/`。核心形态如下，具体字段以版本化 Proto 为准：
 
-```json
-{
-  "sentAt": "2026-08-22T08:30:00Z",
-  "state": "ONLINE",
-  "capacity": {"maxRuns": 4, "activeRuns": 1, "availableConcurrency": 80},
-  "leases": [
-    {"leaseId": "...", "runId": "...", "epoch": 3, "state": "RUNNING"}
-  ],
-  "lastCommandSequence": 18
+```proto
+service AgentControlService {
+  rpc Connect(stream AgentToService) returns (stream ServiceToAgent);
+}
+
+message AgentToService {
+  string agent_id = 1;
+  uint64 sequence = 2;
+  oneof payload {
+    Hello hello = 10;
+    Heartbeat heartbeat = 11;
+    LeaseAck lease_ack = 12;
+    EventBatch event_batch = 13;
+    CommandAck command_ack = 14;
+    RunCompleted run_completed = 15;
+    Draining draining = 16;
+  }
+}
+
+message ServiceToAgent {
+  uint64 sequence = 1;
+  oneof payload {
+    Welcome welcome = 10;
+    LeaseOffer lease_offer = 11;
+    RunCommand command = 12;
+    EventAck event_ack = 13;
+    DrainRequest drain = 14;
+  }
 }
 ```
 
-响应返回 Server 时间、下次心跳建议和待处理命令摘要。
+同一方向的 `sequence` 单调递增。gRPC 保证单条活跃流内有序，但 Agent 和 Service 仍持久化最后确认位置，以处理断线、重连和重复帧。应用消息设置大小上限；Audience、结果、日志和插件包不进入控制流。
 
-### 19.2 领取任务
+### 19.2 建连和心跳
 
-```http
-POST /internal/agent/v1/claims
-```
+Agent 使用 Enrollment 获得的身份建立 `Connect`，第一帧必须是 `Hello`，包含 Agent 版本、协议范围、平台、Provider 清单摘要、容量和恢复游标。Service 返回 `Welcome`，确认选定协议版本、Server 时间、心跳间隔、消息上限和双方已确认 Sequence。
 
-请求包含 Agent 能力、可用 Run 数和 Provider 清单摘要。长轮询超时建议 20～30 秒。
+Heartbeat 包含 Agent 状态、最大/活跃 Run、可用并发和当前 Lease 摘要。心跳间隔默认 10 秒；超过三个周期未收到有效帧时 Service 将连接标记为失联并启动 Lease 恢复，但具体 Lease 到期以数据库时间为准。
 
-响应为空时返回 `204 No Content`；领取成功时返回：
+### 19.3 Lease Offer 和确认
 
-```json
-{
-  "lease": {
-    "leaseId": "...",
-    "runId": "...",
-    "epoch": 3,
-    "expiresAt": "2026-08-22T08:31:00Z",
-    "leaseToken": "opaque-token"
-  },
-  "executionSpec": {},
-  "recipientArtifact": {},
-  "secretEnvelope": {},
-  "commandsAfter": 18
-}
-```
+Service 根据 Agent 能力和容量主动发送 `LeaseOffer`，其中包含：
 
-### 19.3 Fencing Token
+- `leaseId`、`runId`、`epoch`、`fencingToken`、`expiresAt`。
+- Execution Snapshot 元数据和短期下载 URL。
+- Audience Artifact 元数据和短期下载 URL。
+- 仅限本次 Run 的 Secret Envelope。
 
-每次重新分配 Lease 时递增 `epoch`。Agent 的确认、心跳、事件和完成请求必须携带 `leaseId + epoch + leaseToken`。Service 拒绝旧 epoch 的写入，防止失联 Agent 恢复后覆盖新执行结果。
+Agent 下载并校验 Snapshot 后发送 `LeaseAck`。未在 Ack Deadline 内确认的 Offer 失效；Service 只有在校验 Agent、Lease、Epoch 和 Fencing Token 后才允许 Run 进入 `RUNNING`。
 
-### 19.4 Lease 确认
+### 19.4 Fencing 和重连
 
-Agent 下载并验证执行快照后调用 Ack。未在 Ack Deadline 内确认的 Lease 自动释放回 `PENDING`。
+每次重新分配 Lease 都递增 `epoch` 并生成新的不透明 Fencing Token。所有 LeaseAck、Heartbeat Lease、EventBatch、CommandAck 和 RunCompleted 都携带 `leaseId + epoch + fencingToken`，旧 Epoch 写入一律拒绝。
+
+Agent 断线后以指数退避和抖动重连负载均衡器，并在 Hello 中报告未完成 Lease、双方 Sequence 和 Outbox 范围。任意 Service 实例从 PostgreSQL 恢复状态并返回继续、停止或重新同步指令；连接到原实例不是恢复前提。
 
 ## 20. Agent 命令和事件上报
 
 ### 20.1 命令结构
 
-```json
-{
-  "sequence": 19,
-  "commandId": "...",
-  "runId": "...",
-  "type": "CHANGE_CONCURRENCY",
-  "payload": {"target": 60},
-  "createdAt": "2026-08-22T08:30:05Z"
-}
-```
+`RunCommand` 包含 Agent 方向 Sequence、Command ID、Run ID、Lease Fencing 信息、命令类型、Payload 和创建时间。
 
 - Sequence 在单 Agent 范围内单调递增。
 - Agent 按顺序处理并持久化最后确认 Sequence。
 - 命令按 `commandId` 幂等。
-- 命令结果通过 Command Ack 和 Run Event 同时体现。
+- 命令结果通过 `CommandAck` 和 Run Event 同时体现。
 
 ### 20.2 事件批次
 
-```http
-POST /internal/agent/v1/leases/{leaseId}/events
-```
+Agent 使用 `EventBatch` 帧发送 `firstSequence`、`lastSequence` 和事件集合。Service 持久化后发送 `EventAck`，给出最后连续确认 Sequence。Agent 可以安全重传整个批次，Service 通过 `runId + eventSequence` 去重；发现缺口时要求从已确认位置重发。
 
-```json
-{
-  "epoch": 3,
-  "firstSequence": 101,
-  "lastSequence": 120,
-  "events": []
-}
-```
+Event Outbox 有内存和本地磁盘上限。达到高水位时优先聚合进度类事件并对 Core 施加背压，状态转换、错误和终态事件不得静默丢弃。
 
-Service 返回最后持久化 Sequence。Agent 可以安全重传整个批次，Service 通过 `runId + sequence` 去重。
+### 20.3 完成和 Artifact
 
-### 20.3 完成
-
-完成请求包含 RunSummary、Artifact 元数据和最后 Event Sequence。Service 只有在确认所有必需事件和 Artifact 后才进入终态；缺失内容时返回可重试错误。
+`RunCompleted` 包含 RunSummary、Artifact ID/校验值/大小和最后 Event Sequence。大文件由 Agent 使用 Service 签发的短期 HTTPS URL 直接上传；Service 通过 Head 和 Checksum 验证所有必需 Artifact 均为 `READY` 后才提交 Run 终态。缺失内容时发送可重试拒绝，Agent 保留 Journal 和 Outbox。
 
 ## 21. Agent 本地恢复
 
@@ -998,7 +1002,7 @@ AuditApplicationService
 7. 写入 `RUN_CREATED` 事件和审计记录。
 8. 保存 Idempotency 结果。
 
-事务提交后通知 Claim Loop 有新任务。通知丢失不影响正确性，Agent 的下一次轮询仍可领取。
+事务提交后发出可用性提示，由已连接的 Service 实例尝试生成 `LeaseOffer`。提示丢失不影响正确性，数据库扫描仍会发现待调度 Run。
 
 ### 22.3 典型用例：下发命令
 
@@ -1071,7 +1075,7 @@ service/service-api/src/main/openapi/
 ### 24.2 创建 Run
 
 ```http
-POST /api/v1/jobs/{jobId}/runs
+POST /api/v1/workspaces/{workspaceId}/jobs/{jobId}/runs
 Idempotency-Key: 20260822-manual-001
 Content-Type: application/json
 ```
@@ -1094,8 +1098,8 @@ Content-Type: application/json
   "state": "PENDING",
   "createdAt": "2026-08-22T08:30:00Z",
   "links": {
-    "self": "/api/v1/runs/run-id",
-    "events": "/api/v1/runs/run-id/events"
+    "self": "/api/v1/workspaces/workspace-id/runs/run-id",
+    "events": "/api/v1/workspaces/workspace-id/runs/run-id/events"
   }
 }
 ```
@@ -1116,7 +1120,7 @@ Run Detail 包含：
 ### 24.4 SSE
 
 ```http
-GET /api/v1/runs/{runId}/events
+GET /api/v1/workspaces/{workspaceId}/runs/{runId}/events
 Accept: text/event-stream
 Last-Event-ID: 120
 ```
@@ -1189,7 +1193,7 @@ INTERNAL_ERROR
 - `200` 查询或同步操作成功。
 - `201` 资源创建完成。
 - `202` 异步命令已接受。
-- `204` 删除成功或 Agent 长轮询无任务。
+- `204` 删除或无响应体操作成功。
 - `400` 请求格式或字段错误。
 - `401` 未认证。
 - `403` 无权限。
@@ -1294,15 +1298,16 @@ idempotency_record(scope, key_hash) UNIQUE
 
 SQLite 不支持的条件索引能力通过事务校验和等价唯一字段实现。
 
-默认保留建议：
+默认保留基线：
 
-- Run 摘要长期保存，具体时长由管理员配置。
-- 高频 Run Event 保存 7～30 天后压缩或删除。
+- Run 摘要作为业务记录保存，具体归档期由 Workspace 策略配置。
+- 高频 Run Event 和运行日志保存 30 天后压缩或删除。
 - Audit Event 保存时间长于普通日志。
-- Artifact 按类型设置独立 TTL；删除前验证没有有效引用。
+- Audience Snapshot 在被引用期间保留，解除引用后 30 天；运行结果 90 天；完整 Provider 响应 7 天；临时导出 24 小时。
+- 删除前验证没有有效引用；`PINNED` 或 `LEGAL_HOLD` 跳过普通 TTL。
 - Secret 不进入备份外的普通导出。
 
-## 28. SQLite 与 PostgreSQL 适配
+## 28. SQLite 与 PostgreSQL 18 适配
 
 ### 28.1 统一语义
 
@@ -1311,9 +1316,13 @@ SQLite 不支持的条件索引能力通过事务校验和等价唯一字段实�
 - 枚举使用可读字符串，不使用数据库特有 Enum。
 - 时间以 UTC 文本或数据库支持的时间类型保存，由适配器统一转换。
 
-### 28.2 Claim 差异
+### 28.2 调度和 Lease Claim 差异
 
 PostgreSQL 使用行锁和 `SKIP LOCKED` 领取候选 Run。SQLite 使用短事务和单写者模型完成领取，Standalone 限制单 Service 实例。
+
+Server 中只有持有 PostgreSQL Session-level Advisory Lock 的 Service 实例运行 Schedule Scanner；锁使用专用连接持有，连接失效自动释放。Run Claim 在短事务中执行并同时写入递增 Epoch 和 Fencing Token，不能只依赖进程内锁。
+
+`LISTEN/NOTIFY` 仅作为新 Run、新命令和新事件的低延迟唤醒提示；所有消费者都必须有数据库轮询和游标恢复路径，正确性不依赖通知必达。
 
 ### 28.3 连接管理
 
@@ -1322,20 +1331,31 @@ PostgreSQL 使用行锁和 `SKIP LOCKED` 领取候选 Run。SQLite 使用短事�
 - PostgreSQL 根据 Service 实例和负载配置池大小。
 - 禁止全局共享 Connection、Session 或 Mapper 实例承载事务状态。
 
+### 28.4 控制面高可用
+
+- 正式 Server HA 至少运行两个无状态 Service 实例，并置于支持 HTTP/2 与 gRPC 的负载均衡器后。
+- 业务状态、Agent Sequence、Lease、Command、Event 和幂等记录都持久化在 PostgreSQL；Service 本地缓存不是事实源。
+- PostgreSQL 自身复制、备份和故障转移交给托管数据库或独立运维层，WePush 安装包不自行组建数据库集群。
+- Schema Migration 以集群级单例执行，采用 Expand → Migrate → Contract，滚动升级期间保持相邻版本兼容。
+- 一个 Service 退出时 REST/SSE 客户端重连，Agent gRPC 自动重连；系统不要求连接粘滞。
+
+详见 [ADR-0006](adr/0006-postgresql-control-plane-ha.md)。
+
 ## 29. Artifact Store
 
 ### 29.1 接口
 
 ```java
 public interface ArtifactStore {
-    ArtifactUpload beginUpload(ArtifactCreateCommand command);
-    InputStream open(ArtifactRef ref, Optional<ByteRange> range);
+    ArtifactUploadPlan beginUpload(ArtifactCreateCommand command);
+    ArtifactMetadata completeUpload(ArtifactCompleteCommand command);
+    ArtifactDownloadPlan authorizeDownload(ArtifactRef ref, Optional<ByteRange> range);
     ArtifactMetadata stat(ArtifactRef ref);
     void delete(ArtifactRef ref);
 }
 ```
 
-Upload 先进入 `UPLOADING`，写入完成、校验 SHA-256 后进入 `READY`。失败或超时的上传由清理任务回收。
+`ArtifactUploadPlan` 可以是本地受控 Stream，也可以是带到期时间的 S3 Presigned URL/Multipart Plan。Upload 先进入 `UPLOADING`，写入完成并校验 SHA-256 后进入 `READY`。失败或超时的上传由清理任务回收。
 
 ### 29.2 本地目录
 
@@ -1351,16 +1371,31 @@ data/artifacts/
 
 路径由 Artifact Store 生成，不能直接使用用户输入的任务名称，避免路径穿越和非法字符问题。
 
-### 29.3 下载
+### 29.3 Server 对象存储
+
+- Server 默认实现 `S3ArtifactStore`，只依赖 Put/Get/Head/Delete、Range、Presigned URL 和 Multipart Upload 等受控 S3-compatible 子集。
+- 对象键格式为 `workspaces/{workspaceId}/{artifactType}/{yyyy}/{mm}/{artifactId}`，不含用户文件名和 Secret。
+- Agent 不持有长期对象存储 Credential；Service 签发最小权限、短期有效的上传或下载 URL。
+- 单对象达到 100 MiB 时默认使用 Multipart；未完成 Multipart 在 24 小时后终止。
+- Server 模式启用对象存储服务端加密；可用时允许配置 KMS Key。
+- 数据库元数据是生命周期事实源，对象存储 List 只能用于对账和孤儿清理。
+
+### 29.4 下载
 
 - Service 校验权限后返回流或短期签名 URL。
 - 支持 Range 请求。
 - 下载文件名通过响应头提供，存储路径不暴露给客户端。
 - 敏感 Artifact 可要求再次认证或更高权限。
 
+### 29.5 保留和删除
+
+Service 清理任务根据 Workspace 策略把到期对象从 `READY` 标记为 `DELETING`，执行幂等删除后置为 `DELETED`。失败使用退避重试；对象不存在视为删除成功。默认保留期采用第 27 节基线，对象存储 Lifecycle 仅作为兜底。详见 [ADR-0007](adr/0007-artifact-store-and-retention.md)。
+
 ## 30. Secret 详细设计
 
-### 30.1 加密信封
+### 30.1 默认实现和加密信封
+
+默认 `SecretStore` 实现为 `LocalEnvelopeSecretStore`。每条 Secret 生成独立 256-bit 随机 DEK，使用 AES-256-GCM 和随机 Nonce 加密；AAD 至少包含 `workspaceId + secretId + secretType + recordVersion`，从而阻止跨记录替换密文。
 
 ```text
 plaintext secret
@@ -1371,6 +1406,13 @@ encrypted DEK + key version
 ```
 
 数据库保存 Ciphertext、Nonce、Encrypted DEK、算法和 Key Version。Master Key 不存入业务数据库。
+
+- Standalone 首启可创建主密钥文件，并限制为当前用户可读：Unix 权限 `0600`，Windows 使用专用 Service Account ACL。
+- Server 从只读挂载文件读取 Master Key；允许环境变量显式注入但不作为推荐生产方式。
+- Server HA 的所有 Service 实例挂载相同的 Active/Retained Key Ring；轮换由单一管理操作生成新版本，再通过受控部署传播到所有实例。
+- Server 发现密钥缺失、权限过宽或 Key Version 不可解析时 Fail Closed，不静默生成新密钥。
+- Master Key 轮换默认只重新包裹各 Secret 的 DEK，并保留旧 Key Version 直到验证和回滚窗口结束。
+- Electron `safeStorage` 不用于 Service Secret；未来 Vault、云 KMS 和操作系统凭据存储通过 `SecretStore` Adapter 扩展。
 
 ### 30.2 API 行为
 
@@ -1442,6 +1484,7 @@ schedule:<scheduleId>:<scheduledInstant>
 sdk-java
 ├── generated/              OpenAPI 生成代码
 ├── WePushClient.java       统一入口
+├── WorkspaceClient.java    Workspace 范围入口
 ├── AccountsClient.java
 ├── MessagesClient.java
 ├── AudiencesClient.java
@@ -1462,11 +1505,12 @@ try (WePushClient client = WePushClient.builder()
         .requestTimeout(Duration.ofSeconds(30))
         .build()) {
 
-    Run run = client.runs().start(jobId,
+    WorkspaceClient workspace = client.workspace(workspaceId);
+    Run run = workspace.runs().start(jobId,
             StartRunRequest.builder().dryRun(false).build(),
             "manual-20260822-001");
 
-    try (EventSubscription events = client.runs().events(run.id())) {
+    try (EventSubscription events = workspace.runs().events(run.id())) {
         events.forEach(System.out::println);
     }
 }
@@ -1497,7 +1541,29 @@ Embedded SDK 不创建数据库、不读取 Next Service 配置目录，也不�
 
 ## 33. WebUI 详细设计
 
-### 33.1 路由
+### 33.1 技术与工程基线
+
+- TypeScript 6.0.x，开启 `strict`、`noUncheckedIndexedAccess` 和未使用代码检查。
+- Vite 8.1.x、React 19.2.x、Node.js 24 LTS；pnpm 通过 Corepack 固定精确版本并使用单一 Lockfile。
+- Tailwind CSS 提供设计 Token 和布局原语；shadcn/ui 仅按需引入复杂可访问组件，复制后的源码视为项目代码并纳入测试。
+- WebUI 是纯 SPA，由 Service 提供静态资源或独立 CDN 部署；生产环境不需要 Node.js Server，也不使用 React Server Components。
+
+前端 Workspace 结构固定为：
+
+```text
+ui/
+├── apps/
+│   ├── web/
+│   └── desktop/
+└── packages/
+    ├── api-client/
+    ├── schema-renderer/
+    ├── ui/
+    ├── features/
+    └── design-tokens/
+```
+
+### 33.2 路由
 
 ```text
 /login
@@ -1520,7 +1586,7 @@ Embedded SDK 不创建数据库、不读取 Next Service 配置目录，也不�
 /settings
 ```
 
-### 33.2 前端分层
+### 33.3 前端分层
 
 ```text
 app/               路由、认证、全局错误处理
@@ -1534,7 +1600,7 @@ events/            SSE 连接、游标和重连
 
 Server State 以 API 缓存为主，不复制成长期全局可变 Store。
 
-### 33.3 Schema 表单
+### 33.4 Schema 表单
 
 | Schema | 默认控件 |
 |---|---|
@@ -1550,7 +1616,7 @@ Server State 以 API 缓存为主，不复制成长期全局可变 Store。
 
 表单保存时发送原始 Schema 数据，不把 UI 布局字段混入 Provider 配置。
 
-### 33.4 Run 页面
+### 33.5 Run 页面
 
 Run Detail 页面展示：
 
@@ -1564,7 +1630,7 @@ Run Detail 页面展示：
 
 SSE 断开时显示连接状态并自动重连；不能将“监控连接断开”误显示为“Run 失败”。
 
-### 33.5 API 文档页
+### 33.6 API 文档页
 
 - 展示当前 Service 的实时 OpenAPI。
 - 使用当前登录身份调用，但不在 Local Storage 保存长期 Token。
@@ -1573,6 +1639,8 @@ SSE 断开时显示连接状态并自动重连；不能将“监控连接断开�
 - 只读角色禁用 Try It Out 的写操作。
 
 ## 34. Desktop UI 详细设计边界
+
+Desktop 固定采用 Electron 43.x。`apps/desktop` 只实现 Main/Preload、窗口、托盘、通知、自动启动和更新能力，Renderer 复用 `packages/features` 中的 WebUI 页面。
 
 ### 34.1 启动流程
 
@@ -1598,6 +1666,9 @@ flowchart TD
 
 ### 34.3 进程边界
 
+- Main、Preload 和 Renderer 严格分层；Renderer 设置 `nodeIntegration: false`、`contextIsolation: true`、`sandbox: true`。
+- Renderer 只加载随安装包发布的本地内容，不执行任意远程代码；CSP 禁止 `unsafe-eval`。
+- Preload 只暴露版本化、最小白名单 IPC，参数按 Schema 校验；不得暴露通用文件系统、Shell 或进程执行能力。
 - Desktop 退出不等于停止 Service 或正在运行的 Run。
 - Desktop 更新和 Service 更新是两个独立过程。
 - Desktop 可以显示 Service 版本不兼容并引导升级。
@@ -1614,6 +1685,8 @@ flowchart TD
 | `VIEWER` | 查询配置摘要、运行状态、日志和文档 |
 
 读取账号不等于读取 Secret。即使 ADMIN 也不能通过普通 API 取回明文 Secret。
+
+角色绑定在 Workspace 范围内；系统管理员身份不能代替每个业务用例的 Workspace 授权。Standalone 的 Default Workspace 在普通 UI 中隐藏，但 API 和 Repository 仍使用其真实 ID。
 
 ### 35.2 权限检查
 
@@ -1710,6 +1783,9 @@ wepush:
   artifacts:
     type: local
     directory: ${WEPUSH_DATA_DIR}/artifacts
+  secrets:
+    type: local-envelope
+    master-key-file: ${WEPUSH_CONFIG_DIR}/master.key
   agent:
     embedded:
       enabled: true
@@ -1732,7 +1808,7 @@ wepush:
 
 ## 39. 默认端口和目录
 
-以下为建议值，正式值由发行 ADR 确认：
+以下为初始发行基线，安装包落地时允许用发行 ADR 调整未公开的具体值：
 
 | 平台 | 配置 | 数据 | 日志 |
 |---|---|---|---|
@@ -1811,7 +1887,7 @@ wepush:
 
 ### 41.3 Agent 故障测试
 
-- Claim 后未 Ack。
+- LeaseOffer 后未 Ack。
 - Heartbeat 超时。
 - Event Batch 重传和乱序。
 - 旧 Epoch Agent 上报。
@@ -1823,7 +1899,9 @@ wepush:
 
 - SQLite 和 PostgreSQL 使用同一 Repository 契约测试。
 - 创建 Run 事务和幂等键。
-- 并发 Claim 只能产生一个 Active Lease。
+- 并发 Lease Claim 只能产生一个 Active Lease，并产生唯一有效 Fencing Token。
+- 两个 Service 实例竞争调度锁时只能有一个 Schedule Scanner。
+- `LISTEN/NOTIFY` 丢失后数据库扫描仍能推进状态。
 - Run 状态机非法转换。
 - Schedule 重复扫描不重复创建 Run。
 - Secret 查询不返回明文。
@@ -1912,7 +1990,7 @@ Next CI 使用 `next/**` 路径过滤，Classic 和 Next 互不依赖对方构�
 ### 44.3 Iteration 3：Service 单机闭环
 
 - SQLite、迁移、Account/Message/Audience/Job/Run API。
-- Embedded Agent、Claim/Lease 复用同一内部接口。
+- Embedded Agent 复用同一 Lease/状态语义，但通过 Java 接口直连，不经过 gRPC。
 - OpenAPI、Java SDK 和 SSE。
 
 ### 44.4 Iteration 4：最小 WebUI
@@ -1924,16 +2002,16 @@ Next CI 使用 `next/**` 路径过滤，Classic 和 Next 互不依赖对方构�
 
 ### 44.5 Iteration 5：远程 Agent
 
-- Enrollment、身份、Heartbeat、Claim、Lease 和 Event Batch。
+- Enrollment、身份、gRPC Connect、Heartbeat、LeaseOffer/LeaseAck 和 EventBatch/EventAck。
 - Fencing Token 与 Agent Journal。
 - Agent 失联和恢复测试。
 
 ### 44.6 Iteration 6：产品化
 
-- 权限、审计、Secret Envelope。
+- Workspace 权限、审计、`LocalEnvelopeSecretStore`。
 - Scheduler。
 - Desktop 和三平台 Service 安装。
-- PostgreSQL 和部署文档。
+- PostgreSQL 18 HA、S3-compatible Artifact Store 和部署文档。
 
 ## 45. 完成定义
 
@@ -1948,21 +2026,20 @@ Next CI 使用 `next/**` 路径过滤，Classic 和 Next 互不依赖对方构�
 - 文档、示例和升级说明同步更新。
 - 不需要 Classic 源码或构建产物即可编译和运行。
 
-## 46. 待确认事项
+## 46. 已决 ADR 与后续非基线事项
 
-以下事项在实现到对应阶段前必须形成 ADR：
+本轮技术基线已由 [ADR-0002](adr/0002-technology-baseline.md) 至 [ADR-0008](adr/0008-workspace-multitenancy-scope.md) 确认，包括 Web/Desktop/Service、Secret、Agent 协议、Provider 插件、PostgreSQL HA、Artifact 和 Workspace 多租户。
 
-1. WebUI 框架、路由、状态管理和组件库。
-2. Desktop 外壳技术及本地 Bootstrap Channel。
-3. Spring Boot、OpenAPI Generator 和数据库迁移工具的具体版本。
-4. Provider 第三方分发、签名、隔离和升级机制。
-5. Standalone Master Key 的操作系统存储方案。
-6. 远程 Agent 使用 Token、mTLS 或混合认证的正式策略。
-7. Artifact 对象存储的首个实现。
-8. PostgreSQL 控制面高可用和调度互斥方案。
-9. 多租户是否进入正式范围。
+以下事项可以在对应能力进入迭代前继续形成独立 ADR，但不阻塞当前架构：
 
-这些事项未确认前，可以用受控的首期实现推进纵向闭环，但禁止将临时技术选择固化进 Core API、Provider SPI、公开 API 和持久化业务语义。
+1. OpenAPI Generator、数据库迁移工具、路由和 Server State 库的具体版本。
+2. Desktop 本地 Bootstrap Channel 的平台实现和签名更新服务。
+3. 远程 Agent Token、mTLS 或混合认证的正式生产策略。
+4. 外部 Vault/云 KMS 的首个适配器。
+5. 非受信 Provider 的独立进程 Runner。
+6. 公共 SaaS 的计费、自助注册、物理隔离和跨地域控制面。
+
+这些扩展不得反向污染 Core API，也不得削弱 Workspace、Lease Fencing、Secret 和 Artifact 的既定安全边界。
 
 ## 47. 文档演进规则
 
