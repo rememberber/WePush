@@ -1,0 +1,26 @@
+{
+  "name": "@wepush-next/features",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.tsx",
+    "./styles.css": "./src/styles.css"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@wepush-next/api-client": "workspace:*",
+    "@wepush-next/schema-renderer": "workspace:*",
+    "@wepush-next/ui": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "catalog:"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "react": "catalog:",
+    "typescript": "catalog:"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "providerId": "wepush.http",
+  "displayName": "HTTP",
+  "implementationVersion": "0.1.0",
+  "spiMajorVersion": 1,
+  "capabilities": ["dry-run", "idempotency", "response-body"],
+  "accountSchema": "schemas/account.schema.json",
+  "messageSchema": "schemas/message.schema.json",
+  "recipientSchema": "schemas/recipient.schema.json",
+  "uiSchema": "schemas/ui.schema.json"
+}

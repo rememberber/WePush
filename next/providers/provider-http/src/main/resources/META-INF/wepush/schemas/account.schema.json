@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wepush.dev/schemas/providers/http/account/1",
+  "title": "HTTP Account",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["baseUrl"],
+  "properties": {
+    "baseUrl": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https?://"
+    },
+    "connectTimeout": {
+      "type": "string",
+      "default": "PT5S"
+    },
+    "allowPrivateAddresses": {
+      "type": "boolean",
+      "default": false,
+      "description": "Only enable for explicitly trusted internal endpoints."
+    },
+    "defaultHeaders": {
+      "type": "object",
+      "additionalProperties": {"type": "string"},
+      "default": {}
+    },
+    "auth": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {"type": {"const": "NONE"}},
+          "required": ["type"]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {"const": "BEARER"},
+            "secret": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["namespace", "name", "version"],
+              "properties": {
+                "namespace": {"type": "string"},
+                "name": {"type": "string", "x-wepush-secret": true},
+                "version": {"type": "string"}
+              }
+            }
+          },
+          "required": ["type", "secret"]
+        }
+      ]
+    }
+  }
+}

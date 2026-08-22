@@ -1,0 +1,127 @@
+syntax = "proto3";
+
+package wepush.next.agent.v1;
+
+option java_multiple_files = true;
+option java_package = "com.fangxuele.wepush.next.agent.protocol.v1";
+option java_outer_classname = "AgentControlV1";
+
+import "google/protobuf/timestamp.proto";
+
+service AgentControlService {
+  rpc Connect(stream AgentToService) returns (stream ServiceToAgent);
+}
+
+message AgentToService {
+  string agent_id = 1;
+  uint64 sequence = 2;
+  oneof payload {
+    Hello hello = 10;
+    Heartbeat heartbeat = 11;
+    LeaseAck lease_ack = 12;
+    EventBatch event_batch = 13;
+    CommandAck command_ack = 14;
+    RunCompleted run_completed = 15;
+    Draining draining = 16;
+  }
+}
+
+message ServiceToAgent {
+  uint64 sequence = 1;
+  oneof payload {
+    Welcome welcome = 10;
+    LeaseOffer lease_offer = 11;
+    RunCommand command = 12;
+    EventAck event_ack = 13;
+    DrainRequest drain = 14;
+  }
+}
+
+message Hello {
+  string agent_version = 1;
+  uint32 protocol_min = 2;
+  uint32 protocol_max = 3;
+  string os = 4;
+  string arch = 5;
+  string java_version = 6;
+  uint32 maximum_runs = 7;
+  uint64 last_service_sequence = 8;
+  uint64 last_agent_sequence_acked = 9;
+  repeated ProviderCapability providers = 10;
+}
+
+message ProviderCapability {
+  string provider_id = 1;
+  string implementation_version = 2;
+  uint32 spi_major = 3;
+  uint32 maximum_concurrency = 4;
+}
+
+message Welcome {
+  uint32 protocol_version = 1;
+  google.protobuf.Timestamp server_time = 2;
+  uint32 heartbeat_seconds = 3;
+  uint64 maximum_message_bytes = 4;
+  uint64 last_agent_sequence = 5;
+}
+
+message LeaseFence {
+  string lease_id = 1;
+  string run_id = 2;
+  uint64 epoch = 3;
+  string fencing_token = 4;
+}
+
+message LeaseOffer {
+  LeaseFence fence = 1;
+  google.protobuf.Timestamp expires_at = 2;
+  string execution_spec_url = 3;
+  string execution_spec_sha256 = 4;
+  string audience_url = 5;
+  string audience_sha256 = 6;
+  bytes secret_envelope = 7;
+}
+
+message LeaseAck { LeaseFence fence = 1; }
+
+message Heartbeat {
+  string state = 1;
+  uint32 active_runs = 2;
+  uint32 available_runs = 3;
+  repeated LeaseFence leases = 4;
+}
+
+message EventBatch {
+  LeaseFence fence = 1;
+  uint64 first_event_sequence = 2;
+  repeated bytes events = 3;
+}
+
+message EventAck {
+  LeaseFence fence = 1;
+  uint64 last_event_sequence = 2;
+}
+
+message RunCommand {
+  string command_id = 1;
+  LeaseFence fence = 2;
+  string type = 3;
+  bytes payload = 4;
+  google.protobuf.Timestamp created_at = 5;
+}
+
+message CommandAck {
+  string command_id = 1;
+  LeaseFence fence = 2;
+  string outcome = 3;
+  string detail = 4;
+}
+
+message RunCompleted {
+  LeaseFence fence = 1;
+  bytes summary = 2;
+  repeated string artifact_refs = 3;
+}
+
+message DrainRequest { google.protobuf.Timestamp deadline = 1; }
+message Draining { uint32 active_runs = 1; }

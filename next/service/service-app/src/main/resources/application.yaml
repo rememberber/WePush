@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: wepush-next-service
+
+server:
+  address: ${WEPUSH_BIND_ADDRESS:127.0.0.1}
+  port: ${WEPUSH_PORT:18990}
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+wepush:
+  mode: ${WEPUSH_MODE:standalone}

@@ -1,0 +1,64 @@
+:root {
+  color-scheme: light;
+  --wp-bg: #f7f7f5;
+  --wp-sidebar: #efefec;
+  --wp-surface: #ffffff;
+  --wp-surface-muted: #f6f6f3;
+  --wp-surface-hover: #e9e9e5;
+  --wp-border: #e2e2de;
+  --wp-border-strong: #d1d1cb;
+  --wp-text: #20201e;
+  --wp-text-secondary: #6f6f69;
+  --wp-text-tertiary: #989890;
+  --wp-accent: #191918;
+  --wp-accent-contrast: #ffffff;
+  --wp-success: #3e7b5b;
+  --wp-success-bg: #e7f2eb;
+  --wp-warning: #9a682b;
+  --wp-warning-bg: #f8efdf;
+  --wp-danger: #a24a43;
+  --wp-danger-bg: #f8e9e7;
+  --wp-info: #4c668a;
+  --wp-info-bg: #e9eef6;
+  --wp-radius-sm: 7px;
+  --wp-radius-md: 11px;
+  --wp-radius-lg: 16px;
+  --wp-shadow: 0 1px 2px rgb(25 25 24 / 4%), 0 8px 24px rgb(25 25 24 / 3%);
+  --wp-font: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", sans-serif;
+  --wp-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--wp-bg);
+  color: var(--wp-text);
+  font-family: var(--wp-font);
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: #d9d9d3;
+}

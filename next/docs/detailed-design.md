@@ -1548,6 +1548,18 @@ Embedded SDK 不创建数据库、不读取 Next Service 配置目录，也不�
 - Tailwind CSS 提供设计 Token 和布局原语；shadcn/ui 仅按需引入复杂可访问组件，复制后的源码视为项目代码并纳入测试。
 - WebUI 是纯 SPA，由 Service 提供静态资源或独立 CDN 部署；生产环境不需要 Node.js Server，也不使用 React Server Components。
 
+#### 33.1.1 视觉语言
+
+WebUI 与 Desktop Renderer 采用接近 Codex 客户端的克制型工作台风格，但不复制其品牌标识或专有资产：
+
+- 使用暖灰应用背景、浅灰紧凑侧栏、白色内容面和低对比细边框组织层级。
+- 左侧导航保持稳定，顶部区域只保留页面标题、搜索/命令入口和连接状态。
+- 字号、圆角和阴影偏小，依靠留白、对齐和字重形成视觉层级，避免装饰性渐变和大面积高饱和色。
+- 默认以单色交互为主；绿色、黄色、红色和蓝色只表达成功、警告、失败和信息状态。
+- 总览优先显示真实 Service、Provider、Agent 和 Run 数据；没有数据时使用明确空状态，不填充伪造趋势或示例成功率。
+- WebUI 与 Desktop 必须复用 `design-tokens` 和共享 UI primitives，平台外壳不得另建一套视觉变量。
+- 保持键盘操作、可见焦点、语义标签、颜色对比和窄屏退化能力；后续暗色主题仍由同一语义 Token 映射实现。
+
 前端 Workspace 结构固定为：
 
 ```text

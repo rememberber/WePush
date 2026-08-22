@@ -1,0 +1,15 @@
+{
+  "account": {
+    "groups": [
+      {"title": "Endpoint", "fields": ["baseUrl", "connectTimeout"]},
+      {"title": "Authentication", "fields": ["auth"]},
+      {"title": "Advanced", "fields": ["defaultHeaders", "allowPrivateAddresses"], "advanced": true}
+    ]
+  },
+  "message": {
+    "groups": [
+      {"title": "Request", "fields": ["method", "path", "headers", "query", "bodyTemplate"]},
+      {"title": "Result", "fields": ["successStatuses", "idempotencyHeader", "responseLimitBytes"]}
+    ]
+  }
+}

@@ -1,0 +1,85 @@
+openapi: 3.1.0
+info:
+  title: WePush Next Service API
+  version: 0.1.0
+servers:
+  - url: /
+paths:
+  /api/v1/system/info:
+    get:
+      operationId: getSystemInfo
+      tags: [System]
+      responses:
+        '200':
+          description: Current Service identity and time
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemInfo'
+  /api/v1/providers:
+    get:
+      operationId: listProviders
+      tags: [Providers]
+      responses:
+        '200':
+          description: Installed and active Provider versions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProviderSummary'
+  /api/v1/providers/{providerId}/versions/{version}/schemas/{schemaKind}:
+    get:
+      operationId: getProviderSchema
+      tags: [Providers]
+      parameters:
+        - name: providerId
+          in: path
+          required: true
+          schema: {type: string}
+        - name: version
+          in: path
+          required: true
+          schema: {type: string}
+        - name: schemaKind
+          in: path
+          required: true
+          schema: {type: string, enum: [account, message, recipient]}
+      responses:
+        '200':
+          description: Provider JSON Schema
+          content:
+            application/schema+json:
+              schema: {type: object}
+        '404':
+          description: Provider or schema was not found
+components:
+  schemas:
+    SystemInfo:
+      type: object
+      required: [product, version, mode, serverTime]
+      properties:
+        product: {type: string}
+        version: {type: string}
+        mode: {type: string}
+        serverTime: {type: string, format: date-time}
+    ProviderSummary:
+      type: object
+      required: [providerId, displayName, implementationVersion, capabilities, maximumConcurrency, links]
+      properties:
+        providerId: {type: string}
+        displayName: {type: string}
+        implementationVersion: {type: string}
+        capabilities:
+          type: array
+          items: {type: string}
+          uniqueItems: true
+        maximumConcurrency: {type: integer, minimum: 1}
+        links:
+          type: object
+          required: [accountSchema, messageSchema, recipientSchema]
+          properties:
+            accountSchema: {type: string}
+            messageSchema: {type: string}
+            recipientSchema: {type: string}

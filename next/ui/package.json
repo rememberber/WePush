@@ -1,0 +1,21 @@
+{
+  "name": "wepush-next-ui",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@11.22.0",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @wepush-next/web dev",
+    "dev:desktop": "pnpm --filter @wepush-next/desktop dev",
+    "build": "pnpm -r --if-present build",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "test": "pnpm -r --if-present test",
+    "check": "pnpm typecheck && pnpm test && pnpm build"
+  },
+  "devDependencies": {
+    "typescript": "6.0.3",
+    "vitest": "4.1.11"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wepush.dev/schemas/providers/http/message/1",
+  "title": "HTTP Message",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["method", "path"],
+  "properties": {
+    "method": {
+      "type": "string",
+      "enum": ["GET", "POST", "PUT", "PATCH", "DELETE"],
+      "default": "POST"
+    },
+    "path": {"type": "string", "pattern": "^/[^/]"},
+    "headers": {
+      "type": "object",
+      "additionalProperties": {"type": "string"},
+      "default": {"Content-Type": "application/json"}
+    },
+    "query": {
+      "type": "object",
+      "additionalProperties": {"type": "string"},
+      "default": {}
+    },
+    "bodyTemplate": {
+      "type": "string",
+      "x-wepush-code-language": "json",
+      "x-wepush-variable": true
+    },
+    "successStatuses": {
+      "type": "array",
+      "items": {"type": "integer", "minimum": 100, "maximum": 599},
+      "uniqueItems": true,
+      "default": [200, 201, 202, 204]
+    },
+    "idempotencyHeader": {"type": "string"},
+    "responseLimitBytes": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10485760,
+      "default": 1048576
+    }
+  }
+}

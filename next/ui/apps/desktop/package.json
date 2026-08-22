@@ -1,0 +1,20 @@
+{
+  "name": "@wepush-next/desktop",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/main/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "dev": "pnpm build && electron ."
+  },
+  "dependencies": {
+    "@wepush-next/web": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "electron": "43.4.1",
+    "typescript": "catalog:"
+  }
+}
