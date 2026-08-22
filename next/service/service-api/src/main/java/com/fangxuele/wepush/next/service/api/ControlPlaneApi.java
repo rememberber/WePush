@@ -96,4 +96,15 @@ public final class ControlPlaneApi {
     public record RunCommandResponse(String commandId, String type, String status, String code,
                                      String message, Instant acknowledgedAt, boolean replayed) {
     }
+
+    public record ArtifactResponse(String id, String workspaceId, String runId, String type,
+                                   String backend, String originalName, String contentType,
+                                   long size, String sha256, String state, Instant expiresAt,
+                                   boolean pinned, boolean legalHold, Instant createdAt,
+                                   Instant readyAt, Instant deletedAt, long version,
+                                   Map<String, String> links) {
+    }
+
+    public record ArtifactCleanupResponse(int claimed, int deleted, int failed) {
+    }
 }

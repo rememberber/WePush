@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -47,6 +48,41 @@ final class HttpTransport implements AutoCloseable {
     <T> T getJson(String path, Class<T> responseType) {
         String body = getText(path);
         return decode(body, responseType);
+    }
+
+    InputStream getStream(String path) {
+        for (int attempt = 1; attempt <= retryPolicy.maximumAttempts(); attempt++) {
+            HttpRequest request = requestBuilder(path)
+                    .header("Accept", "application/octet-stream, text/csv")
+                    .GET()
+                    .build();
+            try {
+                HttpResponse<InputStream> response = client.send(
+                        request, HttpResponse.BodyHandlers.ofInputStream());
+                if (response.statusCode() >= 200 && response.statusCode() < 300) {
+                    return response.body();
+                }
+                try (InputStream errorBody = response.body()) {
+                    String body = new String(errorBody.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+                    if (retryable(response.statusCode()) && attempt < retryPolicy.maximumAttempts()) {
+                        sleep(retryDelay(response, attempt));
+                        continue;
+                    }
+                    throw new WePushException(
+                            "WePush Service returned HTTP " + response.statusCode(),
+                            response.statusCode(), body);
+                }
+            } catch (IOException exception) {
+                if (attempt >= retryPolicy.maximumAttempts()) {
+                    throw new WePushException("Unable to reach WePush Service", exception);
+                }
+                sleep(withJitter(retryPolicy.delayForAttempt(attempt)));
+            } catch (InterruptedException exception) {
+                Thread.currentThread().interrupt();
+                throw new WePushException("Interrupted while calling WePush Service", exception);
+            }
+        }
+        throw new IllegalStateException("unreachable retry state");
     }
 
     <T> T postJson(String path, Object requestBody, String idempotencyKey, Class<T> responseType) {

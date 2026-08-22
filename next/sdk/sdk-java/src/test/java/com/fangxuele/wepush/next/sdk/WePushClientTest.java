@@ -6,6 +6,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -133,5 +134,50 @@ class WePushClientTest {
             assertEquals("next.abc", page.page().nextCursor());
         }
         assertEquals("limit=1&cursor=cursor.abc", query.get());
+    }
+
+    @Test
+    void createsListsAndDownloadsRunArtifacts() throws IOException {
+        server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        String artifactJson = """
+                {"id":"artifact_1","workspaceId":"ws_default","runId":"run_1",
+                "type":"RUN_RESULTS_CSV","backend":"LOCAL_FILE","originalName":"run-results.csv",
+                "contentType":"text/csv; charset=utf-8","size":7,"sha256":"abc","state":"READY",
+                "expiresAt":"2026-08-23T10:00:00Z","pinned":false,"legalHold":false,
+                "createdAt":"2026-08-22T10:00:00Z","readyAt":"2026-08-22T10:00:01Z",
+                "deletedAt":null,"version":1,"links":{}}
+                """;
+        server.createContext("/api/v1/workspaces/ws_default/runs/run_1/artifacts/result-export", exchange -> {
+            byte[] body = artifactJson.getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().add("Content-Type", "application/json");
+            exchange.sendResponseHeaders(201, body.length);
+            exchange.getResponseBody().write(body);
+            exchange.close();
+        });
+        server.createContext("/api/v1/workspaces/ws_default/runs/run_1/artifacts", exchange -> {
+            byte[] body = ("[" + artifactJson + "]").getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().add("Content-Type", "application/json");
+            exchange.sendResponseHeaders(200, body.length);
+            exchange.getResponseBody().write(body);
+            exchange.close();
+        });
+        server.createContext("/api/v1/workspaces/ws_default/artifacts/artifact_1/content", exchange -> {
+            byte[] body = "item_id".getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().add("Content-Type", "text/csv; charset=utf-8");
+            exchange.sendResponseHeaders(200, body.length);
+            exchange.getResponseBody().write(body);
+            exchange.close();
+        });
+        server.start();
+
+        try (WePushClient client = WePushClient.builder()
+                .endpoint(URI.create("http://127.0.0.1:" + server.getAddress().getPort())).build()) {
+            WorkspaceClient workspace = client.workspace("ws_default");
+            assertEquals("artifact_1", workspace.createResultExport("run_1").id());
+            assertEquals("RUN_RESULTS_CSV", workspace.runArtifacts("run_1").getFirst().type());
+            try (InputStream content = workspace.downloadArtifact("artifact_1")) {
+                assertEquals("item_id", new String(content.readAllBytes(), StandardCharsets.UTF_8));
+            }
+        }
     }
 }

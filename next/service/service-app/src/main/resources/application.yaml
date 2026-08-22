@@ -24,3 +24,9 @@ wepush:
   secret:
     master-key-path: ${WEPUSH_MASTER_KEY_PATH:.local/secrets/master-key.json}
     master-key-base64: ${WEPUSH_MASTER_KEY_BASE64:}
+  artifact:
+    root: ${WEPUSH_ARTIFACT_ROOT:.local/artifacts}
+    environment: ${WEPUSH_ENVIRONMENT:standalone}
+    export-retention: ${WEPUSH_EXPORT_RETENTION:PT24H}
+    retention-initial-delay: ${WEPUSH_RETENTION_INITIAL_DELAY:PT1M}
+    retention-interval: ${WEPUSH_RETENTION_INTERVAL:PT1H}

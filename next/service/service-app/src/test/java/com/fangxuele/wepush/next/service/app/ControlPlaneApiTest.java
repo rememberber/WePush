@@ -3,10 +3,12 @@ package com.fangxuele.wepush.next.service.app;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -27,9 +29,14 @@ class ControlPlaneApiTest {
             "wepush-next-control-plane-" + UUID.randomUUID() + ".db");
     private static final Path MASTER_KEY = Path.of(System.getProperty("java.io.tmpdir"),
             "wepush-next-control-plane-key-" + UUID.randomUUID() + ".json");
+    private static final Path ARTIFACT_ROOT = Path.of(System.getProperty("java.io.tmpdir"),
+            "wepush-next-artifacts-" + UUID.randomUUID());
 
     private final HttpClient client = HttpClient.newHttpClient();
     private final ObjectMapper json = new ObjectMapper().findAndRegisterModules();
+
+    @Autowired
+    private JdbcTemplate jdbc;
 
     @LocalServerPort
     private int port;
@@ -38,6 +45,8 @@ class ControlPlaneApiTest {
     static void database(DynamicPropertyRegistry registry) {
         registry.add("wepush.database.path", DATABASE::toString);
         registry.add("wepush.secret.master-key-path", MASTER_KEY::toString);
+        registry.add("wepush.artifact.root", ARTIFACT_ROOT::toString);
+        registry.add("wepush.artifact.retention-initial-delay", () -> "PT1H");
         registry.add("server.shutdown", () -> "immediate");
     }
 
@@ -137,6 +146,38 @@ class ControlPlaneApiTest {
                 "{\"reason\":\"too late\"}", "cancel-test"), 409);
         assertEquals("REJECTED", lateCancel.get("status").textValue());
         assertEquals("RUN_NOT_ACTIVE", lateCancel.get("code").textValue());
+
+        String artifactBase = "/api/v1/workspaces/ws_default/runs/"
+                + run.get("id").textValue() + "/artifacts";
+        JsonNode artifact = accepted(post(artifactBase + "/result-export", "{}", null), 201);
+        assertEquals("RUN_RESULTS_CSV", artifact.get("type").textValue());
+        assertEquals("READY", artifact.get("state").textValue());
+        assertEquals(64, artifact.get("sha256").textValue().length());
+        JsonNode artifactReplay = accepted(post(artifactBase + "/result-export", "{}", null), 200);
+        assertEquals(artifact.get("id").textValue(), artifactReplay.get("id").textValue());
+        JsonNode artifactList = accepted(get(artifactBase), 200);
+        assertEquals(1, artifactList.size());
+
+        String contentPath = artifact.at("/links/content").textValue();
+        HttpResponse<String> csv = get(contentPath);
+        assertEquals(200, csv.statusCode(), csv.body());
+        assertTrue(csv.body().startsWith("item_id,state,attempts"));
+        assertEquals(3, csv.body().lines().count());
+        HttpRequest rangeRequest = HttpRequest.newBuilder(uri(contentPath))
+                .header("Range", "bytes=0-6").GET().build();
+        HttpResponse<String> range = client.send(rangeRequest, HttpResponse.BodyHandlers.ofString());
+        assertEquals(206, range.statusCode(), range.body());
+        assertEquals("item_id", range.body());
+        assertTrue(range.headers().firstValue("Content-Range").orElseThrow().startsWith("bytes 0-6/"));
+
+        jdbc.update("UPDATE artifact_record SET expires_at = created_at WHERE id = ?",
+                artifact.get("id").textValue());
+        JsonNode cleanup = accepted(post(
+                "/api/v1/system/maintenance/artifacts/retention?limit=10", "{}", null), 200);
+        assertEquals(1, cleanup.get("deleted").intValue());
+        JsonNode deletedArtifact = accepted(get(artifact.at("/links/self").textValue()), 200);
+        assertEquals("DELETED", deletedArtifact.get("state").textValue());
+        assertEquals(409, get(contentPath).statusCode());
 
         HttpResponse<String> conflictingReplay = post(runPath,
                 "{\"dryRun\":false,\"reason\":\"integration-test\"}", "control-plane-test");

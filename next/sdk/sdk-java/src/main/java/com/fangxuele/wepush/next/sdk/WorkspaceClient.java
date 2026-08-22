@@ -2,6 +2,7 @@ package com.fangxuele.wepush.next.sdk;
 
 import com.fangxuele.wepush.next.service.api.ControlPlaneApi;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Arrays;
@@ -80,6 +81,26 @@ public final class WorkspaceClient {
             path += "&cursor=" + cursor;
         }
         return transport.getJson(path, ControlPlaneApi.RunItemResultPage.class);
+    }
+
+    public List<ControlPlaneApi.ArtifactResponse> runArtifacts(String runId) {
+        return List.of(transport.getJson(base + "/runs/" + pathId(runId) + "/artifacts",
+                ControlPlaneApi.ArtifactResponse[].class));
+    }
+
+    public ControlPlaneApi.ArtifactResponse createResultExport(String runId) {
+        return transport.postJson(base + "/runs/" + pathId(runId) + "/artifacts/result-export",
+                Map.of(), null, ControlPlaneApi.ArtifactResponse.class);
+    }
+
+    public ControlPlaneApi.ArtifactResponse artifact(String artifactId) {
+        return transport.getJson(base + "/artifacts/" + pathId(artifactId),
+                ControlPlaneApi.ArtifactResponse.class);
+    }
+
+    /** The caller owns and must close the returned stream. */
+    public InputStream downloadArtifact(String artifactId) {
+        return transport.getStream(base + "/artifacts/" + pathId(artifactId) + "/content");
     }
 
     public ControlPlaneApi.RunCommandResponse pauseRun(String runId, String idempotencyKey) {

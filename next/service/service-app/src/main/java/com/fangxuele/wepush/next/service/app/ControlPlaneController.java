@@ -251,7 +251,8 @@ final class ControlPlaneController {
                 new ControlPlaneApi.RunCounters(value.total(), value.succeeded(), value.failed(), value.unknown(),
                         value.unsent(), value.skipped(), value.retried()), value.createdAt(), value.startedAt(),
                 value.endedAt(), value.updatedAt(), value.version(),
-                Map.of("self", base, "events", base + "/events", "items", base + "/items"));
+                Map.of("self", base, "events", base + "/events", "items", base + "/items",
+                        "artifacts", base + "/artifacts"));
     }
 
     private static <T> ResponseEntity<T> created(String location, T body) {

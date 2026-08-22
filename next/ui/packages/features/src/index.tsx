@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react
 
 import {
   type Account,
+  type Artifact,
   type Audience,
   type DebugResponse,
   type Job,
@@ -652,6 +653,9 @@ function RunsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
   const [results, setResults] = useState<RunItemResult[]>([]);
   const [nextCursor, setNextCursor] = useState<string>();
   const [resultsLoading, setResultsLoading] = useState(false);
+  const [artifacts, setArtifacts] = useState<Artifact[]>([]);
+  const [artifactsLoading, setArtifactsLoading] = useState(false);
+  const [exportBusy, setExportBusy] = useState(false);
   const [commandBusy, setCommandBusy] = useState<string>();
   const [commandError, setCommandError] = useState<string>();
   const [concurrency, setConcurrency] = useState(8);
@@ -697,6 +701,22 @@ function RunsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
     const timer = window.setInterval(() => void refreshResults(), 1_500);
     return () => window.clearInterval(timer);
   }, [refreshResults]);
+
+  const refreshArtifacts = useCallback(async () => {
+    if (!selectedId) { setArtifacts([]); return; }
+    setArtifactsLoading(true);
+    try {
+      setArtifacts(await client.runArtifacts(selectedId));
+    } catch (nextError) {
+      setCommandError(nextError instanceof Error ? nextError.message : "Artifact 加载失败");
+    } finally {
+      setArtifactsLoading(false);
+    }
+  }, [client, selectedId]);
+
+  useEffect(() => {
+    void refreshArtifacts();
+  }, [refreshArtifacts]);
 
   useEffect(() => {
     if (!selected?.id) return;
@@ -745,6 +765,19 @@ function RunsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
     }
   }
 
+  async function createResultExport() {
+    if (!selected) return;
+    setExportBusy(true); setCommandError(undefined);
+    try {
+      await client.createResultExport(selected.id);
+      await refreshArtifacts();
+    } catch (nextError) {
+      setCommandError(nextError instanceof Error ? nextError.message : "结果导出失败");
+    } finally {
+      setExportBusy(false);
+    }
+  }
+
   return (
     <div className="page runs-page">
       <section className="page-heading page-heading--compact">
@@ -777,7 +810,7 @@ function RunsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
             <div className="run-counter-grid">
               {Object.entries(selected.counters).map(([name, value]) => <div key={name}><span>{name}</span><strong>{value}</strong></div>)}
             </div>
-            <div className="event-heading result-heading"><div><h3>Item Results</h3><p>持久化明细 · HMAC 游标分页 · 同 Item 幂等写入</p></div><Badge tone="neutral">{results.length} loaded</Badge></div>
+            <div className="event-heading result-heading"><div><h3>Item Results</h3><p>持久化明细 · HMAC 游标分页 · 同 Item 幂等写入</p></div><div className="heading-actions"><Badge tone="neutral">{results.length} loaded</Badge>{["CANCELLED", "SUCCEEDED", "PARTIAL", "FAILED"].includes(selected.state) ? <Button variant="ghost" disabled={exportBusy} onClick={() => void createResultExport()}>{exportBusy ? "生成中…" : "导出 CSV"}</Button> : null}</div></div>
             <div className="result-table">
               <div className="result-row result-row--header"><span>Item</span><span>State</span><span>Attempts</span><span>Provider</span><span>Completed</span></div>
               {results.map((result) => <div className="result-row" key={result.itemId}>
@@ -788,6 +821,17 @@ function RunsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
               {!resultsLoading && results.length === 0 ? <div className="result-empty">运行产生结果后会在这里逐项显示。</div> : null}
             </div>
             {nextCursor ? <div className="load-more-row"><Button variant="ghost" disabled={resultsLoading} onClick={() => void loadMoreResults()}>{resultsLoading ? "加载中…" : "加载更多"}</Button></div> : null}
+            <div className="artifact-section">
+              <div className="artifact-heading"><div><h3>Artifacts</h3><p>本地文件存储 · SHA-256 校验 · 默认保留 24 小时</p></div><Badge tone="info">{artifacts.length}</Badge></div>
+              {artifactsLoading ? <div className="loading-row"><Spinner />正在加载导出文件…</div> : null}
+              {!artifactsLoading && artifacts.length === 0 ? <div className="artifact-empty">运行结束后可生成脱敏的 Item Results CSV。</div> : null}
+              <div className="artifact-list">{artifacts.map((artifact) => <article key={artifact.id}>
+                <span className="artifact-file-icon">CSV</span>
+                <span><strong>{artifact.originalName}</strong><small>{formatBytes(artifact.size)} · SHA {artifact.sha256.slice(0, 12)}… · {formatTime(artifact.expiresAt)} 过期</small></span>
+                <Badge tone={artifact.state === "READY" ? "success" : artifact.state === "FAILED" ? "danger" : "neutral"}>{artifact.state}</Badge>
+                {artifact.state === "READY" ? <a className="wp-button wp-button--secondary" href={client.artifactDownloadUrl(artifact.id)}>下载</a> : null}
+              </article>)}</div>
+            </div>
             <div className="event-heading"><div><h3>事件流</h3><p>SSE 实时订阅 · 断线后按 Last-Event-ID 回放</p></div><Badge tone="info">{events.length} events</Badge></div>
             <div className="event-timeline">
               {events.length === 0 ? <div className="response-placeholder"><Icon name="pulse" /><p>等待运行事件…</p></div> : events.map((event) => <article key={`${event.id}:${event.type}`}><span>{event.id}</span><div><strong>{event.type}</strong><pre>{prettyBody(event.data)}</pre></div></article>)}
@@ -908,6 +952,12 @@ function formatTime(value: string): string {
     minute: "2-digit",
     second: "2-digit",
   }).format(new Date(value));
+}
+
+function formatBytes(value: number): string {
+  if (value < 1024) return `${value} B`;
+  if (value < 1024 * 1024) return `${(value / 1024).toFixed(1)} KB`;
+  return `${(value / 1024 / 1024).toFixed(1)} MB`;
 }
 
 function runTone(state: string): "neutral" | "success" | "warning" | "danger" | "info" {

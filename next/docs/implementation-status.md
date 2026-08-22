@@ -11,7 +11,7 @@ React / Electron / Java SDK
           ↓ HTTP + SSE
 Spring Boot Service API
           ↓ 应用事务
-SQLite + Flyway
+SQLite + Flyway ─── Artifact Metadata ─── Local File Artifact Store
           ↓ Run Snapshot
 Embedded Core Engine
           ↓
@@ -40,6 +40,9 @@ HTTP Provider（支持 Dry Run）
 - Standalone 首次启动生成独立主密钥文件；POSIX 强制 owner-only 权限，Windows 使用 owner ACL；也可由环境注入主密钥。
 - Item Result 批量、事务和幂等落盘，使用 HMAC 完整性保护的 Cursor Pagination 查询。
 - Pause、Resume、Cancel 和 ChangeConcurrency 命令持久化、按命令 ID 幂等并写入审计事件。
+- Artifact 元数据以 SQLite 为事实源，采用 `UPLOADING → READY → DELETING → DELETED` 两阶段状态机。
+- Standalone 默认 `LocalFileArtifactStore`：受控分区路径、临时文件写入、fsync、SHA-256 校验和原子移动；POSIX 文件权限为 `0600`。
+- 定时保留任务回收过期且未 Pin/Legal Hold 的 Artifact；删除幂等，失败记录状态并允许后续重试。
 - Message Revision、Audience Snapshot、Run Snapshot 创建后不可变。
 - 应用服务显式持有事务边界，Repository 不自行提交。
 
@@ -52,8 +55,9 @@ HTTP Provider（支持 Dry Run）
 - Run SSE 事件流支持持久化回放及实时推送，事件 ID 是 Run 内单调递增序号。
 - Secret 写入/元数据 API；读取接口永不返回明文。
 - Run Item Result 分页 API，以及暂停、恢复、取消和动态并发命令 API。
+- 终态 Run 的脱敏 Item Result CSV 导出、Artifact 元数据、完整/Range 下载及保留清理 API。
 - 统一 `application/problem+json` 错误响应和稳定错误码。
-- OpenAPI 3.1 契约覆盖当前公开控制面。
+- OpenAPI 3.1 契约以 26 个 Path 覆盖当前公开控制面。
 
 ### 2.4 Standalone 执行
 
@@ -69,13 +73,13 @@ HTTP Provider（支持 Dry Run）
 ### 2.5 SDK 和 UI
 
 - Java SDK 只依赖 Service API DTO 和 HTTP，不依赖 Core/Engine。
-- Java SDK 已增加 Workspace 控制面、Secret、结果分页、幂等 Run 创建和运行命令客户端。
-- TypeScript API Client 已覆盖 Account、Message、Audience、Job、Run、Secret、结果和命令。
+- Java SDK 已增加 Workspace 控制面、Secret、结果分页、Artifact 流式下载、幂等 Run 创建和运行命令客户端。
+- TypeScript API Client 已覆盖 Account、Message、Audience、Job、Run、Secret、结果、Artifact 和命令。
 - React WebUI 与 Electron 共享 Feature/UI 包。
 - Provider Schema 可视化配置可以直接保存 Account。
 - 账号页读取真实持久化数据。
 - 消息、受众和 Job 页面均接入真实创建/列表 API，Job 可直接发起 Dry Run。
-- 运行中心轮询 Run 状态，使用 SSE 展示持久化/实时事件，并显示 Item Result 和实时命令控制条。
+- 运行中心轮询 Run 状态，使用 SSE 展示持久化/实时事件，并显示 Item Result、实时命令控制条和 CSV Artifact 导出/下载卡片。
 - API 文档页加载当前 OpenAPI，并可动态调试主要 GET API。
 
 ## 3. 当前数据库表
@@ -93,6 +97,7 @@ HTTP Provider（支持 Dry Run）
 | `secret_record` | AES-GCM 密文、封装 DEK、主密钥版本和安全元数据 |
 | `run_item_result` | Item 最终结果、尝试数、Provider 摘要和完成时间 |
 | `run_command` | 幂等运行命令、处理状态和确认结果 |
+| `artifact_record` | Artifact 状态、文件定位、校验值、保留期和保护标记 |
 | `flyway_schema_history` | 数据库迁移历史 |
 
 ## 4. 已验证行为
@@ -106,6 +111,8 @@ HTTP Provider（支持 Dry Run）
 - Secret 密文不含明文、记录替换递增版本、主密钥文件为 `0600`，丢失主密钥且已有密文时启动失败。
 - 两条 Dry Run Item Result 可按 HMAC 游标分页；修改游标返回 `400`。
 - REST 命令完成 `RUNNING → PAUSED → RUNNING → SUCCEEDED`，动态并发和命令重放通过验证。
+- 终态 Run 结果 CSV 流式生成、重复请求复用、SHA-256、完整/Range 下载以及过期清理通过验证。
+- 本地 Artifact 文件路径穿越防护、原子写入、`0600` 权限和幂等删除通过单元测试。
 - pnpm 类型检查、Vitest、Vite Web 构建和 Electron TypeScript 构建。
 
 ## 5. 下一阶段边界
@@ -113,7 +120,7 @@ HTTP Provider（支持 Dry Run）
 以下能力仍按详细设计继续推进，不应把当前初版误认为最终实现：
 
 - OS Keychain/KMS 主密钥适配；当前默认实现是独立受保护密钥文件或显式环境注入。
-- Artifact 元数据、对象/文件存储、完整响应体策略及保留任务。
+- Server 模式的 S3-compatible Artifact Store、Presigned/Multipart 上传，以及完整 Provider 响应体的 7 天策略。
 - Message、Audience 和 Job 的编辑、修订对比、CSV 导入和正式发送确认体验。
 - API 文档页面的通用 POST/PUT/PATCH 请求编辑器。
 - Agent gRPC 控制流、租约与远端执行；当前执行器是 Standalone Embedded 模式。

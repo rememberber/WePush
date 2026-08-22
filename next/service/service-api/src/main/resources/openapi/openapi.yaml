@@ -14,6 +14,7 @@ tags:
   - {name: Audiences}
   - {name: Jobs}
   - {name: Runs}
+  - {name: Artifacts}
 paths:
   /api/v1/system/info:
     get:
@@ -342,6 +343,110 @@ paths:
               schema: {$ref: '#/components/schemas/RunItemResultPage'}
         '400': {$ref: '#/components/responses/BadRequest'}
         '404': {$ref: '#/components/responses/NotFound'}
+  /api/v1/workspaces/{workspaceId}/runs/{runId}/artifacts:
+    get:
+      operationId: listRunArtifacts
+      tags: [Artifacts]
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+        - {$ref: '#/components/parameters/RunId'}
+      responses:
+        '200':
+          description: Non-deleted Artifacts associated with the Run
+          content:
+            application/json:
+              schema: {type: array, items: {$ref: '#/components/schemas/Artifact'}}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /api/v1/workspaces/{workspaceId}/runs/{runId}/artifacts/result-export:
+    post:
+      operationId: createRunResultExport
+      tags: [Artifacts]
+      description: Creates a privacy-minimized CSV export for a terminal Run, or reuses its unexpired READY export.
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+        - {$ref: '#/components/parameters/RunId'}
+      responses:
+        '201':
+          description: Export created and ready to download
+          headers:
+            Location: {schema: {type: string}}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Artifact'}
+        '200':
+          description: Existing unexpired READY export reused
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Artifact'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+  /api/v1/workspaces/{workspaceId}/artifacts/{artifactId}:
+    get:
+      operationId: getArtifact
+      tags: [Artifacts]
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+        - {$ref: '#/components/parameters/ArtifactId'}
+      responses:
+        '200':
+          description: Artifact metadata
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Artifact'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /api/v1/workspaces/{workspaceId}/artifacts/{artifactId}/content:
+    get:
+      operationId: downloadArtifact
+      tags: [Artifacts]
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+        - {$ref: '#/components/parameters/ArtifactId'}
+        - name: Range
+          in: header
+          required: false
+          description: One RFC 9110 byte range, for example bytes=0-1023.
+          schema: {type: string}
+      responses:
+        '200':
+          description: Complete Artifact content
+          headers:
+            Accept-Ranges: {schema: {type: string, const: bytes}}
+            ETag: {schema: {type: string}}
+          content:
+            application/octet-stream:
+              schema: {type: string, format: binary}
+            text/csv:
+              schema: {type: string, format: binary}
+        '206':
+          description: Requested byte range
+          headers:
+            Accept-Ranges: {schema: {type: string, const: bytes}}
+            Content-Range: {schema: {type: string}}
+            ETag: {schema: {type: string}}
+          content:
+            application/octet-stream:
+              schema: {type: string, format: binary}
+            text/csv:
+              schema: {type: string, format: binary}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+  /api/v1/system/maintenance/artifacts/retention:
+    post:
+      operationId: runArtifactRetention
+      tags: [System, Artifacts]
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema: {type: integer, minimum: 1, maximum: 1000, default: 100}
+      responses:
+        '200':
+          description: Expired, unpinned Artifacts claimed and deleted by this pass
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ArtifactCleanup'}
+        '400': {$ref: '#/components/responses/BadRequest'}
   /api/v1/workspaces/{workspaceId}/runs/{runId}/commands/pause:
     post:
       operationId: pauseRun
@@ -406,6 +511,7 @@ components:
     ProviderId: {name: providerId, in: path, required: true, schema: {type: string}}
     ProviderVersion: {name: version, in: path, required: true, schema: {type: string}}
     RunId: {name: runId, in: path, required: true, schema: {type: string}}
+    ArtifactId: {name: artifactId, in: path, required: true, schema: {type: string}}
     IdempotencyKey:
       name: Idempotency-Key
       in: header
@@ -681,6 +787,36 @@ components:
         message: {type: string}
         acknowledgedAt: {type: string, format: date-time}
         replayed: {type: boolean}
+    Artifact:
+      type: object
+      required: [id, workspaceId, runId, type, backend, originalName, contentType, size, sha256, state,
+                 expiresAt, pinned, legalHold, createdAt, version, links]
+      properties:
+        id: {type: string}
+        workspaceId: {type: string}
+        runId: {type: string}
+        type: {type: string, enum: [RUN_RESULTS_CSV]}
+        backend: {type: string, enum: [LOCAL_FILE]}
+        originalName: {type: string}
+        contentType: {type: string}
+        size: {type: integer, format: int64, minimum: 0}
+        sha256: {type: string, pattern: '^[a-f0-9]{64}$'}
+        state: {type: string, enum: [UPLOADING, READY, DELETING, DELETED, FAILED]}
+        expiresAt: {type: string, format: date-time}
+        pinned: {type: boolean}
+        legalHold: {type: boolean}
+        createdAt: {type: string, format: date-time}
+        readyAt: {type: [string, 'null'], format: date-time}
+        deletedAt: {type: [string, 'null'], format: date-time}
+        version: {type: integer, format: int64, minimum: 0}
+        links: {type: object, additionalProperties: {type: string}}
+    ArtifactCleanup:
+      type: object
+      required: [claimed, deleted, failed]
+      properties:
+        claimed: {type: integer, minimum: 0}
+        deleted: {type: integer, minimum: 0}
+        failed: {type: integer, minimum: 0}
     Problem:
       type: object
       required: [type, title, status, code, detail, traceId, errors]

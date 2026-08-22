@@ -127,6 +127,27 @@ export interface RunCommandResult {
   replayed: boolean;
 }
 
+export interface Artifact {
+  id: string;
+  workspaceId: string;
+  runId: string;
+  type: "RUN_RESULTS_CSV" | string;
+  backend: string;
+  originalName: string;
+  contentType: string;
+  size: number;
+  sha256: string;
+  state: "UPLOADING" | "READY" | "DELETING" | "DELETED" | "FAILED";
+  expiresAt: string;
+  pinned: boolean;
+  legalHold: boolean;
+  createdAt: string;
+  readyAt?: string;
+  deletedAt?: string;
+  version: number;
+  links: Record<string, string>;
+}
+
 export interface SecretMetadata {
   workspaceId: string;
   namespace: string;
@@ -255,6 +276,32 @@ export class WePushClient {
     return this.getJson<RunItemResultPage>(
       this.workspacePath(workspaceId, `/runs/${pathId(runId)}/items?${query}`), signal,
     );
+  }
+
+  runArtifacts(runId: string, workspaceId = "ws_default",
+    signal?: AbortSignal): Promise<Artifact[]> {
+    return this.getJson<Artifact[]>(
+      this.workspacePath(workspaceId, `/runs/${pathId(runId)}/artifacts`), signal,
+    );
+  }
+
+  createResultExport(runId: string, workspaceId = "ws_default",
+    signal?: AbortSignal): Promise<Artifact> {
+    return this.postJson<Artifact>(
+      this.workspacePath(workspaceId, `/runs/${pathId(runId)}/artifacts/result-export`),
+      {}, undefined, signal,
+    );
+  }
+
+  artifact(artifactId: string, workspaceId = "ws_default",
+    signal?: AbortSignal): Promise<Artifact> {
+    return this.getJson<Artifact>(
+      this.workspacePath(workspaceId, `/artifacts/${pathId(artifactId)}`), signal,
+    );
+  }
+
+  artifactDownloadUrl(artifactId: string, workspaceId = "ws_default"): string {
+    return this.resolve(this.workspacePath(workspaceId, `/artifacts/${pathId(artifactId)}/content`));
   }
 
   pauseRun(runId: string, idempotencyKey: string, workspaceId = "ws_default",

@@ -2,6 +2,8 @@ package com.fangxuele.wepush.next.service.app;
 
 import com.fangxuele.wepush.next.service.application.ProviderCatalogQuery;
 import com.fangxuele.wepush.next.service.application.ProviderRegistry;
+import com.fangxuele.wepush.next.service.application.ArtifactApplicationService;
+import com.fangxuele.wepush.next.service.application.ArtifactStore;
 import com.fangxuele.wepush.next.service.application.AccountApplicationService;
 import com.fangxuele.wepush.next.service.application.AudienceApplicationService;
 import com.fangxuele.wepush.next.service.application.JobApplicationService;
@@ -18,6 +20,7 @@ import com.fangxuele.wepush.next.service.application.SecretApplicationService;
 import com.fangxuele.wepush.next.service.application.SecretStore;
 import com.fangxuele.wepush.next.service.application.TransactionRunner;
 import com.fangxuele.wepush.next.service.domain.AccountRepository;
+import com.fangxuele.wepush.next.service.domain.ArtifactRepository;
 import com.fangxuele.wepush.next.service.domain.AudienceRepository;
 import com.fangxuele.wepush.next.service.domain.JobRepository;
 import com.fangxuele.wepush.next.service.domain.MessageRepository;
@@ -27,6 +30,7 @@ import com.fangxuele.wepush.next.service.domain.RunResultRepository;
 import com.fangxuele.wepush.next.service.domain.WorkspaceRepository;
 import com.fangxuele.wepush.next.service.infrastructure.JacksonJsonCodec;
 import com.fangxuele.wepush.next.service.infrastructure.JdbcAccountRepository;
+import com.fangxuele.wepush.next.service.infrastructure.JdbcArtifactRepository;
 import com.fangxuele.wepush.next.service.infrastructure.JdbcAudienceRepository;
 import com.fangxuele.wepush.next.service.infrastructure.JdbcJobRepository;
 import com.fangxuele.wepush.next.service.infrastructure.JdbcMessageRepository;
@@ -35,6 +39,7 @@ import com.fangxuele.wepush.next.service.infrastructure.JdbcRunCommandRepository
 import com.fangxuele.wepush.next.service.infrastructure.JdbcRunResultRepository;
 import com.fangxuele.wepush.next.service.infrastructure.JdbcWorkspaceRepository;
 import com.fangxuele.wepush.next.service.infrastructure.LocalEnvelopeSecretStore;
+import com.fangxuele.wepush.next.service.infrastructure.LocalFileArtifactStore;
 import com.fangxuele.wepush.next.service.infrastructure.LocalHmacCursorCodec;
 import com.fangxuele.wepush.next.service.infrastructure.ServiceLoaderProviderRegistry;
 import com.fangxuele.wepush.next.service.infrastructure.SQLiteDatabase;
@@ -55,6 +60,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import javax.sql.DataSource;
 import java.nio.file.Path;
 import java.time.Clock;
+import java.time.Duration;
 
 @Configuration(proxyBeanMethods = false)
 class ServiceComposition {
@@ -105,6 +111,18 @@ class ServiceComposition {
     @Bean
     AccountRepository accountRepository(JdbcTemplate jdbc, Flyway flyway) {
         return new JdbcAccountRepository(jdbc);
+    }
+
+    @Bean
+    ArtifactRepository artifactRepository(JdbcTemplate jdbc, Flyway flyway) {
+        return new JdbcArtifactRepository(jdbc);
+    }
+
+    @Bean
+    LocalFileArtifactStore artifactStore(
+            @Value("${wepush.artifact.root:.local/artifacts}") String root,
+            @Value("${wepush.artifact.environment:standalone}") String environment) {
+        return new LocalFileArtifactStore(Path.of(root), environment);
     }
 
     @Bean
@@ -224,6 +242,16 @@ class ServiceComposition {
             RunRepository runs, RunCommandRepository commands, RunCommandGateway gateway,
             JsonCodec json, TransactionRunner transactions, LocalRunEventHub events, Clock clock) {
         return new RunCommandApplicationService(runs, commands, gateway, json, transactions, events, clock);
+    }
+
+    @Bean
+    ArtifactApplicationService artifactApplicationService(
+            RunRepository runs, RunResultRepository results, ArtifactRepository artifacts,
+            ArtifactStore store, ResourceIdGenerator ids, TransactionRunner transactions,
+            JsonCodec json, LocalRunEventHub events, Clock clock,
+            @Value("${wepush.artifact.export-retention:PT24H}") Duration exportRetention) {
+        return new ArtifactApplicationService(runs, results, artifacts, store, ids,
+                transactions, json, events, clock, exportRetention);
     }
 
     @Bean

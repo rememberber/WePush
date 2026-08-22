@@ -28,6 +28,8 @@ Standalone 数据默认保存到 `.local/data/wepush-next.db`，可通过 `WEPUS
 
 Secret 默认使用本地信封加密：密文进入 SQLite，主密钥单独保存到 `.local/secrets/master-key.json`。可通过 `WEPUSH_MASTER_KEY_PATH` 修改路径，或使用 `WEPUSH_MASTER_KEY_BASE64` 注入 32-byte Base64 主密钥。已有密文但主密钥缺失、权限不安全或认证失败时，Service 会失败关闭，不会生成新密钥覆盖。
 
+Artifact 默认保存到 `.local/artifacts`，SQLite 只保存元数据、SHA-256、大小和生命周期状态。可通过 `WEPUSH_ARTIFACT_ROOT` 修改根目录；临时结果导出默认保留 24 小时，可通过 `WEPUSH_EXPORT_RETENTION` 使用 ISO-8601 Duration 调整。Service 会按 `WEPUSH_RETENTION_INTERVAL` 周期回收过期且未 Pin/Legal Hold 的文件。
+
 ## 启动 WebUI 开发环境
 
 ```bash
@@ -61,6 +63,7 @@ try (var client = WePushClient.builder()
     var providers = client.providers().list();
     var workspace = client.workspace("ws_default");
     var runs = workspace.runs();
+    var artifacts = workspace.runArtifacts(runs.getFirst().id());
 }
 ```
 
@@ -68,7 +71,7 @@ try (var client = WePushClient.builder()
 
 - Core API、Provider SPI、虚拟线程 Engine 与 HTTP Provider。
 - Agent Protocol、Sequence/Fencing Runtime 与可执行 Agent 包。
-- Service 分层、SQLite/Flyway、控制面 CRUD、信封加密 Secret Store、Result/Command 持久化、Run 幂等创建、SSE 与内嵌执行器。
+- Service 分层、SQLite/Flyway、控制面 CRUD、信封加密 Secret Store、Result/Command/Artifact 持久化、本地 Artifact Store、Run 幂等创建、SSE 与内嵌执行器。
 - 独立远程 Java SDK 和 TypeScript API Client。
 - React WebUI、可视化 Account/Message/Audience/Job 创建闭环、可控制运行中心、动态 API 文档、Electron 安全外壳和共享前端 packages。
 - 架构、单元、契约、Service 冒烟与 Account→Run→Engine→Provider 纵向测试。

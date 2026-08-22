@@ -3,6 +3,7 @@ package com.fangxuele.wepush.next.service.infrastructure;
 import com.fangxuele.wepush.next.core.api.ProviderRef;
 import com.fangxuele.wepush.next.core.api.ItemState;
 import com.fangxuele.wepush.next.service.domain.AccountDefinition;
+import com.fangxuele.wepush.next.service.domain.ArtifactDefinition;
 import com.fangxuele.wepush.next.service.domain.AudienceDefinition;
 import com.fangxuele.wepush.next.service.domain.AudienceRecipient;
 import com.fangxuele.wepush.next.service.domain.IdempotencyRecord;
@@ -90,6 +91,15 @@ final class JdbcRows {
             workspaceId(rs), rs.getString("scope"), rs.getString("key_hash"),
             rs.getString("request_hash"), rs.getString("resource_id"), rs.getInt("response_status"),
             instant(rs, "created_at"), instant(rs, "expires_at"));
+
+    static final RowMapper<ArtifactDefinition> ARTIFACT = (rs, row) -> new ArtifactDefinition(
+            rs.getString("id"), workspaceId(rs), rs.getString("run_id"), rs.getString("type"),
+            rs.getString("backend"), rs.getString("location"), rs.getString("original_name"),
+            rs.getString("content_type"), rs.getLong("size"), rs.getString("sha256"),
+            ArtifactDefinition.State.valueOf(rs.getString("state")), instant(rs, "expires_at"),
+            rs.getInt("pinned") != 0, rs.getInt("legal_hold") != 0, instant(rs, "created_at"),
+            nullableInstant(rs, "ready_at"), nullableInstant(rs, "deleted_at"),
+            rs.getString("last_error"), rs.getLong("version"));
 
     private JdbcRows() {
     }

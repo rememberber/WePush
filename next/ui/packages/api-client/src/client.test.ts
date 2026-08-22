@@ -81,4 +81,23 @@ describe("WePushClient", () => {
       }),
     );
   });
+
+  it("creates result exports and exposes their download URL", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({
+      id: "artifact_1", type: "RUN_RESULTS_CSV", state: "READY",
+    }), { status: 201 }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const client = new WePushClient("http://localhost:18990/");
+    const artifact = await client.createResultExport("run_1");
+
+    expect(artifact.id).toBe("artifact_1");
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://localhost:18990/api/v1/workspaces/ws_default/runs/run_1/artifacts/result-export",
+      expect.objectContaining({ method: "POST", body: "{}" }),
+    );
+    expect(client.artifactDownloadUrl("artifact_1")).toBe(
+      "http://localhost:18990/api/v1/workspaces/ws_default/artifacts/artifact_1/content",
+    );
+  });
 });
