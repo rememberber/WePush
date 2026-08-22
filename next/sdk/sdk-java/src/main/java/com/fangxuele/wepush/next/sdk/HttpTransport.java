@@ -46,16 +46,64 @@ final class HttpTransport implements AutoCloseable {
 
     <T> T getJson(String path, Class<T> responseType) {
         String body = getText(path);
+        return decode(body, responseType);
+    }
+
+    <T> T postJson(String path, Object requestBody, String idempotencyKey, Class<T> responseType) {
+        return writeJson(path, requestBody, idempotencyKey, "POST", responseType);
+    }
+
+    <T> T putJson(String path, Object requestBody, Class<T> responseType) {
+        return writeJson(path, requestBody, null, "PUT", responseType);
+    }
+
+    private <T> T writeJson(String path, Object requestBody, String idempotencyKey,
+                            String method, Class<T> responseType) {
+        String body;
         try {
-            return mapper.readValue(body, responseType);
+            body = mapper.writeValueAsString(requestBody);
         } catch (JsonProcessingException exception) {
-            throw new WePushException("Service returned invalid JSON", exception);
+            throw new WePushException("Unable to encode request JSON", exception);
         }
+        int attempts = idempotencyKey == null ? 1 : retryPolicy.maximumAttempts();
+        for (int attempt = 1; attempt <= attempts; attempt++) {
+            HttpRequest.Builder builder = requestBuilder(path)
+                    .header("Accept", "application/json")
+                    .header("Content-Type", "application/json")
+                    .method(method, HttpRequest.BodyPublishers.ofString(body));
+            if (idempotencyKey != null) {
+                builder.header("Idempotency-Key", safeHeader(idempotencyKey, "idempotencyKey"));
+            }
+            try {
+                HttpResponse<String> response = client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() >= 200 && response.statusCode() < 300) {
+                    return decode(response.body(), responseType);
+                }
+                if (retryable(response.statusCode()) && attempt < attempts) {
+                    sleep(retryDelay(response, attempt));
+                    continue;
+                }
+                throw new WePushException("WePush Service returned HTTP " + response.statusCode(),
+                        response.statusCode(), response.body());
+            } catch (IOException exception) {
+                if (attempt >= attempts) {
+                    throw new WePushException("Unable to reach WePush Service", exception);
+                }
+                sleep(withJitter(retryPolicy.delayForAttempt(attempt)));
+            } catch (InterruptedException exception) {
+                Thread.currentThread().interrupt();
+                throw new WePushException("Interrupted while calling WePush Service", exception);
+            }
+        }
+        throw new IllegalStateException("unreachable retry state");
     }
 
     String getText(String path) {
         for (int attempt = 1; attempt <= retryPolicy.maximumAttempts(); attempt++) {
-            HttpRequest request = request(path);
+            HttpRequest request = requestBuilder(path)
+                    .header("Accept", "application/json")
+                    .GET()
+                    .build();
             try {
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() >= 200 && response.statusCode() < 300) {
@@ -82,23 +130,33 @@ final class HttpTransport implements AutoCloseable {
         throw new IllegalStateException("unreachable retry state");
     }
 
-    private HttpRequest request(String path) {
+    private HttpRequest.Builder requestBuilder(String path) {
         URI target = path.startsWith("http://") || path.startsWith("https://")
                 ? URI.create(path)
                 : URI.create(endpoint + (path.startsWith("/") ? path : "/" + path));
         HttpRequest.Builder builder = HttpRequest.newBuilder(target)
                 .timeout(requestTimeout)
-                .header("Accept", "application/json")
-                .header("User-Agent", "wepush-next-java-sdk/0.1")
-                .GET();
+                .header("User-Agent", "wepush-next-java-sdk/0.1");
         String token = tokenProvider.currentToken();
         if (token != null && !token.isBlank()) {
-            if (token.indexOf('\r') >= 0 || token.indexOf('\n') >= 0) {
-                throw new IllegalArgumentException("token contains prohibited control characters");
-            }
-            builder.header("Authorization", "Bearer " + token);
+            builder.header("Authorization", "Bearer " + safeHeader(token, "token"));
         }
-        return builder.build();
+        return builder;
+    }
+
+    private <T> T decode(String body, Class<T> responseType) {
+        try {
+            return mapper.readValue(body, responseType);
+        } catch (JsonProcessingException exception) {
+            throw new WePushException("Service returned invalid JSON", exception);
+        }
+    }
+
+    private static String safeHeader(String value, String name) {
+        if (value == null || value.isBlank() || value.indexOf('\r') >= 0 || value.indexOf('\n') >= 0) {
+            throw new IllegalArgumentException(name + " is blank or contains prohibited control characters");
+        }
+        return value;
     }
 
     private Duration retryDelay(HttpResponse<?> response, int attempt) {

@@ -24,6 +24,10 @@ Service 默认只监听 `127.0.0.1:18990`。启动后可访问：
 - `http://127.0.0.1:18990/api/v1/providers`
 - `http://127.0.0.1:18990/openapi.yaml`
 
+Standalone 数据默认保存到 `.local/data/wepush-next.db`，可通过 `WEPUSH_DATABASE_PATH` 指定其他位置。Service 首次启动会运行 Flyway 迁移并创建 `ws_default` 工作区。
+
+Secret 默认使用本地信封加密：密文进入 SQLite，主密钥单独保存到 `.local/secrets/master-key.json`。可通过 `WEPUSH_MASTER_KEY_PATH` 修改路径，或使用 `WEPUSH_MASTER_KEY_BASE64` 注入 32-byte Base64 主密钥。已有密文但主密钥缺失、权限不安全或认证失败时，Service 会失败关闭，不会生成新密钥覆盖。
+
 ## 启动 WebUI 开发环境
 
 ```bash
@@ -55,6 +59,8 @@ try (var client = WePushClient.builder()
         .build()) {
     var system = client.system().info();
     var providers = client.providers().list();
+    var workspace = client.workspace("ws_default");
+    var runs = workspace.runs();
 }
 ```
 
@@ -62,9 +68,9 @@ try (var client = WePushClient.builder()
 
 - Core API、Provider SPI、虚拟线程 Engine 与 HTTP Provider。
 - Agent Protocol、Sequence/Fencing Runtime 与可执行 Agent 包。
-- Service 分层、Provider 目录、动态 Schema、Actuator 与 OpenAPI。
-- 独立远程 Java SDK。
-- React WebUI、Electron 安全外壳和共享前端 packages。
-- 架构、单元、契约、Service 冒烟与 Engine→Provider 集成测试。
+- Service 分层、SQLite/Flyway、控制面 CRUD、信封加密 Secret Store、Result/Command 持久化、Run 幂等创建、SSE 与内嵌执行器。
+- 独立远程 Java SDK 和 TypeScript API Client。
+- React WebUI、可视化 Account/Message/Audience/Job 创建闭环、可控制运行中心、动态 API 文档、Electron 安全外壳和共享前端 packages。
+- 架构、单元、契约、Service 冒烟与 Account→Run→Engine→Provider 纵向测试。
 
-模块边界和后续迭代以 [`docs/architecture-and-high-level-design.md`](docs/architecture-and-high-level-design.md)、[`docs/detailed-design.md`](docs/detailed-design.md) 及 [`docs/adr/`](docs/adr/) 为准。
+模块边界和后续迭代以 [`docs/architecture-and-high-level-design.md`](docs/architecture-and-high-level-design.md)、[`docs/detailed-design.md`](docs/detailed-design.md)、[`docs/implementation-status.md`](docs/implementation-status.md) 及 [`docs/adr/`](docs/adr/) 为准。

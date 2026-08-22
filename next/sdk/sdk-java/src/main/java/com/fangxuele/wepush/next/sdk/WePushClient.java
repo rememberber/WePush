@@ -41,6 +41,10 @@ public final class WePushClient implements AutoCloseable {
         return providers;
     }
 
+    public WorkspaceClient workspace(String workspaceId) {
+        return new WorkspaceClient(transport, workspaceId);
+    }
+
     public URI endpoint() {
         return transport.endpoint();
     }

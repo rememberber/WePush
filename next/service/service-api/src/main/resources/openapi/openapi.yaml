@@ -2,8 +2,18 @@ openapi: 3.1.0
 info:
   title: WePush Next Service API
   version: 0.1.0
+  description: Local-first control plane API shared by Web UI, Desktop UI and remote SDKs.
 servers:
   - url: /
+tags:
+  - {name: System}
+  - {name: Providers}
+  - {name: Accounts}
+  - {name: Secrets}
+  - {name: Messages}
+  - {name: Audiences}
+  - {name: Jobs}
+  - {name: Runs}
 paths:
   /api/v1/system/info:
     get:
@@ -14,8 +24,7 @@ paths:
           description: Current Service identity and time
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/SystemInfo'
+              schema: {$ref: '#/components/schemas/SystemInfo'}
   /api/v1/providers:
     get:
       operationId: listProviders
@@ -27,21 +36,14 @@ paths:
             application/json:
               schema:
                 type: array
-                items:
-                  $ref: '#/components/schemas/ProviderSummary'
+                items: {$ref: '#/components/schemas/ProviderSummary'}
   /api/v1/providers/{providerId}/versions/{version}/schemas/{schemaKind}:
     get:
       operationId: getProviderSchema
       tags: [Providers]
       parameters:
-        - name: providerId
-          in: path
-          required: true
-          schema: {type: string}
-        - name: version
-          in: path
-          required: true
-          schema: {type: string}
+        - {$ref: '#/components/parameters/ProviderId'}
+        - {$ref: '#/components/parameters/ProviderVersion'}
         - name: schemaKind
           in: path
           required: true
@@ -52,10 +54,416 @@ paths:
           content:
             application/schema+json:
               schema: {type: object}
-        '404':
-          description: Provider or schema was not found
+        '404': {$ref: '#/components/responses/NotFound'}
+  /api/v1/workspaces/{workspaceId}/accounts:
+    parameters:
+      - {$ref: '#/components/parameters/WorkspaceId'}
+    get:
+      operationId: listAccounts
+      tags: [Accounts]
+      responses:
+        '200': {$ref: '#/components/responses/AccountList'}
+    post:
+      operationId: createAccount
+      tags: [Accounts]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CreateAccount'}
+      responses:
+        '201':
+          description: Account created
+          headers:
+            Location: {schema: {type: string}}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Account'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/Unprocessable'}
+  /api/v1/workspaces/{workspaceId}/accounts/{accountId}:
+    get:
+      operationId: getAccount
+      tags: [Accounts]
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+        - {name: accountId, in: path, required: true, schema: {type: string}}
+      responses:
+        '200':
+          description: Account detail
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Account'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /api/v1/workspaces/{workspaceId}/secrets/{namespace}/{name}/versions/{version}:
+    parameters:
+      - {$ref: '#/components/parameters/WorkspaceId'}
+      - {name: namespace, in: path, required: true, schema: {type: string}}
+      - {name: name, in: path, required: true, schema: {type: string}}
+      - {name: version, in: path, required: true, schema: {type: string}}
+    put:
+      operationId: replaceSecret
+      tags: [Secrets]
+      description: Replaces a secret value. Plaintext is accepted write-only and is never returned.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/SecretWrite'}
+      responses:
+        '200':
+          description: Encrypted secret metadata
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/SecretMetadata'}
+        '404': {$ref: '#/components/responses/NotFound'}
+    get:
+      operationId: getSecretMetadata
+      tags: [Secrets]
+      description: Returns configuration metadata only; secret plaintext is never readable through this API.
+      responses:
+        '200':
+          description: Secret metadata
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/SecretMetadata'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /api/v1/workspaces/{workspaceId}/messages:
+    parameters:
+      - {$ref: '#/components/parameters/WorkspaceId'}
+    get:
+      operationId: listMessages
+      tags: [Messages]
+      responses:
+        '200':
+          description: Messages
+          content:
+            application/json:
+              schema: {type: array, items: {$ref: '#/components/schemas/Message'}}
+    post:
+      operationId: createMessage
+      tags: [Messages]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CreateMessage'}
+      responses:
+        '201':
+          description: Message created
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Message'}
+        '422': {$ref: '#/components/responses/Unprocessable'}
+  /api/v1/workspaces/{workspaceId}/messages/{messageId}:
+    get:
+      operationId: getMessage
+      tags: [Messages]
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+        - {name: messageId, in: path, required: true, schema: {type: string}}
+      responses:
+        '200':
+          description: Message detail
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Message'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /api/v1/workspaces/{workspaceId}/audiences:
+    parameters:
+      - {$ref: '#/components/parameters/WorkspaceId'}
+    get:
+      operationId: listAudiences
+      tags: [Audiences]
+      responses:
+        '200':
+          description: Audiences
+          content:
+            application/json:
+              schema: {type: array, items: {$ref: '#/components/schemas/Audience'}}
+    post:
+      operationId: createAudience
+      tags: [Audiences]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CreateAudience'}
+      responses:
+        '201':
+          description: Audience and first immutable snapshot created
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Audience'}
+  /api/v1/workspaces/{workspaceId}/audiences/{audienceId}:
+    get:
+      operationId: getAudience
+      tags: [Audiences]
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+        - {name: audienceId, in: path, required: true, schema: {type: string}}
+      responses:
+        '200':
+          description: Audience detail
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Audience'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /api/v1/workspaces/{workspaceId}/jobs:
+    parameters:
+      - {$ref: '#/components/parameters/WorkspaceId'}
+    get:
+      operationId: listJobs
+      tags: [Jobs]
+      responses:
+        '200':
+          description: Jobs
+          content:
+            application/json:
+              schema: {type: array, items: {$ref: '#/components/schemas/Job'}}
+    post:
+      operationId: createJob
+      tags: [Jobs]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CreateJob'}
+      responses:
+        '201':
+          description: Job created
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Job'}
+        '422': {$ref: '#/components/responses/Unprocessable'}
+  /api/v1/workspaces/{workspaceId}/jobs/{jobId}:
+    get:
+      operationId: getJob
+      tags: [Jobs]
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+        - {name: jobId, in: path, required: true, schema: {type: string}}
+      responses:
+        '200':
+          description: Job detail
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Job'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /api/v1/workspaces/{workspaceId}/jobs/{jobId}/runs:
+    post:
+      operationId: createRun
+      tags: [Runs]
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+        - {name: jobId, in: path, required: true, schema: {type: string}}
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CreateRun'}
+      responses:
+        '202':
+          description: Run accepted for asynchronous execution
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Run'}
+        '200':
+          description: Existing Run returned after idempotent replay
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Run'}
+        '409': {$ref: '#/components/responses/Conflict'}
+  /api/v1/workspaces/{workspaceId}/runs:
+    get:
+      operationId: listRuns
+      tags: [Runs]
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+      responses:
+        '200':
+          description: Runs ordered newest first
+          content:
+            application/json:
+              schema: {type: array, items: {$ref: '#/components/schemas/Run'}}
+  /api/v1/workspaces/{workspaceId}/runs/{runId}:
+    get:
+      operationId: getRun
+      tags: [Runs]
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+        - {name: runId, in: path, required: true, schema: {type: string}}
+      responses:
+        '200':
+          description: Current Run detail and counters
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Run'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /api/v1/workspaces/{workspaceId}/runs/{runId}/events:
+    get:
+      operationId: streamRunEvents
+      tags: [Runs]
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+        - {name: runId, in: path, required: true, schema: {type: string}}
+        - name: Last-Event-ID
+          in: header
+          required: false
+          schema: {type: integer, minimum: 0}
+      responses:
+        '200':
+          description: Persisted replay followed by live Run events. SSE id is the per-Run sequence.
+          content:
+            text/event-stream:
+              schema: {$ref: '#/components/schemas/RunEvent'}
+  /api/v1/workspaces/{workspaceId}/runs/{runId}/items:
+    get:
+      operationId: listRunItemResults
+      tags: [Runs]
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+        - {$ref: '#/components/parameters/RunId'}
+        - name: cursor
+          in: query
+          required: false
+          description: Opaque HMAC-protected cursor returned by the previous page.
+          schema: {type: string}
+        - name: limit
+          in: query
+          required: false
+          schema: {type: integer, minimum: 1, maximum: 500, default: 100}
+      responses:
+        '200':
+          description: Persisted final Item Results ordered by completion time and Item ID
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RunItemResultPage'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /api/v1/workspaces/{workspaceId}/runs/{runId}/commands/pause:
+    post:
+      operationId: pauseRun
+      tags: [Runs]
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+        - {$ref: '#/components/parameters/RunId'}
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      responses:
+        '202': {$ref: '#/components/responses/CommandAccepted'}
+        '200': {$ref: '#/components/responses/CommandReplay'}
+        '409': {$ref: '#/components/responses/CommandRejected'}
+  /api/v1/workspaces/{workspaceId}/runs/{runId}/commands/resume:
+    post:
+      operationId: resumeRun
+      tags: [Runs]
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+        - {$ref: '#/components/parameters/RunId'}
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      responses:
+        '202': {$ref: '#/components/responses/CommandAccepted'}
+        '200': {$ref: '#/components/responses/CommandReplay'}
+        '409': {$ref: '#/components/responses/CommandRejected'}
+  /api/v1/workspaces/{workspaceId}/runs/{runId}/commands/cancel:
+    post:
+      operationId: cancelRun
+      tags: [Runs]
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+        - {$ref: '#/components/parameters/RunId'}
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CancelRun'}
+      responses:
+        '202': {$ref: '#/components/responses/CommandAccepted'}
+        '200': {$ref: '#/components/responses/CommandReplay'}
+        '409': {$ref: '#/components/responses/CommandRejected'}
+  /api/v1/workspaces/{workspaceId}/runs/{runId}/commands/concurrency:
+    post:
+      operationId: changeRunConcurrency
+      tags: [Runs]
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+        - {$ref: '#/components/parameters/RunId'}
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ChangeConcurrency'}
+      responses:
+        '202': {$ref: '#/components/responses/CommandAccepted'}
+        '200': {$ref: '#/components/responses/CommandReplay'}
+        '409': {$ref: '#/components/responses/CommandRejected'}
 components:
+  parameters:
+    WorkspaceId: {name: workspaceId, in: path, required: true, schema: {type: string}}
+    ProviderId: {name: providerId, in: path, required: true, schema: {type: string}}
+    ProviderVersion: {name: version, in: path, required: true, schema: {type: string}}
+    RunId: {name: runId, in: path, required: true, schema: {type: string}}
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema: {type: string, minLength: 1, maxLength: 256}
+  responses:
+    BadRequest:
+      description: Request or cursor is invalid
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+    AccountList:
+      description: Accounts
+      content:
+        application/json:
+          schema: {type: array, items: {$ref: '#/components/schemas/Account'}}
+    NotFound:
+      description: Resource not found
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+    Conflict:
+      description: Resource or idempotency conflict
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+    Unprocessable:
+      description: Provider or domain validation failed
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+    CommandAccepted:
+      description: Command accepted by the active execution handle
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/RunCommand'}
+    CommandReplay:
+      description: Previously accepted command returned idempotently
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/RunCommand'}
+    CommandRejected:
+      description: Command reached Core but was rejected for the current Run state
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/RunCommand'}
   schemas:
+    JsonObject: {type: object, additionalProperties: true}
+    ResourceMetadata:
+      type: object
+      required: [id, workspaceId, name, createdAt, updatedAt, version]
+      properties:
+        id: {type: string}
+        workspaceId: {type: string}
+        name: {type: string}
+        createdAt: {type: string, format: date-time}
+        updatedAt: {type: string, format: date-time}
+        version: {type: integer, format: int64, minimum: 0}
     SystemInfo:
       type: object
       required: [product, version, mode, serverTime]
@@ -71,10 +479,7 @@ components:
         providerId: {type: string}
         displayName: {type: string}
         implementationVersion: {type: string}
-        capabilities:
-          type: array
-          items: {type: string}
-          uniqueItems: true
+        capabilities: {type: array, items: {type: string}, uniqueItems: true}
         maximumConcurrency: {type: integer, minimum: 1}
         links:
           type: object
@@ -83,3 +488,215 @@ components:
             accountSchema: {type: string}
             messageSchema: {type: string}
             recipientSchema: {type: string}
+    CreateAccount:
+      type: object
+      required: [name, providerId, providerVersion, configuration]
+      properties:
+        name: {type: string}
+        providerId: {type: string}
+        providerVersion: {type: string}
+        configuration: {$ref: '#/components/schemas/JsonObject'}
+    Account:
+      allOf:
+        - {$ref: '#/components/schemas/ResourceMetadata'}
+        - type: object
+          required: [providerId, providerVersion, configuration, status]
+          properties:
+            providerId: {type: string}
+            providerVersion: {type: string}
+            configuration: {$ref: '#/components/schemas/JsonObject'}
+            status: {type: string, enum: [ACTIVE, DISABLED, ARCHIVED]}
+    SecretWrite:
+      type: object
+      required: [value]
+      properties:
+        value:
+          type: string
+          minLength: 1
+          writeOnly: true
+    SecretMetadata:
+      type: object
+      required: [workspaceId, namespace, name, secretVersion, configured, recordVersion, createdAt, updatedAt]
+      properties:
+        workspaceId: {type: string}
+        namespace: {type: string}
+        name: {type: string}
+        secretVersion: {type: string}
+        configured: {type: boolean}
+        recordVersion: {type: integer, format: int64, minimum: 1}
+        createdAt: {type: string, format: date-time}
+        updatedAt: {type: string, format: date-time}
+    CreateMessage:
+      type: object
+      required: [name, providerId, providerVersion, content]
+      properties:
+        name: {type: string}
+        providerId: {type: string}
+        providerVersion: {type: string}
+        content: {$ref: '#/components/schemas/JsonObject'}
+    Message:
+      allOf:
+        - {$ref: '#/components/schemas/ResourceMetadata'}
+        - type: object
+          required: [providerId, providerVersion, revision, schemaVersion, content, contentHash, status]
+          properties:
+            providerId: {type: string}
+            providerVersion: {type: string}
+            revision: {type: integer, minimum: 1}
+            schemaVersion: {type: string}
+            content: {$ref: '#/components/schemas/JsonObject'}
+            contentHash: {type: string}
+            status: {type: string, enum: [ACTIVE, DISABLED, ARCHIVED]}
+    Recipient:
+      type: object
+      required: [fields]
+      properties:
+        itemId: {type: string}
+        fields: {$ref: '#/components/schemas/JsonObject'}
+    CreateAudience:
+      type: object
+      required: [name, recipients]
+      properties:
+        name: {type: string}
+        recipients: {type: array, items: {$ref: '#/components/schemas/Recipient'}}
+    Audience:
+      allOf:
+        - {$ref: '#/components/schemas/ResourceMetadata'}
+        - type: object
+          required: [snapshotId, revision, recordCount, contentHash, status]
+          properties:
+            snapshotId: {type: string}
+            revision: {type: integer, minimum: 1}
+            recordCount: {type: integer, format: int64, minimum: 0}
+            contentHash: {type: string}
+            status: {type: string, enum: [ACTIVE, DISABLED, ARCHIVED]}
+    CreateJob:
+      type: object
+      required: [name, accountId, messageId, audienceId]
+      properties:
+        name: {type: string}
+        accountId: {type: string}
+        messageId: {type: string}
+        audienceId: {type: string}
+        policies: {$ref: '#/components/schemas/JsonObject'}
+        enabled: {type: boolean, default: true}
+    Job:
+      allOf:
+        - {$ref: '#/components/schemas/ResourceMetadata'}
+        - type: object
+          required: [accountId, messageId, audienceId, policies, enabled]
+          properties:
+            accountId: {type: string}
+            messageId: {type: string}
+            audienceId: {type: string}
+            policies: {$ref: '#/components/schemas/JsonObject'}
+            enabled: {type: boolean}
+    CreateRun:
+      type: object
+      properties:
+        dryRun: {type: boolean, default: false}
+        policyOverrides: {$ref: '#/components/schemas/JsonObject'}
+        reason: {type: string, default: manual}
+    RunCounters:
+      type: object
+      required: [total, succeeded, failed, unknown, unsent, skipped, retried]
+      properties:
+        total: {type: integer, format: int64, minimum: 0}
+        succeeded: {type: integer, format: int64, minimum: 0}
+        failed: {type: integer, format: int64, minimum: 0}
+        unknown: {type: integer, format: int64, minimum: 0}
+        unsent: {type: integer, format: int64, minimum: 0}
+        skipped: {type: integer, format: int64, minimum: 0}
+        retried: {type: integer, format: int64, minimum: 0}
+    Run:
+      type: object
+      required: [id, workspaceId, jobId, state, stateReason, dryRun, counters, createdAt, updatedAt, version, links]
+      properties:
+        id: {type: string}
+        workspaceId: {type: string}
+        jobId: {type: string}
+        state: {type: string}
+        stateReason: {type: string}
+        dryRun: {type: boolean}
+        counters: {$ref: '#/components/schemas/RunCounters'}
+        createdAt: {type: string, format: date-time}
+        startedAt: {type: [string, 'null'], format: date-time}
+        endedAt: {type: [string, 'null'], format: date-time}
+        updatedAt: {type: string, format: date-time}
+        version: {type: integer, format: int64, minimum: 0}
+        links: {type: object, additionalProperties: {type: string}}
+    RunEvent:
+      type: object
+      required: [runId, sequence, type, occurredAt, payload, severity]
+      properties:
+        runId: {type: string}
+        sequence: {type: integer, format: int64, minimum: 1}
+        type: {type: string}
+        occurredAt: {type: string, format: date-time}
+        payload: {}
+        severity: {type: string, enum: [DEBUG, INFO, WARNING, ERROR]}
+    RunItemResult:
+      type: object
+      required: [runId, itemId, attempts, state, providerCode, diagnostic, externalRequestId, completedAt, metadata]
+      properties:
+        runId: {type: string}
+        itemId: {type: string}
+        attempts: {type: integer, minimum: 0}
+        state: {type: string, enum: [SUCCEEDED, FAILED, UNKNOWN, UNSENT, SKIPPED]}
+        providerCode: {type: string}
+        diagnostic: {type: string}
+        externalRequestId: {type: string}
+        completedAt: {type: string, format: date-time}
+        metadata: {$ref: '#/components/schemas/JsonObject'}
+    CursorPage:
+      type: object
+      required: [hasMore]
+      properties:
+        nextCursor: {type: [string, 'null']}
+        hasMore: {type: boolean}
+    RunItemResultPage:
+      type: object
+      required: [items, page]
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/RunItemResult'}}
+        page: {$ref: '#/components/schemas/CursorPage'}
+    CancelRun:
+      type: object
+      required: [reason]
+      properties:
+        reason: {type: string, minLength: 1}
+    ChangeConcurrency:
+      type: object
+      required: [target]
+      properties:
+        target: {type: integer, minimum: 1}
+    RunCommand:
+      type: object
+      required: [commandId, type, status, code, message, acknowledgedAt, replayed]
+      properties:
+        commandId: {type: string}
+        type: {type: string, enum: [PAUSE, RESUME, CANCEL, CONCURRENCY]}
+        status: {type: string, enum: [ACCEPTED, REJECTED]}
+        code: {type: string}
+        message: {type: string}
+        acknowledgedAt: {type: string, format: date-time}
+        replayed: {type: boolean}
+    Problem:
+      type: object
+      required: [type, title, status, code, detail, traceId, errors]
+      properties:
+        type: {type: string, format: uri}
+        title: {type: string}
+        status: {type: integer}
+        code: {type: string}
+        detail: {type: string}
+        traceId: {type: string}
+        errors:
+          type: array
+          items:
+            type: object
+            required: [path, code, message]
+            properties:
+              path: {type: string}
+              code: {type: string}
+              message: {type: string}

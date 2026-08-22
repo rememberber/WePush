@@ -19,3 +19,8 @@ management:
 
 wepush:
   mode: ${WEPUSH_MODE:standalone}
+  database:
+    path: ${WEPUSH_DATABASE_PATH:.local/data/wepush-next.db}
+  secret:
+    master-key-path: ${WEPUSH_MASTER_KEY_PATH:.local/secrets/master-key.json}
+    master-key-base64: ${WEPUSH_MASTER_KEY_BASE64:}

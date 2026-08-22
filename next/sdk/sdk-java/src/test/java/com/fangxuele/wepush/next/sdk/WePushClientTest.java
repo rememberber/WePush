@@ -1,5 +1,6 @@
 package com.fangxuele.wepush.next.sdk;
 
+import com.fangxuele.wepush.next.service.api.ControlPlaneApi;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -9,6 +10,7 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -66,5 +68,70 @@ class WePushClientTest {
                 .endpoint(URI.create("https://user:password@example.com"));
 
         assertThrows(IllegalStateException.class, builder::build);
+    }
+
+    @Test
+    void createsRunThroughRemoteApiWithoutDependingOnCore() throws IOException {
+        server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        AtomicReference<String> idempotencyKey = new AtomicReference<>();
+        AtomicReference<String> requestMethod = new AtomicReference<>();
+        server.createContext("/api/v1/workspaces/ws_default/jobs/job_1/runs", exchange -> {
+            idempotencyKey.set(exchange.getRequestHeaders().getFirst("Idempotency-Key"));
+            requestMethod.set(exchange.getRequestMethod());
+            byte[] body = """
+                    {
+                      "id":"run_1","workspaceId":"ws_default","jobId":"job_1","state":"PENDING",
+                      "stateReason":"manual","dryRun":true,
+                      "counters":{"total":1,"succeeded":0,"failed":0,"unknown":0,"unsent":0,"skipped":0,"retried":0},
+                      "createdAt":"2026-08-22T10:00:00Z","startedAt":null,"endedAt":null,
+                      "updatedAt":"2026-08-22T10:00:00Z","version":0,"links":{}
+                    }
+                    """.getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().add("Content-Type", "application/json");
+            exchange.sendResponseHeaders(202, body.length);
+            exchange.getResponseBody().write(body);
+            exchange.close();
+        });
+        server.start();
+
+        try (WePushClient client = WePushClient.builder()
+                .endpoint(URI.create("http://127.0.0.1:" + server.getAddress().getPort()))
+                .build()) {
+            ControlPlaneApi.RunResponse run = client.workspace("ws_default").createRun(
+                    "job_1", "sdk-run-1", new ControlPlaneApi.CreateRunRequest(true, Map.of(), "manual"));
+            assertEquals("run_1", run.id());
+        }
+
+        assertEquals("POST", requestMethod.get());
+        assertEquals("sdk-run-1", idempotencyKey.get());
+    }
+
+    @Test
+    void pagesPersistedRunItemResults() throws IOException {
+        server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        AtomicReference<String> query = new AtomicReference<>();
+        server.createContext("/api/v1/workspaces/ws_default/runs/run_1/items", exchange -> {
+            query.set(exchange.getRequestURI().getQuery());
+            byte[] body = """
+                    {"items":[{"runId":"run_1","itemId":"alice","attempts":1,"state":"SUCCEEDED",
+                    "providerCode":"DRY_RUN","diagnostic":"","externalRequestId":"",
+                    "completedAt":"2026-08-22T10:00:00Z","metadata":{}}],
+                    "page":{"nextCursor":"next.abc","hasMore":true}}
+                    """.getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().add("Content-Type", "application/json");
+            exchange.sendResponseHeaders(200, body.length);
+            exchange.getResponseBody().write(body);
+            exchange.close();
+        });
+        server.start();
+
+        try (WePushClient client = WePushClient.builder()
+                .endpoint(URI.create("http://127.0.0.1:" + server.getAddress().getPort())).build()) {
+            ControlPlaneApi.RunItemResultPage page = client.workspace("ws_default")
+                    .runItems("run_1", "cursor.abc", 1);
+            assertEquals("alice", page.items().getFirst().itemId());
+            assertEquals("next.abc", page.page().nextCursor());
+        }
+        assertEquals("limit=1&cursor=cursor.abc", query.get());
     }
 }
