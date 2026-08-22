@@ -523,6 +523,37 @@
 .event-timeline article strong { font-size: 9px; font-weight: 640; }
 .event-timeline article pre { margin: 5px 0 0; overflow: auto; color: var(--wp-text-secondary); font-family: var(--wp-mono); font-size: 8px; line-height: 1.45; white-space: pre-wrap; }
 
+.agents-page .metric-grid { margin-bottom: 12px; }
+.agents-layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); align-items: start; gap: 12px; }
+.agent-list-panel { min-height: 570px; padding: 9px; }
+.agent-list-item { display: grid; width: 100%; grid-template-columns: 8px minmax(0, 1fr) auto; align-items: center; gap: 11px; padding: 12px 9px; border: 1px solid transparent; border-radius: 9px; background: transparent; color: var(--wp-text); cursor: pointer; text-align: left; }
+.agent-list-item:hover { background: var(--wp-surface-muted); }
+.agent-list-item--active { border-color: var(--wp-border); background: var(--wp-surface-muted); }
+.agent-list-item > span:nth-child(2) { display: flex; min-width: 0; flex-direction: column; }
+.agent-list-item strong { overflow: hidden; font-family: var(--wp-mono); font-size: 9px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.agent-list-item small { margin-top: 4px; overflow: hidden; color: var(--wp-text-tertiary); font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.agent-detail-panel { min-height: 570px; padding: 23px 25px; }
+.agent-detail-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; }
+.agent-detail-heading h3 { margin: 0; font-family: var(--wp-mono); font-size: 15px; font-weight: 620; }
+.agent-detail-heading p:not(.eyebrow) { margin: 5px 0 0; color: var(--wp-text-tertiary); font-family: var(--wp-mono); font-size: 8px; }
+.agent-capacity { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; margin-top: 23px; }
+.agent-capacity div { padding: 11px; border: 1px solid var(--wp-border); border-radius: 8px; background: var(--wp-surface-muted); }
+.agent-capacity span { display: block; color: var(--wp-text-tertiary); font-size: 8px; }
+.agent-capacity strong { display: block; margin-top: 7px; font-size: 17px; font-weight: 600; }
+.agent-progress { height: 4px; margin: 10px 1px 20px; overflow: hidden; border-radius: 99px; background: var(--wp-surface-muted); }
+.agent-progress span { display: block; height: 100%; border-radius: inherit; background: var(--wp-info); transition: width .2s ease; }
+.agent-metadata { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+.agent-metadata > span { display: flex; min-width: 0; flex-direction: column; padding: 10px; border-bottom: 1px solid var(--wp-border); }
+.agent-metadata small { color: var(--wp-text-tertiary); font-size: 8px; }
+.agent-metadata strong { margin-top: 5px; overflow: hidden; color: var(--wp-text-secondary); font-family: var(--wp-mono); font-size: 8px; font-weight: 570; text-overflow: ellipsis; white-space: nowrap; }
+.agent-detail-panel .event-heading { margin-top: 23px; }
+.agent-provider-list { display: grid; gap: 6px; margin-top: 12px; }
+.agent-provider-list article { display: grid; grid-template-columns: 33px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 9px 10px; border: 1px solid var(--wp-border); border-radius: 8px; background: var(--wp-surface-muted); }
+.agent-provider-list article > span:nth-child(2), .agent-provider-list article > span:last-child { display: flex; flex-direction: column; }
+.agent-provider-list article > span:last-child { align-items: flex-end; }
+.agent-provider-list strong { font-size: 9px; font-weight: 600; }
+.agent-provider-list small { margin-top: 3px; color: var(--wp-text-tertiary); font-size: 8px; }
+
 .api-layout { display: grid; grid-template-columns: 285px minmax(0, 1fr); align-items: start; gap: 12px; }
 .endpoint-list { min-height: 590px; padding: 10px; }
 .endpoint-search { position: relative; display: flex; align-items: center; margin-bottom: 16px; }
@@ -560,7 +591,7 @@
   .metric-grid { grid-template-columns: repeat(2, 1fr); }
   .dashboard-grid { grid-template-columns: 1fr; }
   .quick-start-panel { min-height: auto; }
-  .split-layout, .composer-layout, .api-layout, .runs-layout { grid-template-columns: 1fr; }
+  .split-layout, .composer-layout, .api-layout, .runs-layout, .agents-layout { grid-template-columns: 1fr; }
   .provider-list-panel, .endpoint-list { min-height: auto; }
 }
 

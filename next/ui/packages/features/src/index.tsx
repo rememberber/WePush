@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react
 
 import {
   type Account,
+  type Agent,
   type Artifact,
   type Audience,
   type DebugResponse,
@@ -55,7 +56,7 @@ const pageTitles: Record<PageId, string> = Object.fromEntries(
   navigation.flatMap((group) => group.items.map((item) => [item.id, item.label])),
 ) as Record<PageId, string>;
 const implementedPages: readonly PageId[] = [
-  "overview", "providers", "accounts", "messages", "audiences", "jobs", "runs", "docs",
+  "overview", "providers", "accounts", "messages", "audiences", "jobs", "runs", "agents", "docs",
 ];
 
 export function WePushApp({ apiBaseUrl }: { apiBaseUrl?: string }) {
@@ -63,18 +64,21 @@ export function WePushApp({ apiBaseUrl }: { apiBaseUrl?: string }) {
   const [activePage, setActivePage] = useState<PageId>("overview");
   const [system, setSystem] = useState<SystemInfo>();
   const [providers, setProviders] = useState<ProviderSummary[]>([]);
+  const [agents, setAgents] = useState<Agent[]>([]);
   const [loading, setLoading] = useState(true);
   const [connectionError, setConnectionError] = useState<string>();
 
   const refresh = useCallback(async (signal?: AbortSignal) => {
     setLoading(true);
     try {
-      const [nextSystem, nextProviders] = await Promise.all([
+      const [nextSystem, nextProviders, nextAgents] = await Promise.all([
         client.systemInfo(signal),
         client.providers(signal),
+        client.agents(signal),
       ]);
       setSystem(nextSystem);
       setProviders(nextProviders);
+      setAgents(nextAgents);
       setConnectionError(undefined);
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") return;
@@ -100,6 +104,7 @@ export function WePushApp({ apiBaseUrl }: { apiBaseUrl?: string }) {
             <Overview
               system={system}
               providers={providers}
+              agents={agents}
               loading={loading}
               error={connectionError}
               onRefresh={() => void refresh()}
@@ -112,6 +117,7 @@ export function WePushApp({ apiBaseUrl }: { apiBaseUrl?: string }) {
           {activePage === "audiences" ? <AudiencesPage client={client} /> : null}
           {activePage === "jobs" ? <JobsPage client={client} onNavigate={setActivePage} /> : null}
           {activePage === "runs" ? <RunsPage client={client} onNavigate={setActivePage} /> : null}
+          {activePage === "agents" ? <AgentsPage client={client} /> : null}
           {activePage === "docs" ? <ApiDocsPage client={client} /> : null}
           {!implementedPages.includes(activePage) ? (
             <ComingSoon page={activePage} onNavigate={setActivePage} />
@@ -187,13 +193,14 @@ function Topbar({ title, connected }: { title: string; connected: boolean }) {
 interface OverviewProps {
   system?: SystemInfo;
   providers: ProviderSummary[];
+  agents: Agent[];
   loading: boolean;
   error?: string;
   onRefresh: () => void;
   onNavigate: (page: PageId) => void;
 }
 
-function Overview({ system, providers, loading, error, onRefresh, onNavigate }: OverviewProps) {
+function Overview({ system, providers, agents, loading, error, onRefresh, onNavigate }: OverviewProps) {
   return (
     <div className="page page--overview">
       <section className="page-heading">
@@ -213,7 +220,7 @@ function Overview({ system, providers, loading, error, onRefresh, onNavigate }: 
         <MetricCard label="Service" value={loading ? "—" : system ? "运行中" : "离线"} detail={system ? `${system.mode} · ${system.version}` : "等待连接"} tone={system ? "success" : "neutral"} />
         <MetricCard label="Providers" value={loading ? "—" : String(providers.length)} detail={providers.length ? `${providers[0]?.displayName ?? ""} 已就绪` : "尚未发现 Provider"} />
         <MetricCard label="活动 Runs" value="0" detail="当前没有执行中的任务" />
-        <MetricCard label="Agents" value="Local" detail="Embedded execution" tone="info" />
+        <MetricCard label="Agents" value={loading ? "—" : String(agents.length)} detail={`${agents.filter((agent) => agent.status === "ONLINE").length} online · ${agents.reduce((sum, agent) => sum + agent.activeRuns, 0)} active runs`} tone="info" />
       </section>
 
       <div className="dashboard-grid">
@@ -843,6 +850,91 @@ function RunsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
   );
 }
 
+function AgentsPage({ client }: { client: WePushClient }) {
+  const [agents, setAgents] = useState<Agent[]>([]);
+  const [selectedId, setSelectedId] = useState<string>();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>();
+  const selected = agents.find((agent) => agent.id === selectedId) ?? agents[0];
+
+  const refresh = useCallback(async () => {
+    try {
+      const nextAgents = await client.agents();
+      setAgents(nextAgents);
+      setSelectedId((current) => current ?? nextAgents[0]?.id);
+      setError(undefined);
+    } catch (nextError) {
+      setError(nextError instanceof Error ? nextError.message : "Agent 状态加载失败");
+    } finally {
+      setLoading(false);
+    }
+  }, [client]);
+
+  useEffect(() => {
+    void refresh();
+    const timer = window.setInterval(() => void refresh(), 3_000);
+    return () => window.clearInterval(timer);
+  }, [refresh]);
+
+  const online = agents.filter((agent) => agent.status === "ONLINE").length;
+  const maximumRuns = agents.reduce((sum, agent) => sum + agent.maximumRuns, 0);
+  const activeRuns = agents.reduce((sum, agent) => sum + agent.activeRuns, 0);
+
+  return (
+    <div className="page agents-page">
+      <section className="page-heading page-heading--compact">
+        <div><p className="eyebrow">DISTRIBUTED EXECUTION</p><h2>Agents</h2><p>观察 gRPC 长连接、心跳、执行容量以及每个节点提供的 Provider 能力。</p></div>
+        <Button onClick={() => void refresh()}>刷新状态</Button>
+      </section>
+      {error ? <div className="connection-banner"><div className="banner-icon">!</div><div><strong>Agent 状态暂不可用</strong><p>{error}</p></div><Button onClick={() => void refresh()}>重试</Button></div> : null}
+      <section className="metric-grid">
+        <MetricCard label="Registered" value={loading ? "—" : String(agents.length)} detail="保留离线节点记录" />
+        <MetricCard label="Online" value={loading ? "—" : String(online)} detail="最近心跳正常" tone="success" />
+        <MetricCard label="Capacity" value={loading ? "—" : String(maximumRuns)} detail="最大并发 Run" tone="info" />
+        <MetricCard label="Active" value={loading ? "—" : String(activeRuns)} detail={`${Math.max(0, maximumRuns - activeRuns)} slots available`} />
+      </section>
+      <div className="agents-layout">
+        <section className="panel agent-list-panel">
+          <div className="list-toolbar"><strong>执行节点</strong><Badge>{agents.length}</Badge></div>
+          {loading ? <div className="loading-row"><Spinner />正在读取 Agent 注册表…</div> : null}
+          {!loading && agents.length === 0 ? <EmptyState icon={<Icon name="agent" />} title="还没有 Agent" description="启动 wepush-next-agent，并让它连接 Service 的 19090 gRPC 端口。" /> : null}
+          {agents.map((agent) => <button type="button" key={agent.id} className={selected?.id === agent.id ? "agent-list-item agent-list-item--active" : "agent-list-item"} onClick={() => setSelectedId(agent.id)}>
+            <span className={`status-dot ${agent.status === "ONLINE" ? "status-dot--online" : ""}`} />
+            <span><strong>{agent.id}</strong><small>{agent.operatingSystem} · {agent.architecture} · last seen {formatTime(agent.lastSeenAt)}</small></span>
+            <Badge tone={agentTone(agent.status)}>{agent.status}</Badge>
+          </button>)}
+        </section>
+        <section className="panel agent-detail-panel">
+          {selected ? <>
+            <div className="agent-detail-heading"><div><p className="eyebrow">AGENT SESSION</p><h3>{selected.id}</h3><p>{selected.sessionId}</p></div><Badge tone={agentTone(selected.status)}>{selected.status}</Badge></div>
+            <div className="agent-capacity">
+              <div><span>Active runs</span><strong>{selected.activeRuns}</strong></div>
+              <div><span>Available</span><strong>{selected.availableRuns}</strong></div>
+              <div><span>Maximum</span><strong>{selected.maximumRuns}</strong></div>
+              <div><span>Protocol</span><strong>v{selected.protocolVersion}</strong></div>
+            </div>
+            <div className="agent-progress"><span style={{ width: `${selected.maximumRuns ? Math.min(100, selected.activeRuns / selected.maximumRuns * 100) : 0}%` }} /></div>
+            <div className="agent-metadata">
+              <span><small>Agent version</small><strong>{selected.agentVersion}</strong></span>
+              <span><small>Runtime</small><strong>Java {selected.javaVersion}</strong></span>
+              <span><small>Connected</small><strong>{formatTime(selected.connectedAt)}</strong></span>
+              <span><small>Last heartbeat</small><strong>{formatTime(selected.lastSeenAt)}</strong></span>
+              <span><small>Agent sequence</small><strong>{selected.lastAgentSequence}</strong></span>
+              <span><small>Service sequence</small><strong>{selected.lastServiceSequence}</strong></span>
+            </div>
+            <div className="event-heading"><div><h3>Provider capabilities</h3><p>该 Agent 可实际装载和执行的 Provider 版本</p></div><Badge tone="info">{selected.providers.length}</Badge></div>
+            <div className="agent-provider-list">{selected.providers.map((provider) => <article key={`${provider.providerId}:${provider.implementationVersion}`}>
+              <span className="provider-logo">{provider.providerId.slice(0, 1).toUpperCase()}</span>
+              <span><strong>{provider.providerId}</strong><small>v{provider.implementationVersion} · SPI {provider.spiMajor}</small></span>
+              <span><small>并发</small><strong>{provider.maximumConcurrency}</strong></span>
+            </article>)}</div>
+          </> : <EmptyState icon={<Icon name="agent" />} title="选择一个 Agent" description="会话与容量详情会显示在这里。" />}
+        </section>
+      </div>
+    </div>
+  );
+}
+
 interface ApiEndpoint {
   method: "GET";
   path: string;
@@ -854,6 +946,7 @@ const apiEndpoints: ApiEndpoint[] = [
   { method: "GET", path: "/actuator/health", title: "Health", description: "检查 Service 是否可用" },
   { method: "GET", path: "/api/v1/system/info", title: "System info", description: "读取产品版本、模式与服务器时间" },
   { method: "GET", path: "/api/v1/providers", title: "List providers", description: "返回当前进程发现的 Provider 清单" },
+  { method: "GET", path: "/api/v1/agents", title: "List agents", description: "读取 Agent 会话、容量、心跳和 Provider 能力" },
   { method: "GET", path: "/api/v1/workspaces/ws_default/accounts", title: "List accounts", description: "读取当前工作区的 Provider 账号" },
   { method: "GET", path: "/api/v1/workspaces/ws_default/messages", title: "List messages", description: "读取消息模板及当前不可变修订" },
   { method: "GET", path: "/api/v1/workspaces/ws_default/audiences", title: "List audiences", description: "读取受众及当前快照元数据" },
@@ -922,6 +1015,12 @@ function ComingSoon({ page, onNavigate }: { page: PageId; onNavigate: (page: Pag
 
 function MetricCard({ label, value, detail, tone = "neutral" }: { label: string; value: string; detail: string; tone?: "neutral" | "success" | "info" }) {
   return <article className="metric-card"><div className="metric-card__top"><span>{label}</span><i className={`metric-status metric-status--${tone}`} /></div><strong>{value}</strong><p>{detail}</p></article>;
+}
+
+function agentTone(status: Agent["status"]): "neutral" | "success" | "warning" | "danger" {
+  if (status === "ONLINE") return "success";
+  if (status === "DRAINING" || status === "DEGRADED") return "warning";
+  return "neutral";
 }
 
 function PanelHeader({ title, description, action }: { title: string; description: string; action?: ReactNode }) {

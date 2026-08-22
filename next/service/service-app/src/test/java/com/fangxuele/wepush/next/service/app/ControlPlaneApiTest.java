@@ -47,6 +47,7 @@ class ControlPlaneApiTest {
         registry.add("wepush.secret.master-key-path", MASTER_KEY::toString);
         registry.add("wepush.artifact.root", ARTIFACT_ROOT::toString);
         registry.add("wepush.artifact.retention-initial-delay", () -> "PT1H");
+        registry.add("wepush.agent.grpc.port", () -> "0");
         registry.add("server.shutdown", () -> "immediate");
     }
 

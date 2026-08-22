@@ -1,8 +1,10 @@
 package com.fangxuele.wepush.next.service.app;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fangxuele.wepush.next.service.application.ProviderCatalogQuery;
 import com.fangxuele.wepush.next.service.application.ProviderRegistry;
 import com.fangxuele.wepush.next.service.application.ArtifactApplicationService;
+import com.fangxuele.wepush.next.service.application.AgentApplicationService;
 import com.fangxuele.wepush.next.service.application.ArtifactStore;
 import com.fangxuele.wepush.next.service.application.AccountApplicationService;
 import com.fangxuele.wepush.next.service.application.AudienceApplicationService;
@@ -21,6 +23,7 @@ import com.fangxuele.wepush.next.service.application.SecretStore;
 import com.fangxuele.wepush.next.service.application.TransactionRunner;
 import com.fangxuele.wepush.next.service.domain.AccountRepository;
 import com.fangxuele.wepush.next.service.domain.ArtifactRepository;
+import com.fangxuele.wepush.next.service.domain.AgentRepository;
 import com.fangxuele.wepush.next.service.domain.AudienceRepository;
 import com.fangxuele.wepush.next.service.domain.JobRepository;
 import com.fangxuele.wepush.next.service.domain.MessageRepository;
@@ -31,6 +34,7 @@ import com.fangxuele.wepush.next.service.domain.WorkspaceRepository;
 import com.fangxuele.wepush.next.service.infrastructure.JacksonJsonCodec;
 import com.fangxuele.wepush.next.service.infrastructure.JdbcAccountRepository;
 import com.fangxuele.wepush.next.service.infrastructure.JdbcArtifactRepository;
+import com.fangxuele.wepush.next.service.infrastructure.JdbcAgentRepository;
 import com.fangxuele.wepush.next.service.infrastructure.JdbcAudienceRepository;
 import com.fangxuele.wepush.next.service.infrastructure.JdbcJobRepository;
 import com.fangxuele.wepush.next.service.infrastructure.JdbcMessageRepository;
@@ -94,6 +98,11 @@ class ServiceComposition {
     }
 
     @Bean
+    ObjectMapper objectMapper() {
+        return new ObjectMapper().findAndRegisterModules();
+    }
+
+    @Bean
     ResourceIdGenerator resourceIdGenerator() {
         return new UuidResourceIdGenerator();
     }
@@ -111,6 +120,11 @@ class ServiceComposition {
     @Bean
     AccountRepository accountRepository(JdbcTemplate jdbc, Flyway flyway) {
         return new JdbcAccountRepository(jdbc);
+    }
+
+    @Bean
+    AgentRepository agentRepository(JdbcTemplate jdbc, ObjectMapper mapper, Flyway flyway) {
+        return new JdbcAgentRepository(jdbc, mapper);
     }
 
     @Bean
@@ -252,6 +266,30 @@ class ServiceComposition {
             @Value("${wepush.artifact.export-retention:PT24H}") Duration exportRetention) {
         return new ArtifactApplicationService(runs, results, artifacts, store, ids,
                 transactions, json, events, clock, exportRetention);
+    }
+
+    @Bean
+    AgentApplicationService agentApplicationService(
+            AgentRepository agents, ResourceIdGenerator ids, TransactionRunner transactions, Clock clock,
+            @Value("${wepush.agent.grpc.heartbeat-interval:PT10S}") Duration heartbeatInterval,
+            @Value("${wepush.agent.grpc.maximum-message-bytes:1048576}") long maximumMessageBytes) {
+        return new AgentApplicationService(agents, ids, transactions, clock,
+                heartbeatInterval, maximumMessageBytes);
+    }
+
+    @Bean
+    AgentControlGrpcService agentControlGrpcService(AgentApplicationService agents) {
+        return new AgentControlGrpcService(agents);
+    }
+
+    @Bean
+    AgentGrpcServer agentGrpcServer(
+            AgentControlGrpcService service,
+            @Value("${wepush.agent.grpc.address:127.0.0.1}") String address,
+            @Value("${wepush.agent.grpc.port:19090}") int port,
+            @Value("${wepush.agent.grpc.token:}") String token,
+            @Value("${wepush.agent.grpc.maximum-message-bytes:1048576}") long maximumMessageBytes) {
+        return new AgentGrpcServer(address, port, token, maximumMessageBytes, service);
     }
 
     @Bean

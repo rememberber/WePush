@@ -107,4 +107,17 @@ public final class ControlPlaneApi {
 
     public record ArtifactCleanupResponse(int claimed, int deleted, int failed) {
     }
+
+    public record AgentProviderResponse(String providerId, String implementationVersion,
+                                        int spiMajor, int maximumConcurrency) {
+    }
+
+    public record AgentResponse(String id, String status, String agentVersion, int protocolVersion,
+                                String operatingSystem, String architecture, String javaVersion,
+                                int maximumRuns, int activeRuns, int availableRuns,
+                                List<AgentProviderResponse> providers, String sessionId,
+                                long lastAgentSequence, long lastServiceSequence,
+                                Instant connectedAt, Instant lastSeenAt, Instant disconnectedAt,
+                                long version, Map<String, String> links) {
+    }
 }

@@ -30,3 +30,10 @@ wepush:
     export-retention: ${WEPUSH_EXPORT_RETENTION:PT24H}
     retention-initial-delay: ${WEPUSH_RETENTION_INITIAL_DELAY:PT1M}
     retention-interval: ${WEPUSH_RETENTION_INTERVAL:PT1H}
+  agent:
+    grpc:
+      address: ${WEPUSH_AGENT_GRPC_ADDRESS:127.0.0.1}
+      port: ${WEPUSH_AGENT_GRPC_PORT:19090}
+      token: ${WEPUSH_AGENT_GRPC_TOKEN:}
+      heartbeat-interval: ${WEPUSH_AGENT_HEARTBEAT_INTERVAL:PT10S}
+      maximum-message-bytes: ${WEPUSH_AGENT_MAXIMUM_MESSAGE_BYTES:1048576}

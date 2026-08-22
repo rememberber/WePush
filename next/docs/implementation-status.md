@@ -9,7 +9,8 @@
 ```text
 React / Electron / Java SDK
           ↓ HTTP + SSE
-Spring Boot Service API
+Spring Boot Service API ←── gRPC 双向控制流 ──→ Remote Agent
+                                                  （Hello / Heartbeat / Reconnect）
           ↓ 应用事务
 SQLite + Flyway ─── Artifact Metadata ─── Local File Artifact Store
           ↓ Run Snapshot
@@ -45,6 +46,9 @@ HTTP Provider（支持 Dry Run）
 - 定时保留任务回收过期且未 Pin/Legal Hold 的 Artifact；删除幂等，失败记录状态并允许后续重试。
 - Message Revision、Audience Snapshot、Run Snapshot 创建后不可变。
 - 应用服务显式持有事务边界，Repository 不自行提交。
+- Agent 注册表持久化会话、平台、Provider 能力、容量、双向 Sequence 与最后心跳。
+- 独立 gRPC Server 默认绑定 `127.0.0.1:19090`；非回环绑定强制 Bootstrap Token，静默超过三个心跳周期自动标记离线。
+- 同一 Agent 的新连接会替换旧连接，旧会话后续写入由 Session ID Fence 拒绝。
 
 ### 2.3 公开 API
 
@@ -56,8 +60,9 @@ HTTP Provider（支持 Dry Run）
 - Secret 写入/元数据 API；读取接口永不返回明文。
 - Run Item Result 分页 API，以及暂停、恢复、取消和动态并发命令 API。
 - 终态 Run 的脱敏 Item Result CSV 导出、Artifact 元数据、完整/Range 下载及保留清理 API。
+- Agent 列表和详情 API，返回会话、平台、执行容量、Provider 能力和连接状态。
 - 统一 `application/problem+json` 错误响应和稳定错误码。
-- OpenAPI 3.1 契约以 26 个 Path 覆盖当前公开控制面。
+- OpenAPI 3.1 契约以 28 个 Path 覆盖当前公开控制面。
 
 ### 2.4 Standalone 执行
 
@@ -74,6 +79,7 @@ HTTP Provider（支持 Dry Run）
 
 - Java SDK 只依赖 Service API DTO 和 HTTP，不依赖 Core/Engine。
 - Java SDK 已增加 Workspace 控制面、Secret、结果分页、Artifact 流式下载、幂等 Run 创建和运行命令客户端。
+- Java SDK 提供独立 `AgentsClient`，仍不依赖 Core 或 Engine。
 - TypeScript API Client 已覆盖 Account、Message、Audience、Job、Run、Secret、结果、Artifact 和命令。
 - React WebUI 与 Electron 共享 Feature/UI 包。
 - Provider Schema 可视化配置可以直接保存 Account。
@@ -81,6 +87,16 @@ HTTP Provider（支持 Dry Run）
 - 消息、受众和 Job 页面均接入真实创建/列表 API，Job 可直接发起 Dry Run。
 - 运行中心轮询 Run 状态，使用 SSE 展示持久化/实时事件，并显示 Item Result、实时命令控制条和 CSV Artifact 导出/下载卡片。
 - API 文档页加载当前 OpenAPI，并可动态调试主要 GET API。
+- Agent 页面轮询真实注册表，以接近 Codex 客户端的紧凑布局展示在线状态、容量、Sequence、平台和 Provider 能力。
+
+### 2.6 Agent 控制面
+
+- `agent_control_v1.proto` 生成 Java Protobuf DTO 和 `AgentControlService.Connect` 双向流 Stub。
+- Agent 主动出站连接 Service，Hello 协商协议 v1，Welcome 下发心跳周期、消息上限和 Service Sequence。
+- Agent 按 Welcome 周期发送 Heartbeat，断线后以 1 秒至 30 秒指数退避并加入随机抖动重连。
+- Agent 的双向 Sequence 和 Lease Fence 使用原子替换的本地文件 Journal 持久化，进程重启后延续。
+- gRPC Server 与 Client 均设置消息上限、Keepalive 和超时；Bootstrap Token 通过固定时间比较校验。
+- 当前里程碑完成的是注册、会话、心跳、离线检测和管理可视化；Lease Offer、远端执行和事件批次仍由后续里程碑接通。
 
 ## 3. 当前数据库表
 
@@ -98,6 +114,7 @@ HTTP Provider（支持 Dry Run）
 | `run_item_result` | Item 最终结果、尝试数、Provider 摘要和完成时间 |
 | `run_command` | 幂等运行命令、处理状态和确认结果 |
 | `artifact_record` | Artifact 状态、文件定位、校验值、保留期和保护标记 |
+| `agent_registration` | Agent 会话、能力、容量、双向 Sequence 和心跳状态 |
 | `flyway_schema_history` | 数据库迁移历史 |
 
 ## 4. 已验证行为
@@ -114,6 +131,8 @@ HTTP Provider（支持 Dry Run）
 - 终态 Run 结果 CSV 流式生成、重复请求复用、SHA-256、完整/Range 下载以及过期清理通过验证。
 - 本地 Artifact 文件路径穿越防护、原子写入、`0600` 权限和幂等删除通过单元测试。
 - pnpm 类型检查、Vitest、Vite Web 构建和 Electron TypeScript 构建。
+- 真实 gRPC 双向流完成 Token 认证、Hello/Welcome、Heartbeat、HTTP 查询 ONLINE，以及流关闭后 OFFLINE 的端到端验证。
+- Protobuf 与领域帧双向映射、Agent 文件 Journal 原子持久化通过单元测试。
 
 ## 5. 下一阶段边界
 
@@ -123,7 +142,8 @@ HTTP Provider（支持 Dry Run）
 - Server 模式的 S3-compatible Artifact Store、Presigned/Multipart 上传，以及完整 Provider 响应体的 7 天策略。
 - Message、Audience 和 Job 的编辑、修订对比、CSV 导入和正式发送确认体验。
 - API 文档页面的通用 POST/PUT/PATCH 请求编辑器。
-- Agent gRPC 控制流、租约与远端执行；当前执行器是 Standalone Embedded 模式。
+- Agent Lease Offer/Ack、Artifact 下载、远端 Engine 执行、Event Batch/Command Ack 和 Run Summary；当前 gRPC 已完成连接与心跳，Run 执行仍是 Standalone Embedded 模式。
+- Agent 正式 Enrollment、证书轮换与 mTLS；当前 Token 只作为本地/Bootstrap 安全机制。
 - PostgreSQL Server 模式、多实例调度、Outbox 和高可用。
 - 身份认证、RBAC、审计事件及正式多 Workspace 管理 API。
 - Provider 插件目录监听、子进程隔离、签名校验和热切换。

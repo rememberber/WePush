@@ -11,6 +11,7 @@ public final class WePushClient implements AutoCloseable {
     private final HttpTransport transport;
     private final SystemClient system;
     private final ProvidersClient providers;
+    private final AgentsClient agents;
 
     private WePushClient(Builder builder) {
         HttpClient httpClient = HttpClient.newBuilder()
@@ -27,6 +28,7 @@ public final class WePushClient implements AutoCloseable {
                 builder.retryPolicy);
         this.system = new SystemClient(transport);
         this.providers = new ProvidersClient(transport);
+        this.agents = new AgentsClient(transport);
     }
 
     public static Builder builder() {
@@ -39,6 +41,10 @@ public final class WePushClient implements AutoCloseable {
 
     public ProvidersClient providers() {
         return providers;
+    }
+
+    public AgentsClient agents() {
+        return agents;
     }
 
     public WorkspaceClient workspace(String workspaceId) {

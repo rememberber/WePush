@@ -8,6 +8,7 @@ servers:
 tags:
   - {name: System}
   - {name: Providers}
+  - {name: Agents}
   - {name: Accounts}
   - {name: Secrets}
   - {name: Messages}
@@ -55,6 +56,29 @@ paths:
           content:
             application/schema+json:
               schema: {type: object}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /api/v1/agents:
+    get:
+      operationId: listAgents
+      tags: [Agents]
+      responses:
+        '200':
+          description: Registered Agent sessions and their current heartbeat state
+          content:
+            application/json:
+              schema: {type: array, items: {$ref: '#/components/schemas/Agent'}}
+  /api/v1/agents/{agentId}:
+    get:
+      operationId: getAgent
+      tags: [Agents]
+      parameters:
+        - {name: agentId, in: path, required: true, schema: {type: string}}
+      responses:
+        '200':
+          description: Agent session, capacity and Provider capabilities
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Agent'}
         '404': {$ref: '#/components/responses/NotFound'}
   /api/v1/workspaces/{workspaceId}/accounts:
     parameters:
@@ -594,6 +618,39 @@ components:
             accountSchema: {type: string}
             messageSchema: {type: string}
             recipientSchema: {type: string}
+    AgentProvider:
+      type: object
+      required: [providerId, implementationVersion, spiMajor, maximumConcurrency]
+      properties:
+        providerId: {type: string}
+        implementationVersion: {type: string}
+        spiMajor: {type: integer, minimum: 1}
+        maximumConcurrency: {type: integer, minimum: 1}
+    Agent:
+      type: object
+      required: [id, status, agentVersion, protocolVersion, operatingSystem, architecture, javaVersion,
+                 maximumRuns, activeRuns, availableRuns, providers, sessionId, lastAgentSequence,
+                 lastServiceSequence, connectedAt, lastSeenAt, version, links]
+      properties:
+        id: {type: string}
+        status: {type: string, enum: [ONLINE, DRAINING, DEGRADED, OFFLINE]}
+        agentVersion: {type: string}
+        protocolVersion: {type: integer, minimum: 1}
+        operatingSystem: {type: string}
+        architecture: {type: string}
+        javaVersion: {type: string}
+        maximumRuns: {type: integer, minimum: 1}
+        activeRuns: {type: integer, minimum: 0}
+        availableRuns: {type: integer, minimum: 0}
+        providers: {type: array, items: {$ref: '#/components/schemas/AgentProvider'}}
+        sessionId: {type: string}
+        lastAgentSequence: {type: integer, format: int64, minimum: 1}
+        lastServiceSequence: {type: integer, format: int64, minimum: 1}
+        connectedAt: {type: string, format: date-time}
+        lastSeenAt: {type: string, format: date-time}
+        disconnectedAt: {type: [string, 'null'], format: date-time}
+        version: {type: integer, format: int64, minimum: 0}
+        links: {type: object, additionalProperties: {type: string}}
     CreateAccount:
       type: object
       required: [name, providerId, providerVersion, configuration]

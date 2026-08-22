@@ -22,6 +22,7 @@ Service 默认只监听 `127.0.0.1:18990`。启动后可访问：
 - `http://127.0.0.1:18990/actuator/health`
 - `http://127.0.0.1:18990/api/v1/system/info`
 - `http://127.0.0.1:18990/api/v1/providers`
+- `http://127.0.0.1:18990/api/v1/agents`
 - `http://127.0.0.1:18990/openapi.yaml`
 
 Standalone 数据默认保存到 `.local/data/wepush-next.db`，可通过 `WEPUSH_DATABASE_PATH` 指定其他位置。Service 首次启动会运行 Flyway 迁移并创建 `ws_default` 工作区。
@@ -41,7 +42,7 @@ pnpm dev
 
 WebUI 默认运行在 `http://127.0.0.1:5173`，开发代理连接本地 Service。界面、API Client、Schema Renderer、设计 Token 与 Electron Desktop 外壳均在同一个 pnpm Workspace 内。
 
-## 验证 Agent 可执行包
+## 启动 Agent
 
 ```bash
 cd next
@@ -49,7 +50,17 @@ cd next
 java -jar agent/agent-app/target/wepush-next-agent.jar
 ```
 
-当前 Agent 包会验证 Provider 发现、能力清单和 Hello/Sequence Journal 基线；正式 gRPC Transport 将在远程 Agent 迭代中接入同一 Runtime。
+Agent 默认主动连接 `127.0.0.1:19090` 的 gRPC 双向控制流，发送 Hello 和周期心跳，断线后使用带抖动的指数退避重连；Sequence 与 Lease Fence Journal 默认保存在 `.local/agent/agent-state.properties`。
+
+常用环境变量：
+
+- `WEPUSH_AGENT_ID`：稳定 Agent 身份，默认 `local-agent`。
+- `WEPUSH_SERVICE_HOST` / `WEPUSH_AGENT_GRPC_PORT`：Service gRPC 地址，默认 `127.0.0.1:19090`。
+- `WEPUSH_AGENT_GRPC_TOKEN`：Agent 与 Service 共享的 Bootstrap Token。
+- `WEPUSH_AGENT_GRPC_PLAINTEXT`：本地开发默认 `true`；远端部署应关闭并使用 TLS。
+- `WEPUSH_AGENT_STATE_PATH`：Agent Journal 文件位置。
+
+Service 的 gRPC 端口默认只绑定回环地址。通过 `WEPUSH_AGENT_GRPC_ADDRESS` 暴露到非回环地址时，必须同时设置 `WEPUSH_AGENT_GRPC_TOKEN`，否则 Service 拒绝启动。正式生产身份基线仍是 ADR 规定的 mTLS，当前 Token 是 Bootstrap/首期部署机制。
 
 ## Java SDK
 
@@ -61,6 +72,7 @@ try (var client = WePushClient.builder()
         .build()) {
     var system = client.system().info();
     var providers = client.providers().list();
+    var agents = client.agents().list();
     var workspace = client.workspace("ws_default");
     var runs = workspace.runs();
     var artifacts = workspace.runArtifacts(runs.getFirst().id());
@@ -70,8 +82,8 @@ try (var client = WePushClient.builder()
 ## 当前开发基线
 
 - Core API、Provider SPI、虚拟线程 Engine 与 HTTP Provider。
-- Agent Protocol、Sequence/Fencing Runtime 与可执行 Agent 包。
-- Service 分层、SQLite/Flyway、控制面 CRUD、信封加密 Secret Store、Result/Command/Artifact 持久化、本地 Artifact Store、Run 幂等创建、SSE 与内嵌执行器。
+- Agent Protocol、Protobuf/gRPC 双向控制流、Sequence/Fencing Runtime、持久 Journal 与常驻 Agent 包。
+- Service 分层、SQLite/Flyway、控制面 CRUD、Agent 注册/心跳、信封加密 Secret Store、Result/Command/Artifact 持久化、本地 Artifact Store、Run 幂等创建、SSE 与内嵌执行器。
 - 独立远程 Java SDK 和 TypeScript API Client。
 - React WebUI、可视化 Account/Message/Audience/Job 创建闭环、可控制运行中心、动态 API 文档、Electron 安全外壳和共享前端 packages。
 - 架构、单元、契约、Service 冒烟与 Account→Run→Engine→Provider 纵向测试。

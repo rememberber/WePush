@@ -20,6 +20,35 @@ export interface ProviderSummary {
   links: ProviderLinks;
 }
 
+export interface AgentProvider {
+  providerId: string;
+  implementationVersion: string;
+  spiMajor: number;
+  maximumConcurrency: number;
+}
+
+export interface Agent {
+  id: string;
+  status: "ONLINE" | "DRAINING" | "DEGRADED" | "OFFLINE";
+  agentVersion: string;
+  protocolVersion: number;
+  operatingSystem: string;
+  architecture: string;
+  javaVersion: string;
+  maximumRuns: number;
+  activeRuns: number;
+  availableRuns: number;
+  providers: AgentProvider[];
+  sessionId: string;
+  lastAgentSequence: number;
+  lastServiceSequence: number;
+  connectedAt: string;
+  lastSeenAt: string;
+  disconnectedAt?: string;
+  version: number;
+  links: Record<string, string>;
+}
+
 export interface HealthResponse {
   status: string;
 }
@@ -193,6 +222,14 @@ export class WePushClient {
 
   providers(signal?: AbortSignal): Promise<ProviderSummary[]> {
     return this.getJson<ProviderSummary[]>("/api/v1/providers", signal);
+  }
+
+  agents(signal?: AbortSignal): Promise<Agent[]> {
+    return this.getJson<Agent[]>("/api/v1/agents", signal);
+  }
+
+  agent(agentId: string, signal?: AbortSignal): Promise<Agent> {
+    return this.getJson<Agent>(`/api/v1/agents/${pathId(agentId)}`, signal);
   }
 
   accounts(workspaceId = "ws_default", signal?: AbortSignal): Promise<Account[]> {

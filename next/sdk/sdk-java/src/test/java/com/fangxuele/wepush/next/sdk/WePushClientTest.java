@@ -72,6 +72,31 @@ class WePushClientTest {
     }
 
     @Test
+    void listsAgentsThroughDedicatedSdkSurface() throws IOException {
+        server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        server.createContext("/api/v1/agents", exchange -> {
+            byte[] body = """
+                    [{"id":"agent_1","status":"ONLINE","agentVersion":"0.1.0","protocolVersion":1,
+                    "operatingSystem":"Linux","architecture":"amd64","javaVersion":"21",
+                    "maximumRuns":4,"activeRuns":1,"availableRuns":3,"providers":[],
+                    "sessionId":"session_1","lastAgentSequence":2,"lastServiceSequence":1,
+                    "connectedAt":"2026-08-22T10:00:00Z","lastSeenAt":"2026-08-22T10:00:01Z",
+                    "disconnectedAt":null,"version":1,"links":{"self":"/api/v1/agents/agent_1"}}]
+                    """.getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().add("Content-Type", "application/json");
+            exchange.sendResponseHeaders(200, body.length);
+            exchange.getResponseBody().write(body);
+            exchange.close();
+        });
+        server.start();
+
+        try (WePushClient client = WePushClient.builder()
+                .endpoint(URI.create("http://127.0.0.1:" + server.getAddress().getPort())).build()) {
+            assertEquals("agent_1", client.agents().list().getFirst().id());
+        }
+    }
+
+    @Test
     void createsRunThroughRemoteApiWithoutDependingOnCore() throws IOException {
         server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         AtomicReference<String> idempotencyKey = new AtomicReference<>();

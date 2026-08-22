@@ -41,6 +41,8 @@
         <jackson.version>2.22.2</jackson.version>
         <archunit.version>1.5.0</archunit.version>
         <spring-boot.version>4.1.1</spring-boot.version>
+        <grpc.version>1.83.1</grpc.version>
+        <protoc.version>3.25.8</protoc.version>
     </properties>
 
     <dependencyManagement>
@@ -63,6 +65,13 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-bom</artifactId>
+                <version>${grpc.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
