@@ -70,7 +70,9 @@ WEPUSH_AGENT_PUBLIC_BASE_URL=http://127.0.0.1:18990 \
 java -jar service/service-app/target/wepush-next-service.jar
 ```
 
-远端模式会按 Provider ID/版本和可用容量选择在线 Agent，持久化带 Epoch/Fencing Token 的 Lease。Agent 校验冻结 Execution Spec 与 Audience 的 SHA-256 后 ACK，随后使用同一 Core Engine 执行，并经 gRPC 回传事件、Item Result、命令确认和 Run Summary。当前加密 Secret Envelope 仍在后续安全里程碑中，因此远端模式现阶段只支持不读取 Secret 的 Provider 配置（包括 HTTP Provider Dry Run 和 `auth.type=NONE`）；不会把 Secret 降级为明文下发。
+远端模式会按 Provider ID/版本和可用容量选择在线 Agent，持久化带 Epoch/Fencing Token 的 Lease。Agent 校验冻结 Execution Spec 与 Audience 的 SHA-256 后 ACK，随后使用同一 Core Engine 执行，并经 gRPC 回传事件、Item Result、命令确认和 Run Summary。
+
+需要 Secret 的远端 Run 会使用 Agent 在 Hello 中发布的会话级 X25519 公钥。Service 只解析冻结配置中实际引用的最小 Secret 集，使用一次性 X25519、HKDF-SHA-256 和 AES-256-GCM 加密，并绑定 Agent、Run、Lease、Epoch、Fencing Token 与过期时间。Agent 仅在内存中解密，运行结束立即清零，不写入 Journal。正式跨主机部署仍应关闭明文 gRPC 并配置 TLS；Secret Envelope 不替代 Agent 身份认证和传输层安全。
 
 ## Java SDK
 
@@ -92,7 +94,7 @@ try (var client = WePushClient.builder()
 ## 当前开发基线
 
 - Core API、Provider SPI、虚拟线程 Engine 与 HTTP Provider。
-- Agent Protocol、Protobuf/gRPC 双向控制流、Sequence/Fencing Runtime、持久 Journal、远端 Core 执行适配与常驻 Agent 包。
+- Agent Protocol、Protobuf/gRPC 双向控制流、Sequence/Fencing Runtime、持久 Journal、加密 Secret Envelope、远端 Core 执行适配与常驻 Agent 包。
 - Service 分层、SQLite/Flyway、控制面 CRUD、Agent 注册/心跳/持久 Lease、信封加密 Secret Store、Result/Command/Artifact 持久化、本地 Artifact Store、Run 幂等创建、SSE，以及可切换的内嵌/远端执行器。
 - 独立远程 Java SDK 和 TypeScript API Client。
 - React WebUI、可视化 Account/Message/Audience/Job 创建闭环、可控制运行中心、动态 API 文档、Electron 安全外壳和共享前端 packages。

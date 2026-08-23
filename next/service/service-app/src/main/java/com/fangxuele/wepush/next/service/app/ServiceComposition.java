@@ -302,13 +302,13 @@ class ServiceComposition {
     RemoteRunCoordinator remoteRunCoordinator(
             RunRepository runs, RunResultRepository results, AudienceRepository audiences,
             AgentRepository agents, AgentLeaseRepository leases, AgentControlGateway gateway,
-            JsonCodec json, ResourceIdGenerator ids, TransactionRunner transactions,
+            SecretStore secrets, JsonCodec json, ResourceIdGenerator ids, TransactionRunner transactions,
             LocalRunEventHub events, Clock clock,
             @Value("${wepush.agent.public-base-url:http://127.0.0.1:18990}") String publicBaseUrl,
             @Value("${wepush.agent.lease-offer-ttl:PT1M}") Duration offerTtl,
             @Value("${wepush.agent.recovery-grace:PT30S}") Duration recoveryGrace) {
         return new RemoteRunCoordinator(runs, results, audiences, agents, leases, gateway,
-                json, ids, transactions, events, clock, publicBaseUrl, offerTtl, recoveryGrace);
+                secrets, json, ids, transactions, events, clock, publicBaseUrl, offerTtl, recoveryGrace);
     }
 
     @Bean

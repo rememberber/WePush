@@ -5,6 +5,7 @@ import com.fangxuele.wepush.next.agent.protocol.AgentFrames;
 import com.fangxuele.wepush.next.agent.protocol.AgentId;
 import com.fangxuele.wepush.next.agent.protocol.LeaseFence;
 import com.fangxuele.wepush.next.agent.protocol.RemoteRunDocuments;
+import com.fangxuele.wepush.next.agent.protocol.SecretEnvelopeCodec;
 import com.fangxuele.wepush.next.agent.runtime.AgentJournal;
 import com.fangxuele.wepush.next.agent.runtime.AgentJournalState;
 import com.fangxuele.wepush.next.agent.runtime.AgentRuntime;
@@ -27,8 +28,10 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -99,6 +102,73 @@ class RemoteAgentRunExecutorTest {
                     .allMatch(value -> "SUCCEEDED".equals(value.state())));
             assertEquals(2, reports.stream().filter(value -> "RESULTS".equals(value.kind()))
                     .flatMap(value -> value.results().stream()).count());
+        } finally {
+            server.stop(0);
+        }
+    }
+
+    @Test
+    void decryptsLeaseBoundSecretInMemoryForRealProviderExecution() throws Exception {
+        HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        AtomicReference<String> authorization = new AtomicReference<>();
+        server.createContext("/notify", exchange -> {
+            authorization.set(exchange.getRequestHeaders().getFirst("Authorization"));
+            exchange.sendResponseHeaders(204, -1);
+            exchange.close();
+        });
+        int port = server.getAddress().getPort();
+        Instant createdAt = Instant.now();
+        RemoteRunDocuments.ExecutionSpec spec = new RemoteRunDocuments.ExecutionSpec(
+                "run_secret", "ws_default", "wepush.http", "0.1.0",
+                "{\"baseUrl\":\"http://127.0.0.1:%d\",\"allowPrivateAddresses\":true,"
+                        .formatted(port)
+                        + "\"auth\":{\"type\":\"BEARER\",\"secret\":{"
+                        + "\"namespace\":\"http\",\"name\":\"authorization\",\"version\":\"v1\"}}}",
+                "{\"method\":\"POST\",\"path\":\"/notify\",\"bodyTemplate\":\"{}\"}",
+                "{\"concurrency\":{\"minimum\":1,\"target\":1,\"maximum\":1}}",
+                Map.of(), false, createdAt);
+        RemoteRunDocuments.Audience audience = new RemoteRunDocuments.Audience(List.of(
+                new RemoteRunDocuments.Recipient(0, "alice", "{\"mobile\":\"13000000000\"}")));
+        byte[] specBytes = json.writeValueAsBytes(spec);
+        byte[] audienceBytes = json.writeValueAsBytes(audience);
+        server.createContext("/spec-secret", exchange -> respond(exchange, specBytes));
+        server.createContext("/audience-secret", exchange -> respond(exchange, audienceBytes));
+        server.start();
+
+        InMemoryJournal journal = new InMemoryJournal();
+        LeaseFence fence = new LeaseFence("lease_secret", "run_secret", 2, "secret-fence-token");
+        BlockingQueue<AgentFrames.AgentToService> outbound = new LinkedBlockingQueue<>();
+        try (AgentRuntime runtime = new AgentRuntime(new AgentId("test-agent"), "test", 1,
+                new DefaultExecutionEngine(List.of(new HttpProviderFactory())), journal);
+             RemoteAgentRunExecutor executor = new RemoteAgentRunExecutor("test-agent", runtime, json, "")) {
+            SecretEnvelopeCodec codec = new SecretEnvelopeCodec();
+            Instant expiresAt = Instant.now().plusSeconds(60);
+            byte[] envelope;
+            try (SecretEnvelopeCodec.SecretMaterial secret = new SecretEnvelopeCodec.SecretMaterial(
+                    "http", "authorization", "v1", "agent-token".getBytes(StandardCharsets.UTF_8))) {
+                envelope = codec.seal("test-agent", fence, expiresAt,
+                        executor.secretEncryptionPublicKey(), List.of(secret));
+            }
+            assertFalse(new String(envelope, StandardCharsets.ISO_8859_1).contains("agent-token"));
+            AgentFrames.LeaseOffer offer = new AgentFrames.LeaseOffer(fence, expiresAt,
+                    "http://127.0.0.1:" + port + "/spec-secret", sha256(specBytes),
+                    "http://127.0.0.1:" + port + "/audience-secret", sha256(audienceBytes), envelope);
+            assertEquals(com.fangxuele.wepush.next.agent.runtime.InboundSequenceResult.ACCEPTED,
+                    runtime.accept(new AgentFrames.ServiceToAgent(1, offer)));
+            executor.offer(offer, outbound::add);
+
+            AgentFrames.RunCompleted completed = null;
+            long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+            while (completed == null && System.nanoTime() < deadline) {
+                AgentFrames.AgentToService frame = outbound.poll(200, TimeUnit.MILLISECONDS);
+                if (frame != null && frame.payload() instanceof AgentFrames.RunCompleted value) {
+                    completed = value;
+                }
+            }
+            assertNotNull(completed, "Agent did not report encrypted-secret run completion");
+            assertEquals("SUCCEEDED", json.readValue(completed.summary(),
+                    RemoteRunDocuments.Summary.class).finalState());
+            assertEquals("Bearer agent-token", authorization.get());
         } finally {
             server.stop(0);
         }

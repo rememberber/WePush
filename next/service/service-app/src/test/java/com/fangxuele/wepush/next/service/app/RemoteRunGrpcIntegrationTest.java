@@ -7,6 +7,7 @@ import com.fangxuele.wepush.next.agent.protocol.AgentId;
 import com.fangxuele.wepush.next.agent.protocol.AgentProtoMapper;
 import com.fangxuele.wepush.next.agent.protocol.ProviderCapability;
 import com.fangxuele.wepush.next.agent.protocol.RemoteRunDocuments;
+import com.fangxuele.wepush.next.agent.protocol.SecretEnvelopeCodec;
 import com.fangxuele.wepush.next.agent.protocol.v1.AgentControlServiceGrpc;
 import com.fangxuele.wepush.next.agent.protocol.v1.AgentToService;
 import com.fangxuele.wepush.next.agent.protocol.v1.ServiceToAgent;
@@ -30,6 +31,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.security.MessageDigest;
+import java.security.KeyPair;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +43,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -111,16 +114,36 @@ class RemoteRunGrpcIntegrationTest {
             });
 
             AgentId agentId = new AgentId("remote-integration-agent");
+            SecretEnvelopeCodec secretEnvelopes = new SecretEnvelopeCodec();
+            KeyPair agentSecretKey = secretEnvelopes.generateRecipientKeyPair();
             requests.onNext(AgentProtoMapper.toProto(new AgentFrames.AgentToService(agentId, 1,
                     new AgentFrames.Hello("0.1.0-test", 1, 1, "TestOS", "amd64", "21",
                             2, 0, 0, List.of(new ProviderCapability(
-                            "wepush.http", "0.1.0", 1, 32))))));
+                            "wepush.http", "0.1.0", 1, 32)),
+                            secretEnvelopes.encodePublicKey(agentSecretKey.getPublic())))));
             assertTrue(welcomed.await(5, TimeUnit.SECONDS));
+            assertEquals(secretEnvelopes.encodePublicKey(agentSecretKey.getPublic()),
+                    jdbc.queryForObject("SELECT secret_encryption_public_key FROM agent_registration WHERE id = ?",
+                            String.class, agentId.value()));
 
             String runId = createRemoteRun();
             AgentFrames.LeaseOffer offer = offers.poll(5, TimeUnit.SECONDS);
             assertNotNull(offer, "Service did not offer the pending run");
             assertEquals(runId, offer.fence().runId());
+            assertTrue(offer.secretEnvelope().length > 0);
+            assertFalse(new String(offer.secretEnvelope(), StandardCharsets.ISO_8859_1)
+                    .contains("must-not-leak"));
+            try (SecretEnvelopeCodec.OpenedSecrets opened = secretEnvelopes.open(
+                    agentId.value(), offer.fence(), offer.expiresAt(), Instant.now(),
+                    agentSecretKey.getPrivate(), offer.secretEnvelope())) {
+                assertEquals(1, opened.secrets().size());
+                byte[] clear = opened.secrets().getFirst().copyValue();
+                try {
+                    assertEquals("Bearer must-not-leak", new String(clear, StandardCharsets.UTF_8));
+                } finally {
+                    java.util.Arrays.fill(clear, (byte) 0);
+                }
+            }
 
             HttpResponse<byte[]> unauthorized = http.send(HttpRequest.newBuilder(
                     uri("/internal/agent/v1/leases/" + offer.fence().leaseId() + "/execution-spec"))
@@ -190,9 +213,12 @@ class RemoteRunGrpcIntegrationTest {
     }
 
     private String createRemoteRun() throws Exception {
+        accepted(put("/api/v1/workspaces/ws_default/secrets/http/authorization/versions/v1",
+                "{\"value\":\"Bearer must-not-leak\"}"), 200);
         JsonNode account = accepted(post("/api/v1/workspaces/ws_default/accounts", """
                 {"name":"Remote HTTP","providerId":"wepush.http","providerVersion":"0.1.0",
-                 "configuration":{"baseUrl":"https://example.com","auth":{"type":"NONE"}}}
+                 "configuration":{"baseUrl":"https://example.com","auth":{"type":"BEARER",
+                 "secret":{"namespace":"http","name":"authorization","version":"v1"}}}}
                 """, null), 201);
         JsonNode message = accepted(post("/api/v1/workspaces/ws_default/messages", """
                 {"name":"Remote message","providerId":"wepush.http","providerVersion":"0.1.0",
@@ -257,6 +283,13 @@ class RemoteRunGrpcIntegrationTest {
 
     private HttpResponse<String> get(String path) throws Exception {
         return http.send(HttpRequest.newBuilder(uri(path)).GET().build(),
+                HttpResponse.BodyHandlers.ofString());
+    }
+
+    private HttpResponse<String> put(String path, String body) throws Exception {
+        return http.send(HttpRequest.newBuilder(uri(path))
+                        .header("Content-Type", "application/json")
+                        .PUT(HttpRequest.BodyPublishers.ofString(body)).build(),
                 HttpResponse.BodyHandlers.ofString());
     }
 

@@ -115,7 +115,8 @@ final class GrpcAgentClient implements AutoCloseable {
 
         StreamObserver<AgentToService> request = stub.connect(responses);
         requests.set(request);
-        send(request, AgentProtoMapper.toProto(runtime.hello(capabilities)), sendLock);
+        send(request, AgentProtoMapper.toProto(
+                runtime.hello(capabilities, remoteRuns.secretEncryptionPublicKey())), sendLock);
         try {
             ended.await();
         } catch (InterruptedException interrupted) {

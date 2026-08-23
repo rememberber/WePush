@@ -56,7 +56,7 @@ public final class WePushNextAgentApplication {
              GrpcAgentClient client = new GrpcAgentClient(
                      serviceHost, servicePort, plaintext, token, 1_048_576);
              RemoteAgentRunExecutor remoteRuns = new RemoteAgentRunExecutor(
-                     runtime, new ObjectMapper().findAndRegisterModules(), token)) {
+                     configuredId, runtime, new ObjectMapper().findAndRegisterModules(), token)) {
             System.out.printf(
                     "WePush Next Agent starting: id=%s service=%s:%d providers=%d maximumRuns=%d%n",
                     configuredId, serviceHost, servicePort, capabilities.size(), maximumRuns);

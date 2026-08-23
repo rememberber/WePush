@@ -12,7 +12,8 @@ class AgentProtoMapperTest {
     void roundTripsHelloHeartbeatAndWelcomeFrames() {
         AgentFrames.AgentToService hello = new AgentFrames.AgentToService(new AgentId("agent_1"), 7,
                 new AgentFrames.Hello("0.1.0", 1, 1, "Linux", "amd64", "21", 4, 3, 6,
-                        List.of(new ProviderCapability("wepush.http", "0.1.0", 1, 32))));
+                        List.of(new ProviderCapability("wepush.http", "0.1.0", 1, 32)),
+                        "x25519-public-key"));
         AgentFrames.AgentToService heartbeat = new AgentFrames.AgentToService(new AgentId("agent_1"), 8,
                 new AgentFrames.Heartbeat("READY", 1, 3,
                         List.of(new LeaseFence("lease_1", "run_1", 2, "secret-fence"))));

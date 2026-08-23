@@ -57,7 +57,8 @@ public final class AgentApplicationService {
         AgentRegistration registration = new AgentRegistration(frame.agentId().value(),
                 AgentRegistration.Status.ONLINE, hello.agentVersion(), PROTOCOL_VERSION,
                 hello.operatingSystem(), hello.architecture(), hello.javaVersion(), hello.maximumRuns(),
-                0, hello.maximumRuns(), providers, sessionId, frame.sequence(), serviceSequence,
+                0, hello.maximumRuns(), providers, hello.secretEncryptionPublicKey(), sessionId,
+                frame.sequence(), serviceSequence,
                 now, now, null, existing == null ? 0 : existing.version() + 1);
         transactions.required(() -> agents.connect(registration));
         AgentFrames.Welcome welcome = new AgentFrames.Welcome(PROTOCOL_VERSION, now,

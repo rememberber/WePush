@@ -63,6 +63,11 @@ public final class AgentRuntime implements AutoCloseable {
     }
 
     public synchronized AgentFrames.AgentToService hello(List<ProviderCapability> providers) {
+        return hello(providers, "");
+    }
+
+    public synchronized AgentFrames.AgentToService hello(
+            List<ProviderCapability> providers, String secretEncryptionPublicKey) {
         AgentFrames.Hello hello = new AgentFrames.Hello(
                 agentVersion,
                 1,
@@ -73,7 +78,8 @@ public final class AgentRuntime implements AutoCloseable {
                 maximumRuns,
                 lastServiceSequence,
                 lastAgentSequence,
-                providers);
+                providers,
+                secretEncryptionPublicKey);
         return next(hello);
     }
 

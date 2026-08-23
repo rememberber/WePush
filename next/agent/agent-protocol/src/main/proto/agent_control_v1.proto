@@ -48,6 +48,7 @@ message Hello {
   uint64 last_service_sequence = 8;
   uint64 last_agent_sequence_acked = 9;
   repeated ProviderCapability providers = 10;
+  string secret_encryption_public_key = 11;
 }
 
 message ProviderCapability {

@@ -127,7 +127,8 @@ public final class AgentProtoMapper {
                 .setProtocolMax(value.protocolMaximum()).setOs(value.operatingSystem())
                 .setArch(value.architecture()).setJavaVersion(value.javaVersion())
                 .setMaximumRuns(value.maximumRuns()).setLastServiceSequence(value.lastServiceSequence())
-                .setLastAgentSequenceAcked(value.lastAgentSequenceAcknowledged());
+                .setLastAgentSequenceAcked(value.lastAgentSequenceAcknowledged())
+                .setSecretEncryptionPublicKey(value.secretEncryptionPublicKey());
         value.providers().forEach(provider -> builder.addProviders(
                 com.fangxuele.wepush.next.agent.protocol.v1.ProviderCapability.newBuilder()
                         .setProviderId(provider.providerId())
@@ -144,7 +145,8 @@ public final class AgentProtoMapper {
                 value.getLastServiceSequence(), value.getLastAgentSequenceAcked(),
                 value.getProvidersList().stream().map(provider -> new ProviderCapability(
                         provider.getProviderId(), provider.getImplementationVersion(),
-                        provider.getSpiMajor(), provider.getMaximumConcurrency())).toList());
+                        provider.getSpiMajor(), provider.getMaximumConcurrency())).toList(),
+                value.getSecretEncryptionPublicKey());
     }
 
     private static com.fangxuele.wepush.next.agent.protocol.v1.Heartbeat toProto(

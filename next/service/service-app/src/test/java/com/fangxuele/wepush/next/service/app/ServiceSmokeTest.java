@@ -3,11 +3,15 @@ package com.fangxuele.wepush.next.service.app;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Path;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -15,10 +19,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         properties = "wepush.agent.grpc.port=0")
 class ServiceSmokeTest {
+    private static final Path DATABASE = Path.of(System.getProperty("java.io.tmpdir"),
+            "wepush-next-smoke-" + UUID.randomUUID() + ".db");
+    private static final Path MASTER_KEY = Path.of(System.getProperty("java.io.tmpdir"),
+            "wepush-next-smoke-key-" + UUID.randomUUID() + ".json");
+    private static final Path ARTIFACT_ROOT = Path.of(System.getProperty("java.io.tmpdir"),
+            "wepush-next-smoke-artifacts-" + UUID.randomUUID());
+
     private final HttpClient client = HttpClient.newHttpClient();
 
     @LocalServerPort
     private int port;
+
+    @DynamicPropertySource
+    static void isolation(DynamicPropertyRegistry registry) {
+        registry.add("wepush.database.path", DATABASE::toString);
+        registry.add("wepush.secret.master-key-path", MASTER_KEY::toString);
+        registry.add("wepush.artifact.root", ARTIFACT_ROOT::toString);
+        registry.add("server.shutdown", () -> "immediate");
+    }
 
     @Test
     void exposesHealthSystemInfoProviderCatalogAndSchemas() throws Exception {

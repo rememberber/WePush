@@ -41,11 +41,17 @@ public final class LocalHmacCursorCodec implements CursorCodec, AutoCloseable {
             if (separator < 1 || separator != cursor.lastIndexOf('.')) {
                 throw new IllegalArgumentException("cursor format");
             }
-            byte[] payload = DECODER.decode(cursor.substring(0, separator));
-            byte[] supplied = DECODER.decode(cursor.substring(separator + 1));
+            String payloadPart = cursor.substring(0, separator);
+            String signaturePart = cursor.substring(separator + 1);
+            byte[] payload = DECODER.decode(payloadPart);
+            byte[] supplied = DECODER.decode(signaturePart);
             byte[] expected = sign(purpose, payload);
             try {
-                if (!MessageDigest.isEqual(expected, supplied)) {
+                // The JDK decoder accepts non-canonical encodings whose unused trailing bits differ.
+                // Reject them so a textual cursor cannot be modified while decoding to identical bytes.
+                if (!ENCODER.encodeToString(payload).equals(payloadPart)
+                        || !ENCODER.encodeToString(supplied).equals(signaturePart)
+                        || !MessageDigest.isEqual(expected, supplied)) {
                     throw new IllegalArgumentException("cursor signature");
                 }
                 return new String(payload, StandardCharsets.UTF_8);

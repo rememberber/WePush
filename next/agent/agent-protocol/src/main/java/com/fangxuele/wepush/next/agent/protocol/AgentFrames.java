@@ -40,13 +40,25 @@ public final class AgentFrames {
             int maximumRuns,
             long lastServiceSequence,
             long lastAgentSequenceAcknowledged,
-            List<ProviderCapability> providers
+            List<ProviderCapability> providers,
+            String secretEncryptionPublicKey
     ) implements AgentPayload {
         public Hello {
             if (protocolMinimum < 1 || protocolMaximum < protocolMinimum || maximumRuns < 1) {
                 throw new IllegalArgumentException("invalid hello protocol range or capacity");
             }
             providers = List.copyOf(providers);
+            secretEncryptionPublicKey = secretEncryptionPublicKey == null
+                    ? "" : secretEncryptionPublicKey.trim();
+        }
+
+        public Hello(String agentVersion, int protocolMinimum, int protocolMaximum,
+                     String operatingSystem, String architecture, String javaVersion,
+                     int maximumRuns, long lastServiceSequence,
+                     long lastAgentSequenceAcknowledged, List<ProviderCapability> providers) {
+            this(agentVersion, protocolMinimum, protocolMaximum, operatingSystem, architecture,
+                    javaVersion, maximumRuns, lastServiceSequence, lastAgentSequenceAcknowledged,
+                    providers, "");
         }
     }
 

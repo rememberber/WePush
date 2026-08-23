@@ -3,9 +3,12 @@ package com.fangxuele.wepush.next.service.application;
 import com.fangxuele.wepush.next.agent.protocol.AgentFrames;
 import com.fangxuele.wepush.next.agent.protocol.LeaseFence;
 import com.fangxuele.wepush.next.agent.protocol.RemoteRunDocuments;
+import com.fangxuele.wepush.next.agent.protocol.SecretEnvelopeCodec;
 import com.fangxuele.wepush.next.core.api.CommandResult;
 import com.fangxuele.wepush.next.core.api.ItemState;
 import com.fangxuele.wepush.next.core.api.RunCommand;
+import com.fangxuele.wepush.next.core.api.SecretRef;
+import com.fangxuele.wepush.next.core.api.SecretValue;
 import com.fangxuele.wepush.next.service.domain.AgentLease;
 import com.fangxuele.wepush.next.service.domain.AgentLeaseRepository;
 import com.fangxuele.wepush.next.service.domain.AgentRegistration;
@@ -30,6 +33,7 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HexFormat;
 import java.util.List;
@@ -48,7 +52,10 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
     private final AgentRepository agents;
     private final AgentLeaseRepository leases;
     private final AgentControlGateway gateway;
+    private final SecretStore secrets;
     private final JsonCodec json;
+    private final SecretReferenceScanner secretReferences;
+    private final SecretEnvelopeCodec secretEnvelopes = new SecretEnvelopeCodec();
     private final ResourceIdGenerator ids;
     private final TransactionRunner transactions;
     private final RunEventPublisher eventPublisher;
@@ -64,6 +71,7 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
             AgentRepository agents,
             AgentLeaseRepository leases,
             AgentControlGateway gateway,
+            SecretStore secrets,
             JsonCodec json,
             ResourceIdGenerator ids,
             TransactionRunner transactions,
@@ -79,7 +87,9 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
         this.agents = Objects.requireNonNull(agents, "agents");
         this.leases = Objects.requireNonNull(leases, "leases");
         this.gateway = Objects.requireNonNull(gateway, "gateway");
+        this.secrets = Objects.requireNonNull(secrets, "secrets");
         this.json = Objects.requireNonNull(json, "json");
+        this.secretReferences = new SecretReferenceScanner(json);
         this.ids = Objects.requireNonNull(ids, "ids");
         this.transactions = Objects.requireNonNull(transactions, "transactions");
         this.eventPublisher = Objects.requireNonNull(eventPublisher, "eventPublisher");
@@ -114,7 +124,9 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
         }
         RunSnapshot snapshot = runs.findSnapshot(workspaceId, runId)
                 .orElseThrow(() -> new IllegalStateException("run snapshot is missing: " + runId));
-        AgentRegistration agent = chooseAgent(snapshot).orElse(null);
+        List<SecretRef> requiredSecrets = secretReferences.scan(
+                snapshot.accountConfiguration(), snapshot.messageContent());
+        AgentRegistration agent = chooseAgent(snapshot, !requiredSecrets.isEmpty()).orElse(null);
         if (agent == null) return;
 
         Instant now = clock.instant();
@@ -125,11 +137,12 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
         LeaseFence fence = fence(lease);
         byte[] spec = executionSpecDocument(lease, snapshot, run);
         byte[] audience = audienceDocument(lease, snapshot);
+        byte[] secretEnvelope = secretEnvelope(agent, lease, requiredSecrets);
         String leasePath = "/internal/agent/v1/leases/"
                 + URLEncoder.encode(lease.id(), StandardCharsets.UTF_8);
         AgentFrames.LeaseOffer offer = new AgentFrames.LeaseOffer(fence, lease.expiresAt(),
                 publicBaseUrl + leasePath + "/execution-spec", sha256(spec),
-                publicBaseUrl + leasePath + "/audience", sha256(audience), new byte[0]);
+                publicBaseUrl + leasePath + "/audience", sha256(audience), secretEnvelope);
 
         RunEventRecord offered = transactions.required(() -> {
             AgentLease current = leases.findCurrent(workspaceId, runId).orElse(null);
@@ -221,9 +234,10 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
         for (AgentLease lease : active) lose(lease, "AGENT_DISCONNECTED", false);
     }
 
-    private Optional<AgentRegistration> chooseAgent(RunSnapshot snapshot) {
+    private Optional<AgentRegistration> chooseAgent(RunSnapshot snapshot, boolean requiresSecrets) {
         return agents.list().stream()
                 .filter(agent -> agent.status() == AgentRegistration.Status.ONLINE)
+                .filter(agent -> !requiresSecrets || !agent.secretEncryptionPublicKey().isBlank())
                 .filter(agent -> agent.availableRuns()
                         > leases.offeredCount(agent.id(), agent.sessionId()))
                 .filter(agent -> agent.providers().stream().anyMatch(provider ->
@@ -233,6 +247,29 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
                 .sorted(Comparator.comparingInt(AgentRegistration::availableRuns).reversed()
                         .thenComparing(AgentRegistration::id))
                 .findFirst();
+    }
+
+    private byte[] secretEnvelope(AgentRegistration agent, AgentLease lease,
+                                  List<SecretRef> required) {
+        if (required.isEmpty()) return new byte[0];
+        List<SecretEnvelopeCodec.SecretMaterial> materials = new ArrayList<>(required.size());
+        try {
+            for (SecretRef ref : required) {
+                try (SecretValue value = secrets.resolve(lease.workspaceId(), ref)) {
+                    byte[] clear = value.copyBytes();
+                    try {
+                        materials.add(new SecretEnvelopeCodec.SecretMaterial(
+                                ref.namespace(), ref.name(), ref.version(), clear));
+                    } finally {
+                        Arrays.fill(clear, (byte) 0);
+                    }
+                }
+            }
+            return secretEnvelopes.seal(agent.id(), fence(lease), lease.expiresAt(),
+                    agent.secretEncryptionPublicKey(), materials);
+        } finally {
+            materials.forEach(SecretEnvelopeCodec.SecretMaterial::close);
+        }
     }
 
     private void acknowledge(AgentRegistration agent, LeaseFence fence) {

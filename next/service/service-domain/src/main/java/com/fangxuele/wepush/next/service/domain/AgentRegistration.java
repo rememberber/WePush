@@ -15,6 +15,7 @@ public record AgentRegistration(
         int activeRuns,
         int availableRuns,
         List<Provider> providers,
+        String secretEncryptionPublicKey,
         String sessionId,
         long lastAgentSequence,
         long lastServiceSequence,
@@ -31,6 +32,11 @@ public record AgentRegistration(
         javaVersion = DomainChecks.text(javaVersion, "agent java version");
         sessionId = DomainChecks.text(sessionId, "agent session id");
         providers = List.copyOf(providers);
+        secretEncryptionPublicKey = secretEncryptionPublicKey == null
+                ? "" : secretEncryptionPublicKey.trim();
+        if (secretEncryptionPublicKey.length() > 512) {
+            throw new IllegalArgumentException("agent secret encryption public key is too large");
+        }
         if (status == null || protocolVersion < 1 || maximumRuns < 1 || activeRuns < 0
                 || availableRuns < 0 || activeRuns + availableRuns > maximumRuns
                 || lastAgentSequence < 1 || lastServiceSequence < 1
@@ -38,6 +44,19 @@ public record AgentRegistration(
                 || version < 0) {
             throw new IllegalArgumentException("agent registration is incomplete");
         }
+    }
+
+    public AgentRegistration(String id, Status status, String agentVersion, int protocolVersion,
+                             String operatingSystem, String architecture, String javaVersion,
+                             int maximumRuns, int activeRuns, int availableRuns,
+                             List<Provider> providers, String sessionId,
+                             long lastAgentSequence, long lastServiceSequence,
+                             Instant connectedAt, Instant lastSeenAt, Instant disconnectedAt,
+                             long version) {
+        this(id, status, agentVersion, protocolVersion, operatingSystem, architecture, javaVersion,
+                maximumRuns, activeRuns, availableRuns, providers, "", sessionId,
+                lastAgentSequence, lastServiceSequence, connectedAt, lastSeenAt,
+                disconnectedAt, version);
     }
 
     public enum Status { ONLINE, DRAINING, DEGRADED, OFFLINE }

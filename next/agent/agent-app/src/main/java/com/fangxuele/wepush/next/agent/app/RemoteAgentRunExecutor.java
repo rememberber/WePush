@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fangxuele.wepush.next.agent.protocol.AgentFrames;
 import com.fangxuele.wepush.next.agent.protocol.LeaseFence;
 import com.fangxuele.wepush.next.agent.protocol.RemoteRunDocuments;
+import com.fangxuele.wepush.next.agent.protocol.SecretEnvelopeCodec;
 import com.fangxuele.wepush.next.agent.runtime.AgentRuntime;
 import com.fangxuele.wepush.next.core.api.ArtifactSink;
 import com.fangxuele.wepush.next.core.api.CommandResult;
@@ -14,6 +15,7 @@ import com.fangxuele.wepush.next.core.api.ExecutionClock;
 import com.fangxuele.wepush.next.core.api.ExecutionPolicies;
 import com.fangxuele.wepush.next.core.api.ExecutionPorts;
 import com.fangxuele.wepush.next.core.api.ItemResult;
+import com.fangxuele.wepush.next.core.api.InMemorySecretValue;
 import com.fangxuele.wepush.next.core.api.ProviderRef;
 import com.fangxuele.wepush.next.core.api.RecipientRecord;
 import com.fangxuele.wepush.next.core.api.RecipientSource;
@@ -33,11 +35,16 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.security.KeyPair;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -51,15 +58,29 @@ final class RemoteAgentRunExecutor implements AutoCloseable {
     private final AgentRuntime runtime;
     private final ObjectMapper mapper;
     private final String token;
+    private final String agentId;
+    private final SecretEnvelopeCodec secretEnvelopes = new SecretEnvelopeCodec();
+    private final KeyPair secretEncryptionKey;
     private final HttpClient http;
     private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
 
     RemoteAgentRunExecutor(AgentRuntime runtime, ObjectMapper mapper, String token) {
+        this("local-agent", runtime, mapper, token);
+    }
+
+    RemoteAgentRunExecutor(String agentId, AgentRuntime runtime, ObjectMapper mapper, String token) {
+        if (agentId == null || agentId.isBlank()) throw new IllegalArgumentException("agentId is required");
+        this.agentId = agentId;
         this.runtime = runtime;
         this.mapper = mapper;
         this.token = token == null ? "" : token;
         this.http = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10))
                 .followRedirects(HttpClient.Redirect.NEVER).build();
+        this.secretEncryptionKey = secretEnvelopes.generateRecipientKeyPair();
+    }
+
+    String secretEncryptionPublicKey() {
+        return secretEnvelopes.encodePublicKey(secretEncryptionKey.getPublic());
     }
 
     void offer(AgentFrames.LeaseOffer offer, AgentFrameSender sender) {
@@ -83,6 +104,8 @@ final class RemoteAgentRunExecutor implements AutoCloseable {
     private void execute(AgentFrames.LeaseOffer offer, AgentFrameSender sender) {
         Instant started = Instant.now();
         RemoteRunDocuments.Audience audience = null;
+        SecretEnvelopeCodec.OpenedSecrets openedSecrets = null;
+        RemoteExecution execution = null;
         boolean acknowledged = false;
         try {
             byte[] specBytes = download(offer.executionSpecUrl());
@@ -96,21 +119,33 @@ final class RemoteAgentRunExecutor implements AutoCloseable {
                 throw new IllegalArgumentException("lease and execution specification run IDs differ");
             }
 
+            if (offer.secretEnvelope().length > 0) {
+                openedSecrets = secretEnvelopes.open(agentId, offer.fence(), offer.expiresAt(),
+                        Instant.now(), secretEncryptionKey.getPrivate(), offer.secretEnvelope());
+            }
+
             RunExecutionSpec spec = specification(document);
-            RemoteExecution execution = new RemoteExecution(offer.fence(), audience, sender);
+            execution = new RemoteExecution(offer.fence(), audience, sender, openedSecrets);
+            openedSecrets = null;
             sender.send(runtime.acknowledge(offer.fence()));
             acknowledged = true;
             RunHandle handle = runtime.start(offer.fence(), spec, execution.ports());
             RemoteRunDocuments.Audience acceptedAudience = audience;
+            RemoteExecution acceptedExecution = execution;
             handle.completion().whenComplete((summary, failure) -> {
-                if (failure == null) execution.complete(summary);
-                else execution.fail(started, acceptedAudience.recipients().size(), failure);
+                if (failure == null) acceptedExecution.complete(summary);
+                else acceptedExecution.fail(started, acceptedAudience.recipients().size(), failure);
             });
+            execution = null;
         } catch (IOException | InterruptedException problem) {
             if (problem instanceof InterruptedException) Thread.currentThread().interrupt();
+            if (openedSecrets != null) openedSecrets.close();
+            if (execution != null) execution.closeSecrets();
             failBeforeStart(offer.fence(), sender, started,
                     audience == null ? 0 : audience.recipients().size(), acknowledged, problem);
         } catch (RuntimeException problem) {
+            if (openedSecrets != null) openedSecrets.close();
+            if (execution != null) execution.closeSecrets();
             failBeforeStart(offer.fence(), sender, started,
                     audience == null ? 0 : audience.recipients().size(), acknowledged, problem);
         }
@@ -218,12 +253,25 @@ final class RemoteAgentRunExecutor implements AutoCloseable {
         private final LeaseFence fence;
         private final List<RecipientRecord> recipients;
         private final AgentFrameSender sender;
+        private final SecretEnvelopeCodec.OpenedSecrets secrets;
+        private final Map<String, SecretEnvelopeCodec.SecretMaterial> secretsByIdentity;
         private long reportSequence;
 
         private RemoteExecution(LeaseFence fence, RemoteRunDocuments.Audience audience,
-                                AgentFrameSender sender) throws JsonProcessingException {
+                                AgentFrameSender sender,
+                                SecretEnvelopeCodec.OpenedSecrets secrets) throws JsonProcessingException {
             this.fence = fence;
             this.sender = sender;
+            this.secrets = secrets;
+            Map<String, SecretEnvelopeCodec.SecretMaterial> indexed = new LinkedHashMap<>();
+            if (secrets != null) {
+                for (SecretEnvelopeCodec.SecretMaterial secret : secrets.secrets()) {
+                    SecretEnvelopeCodec.SecretMaterial previous = indexed.put(identity(secret.namespace(),
+                            secret.name(), secret.version()), secret);
+                    if (previous != null) throw new IllegalArgumentException("secret envelope contains duplicates");
+                }
+            }
+            this.secretsByIdentity = Map.copyOf(indexed);
             List<RecipientRecord> converted = new ArrayList<>(audience.recipients().size());
             for (RemoteRunDocuments.Recipient recipient : audience.recipients()) {
                 converted.add(recipient(recipient));
@@ -233,8 +281,20 @@ final class RemoteAgentRunExecutor implements AutoCloseable {
 
         private ExecutionPorts ports() {
             return new ExecutionPorts(new ListRecipientSource(recipients), ref -> {
-                throw new IllegalStateException(
-                        "Remote secret envelope encryption is not enabled for this Agent");
+                SecretEnvelopeCodec.SecretMaterial material = secretsByIdentity.get(
+                        identity(ref.namespace(), ref.name(), ref.version()));
+                if (material == null) {
+                    throw new IllegalStateException("Secret is outside this run's Agent envelope");
+                }
+                byte[] encoded = material.copyValue();
+                char[] decoded = null;
+                try {
+                    decoded = decode(encoded);
+                    return InMemorySecretValue.of(decoded);
+                } finally {
+                    Arrays.fill(encoded, (byte) 0);
+                    if (decoded != null) Arrays.fill(decoded, '\0');
+                }
             }, new RemoteResultSink(), ArtifactSink.none(), new RemoteEventSink(), ExecutionClock.system());
         }
 
@@ -244,20 +304,32 @@ final class RemoteAgentRunExecutor implements AutoCloseable {
         }
 
         private void complete(RunSummary source) {
-            RemoteRunDocuments.Summary summary = new RemoteRunDocuments.Summary(source.runId(),
-                    source.finalState().name(), source.total(), source.succeeded(), source.failed(),
-                    source.unknown(), source.unsent(), source.skipped(), source.retried(),
-                    source.startedAt(), source.endedAt());
-            sender.send(runtime.completed(fence, encode(summary), source.artifacts().stream()
-                    .map(value -> value.artifactId()).toList()));
+            try {
+                RemoteRunDocuments.Summary summary = new RemoteRunDocuments.Summary(source.runId(),
+                        source.finalState().name(), source.total(), source.succeeded(), source.failed(),
+                        source.unknown(), source.unsent(), source.skipped(), source.retried(),
+                        source.startedAt(), source.endedAt());
+                sender.send(runtime.completed(fence, encode(summary), source.artifacts().stream()
+                        .map(value -> value.artifactId()).toList()));
+            } finally {
+                closeSecrets();
+            }
         }
 
         private void fail(Instant started, long total, Throwable failure) {
-            Instant ended = Instant.now();
-            RemoteRunDocuments.Summary summary = new RemoteRunDocuments.Summary(fence.runId(), "FAILED",
-                    total, 0, 0, 0, total, 0, 0, started, ended);
-            sender.send(runtime.completed(fence, encode(summary), List.of()));
-            System.err.printf("Remote run %s failed: %s%n", fence.runId(), safeMessage(failure));
+            try {
+                Instant ended = Instant.now();
+                RemoteRunDocuments.Summary summary = new RemoteRunDocuments.Summary(fence.runId(), "FAILED",
+                        total, 0, 0, 0, total, 0, 0, started, ended);
+                sender.send(runtime.completed(fence, encode(summary), List.of()));
+                System.err.printf("Remote run %s failed: %s%n", fence.runId(), safeMessage(failure));
+            } finally {
+                closeSecrets();
+            }
+        }
+
+        private void closeSecrets() {
+            if (secrets != null) secrets.close();
         }
 
         private RecipientRecord recipient(RemoteRunDocuments.Recipient source)
@@ -307,6 +379,22 @@ final class RemoteAgentRunExecutor implements AutoCloseable {
             @Override
             public void flush() {
             }
+        }
+    }
+
+    private static String identity(String namespace, String name, String version) {
+        return namespace + '\0' + name + '\0' + version;
+    }
+
+    private static char[] decode(byte[] value) {
+        try {
+            CharBuffer decoded = StandardCharsets.UTF_8.newDecoder().decode(ByteBuffer.wrap(value));
+            char[] chars = new char[decoded.remaining()];
+            decoded.get(chars);
+            if (decoded.hasArray()) Arrays.fill(decoded.array(), '\0');
+            return chars;
+        } catch (CharacterCodingException exception) {
+            throw new IllegalArgumentException("Secret envelope value is not valid UTF-8", exception);
         }
     }
 

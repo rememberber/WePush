@@ -41,15 +41,17 @@ public final class JdbcAgentRepository implements AgentRepository {
                 INSERT INTO agent_registration
                 (id, status, agent_version, protocol_version, os_name, architecture, java_version,
                  maximum_runs, active_runs, available_runs, providers_json, session_id,
+                 secret_encryption_public_key,
                  last_agent_sequence, last_service_sequence, connected_at, last_seen_at,
                  disconnected_at, version)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(id) DO UPDATE SET
                   status = excluded.status, agent_version = excluded.agent_version,
                   protocol_version = excluded.protocol_version, os_name = excluded.os_name,
                   architecture = excluded.architecture, java_version = excluded.java_version,
                   maximum_runs = excluded.maximum_runs, active_runs = excluded.active_runs,
                   available_runs = excluded.available_runs, providers_json = excluded.providers_json,
+                  secret_encryption_public_key = excluded.secret_encryption_public_key,
                   session_id = excluded.session_id, last_agent_sequence = excluded.last_agent_sequence,
                   last_service_sequence = excluded.last_service_sequence,
                   connected_at = excluded.connected_at, last_seen_at = excluded.last_seen_at,
@@ -57,6 +59,7 @@ public final class JdbcAgentRepository implements AgentRepository {
                 """, value.id(), value.status().name(), value.agentVersion(), value.protocolVersion(),
                 value.operatingSystem(), value.architecture(), value.javaVersion(), value.maximumRuns(),
                 value.activeRuns(), value.availableRuns(), json(value.providers()), value.sessionId(),
+                value.secretEncryptionPublicKey(),
                 value.lastAgentSequence(), value.lastServiceSequence(), text(value.connectedAt()),
                 text(value.lastSeenAt()), text(value.disconnectedAt()), value.version());
     }
@@ -121,7 +124,8 @@ public final class JdbcAgentRepository implements AgentRepository {
                 rs.getString("agent_version"), rs.getInt("protocol_version"),
                 rs.getString("os_name"), rs.getString("architecture"), rs.getString("java_version"),
                 rs.getInt("maximum_runs"), rs.getInt("active_runs"), rs.getInt("available_runs"),
-                providers(rs.getString("providers_json")), rs.getString("session_id"),
+                providers(rs.getString("providers_json")), rs.getString("secret_encryption_public_key"),
+                rs.getString("session_id"),
                 rs.getLong("last_agent_sequence"), rs.getLong("last_service_sequence"),
                 Instant.parse(rs.getString("connected_at")), Instant.parse(rs.getString("last_seen_at")),
                 nullableInstant(rs.getString("disconnected_at")), rs.getLong("version"));

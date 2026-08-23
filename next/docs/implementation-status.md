@@ -1,6 +1,6 @@
 # WePush Next 实现状态
 
-更新时间：2026-08-22
+更新时间：2026-08-23
 
 ## 1. 当前里程碑
 
@@ -40,7 +40,7 @@ HTTP Provider（支持 Dry Run）
 - Account、Message Revision、Audience Snapshot、Job、Run、Run Snapshot、Run Event 和幂等记录持久化。
 - 默认 `LocalEnvelopeSecretStore`：每条 Secret 随机 256-bit DEK、AES-256-GCM、版本化主密钥封装、AAD 身份绑定和失败关闭。
 - Standalone 首次启动生成独立主密钥文件；POSIX 强制 owner-only 权限，Windows 使用 owner ACL；也可由环境注入主密钥。
-- Item Result 批量、事务和幂等落盘，使用 HMAC 完整性保护的 Cursor Pagination 查询。
+- Item Result 批量、事务和幂等落盘，使用 HMAC 完整性保护的 Cursor Pagination 查询；解码同时强制 Base64URL 规范编码，拒绝等价字节的文本变体。
 - Pause、Resume、Cancel 和 ChangeConcurrency 命令持久化、按命令 ID 幂等并写入审计事件。
 - Artifact 元数据以 SQLite 为事实源，采用 `UPLOADING → READY → DELETING → DELETED` 两阶段状态机。
 - Standalone 默认 `LocalFileArtifactStore`：受控分区路径、临时文件写入、fsync、SHA-256 校验和原子移动；POSIX 文件权限为 `0600`。
@@ -48,6 +48,7 @@ HTTP Provider（支持 Dry Run）
 - Message Revision、Audience Snapshot、Run Snapshot 创建后不可变。
 - 应用服务显式持有事务边界，Repository 不自行提交。
 - Agent 注册表持久化会话、平台、Provider 能力、容量、双向 Sequence 与最后心跳。
+- Agent 注册表保存当前会话的 X25519 Secret 加密公钥；新会话会原子替换旧会话公钥。
 - 独立 gRPC Server 默认绑定 `127.0.0.1:19090`；非回环绑定强制 Bootstrap Token，静默超过三个心跳周期自动标记离线。
 - 同一 Agent 的新连接会替换旧连接，旧会话后续写入由 Session ID Fence 拒绝。
 - SQLite 持久化 Agent Lease、Epoch、Fencing Token、会话归属、Event Cursor 和完成状态；同一 Run 同时只允许一个活跃 Lease。
@@ -106,7 +107,9 @@ HTTP Provider（支持 Dry Run）
 - Pause、Resume、Cancel、ChangeConcurrency 可由 Service 经活跃 Lease 发送到远端 `RunHandle`，Agent 返回 Command Ack。
 - Run Summary 经 `RunCompleted` 回传，Service 校验 Fence 后原子完成 Lease 与 Run，并产生 `RUN_FINALIZED`。
 - Offer 过期、发送失败或 Agent 断线会使 Lease 进入 `EXPIRED` / `LOST`，Run 进入 `RECOVERING`；运行中断线默认保留 30 秒恢复宽限期，避免立即无条件重发。
-- 当前远端 Secret Envelope 尚未实现加密封装；远端执行明确拒绝 Secret 解析，只支持无需 Secret 的配置，不会明文降级。
+- Agent 在 Hello 中发布进程级 X25519 公钥；Service 只扫描冻结 Account/Message 中实际出现的标准 `SecretRef`，从本地 Secret Store 解析最小集合。
+- Secret Envelope 使用一次性 X25519、HKDF-SHA-256 与 AES-256-GCM，AAD 和密文载荷同时绑定 Agent ID、Run ID、Lease ID、Epoch、Fencing Token 和过期时间。
+- Agent 只在 Lease 下载校验阶段解密，校验成功后才 ACK；明文只存在于运行内存，经受限 `SecretResolver` 按引用复制，完成或失败时清零，不进入 Journal、日志、事件或 Artifact。
 
 ## 3. 当前数据库表
 
@@ -125,6 +128,7 @@ HTTP Provider（支持 Dry Run）
 | `run_command` | 幂等运行命令、处理状态和确认结果 |
 | `artifact_record` | Artifact 状态、文件定位、校验值、保留期和保护标记 |
 | `agent_registration` | Agent 会话、能力、容量、双向 Sequence 和心跳状态 |
+| `agent_registration.secret_encryption_public_key` | 当前 Agent 会话的 X25519 Secret 加密公钥（V6） |
 | `agent_lease` | Run/Agent 会话归属、Epoch、Fencing Token、Event Cursor 和租约状态 |
 | `flyway_schema_history` | 数据库迁移历史 |
 
@@ -146,6 +150,8 @@ HTTP Provider（支持 Dry Run）
 - Protobuf 与领域帧双向映射、Agent 文件 Journal 原子持久化通过单元测试。
 - Agent 远端适配器通过 Execution Spec/Audience 下载与哈希校验，使用真实 Core + HTTP Provider 完成两条 Dry Run 并回传结果。
 - Service 远端 gRPC 集成覆盖 Lease Ack、受保护文档、命令投递、Event Ack、重复批次去重、Item Result 落库和 Run Summary 终态收敛。
+- Secret Envelope 单元测试覆盖密文篡改、错误 Agent/Lease/私钥、过期拒绝和内存清零；真实 HTTP Provider 远端执行验证 Bearer Secret 能正确解密使用。
+- Service 远端集成验证最小 Secret 集加密、会话公钥持久化、密文不含明文以及指定 Agent 私钥可解密。
 
 ## 5. 下一阶段边界
 
@@ -156,7 +162,7 @@ HTTP Provider（支持 Dry Run）
 - Message、Audience 和 Job 的编辑、修订对比、CSV 导入和正式发送确认体验。
 - API 文档页面的通用 POST/PUT/PATCH 请求编辑器。
 - Agent Event Outbox 的磁盘持久化、断点重传和进程重启后的运行恢复；当前 Event Cursor 在 Service 持久化，Agent 运行期按序发送。
-- Agent 加密 Secret Envelope、Artifact Presigned 上传与完整性提交；当前远端模式只允许无需 Secret/Artifact 的执行配置。
+- Agent Artifact Presigned 上传与完整性提交；Secret Envelope 已完成，Artifact 仍只支持无需远端上传的执行路径。
 - Agent 正式 Enrollment、证书轮换与 mTLS；当前 Token 只作为本地/Bootstrap 安全机制。
 - PostgreSQL Server 模式、多实例调度、Outbox 和高可用。
 - 身份认证、RBAC、审计事件及正式多 Workspace 管理 API。
