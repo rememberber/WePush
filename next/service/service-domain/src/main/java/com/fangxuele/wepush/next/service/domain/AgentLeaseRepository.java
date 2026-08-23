@@ -22,6 +22,9 @@ public interface AgentLeaseRepository {
 
     boolean markRunning(String leaseId, String fencingToken);
 
+    boolean renew(LeaseFenceAuthority authority, String agentId, String agentSessionId,
+                  Instant now, Instant expiresAt);
+
     boolean advanceEvents(String leaseId, String fencingToken, long expectedPrevious,
                           long lastEventSequence);
 
@@ -30,4 +33,13 @@ public interface AgentLeaseRepository {
     boolean markLost(String leaseId, String fencingToken, Instant changedAt);
 
     List<AgentLease> expireActive(Instant now);
+
+    record LeaseFenceAuthority(String leaseId, String runId, long epoch, String fencingToken) {
+        public LeaseFenceAuthority {
+            if (leaseId == null || leaseId.isBlank() || runId == null || runId.isBlank()
+                    || epoch < 1 || fencingToken == null || fencingToken.isBlank()) {
+                throw new IllegalArgumentException("lease fence authority is incomplete");
+            }
+        }
+    }
 }

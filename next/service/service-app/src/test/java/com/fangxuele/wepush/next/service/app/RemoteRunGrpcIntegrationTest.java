@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -54,11 +53,14 @@ class RemoteRunGrpcIntegrationTest {
             "wepush-next-remote-run-" + UUID.randomUUID() + ".db");
     private static final Path MASTER_KEY = Path.of(System.getProperty("java.io.tmpdir"),
             "wepush-next-remote-key-" + UUID.randomUUID() + ".json");
+    private static final Path ARTIFACT_ROOT = Path.of(System.getProperty("java.io.tmpdir"),
+            "wepush-next-remote-artifacts-" + UUID.randomUUID());
 
     @DynamicPropertySource
     static void configuration(DynamicPropertyRegistry registry) {
         registry.add("wepush.database.path", DATABASE::toString);
         registry.add("wepush.secret.master-key-path", MASTER_KEY::toString);
+        registry.add("wepush.artifact.root", ARTIFACT_ROOT::toString);
         registry.add("wepush.execution.mode", () -> "remote");
         registry.add("wepush.agent.grpc.port", () -> "0");
         registry.add("wepush.agent.grpc.token", () -> TOKEN);
@@ -88,19 +90,21 @@ class RemoteRunGrpcIntegrationTest {
             metadata.put(Metadata.Key.of("x-wepush-agent-token", Metadata.ASCII_STRING_MARSHALLER), TOKEN);
             AgentControlServiceGrpc.AgentControlServiceStub stub = AgentControlServiceGrpc.newStub(channel)
                     .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata));
-            CountDownLatch welcomed = new CountDownLatch(1);
+            BlockingQueue<AgentFrames.Welcome> welcomes = new LinkedBlockingQueue<>();
             BlockingQueue<AgentFrames.LeaseOffer> offers = new LinkedBlockingQueue<>();
             BlockingQueue<AgentFrames.RunCommand> commands = new LinkedBlockingQueue<>();
             BlockingQueue<AgentFrames.EventAck> eventAcks = new LinkedBlockingQueue<>();
+            BlockingQueue<AgentFrames.RunCompletionAck> completionAcks = new LinkedBlockingQueue<>();
             AtomicReference<Throwable> streamFailure = new AtomicReference<>();
-            StreamObserver<AgentToService> requests = stub.connect(new StreamObserver<>() {
+            StreamObserver<ServiceToAgent> responses = new StreamObserver<>() {
                 @Override
                 public void onNext(ServiceToAgent value) {
                     AgentFrames.ServicePayload payload = AgentProtoMapper.fromProto(value).payload();
-                    if (payload instanceof AgentFrames.Welcome) welcomed.countDown();
+                    if (payload instanceof AgentFrames.Welcome welcome) welcomes.add(welcome);
                     if (payload instanceof AgentFrames.LeaseOffer offer) offers.add(offer);
                     if (payload instanceof AgentFrames.RunCommand command) commands.add(command);
                     if (payload instanceof AgentFrames.EventAck ack) eventAcks.add(ack);
+                    if (payload instanceof AgentFrames.RunCompletionAck ack) completionAcks.add(ack);
                 }
 
                 @Override
@@ -111,7 +115,8 @@ class RemoteRunGrpcIntegrationTest {
                 @Override
                 public void onCompleted() {
                 }
-            });
+            };
+            StreamObserver<AgentToService> requests = stub.connect(responses);
 
             AgentId agentId = new AgentId("remote-integration-agent");
             SecretEnvelopeCodec secretEnvelopes = new SecretEnvelopeCodec();
@@ -121,7 +126,7 @@ class RemoteRunGrpcIntegrationTest {
                             2, 0, 0, List.of(new ProviderCapability(
                             "wepush.http", "0.1.0", 1, 32)),
                             secretEnvelopes.encodePublicKey(agentSecretKey.getPublic())))));
-            assertTrue(welcomed.await(5, TimeUnit.SECONDS));
+            assertNotNull(welcomes.poll(5, TimeUnit.SECONDS));
             assertEquals(secretEnvelopes.encodePublicKey(agentSecretKey.getPublic()),
                     jdbc.queryForObject("SELECT secret_encryption_public_key FROM agent_registration WHERE id = ?",
                             String.class, agentId.value()));
@@ -162,13 +167,25 @@ class RemoteRunGrpcIntegrationTest {
                     new AgentFrames.LeaseAck(offer.fence()))));
             awaitRunState(runId, "RUNNING");
 
+            requests.onCompleted();
+            requests = stub.connect(responses);
+            requests.onNext(AgentProtoMapper.toProto(new AgentFrames.AgentToService(agentId, 3,
+                    new AgentFrames.Hello("0.1.0-test", 1, 1, "TestOS", "amd64", "21",
+                            2, 2, 2, List.of(new ProviderCapability(
+                            "wepush.http", "0.1.0", 1, 32)),
+                            secretEnvelopes.encodePublicKey(agentSecretKey.getPublic()),
+                            List.of(offer.fence())))));
+            AgentFrames.Welcome resumed = welcomes.poll(5, TimeUnit.SECONDS);
+            assertNotNull(resumed, "Service did not welcome the reconnecting Agent");
+            assertEquals(List.of(offer.fence()), resumed.resumableLeases());
+
             JsonNode commandResponse = accepted(post("/api/v1/workspaces/ws_default/runs/" + runId
                     + "/commands/concurrency", "{\"target\":2}", "remote-concurrency"), 202);
             assertEquals("REMOTE_COMMAND_DELIVERED", commandResponse.get("code").textValue());
             AgentFrames.RunCommand command = commands.poll(5, TimeUnit.SECONDS);
             assertNotNull(command);
             assertEquals("CONCURRENCY", command.type());
-            requests.onNext(AgentProtoMapper.toProto(new AgentFrames.AgentToService(agentId, 3,
+            requests.onNext(AgentProtoMapper.toProto(new AgentFrames.AgentToService(agentId, 4,
                     new AgentFrames.CommandAck(command.commandId(), offer.fence(),
                             "ACCEPTED", "CONCURRENCY_CHANGED"))));
 
@@ -181,19 +198,47 @@ class RemoteRunGrpcIntegrationTest {
                             "DRY_RUN", "", "", completedAt, Map.of("agent", agentId.value()))));
             AgentFrames.EventBatch batch = new AgentFrames.EventBatch(offer.fence(), 1,
                     List.of(json.writeValueAsBytes(started), json.writeValueAsBytes(result)));
-            requests.onNext(AgentProtoMapper.toProto(new AgentFrames.AgentToService(agentId, 4, batch)));
+            requests.onNext(AgentProtoMapper.toProto(new AgentFrames.AgentToService(agentId, 5, batch)));
             assertEquals(2, requireAck(eventAcks).lastEventSequence());
 
-            requests.onNext(AgentProtoMapper.toProto(new AgentFrames.AgentToService(agentId, 5, batch)));
+            requests.onNext(AgentProtoMapper.toProto(new AgentFrames.AgentToService(agentId, 6, batch)));
             assertEquals(2, requireAck(eventAcks).lastEventSequence());
             Integer resultCount = jdbc.queryForObject(
                     "SELECT COUNT(*) FROM run_item_result WHERE run_id = ?", Integer.class, runId);
             assertEquals(1, resultCount);
 
+            byte[] artifactBody = "Agent generated diagnostics".getBytes(StandardCharsets.UTF_8);
+            String artifactSha = sha256(artifactBody);
+            HttpResponse<String> plannedResponse = http.send(HttpRequest.newBuilder(uri(
+                            "/internal/agent/v1/leases/" + offer.fence().leaseId() + "/artifacts"))
+                    .header("Content-Type", "application/json")
+                    .header("x-wepush-agent-token", TOKEN)
+                    .POST(HttpRequest.BodyPublishers.ofString("""
+                            {"runId":"%s","epoch":%d,"fencingToken":"%s",
+                             "type":"RUN_DIAGNOSTIC","originalName":"diagnostic.txt",
+                             "contentType":"text/plain","size":%d,"sha256":"%s"}
+                            """.formatted(runId, offer.fence().epoch(), offer.fence().fencingToken(),
+                            artifactBody.length, artifactSha))).build(),
+                    HttpResponse.BodyHandlers.ofString());
+            JsonNode uploadPlan = accepted(plannedResponse, 201);
+            String artifactId = uploadPlan.get("artifactId").textValue();
+            URI uploadUri = localUri(uploadPlan.get("uploadUrl").textValue());
+            HttpResponse<String> uploaded = http.send(HttpRequest.newBuilder(uploadUri)
+                    .PUT(HttpRequest.BodyPublishers.ofByteArray(artifactBody)).build(),
+                    HttpResponse.BodyHandlers.ofString());
+            JsonNode uploadResult = accepted(uploaded, 200);
+            assertEquals(artifactSha, uploadResult.get("sha256").textValue());
+            HttpResponse<String> committed = http.send(HttpRequest.newBuilder(
+                            localUri(uploadPlan.get("commitUrl").textValue()))
+                    .POST(HttpRequest.BodyPublishers.noBody()).build(), HttpResponse.BodyHandlers.ofString());
+            assertEquals("READY", accepted(committed, 200).get("state").textValue());
+
             RemoteRunDocuments.Summary summary = new RemoteRunDocuments.Summary(runId, "SUCCEEDED",
                     1, 1, 0, 0, 0, 0, 0, completedAt.minusMillis(1), completedAt);
-            requests.onNext(AgentProtoMapper.toProto(new AgentFrames.AgentToService(agentId, 6,
-                    new AgentFrames.RunCompleted(offer.fence(), json.writeValueAsBytes(summary), List.of()))));
+            requests.onNext(AgentProtoMapper.toProto(new AgentFrames.AgentToService(agentId, 7,
+                    new AgentFrames.RunCompleted(offer.fence(), json.writeValueAsBytes(summary),
+                            List.of(artifactId)))));
+            assertEquals(offer.fence(), completionAcks.poll(5, TimeUnit.SECONDS).fence());
 
             JsonNode completed = awaitRunState(runId, "SUCCEEDED");
             assertEquals(1, completed.at("/counters/succeeded").intValue());
@@ -205,6 +250,8 @@ class RemoteRunGrpcIntegrationTest {
             assertEquals(2L, jdbc.queryForObject(
                     "SELECT last_event_sequence FROM agent_lease WHERE id = ?", Long.class,
                     offer.fence().leaseId()));
+            assertEquals("READY", jdbc.queryForObject(
+                    "SELECT state FROM artifact_record WHERE id = ?", String.class, artifactId));
             assertEquals(null, streamFailure.get());
             requests.onCompleted();
         } finally {
@@ -262,6 +309,10 @@ class RemoteRunGrpcIntegrationTest {
                 .getBytes(StandardCharsets.US_ASCII), expected.getBytes(StandardCharsets.US_ASCII)));
     }
 
+    private static String sha256(byte[] value) throws Exception {
+        return java.util.HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(value));
+    }
+
     private JsonNode awaitRunState(String runId, String expected) throws Exception {
         String path = "/api/v1/workspaces/ws_default/runs/" + runId;
         JsonNode last = null;
@@ -300,5 +351,11 @@ class RemoteRunGrpcIntegrationTest {
 
     private URI uri(String path) {
         return URI.create("http://127.0.0.1:" + httpPort + path);
+    }
+
+    private URI localUri(String absoluteUrl) {
+        URI supplied = URI.create(absoluteUrl);
+        return uri(supplied.getRawPath() + (supplied.getRawQuery() == null
+                ? "" : "?" + supplied.getRawQuery()));
     }
 }

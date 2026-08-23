@@ -34,6 +34,7 @@ class LocalFileArtifactStoreTest {
         assertEquals(10, stored.size());
         assertEquals("84d89877f0d4041efb6bf91a16f0248f2fd573e6af05c19f96bedb9f882f7882",
                 stored.sha256());
+        assertEquals(stored, store.inspect(plan.location()));
         try (InputStream range = store.open(plan.location(), 2, 4)) {
             assertEquals("2345", new String(range.readAllBytes(), StandardCharsets.UTF_8));
         }

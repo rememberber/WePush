@@ -12,6 +12,7 @@ import io.grpc.stub.StreamObserver;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.List;
 
 final class AgentControlGrpcService extends AgentControlServiceGrpc.AgentControlServiceImplBase {
     private final AgentApplicationService agents;
@@ -29,16 +30,18 @@ final class AgentControlGrpcService extends AgentControlServiceGrpc.AgentControl
 
     @Override
     public StreamObserver<AgentToService> connect(StreamObserver<ServiceToAgent> responses) {
-        return new AgentStream(responses);
+        return new AgentStream(responses, AgentTokenServerInterceptor.AUTHENTICATED_AGENT_ID.get());
     }
 
     private final class AgentStream implements StreamObserver<AgentToService> {
         private final StreamObserver<ServiceToAgent> responses;
         private final AtomicBoolean terminated = new AtomicBoolean();
+        private final String authenticatedAgentId;
         private AgentApplicationService.Connection connection;
 
-        private AgentStream(StreamObserver<ServiceToAgent> responses) {
+        private AgentStream(StreamObserver<ServiceToAgent> responses, String authenticatedAgentId) {
             this.responses = responses;
+            this.authenticatedAgentId = authenticatedAgentId == null ? "" : authenticatedAgentId;
         }
 
         @Override
@@ -47,10 +50,22 @@ final class AgentControlGrpcService extends AgentControlServiceGrpc.AgentControl
             try {
                 AgentFrames.AgentToService frame = AgentProtoMapper.fromProto(value);
                 if (connection == null) {
+                    if (!authenticatedAgentId.isEmpty()
+                            && !authenticatedAgentId.equals(frame.agentId().value())) {
+                        throw new AgentApplicationService.AgentProtocolProblem(
+                                "AGENT_IDENTITY_MISMATCH",
+                                "Authenticated Agent identity differs from Hello");
+                    }
                     connection = agents.connect(frame);
                     streams.register(connection, this::send, this::replaced);
-                    responses.onNext(AgentProtoMapper.toProto(connection.welcome()));
-                    if (remoteExecution) remoteRuns.recoverPending();
+                    List<com.fangxuele.wepush.next.agent.protocol.LeaseFence> resumable =
+                            remoteExecution ? remoteRuns.reconnected(connection.registration(),
+                                    connection.recoveredLeases()) : List.of();
+                    responses.onNext(AgentProtoMapper.toProto(connection.welcome(resumable)));
+                    if (remoteExecution) {
+                        remoteRuns.deliverPendingForAgent(connection.registration().id());
+                        remoteRuns.recoverPending();
+                    }
                 } else {
                     AtomicReference<AgentFrames.ServicePayload> response = new AtomicReference<>();
                     agents.accept(connection, frame, payload -> {

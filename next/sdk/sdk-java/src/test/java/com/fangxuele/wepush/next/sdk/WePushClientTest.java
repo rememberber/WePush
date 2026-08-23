@@ -205,4 +205,32 @@ class WePushClientTest {
             }
         }
     }
+
+    @Test
+    void createsApiTokensThroughTheWorkspaceScopedSecurityEndpoint() throws IOException {
+        server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        AtomicReference<String> requestBody = new AtomicReference<>();
+        server.createContext("/api/v1/workspaces/ws_blue/api-tokens", exchange -> {
+            requestBody.set(new String(exchange.getRequestBody().readAllBytes(),
+                    StandardCharsets.UTF_8));
+            byte[] body = """
+                    {"tokenId":"token_1","principalId":"principal_1","token":"wpu.secret",
+                    "expiresAt":"2026-08-24T10:00:00Z","workspaceId":"ws_blue","role":"OPERATOR"}
+                    """.getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().add("Content-Type", "application/json");
+            exchange.sendResponseHeaders(201, body.length);
+            exchange.getResponseBody().write(body);
+            exchange.close();
+        });
+        server.start();
+
+        try (WePushClient client = WePushClient.builder()
+                .endpoint(URI.create("http://127.0.0.1:" + server.getAddress().getPort())).build()) {
+            SecurityClient.IssuedToken issued = client.security().createToken(
+                    "operator", "ws_blue", SecurityClient.Role.OPERATOR, "P1D");
+            assertEquals("ws_blue", issued.workspaceId());
+        }
+        assertEquals("{\"name\":\"operator\",\"role\":\"OPERATOR\",\"ttl\":\"P1D\"}",
+                requestBody.get());
+    }
 }

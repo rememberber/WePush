@@ -7,8 +7,13 @@ import com.fangxuele.wepush.next.agent.protocol.AgentFrames;
 import com.fangxuele.wepush.next.agent.protocol.LeaseFence;
 import com.fangxuele.wepush.next.agent.protocol.RemoteRunDocuments;
 import com.fangxuele.wepush.next.agent.protocol.SecretEnvelopeCodec;
+import com.fangxuele.wepush.next.agent.runtime.AgentEventOutbox;
+import com.fangxuele.wepush.next.agent.runtime.AgentCompletionOutbox;
 import com.fangxuele.wepush.next.agent.runtime.AgentRuntime;
+import com.fangxuele.wepush.next.agent.runtime.InMemoryAgentCompletionOutbox;
+import com.fangxuele.wepush.next.agent.runtime.InMemoryAgentEventOutbox;
 import com.fangxuele.wepush.next.core.api.ArtifactSink;
+import com.fangxuele.wepush.next.core.api.ArtifactRef;
 import com.fangxuele.wepush.next.core.api.CommandResult;
 import com.fangxuele.wepush.next.core.api.ConfigDocument;
 import com.fangxuele.wepush.next.core.api.ExecutionClock;
@@ -31,6 +36,7 @@ import com.fangxuele.wepush.next.core.api.RunSummary;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -38,19 +44,27 @@ import java.nio.charset.StandardCharsets;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.KeyPair;
+import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 final class RemoteAgentRunExecutor implements AutoCloseable {
     private static final int MAXIMUM_DOCUMENT_BYTES = 64 * 1024 * 1024;
@@ -61,19 +75,40 @@ final class RemoteAgentRunExecutor implements AutoCloseable {
     private final String agentId;
     private final SecretEnvelopeCodec secretEnvelopes = new SecretEnvelopeCodec();
     private final KeyPair secretEncryptionKey;
+    private final AgentEventOutbox eventOutbox;
+    private final AgentCompletionOutbox completionOutbox;
     private final HttpClient http;
     private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
+    private final AtomicReference<AgentFrameSender> activeSender = new AtomicReference<>();
+    private final Object eventPumpLock = new Object();
+    private final Map<LeaseFence, Long> transmittedEventSequences = new HashMap<>();
+    private final Set<LeaseFence> resumableFences = new HashSet<>();
+    private final Set<LeaseFence> transmittedCompletions = new HashSet<>();
 
     RemoteAgentRunExecutor(AgentRuntime runtime, ObjectMapper mapper, String token) {
-        this("local-agent", runtime, mapper, token);
+        this("local-agent", runtime, mapper, token, new InMemoryAgentEventOutbox(),
+                new InMemoryAgentCompletionOutbox());
     }
 
     RemoteAgentRunExecutor(String agentId, AgentRuntime runtime, ObjectMapper mapper, String token) {
+        this(agentId, runtime, mapper, token, new InMemoryAgentEventOutbox(),
+                new InMemoryAgentCompletionOutbox());
+    }
+
+    RemoteAgentRunExecutor(String agentId, AgentRuntime runtime, ObjectMapper mapper, String token,
+                           AgentEventOutbox eventOutbox) {
+        this(agentId, runtime, mapper, token, eventOutbox, new InMemoryAgentCompletionOutbox());
+    }
+
+    RemoteAgentRunExecutor(String agentId, AgentRuntime runtime, ObjectMapper mapper, String token,
+                           AgentEventOutbox eventOutbox, AgentCompletionOutbox completionOutbox) {
         if (agentId == null || agentId.isBlank()) throw new IllegalArgumentException("agentId is required");
         this.agentId = agentId;
         this.runtime = runtime;
         this.mapper = mapper;
         this.token = token == null ? "" : token;
+        this.eventOutbox = eventOutbox;
+        this.completionOutbox = completionOutbox;
         this.http = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10))
                 .followRedirects(HttpClient.Redirect.NEVER).build();
         this.secretEncryptionKey = secretEnvelopes.generateRecipientKeyPair();
@@ -84,10 +119,18 @@ final class RemoteAgentRunExecutor implements AutoCloseable {
     }
 
     void offer(AgentFrames.LeaseOffer offer, AgentFrameSender sender) {
+        synchronized (eventPumpLock) {
+            resumableFences.add(offer.fence());
+        }
+        connected(sender, Set.copyOf(resumableFences));
         executor.execute(() -> execute(offer, sender));
     }
 
     void command(AgentFrames.RunCommand frame, AgentFrameSender sender) {
+        synchronized (eventPumpLock) {
+            resumableFences.add(frame.fence());
+        }
+        connected(sender, Set.copyOf(resumableFences));
         executor.execute(() -> {
             try {
                 RunCommand command = command(frame);
@@ -99,6 +142,114 @@ final class RemoteAgentRunExecutor implements AutoCloseable {
                         "REJECTED", safeMessage(problem)));
             }
         });
+    }
+
+    void connected(AgentFrameSender sender) {
+        connected(sender, eventOutbox.pending().stream().map(AgentEventOutbox.PendingBatch::fence)
+                .collect(java.util.stream.Collectors.toSet()));
+    }
+
+    void connected(AgentFrameSender sender, java.util.Collection<LeaseFence> resumable) {
+        synchronized (eventPumpLock) {
+            if (activeSender.get() != sender) transmittedEventSequences.clear();
+            if (activeSender.get() != sender) transmittedCompletions.clear();
+            resumableFences.clear();
+            resumableFences.addAll(resumable);
+            activeSender.set(sender);
+            transmitPendingEvents();
+            recoverInterruptedRuns();
+            transmitPendingCompletions();
+        }
+    }
+
+    void disconnected(AgentFrameSender sender) {
+        synchronized (eventPumpLock) {
+            if (activeSender.compareAndSet(sender, null)) {
+                transmittedEventSequences.clear();
+                transmittedCompletions.clear();
+            }
+        }
+    }
+
+    void acknowledge(AgentFrames.EventAck acknowledgement) {
+        eventOutbox.acknowledge(acknowledgement);
+        synchronized (eventPumpLock) {
+            transmittedEventSequences.computeIfPresent(acknowledgement.fence(), (_fence, sent) ->
+                    Math.max(sent, acknowledgement.lastEventSequence()));
+            transmitPendingEvents();
+        }
+    }
+
+    void acknowledge(AgentFrames.RunCompletionAck acknowledgement) {
+        synchronized (eventPumpLock) {
+            completionOutbox.acknowledge(acknowledgement.fence());
+            transmittedCompletions.remove(acknowledgement.fence());
+            runtime.recoveryCompleted(acknowledgement.fence());
+        }
+    }
+
+    long pendingEventBytes() {
+        return eventOutbox.sizeBytes();
+    }
+
+    private void transmitPendingEvents() {
+        AgentFrameSender sender = activeSender.get();
+        if (sender == null) return;
+        for (AgentEventOutbox.PendingBatch batch : eventOutbox.pending()) {
+            if (!resumableFences.contains(batch.fence())) continue;
+            long sent = transmittedEventSequences.getOrDefault(batch.fence(), 0L);
+            if (batch.lastEventSequence() <= sent) continue;
+            try {
+                sender.send(runtime.events(batch.fence(), batch.firstEventSequence(), batch.events()));
+                transmittedEventSequences.put(batch.fence(), batch.lastEventSequence());
+            } catch (RuntimeException connectionFailure) {
+                activeSender.compareAndSet(sender, null);
+                transmittedEventSequences.clear();
+                return;
+            }
+        }
+    }
+
+    private void recoverInterruptedRuns() {
+        Instant endedAt = Instant.now();
+        for (AgentRuntime.RecoveryRun recovered : runtime.recoveryRuns()) {
+            if (!resumableFences.contains(recovered.fence())) continue;
+            long total = recovered.totalRecipients();
+            boolean mayHaveCalledProvider = recovered.previousState()
+                    == com.fangxuele.wepush.next.agent.runtime.LeaseState.RUNNING;
+            RemoteRunDocuments.Summary summary = new RemoteRunDocuments.Summary(
+                    recovered.fence().runId(), "FAILED", total, 0, 0,
+                    mayHaveCalledProvider ? total : 0,
+                    mayHaveCalledProvider ? 0 : total, 0, 0,
+                    recovered.startedAt() == null ? endedAt : recovered.startedAt(), endedAt);
+            completionOutbox.put(recovered.fence(), encode(summary), List.of());
+        }
+    }
+
+    private void queueCompletion(LeaseFence fence, byte[] summary, List<String> artifacts) {
+        completionOutbox.put(fence, summary, artifacts);
+        synchronized (eventPumpLock) {
+            transmitPendingCompletions();
+        }
+    }
+
+    private void transmitPendingCompletions() {
+        AgentFrameSender sender = activeSender.get();
+        if (sender == null) return;
+        for (AgentCompletionOutbox.PendingCompletion completion : completionOutbox.pending()) {
+            if (!resumableFences.contains(completion.fence())
+                    || transmittedCompletions.contains(completion.fence())) continue;
+            try {
+                sender.send(runtime.completed(completion.fence(), completion.summary(),
+                        completion.artifactReferences()));
+                transmittedCompletions.add(completion.fence());
+            } catch (RuntimeException connectionFailure) {
+                activeSender.compareAndSet(sender, null);
+                transmittedEventSequences.clear();
+                transmittedCompletions.clear();
+                return;
+            }
+        }
     }
 
     private void execute(AgentFrames.LeaseOffer offer, AgentFrameSender sender) {
@@ -125,8 +276,11 @@ final class RemoteAgentRunExecutor implements AutoCloseable {
             }
 
             RunExecutionSpec spec = specification(document);
-            execution = new RemoteExecution(offer.fence(), audience, sender, openedSecrets);
+            execution = new RemoteExecution(offer.fence(), audience, sender, openedSecrets,
+                    serviceBaseUrl(offer.executionSpecUrl()));
             openedSecrets = null;
+            runtime.prepared(offer.fence(), offer.executionSpecSha256(), offer.audienceSha256(),
+                    audience.recipients().size(), started);
             sender.send(runtime.acknowledge(offer.fence()));
             acknowledged = true;
             RunHandle handle = runtime.start(offer.fence(), spec, execution.ports());
@@ -180,13 +334,18 @@ final class RemoteAgentRunExecutor implements AutoCloseable {
         return response.body();
     }
 
+    private static String serviceBaseUrl(String url) {
+        URI value = URI.create(url);
+        return value.getScheme() + "://" + value.getRawAuthority();
+    }
+
     private void failBeforeStart(LeaseFence fence, AgentFrameSender sender, Instant started,
                                  long total, boolean acknowledged, Throwable failure) {
         if (acknowledged) {
             Instant ended = Instant.now();
             RemoteRunDocuments.Summary summary = new RemoteRunDocuments.Summary(fence.runId(), "FAILED",
                     total, 0, 0, 0, total, 0, 0, started, ended);
-            sender.send(runtime.completed(fence, encode(summary), List.of()));
+            queueCompletion(fence, encode(summary), List.of());
         }
         System.err.printf("Remote run %s could not start: %s%n", fence.runId(), safeMessage(failure));
     }
@@ -255,11 +414,11 @@ final class RemoteAgentRunExecutor implements AutoCloseable {
         private final AgentFrameSender sender;
         private final SecretEnvelopeCodec.OpenedSecrets secrets;
         private final Map<String, SecretEnvelopeCodec.SecretMaterial> secretsByIdentity;
-        private long reportSequence;
-
+        private final ArtifactSink artifactSink;
         private RemoteExecution(LeaseFence fence, RemoteRunDocuments.Audience audience,
                                 AgentFrameSender sender,
-                                SecretEnvelopeCodec.OpenedSecrets secrets) throws JsonProcessingException {
+                                SecretEnvelopeCodec.OpenedSecrets secrets,
+                                String serviceBaseUrl) throws JsonProcessingException {
             this.fence = fence;
             this.sender = sender;
             this.secrets = secrets;
@@ -272,6 +431,7 @@ final class RemoteAgentRunExecutor implements AutoCloseable {
                 }
             }
             this.secretsByIdentity = Map.copyOf(indexed);
+            this.artifactSink = new RemoteArtifactSink(fence, serviceBaseUrl);
             List<RecipientRecord> converted = new ArrayList<>(audience.recipients().size());
             for (RemoteRunDocuments.Recipient recipient : audience.recipients()) {
                 converted.add(recipient(recipient));
@@ -295,12 +455,14 @@ final class RemoteAgentRunExecutor implements AutoCloseable {
                     Arrays.fill(encoded, (byte) 0);
                     if (decoded != null) Arrays.fill(decoded, '\0');
                 }
-            }, new RemoteResultSink(), ArtifactSink.none(), new RemoteEventSink(), ExecutionClock.system());
+            }, new RemoteResultSink(), artifactSink, new RemoteEventSink(), ExecutionClock.system());
         }
 
         private synchronized void report(RemoteRunDocuments.Report report) {
-            long sequence = ++reportSequence;
-            sender.send(runtime.events(fence, sequence, List.of(encode(report))));
+            eventOutbox.append(fence, List.of(encode(report)));
+            synchronized (eventPumpLock) {
+                transmitPendingEvents();
+            }
         }
 
         private void complete(RunSummary source) {
@@ -309,8 +471,8 @@ final class RemoteAgentRunExecutor implements AutoCloseable {
                         source.finalState().name(), source.total(), source.succeeded(), source.failed(),
                         source.unknown(), source.unsent(), source.skipped(), source.retried(),
                         source.startedAt(), source.endedAt());
-                sender.send(runtime.completed(fence, encode(summary), source.artifacts().stream()
-                        .map(value -> value.artifactId()).toList()));
+                queueCompletion(fence, encode(summary), source.artifacts().stream()
+                        .map(value -> value.artifactId()).toList());
             } finally {
                 closeSecrets();
             }
@@ -321,7 +483,7 @@ final class RemoteAgentRunExecutor implements AutoCloseable {
                 Instant ended = Instant.now();
                 RemoteRunDocuments.Summary summary = new RemoteRunDocuments.Summary(fence.runId(), "FAILED",
                         total, 0, 0, 0, total, 0, 0, started, ended);
-                sender.send(runtime.completed(fence, encode(summary), List.of()));
+                queueCompletion(fence, encode(summary), List.of());
                 System.err.printf("Remote run %s failed: %s%n", fence.runId(), safeMessage(failure));
             } finally {
                 closeSecrets();
@@ -397,6 +559,116 @@ final class RemoteAgentRunExecutor implements AutoCloseable {
             throw new IllegalArgumentException("Secret envelope value is not valid UTF-8", exception);
         }
     }
+
+    private final class RemoteArtifactSink implements ArtifactSink {
+        private final LeaseFence fence;
+        private final String serviceBaseUrl;
+        private final CopyOnWriteArrayList<ArtifactRef> references = new CopyOnWriteArrayList<>();
+
+        private RemoteArtifactSink(LeaseFence fence, String serviceBaseUrl) {
+            this.fence = fence;
+            this.serviceBaseUrl = serviceBaseUrl;
+        }
+
+        @Override
+        public ArtifactRef write(String type, String originalName, String contentType,
+                                 ContentWriter writer) throws IOException {
+            Path temporary = Files.createTempFile("wepush-agent-artifact-", ".tmp");
+            try {
+                MessageDigest digest = sha256Digest();
+                try (var output = new DigestOutputStream(Files.newOutputStream(temporary), digest)) {
+                    writer.write(output);
+                }
+                long size = Files.size(temporary);
+                String sha256 = HexFormat.of().formatHex(digest.digest());
+                ArtifactUploadPlan plan = plan(type, originalName, contentType, size, sha256);
+                upload(plan, temporary);
+                ArtifactCommitResult committed = commit(plan);
+                if (committed.size() != size || !sha256.equals(committed.sha256())
+                        || !"READY".equals(committed.state())) {
+                    throw new IOException("Service committed different Artifact content");
+                }
+                ArtifactRef reference = new ArtifactRef(committed.artifactId(), type, sha256, size);
+                references.add(reference);
+                return reference;
+            } catch (InterruptedException problem) {
+                Thread.currentThread().interrupt();
+                throw new IOException("Artifact upload was interrupted", problem);
+            } finally {
+                Files.deleteIfExists(temporary);
+            }
+        }
+
+        @Override
+        public List<ArtifactRef> artifacts() {
+            return List.copyOf(references);
+        }
+
+        private ArtifactUploadPlan plan(String type, String originalName, String contentType,
+                                        long size, String sha256) throws IOException, InterruptedException {
+            String path = serviceBaseUrl + "/internal/agent/v1/leases/"
+                    + URLEncoder.encode(fence.leaseId(), StandardCharsets.UTF_8) + "/artifacts";
+            byte[] body = mapper.writeValueAsBytes(new ArtifactPlanRequest(fence.runId(), fence.epoch(),
+                    fence.fencingToken(), type, originalName, contentType, size, sha256));
+            HttpRequest.Builder request = HttpRequest.newBuilder(URI.create(path))
+                    .timeout(Duration.ofSeconds(30)).header("Content-Type", "application/json")
+                    .header("Accept", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofByteArray(body));
+            authenticate(request);
+            HttpResponse<byte[]> response = http.send(request.build(), HttpResponse.BodyHandlers.ofByteArray());
+            if (response.statusCode() != 201) {
+                throw new IOException("Artifact plan returned HTTP " + response.statusCode());
+            }
+            return mapper.readValue(response.body(), ArtifactUploadPlan.class);
+        }
+
+        private void upload(ArtifactUploadPlan plan, Path file) throws IOException, InterruptedException {
+            HttpRequest.Builder request = HttpRequest.newBuilder(URI.create(plan.uploadUrl()))
+                    .timeout(Duration.ofMinutes(30)).PUT(HttpRequest.BodyPublishers.ofFile(file));
+            plan.uploadHeaders().forEach((name, value) -> {
+                if (!"host".equalsIgnoreCase(name) && !"content-length".equalsIgnoreCase(name)) {
+                    request.header(name, value);
+                }
+            });
+            HttpResponse<byte[]> response = http.send(request.build(), HttpResponse.BodyHandlers.ofByteArray());
+            if (response.statusCode() < 200 || response.statusCode() >= 300) {
+                throw new IOException("Artifact upload returned HTTP " + response.statusCode());
+            }
+        }
+
+        private ArtifactCommitResult commit(ArtifactUploadPlan plan)
+                throws IOException, InterruptedException {
+            HttpRequest.Builder request = HttpRequest.newBuilder(URI.create(plan.commitUrl()))
+                    .timeout(Duration.ofSeconds(30)).header("Accept", "application/json")
+                    .POST(HttpRequest.BodyPublishers.noBody());
+            authenticate(request);
+            HttpResponse<byte[]> response = http.send(request.build(), HttpResponse.BodyHandlers.ofByteArray());
+            if (response.statusCode() != 200) {
+                throw new IOException("Artifact commit returned HTTP " + response.statusCode());
+            }
+            return mapper.readValue(response.body(), ArtifactCommitResult.class);
+        }
+
+        private void authenticate(HttpRequest.Builder request) {
+            if (!token.isBlank()) request.header("Authorization", "Agent " + token);
+        }
+    }
+
+    private static MessageDigest sha256Digest() {
+        try {
+            return MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException impossible) {
+            throw new IllegalStateException("SHA-256 is unavailable", impossible);
+        }
+    }
+
+    private record ArtifactPlanRequest(String runId, long epoch, String fencingToken, String type,
+                                       String originalName, String contentType, long size, String sha256) { }
+    private record ArtifactUploadPlan(String artifactId, String uploadUrl, String commitUrl,
+                                      Instant expiresAt, long expectedSize, String expectedSha256,
+                                      Map<String, String> uploadHeaders) { }
+    private record ArtifactCommitResult(String artifactId, long size, String sha256,
+                                        String state, Instant readyAt) { }
 
     private static final class ListRecipientSource implements RecipientSource {
         private final List<RecipientRecord> recipients;

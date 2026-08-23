@@ -64,7 +64,7 @@ public final class AgentApplicationService {
         AgentFrames.Welcome welcome = new AgentFrames.Welcome(PROTOCOL_VERSION, now,
                 Math.toIntExact(heartbeatInterval.toSeconds()), maximumMessageBytes, frame.sequence());
         return new Connection(registration,
-                new AgentFrames.ServiceToAgent(serviceSequence, welcome));
+                new AgentFrames.ServiceToAgent(serviceSequence, welcome), hello.recoveredLeases());
     }
 
     public void accept(Connection connection, AgentFrames.AgentToService frame) {
@@ -155,12 +155,15 @@ public final class AgentApplicationService {
     public static final class Connection {
         private final AgentRegistration registration;
         private final AgentFrames.ServiceToAgent welcome;
+        private final List<com.fangxuele.wepush.next.agent.protocol.LeaseFence> recoveredLeases;
         private long lastAgentSequence;
         private long lastServiceSequence;
 
-        private Connection(AgentRegistration registration, AgentFrames.ServiceToAgent welcome) {
+        private Connection(AgentRegistration registration, AgentFrames.ServiceToAgent welcome,
+                           List<com.fangxuele.wepush.next.agent.protocol.LeaseFence> recoveredLeases) {
             this.registration = registration;
             this.welcome = welcome;
+            this.recoveredLeases = List.copyOf(recoveredLeases);
             this.lastAgentSequence = registration.lastAgentSequence();
             this.lastServiceSequence = welcome.sequence();
         }
@@ -168,6 +171,18 @@ public final class AgentApplicationService {
         public AgentRegistration registration() { return registration; }
 
         public AgentFrames.ServiceToAgent welcome() { return welcome; }
+
+        public AgentFrames.ServiceToAgent welcome(
+                List<com.fangxuele.wepush.next.agent.protocol.LeaseFence> resumableLeases) {
+            AgentFrames.Welcome value = (AgentFrames.Welcome) welcome.payload();
+            return new AgentFrames.ServiceToAgent(welcome.sequence(), new AgentFrames.Welcome(
+                    value.protocolVersion(), value.serverTime(), value.heartbeatSeconds(),
+                    value.maximumMessageBytes(), value.lastAgentSequence(), resumableLeases));
+        }
+
+        public List<com.fangxuele.wepush.next.agent.protocol.LeaseFence> recoveredLeases() {
+            return recoveredLeases;
+        }
     }
 
     public static final class AgentProtocolProblem extends RuntimeException {

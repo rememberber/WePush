@@ -2,6 +2,12 @@ packages:
   - apps/*
   - packages/*
 
+# pnpm blocks dependency lifecycle scripts unless they are explicitly trusted.
+# Electron's pinned postinstall downloads and verifies the native runtime that
+# the Desktop packager copies into the release bundle.
+onlyBuiltDependencies:
+  - electron
+
 catalog:
   '@tailwindcss/vite': 4.3.3
   '@types/node': 24.13.3

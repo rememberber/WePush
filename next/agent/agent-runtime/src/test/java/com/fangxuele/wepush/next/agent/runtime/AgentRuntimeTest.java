@@ -66,6 +66,22 @@ class AgentRuntimeTest {
         assertEquals(3, recovered.heartbeat().sequence());
     }
 
+    @Test
+    void advertisesOnlyRecoverableLeasesAfterProcessRestart() {
+        LeaseFence running = new LeaseFence("lease-running", "run-1", 2, "running-token");
+        LeaseFence completed = new LeaseFence("lease-completed", "run-2", 1, "completed-token");
+        InMemoryAgentJournal journal = new InMemoryAgentJournal();
+        journal.save(new AgentJournalState(8, 5, java.util.Map.of(
+                running.leaseId(), new AgentJournalState.PersistedLease(
+                        running, NOW.plusSeconds(30), LeaseState.RUNNING),
+                completed.leaseId(), new AgentJournalState.PersistedLease(
+                        completed, NOW.plusSeconds(30), LeaseState.COMPLETED))));
+
+        AgentFrames.Hello hello = (AgentFrames.Hello) runtime(journal).hello(List.of()).payload();
+
+        assertEquals(List.of(running), hello.recoveredLeases());
+    }
+
     private static AgentRuntime runtime(InMemoryAgentJournal journal) {
         return new AgentRuntime(
                 new AgentId("agent-test"),

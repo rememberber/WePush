@@ -922,7 +922,7 @@ Service 根据 Agent 能力和容量主动发送 `LeaseOffer`，其中包含：
 
 Agent 下载并校验 Snapshot 后发送 `LeaseAck`。未在 Ack Deadline 内确认的 Offer 失效；Service 只有在校验 Agent、Lease、Epoch 和 Fencing Token 后才允许 Run 进入 `RUNNING`。
 
-当前 SQLite 纵向实现可通过 `wepush.execution.mode=remote` 启用该链路：`agent_lease` 保存会话归属、Epoch、Fencing Token、状态和最后连续 Event Sequence；Execution Spec 与 Audience 由受 Agent Token 保护的 `/internal/agent/v1/leases/{leaseId}/...` JSON API 提供，并在 Offer 中携带 SHA-256。Secret Envelope 已采用一次性 X25519 + HKDF-SHA-256 + AES-256-GCM 实现，Agent 会话公钥由 Hello 发布并持久化，密文同时绑定 Agent/Run/Lease/Epoch/Fence/过期时间，明文只在 Agent 运行内存短期存在。生产版 Presigned Artifact 仍按本章后续设计演进。
+当前实现可通过 `wepush.execution.mode=remote` 启用该链路：`agent_lease` 保存会话归属、Epoch、Fencing Token、状态和最后连续 Event Sequence；Execution Spec 与 Audience 由受 Agent Credential/Bootstrap Token 保护的 `/internal/agent/v1/leases/{leaseId}/...` JSON API 提供，并在 Offer 中携带 SHA-256。Secret Envelope 已采用一次性 X25519 + HKDF-SHA-256 + AES-256-GCM 实现，Agent 会话公钥由 Hello 发布并持久化，密文同时绑定 Agent/Run/Lease/Epoch/Fence/过期时间，明文只在 Agent 运行内存短期存在。Agent Artifact 使用 Lease 绑定的短期上传计划，可经 Service 流式上传或 S3 Presigned Put，Commit 前执行 Head、大小和 SHA-256 完整性校验；Service 直接写入达到 100 MiB 时使用 Multipart。
 
 ### 19.4 Fencing 和重连
 
@@ -1378,7 +1378,7 @@ data/artifacts/
 - Server 默认实现 `S3ArtifactStore`，只依赖 Put/Get/Head/Delete、Range、Presigned URL 和 Multipart Upload 等受控 S3-compatible 子集。
 - 对象键格式为 `workspaces/{workspaceId}/{artifactType}/{yyyy}/{mm}/{artifactId}`，不含用户文件名和 Secret。
 - Agent 不持有长期对象存储 Credential；Service 签发最小权限、短期有效的上传或下载 URL。
-- 单对象达到 100 MiB 时默认使用 Multipart；未完成 Multipart 在 24 小时后终止。
+- Service 托管流式写入达到 100 MiB 时默认使用 Multipart；Agent 当前使用绑定长度和 SHA-256 的单次 Presigned Put，单 Artifact 上限 1 GiB。提高上限时可扩展 Presigned Multipart Plan；未完成 Multipart 由对象存储 Lifecycle 在 24 小时后终止。
 - Server 模式启用对象存储服务端加密；可用时允许配置 KMS Key。
 - 数据库元数据是生命周期事实源，对象存储 List 只能用于对账和孤儿清理。
 
@@ -1702,7 +1702,7 @@ flowchart TD
 
 读取账号不等于读取 Secret。即使 ADMIN 也不能通过普通 API 取回明文 Secret。
 
-角色绑定在 Workspace 范围内；系统管理员身份不能代替每个业务用例的 Workspace 授权。Standalone 的 Default Workspace 在普通 UI 中隐藏，但 API 和 Repository 仍使用其真实 ID。
+`ADMIN`、`OPERATOR`、`VIEWER` 角色绑定在 Workspace 范围内。另设显式 `SYSTEM_ADMIN`，只用于 Workspace 生命周期、全局 Agent 视图和跨 Workspace 应急治理；它可以越过 Workspace 角色，但每次操作仍携带目标 `workspaceId` 并进入审计。普通 Workspace `ADMIN` 不能签发、查看或吊销其他 Workspace 的 API Token/Enrollment Token。Standalone 的 Default Workspace 在普通 UI 中隐藏，但 API 和 Repository 仍使用其真实 ID。
 
 ### 35.2 权限检查
 
@@ -1829,8 +1829,8 @@ wepush:
 | 平台 | 配置 | 数据 | 日志 |
 |---|---|---|---|
 | Linux | `/etc/wepush-next/` | `/var/lib/wepush-next/` | `/var/log/wepush-next/` |
-| Windows | `%ProgramData%\WePush Next\config` | `%ProgramData%\WePush Next\data` | `%ProgramData%\WePush Next\logs` |
-| macOS Service | `/Library/Application Support/WePush Next/` | 同目录下 `data` | 同目录下 `logs` |
+| Windows | `%ProgramData%\WePush Next\service.env`、`agent.env` | `%ProgramData%\WePush Next\service`、`agent` | `%ProgramData%\WePush Next\logs` |
+| macOS Service | `/Library/Preferences/wepush-next/` | `/Library/WePushNext/data/` | `/Library/Logs/WePushNext/` |
 | 开发模式 | `next/.local/config` | `next/.local/data` | `next/.local/logs` |
 
 默认 HTTP 端口建议 `18990`，不得与 Classic 使用的资源发生冲突。
@@ -1841,16 +1841,16 @@ wepush:
 
 ### 40.1 Linux
 
-- 使用专用系统用户 `wepush-next`。
+- Service 使用专用系统用户 `wepush`，Agent 使用独立的 `wepush-agent`，配置组权限和数据目录彼此分离。
 - systemd Unit 以非 root 用户运行。
-- `ExecStart` 指向应用镜像或捆绑 JRE。
+- `ExecStart` 指向版本化发行目录；`0.1.x` 安装器校验并使用系统 Java 21+。未来若改为 `jlink` Runtime Image，作为独立发行变体提供。
 - 配置 `Restart=on-failure` 和合理的 Stop Timeout。
 - 安装后不自动开放公网防火墙端口。
 
 ### 40.2 Windows
 
 - 使用独立 Windows Service 名称 `WePushNextService`。
-- 通过 Service Wrapper 启动捆绑 JRE。
+- 通过 WinSW 启动系统 Java 21+；WinSW 使用低权限 `LocalService`，`ProgramData` ACL 只授予 LocalService、SYSTEM 和 Administrators。
 - 配置滚动日志、失败重启和优雅停止。
 - 安装、卸载和 Service 控制需要管理员权限。
 
@@ -1858,6 +1858,7 @@ wepush:
 
 - 系统级 Service 使用 LaunchDaemon；用户级 Standalone 可使用 LaunchAgent。
 - 安装包明确选择一种运行级别，不能混用数据目录。
+- LaunchDaemon 必须使用明确存在的非 root 账号；安装器默认使用 `sudo` 的发起用户，也允许显式设置 `WEPUSH_SERVICE_USER`。
 - 签名、公证和升级流程单独验证。
 
 ### 40.4 升级
@@ -2022,7 +2023,7 @@ Next CI 使用 `next/**` 路径过滤，Classic 和 Next 互不依赖对方构�
 - Fencing Token 与 Agent Journal。
 - Agent 失联和恢复测试。
 
-当前进度：Hello/Heartbeat、持久 Lease/Fence、Snapshot/Audience 下载校验、加密 Secret Envelope、远端 Core 执行、EventBatch/EventAck、RunCommand/CommandAck、RunCompleted 和重复 Event Batch 去重已形成 SQLite 纵向闭环；Enrollment/mTLS、磁盘 Event Outbox、Artifact 上传和进程重启续跑仍未完成。
+当前进度：Iteration 5 基线已完成。Hello/Heartbeat、持久 Lease/Fence、Snapshot/Audience 下载校验、加密 Secret Envelope、远端 Core 执行、磁盘 Event/Completion Outbox、EventBatch/EventAck、RunCommand/CommandAck、Agent Artifact 上传/完整性提交、RunCompleted、重复 Offer/Event 去重、进程重启恢复、一次性 Enrollment、Credential/证书轮换以及 TLS/mTLS 已形成纵向闭环；Service→Agent 消息使用数据库 outbox 支持 Agent 在任意 Service 实例重连。
 
 ### 44.6 Iteration 6：产品化
 
@@ -2030,6 +2031,8 @@ Next CI 使用 `next/**` 路径过滤，Classic 和 Next 互不依赖对方构�
 - Scheduler。
 - Desktop 和三平台 Service 安装。
 - PostgreSQL 18 HA、S3-compatible Artifact Store 和部署文档。
+
+当前进度：Iteration 6 基线已完成。Workspace API 与 Agent Binding、Bearer API Token、VIEWER/OPERATOR/ADMIN、审计、Cron/Misfire Scheduler、PostgreSQL Advisory Lock、跨实例 SSE 补偿、S3 Store、Prometheus、三平台安装/升级/备份/卸载、WebUI Security/Schedule/API Debug 页面、Electron 目标平台目录打包、容器 HA 参考拓扑和运维手册均已落地。商业代码签名、公证、云 KMS/Vault 和公共 SaaS 属于后续产品增量。
 
 ## 45. 完成定义
 
@@ -2052,10 +2055,9 @@ Next CI 使用 `next/**` 路径过滤，Classic 和 Next 互不依赖对方构�
 
 1. OpenAPI Generator、数据库迁移工具、路由和 Server State 库的具体版本。
 2. Desktop 本地 Bootstrap Channel 的平台实现和签名更新服务。
-3. 远程 Agent Token、mTLS 或混合认证的正式生产策略。
-4. 外部 Vault/云 KMS 的首个适配器。
-5. 非受信 Provider 的独立进程 Runner。
-6. 公共 SaaS 的计费、自助注册、物理隔离和跨地域控制面。
+3. 外部 Vault/云 KMS 的首个适配器。
+4. 非受信 Provider 的独立进程 Runner。
+5. 公共 SaaS 的计费、自助注册、物理隔离和跨地域控制面。
 
 这些扩展不得反向污染 Core API，也不得削弱 Workspace、Lease Fencing、Secret 和 Artifact 的既定安全边界。
 

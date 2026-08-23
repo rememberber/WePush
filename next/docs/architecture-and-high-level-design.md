@@ -723,6 +723,8 @@ Run 的状态摘要、事件和结果制品允许短暂最终一致，但终态�
 - 为每个 Provider 建立契约测试和模拟服务。
 - 完善 Schema 组件库和 Provider 开发文档。
 
+截至 2026-08-23，阶段 A–D 的 `0.1.0` 架构基线已经实现并进入持续验证；阶段 E 是按业务优先级持续增加消息类型的长期产品迭代，不阻塞当前 Next 目标架构成立。实现证据见 [实现状态](implementation-status.md)，安装、HA、升级和恢复见 [部署与运维](deployment-and-operations.md)。
+
 ## 28. 已接受的架构决策
 
 - [ADR-0001：Classic 与 Next 双轨独立发展](adr/0001-dual-track-development.md)

@@ -80,9 +80,10 @@ public final class LocalFileArtifactStore implements ArtifactStore {
             }
             secure(temporary);
             try {
-                Files.move(temporary, target, StandardCopyOption.ATOMIC_MOVE);
+                Files.move(temporary, target, StandardCopyOption.ATOMIC_MOVE,
+                        StandardCopyOption.REPLACE_EXISTING);
             } catch (AtomicMoveNotSupportedException exception) {
-                Files.move(temporary, target);
+                Files.move(temporary, target, StandardCopyOption.REPLACE_EXISTING);
             }
             secure(target);
             syncDirectory(parent);
@@ -90,6 +91,23 @@ public final class LocalFileArtifactStore implements ArtifactStore {
         } finally {
             Files.deleteIfExists(temporary);
         }
+    }
+
+    @Override
+    public StoredObject inspect(String location) throws IOException {
+        Path target = resolve(location);
+        MessageDigest digest = sha256();
+        long size = 0;
+        try (InputStream input = Files.newInputStream(target)) {
+            byte[] buffer = new byte[64 * 1024];
+            int read;
+            while ((read = input.read(buffer)) >= 0) {
+                if (read == 0) continue;
+                digest.update(buffer, 0, read);
+                size += read;
+            }
+        }
+        return new StoredObject(size, HexFormat.of().formatHex(digest.digest()));
     }
 
     @Override

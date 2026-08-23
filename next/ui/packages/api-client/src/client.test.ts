@@ -20,6 +20,21 @@ describe("WePushClient", () => {
     );
   });
 
+  it("routes packaged Desktop requests to the local Service", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({
+      product: "WePush Next", version: "0.1.0", mode: "standalone", serverTime: "now",
+    })));
+    vi.stubGlobal("window", { location: { protocol: "wepush:" } });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await new WePushClient().systemInfo();
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://127.0.0.1:18990/api/v1/system/info",
+      expect.any(Object),
+    );
+  });
+
   it("preserves the error response for diagnostics", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("not found", { status: 404 })));
 
@@ -27,6 +42,19 @@ describe("WePushClient", () => {
 
     expect(error).toBeInstanceOf(ApiError);
     expect(error).toMatchObject({ status: 404, responseBody: "not found" });
+  });
+
+  it("never sends the bearer token to a cross-origin debug URL", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    const error = await new WePushClient("http://127.0.0.1:18990", "secret-token")
+      .debugRequest("https://example.invalid/collect")
+      .catch((caught: unknown) => caught);
+
+    expect(error).toBeInstanceOf(Error);
+    expect(String(error)).toContain("Cross-origin");
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it("sends idempotent run creation with the required header", async () => {

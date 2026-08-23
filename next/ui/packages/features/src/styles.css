@@ -586,6 +586,17 @@
 .coming-page { display: grid; min-height: calc(100vh - 55px); place-items: center; padding: 0; }
 .coming-page .wp-empty-state { margin: 0; }
 .icon { width: 18px; height: 18px; }
+.schedule-panel { margin-top: 20px; }
+.schedule-composer { display: grid; grid-template-columns: minmax(180px, 1fr) minmax(240px, 1.3fr) auto; gap: 12px; align-items: end; margin-bottom: 18px; }
+.api-path-input { flex: 1; min-width: 160px; border: 0; background: transparent; color: var(--wp-text); font-family: var(--wp-mono); font-size: 13px; font-weight: 600; outline: none; }
+.one-time-secret { display: grid; gap: 8px; margin-top: 14px; padding: 12px; border: 1px solid var(--wp-warning); border-radius: 8px; background: var(--wp-warning-bg); }
+.one-time-secret code { overflow-wrap: anywhere; user-select: all; }
+.settings-page .recent-panel { margin-top: 20px; }
+.audit-list { display: grid; gap: 2px; }
+.audit-list article { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 12px; padding: 10px 2px; border-bottom: 1px solid var(--wp-border); }
+.audit-list article:last-child { border-bottom: 0; }
+.audit-list strong, .audit-list small { display: block; }
+.audit-list small { margin-top: 3px; color: var(--wp-text-tertiary); }
 
 @media (max-width: 980px) {
   .metric-grid { grid-template-columns: repeat(2, 1fr); }
@@ -593,6 +604,7 @@
   .quick-start-panel { min-height: auto; }
   .split-layout, .composer-layout, .api-layout, .runs-layout, .agents-layout { grid-template-columns: 1fr; }
   .provider-list-panel, .endpoint-list { min-height: auto; }
+  .schedule-composer { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 720px) {

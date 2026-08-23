@@ -71,6 +71,16 @@ public final class JdbcArtifactRepository implements ArtifactRepository {
     }
 
     @Override
+    public void recordUpload(WorkspaceId workspaceId, String artifactId, long size, String sha256) {
+        int changed = jdbc.update("""
+                UPDATE artifact_record
+                SET size = ?, sha256 = ?, last_error = '', version = version + 1
+                WHERE workspace_id = ? AND id = ? AND state = 'UPLOADING'
+                """, size, sha256, workspaceId.value(), artifactId);
+        if (changed != 1) throw new IllegalStateException("artifact upload cannot be recorded: " + artifactId);
+    }
+
+    @Override
     public void markFailed(WorkspaceId workspaceId, String artifactId, String error) {
         jdbc.update("""
                 UPDATE artifact_record

@@ -12,10 +12,13 @@ import io.grpc.ManagedChannel;
 import io.grpc.Metadata;
 import io.grpc.Status;
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
+import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
 import io.grpc.stub.MetadataUtils;
 import io.grpc.stub.StreamObserver;
 
 import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -34,6 +37,11 @@ final class GrpcAgentClient implements AutoCloseable {
             Thread.ofPlatform().name("wepush-agent-heartbeat").factory());
 
     GrpcAgentClient(String host, int port, boolean plaintext, String token, int maximumMessageBytes) {
+        this(host, port, plaintext, token, maximumMessageBytes, TlsConfiguration.systemTrust());
+    }
+
+    GrpcAgentClient(String host, int port, boolean plaintext, String token, int maximumMessageBytes,
+                    TlsConfiguration tls) {
         if (host == null || host.isBlank() || port < 1 || port > 65_535) {
             throw new IllegalArgumentException("Service host and Agent gRPC port are invalid");
         }
@@ -41,8 +49,11 @@ final class GrpcAgentClient implements AutoCloseable {
                 .maxInboundMessageSize(maximumMessageBytes)
                 .keepAliveTime(30, TimeUnit.SECONDS)
                 .keepAliveTimeout(10, TimeUnit.SECONDS);
-        if (plaintext) builder.usePlaintext();
-        else builder.useTransportSecurity();
+        if (plaintext) {
+            builder.usePlaintext();
+        } else {
+            configureTls(builder, tls == null ? TlsConfiguration.systemTrust() : tls);
+        }
         channel = builder.build();
         AgentControlServiceGrpc.AgentControlServiceStub configured =
                 AgentControlServiceGrpc.newStub(channel);
@@ -54,6 +65,31 @@ final class GrpcAgentClient implements AutoCloseable {
         stub = configured;
     }
 
+    private static void configureTls(NettyChannelBuilder builder, TlsConfiguration tls) {
+        try {
+            var ssl = GrpcSslContexts.forClient();
+            if (tls.trustCertificates() != null) {
+                requireFile(tls.trustCertificates(), "Agent gRPC trust certificates");
+                ssl.trustManager(tls.trustCertificates().toFile());
+            }
+            if (tls.clientCertificateChain() != null || tls.clientPrivateKey() != null) {
+                requireFile(tls.clientCertificateChain(), "Agent gRPC client certificate chain");
+                requireFile(tls.clientPrivateKey(), "Agent gRPC client private key");
+                ssl.keyManager(tls.clientCertificateChain().toFile(),
+                        tls.clientPrivateKey().toFile());
+            }
+            builder.sslContext(ssl.build());
+        } catch (Exception problem) {
+            throw new IllegalStateException("Agent gRPC TLS configuration is invalid", problem);
+        }
+    }
+
+    private static void requireFile(Path path, String label) {
+        if (path == null || !Files.isRegularFile(path)) {
+            throw new IllegalStateException(label + " is missing: " + path);
+        }
+    }
+
     void runSession(AgentRuntime runtime, RemoteAgentRunExecutor remoteRuns,
                     List<ProviderCapability> capabilities)
             throws InterruptedException {
@@ -63,6 +99,8 @@ final class GrpcAgentClient implements AutoCloseable {
         AtomicReference<ScheduledFuture<?>> heartbeat = new AtomicReference<>();
         AtomicBoolean welcomed = new AtomicBoolean();
         Object sendLock = new Object();
+        RemoteAgentRunExecutor.AgentFrameSender sessionSender = outbound -> send(requests.get(),
+                AgentProtoMapper.toProto(outbound), sendLock);
 
         StreamObserver<ServiceToAgent> responses = new StreamObserver<>() {
             @Override
@@ -74,10 +112,9 @@ final class GrpcAgentClient implements AutoCloseable {
                         throw new IllegalStateException("Service sequence gap at " + frame.sequence());
                     }
                     if (result == InboundSequenceResult.DUPLICATE) return;
-                    RemoteAgentRunExecutor.AgentFrameSender sender = outbound -> send(requests.get(),
-                            AgentProtoMapper.toProto(outbound), sendLock);
                     if (frame.payload() instanceof AgentFrames.Welcome welcome
                             && welcomed.compareAndSet(false, true)) {
+                        remoteRuns.connected(sessionSender, welcome.resumableLeases());
                         heartbeat.set(heartbeatExecutor.scheduleWithFixedDelay(() -> {
                             try {
                                 send(requests.get(), AgentProtoMapper.toProto(runtime.heartbeat()), sendLock);
@@ -87,9 +124,13 @@ final class GrpcAgentClient implements AutoCloseable {
                             }
                         }, welcome.heartbeatSeconds(), welcome.heartbeatSeconds(), TimeUnit.SECONDS));
                     } else if (frame.payload() instanceof AgentFrames.LeaseOffer offer) {
-                        remoteRuns.offer(offer, sender);
+                        remoteRuns.offer(offer, sessionSender);
                     } else if (frame.payload() instanceof AgentFrames.RunCommand command) {
-                        remoteRuns.command(command, sender);
+                        remoteRuns.command(command, sessionSender);
+                    } else if (frame.payload() instanceof AgentFrames.EventAck acknowledgement) {
+                        remoteRuns.acknowledge(acknowledgement);
+                    } else if (frame.payload() instanceof AgentFrames.RunCompletionAck acknowledgement) {
+                        remoteRuns.acknowledge(acknowledgement);
                     }
                 } catch (RuntimeException problem) {
                     StreamObserver<AgentToService> current = requests.get();
@@ -125,6 +166,7 @@ final class GrpcAgentClient implements AutoCloseable {
             throw interrupted;
         } finally {
             cancel(heartbeat.get());
+            remoteRuns.disconnected(sessionSender);
         }
         Throwable problem = failure.get();
         if (problem != null) throw new AgentConnectionException(problem);
@@ -157,6 +199,13 @@ final class GrpcAgentClient implements AutoCloseable {
     static final class AgentConnectionException extends RuntimeException {
         AgentConnectionException(Throwable cause) {
             super(cause);
+        }
+    }
+
+    record TlsConfiguration(Path trustCertificates, Path clientCertificateChain,
+                            Path clientPrivateKey) {
+        static TlsConfiguration systemTrust() {
+            return new TlsConfiguration(null, null, null);
         }
     }
 }

@@ -98,6 +98,18 @@ public final class JdbcAgentLeaseRepository implements AgentLeaseRepository {
     }
 
     @Override
+    public boolean renew(LeaseFenceAuthority authority, String agentId, String agentSessionId,
+                         Instant now, Instant expiresAt) {
+        return jdbc.update("""
+                UPDATE agent_lease
+                SET agent_session_id = ?, expires_at = ?, version = version + 1
+                WHERE id = ? AND run_id = ? AND epoch = ? AND fencing_token = ? AND agent_id = ?
+                  AND status IN ('ACKNOWLEDGED', 'RUNNING') AND expires_at > ?
+                """, agentSessionId, text(expiresAt), authority.leaseId(), authority.runId(),
+                authority.epoch(), authority.fencingToken(), agentId, text(now)) == 1;
+    }
+
+    @Override
     public boolean advanceEvents(String leaseId, String fencingToken, long expectedPrevious,
                                  long lastEventSequence) {
         return jdbc.update("""
@@ -130,14 +142,14 @@ public final class JdbcAgentLeaseRepository implements AgentLeaseRepository {
     public List<AgentLease> expireActive(Instant now) {
         List<AgentLease> expired = jdbc.query("""
                 SELECT * FROM agent_lease
-                WHERE status IN ('OFFERED', 'ACKNOWLEDGED') AND expires_at <= ?
+                WHERE status IN ('OFFERED', 'ACKNOWLEDGED', 'RUNNING') AND expires_at <= ?
                 ORDER BY expires_at, id
                 """, rowMapper, text(now));
         if (!expired.isEmpty()) {
             jdbc.update("""
                     UPDATE agent_lease
                     SET status = 'EXPIRED', completed_at = ?, version = version + 1
-                    WHERE status IN ('OFFERED', 'ACKNOWLEDGED') AND expires_at <= ?
+                    WHERE status IN ('OFFERED', 'ACKNOWLEDGED', 'RUNNING') AND expires_at <= ?
                     """, text(now), text(now));
         }
         return expired;

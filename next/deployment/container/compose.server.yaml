@@ -1,0 +1,83 @@
+name: wepush-next-server
+services:
+  gateway:
+    image: haproxy:3.2-alpine
+    depends_on: [service-1, service-2]
+    volumes: ["./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro"]
+    ports:
+      - "127.0.0.1:18990:18990"
+      - "19090:19090"
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: wepush
+      POSTGRES_USER: wepush
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+    volumes: ["postgres-data:/var/lib/postgresql/data"]
+    healthcheck: {test: [CMD-SHELL, "pg_isready -U wepush"], interval: 5s, timeout: 3s, retries: 20}
+  minio:
+    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
+    command: server /data --console-address :9001
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?set MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?set MINIO_ROOT_PASSWORD}
+    volumes: ["minio-data:/data"]
+  minio-init:
+    image: minio/mc:RELEASE.2025-08-13T08-35-41Z
+    depends_on: [minio]
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["until mc alias set local http://minio:9000 $$MINIO_ROOT_USER $$MINIO_ROOT_PASSWORD; do sleep 2; done; mc mb --ignore-existing local/wepush-artifacts; mc version enable local/wepush-artifacts"]
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?set MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?set MINIO_ROOT_PASSWORD}
+  secrets-init:
+    image: alpine:3.23
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["cp /source/*.pem /target/; chown 10001:10001 /target/*.pem; chmod 0400 /target/*-key.pem; chmod 0444 /target/*-cert.pem /target/agent-ca.pem"]
+    volumes:
+      - ./secrets:/source:ro
+      - service-secrets:/target
+  service-1: &service
+    build: {context: ../.., dockerfile: deployment/container/service.Dockerfile}
+    depends_on:
+      postgres: {condition: service_healthy}
+      minio-init: {condition: service_completed_successfully}
+      secrets-init: {condition: service_completed_successfully}
+    environment: &service-env
+      WEPUSH_MODE: server
+      WEPUSH_BIND_ADDRESS: 0.0.0.0
+      WEPUSH_EXECUTION_MODE: remote
+      WEPUSH_DATABASE_KIND: postgresql
+      WEPUSH_DATABASE_URL: jdbc:postgresql://postgres:5432/wepush
+      WEPUSH_DATABASE_USERNAME: wepush
+      WEPUSH_DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      WEPUSH_ARTIFACT_KIND: s3
+      WEPUSH_S3_BUCKET: wepush-artifacts
+      WEPUSH_S3_ENDPOINT: http://minio:9000
+      WEPUSH_S3_PATH_STYLE_ACCESS: "true"
+      WEPUSH_S3_ACCESS_KEY: ${MINIO_ROOT_USER}
+      WEPUSH_S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
+      # The local MinIO smoke topology has no KMS. Production must use AES256
+      # or AWS_KMS against an object store configured for that encryption mode.
+      WEPUSH_S3_SERVER_SIDE_ENCRYPTION: NONE
+      WEPUSH_SECURITY_ENABLED: "true"
+      WEPUSH_BOOTSTRAP_TOKEN: ${WEPUSH_BOOTSTRAP_TOKEN:?set WEPUSH_BOOTSTRAP_TOKEN}
+      WEPUSH_MASTER_KEY_BASE64: ${WEPUSH_MASTER_KEY_BASE64:?set WEPUSH_MASTER_KEY_BASE64}
+      WEPUSH_AGENT_ARTIFACT_SIGNING_KEY_BASE64: ${WEPUSH_AGENT_ARTIFACT_SIGNING_KEY_BASE64:?set WEPUSH_AGENT_ARTIFACT_SIGNING_KEY_BASE64}
+      WEPUSH_AGENT_PUBLIC_BASE_URL: ${WEPUSH_AGENT_PUBLIC_BASE_URL:-https://wepush.example.com}
+      WEPUSH_AGENT_GRPC_ADDRESS: 0.0.0.0
+      WEPUSH_AGENT_GRPC_TLS_ENABLED: "true"
+      WEPUSH_AGENT_GRPC_TLS_CERTIFICATE_CHAIN: /run/secrets/grpc-server-cert.pem
+      WEPUSH_AGENT_GRPC_TLS_PRIVATE_KEY: /run/secrets/grpc-server-key.pem
+      WEPUSH_AGENT_GRPC_TLS_TRUST_CERTIFICATES: /run/secrets/agent-ca.pem
+      WEPUSH_AGENT_GRPC_TLS_REQUIRE_CLIENT_CERTIFICATE: "true"
+      WEPUSH_AGENT_CA_KEY_PATH: /run/secrets/agent-ca-key.pem
+      WEPUSH_AGENT_CA_CERTIFICATE_PATH: /run/secrets/agent-ca.pem
+    volumes: ["service-secrets:/run/secrets:ro"]
+  service-2:
+    <<: *service
+    environment: *service-env
+volumes:
+  postgres-data:
+  minio-data:
+  service-secrets:

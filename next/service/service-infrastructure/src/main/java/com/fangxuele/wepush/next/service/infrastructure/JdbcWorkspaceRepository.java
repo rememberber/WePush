@@ -6,6 +6,7 @@ import com.fangxuele.wepush.next.service.domain.WorkspaceRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.Optional;
+import java.util.List;
 
 public final class JdbcWorkspaceRepository implements WorkspaceRepository {
     private final JdbcTemplate jdbc;
@@ -18,6 +19,21 @@ public final class JdbcWorkspaceRepository implements WorkspaceRepository {
     public Optional<Workspace> findById(WorkspaceId workspaceId) {
         return jdbc.query("SELECT id AS workspace_id, name, status, created_at, version FROM workspace WHERE id = ?",
                 JdbcRows.WORKSPACE, workspaceId.value()).stream().findFirst();
+    }
+
+    @Override
+    public List<Workspace> list() {
+        return jdbc.query("""
+                SELECT id AS workspace_id, name, status, created_at, version
+                FROM workspace ORDER BY created_at, id
+                """, JdbcRows.WORKSPACE);
+    }
+
+    @Override
+    public void create(Workspace value) {
+        jdbc.update("INSERT INTO workspace(id, name, status, created_at, version) VALUES (?, ?, ?, ?, ?)",
+                value.id().value(), value.name(), value.status().name(),
+                value.createdAt().toString(), value.version());
     }
 
     @Override

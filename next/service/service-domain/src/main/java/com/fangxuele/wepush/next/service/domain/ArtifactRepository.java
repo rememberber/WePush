@@ -15,6 +15,8 @@ public interface ArtifactRepository {
 
     void markReady(WorkspaceId workspaceId, String artifactId, long size, String sha256, Instant readyAt);
 
+    void recordUpload(WorkspaceId workspaceId, String artifactId, long size, String sha256);
+
     void markFailed(WorkspaceId workspaceId, String artifactId, String error);
 
     List<ArtifactDefinition> claimExpired(Instant now, int limit);

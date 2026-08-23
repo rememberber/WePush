@@ -5,7 +5,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const currentDirectory = dirname(fileURLToPath(import.meta.url));
 const developmentUrl = process.env.WEPUSH_UI_URL ?? "http://127.0.0.1:5173";
 const productionOrigin = "wepush://app";
-const rendererRoot = resolve(currentDirectory, "../../../web/dist");
+const rendererRoot = app.isPackaged
+  ? join(process.resourcesPath, "web/dist")
+  : resolve(currentDirectory, "../../../web/dist");
 
 protocol.registerSchemesAsPrivileged([{
   scheme: "wepush",
@@ -43,10 +45,15 @@ async function createWindow(): Promise<void> {
     return { action: "deny" };
   });
   window.webContents.on("will-navigate", (event, url) => {
-    const expectedOrigin = app.isPackaged ? productionOrigin : new URL(developmentUrl).origin;
-    if (!url.startsWith(expectedOrigin)) {
-      event.preventDefault();
+    let sameOrigin = false;
+    try {
+      const expected = new URL(app.isPackaged ? productionOrigin : developmentUrl);
+      const target = new URL(url);
+      sameOrigin = target.protocol === expected.protocol && target.host === expected.host;
+    } catch {
+      // Malformed navigation targets are denied below.
     }
+    if (!sameOrigin) event.preventDefault();
   });
   window.once("ready-to-show", () => window.show());
 

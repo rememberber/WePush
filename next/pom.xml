@@ -19,6 +19,7 @@
         <module>providers/provider-http</module>
         <module>agent/agent-protocol</module>
         <module>agent/agent-runtime</module>
+        <module>agent/agent-plugin-api</module>
         <module>agent/agent-app</module>
         <module>service/service-api</module>
         <module>service/service-domain</module>
@@ -28,6 +29,7 @@
         <module>sdk/sdk-java</module>
         <module>tests/architecture-tests</module>
         <module>tests/integration-tests</module>
+        <module>distribution</module>
     </modules>
 
     <properties>
@@ -43,6 +45,10 @@
         <spring-boot.version>4.1.1</spring-boot.version>
         <grpc.version>1.83.1</grpc.version>
         <protoc.version>3.25.8</protoc.version>
+        <bouncycastle.version>1.85</bouncycastle.version>
+        <aws-sdk.version>2.42.35</aws-sdk.version>
+        <postgresql.version>42.7.13</postgresql.version>
+        <pf4j.version>3.15.0</pf4j.version>
     </properties>
 
     <dependencyManagement>
@@ -72,6 +78,13 @@
                 <groupId>io.grpc</groupId>
                 <artifactId>grpc-bom</artifactId>
                 <version>${grpc.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>bom</artifactId>
+                <version>${aws-sdk.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

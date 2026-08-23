@@ -1,0 +1,22 @@
+[Unit]
+Description=WePush Next Agent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=wepush-agent
+Group=wepush-agent
+Environment=WEPUSH_AGENT_ENV=/etc/wepush-next/agent.env
+ExecStart=/opt/wepush-next/current/bin/wepush-agent
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=45s
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/wepush-next/agent /var/log/wepush-next
+
+[Install]
+WantedBy=multi-user.target

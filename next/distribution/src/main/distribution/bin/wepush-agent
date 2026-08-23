@@ -1,0 +1,10 @@
+#!/bin/sh
+set -eu
+WEPUSH_RELEASE_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+WEPUSH_AGENT_ENV=${WEPUSH_AGENT_ENV:-/etc/wepush-next/agent.env}
+if [ -r "$WEPUSH_AGENT_ENV" ]; then
+  set -a
+  . "$WEPUSH_AGENT_ENV"
+  set +a
+fi
+exec "${WEPUSH_JAVA:-java}" ${WEPUSH_JAVA_OPTS:-} -jar "$WEPUSH_RELEASE_ROOT/lib/wepush-next-agent.jar" "$@"

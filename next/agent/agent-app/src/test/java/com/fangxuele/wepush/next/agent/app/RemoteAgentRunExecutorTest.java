@@ -9,6 +9,9 @@ import com.fangxuele.wepush.next.agent.protocol.SecretEnvelopeCodec;
 import com.fangxuele.wepush.next.agent.runtime.AgentJournal;
 import com.fangxuele.wepush.next.agent.runtime.AgentJournalState;
 import com.fangxuele.wepush.next.agent.runtime.AgentRuntime;
+import com.fangxuele.wepush.next.agent.runtime.InMemoryAgentEventOutbox;
+import com.fangxuele.wepush.next.agent.runtime.InMemoryAgentCompletionOutbox;
+import com.fangxuele.wepush.next.agent.runtime.LeaseState;
 import com.fangxuele.wepush.next.core.engine.DefaultExecutionEngine;
 import com.fangxuele.wepush.next.provider.http.HttpProviderFactory;
 import com.sun.net.httpserver.HttpExchange;
@@ -37,6 +40,66 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RemoteAgentRunExecutorTest {
     private final ObjectMapper json = new ObjectMapper().findAndRegisterModules();
+
+    @Test
+    void replaysDurableBusinessEventsOnAuthorizedReconnectUntilAcknowledged() throws Exception {
+        InMemoryAgentEventOutbox outbox = new InMemoryAgentEventOutbox();
+        LeaseFence fence = new LeaseFence("lease-replay", "run-replay", 1, "replay-token");
+        outbox.append(fence, List.of("event".getBytes(StandardCharsets.UTF_8)));
+        BlockingQueue<AgentFrames.AgentToService> first = new LinkedBlockingQueue<>();
+        BlockingQueue<AgentFrames.AgentToService> second = new LinkedBlockingQueue<>();
+
+        try (AgentRuntime runtime = new AgentRuntime(new AgentId("test-agent"), "test", 1,
+                new DefaultExecutionEngine(List.of(new HttpProviderFactory())), new InMemoryJournal());
+             RemoteAgentRunExecutor executor = new RemoteAgentRunExecutor(
+                     "test-agent", runtime, json, "", outbox)) {
+            RemoteAgentRunExecutor.AgentFrameSender firstSender = first::add;
+            executor.connected(firstSender, List.of(fence));
+            AgentFrames.EventBatch initial = (AgentFrames.EventBatch) first.poll(1, TimeUnit.SECONDS).payload();
+            executor.disconnected(firstSender);
+
+            executor.connected(second::add, List.of(fence));
+            AgentFrames.AgentToService replayedFrame = second.poll(1, TimeUnit.SECONDS);
+            AgentFrames.EventBatch replayed = (AgentFrames.EventBatch) replayedFrame.payload();
+            assertEquals(initial.firstEventSequence(), replayed.firstEventSequence());
+            assertEquals(2, replayedFrame.sequence());
+            assertTrue(executor.pendingEventBytes() > 0);
+
+            executor.acknowledge(new AgentFrames.EventAck(fence,
+                    replayed.firstEventSequence() + replayed.events().size() - 1L));
+            assertEquals(0, executor.pendingEventBytes());
+        }
+    }
+
+    @Test
+    void convertsInterruptedRunningLeaseToUnknownCompletionAndWaitsForAck() throws Exception {
+        LeaseFence fence = new LeaseFence("lease-crashed", "run-crashed", 3, "crash-token");
+        InMemoryJournal journal = new InMemoryJournal();
+        journal.save(new AgentJournalState(4, 2, Map.of(fence.leaseId(),
+                new AgentJournalState.PersistedLease(fence, Instant.now().plusSeconds(30),
+                        LeaseState.RUNNING, "spec-sha", "audience-sha", 7,
+                        Instant.now().minusSeconds(5)))));
+        BlockingQueue<AgentFrames.AgentToService> outbound = new LinkedBlockingQueue<>();
+
+        try (AgentRuntime runtime = new AgentRuntime(new AgentId("test-agent"), "test", 1,
+                new DefaultExecutionEngine(List.of(new HttpProviderFactory())), journal);
+             RemoteAgentRunExecutor executor = new RemoteAgentRunExecutor("test-agent", runtime, json, "",
+                     new InMemoryAgentEventOutbox(), new InMemoryAgentCompletionOutbox())) {
+            executor.connected(outbound::add, List.of(fence));
+            AgentFrames.RunCompleted completed = (AgentFrames.RunCompleted)
+                    outbound.poll(1, TimeUnit.SECONDS).payload();
+            RemoteRunDocuments.Summary summary = json.readValue(completed.summary(),
+                    RemoteRunDocuments.Summary.class);
+            assertEquals("FAILED", summary.finalState());
+            assertEquals(7, summary.total());
+            assertEquals(7, summary.unknown());
+            assertEquals(LeaseState.RUNNING, journal.load().leases().get(fence.leaseId()).state());
+
+            executor.acknowledge(new AgentFrames.RunCompletionAck(fence));
+            assertEquals(LeaseState.COMPLETED,
+                    journal.load().leases().get(fence.leaseId()).state());
+        }
+    }
 
     @Test
     void downloadsVerifiedSnapshotExecutesCoreAndReportsResults() throws Exception {

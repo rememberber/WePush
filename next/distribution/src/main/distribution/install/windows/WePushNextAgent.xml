@@ -1,0 +1,14 @@
+<service>
+  <id>WePushNextAgent</id>
+  <name>WePush Next Agent</name>
+  <description>WePush Next remote execution Agent</description>
+  <executable>powershell.exe</executable>
+  <arguments>-NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "%ProgramFiles%\WePush Next\current\install\windows\run-agent.ps1"</arguments>
+  <startmode>Automatic</startmode>
+  <delayedAutoStart>true</delayedAutoStart>
+  <serviceaccount><username>NT AUTHORITY\LocalService</username></serviceaccount>
+  <stoptimeout>45sec</stoptimeout>
+  <onfailure action="restart" delay="5 sec"/>
+  <logpath>%ProgramData%\WePush Next\logs</logpath>
+  <log mode="roll-by-size-time"><sizeThreshold>10240</sizeThreshold><pattern>yyyyMMdd</pattern><autoRollAtTime>00:00:00</autoRollAtTime><zipOlderThanNumDays>7</zipOlderThanNumDays><zipDateFormat>yyyyMMdd</zipDateFormat></log>
+</service>

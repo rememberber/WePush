@@ -2,168 +2,124 @@
 
 更新时间：2026-08-23
 
-## 1. 当前里程碑
+## 1. 里程碑结论
 
-`next/` 已完成第一条可运行的 Standalone 纵向链路：
+`next/` 的 `0.1.0` 目标架构基线已经形成完整、可独立构建的产品纵向链路。Classic 源码和构建保持不动；两条产品线不共享源码依赖，允许各自存在相似实现。
 
 ```text
-React / Electron / Java SDK
-          ↓ HTTP + SSE
-Spring Boot Service API ←── gRPC 双向控制流 ──→ Remote Agent
-                  │        Lease / Event / Command        ↓
-                  │                                  Core Engine
-          ↓ 应用事务
-SQLite + Flyway ─── Artifact Metadata ─── Local File Artifact Store
-          ↓ Run Snapshot
-Embedded Core Engine（embedded）或 Remote Core Engine（remote）
-          ↓
-HTTP Provider（支持 Dry Run）
+React WebUI / Electron Desktop / Java SDK
+                  │ REST + Bearer RBAC + SSE
+                  ▼
+       Spring Boot Service API（1..N 实例）
+          │             │              │
+   SQLite/PostgreSQL  Secret Store   Local/S3 Artifact
+          │             │              ▲ Presigned/Commit
+          └──── durable control ────────┘
+                         │ gRPC 双向流
+                         ▼
+             Enrolled Remote Agent + PF4J
+                         │
+                    Core Engine
+                         │
+                   Provider SPI
 ```
 
-经典客户端工程未改动。Next 与经典客户端保持双轨、独立演进，允许各自按需实现相似代码。
+Standalone 默认是单 Service + SQLite + Local Artifact + Embedded Engine；Server 默认模型是 PostgreSQL 18 + S3-compatible Store + 多 Service + Remote Agent。PostgreSQL 和 S3 不是使用 Next 的前置条件，只是 Server/HA 形态的共享事实源。
 
-## 2. 已实现组件
+## 2. 组件完成状态
 
-### 2.1 Core 和 Provider
+| 组件 | 当前基线 |
+|---|---|
+| Core | Framework-free API、虚拟线程 Engine、并发/限速/重试/暂停/取消、流式 Result/Event/Artifact 端口 |
+| Provider | 独立 SPI、HTTP Provider、JSON Schema、SSRF/响应上限；PF4J 外部插件发现、Ed25519 签名、Zip Slip/共享包校验、受控滚动激活与失败回滚 |
+| Agent | gRPC 双向流、Sequence/Fence Journal、磁盘 Event/Completion Outbox、重连恢复、Secret Envelope、远端 Artifact 上传、Enrollment/轮换、TLS/mTLS |
+| Service | Spring Boot 4.1.1、分层应用服务、SQLite/PostgreSQL、Local/S3 Artifact、RBAC/审计/Scheduler、Agent HA outbox、跨实例 SSE 补偿 |
+| Java SDK | 只依赖公开 `service-api`；覆盖 System、Provider、Agent、Workspace、资源、Run、Artifact、Schedule、Security |
+| WebUI | TypeScript/Vite/React；可视化配置、任务/调度、运行监控、Bearer SSE、Token/Enrollment/审计、动态 API 调试文档 |
+| Desktop | Electron 安全外壳，共用 WebUI；目标系统原生目录打包、相对 Framework 链接、macOS ad-hoc/Developer ID 签名入口，不依赖 Core 或 Service 内部实现 |
+| Distribution | tar.gz/zip + 标准 SHA-256 校验；内含 WebUI；Linux systemd、macOS 非 root launchd、Windows LocalService/WinSW 安装/升级/备份/卸载；容器 Server/HA 拓扑 |
 
-- Framework-free Core API、Provider SPI 与执行引擎。
-- 每个 Run 独立状态、虚拟线程执行、动态并发、限速、重试、超时、取消及结果汇总。
-- 首个 HTTP Provider，包含 Account、Message、Recipient JSON Schema、SSRF 防护和 Dry Run。
+## 3. Core、Provider 与 Agent
 
-### 2.2 Service 控制面
+- Core API 不依赖 Spring、数据库、HTTP Server、PF4J 或 UI；Service 和 Agent 通过端口适配同一个 Engine。
+- Run Snapshot 固定 Provider ID/实现版本，调度只选择上报精确兼容版本且有容量的 Agent。
+- PF4J 只位于 Agent App 边界。每个插件独立 ClassLoader，Provider SPI/Core API/日志 API 由 Parent 提供；这解决依赖冲突，不宣称是恶意代码沙箱。
+- 正式插件包必须包含 SHA-256 清单和 Ed25519 签名。未知发布者、清单篡改、Zip Slip、压缩炸弹、捆绑共享 API 或重复 Provider 版本都会失败关闭。
+- 插件更新采用 Stage → 原子替换 → Supervisor Restart → Health Verify；失败自动恢复旧包。运行中不热卸载 ClassLoader。
+- Agent 持久化 Lease Fence、双向 Sequence、Event Batch 与 Run Completion。Service ACK 前数据不会从 Outbox 删除；重连后按 Fence/Sequence 重放。
+- 同一权威 Lease Offer 重放只推进 Service Sequence，不重复启动 Run。进程重启发现曾处于 RUNNING 的 Lease 时按 Unknown/Unsent 安全语义生成可恢复 Completion，而不假定外部渠道 Exactly Once。
+- Secret 只扫描冻结 Account/Message 中实际引用的 `SecretRef`；Service 使用一次性 X25519 + HKDF-SHA-256 + AES-256-GCM 生成绑定 Agent/Run/Lease/Epoch/Fence/过期时间的 Envelope。Agent 明文只存在运行内存并主动清零。
+- Agent 的 Core `ArtifactSink` 先写 owner-only 临时文件并计算大小/SHA-256，再获取 Lease 绑定的上传计划，上传到 Service 或 S3 Presigned URL，最后 Commit；READY Artifact 引用进入 `RunCompleted`。
+- Enrollment Token 一次性消费并绑定 Workspace。Agent 生成 P-256 私钥，保存长期 Credential、客户端证书和 CA，在到期窗口内自动轮换。匿名 Agent 仅允许回环开发；非回环 HTTP/gRPC 必须认证，gRPC 强制 TLS，生产要求 mTLS。
 
-- Spring Boot 4.1.1 Web 与 Actuator 基线。
-- SQLite Standalone 数据库，Hikari 最大连接数 4。
-- SQLite `foreign_keys=ON`、WAL、`busy_timeout=5s`、`synchronous=NORMAL`。
-- Flyway 显式启动迁移；迁移失败会阻止 Repository 和 Service 启动。
-- 默认工作区 `ws_default`。
-- Account、Message Revision、Audience Snapshot、Job、Run、Run Snapshot、Run Event 和幂等记录持久化。
-- 默认 `LocalEnvelopeSecretStore`：每条 Secret 随机 256-bit DEK、AES-256-GCM、版本化主密钥封装、AAD 身份绑定和失败关闭。
-- Standalone 首次启动生成独立主密钥文件；POSIX 强制 owner-only 权限，Windows 使用 owner ACL；也可由环境注入主密钥。
-- Item Result 批量、事务和幂等落盘，使用 HMAC 完整性保护的 Cursor Pagination 查询；解码同时强制 Base64URL 规范编码，拒绝等价字节的文本变体。
-- Pause、Resume、Cancel 和 ChangeConcurrency 命令持久化、按命令 ID 幂等并写入审计事件。
-- Artifact 元数据以 SQLite 为事实源，采用 `UPLOADING → READY → DELETING → DELETED` 两阶段状态机。
-- Standalone 默认 `LocalFileArtifactStore`：受控分区路径、临时文件写入、fsync、SHA-256 校验和原子移动；POSIX 文件权限为 `0600`。
-- 定时保留任务回收过期且未 Pin/Legal Hold 的 Artifact；删除幂等，失败记录状态并允许后续重试。
-- Message Revision、Audience Snapshot、Run Snapshot 创建后不可变。
-- 应用服务显式持有事务边界，Repository 不自行提交。
-- Agent 注册表持久化会话、平台、Provider 能力、容量、双向 Sequence 与最后心跳。
-- Agent 注册表保存当前会话的 X25519 Secret 加密公钥；新会话会原子替换旧会话公钥。
-- 独立 gRPC Server 默认绑定 `127.0.0.1:19090`；非回环绑定强制 Bootstrap Token，静默超过三个心跳周期自动标记离线。
-- 同一 Agent 的新连接会替换旧连接，旧会话后续写入由 Session ID Fence 拒绝。
-- SQLite 持久化 Agent Lease、Epoch、Fencing Token、会话归属、Event Cursor 和完成状态；同一 Run 同时只允许一个活跃 Lease。
-- `wepush.execution.mode=embedded|remote` 在组合根选择执行路径，默认保持 `embedded`。
+## 4. Service、HA、安全与数据
 
-### 2.3 公开 API
+- SQLite 开启 Foreign Key、WAL、Busy Timeout 和原子 Flyway 迁移；V10 通过表重建正确增加带外键/非空默认语义的 Enrollment Workspace 列，V11 增加显式系统管理员角色，并由 PRAGMA 测试验证实际列和外键。
+- PostgreSQL 使用 Hikari；相同有序迁移由 PostgreSQL 18 CI 实库验证。Server 模式启动校验 PostgreSQL、S3、API Security 和 Agent TLS 均已启用。
+- Schedule Scanner 使用 PostgreSQL Session Advisory Lock 单 Leader；触发 Run 仍使用持久幂等键。
+- Lease Offer 和 Run Command 先写 `agent_message_outbox`。任意 Service 扫描待发送消息，只有持有 Agent 当前 gRPC 流的实例实际投递，Agent ACK 后关闭消息。
+- SSE 历史从 `run_event` 回放；本实例实时发布，同时每个实例轮询有本地订阅者的游标，补偿其他实例提交的事件。
+- API Token 只保存 SHA-256，明文仅签发时返回一次。VIEWER/OPERATOR/ADMIN 按 Workspace 授权；Bootstrap `SYSTEM_ADMIN` 只承担全局治理。启用安全时按系统管理员是否存在而非“任意 Token 是否存在”初始化 Bootstrap，避免先创建普通 Token 后锁死全局治理。Token 与 Enrollment 管理 API 进入 Workspace 路径，普通 ADMIN 无法跨 Workspace 签发、枚举或吊销；写操作和拒绝结果进入审计日志。
+- 无认证开发模式只能绑定回环地址；HTTP 对外监听强制 API Security，Server 模式进一步强制 PostgreSQL、S3 与 Agent gRPC TLS，误配置时失败关闭。
+- Workspace 有正式列表/创建/详情 API。Account、Secret、Message、Audience、Job、Schedule、Run、Artifact、API Token 与 Agent Enrollment Binding 均显式带 Workspace 边界；旧的未绑定开发 Agent 只兼容 `ws_default`。
+- 默认 Secret Store 为 Local Envelope：随机 DEK + AES-256-GCM + 主密钥封装。主密钥来自 owner-only 文件或显式注入；密文存在而主密钥丢失/权限不安全时失败关闭。OS Keychain、Vault/KMS 是可替换主密钥适配器，不影响默认方案成立。
+- Local Artifact 采用受控路径、临时写、fsync、SHA-256 与原子移动。S3 Store 支持 Put/Get/Range/Head/Delete、Presigned Put、100 MiB Multipart、Abort、可选 AES256/AWS_KMS 和对象元数据校验。
+- Artifact 状态是 `UPLOADING → READY → DELETING → DELETED`，失败进入 `FAILED`；TTL 清理尊重 Pin/Legal Hold。对象存储 Lifecycle 是兜底，不替代数据库事实源。
+- Actuator 暴露 Health/Readiness/Prometheus，指标带稳定 application 标签；Server HAProxy 对 Readiness 做后端摘除。
 
-- Provider 发现及 Schema API。
-- Account、Message、Audience、Job 的创建、列表和详情 API。
-- Run 幂等创建、列表和详情 API。
-- `Idempotency-Key` 相同且请求相同返回原 Run；相同 Key 对应不同请求返回 `409`。
-- Run SSE 事件流支持持久化回放及实时推送，事件 ID 是 Run 内单调递增序号。
-- Secret 写入/元数据 API；读取接口永不返回明文。
-- Run Item Result 分页 API，以及暂停、恢复、取消和动态并发命令 API。
-- 终态 Run 的脱敏 Item Result CSV 导出、Artifact 元数据、完整/Range 下载及保留清理 API。
-- Agent 列表和详情 API，返回会话、平台、执行容量、Provider 能力和连接状态。
-- 统一 `application/problem+json` 错误响应和稳定错误码。
-- OpenAPI 3.1 契约以 28 个 Path 覆盖当前公开控制面。
+## 5. API、SDK 与 UI
 
-### 2.4 Standalone 执行
+- OpenAPI 3.1 覆盖公开控制面、Schedule/Security/Workspace 与 Agent Internal Enrollment/Lease/Artifact API；全局 Bearer Security 和内部自定义认证显式声明。
+- Maven 契约测试拒绝 YAML 重复键、重复/缺失 `operationId`、无 Response 和不可解析的本地 `$ref`。
+- Java SDK 只有 `service-api` 依赖，绝不依赖 Core/Engine/Provider；新增 `SecurityClient`、`WorkspacesClient`、Schedule CRUD、Token 撤销、Enrollment Token 和通用 PATCH/DELETE Transport。
+- TypeScript Client 使用可更新 Bearer Token；SSE 使用自定义 Fetch Parser，因此 Server 安全模式不受原生 `EventSource` 无法设置 Authorization Header 的限制。
+- WebUI 接入 Account/Message/Audience/Job/Run/Artifact 全链路、Schedule 创建/启停、API Token 创建/列表/撤销、Agent Enrollment、审计查看与动态 GET/POST/PUT/PATCH/DELETE API 调试。
+- Desktop 主进程保持 `contextIsolation=true`、`nodeIntegration=false`，开发加载 Vite，发行加载 `process.resourcesPath` 下的共享 WebUI。布局和视觉 Token 使用接近 Codex 客户端的紧凑侧栏、内容工作区、柔和边界和低噪声状态样式。
 
-- Run 创建提交后由内嵌 Core Engine 异步执行。
-- Service 启动时重新发现默认工作区中的 `PENDING` / `RECOVERING` Run。
-- Audience Snapshot 转换成 Core RecipientSource。
-- Engine 事件持久化后再推送到本地 SSE Hub。
-- Engine ResultSink 使用 SQLite 批量 Upsert；相同 Item/attempt 重放不产生重复结果。
-- 活跃 RunHandle 保存在 Standalone 执行器内，Service 命令通过稳定 `commandId` 传递给 Core。
-- 最终状态和计数原子写回 Run，并追加 `RUN_FINALIZED` 事件。
-- 当前 HTTP Provider Dry Run 已通过两条 Recipient 的端到端测试。
+## 6. 当前数据库事实源
 
-### 2.5 SDK 和 UI
-
-- Java SDK 只依赖 Service API DTO 和 HTTP，不依赖 Core/Engine。
-- Java SDK 已增加 Workspace 控制面、Secret、结果分页、Artifact 流式下载、幂等 Run 创建和运行命令客户端。
-- Java SDK 提供独立 `AgentsClient`，仍不依赖 Core 或 Engine。
-- TypeScript API Client 已覆盖 Account、Message、Audience、Job、Run、Secret、结果、Artifact 和命令。
-- React WebUI 与 Electron 共享 Feature/UI 包。
-- Provider Schema 可视化配置可以直接保存 Account。
-- 账号页读取真实持久化数据。
-- 消息、受众和 Job 页面均接入真实创建/列表 API，Job 可直接发起 Dry Run。
-- 运行中心轮询 Run 状态，使用 SSE 展示持久化/实时事件，并显示 Item Result、实时命令控制条和 CSV Artifact 导出/下载卡片。
-- API 文档页加载当前 OpenAPI，并可动态调试主要 GET API。
-- Agent 页面轮询真实注册表，以接近 Codex 客户端的紧凑布局展示在线状态、容量、Sequence、平台和 Provider 能力。
-
-### 2.6 Agent 控制面
-
-- `agent_control_v1.proto` 生成 Java Protobuf DTO 和 `AgentControlService.Connect` 双向流 Stub。
-- Agent 主动出站连接 Service，Hello 协商协议 v1，Welcome 下发心跳周期、消息上限和 Service Sequence。
-- Agent 按 Welcome 周期发送 Heartbeat，断线后以 1 秒至 30 秒指数退避并加入随机抖动重连。
-- Agent 的双向 Sequence 和 Lease Fence 使用原子替换的本地文件 Journal 持久化，进程重启后延续。
-- gRPC Server 与 Client 均设置消息上限、Keepalive 和超时；Bootstrap Token 通过固定时间比较校验。
-- Service 按 Provider 精确版本和可用容量选择在线 Agent，发送带 Epoch、Fencing Token、期限、Snapshot/Audience URL 与 SHA-256 的 Lease Offer。
-- Execution Spec 与 Audience 使用受 Agent Token 保护的内部 HTTP API 下载；Agent 只有在下载和哈希校验成功后才发送 Lease Ack。
-- Agent 把冻结文档转换成 Core `RunExecutionSpec` / `RecipientSource`，与内嵌模式复用同一 Engine 和 Provider 行为。
-- Core Event 和批量 Item Result 编码为连续 Agent Event Batch；Service 原子落库后返回 Event Ack，重放同一批次不会重复结果或事件。
-- Pause、Resume、Cancel、ChangeConcurrency 可由 Service 经活跃 Lease 发送到远端 `RunHandle`，Agent 返回 Command Ack。
-- Run Summary 经 `RunCompleted` 回传，Service 校验 Fence 后原子完成 Lease 与 Run，并产生 `RUN_FINALIZED`。
-- Offer 过期、发送失败或 Agent 断线会使 Lease 进入 `EXPIRED` / `LOST`，Run 进入 `RECOVERING`；运行中断线默认保留 30 秒恢复宽限期，避免立即无条件重发。
-- Agent 在 Hello 中发布进程级 X25519 公钥；Service 只扫描冻结 Account/Message 中实际出现的标准 `SecretRef`，从本地 Secret Store 解析最小集合。
-- Secret Envelope 使用一次性 X25519、HKDF-SHA-256 与 AES-256-GCM，AAD 和密文载荷同时绑定 Agent ID、Run ID、Lease ID、Epoch、Fencing Token 和过期时间。
-- Agent 只在 Lease 下载校验阶段解密，校验成功后才 ACK；明文只存在于运行内存，经受限 `SecretResolver` 按引用复制，完成或失败时清零，不进入 Journal、日志、事件或 Artifact。
-
-## 3. 当前数据库表
+在原有 Workspace、Account、Message Revision、Audience Snapshot、Job、Run Snapshot/Event/Result/Command、Secret 和 Artifact 表之外，当前迁移还包含：
 
 | 表 | 用途 |
 |---|---|
-| `workspace` | Workspace 边界和状态 |
-| `account_definition` | Provider 账号普通配置和 Secret 引用 |
-| `message_definition` / `message_revision` | 消息元数据和不可变修订 |
-| `audience_definition` / `audience_snapshot` / `audience_recipient` | 受众及不可变执行快照 |
-| `job_definition` | Account、Message、Audience 和策略组合 |
-| `run_instance` / `run_snapshot` | Run 状态与冻结输入 |
-| `run_event` | Run 内有序、可回放事件 |
-| `idempotency_record` | 创建 Run 的 24 小时幂等窗口 |
-| `secret_record` | AES-GCM 密文、封装 DEK、主密钥版本和安全元数据 |
-| `run_item_result` | Item 最终结果、尝试数、Provider 摘要和完成时间 |
-| `run_command` | 幂等运行命令、处理状态和确认结果 |
-| `artifact_record` | Artifact 状态、文件定位、校验值、保留期和保护标记 |
-| `agent_registration` | Agent 会话、能力、容量、双向 Sequence 和心跳状态 |
-| `agent_registration.secret_encryption_public_key` | 当前 Agent 会话的 X25519 Secret 加密公钥（V6） |
-| `agent_lease` | Run/Agent 会话归属、Epoch、Fencing Token、Event Cursor 和租约状态 |
-| `flyway_schema_history` | 数据库迁移历史 |
+| `agent_registration` | Agent 当前会话、平台、Provider、容量、Sequence、X25519 公钥 |
+| `agent_lease` | Run/Agent 归属、Epoch、Fencing Token、Event Cursor 和恢复状态 |
+| `agent_message_outbox` | 跨 Service 实例的 Lease Offer/Run Command 持久消息 |
+| `agent_enrollment_token` | 一次性 Enrollment、Workspace、过期和消费状态 |
+| `agent_credential` | 哈希长期 Credential、证书指纹、轮换/撤销/使用时间 |
+| `agent_workspace_binding` | Agent 与可执行 Workspace 的正式绑定 |
+| `api_principal` / `api_token` / `role_binding` | API 身份、Token 和 Workspace RBAC |
+| `audit_event` | 控制面安全与变更审计 |
+| `schedule_definition` | Cron、时区、Misfire、启停和下次触发时间 |
 
-## 4. 已验证行为
+## 7. 验证与发布门禁
 
-- Maven 全模块编译、单元测试、架构测试和集成测试。
-- Flyway 从空 SQLite 数据库创建所有表和默认工作区。
-- HTTP API 创建 Account → Message → Audience → Job → Dry Run。
-- Run 首次创建返回 `202`，相同请求幂等重放返回同一 Run，不同请求复用 Key 返回 `409`。
-- 内嵌 Engine 把 Dry Run 推进到 `SUCCEEDED`，结果计数满足总量不变量。
-- SSE 从 `RUN_CREATED` 开始回放事件。
-- Secret 密文不含明文、记录替换递增版本、主密钥文件为 `0600`，丢失主密钥且已有密文时启动失败。
-- 两条 Dry Run Item Result 可按 HMAC 游标分页；修改游标返回 `400`。
-- REST 命令完成 `RUNNING → PAUSED → RUNNING → SUCCEEDED`，动态并发和命令重放通过验证。
-- 终态 Run 结果 CSV 流式生成、重复请求复用、SHA-256、完整/Range 下载以及过期清理通过验证。
-- 本地 Artifact 文件路径穿越防护、原子写入、`0600` 权限和幂等删除通过单元测试。
-- pnpm 类型检查、Vitest、Vite Web 构建和 Electron TypeScript 构建。
-- 真实 gRPC 双向流完成 Token 认证、Hello/Welcome、Heartbeat、HTTP 查询 ONLINE，以及流关闭后 OFFLINE 的端到端验证。
-- Protobuf 与领域帧双向映射、Agent 文件 Journal 原子持久化通过单元测试。
-- Agent 远端适配器通过 Execution Spec/Audience 下载与哈希校验，使用真实 Core + HTTP Provider 完成两条 Dry Run 并回传结果。
-- Service 远端 gRPC 集成覆盖 Lease Ack、受保护文档、命令投递、Event Ack、重复批次去重、Item Result 落库和 Run Summary 终态收敛。
-- Secret Envelope 单元测试覆盖密文篡改、错误 Agent/Lease/私钥、过期拒绝和内存清零；真实 HTTP Provider 远端执行验证 Bearer Secret 能正确解密使用。
-- Service 远端集成验证最小 Secret 集加密、会话公钥持久化、密文不含明文以及指定 Agent 私钥可解密。
+本地/常规门禁：
 
-## 5. 下一阶段边界
+- `./mvnw verify`：Core、Provider、Agent、Service、SDK、架构和纵向集成测试。
+- `pnpm check`：全部 Workspace TypeScript、Vitest、Web Vite 构建与 Desktop TypeScript 构建。
+- SQLite 空库迁移断言真实列和 Foreign Key，而不只相信 Flyway 版本号。
+- 真实 gRPC 纵向链路覆盖 Hello/Welcome、Lease Ack、受保护文档、Secret、Command Ack、Event 去重、Agent Artifact 上传/Commit、Run Completion。
+- 插件测试覆盖有效签名、未知签名者、Zip Slip 和空目录。
+- 安装脚本通过 POSIX shell 语法、launchd plist、WinSW XML 与 Compose 配置静态校验。
+- 发行归档生成 tar.gz、zip 与 SHA-256，并检查 Service/Agent/WebUI/安装脚本均存在。
 
-以下能力仍按详细设计继续推进，不应把当前初版误认为最终实现：
+`.github/workflows/next-ci.yml` 另外使用真实 PostgreSQL 18 和固定 MinIO 版本验证：
 
-- OS Keychain/KMS 主密钥适配；当前默认实现是独立受保护密钥文件或显式环境注入。
-- Server 模式的 S3-compatible Artifact Store、Presigned/Multipart 上传，以及完整 Provider 响应体的 7 天策略。
-- Message、Audience 和 Job 的编辑、修订对比、CSV 导入和正式发送确认体验。
-- API 文档页面的通用 POST/PUT/PATCH 请求编辑器。
-- Agent Event Outbox 的磁盘持久化、断点重传和进程重启后的运行恢复；当前 Event Cursor 在 Service 持久化，Agent 运行期按序发送。
-- Agent Artifact Presigned 上传与完整性提交；Secret Envelope 已完成，Artifact 仍只支持无需远端上传的执行路径。
-- Agent 正式 Enrollment、证书轮换与 mTLS；当前 Token 只作为本地/Bootstrap 安全机制。
-- PostgreSQL Server 模式、多实例调度、Outbox 和高可用。
-- 身份认证、RBAC、审计事件及正式多 Workspace 管理 API。
-- Provider 插件目录监听、子进程隔离、签名校验和热切换。
+- PostgreSQL 全量迁移、默认 Workspace、V10 Workspace 列、V11 系统角色列和 outbox 外键；
+- S3 Presigned Put、Range、Head/Checksum、Delete 和 100 MiB Multipart；
+- Java/UI 门禁通过后才生成发行归档。
+
+## 8. 本轮完成边界与后续演进
+
+本轮详细设计的阶段 A–D 基线已经实现并进入可验证状态：工程契约、Standalone 纵向闭环、Web/Desktop 产品壳、远程 Agent、安全、Artifact、Scheduler、三平台安装和 Server/HA 参考拓扑均已收口。部署、升级、备份、插件和故障验收见 [`deployment-and-operations.md`](deployment-and-operations.md)。
+
+以下属于后续产品增量，不是本轮目标架构的未完成项：
+
+- 增加邮件、短信、微信等正式 Provider，以及对应模拟服务和 Schema 组件。
+- Message/Audience/Job 编辑、修订 Diff、大文件 CSV 导入和正式发送二次确认体验。
+- macOS/Windows 商业发行签名、公证、自动更新渠道和品牌资产。
+- 外部 Vault/云 KMS/OS Keychain 适配器，以及非受信 Provider 独立进程 Runner。
+- 公共 SaaS 的自助注册、计费、订阅、恶意租户物理隔离和跨区域 Active-Active。
+
+这些增量继续遵守 Classic/Next 双轨独立、Java SDK 不依赖 Core、Workspace 显式隔离、Lease Fencing、Secret 最小暴露和 Artifact 完整性边界。

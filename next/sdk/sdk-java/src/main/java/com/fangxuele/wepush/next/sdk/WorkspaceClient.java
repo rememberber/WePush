@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Arrays;
+import java.time.Instant;
 
 public final class WorkspaceClient {
     private final HttpTransport transport;
@@ -142,6 +143,31 @@ public final class WorkspaceClient {
                 ControlPlaneApi.SecretMetadataResponse.class);
     }
 
+    public List<Schedule> schedules() {
+        return List.of(transport.getJson(base + "/schedules", Schedule[].class));
+    }
+
+    public Schedule createSchedule(String name, String jobId, String cronExpression,
+                                   String timezone, MisfirePolicy misfirePolicy, boolean enabled) {
+        return transport.postJson(base + "/schedules", new CreateSchedule(name, jobId,
+                cronExpression, timezone, misfirePolicy.name(), enabled), null, Schedule.class);
+    }
+
+    public Schedule setScheduleEnabled(String scheduleId, boolean enabled) {
+        return transport.patchJson(base + "/schedules/" + pathId(scheduleId),
+                Map.of("enabled", enabled), Schedule.class);
+    }
+
+    public void deleteSchedule(String scheduleId) {
+        transport.delete(base + "/schedules/" + pathId(scheduleId));
+    }
+
+    public List<AuditEvent> auditEvents(int limit) {
+        if (limit < 1 || limit > 1_000) throw new IllegalArgumentException("limit must be 1..1000");
+        return List.of(transport.getJson(base + "/audit-events?limit=" + limit,
+                AuditEvent[].class));
+    }
+
     private ControlPlaneApi.RunCommandResponse runCommand(
             String runId, String command, Object request, String idempotencyKey) {
         return transport.postJson(base + "/runs/" + pathId(runId) + "/commands/" + command,
@@ -159,4 +185,15 @@ public final class WorkspaceClient {
         }
         return id;
     }
+
+    public enum MisfirePolicy { FIRE_ONCE, SKIP }
+    private record CreateSchedule(String name, String jobId, String cronExpression,
+                                  String timezone, String misfirePolicy, boolean enabled) {}
+    public record Schedule(String id, String workspaceId, String jobId, String name,
+                           String cronExpression, String timezone, String misfirePolicy,
+                           boolean enabled, Instant nextFireAt, Instant lastFireAt,
+                           Instant createdAt, Instant updatedAt, long version) {}
+    public record AuditEvent(String id, String workspaceId, String actorType, String actorId,
+                             String action, String resourceType, String resourceId, String result,
+                             String detailsJson, Instant occurredAt) {}
 }

@@ -9,6 +9,8 @@ cd next
 ./mvnw verify
 ```
 
+完整构建、三平台安装、Server/HA、Agent Enrollment、插件升级和恢复步骤见 [`docs/deployment-and-operations.md`](docs/deployment-and-operations.md)。
+
 ## 启动 Service
 
 ```bash
@@ -24,6 +26,8 @@ Service 默认只监听 `127.0.0.1:18990`。启动后可访问：
 - `http://127.0.0.1:18990/api/v1/providers`
 - `http://127.0.0.1:18990/api/v1/agents`
 - `http://127.0.0.1:18990/openapi.yaml`
+
+本地无认证模式只允许监听回环地址；将 `WEPUSH_BIND_ADDRESS` 改为非回环地址时必须同时开启 `WEPUSH_SECURITY_ENABLED=true` 并配置足够强度的 `WEPUSH_BOOTSTRAP_TOKEN`，否则 Service 拒绝启动。
 
 Standalone 数据默认保存到 `.local/data/wepush-next.db`，可通过 `WEPUSH_DATABASE_PATH` 指定其他位置。Service 首次启动会运行 Flyway 迁移并创建 `ws_default` 工作区。
 
@@ -56,11 +60,11 @@ Agent 默认主动连接 `127.0.0.1:19090` 的 gRPC 双向控制流，发送 Hel
 
 - `WEPUSH_AGENT_ID`：稳定 Agent 身份，默认 `local-agent`。
 - `WEPUSH_SERVICE_HOST` / `WEPUSH_AGENT_GRPC_PORT`：Service gRPC 地址，默认 `127.0.0.1:19090`。
-- `WEPUSH_AGENT_GRPC_TOKEN`：Agent 与 Service 共享的 Bootstrap Token。
+- `WEPUSH_AGENT_GRPC_TOKEN`：仅用于回环开发/Bootstrap 的共享 Token；正式 Agent 使用 Enrollment Credential。
 - `WEPUSH_AGENT_GRPC_PLAINTEXT`：本地开发默认 `true`；远端部署应关闭并使用 TLS。
 - `WEPUSH_AGENT_STATE_PATH`：Agent Journal 文件位置。
 
-Service 的 gRPC 端口默认只绑定回环地址。通过 `WEPUSH_AGENT_GRPC_ADDRESS` 暴露到非回环地址时，必须同时设置 `WEPUSH_AGENT_GRPC_TOKEN`，否则 Service 拒绝启动。正式生产身份基线仍是 ADR 规定的 mTLS，当前 Token 是 Bootstrap/首期部署机制。
+Service 的 gRPC 端口默认只绑定回环地址。暴露到非回环地址时强制 TLS，HTTP Lease/Artifact 与 gRPC 都拒绝匿名 Agent；正式生产通过一次性 Enrollment 获取长期 Credential 和客户端证书，并使用 mTLS。共享 Token 只保留为回环开发兼容入口。
 
 要把 Run 交给独立 Agent 执行，Service 使用以下配置启动：
 
@@ -100,4 +104,4 @@ try (var client = WePushClient.builder()
 - React WebUI、可视化 Account/Message/Audience/Job 创建闭环、可控制运行中心、动态 API 文档、Electron 安全外壳和共享前端 packages。
 - 架构、单元、契约、Service 冒烟与 Account→Run→Engine→Provider 纵向测试。
 
-模块边界和后续迭代以 [`docs/architecture-and-high-level-design.md`](docs/architecture-and-high-level-design.md)、[`docs/detailed-design.md`](docs/detailed-design.md)、[`docs/implementation-status.md`](docs/implementation-status.md) 及 [`docs/adr/`](docs/adr/) 为准。
+模块边界和后续迭代以 [`docs/architecture-and-high-level-design.md`](docs/architecture-and-high-level-design.md)、[`docs/detailed-design.md`](docs/detailed-design.md)、[`docs/implementation-status.md`](docs/implementation-status.md)、[`docs/deployment-and-operations.md`](docs/deployment-and-operations.md) 及 [`docs/adr/`](docs/adr/) 为准。

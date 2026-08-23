@@ -1,0 +1,221 @@
+name: WePush Next CI
+
+on:
+  push:
+    paths:
+      - 'next/**'
+      - '.github/workflows/next-ci.yml'
+  pull_request:
+    paths:
+      - 'next/**'
+      - '.github/workflows/next-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  java:
+    name: Java, SQLite and architecture
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Verify Next reactor
+        working-directory: next
+        run: ./mvnw --batch-mode --no-transfer-progress verify
+
+  postgres:
+    name: PostgreSQL 18 migrations
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: wepush
+          POSTGRES_USER: wepush
+          POSTGRES_PASSWORD: wepush-test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U wepush"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      WEPUSH_TEST_POSTGRES_URL: jdbc:postgresql://127.0.0.1:5432/wepush
+      WEPUSH_TEST_POSTGRES_USERNAME: wepush
+      WEPUSH_TEST_POSTGRES_PASSWORD: wepush-test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Verify PostgreSQL schema
+        working-directory: next
+        run: >-
+          ./mvnw --batch-mode --no-transfer-progress
+          -pl service/service-app -am
+          -Dtest=PostgreSQLMigrationIntegrationTest
+          -Dsurefire.failIfNoSpecifiedTests=false test
+
+  artifact-store:
+    name: S3-compatible Artifact Store
+    runs-on: ubuntu-latest
+    env:
+      WEPUSH_TEST_S3_ENDPOINT: http://127.0.0.1:9000
+      WEPUSH_TEST_S3_ACCESS_KEY: wepush-test
+      WEPUSH_TEST_S3_SECRET_KEY: wepush-test-secret
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Start pinned MinIO
+        run: >-
+          docker run --detach --name wepush-next-minio -p 9000:9000
+          -e MINIO_ROOT_USER=wepush-test
+          -e MINIO_ROOT_PASSWORD=wepush-test-secret
+          quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z server /data
+      - name: Wait for MinIO
+        run: |
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:9000/minio/health/ready >/dev/null; then exit 0; fi
+            sleep 2
+          done
+          docker logs wepush-next-minio
+          exit 1
+      - name: Verify S3 protocol and multipart path
+        working-directory: next
+        run: >-
+          ./mvnw --batch-mode --no-transfer-progress
+          -pl service/service-infrastructure -am
+          -Dtest=S3ArtifactStoreIntegrationTest
+          -Dsurefire.failIfNoSpecifiedTests=false test
+
+  ui:
+    name: Web and Desktop UI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install pinned pnpm
+        run: npm install --global pnpm@11.22.0
+      - name: Install UI dependencies
+        working-directory: next/ui
+        run: pnpm install --frozen-lockfile
+      - name: Typecheck, test and build UI
+        working-directory: next/ui
+        run: pnpm check
+
+  desktop-and-platform-scripts:
+    name: Desktop and installers (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install pinned pnpm
+        run: npm install --global pnpm@11.22.0
+      - name: Install UI dependencies
+        working-directory: next/ui
+        run: pnpm install --frozen-lockfile
+      - name: Package native Desktop shell
+        working-directory: next/ui
+        run: pnpm --filter @wepush-next/desktop package
+      - name: Validate Unix installers
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          find next/distribution/src/main/distribution -type f -name '*.sh' -print0 |
+            xargs -0 -n1 sh -n
+      - name: Validate launchd units and macOS application
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          find next/distribution/src/main/distribution/install/macos -type f -name '*.plist' -print0 |
+            xargs -0 -n1 plutil -lint
+          test -f 'next/ui/apps/desktop/release/WePush Next.app/Contents/Info.plist'
+          codesign --verify --deep --strict --verbose=2 'next/ui/apps/desktop/release/WePush Next.app'
+      - name: Validate Linux application
+        if: runner.os == 'Linux'
+        shell: bash
+        run: test -x next/ui/apps/desktop/release/linux-unpacked/wepush-next
+      - name: Validate PowerShell, WinSW XML and Windows application
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $failed = $false
+          Get-ChildItem next/distribution/src/main/distribution -Recurse -Filter *.ps1 | ForEach-Object {
+            $tokens = $null
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$tokens, [ref]$errors) | Out-Null
+            if ($errors.Count -gt 0) {
+              $errors | ForEach-Object { Write-Error "$($_.Extent.File):$($_.Extent.StartLineNumber): $($_.Message)" }
+              $failed = $true
+            }
+          }
+          Get-ChildItem next/distribution/src/main/distribution/install/windows -Filter *.xml | ForEach-Object {
+            try { [xml](Get-Content $_.FullName -Raw) | Out-Null } catch { Write-Error $_; $failed = $true }
+          }
+          if (-not (Test-Path 'next/ui/apps/desktop/release/win-unpacked/WePush Next.exe')) {
+            Write-Error 'Packaged Windows application is missing'
+            $failed = $true
+          }
+          if ($failed) { exit 1 }
+
+  distribution:
+    name: Distribution archives
+    needs: [java, ui, postgres, artifact-store, desktop-and-platform-scripts]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm install --global pnpm@11.22.0
+      - name: Build WebUI
+        working-directory: next/ui
+        run: pnpm install --frozen-lockfile && pnpm --filter @wepush-next/web build
+      - name: Build release archives after verified jobs
+        working-directory: next
+        run: ./mvnw --batch-mode --no-transfer-progress -DskipTests package
+      - name: Verify checksums and required release content
+        working-directory: next/distribution/target
+        shell: bash
+        run: |
+          sha256sum --check *.sha256
+          tar_archive=$(find . -maxdepth 1 -name '*.tar.gz' -print -quit)
+          zip_archive=$(find . -maxdepth 1 -name '*.zip' -print -quit)
+          test -n "$tar_archive" && test -n "$zip_archive"
+          tar -tzf "$tar_archive" | grep -Eq '^wepush-next-[^/]+/web/index.html$'
+          unzip -t "$zip_archive"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wepush-next-distribution
+          path: |
+            next/distribution/target/*.tar.gz
+            next/distribution/target/*.zip
+            next/distribution/target/*.sha256
+          if-no-files-found: error
+          retention-days: 14

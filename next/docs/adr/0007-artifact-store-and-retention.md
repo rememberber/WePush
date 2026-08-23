@@ -42,7 +42,7 @@ S3-compatible 最小能力：
 - Service 在权限、Lease 和配额校验后签发短期 Presigned URL。
 - URL 绑定方法、Key、Content Length 范围、Checksum 和短期过期时间。
 - 上传完成后 Agent 通知 Service，Service通过 Head/Checksum 验证后把 Artifact 置为 `READY`。
-- 大于等于 100 MiB 的对象默认使用 Multipart Upload；阈值可以配置。
+- Service 托管流式写入达到 100 MiB 时默认使用 Multipart Upload。Agent 首版直传使用带长度与校验和约束的单次 Presigned Put（当前上限 1 GiB）；后续如提高单 Artifact 上限，可在不改变 Artifact 状态机的前提下扩展 Presigned Multipart Plan。
 - 下载支持 Range，用户下载仍先经过 Service 权限检查。
 
 ### 完整性和加密
@@ -72,7 +72,7 @@ UPLOADING → READY → DELETING → DELETED
 | 结构化运行日志 | Run 结束后 30 天 |
 | 完整 Provider 响应体 | Run 结束后 7 天 |
 | 导出文件和临时下载 | 创建后 24 小时 |
-| 未完成 Multipart Upload | 24 小时后 Abort |
+| 未完成 Multipart Upload | 24 小时后 Abort（对象存储 Lifecycle 兜底） |
 | Provider 插件包 | 存在 Agent、Job 或 Run Snapshot 引用期间保留 |
 
 - Workspace 管理员可以在系统允许范围内缩短或延长策略。
@@ -92,4 +92,3 @@ Local Store 使用相同 Artifact ID、状态、校验和和保留规则。写�
 - [S3 Presigned URLs](https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-presigned-url.html)
 - [S3 Multipart Upload](https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html)
 - [S3 Object Lifecycle](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html)
-

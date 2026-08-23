@@ -52,27 +52,29 @@ ClassLoader 隔离只解决依赖冲突，不是恶意代码安全沙箱。JVM �
 
 ### 安装和激活
 
-插件安装到版本化目录：
+首期发行工具使用显式 Staging/Active/Rollback 目录；插件 ZIP 文件名必须包含稳定 Plugin ID 和版本：
 
 ```text
 plugins/
-└── wepush.http/
-    ├── 1.0.0/
-    ├── 1.1.0/
-    └── active.json
+├── staging/
+│   └── wepush-provider-http-1.1.0.zip
+├── active/
+│   └── wepush-provider-http-1.1.0.zip
+└── rollback/
+    └── wepush-provider-http-1.0.0.zip.20260823T010203Z
 ```
 
-- 下载到 Staging 目录后验证大小、哈希、签名、Descriptor 和 SPI 兼容性。
-- 验证成功后原子移动到版本目录。
-- `active.json` 只记录期望激活版本，不覆盖旧版本文件。
+- 下载到 Staging 目录并记录包级 SHA-256。
+- 激活时先把旧包移动到 Rollback，再把新包原子移动到 Active；Agent 启动在 PF4J 解包前验证 ZIP 边界、清单、签名、Descriptor、共享包和 SPI 兼容性。
+- Agent 启动/健康验证失败时，Supervisor 工具恢复 Rollback 旧包并再次启动。
 - Service 保存期望插件版本，Agent 上报实际插件清单和状态。
 
 ### 更新策略
 
 - 不进行 JVM 内热替换，不在运行中卸载或替换 Provider ClassLoader。
-- 更新采用 Stage、Drain、Restart、Verify、Activate 的滚动流程。
-- Agent 先停止领取新 Run，等待当前 Run 完成或达到 Drain Timeout，再由 Supervisor 重启。
-- 重启后加载新版本并通过 Health 和自检；失败时恢复 `active.json` 指向旧版本并再次重启。
+- 单 Agent 工具执行 Stage、Activate、Restart、Verify、Rollback；多 Agent 编排在激活前先把目标 Agent 从可调度池摘除，等待当前 Run 完成或达到 Drain Timeout。
+- 首期命令行工具不伪造进程内热更新；Drain 编排由 Service/运维层控制，Supervisor 只负责重启、健康验证和回滚。
+- 重启后加载新版本并通过 Health 和自检；失败时恢复旧 ZIP 并再次重启。
 - 多 Agent 环境逐台滚动，确保始终保留可执行旧任务的 Agent。
 - Provider 版本由 Run Snapshot 固定；调度新 Run 前必须存在兼容 Agent。
 
@@ -90,4 +92,3 @@ plugins/
 ## 参考
 
 - [PF4J](https://github.com/pf4j/pf4j)
-

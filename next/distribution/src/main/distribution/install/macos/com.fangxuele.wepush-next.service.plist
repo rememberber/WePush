@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>Label</key><string>com.fangxuele.wepush-next.service</string>
+  <key>UserName</key><string>__WEPUSH_USER__</string>
+  <key>ProgramArguments</key><array><string>/Library/WePushNext/current/bin/wepush-service</string></array>
+  <key>EnvironmentVariables</key><dict>
+    <key>WEPUSH_SERVICE_ENV</key><string>/Library/Preferences/wepush-next/service.env</string>
+  </dict>
+  <key>RunAtLoad</key><true/><key>KeepAlive</key><true/>
+  <key>ProcessType</key><string>Background</string>
+  <key>StandardOutPath</key><string>/Library/Logs/WePushNext/service.log</string>
+  <key>StandardErrorPath</key><string>/Library/Logs/WePushNext/service-error.log</string>
+</dict></plist>

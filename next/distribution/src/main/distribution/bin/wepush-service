@@ -1,0 +1,14 @@
+#!/bin/sh
+set -eu
+WEPUSH_RELEASE_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+WEPUSH_SERVICE_ENV=${WEPUSH_SERVICE_ENV:-/etc/wepush-next/service.env}
+if [ -r "$WEPUSH_SERVICE_ENV" ]; then
+  set -a
+  . "$WEPUSH_SERVICE_ENV"
+  set +a
+fi
+if [ -z "${WEPUSH_WEB_ROOT:-}" ] && [ -f "$WEPUSH_RELEASE_ROOT/web/index.html" ]; then
+  WEPUSH_WEB_ROOT="file:$WEPUSH_RELEASE_ROOT/web/"
+  export WEPUSH_WEB_ROOT
+fi
+exec "${WEPUSH_JAVA:-java}" ${WEPUSH_JAVA_OPTS:-} -jar "$WEPUSH_RELEASE_ROOT/lib/wepush-next-service.jar" "$@"

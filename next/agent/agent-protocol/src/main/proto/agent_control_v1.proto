@@ -34,6 +34,7 @@ message ServiceToAgent {
     RunCommand command = 12;
     EventAck event_ack = 13;
     DrainRequest drain = 14;
+    RunCompletionAck run_completion_ack = 15;
   }
 }
 
@@ -49,6 +50,7 @@ message Hello {
   uint64 last_agent_sequence_acked = 9;
   repeated ProviderCapability providers = 10;
   string secret_encryption_public_key = 11;
+  repeated LeaseFence recovered_leases = 12;
 }
 
 message ProviderCapability {
@@ -64,6 +66,7 @@ message Welcome {
   uint32 heartbeat_seconds = 3;
   uint64 maximum_message_bytes = 4;
   uint64 last_agent_sequence = 5;
+  repeated LeaseFence resumable_leases = 6;
 }
 
 message LeaseFence {
@@ -123,6 +126,8 @@ message RunCompleted {
   bytes summary = 2;
   repeated string artifact_refs = 3;
 }
+
+message RunCompletionAck { LeaseFence fence = 1; }
 
 message DrainRequest { google.protobuf.Timestamp deadline = 1; }
 message Draining { uint32 active_runs = 1; }

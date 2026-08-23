@@ -188,6 +188,56 @@ export interface SecretMetadata {
   updatedAt: string;
 }
 
+export interface Schedule {
+  id: string;
+  workspaceId: string;
+  jobId: string;
+  name: string;
+  cronExpression: string;
+  timezone: string;
+  misfirePolicy: "FIRE_ONCE" | "SKIP";
+  enabled: boolean;
+  nextFireAt: string;
+  lastFireAt?: string;
+  createdAt: string;
+  updatedAt: string;
+  version: number;
+}
+
+export interface ApiTokenSummary {
+  tokenId: string;
+  principalId: string;
+  name: string;
+  expiresAt: string;
+  revokedAt?: string;
+  createdAt: string;
+  lastUsedAt?: string;
+}
+
+export interface IssuedApiToken {
+  tokenId: string;
+  principalId: string;
+  token: string;
+  expiresAt: string;
+  workspaceId: string;
+  role: "VIEWER" | "OPERATOR" | "ADMIN";
+}
+
+export interface EnrollmentToken { id: string; token: string; expiresAt: string; }
+
+export interface AuditEvent {
+  id: string;
+  workspaceId?: string;
+  actorType: string;
+  actorId: string;
+  action: string;
+  resourceType: string;
+  resourceId: string;
+  result: string;
+  detailsJson: string;
+  occurredAt: string;
+}
+
 export interface RecipientInput {
   itemId?: string;
   fields: Record<string, unknown>;
@@ -207,9 +257,15 @@ export class ApiError extends Error {
 
 export class WePushClient {
   readonly baseUrl: string;
+  private token: string;
 
-  constructor(baseUrl = defaultBaseUrl()) {
+  constructor(baseUrl = defaultBaseUrl(), token = defaultToken()) {
     this.baseUrl = baseUrl.replace(/\/$/, "");
+    this.token = token;
+  }
+
+  setToken(token: string): void {
+    this.token = token.trim();
   }
 
   systemInfo(signal?: AbortSignal): Promise<SystemInfo> {
@@ -303,6 +359,36 @@ export class WePushClient {
     return this.resolve(this.workspacePath(workspaceId, `/runs/${pathId(runId)}/events`));
   }
 
+  async streamRunEvents(runId: string, afterSequence: string,
+    receive: (event: { id: string; type: string; data: string }) => void,
+    workspaceId = "ws_default", signal?: AbortSignal): Promise<string> {
+    const headers = this.headers({ Accept: "text/event-stream" });
+    if (afterSequence) headers["Last-Event-ID"] = afterSequence;
+    const response = await fetch(this.runEventsUrl(runId, workspaceId), { headers, signal });
+    if (!response.ok || !response.body) throw new ApiError(response.status, await response.text());
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    let lastSequence = afterSequence;
+    while (true) {
+      const { value, done } = await reader.read();
+      buffer += decoder.decode(value, { stream: !done }).replace(/\r\n/g, "\n");
+      let boundary = buffer.indexOf("\n\n");
+      while (boundary >= 0) {
+        const block = buffer.slice(0, boundary); buffer = buffer.slice(boundary + 2);
+        let id = ""; let type = "message"; const data: string[] = [];
+        for (const line of block.split("\n")) {
+          if (line.startsWith("id:")) id = line.slice(3).trimStart();
+          else if (line.startsWith("event:")) type = line.slice(6).trimStart();
+          else if (line.startsWith("data:")) data.push(line.slice(5).trimStart());
+        }
+        if (id || data.length) { receive({ id, type, data: data.join("\n") }); if (id) lastSequence = id; }
+        boundary = buffer.indexOf("\n\n");
+      }
+      if (done) return lastSequence;
+    }
+  }
+
   runItems(runId: string, cursor?: string, limit = 100,
     workspaceId = "ws_default", signal?: AbortSignal): Promise<RunItemResultPage> {
     if (!Number.isInteger(limit) || limit < 1 || limit > 500) {
@@ -372,6 +458,55 @@ export class WePushClient {
     return this.getJson<SecretMetadata>(this.secretPath(workspaceId, namespace, name, version), signal);
   }
 
+  schedules(workspaceId = "ws_default", signal?: AbortSignal): Promise<Schedule[]> {
+    return this.getJson<Schedule[]>(this.workspacePath(workspaceId, "/schedules"), signal);
+  }
+
+  createSchedule(request: { name: string; jobId: string; cronExpression: string; timezone: string;
+    misfirePolicy: "FIRE_ONCE" | "SKIP"; enabled?: boolean }, workspaceId = "ws_default",
+    signal?: AbortSignal): Promise<Schedule> {
+    return this.postJson<Schedule>(this.workspacePath(workspaceId, "/schedules"), request, undefined, signal);
+  }
+
+  setScheduleEnabled(scheduleId: string, enabled: boolean, workspaceId = "ws_default",
+    signal?: AbortSignal): Promise<Schedule> {
+    return this.patchJson<Schedule>(this.workspacePath(workspaceId, `/schedules/${pathId(scheduleId)}`),
+      { enabled }, signal);
+  }
+
+  deleteSchedule(scheduleId: string, workspaceId = "ws_default", signal?: AbortSignal): Promise<void> {
+    return this.deleteRequest(this.workspacePath(workspaceId, `/schedules/${pathId(scheduleId)}`), signal);
+  }
+
+  apiTokens(workspaceId = "ws_default", signal?: AbortSignal): Promise<ApiTokenSummary[]> {
+    return this.getJson<ApiTokenSummary[]>(
+      this.workspacePath(workspaceId, "/api-tokens"), signal);
+  }
+
+  createApiToken(request: { name: string; workspaceId: string; role: "VIEWER" | "OPERATOR" | "ADMIN";
+    ttl: string }, signal?: AbortSignal): Promise<IssuedApiToken> {
+    const { workspaceId, ...body } = request;
+    return this.postJson<IssuedApiToken>(this.workspacePath(workspaceId, "/api-tokens"),
+      body, undefined, signal);
+  }
+
+  revokeApiToken(tokenId: string, workspaceId = "ws_default", signal?: AbortSignal): Promise<void> {
+    return this.deleteRequest(
+      this.workspacePath(workspaceId, `/api-tokens/${pathId(tokenId)}`), signal);
+  }
+
+  createAgentEnrollmentToken(name: string, ttl = "PT15M", workspaceId = "ws_default",
+    signal?: AbortSignal): Promise<EnrollmentToken> {
+    return this.postJson<EnrollmentToken>(
+      this.workspacePath(workspaceId, "/agent-enrollment-tokens"),
+      { name, ttl }, undefined, signal);
+  }
+
+  auditEvents(limit = 100, workspaceId = "ws_default", signal?: AbortSignal): Promise<AuditEvent[]> {
+    if (!Number.isInteger(limit) || limit < 1 || limit > 1000) throw new Error("Audit limit must be 1..1000");
+    return this.getJson<AuditEvent[]>(this.workspacePath(workspaceId, `/audit-events?limit=${limit}`), signal);
+  }
+
   providerSchema(path: string, signal?: AbortSignal): Promise<Record<string, unknown>> {
     return this.getJson<Record<string, unknown>>(path, signal);
   }
@@ -380,11 +515,14 @@ export class WePushClient {
     return this.requestText("/openapi.yaml", signal);
   }
 
-  async debugGet(path: string, signal?: AbortSignal): Promise<DebugResponse> {
+  async debugRequest(path: string, method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE" = "GET",
+    requestBody?: string, signal?: AbortSignal): Promise<DebugResponse> {
     const startedAt = performance.now();
     const response = await fetch(this.resolve(path), {
-      method: "GET",
-      headers: { Accept: "application/json, text/plain, */*" },
+      method,
+      headers: this.headers({ Accept: "application/json, text/plain, */*",
+        ...(requestBody ? { "Content-Type": "application/json" } : {}) }),
+      body: requestBody && method !== "GET" ? requestBody : undefined,
       signal,
     });
     const body = await response.text();
@@ -397,9 +535,13 @@ export class WePushClient {
     };
   }
 
+  debugGet(path: string, signal?: AbortSignal): Promise<DebugResponse> {
+    return this.debugRequest(path, "GET", undefined, signal);
+  }
+
   private async getJson<T>(path: string, signal?: AbortSignal): Promise<T> {
     const response = await fetch(this.resolve(path), {
-      headers: { Accept: "application/json" },
+      headers: this.headers({ Accept: "application/json" }),
       signal,
     });
     const body = await response.text();
@@ -410,7 +552,7 @@ export class WePushClient {
   }
 
   private async requestText(path: string, signal?: AbortSignal): Promise<string> {
-    const response = await fetch(this.resolve(path), { signal });
+    const response = await fetch(this.resolve(path), { headers: this.headers(), signal });
     const body = await response.text();
     if (!response.ok) {
       throw new ApiError(response.status, body);
@@ -420,10 +562,10 @@ export class WePushClient {
 
   private async postJson<T>(path: string, value: unknown, idempotencyKey?: string,
     signal?: AbortSignal): Promise<T> {
-    const headers: Record<string, string> = {
+    const headers: Record<string, string> = this.headers({
       Accept: "application/json",
       "Content-Type": "application/json",
-    };
+    });
     if (idempotencyKey) headers["Idempotency-Key"] = idempotencyKey;
     const response = await fetch(this.resolve(path), {
       method: "POST",
@@ -439,13 +581,33 @@ export class WePushClient {
   private async putJson<T>(path: string, value: unknown, signal?: AbortSignal): Promise<T> {
     const response = await fetch(this.resolve(path), {
       method: "PUT",
-      headers: { Accept: "application/json", "Content-Type": "application/json" },
+      headers: this.headers({ Accept: "application/json", "Content-Type": "application/json" }),
       body: JSON.stringify(value),
       signal,
     });
     const body = await response.text();
     if (!response.ok) throw new ApiError(response.status, body);
     return JSON.parse(body) as T;
+  }
+
+  private async patchJson<T>(path: string, value: unknown, signal?: AbortSignal): Promise<T> {
+    const response = await fetch(this.resolve(path), {
+      method: "PATCH",
+      headers: this.headers({ Accept: "application/json", "Content-Type": "application/json" }),
+      body: JSON.stringify(value), signal,
+    });
+    const body = await response.text();
+    if (!response.ok) throw new ApiError(response.status, body);
+    return JSON.parse(body) as T;
+  }
+
+  private async deleteRequest(path: string, signal?: AbortSignal): Promise<void> {
+    const response = await fetch(this.resolve(path), { method: "DELETE", headers: this.headers(), signal });
+    if (!response.ok) throw new ApiError(response.status, await response.text());
+  }
+
+  private headers(values: Record<string, string> = {}): Record<string, string> {
+    return this.token ? { ...values, Authorization: `Bearer ${this.token}` } : values;
   }
 
   private runCommand(runId: string, command: string, value: unknown, idempotencyKey: string,
@@ -466,8 +628,17 @@ export class WePushClient {
   }
 
   private resolve(path: string): string {
-    if (/^https?:\/\//.test(path)) {
-      return path;
+    if (/^https?:\/\//i.test(path)) {
+      if (!this.baseUrl) throw new Error("Absolute API URLs require an explicit trusted Service base URL");
+      const target = new URL(path);
+      const service = new URL(this.baseUrl);
+      if (target.origin !== service.origin) {
+        throw new Error("Cross-origin API URLs are not allowed");
+      }
+      return target.toString();
+    }
+    if (path.startsWith("//") || /^[A-Za-z][A-Za-z0-9+.-]*:/.test(path)) {
+      throw new Error("API path must be relative to the configured Service");
     }
     return `${this.baseUrl}${path.startsWith("/") ? path : `/${path}`}`;
   }
@@ -479,8 +650,14 @@ function pathId(value: string): string {
 }
 
 function defaultBaseUrl(): string {
-  if (typeof window !== "undefined" && window.location.protocol === "file:") {
+  if (typeof window !== "undefined"
+    && (window.location.protocol === "file:" || window.location.protocol === "wepush:")) {
     return "http://127.0.0.1:18990";
   }
   return "";
+}
+
+function defaultToken(): string {
+  try { return typeof localStorage === "undefined" ? "" : localStorage.getItem("wepush.apiToken") ?? ""; }
+  catch { return ""; }
 }

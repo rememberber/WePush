@@ -11,10 +11,14 @@ import com.fangxuele.wepush.next.core.api.SecretRef;
 import com.fangxuele.wepush.next.core.api.SecretValue;
 import com.fangxuele.wepush.next.service.domain.AgentLease;
 import com.fangxuele.wepush.next.service.domain.AgentLeaseRepository;
+import com.fangxuele.wepush.next.service.domain.AgentOutboundMessage;
+import com.fangxuele.wepush.next.service.domain.AgentOutboundMessageRepository;
 import com.fangxuele.wepush.next.service.domain.AgentRegistration;
 import com.fangxuele.wepush.next.service.domain.AgentRepository;
 import com.fangxuele.wepush.next.service.domain.AudienceRecipient;
 import com.fangxuele.wepush.next.service.domain.AudienceRepository;
+import com.fangxuele.wepush.next.service.domain.ArtifactDefinition;
+import com.fangxuele.wepush.next.service.domain.ArtifactRepository;
 import com.fangxuele.wepush.next.service.domain.JsonDocument;
 import com.fangxuele.wepush.next.service.domain.RunDefinition;
 import com.fangxuele.wepush.next.service.domain.RunEventRecord;
@@ -24,6 +28,7 @@ import com.fangxuele.wepush.next.service.domain.RunResultRepository;
 import com.fangxuele.wepush.next.service.domain.RunSnapshot;
 import com.fangxuele.wepush.next.service.domain.RunStatus;
 import com.fangxuele.wepush.next.service.domain.WorkspaceId;
+import com.fangxuele.wepush.next.service.domain.WorkspaceRepository;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -44,13 +49,15 @@ import java.util.Set;
 
 /** Durable remote-run scheduler and the receiving side of the Agent execution protocol. */
 public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGateway {
-    private static final WorkspaceId DEFAULT_WORKSPACE = new WorkspaceId("ws_default");
-
+    private final WorkspaceRepository workspaces;
     private final RunRepository runs;
     private final RunResultRepository results;
     private final AudienceRepository audiences;
     private final AgentRepository agents;
+    private final AgentIdentityService agentIdentities;
     private final AgentLeaseRepository leases;
+    private final AgentOutboundMessageRepository outbound;
+    private final ArtifactRepository artifacts;
     private final AgentControlGateway gateway;
     private final SecretStore secrets;
     private final JsonCodec json;
@@ -66,10 +73,14 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
 
     public RemoteRunCoordinator(
             RunRepository runs,
+            WorkspaceRepository workspaces,
             RunResultRepository results,
             AudienceRepository audiences,
             AgentRepository agents,
+            AgentIdentityService agentIdentities,
             AgentLeaseRepository leases,
+            AgentOutboundMessageRepository outbound,
+            ArtifactRepository artifacts,
             AgentControlGateway gateway,
             SecretStore secrets,
             JsonCodec json,
@@ -82,10 +93,14 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
             Duration recoveryGrace
     ) {
         this.runs = Objects.requireNonNull(runs, "runs");
+        this.workspaces = Objects.requireNonNull(workspaces, "workspaces");
         this.results = Objects.requireNonNull(results, "results");
         this.audiences = Objects.requireNonNull(audiences, "audiences");
         this.agents = Objects.requireNonNull(agents, "agents");
+        this.agentIdentities = Objects.requireNonNull(agentIdentities, "agentIdentities");
         this.leases = Objects.requireNonNull(leases, "leases");
+        this.outbound = Objects.requireNonNull(outbound, "outbound");
+        this.artifacts = Objects.requireNonNull(artifacts, "artifacts");
         this.gateway = Objects.requireNonNull(gateway, "gateway");
         this.secrets = Objects.requireNonNull(secrets, "secrets");
         this.json = Objects.requireNonNull(json, "json");
@@ -135,14 +150,9 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
                 agent.sessionId(), epoch, ids.next("fence"), AgentLease.Status.OFFERED,
                 now, now.plus(offerTtl), null, null, 0, 0);
         LeaseFence fence = fence(lease);
-        byte[] spec = executionSpecDocument(lease, snapshot, run);
-        byte[] audience = audienceDocument(lease, snapshot);
-        byte[] secretEnvelope = secretEnvelope(agent, lease, requiredSecrets);
-        String leasePath = "/internal/agent/v1/leases/"
-                + URLEncoder.encode(lease.id(), StandardCharsets.UTF_8);
-        AgentFrames.LeaseOffer offer = new AgentFrames.LeaseOffer(fence, lease.expiresAt(),
-                publicBaseUrl + leasePath + "/execution-spec", sha256(spec),
-                publicBaseUrl + leasePath + "/audience", sha256(audience), secretEnvelope);
+        AgentOutboundMessage message = new AgentOutboundMessage("offer_" + lease.id(),
+                workspaceId, runId, agent.id(), lease.id(), AgentOutboundMessage.Type.LEASE_OFFER,
+                "", new JsonDocument("{}"), now, now, null, null, 0, "");
 
         RunEventRecord offered = transactions.required(() -> {
             AgentLease current = leases.findCurrent(workspaceId, runId).orElse(null);
@@ -151,6 +161,7 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
             if (latest == null || (latest.status() != RunStatus.PENDING
                     && latest.status() != RunStatus.RECOVERING)) return null;
             leases.create(lease);
+            outbound.create(message);
             if (!runs.transition(workspaceId, runId,
                     Set.of(RunStatus.PENDING, RunStatus.RECOVERING), RunStatus.LEASED,
                     "offered to Agent " + agent.id(), now)) {
@@ -164,9 +175,7 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
         });
         if (offered == null) return;
         eventPublisher.publish(offered);
-        if (!gateway.send(agent.id(), offer)) {
-            lose(lease, "AGENT_STREAM_UNAVAILABLE", true);
-        }
+        deliver(message);
     }
 
     public Optional<AgentFrames.ServicePayload> accept(AgentRegistration agent,
@@ -177,10 +186,31 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
             return Optional.of(acceptEvents(agent, batch));
         } else if (payload instanceof AgentFrames.RunCompleted completed) {
             complete(agent, completed);
+            return Optional.of(new AgentFrames.RunCompletionAck(completed.fence()));
         } else if (payload instanceof AgentFrames.CommandAck commandAck) {
             validate(agent, commandAck.fence());
+            outbound.acknowledgeCommand(commandAck.commandId(), clock.instant());
+        } else if (payload instanceof AgentFrames.Heartbeat heartbeat) {
+            renew(agent, heartbeat.leases());
         }
         return Optional.empty();
+    }
+
+    public List<LeaseFence> reconnected(AgentRegistration agent, List<LeaseFence> recovered) {
+        if (recovered.size() > agent.maximumRuns()) {
+            throw new RemoteProtocolProblem("RECOVERED_LEASE_CAPACITY_INVALID",
+                    "Agent reported more recovered Leases than its capacity");
+        }
+        if (recovered.stream().map(LeaseFence::leaseId).distinct().count() != recovered.size()) {
+            throw new RemoteProtocolProblem("RECOVERED_LEASE_DUPLICATE",
+                    "Agent reported duplicate recovered Leases");
+        }
+        Instant now = clock.instant();
+        Instant renewedUntil = now.plus(offerTtl);
+        return transactions.required(() -> recovered.stream()
+                .filter(fence -> leases.renew(authority(fence), agent.id(), agent.sessionId(),
+                        now, renewedUntil))
+                .toList());
     }
 
     @Override
@@ -192,12 +222,25 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
                     "Run has no active Agent lease");
         }
         CommandDocument document = command(command);
-        AgentFrames.RunCommand frame = new AgentFrames.RunCommand(command.commandId(), fence(lease),
-                document.type(), document.payload(), clock.instant());
-        return gateway.send(lease.agentId(), frame)
+        Instant now = clock.instant();
+        AgentOutboundMessage message = new AgentOutboundMessage(command.commandId(), workspaceId,
+                runId, lease.agentId(), lease.id(), AgentOutboundMessage.Type.RUN_COMMAND,
+                document.type(), new JsonDocument(new String(document.payload(), StandardCharsets.UTF_8)),
+                now, now, null, null, 0, "");
+        transactions.required(() -> outbound.create(message));
+        return deliver(message)
                 ? CommandResult.accepted(command.commandId(), "REMOTE_COMMAND_DELIVERED")
-                : CommandResult.rejected(command.commandId(), "AGENT_STREAM_UNAVAILABLE",
-                "Agent control stream is unavailable");
+                : CommandResult.accepted(command.commandId(), "REMOTE_COMMAND_QUEUED");
+    }
+
+    /** Retries durable messages on every instance; only the stream-owning instance can send. */
+    public void deliverPending() {
+        outbound.pending(clock.instant(), 100).forEach(this::deliver);
+    }
+
+    /** Gives a newly connected Agent an immediate delivery pass instead of waiting for the poller. */
+    public void deliverPendingForAgent(String agentId) {
+        outbound.pendingForAgent(agentId, clock.instant(), 100).forEach(this::deliver);
     }
 
     public byte[] executionSpec(String leaseId) {
@@ -217,9 +260,9 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
     }
 
     public void recoverPending() {
-        runs.list(DEFAULT_WORKSPACE).stream()
+        workspaces.list().forEach(workspace -> runs.list(workspace.id()).stream()
                 .filter(run -> run.status() == RunStatus.PENDING || run.status() == RunStatus.RECOVERING)
-                .forEach(run -> dispatch(DEFAULT_WORKSPACE, run.id()));
+                .forEach(run -> dispatch(workspace.id(), run.id())));
     }
 
     public void expireAndRecover() {
@@ -230,13 +273,24 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
     }
 
     public void disconnected(AgentRegistration agent) {
-        List<AgentLease> active = leases.activeForAgent(agent.id(), agent.sessionId());
-        for (AgentLease lease : active) lose(lease, "AGENT_DISCONNECTED", false);
+        // A transport disconnect is not proof that execution stopped. The Lease remains
+        // fenced and may be rebound by the same Agent until its database expiry.
+    }
+
+    private void renew(AgentRegistration agent, List<LeaseFence> reported) {
+        Instant now = clock.instant();
+        Instant renewedUntil = now.plus(offerTtl);
+        transactions.required(() -> {
+            for (LeaseFence fence : reported) {
+                leases.renew(authority(fence), agent.id(), agent.sessionId(), now, renewedUntil);
+            }
+        });
     }
 
     private Optional<AgentRegistration> chooseAgent(RunSnapshot snapshot, boolean requiresSecrets) {
         return agents.list().stream()
                 .filter(agent -> agent.status() == AgentRegistration.Status.ONLINE)
+                .filter(agent -> agentIdentities.allowedInWorkspace(agent.id(), snapshot.workspaceId()))
                 .filter(agent -> !requiresSecrets || !agent.secretEncryptionPublicKey().isBlank())
                 .filter(agent -> agent.availableRuns()
                         > leases.offeredCount(agent.id(), agent.sessionId()))
@@ -285,6 +339,7 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
                     lease.fencingToken(), now)) {
                 throw new RemoteProtocolProblem("LEASE_ACK_REJECTED", "lease acknowledgement is stale");
             }
+            outbound.acknowledgeLease(lease.id(), now);
             runs.transition(lease.workspaceId(), lease.runId(), Set.of(RunStatus.LEASED),
                     RunStatus.RUNNING, "executing on Agent " + agent.id(), now);
             RunEventRecord event = event(lease, "RUN_LEASE_ACCEPTED", now,
@@ -349,6 +404,7 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
     private void complete(AgentRegistration agent, AgentFrames.RunCompleted completed) {
         AgentLease lease = validate(agent, completed.fence());
         if (lease.status() == AgentLease.Status.COMPLETED) return;
+        validateArtifacts(lease, completed.artifactReferences());
         RemoteRunDocuments.Summary summary = json.read(
                 new JsonDocument(new String(completed.summary(), StandardCharsets.UTF_8)),
                 RemoteRunDocuments.Summary.class);
@@ -374,6 +430,21 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
             return event;
         });
         eventPublisher.publish(finalized);
+    }
+
+    private void validateArtifacts(AgentLease lease, List<String> references) {
+        if (references.size() > 1_000 || references.stream().distinct().count() != references.size()) {
+            throw new RemoteProtocolProblem("ARTIFACT_REFERENCES_INVALID",
+                    "Run completion Artifact references are duplicated or excessive");
+        }
+        for (String artifactId : references) {
+            ArtifactDefinition artifact = artifacts.findById(lease.workspaceId(), artifactId).orElseThrow(() ->
+                    new RemoteProtocolProblem("ARTIFACT_NOT_FOUND", "Run Artifact is unknown"));
+            if (!lease.runId().equals(artifact.runId()) || artifact.state() != ArtifactDefinition.State.READY) {
+                throw new RemoteProtocolProblem("ARTIFACT_NOT_READY",
+                        "Run Artifact is not READY for this Lease");
+            }
+        }
     }
 
     private AgentLease validate(AgentRegistration agent, LeaseFence fence) {
@@ -430,6 +501,7 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
             if (!leases.markLost(lease.id(), lease.fencingToken(), clock.instant())) {
                 return new LeaseLoss(false, null);
             }
+            outbound.discardLease(lease.id(), reason, clock.instant());
             RunDefinition run = runs.findById(lease.workspaceId(), lease.runId()).orElse(null);
             if (run == null || run.status().terminal()) return new LeaseLoss(true, null);
             RunStatus target = run.status() == RunStatus.CANCELLING ? RunStatus.LOST : RunStatus.RECOVERING;
@@ -447,6 +519,7 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
 
     private void recoverLease(AgentLease lease, String reason) {
         RunEventRecord recovered = transactions.required(() -> {
+            outbound.discardLease(lease.id(), reason, clock.instant());
             RunDefinition run = runs.findById(lease.workspaceId(), lease.runId()).orElse(null);
             if (run != null && !run.status().terminal()) {
                 runs.transition(lease.workspaceId(), lease.runId(), Set.of(run.status()),
@@ -485,8 +558,59 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
         return json.canonicalize(value).value().getBytes(StandardCharsets.UTF_8);
     }
 
+    private boolean deliver(AgentOutboundMessage message) {
+        Instant now = clock.instant();
+        try {
+            AgentLease lease = leases.findById(message.leaseId()).orElse(null);
+            if (lease == null || !lease.status().active() || !lease.expiresAt().isAfter(now)
+                    || !lease.agentId().equals(message.agentId())) {
+                outbound.discardLease(message.leaseId(), "LEASE_NO_LONGER_ACTIVE", now);
+                return false;
+            }
+            AgentFrames.ServicePayload payload = switch (message.type()) {
+                case LEASE_OFFER -> leaseOffer(lease);
+                case RUN_COMMAND -> new AgentFrames.RunCommand(message.id(), fence(lease),
+                        message.commandType(), message.payload().value().getBytes(StandardCharsets.UTF_8), now);
+            };
+            if (gateway.send(message.agentId(), payload)) {
+                outbound.delivered(message.id(), now, now.plusSeconds(5));
+                return true;
+            }
+            outbound.failed(message.id(), "AGENT_STREAM_UNAVAILABLE", now.plusSeconds(1));
+            return false;
+        } catch (RuntimeException problem) {
+            outbound.failed(message.id(), problem.getClass().getSimpleName() + ": "
+                    + Objects.toString(problem.getMessage(), "delivery failed"), now.plusSeconds(5));
+            return false;
+        }
+    }
+
+    private AgentFrames.LeaseOffer leaseOffer(AgentLease lease) {
+        RunDefinition run = runs.findById(lease.workspaceId(), lease.runId())
+                .orElseThrow(() -> new IllegalStateException("leased run is missing: " + lease.runId()));
+        RunSnapshot snapshot = runs.findSnapshot(lease.workspaceId(), lease.runId())
+                .orElseThrow(() -> new IllegalStateException("run snapshot is missing: " + lease.runId()));
+        AgentRegistration agent = agents.findById(lease.agentId())
+                .orElseThrow(() -> new IllegalStateException("leased Agent is missing: " + lease.agentId()));
+        byte[] spec = executionSpecDocument(lease, snapshot, run);
+        byte[] audience = audienceDocument(lease, snapshot);
+        List<SecretRef> requiredSecrets = secretReferences.scan(
+                snapshot.accountConfiguration(), snapshot.messageContent());
+        byte[] secretEnvelope = secretEnvelope(agent, lease, requiredSecrets);
+        String leasePath = "/internal/agent/v1/leases/"
+                + URLEncoder.encode(lease.id(), StandardCharsets.UTF_8);
+        return new AgentFrames.LeaseOffer(fence(lease), lease.expiresAt(),
+                publicBaseUrl + leasePath + "/execution-spec", sha256(spec),
+                publicBaseUrl + leasePath + "/audience", sha256(audience), secretEnvelope);
+    }
+
     private static LeaseFence fence(AgentLease lease) {
         return new LeaseFence(lease.id(), lease.runId(), lease.epoch(), lease.fencingToken());
+    }
+
+    private static AgentLeaseRepository.LeaseFenceAuthority authority(LeaseFence fence) {
+        return new AgentLeaseRepository.LeaseFenceAuthority(fence.leaseId(), fence.runId(),
+                fence.epoch(), fence.fencingToken());
     }
 
     private static void requireRun(AgentLease lease, String runId) {

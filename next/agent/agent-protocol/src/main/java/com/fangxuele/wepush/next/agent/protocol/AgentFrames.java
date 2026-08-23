@@ -27,7 +27,8 @@ public final class AgentFrames {
             CommandAck, RunCompleted, Draining {
     }
 
-    public sealed interface ServicePayload permits Welcome, LeaseOffer, RunCommand, EventAck, DrainRequest {
+    public sealed interface ServicePayload permits Welcome, LeaseOffer, RunCommand, EventAck,
+            RunCompletionAck, DrainRequest {
     }
 
     public record Hello(
@@ -41,7 +42,8 @@ public final class AgentFrames {
             long lastServiceSequence,
             long lastAgentSequenceAcknowledged,
             List<ProviderCapability> providers,
-            String secretEncryptionPublicKey
+            String secretEncryptionPublicKey,
+            List<LeaseFence> recoveredLeases
     ) implements AgentPayload {
         public Hello {
             if (protocolMinimum < 1 || protocolMaximum < protocolMinimum || maximumRuns < 1) {
@@ -50,6 +52,17 @@ public final class AgentFrames {
             providers = List.copyOf(providers);
             secretEncryptionPublicKey = secretEncryptionPublicKey == null
                     ? "" : secretEncryptionPublicKey.trim();
+            recoveredLeases = List.copyOf(recoveredLeases);
+        }
+
+        public Hello(String agentVersion, int protocolMinimum, int protocolMaximum,
+                     String operatingSystem, String architecture, String javaVersion,
+                     int maximumRuns, long lastServiceSequence,
+                     long lastAgentSequenceAcknowledged, List<ProviderCapability> providers,
+                     String secretEncryptionPublicKey) {
+            this(agentVersion, protocolMinimum, protocolMaximum, operatingSystem, architecture,
+                    javaVersion, maximumRuns, lastServiceSequence, lastAgentSequenceAcknowledged,
+                    providers, secretEncryptionPublicKey, List.of());
         }
 
         public Hello(String agentVersion, int protocolMinimum, int protocolMaximum,
@@ -58,7 +71,7 @@ public final class AgentFrames {
                      long lastAgentSequenceAcknowledged, List<ProviderCapability> providers) {
             this(agentVersion, protocolMinimum, protocolMaximum, operatingSystem, architecture,
                     javaVersion, maximumRuns, lastServiceSequence, lastAgentSequenceAcknowledged,
-                    providers, "");
+                    providers, "", List.of());
         }
     }
 
@@ -67,12 +80,20 @@ public final class AgentFrames {
             Instant serverTime,
             int heartbeatSeconds,
             long maximumMessageBytes,
-            long lastAgentSequence
+            long lastAgentSequence,
+            List<LeaseFence> resumableLeases
     ) implements ServicePayload {
         public Welcome {
             if (protocolVersion < 1 || serverTime == null || heartbeatSeconds < 1 || maximumMessageBytes < 1) {
                 throw new IllegalArgumentException("invalid welcome values");
             }
+            resumableLeases = List.copyOf(resumableLeases);
+        }
+
+        public Welcome(int protocolVersion, Instant serverTime, int heartbeatSeconds,
+                       long maximumMessageBytes, long lastAgentSequence) {
+            this(protocolVersion, serverTime, heartbeatSeconds, maximumMessageBytes,
+                    lastAgentSequence, List.of());
         }
     }
 
@@ -179,6 +200,12 @@ public final class AgentFrames {
         @Override
         public byte[] summary() {
             return summary.clone();
+        }
+    }
+
+    public record RunCompletionAck(LeaseFence fence) implements ServicePayload {
+        public RunCompletionAck {
+            if (fence == null) throw new IllegalArgumentException("run completion ACK requires a fence");
         }
     }
 

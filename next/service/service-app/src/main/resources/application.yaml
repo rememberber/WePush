@@ -1,6 +1,9 @@
 spring:
   application:
     name: wepush-next-service
+  web:
+    resources:
+      static-locations: ${WEPUSH_WEB_ROOT:classpath:/static/}
 
 server:
   address: ${WEPUSH_BIND_ADDRESS:127.0.0.1}
@@ -11,35 +14,77 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,prometheus
   endpoint:
     health:
       probes:
         enabled: true
+      show-details: when_authorized
+  metrics:
+    tags:
+      application: wepush-next-service
 
 wepush:
   mode: ${WEPUSH_MODE:standalone}
+  security:
+    enabled: ${WEPUSH_SECURITY_ENABLED:false}
+    bootstrap-token: ${WEPUSH_BOOTSTRAP_TOKEN:}
   execution:
     mode: ${WEPUSH_EXECUTION_MODE:embedded}
+  schedule:
+    scan-interval: ${WEPUSH_SCHEDULE_SCAN_INTERVAL:PT5S}
+  events:
+    poll-interval: ${WEPUSH_EVENT_POLL_INTERVAL:PT1S}
   database:
+    kind: ${WEPUSH_DATABASE_KIND:sqlite}
     path: ${WEPUSH_DATABASE_PATH:.local/data/wepush-next.db}
+    url: ${WEPUSH_DATABASE_URL:}
+    username: ${WEPUSH_DATABASE_USERNAME:}
+    password: ${WEPUSH_DATABASE_PASSWORD:}
+    maximum-pool-size: ${WEPUSH_DATABASE_MAXIMUM_POOL_SIZE:16}
   secret:
     master-key-path: ${WEPUSH_MASTER_KEY_PATH:.local/secrets/master-key.json}
     master-key-base64: ${WEPUSH_MASTER_KEY_BASE64:}
   artifact:
+    kind: ${WEPUSH_ARTIFACT_KIND:local}
     root: ${WEPUSH_ARTIFACT_ROOT:.local/artifacts}
     environment: ${WEPUSH_ENVIRONMENT:standalone}
     export-retention: ${WEPUSH_EXPORT_RETENTION:PT24H}
     retention-initial-delay: ${WEPUSH_RETENTION_INITIAL_DELAY:PT1M}
     retention-interval: ${WEPUSH_RETENTION_INTERVAL:PT1H}
+    s3:
+      bucket: ${WEPUSH_S3_BUCKET:}
+      region: ${WEPUSH_S3_REGION:us-east-1}
+      endpoint: ${WEPUSH_S3_ENDPOINT:}
+      path-style-access: ${WEPUSH_S3_PATH_STYLE_ACCESS:false}
+      access-key: ${WEPUSH_S3_ACCESS_KEY:}
+      secret-key: ${WEPUSH_S3_SECRET_KEY:}
+      kms-key-id: ${WEPUSH_S3_KMS_KEY_ID:}
+      server-side-encryption: ${WEPUSH_S3_SERVER_SIDE_ENCRYPTION:AUTO}
   agent:
     public-base-url: ${WEPUSH_AGENT_PUBLIC_BASE_URL:http://127.0.0.1:18990}
+    artifact-signing-key-base64: ${WEPUSH_AGENT_ARTIFACT_SIGNING_KEY_BASE64:}
+    artifact-upload-ttl: ${WEPUSH_AGENT_ARTIFACT_UPLOAD_TTL:PT15M}
+    artifact-retention: ${WEPUSH_AGENT_ARTIFACT_RETENTION:P7D}
+    artifact-maximum-bytes: ${WEPUSH_AGENT_ARTIFACT_MAXIMUM_BYTES:1073741824}
     lease-offer-ttl: ${WEPUSH_AGENT_LEASE_OFFER_TTL:PT1M}
     lease-scan-interval: ${WEPUSH_AGENT_LEASE_SCAN_INTERVAL:PT10S}
+    outbox-scan-interval: ${WEPUSH_AGENT_OUTBOX_SCAN_INTERVAL:PT1S}
     recovery-grace: ${WEPUSH_AGENT_RECOVERY_GRACE:PT30S}
+    identity:
+      ca-key-path: ${WEPUSH_AGENT_CA_KEY_PATH:.local/agent-ca/ca-key.pem}
+      ca-certificate-path: ${WEPUSH_AGENT_CA_CERTIFICATE_PATH:.local/agent-ca/ca-certificate.pem}
+      ca-validity: ${WEPUSH_AGENT_CA_VALIDITY:P3650D}
+      credential-ttl: ${WEPUSH_AGENT_CREDENTIAL_TTL:P90D}
     grpc:
       address: ${WEPUSH_AGENT_GRPC_ADDRESS:127.0.0.1}
       port: ${WEPUSH_AGENT_GRPC_PORT:19090}
       token: ${WEPUSH_AGENT_GRPC_TOKEN:}
       heartbeat-interval: ${WEPUSH_AGENT_HEARTBEAT_INTERVAL:PT10S}
       maximum-message-bytes: ${WEPUSH_AGENT_MAXIMUM_MESSAGE_BYTES:1048576}
+      tls:
+        enabled: ${WEPUSH_AGENT_GRPC_TLS_ENABLED:false}
+        certificate-chain: ${WEPUSH_AGENT_GRPC_TLS_CERTIFICATE_CHAIN:}
+        private-key: ${WEPUSH_AGENT_GRPC_TLS_PRIVATE_KEY:}
+        trust-certificates: ${WEPUSH_AGENT_GRPC_TLS_TRUST_CERTIFICATES:}
+        require-client-certificate: ${WEPUSH_AGENT_GRPC_TLS_REQUIRE_CLIENT_CERTIFICATE:false}

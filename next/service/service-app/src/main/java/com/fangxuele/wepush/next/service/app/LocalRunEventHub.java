@@ -61,6 +61,25 @@ final class LocalRunEventHub implements RunEventPublisher {
         }
     }
 
+    /**
+     * Replays database events into locally connected SSE clients. This deliberately polls the
+     * durable event log so an event committed by another Service instance is still observed.
+     */
+    void poll(RunApplicationService runs) {
+        channels.forEach((key, channel) -> {
+            synchronized (channel) {
+                if (channel.subscribers.isEmpty()) return;
+                long after = channel.subscribers.stream()
+                        .mapToLong(subscriber -> subscriber.lastSequence)
+                        .min().orElse(0L);
+                WorkspaceId workspaceId = new WorkspaceId(key.workspaceId());
+                List<RunEventRecord> replay = runs.eventsAfter(workspaceId, key.runId(), after, 1_000);
+                replay.forEach(event -> channel.subscribers
+                        .forEach(subscriber -> send(channel, subscriber, event)));
+            }
+        });
+    }
+
     private void send(Channel channel, Subscriber subscriber, RunEventRecord event) {
         if (event.sequence() <= subscriber.lastSequence) {
             return;

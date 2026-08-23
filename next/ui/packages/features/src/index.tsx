@@ -11,6 +11,9 @@ import {
   type ProviderSummary,
   type Run,
   type RunItemResult,
+  type Schedule,
+  type ApiTokenSummary,
+  type AuditEvent,
   type SystemInfo,
   WePushClient,
 } from "@wepush-next/api-client";
@@ -56,7 +59,7 @@ const pageTitles: Record<PageId, string> = Object.fromEntries(
   navigation.flatMap((group) => group.items.map((item) => [item.id, item.label])),
 ) as Record<PageId, string>;
 const implementedPages: readonly PageId[] = [
-  "overview", "providers", "accounts", "messages", "audiences", "jobs", "runs", "agents", "docs",
+  "overview", "providers", "accounts", "messages", "audiences", "jobs", "runs", "agents", "docs", "settings",
 ];
 
 export function WePushApp({ apiBaseUrl }: { apiBaseUrl?: string }) {
@@ -119,6 +122,7 @@ export function WePushApp({ apiBaseUrl }: { apiBaseUrl?: string }) {
           {activePage === "runs" ? <RunsPage client={client} onNavigate={setActivePage} /> : null}
           {activePage === "agents" ? <AgentsPage client={client} /> : null}
           {activePage === "docs" ? <ApiDocsPage client={client} /> : null}
+          {activePage === "settings" ? <SettingsPage client={client} /> : null}
           {!implementedPages.includes(activePage) ? (
             <ComingSoon page={activePage} onNavigate={setActivePage} />
           ) : null}
@@ -561,6 +565,7 @@ function JobsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
   const [messages, setMessages] = useState<Message[]>([]);
   const [audiences, setAudiences] = useState<Audience[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [name, setName] = useState("Welcome job");
   const [accountId, setAccountId] = useState("");
   const [messageId, setMessageId] = useState("");
@@ -569,16 +574,20 @@ function JobsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
   const [saving, setSaving] = useState(false);
   const [runningJob, setRunningJob] = useState<string>();
   const [error, setError] = useState<string>();
+  const [scheduleJobId, setScheduleJobId] = useState("");
+  const [cronExpression, setCronExpression] = useState("0 0 9 * * *");
 
   const load = useCallback(async () => {
     try {
-      const [nextAccounts, nextMessages, nextAudiences, nextJobs] = await Promise.all([
-        client.accounts(), client.messages(), client.audiences(), client.jobs(),
+      const [nextAccounts, nextMessages, nextAudiences, nextJobs, nextSchedules] = await Promise.all([
+        client.accounts(), client.messages(), client.audiences(), client.jobs(), client.schedules(),
       ]);
       setAccounts(nextAccounts); setMessages(nextMessages); setAudiences(nextAudiences); setJobs(nextJobs);
+      setSchedules(nextSchedules);
       setAccountId((current) => current || nextAccounts[0]?.id || "");
       setMessageId((current) => current || nextMessages[0]?.id || "");
       setAudienceId((current) => current || nextAudiences[0]?.id || "");
+      setScheduleJobId((current) => current || nextJobs[0]?.id || "");
       setError(undefined);
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : "任务资源加载失败");
@@ -615,6 +624,26 @@ function JobsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
     }
   }
 
+  async function createSchedule() {
+    if (!scheduleJobId) return;
+    setError(undefined);
+    try {
+      await client.createSchedule({
+        name: `Schedule ${schedules.length + 1}`, jobId: scheduleJobId,
+        cronExpression, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
+        misfirePolicy: "FIRE_ONCE", enabled: true,
+      });
+      await load();
+    } catch (nextError) {
+      setError(nextError instanceof Error ? nextError.message : "调度创建失败");
+    }
+  }
+
+  async function toggleSchedule(schedule: Schedule) {
+    try { await client.setScheduleEnabled(schedule.id, !schedule.enabled); await load(); }
+    catch (nextError) { setError(nextError instanceof Error ? nextError.message : "调度更新失败"); }
+  }
+
   const ready = Boolean(accountId && messageId && audienceId && name.trim());
   return (
     <div className="page resource-page">
@@ -643,6 +672,20 @@ function JobsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
           </article>)}</div>
         </section>
       </div>
+      <section className="panel recent-panel schedule-panel">
+        <PanelHeader title="Cron 调度" description="Service 以数据库幂等键触发，PostgreSQL Server 模式由 advisory lock 选主" />
+        <div className="schedule-composer">
+          <label className="simple-field"><span>任务</span><select value={scheduleJobId} onChange={(event) => setScheduleJobId(event.target.value)}><option value="">请选择</option>{jobs.map((job) => <option key={job.id} value={job.id}>{job.name}</option>)}</select></label>
+          <label className="simple-field"><span>六段 Cron</span><input value={cronExpression} onChange={(event) => setCronExpression(event.target.value)} /></label>
+          <Button variant="primary" disabled={!scheduleJobId || !cronExpression.trim()} onClick={() => void createSchedule()}>创建调度</Button>
+        </div>
+        {schedules.length === 0 ? <EmptyState icon={<Icon name="task" />} title="还没有调度" description="选择一个已启用任务并设置 Cron 表达式。" /> : null}
+        <div className="resource-card-list">{schedules.map((schedule) => <article key={schedule.id}>
+          <span className="resource-card-icon"><Icon name="task" /></span>
+          <div><strong>{schedule.name}</strong><small>{schedule.cronExpression} · {schedule.timezone}</small><code>next {new Date(schedule.nextFireAt).toLocaleString()}</code></div>
+          <Button variant="ghost" onClick={() => void toggleSchedule(schedule)}>{schedule.enabled ? "停用" : "启用"}</Button>
+        </article>)}</div>
+      </section>
     </div>
   );
 }
@@ -728,17 +771,22 @@ function RunsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
   useEffect(() => {
     if (!selected?.id) return;
     setEvents([]);
-    const source = new EventSource(client.runEventsUrl(selected.id));
-    const names = ["RUN_CREATED", "RUN_STARTED", "ITEM_COMPLETED", "PROGRESS", "RUN_COMPLETED", "RUN_FAILED", "RUN_FINALIZED", "RUN_FAILED_TO_START", "STATE_CHANGED", "CONCURRENCY_CHANGED", "RUN_COMMAND_ACCEPTED", "RUN_COMMAND_REJECTED"];
-    const receive = (raw: Event) => {
-      const event = raw as MessageEvent<string>;
-      setEvents((current) => [...current, { id: event.lastEventId, type: event.type, data: event.data }].slice(-200));
-      void refreshRuns();
-    };
-    names.forEach((name) => source.addEventListener(name, receive));
-    // EventSource reconnects automatically and carries Last-Event-ID for persisted replay.
-    source.onerror = () => undefined;
-    return () => source.close();
+    const controller = new AbortController();
+    let lastSequence = "";
+    void (async () => {
+      while (!controller.signal.aborted) {
+        try {
+          lastSequence = await client.streamRunEvents(selected.id, lastSequence, (event) => {
+            setEvents((current) => [...current, event].slice(-200));
+            void refreshRuns();
+          }, "ws_default", controller.signal);
+        } catch (problem) {
+          if (controller.signal.aborted) return;
+          await new Promise((resolve) => window.setTimeout(resolve, 1_000));
+        }
+      }
+    })();
+    return () => controller.abort();
   }, [client, refreshRuns, selected?.id]);
 
   async function loadMoreResults() {
@@ -936,10 +984,11 @@ function AgentsPage({ client }: { client: WePushClient }) {
 }
 
 interface ApiEndpoint {
-  method: "GET";
+  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   path: string;
   title: string;
   description: string;
+  exampleBody?: string;
 }
 
 const apiEndpoints: ApiEndpoint[] = [
@@ -952,6 +1001,10 @@ const apiEndpoints: ApiEndpoint[] = [
   { method: "GET", path: "/api/v1/workspaces/ws_default/audiences", title: "List audiences", description: "读取受众及当前快照元数据" },
   { method: "GET", path: "/api/v1/workspaces/ws_default/jobs", title: "List jobs", description: "读取任务组合与执行策略" },
   { method: "GET", path: "/api/v1/workspaces/ws_default/runs", title: "List runs", description: "读取执行状态和结果计数" },
+  { method: "GET", path: "/api/v1/workspaces/ws_default/schedules", title: "List schedules", description: "读取 Cron 调度定义" },
+  { method: "POST", path: "/api/v1/workspaces/ws_default/schedules", title: "Create schedule", description: "为任务创建数据库幂等调度", exampleBody: '{\n  "name": "Daily",\n  "jobId": "job_id",\n  "cronExpression": "0 0 9 * * *",\n  "timezone": "Asia/Shanghai",\n  "misfirePolicy": "FIRE_ONCE",\n  "enabled": true\n}' },
+  { method: "GET", path: "/api/v1/workspaces/ws_default/audit-events", title: "Audit events", description: "读取工作区审计日志" },
+  { method: "POST", path: "/api/v1/workspaces/ws_default/agent-enrollment-tokens", title: "Create enrollment token", description: "为当前 Workspace 签发一次性 Agent 注册令牌", exampleBody: '{\n  "name": "new-agent",\n  "ttl": "PT15M"\n}' },
 ];
 
 function ApiDocsPage({ client }: { client: WePushClient }) {
@@ -959,6 +1012,8 @@ function ApiDocsPage({ client }: { client: WePushClient }) {
   const [response, setResponse] = useState<DebugResponse>();
   const [running, setRunning] = useState(false);
   const [openApi, setOpenApi] = useState<string>();
+  const [requestPath, setRequestPath] = useState(selected.path);
+  const [requestBody, setRequestBody] = useState(selected.exampleBody ?? "");
 
   useEffect(() => {
     const controller = new AbortController();
@@ -967,9 +1022,16 @@ function ApiDocsPage({ client }: { client: WePushClient }) {
   }, [client]);
 
   async function execute() {
+    if (selected.method !== "GET" && !window.confirm(
+      `确认以 ${selected.method} 调用 ${requestPath}？写操作将按当前身份执行并进入服务端审计。`,
+    )) return;
     setRunning(true);
     try {
-      setResponse(await client.debugGet(selected.path));
+      if (requestBody.trim()) JSON.parse(requestBody);
+      setResponse(await client.debugRequest(requestPath, selected.method, requestBody || undefined));
+    } catch (error) {
+      setResponse({ status: 0, statusText: "Client error", durationMs: 0, headers: {},
+        body: error instanceof Error ? error.message : "请求失败" });
     } finally {
       setRunning(false);
     }
@@ -986,23 +1048,83 @@ function ApiDocsPage({ client }: { client: WePushClient }) {
           <div className="endpoint-search"><Icon name="search" /><input aria-label="筛选接口" placeholder="筛选接口…" /></div>
           <div className="endpoint-group"><h3>Service API <Badge tone="success">{openApi ? "live" : "offline"}</Badge></h3>
             {apiEndpoints.map((endpoint) => (
-              <button type="button" key={endpoint.path} className={endpoint.path === selected.path ? "endpoint-item endpoint-item--active" : "endpoint-item"} onClick={() => { setSelected(endpoint); setResponse(undefined); }}>
+              <button type="button" key={`${endpoint.method}:${endpoint.path}`} className={endpoint.path === selected.path && endpoint.method === selected.method ? "endpoint-item endpoint-item--active" : "endpoint-item"} onClick={() => { setSelected(endpoint); setRequestPath(endpoint.path); setRequestBody(endpoint.exampleBody ?? ""); setResponse(undefined); }}>
                 <span className="http-method">{endpoint.method}</span><span><strong>{endpoint.title}</strong><small>{endpoint.path}</small></span>
               </button>
             ))}
           </div>
         </aside>
         <section className="panel api-console">
-          <div className="api-console-heading"><Badge tone="info">{selected.method}</Badge><code>{selected.path}</code><Button variant="primary" onClick={() => void execute()} disabled={running}>{running ? "发送中…" : "发送请求"}</Button></div>
+          <div className="api-console-heading"><Badge tone="info">{selected.method}</Badge><input className="api-path-input" value={requestPath} onChange={(event) => setRequestPath(event.target.value)} aria-label="请求路径" /><Button variant="primary" onClick={() => void execute()} disabled={running}>{running ? "发送中…" : "发送请求"}</Button></div>
           <p className="api-description">{selected.description}</p>
-          <div className="request-preview"><span>Request URL</span><code>{client.baseUrl || window.location.origin}{selected.path}</code></div>
+          <div className="request-preview"><span>Request URL</span><code>{client.baseUrl || window.location.origin}{requestPath}</code></div>
+          {selected.method !== "GET" && selected.method !== "DELETE" ? <label className="simple-field"><span>JSON Request Body</span><textarea rows={10} value={requestBody} onChange={(event) => setRequestBody(event.target.value)} spellCheck={false} /></label> : null}
           <div className="response-heading"><h3>Response</h3>{response ? <span><Badge tone={response.status < 400 ? "success" : "danger"}>{response.status} {response.statusText}</Badge> {response.durationMs} ms</span> : null}</div>
           {response ? <pre className="response-body"><code>{prettyBody(response.body)}</code></pre> : <div className="response-placeholder"><Icon name="code" /><p>发送请求后，结构化响应会显示在这里。</p></div>}
-          <div className="api-safety-note"><span>i</span><p><strong>动态调试安全规则</strong><br />Secret 示例只显示占位符；后续写操作将根据角色和风险级别显示二次确认。</p></div>
+          <div className="api-safety-note"><span>i</span><p><strong>动态调试安全规则</strong><br />Secret 示例只显示占位符；所有写操作发送前二次确认，权限和审计仍由 Service 强制执行；API Client 拒绝跨源 URL，避免 Bearer Token 外发。</p></div>
         </section>
       </div>
     </div>
   );
+}
+
+function SettingsPage({ client }: { client: WePushClient }) {
+  const [token, setToken] = useState(() => { try { return localStorage.getItem("wepush.apiToken") ?? ""; } catch { return ""; } });
+  const [tokens, setTokens] = useState<ApiTokenSummary[]>([]);
+  const [audits, setAudits] = useState<AuditEvent[]>([]);
+  const [issued, setIssued] = useState<string>();
+  const [enrollment, setEnrollment] = useState<string>();
+  const [error, setError] = useState<string>();
+
+  const load = useCallback(async () => {
+    try {
+      const [nextTokens, nextAudits] = await Promise.all([client.apiTokens(), client.auditEvents(50)]);
+      setTokens(nextTokens); setAudits(nextAudits); setError(undefined);
+    } catch (nextError) {
+      setError(nextError instanceof Error ? nextError.message : "安全数据加载失败");
+    }
+  }, [client]);
+  useEffect(() => { if (token) void load(); }, [load, token]);
+
+  function saveToken() {
+    client.setToken(token);
+    try { localStorage.setItem("wepush.apiToken", token); } catch { /* desktop storage unavailable */ }
+    void load();
+  }
+
+  async function createToken() {
+    try {
+      const result = await client.createApiToken({ name: "Web UI operator", workspaceId: "ws_default", role: "OPERATOR", ttl: "P30D" });
+      setIssued(result.token); await load();
+    } catch (nextError) { setError(nextError instanceof Error ? nextError.message : "令牌签发失败"); }
+  }
+
+  async function createEnrollment() {
+    try { setEnrollment((await client.createAgentEnrollmentToken("Web UI enrollment")).token); }
+    catch (nextError) { setError(nextError instanceof Error ? nextError.message : "注册令牌签发失败"); }
+  }
+
+  return <div className="page settings-page">
+    <section className="page-heading page-heading--compact"><div><p className="eyebrow">SECURITY & OPERATIONS</p><h2>设置</h2><p>管理本机 API 身份、Agent 注册和只追加审计日志。</p></div><Badge tone="info">Workspace RBAC</Badge></section>
+    {error ? <div className="inline-error">{error}</div> : null}
+    <div className="dashboard-grid">
+      <section className="panel composer-panel compact-form"><PanelHeader title="当前 API Token" description="仅保存在当前 UI 的本地存储中" />
+        <label className="simple-field"><span>Bearer Token</span><input type="password" value={token} onChange={(event) => setToken(event.target.value)} placeholder="wpu.… 或 bootstrap token" /></label>
+        <div className="form-actions"><Button variant="primary" onClick={saveToken}>保存并验证</Button><Button onClick={() => void createToken()}>签发 30 天 Operator</Button></div>
+        {issued ? <div className="one-time-secret"><strong>只显示一次</strong><code>{issued}</code></div> : null}
+      </section>
+      <section className="panel composer-panel compact-form"><PanelHeader title="Agent Enrollment" description="一次性、短时有效，完成注册后自动失效" />
+        <Button variant="primary" onClick={() => void createEnrollment()}>生成 15 分钟注册令牌</Button>
+        {enrollment ? <div className="one-time-secret"><strong>只显示一次</strong><code>{enrollment}</code></div> : null}
+      </section>
+    </div>
+    <section className="panel recent-panel"><PanelHeader title="API Tokens" description="Token 明文不会再次返回" action={<Button variant="ghost" onClick={() => void load()}>刷新</Button>} />
+      <div className="resource-card-list">{tokens.map((item) => <article key={item.tokenId}><span className="resource-card-icon"><Icon name="key" /></span><div><strong>{item.name}</strong><small>{shortId(item.principalId)} · expires {new Date(item.expiresAt).toLocaleString()}</small><code>{shortId(item.tokenId)}</code></div><Badge tone={item.revokedAt ? "neutral" : "success"}>{item.revokedAt ? "REVOKED" : "ACTIVE"}</Badge></article>)}</div>
+    </section>
+    <section className="panel recent-panel"><PanelHeader title="Audit Events" description="最近 50 条工作区访问和变更记录" />
+      <div className="audit-list">{audits.map((item) => <article key={item.id}><Badge tone={item.result === "SUCCESS" ? "success" : item.result === "DENIED" ? "danger" : "neutral"}>{item.result}</Badge><div><strong>{item.action}</strong><small>{item.actorId} · {new Date(item.occurredAt).toLocaleString()}</small></div></article>)}</div>
+    </section>
+  </div>;
 }
 
 function ComingSoon({ page, onNavigate }: { page: PageId; onNavigate: (page: PageId) => void }) {

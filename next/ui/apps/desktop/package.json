@@ -7,7 +7,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "dev": "pnpm build && electron ."
+    "dev": "pnpm build && electron .",
+    "package": "pnpm --filter @wepush-next/web build && pnpm build && node scripts/package.mjs"
   },
   "dependencies": {
     "@wepush-next/web": "workspace:*"

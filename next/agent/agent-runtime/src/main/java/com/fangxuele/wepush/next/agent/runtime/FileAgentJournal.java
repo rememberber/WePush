@@ -42,7 +42,11 @@ public final class FileAgentJournal implements AgentJournal {
                 AgentJournalState.PersistedLease lease = new AgentJournalState.PersistedLease(
                         fence,
                         Instant.parse(required(properties, prefix + "expiresAt")),
-                        LeaseState.valueOf(required(properties, prefix + "state")));
+                        LeaseState.valueOf(required(properties, prefix + "state")),
+                        properties.getProperty(prefix + "executionSpecSha256", ""),
+                        properties.getProperty(prefix + "audienceSha256", ""),
+                        Long.parseLong(properties.getProperty(prefix + "totalRecipients", "-1")),
+                        optionalInstant(properties.getProperty(prefix + "executionStartedAt")));
                 leases.put(fence.leaseId(), lease);
             }
             return new AgentJournalState(lastAgentSequence, lastServiceSequence, leases);
@@ -66,6 +70,12 @@ public final class FileAgentJournal implements AgentJournal {
             properties.setProperty(prefix + "fencingToken", lease.fence().fencingToken());
             properties.setProperty(prefix + "expiresAt", lease.expiresAt().toString());
             properties.setProperty(prefix + "state", lease.state().name());
+            properties.setProperty(prefix + "executionSpecSha256", lease.executionSpecSha256());
+            properties.setProperty(prefix + "audienceSha256", lease.audienceSha256());
+            properties.setProperty(prefix + "totalRecipients", Long.toString(lease.totalRecipients()));
+            if (lease.executionStartedAt() != null) {
+                properties.setProperty(prefix + "executionStartedAt", lease.executionStartedAt().toString());
+            }
         }
         Path parent = path.getParent();
         Path temporary = path.resolveSibling(path.getFileName() + ".tmp");
@@ -96,5 +106,9 @@ public final class FileAgentJournal implements AgentJournal {
         String value = properties.getProperty(name);
         if (value == null || value.isBlank()) throw new IllegalArgumentException(name + " is missing");
         return value;
+    }
+
+    private static Instant optionalInstant(String value) {
+        return value == null || value.isBlank() ? null : Instant.parse(value);
     }
 }

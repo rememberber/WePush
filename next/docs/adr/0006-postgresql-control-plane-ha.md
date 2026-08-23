@@ -22,7 +22,7 @@ Standalone 模式使用单 Service 和 SQLite，不需要控制面集群。Serve
 ### API 和 Agent 连接
 
 - REST 请求可以落到任意 Service 实例，不要求 Sticky Session。
-- SSE 可以连接任意实例，历史游标从 PostgreSQL 读取，新事件通过通知加轮询获得。
+- SSE 可以连接任意实例，历史游标从 PostgreSQL 读取，新事件通过本地发布加数据库轮询补偿获得。
 - Agent gRPC 流连接一个 Service 实例；实例失败时 Agent 重连到负载均衡器并恢复 Sequence、Lease 和事件上报。
 - 当前 Agent 连接的 Owner Instance 只作为可丢失的路由提示，不成为持久化真相。
 
@@ -35,17 +35,17 @@ Standalone 模式使用单 Service 和 SQLite，不需要控制面集群。Serve
 
 ### Run 领取和 Lease
 
-- 候选 Run 通过短事务和 `FOR UPDATE SKIP LOCKED` 领取。
+- 候选 Run 通过短事务、Run 状态条件更新和“每个 Run 仅一个 Active Lease”的数据库唯一索引领取；并发冲突失败后由下一次扫描重试。批量吞吐需要提高时可以在 PostgreSQL Repository 内加入 `FOR UPDATE SKIP LOCKED`，不改变应用层语义。
 - 创建 Lease 时递增 Epoch 并生成随机 Lease Token。
 - 同一 Run 同时最多一个 Active Lease。
 - 所有 Agent 写入校验 Lease ID、Epoch 和 Token，拒绝旧 Agent 的过期写入。
 - Service 实例故障不会自动宣布 Run 失败；由 Lease Timeout 和恢复状态机判断。
 
-### 实例间通知
+### 实例间通知与持久消息
 
-- PostgreSQL `LISTEN/NOTIFY` 只用于低延迟唤醒，例如新命令、新事件和新待领取 Run。
-- 真实数据始终写入表中，NOTIFY Payload 只携带资源 ID 或游标。
-- 所有监听器都有周期性数据库扫描作为补偿，丢失 NOTIFY 不影响正确性。
+- Service→Agent 的 Lease Offer 和 Run Command 先写 `agent_message_outbox`，所有 Service 周期扫描；只有持有 Agent 当前 gRPC 流的实例发送，ACK 后关闭消息。
+- SSE 以 `run_event` 为事实源，每个实例只轮询本机存在订阅者的 Run Cursor，从而观察其他实例提交的事件。
+- PostgreSQL `LISTEN/NOTIFY` 可以在后续作为低延迟唤醒优化，但不得替代 outbox、事件表和周期扫描。
 - 禁止把 LISTEN/NOTIFY 当成持久消息队列。
 
 ### 数据库迁移
@@ -61,7 +61,7 @@ Standalone 模式使用单 Service 和 SQLite，不需要控制面集群。Serve
 |---|---|
 | 一个 Service 实例退出 | REST/SSE 重连；Agent gRPC 重连；其他实例继续服务 |
 | 调度 Leader 退出 | Advisory Lock 自动释放，其他实例接任 |
-| NOTIFY 丢失 | 周期扫描补偿 |
+| 一个轮询周期未观察到新事件/消息 | 下一周期继续从持久游标扫描补偿 |
 | PostgreSQL 暂时不可用 | Service Readiness 失败，不创建新 Run；Agent 保留有界 Outbox |
 | PostgreSQL 主从切换 | Service 重建连接，重新竞选调度 Leader |
 | Agent 连接到新实例 | 使用 Sequence 和 Lease Epoch 恢复，不重复接受旧写入 |
@@ -78,4 +78,3 @@ Standalone 模式使用单 Service 和 SQLite，不需要控制面集群。Serve
 - [PostgreSQL Advisory Locks](https://www.postgresql.org/docs/current/explicit-locking.html)
 - [PostgreSQL LISTEN](https://www.postgresql.org/docs/current/sql-listen.html)
 - [PostgreSQL SELECT Locking](https://www.postgresql.org/docs/current/sql-select.html)
-

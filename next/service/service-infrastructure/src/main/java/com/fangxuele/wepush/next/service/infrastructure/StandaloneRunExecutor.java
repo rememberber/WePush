@@ -38,6 +38,7 @@ import com.fangxuele.wepush.next.service.domain.RunResultRepository;
 import com.fangxuele.wepush.next.service.domain.RunSnapshot;
 import com.fangxuele.wepush.next.service.domain.RunStatus;
 import com.fangxuele.wepush.next.service.domain.WorkspaceId;
+import com.fangxuele.wepush.next.service.domain.WorkspaceRepository;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -54,6 +55,7 @@ import java.util.concurrent.Executors;
 
 public final class StandaloneRunExecutor implements RunDispatcher, RunCommandGateway, AutoCloseable {
     private final RunRepository runs;
+    private final WorkspaceRepository workspaces;
     private final AudienceRepository audiences;
     private final RunResultRepository results;
     private final SecretStore secrets;
@@ -66,10 +68,12 @@ public final class StandaloneRunExecutor implements RunDispatcher, RunCommandGat
     private final Set<String> activeRuns = ConcurrentHashMap.newKeySet();
     private final Map<String, RunHandle> handles = new ConcurrentHashMap<>();
 
-    public StandaloneRunExecutor(RunRepository runs, RunResultRepository results, AudienceRepository audiences,
+    public StandaloneRunExecutor(WorkspaceRepository workspaces, RunRepository runs,
+                                 RunResultRepository results, AudienceRepository audiences,
                                  ProviderRegistry providers, SecretStore secrets, JsonCodec json,
                                  TransactionRunner transactions, RunEventPublisher eventPublisher,
                                  Clock clock) {
+        this.workspaces = workspaces;
         this.runs = runs;
         this.results = results;
         this.audiences = audiences;
@@ -90,11 +94,9 @@ public final class StandaloneRunExecutor implements RunDispatcher, RunCommandGat
     }
 
     public void recoverPending() {
-        // Standalone has one implicit workspace in the first milestone.
-        WorkspaceId workspaceId = new WorkspaceId("ws_default");
-        runs.list(workspaceId).stream()
+        workspaces.list().forEach(workspace -> runs.list(workspace.id()).stream()
                 .filter(run -> run.status() == RunStatus.PENDING || run.status() == RunStatus.RECOVERING)
-                .forEach(run -> dispatch(workspaceId, run.id()));
+                .forEach(run -> dispatch(workspace.id(), run.id())));
     }
 
     @Override

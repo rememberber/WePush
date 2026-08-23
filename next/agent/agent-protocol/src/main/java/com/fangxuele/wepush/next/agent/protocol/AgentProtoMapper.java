@@ -74,7 +74,9 @@ public final class AgentProtoMapper {
                             .setProtocolVersion(value.protocolVersion()).setServerTime(toTimestamp(value.serverTime()))
                             .setHeartbeatSeconds(value.heartbeatSeconds())
                             .setMaximumMessageBytes(value.maximumMessageBytes())
-                            .setLastAgentSequence(value.lastAgentSequence()));
+                            .setLastAgentSequence(value.lastAgentSequence())
+                            .addAllResumableLeases(value.resumableLeases().stream()
+                                    .map(AgentProtoMapper::toProto).toList()));
             case AgentFrames.LeaseOffer value -> builder.setLeaseOffer(
                     com.fangxuele.wepush.next.agent.protocol.v1.LeaseOffer.newBuilder()
                             .setFence(toProto(value.fence())).setExpiresAt(toTimestamp(value.expiresAt()))
@@ -90,6 +92,9 @@ public final class AgentProtoMapper {
             case AgentFrames.EventAck value -> builder.setEventAck(
                     com.fangxuele.wepush.next.agent.protocol.v1.EventAck.newBuilder()
                             .setFence(toProto(value.fence())).setLastEventSequence(value.lastEventSequence()));
+            case AgentFrames.RunCompletionAck value -> builder.setRunCompletionAck(
+                    com.fangxuele.wepush.next.agent.protocol.v1.RunCompletionAck.newBuilder()
+                            .setFence(toProto(value.fence())));
             case AgentFrames.DrainRequest value -> builder.setDrain(
                     com.fangxuele.wepush.next.agent.protocol.v1.DrainRequest.newBuilder()
                             .setDeadline(toTimestamp(value.deadline())));
@@ -103,7 +108,8 @@ public final class AgentProtoMapper {
             case WELCOME -> new AgentFrames.Welcome(frame.getWelcome().getProtocolVersion(),
                     fromTimestamp(frame.getWelcome().getServerTime()),
                     frame.getWelcome().getHeartbeatSeconds(), frame.getWelcome().getMaximumMessageBytes(),
-                    frame.getWelcome().getLastAgentSequence());
+                    frame.getWelcome().getLastAgentSequence(), frame.getWelcome().getResumableLeasesList()
+                    .stream().map(AgentProtoMapper::fromProto).toList());
             case LEASE_OFFER -> new AgentFrames.LeaseOffer(fromProto(frame.getLeaseOffer().getFence()),
                     fromTimestamp(frame.getLeaseOffer().getExpiresAt()),
                     frame.getLeaseOffer().getExecutionSpecUrl(), frame.getLeaseOffer().getExecutionSpecSha256(),
@@ -115,6 +121,8 @@ public final class AgentProtoMapper {
                     fromTimestamp(frame.getCommand().getCreatedAt()));
             case EVENT_ACK -> new AgentFrames.EventAck(fromProto(frame.getEventAck().getFence()),
                     frame.getEventAck().getLastEventSequence());
+            case RUN_COMPLETION_ACK -> new AgentFrames.RunCompletionAck(
+                    fromProto(frame.getRunCompletionAck().getFence()));
             case DRAIN -> new AgentFrames.DrainRequest(fromTimestamp(frame.getDrain().getDeadline()));
             case PAYLOAD_NOT_SET -> throw new IllegalArgumentException("Service frame payload is missing");
         };
@@ -135,6 +143,7 @@ public final class AgentProtoMapper {
                         .setImplementationVersion(provider.implementationVersion())
                         .setSpiMajor(provider.spiMajorVersion())
                         .setMaximumConcurrency(provider.maximumConcurrency())));
+        value.recoveredLeases().forEach(lease -> builder.addRecoveredLeases(toProto(lease)));
         return builder.build();
     }
 
@@ -146,7 +155,8 @@ public final class AgentProtoMapper {
                 value.getProvidersList().stream().map(provider -> new ProviderCapability(
                         provider.getProviderId(), provider.getImplementationVersion(),
                         provider.getSpiMajor(), provider.getMaximumConcurrency())).toList(),
-                value.getSecretEncryptionPublicKey());
+                value.getSecretEncryptionPublicKey(),
+                value.getRecoveredLeasesList().stream().map(AgentProtoMapper::fromProto).toList());
     }
 
     private static com.fangxuele.wepush.next.agent.protocol.v1.Heartbeat toProto(

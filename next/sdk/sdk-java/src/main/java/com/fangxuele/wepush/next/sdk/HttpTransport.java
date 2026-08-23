@@ -93,6 +93,26 @@ final class HttpTransport implements AutoCloseable {
         return writeJson(path, requestBody, null, "PUT", responseType);
     }
 
+    <T> T patchJson(String path, Object requestBody, Class<T> responseType) {
+        return writeJson(path, requestBody, null, "PATCH", responseType);
+    }
+
+    void delete(String path) {
+        HttpRequest request = requestBuilder(path).DELETE().build();
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() < 200 || response.statusCode() >= 300) {
+                throw new WePushException("WePush Service returned HTTP " + response.statusCode(),
+                        response.statusCode(), response.body());
+            }
+        } catch (IOException exception) {
+            throw new WePushException("Unable to reach WePush Service", exception);
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+            throw new WePushException("Interrupted while calling WePush Service", exception);
+        }
+    }
+
     private <T> T writeJson(String path, Object requestBody, String idempotencyKey,
                             String method, Class<T> responseType) {
         String body;

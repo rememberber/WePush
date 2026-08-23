@@ -79,7 +79,12 @@ public final class AgentRuntime implements AutoCloseable {
                 lastServiceSequence,
                 lastAgentSequence,
                 providers,
-                secretEncryptionPublicKey);
+                secretEncryptionPublicKey,
+                leases.snapshot().values().stream()
+                        .filter(lease -> lease.state() == LeaseState.ACKNOWLEDGED
+                                || lease.state() == LeaseState.RUNNING)
+                        .map(AgentJournalState.PersistedLease::fence)
+                        .toList());
         return next(hello);
     }
 
@@ -91,18 +96,24 @@ public final class AgentRuntime implements AutoCloseable {
         if (frame.sequence() != lastServiceSequence + 1) {
             return InboundSequenceResult.GAP;
         }
-        if (frame.payload() instanceof AgentFrames.LeaseOffer offer) {
-            leases.offer(offer, clock.instant());
-        }
+        boolean redundantOffer = frame.payload() instanceof AgentFrames.LeaseOffer offer
+                && !leases.offer(offer, clock.instant());
         lastServiceSequence = frame.sequence();
         persist();
-        return InboundSequenceResult.ACCEPTED;
+        return redundantOffer ? InboundSequenceResult.DUPLICATE : InboundSequenceResult.ACCEPTED;
     }
 
     public synchronized AgentFrames.AgentToService acknowledge(LeaseFence fence) {
         leases.acknowledge(fence, clock.instant());
         persist();
         return next(new AgentFrames.LeaseAck(fence));
+    }
+
+    public synchronized void prepared(LeaseFence fence, String executionSpecSha256,
+                                      String audienceSha256, long totalRecipients, Instant startedAt) {
+        leases.prepared(fence, executionSpecSha256, audienceSha256, totalRecipients, startedAt,
+                clock.instant());
+        persist();
     }
 
     public RunHandle start(LeaseFence fence, RunExecutionSpec spec, ExecutionPorts ports) {
@@ -180,6 +191,24 @@ public final class AgentRuntime implements AutoCloseable {
 
     public synchronized AgentJournalState journalState() {
         return new AgentJournalState(lastAgentSequence, lastServiceSequence, leases.snapshot());
+    }
+
+    public synchronized List<RecoveryRun> recoveryRuns() {
+        return leases.snapshot().values().stream()
+                .filter(lease -> (lease.state() == LeaseState.ACKNOWLEDGED
+                        || lease.state() == LeaseState.RUNNING) && lease.totalRecipients() >= 0)
+                .map(lease -> new RecoveryRun(lease.fence(), lease.state(), lease.totalRecipients(),
+                        lease.executionStartedAt(), lease.executionSpecSha256(), lease.audienceSha256()))
+                .toList();
+    }
+
+    public synchronized void recoveryCompleted(LeaseFence fence) {
+        leases.completeRecovered(fence);
+        persist();
+    }
+
+    public record RecoveryRun(LeaseFence fence, LeaseState previousState, long totalRecipients,
+                              Instant startedAt, String executionSpecSha256, String audienceSha256) {
     }
 
     private AgentFrames.AgentToService next(AgentFrames.AgentPayload payload) {

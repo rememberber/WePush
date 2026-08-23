@@ -5,6 +5,8 @@ info:
   description: Local-first control plane API shared by Web UI, Desktop UI and remote SDKs.
 servers:
   - url: /
+security:
+  - bearerAuth: []
 tags:
   - {name: System}
   - {name: Providers}
@@ -16,17 +18,88 @@ tags:
   - {name: Jobs}
   - {name: Runs}
   - {name: Artifacts}
+  - {name: Schedules}
+  - {name: Security}
+  - {name: Agent Internal}
 paths:
   /api/v1/system/info:
     get:
       operationId: getSystemInfo
       tags: [System]
+      security: []
       responses:
         '200':
           description: Current Service identity and time
           content:
             application/json:
               schema: {$ref: '#/components/schemas/SystemInfo'}
+  /api/v1/workspaces/{workspaceId}/api-tokens:
+    get:
+      operationId: listApiTokens
+      tags: [Security]
+      security: [{bearerAuth: []}]
+      parameters: [{$ref: '#/components/parameters/WorkspaceId'}]
+      responses:
+        '200':
+          description: API Token metadata; clear token values are never returned
+          content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/ApiTokenSummary'}}}}
+    post:
+      operationId: createApiToken
+      tags: [Security]
+      security: [{bearerAuth: []}]
+      parameters: [{$ref: '#/components/parameters/WorkspaceId'}]
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/CreateApiToken'}}}
+      responses:
+        '201':
+          description: Token issued; the clear token is returned exactly once
+          content: {application/json: {schema: {$ref: '#/components/schemas/IssuedApiToken'}}}
+  /api/v1/workspaces/{workspaceId}/api-tokens/{tokenId}:
+    delete:
+      operationId: revokeApiToken
+      tags: [Security]
+      security: [{bearerAuth: []}]
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+        - {name: tokenId, in: path, required: true, schema: {type: string}}
+      responses:
+        '204': {description: Token revoked}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /api/v1/workspaces/{workspaceId}/agent-enrollment-tokens:
+    post:
+      operationId: createAgentEnrollmentToken
+      tags: [Security, Agents]
+      security: [{bearerAuth: []}]
+      parameters: [{$ref: '#/components/parameters/WorkspaceId'}]
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/CreateEnrollmentToken'}}}
+      responses:
+        '201':
+          description: One-time Agent enrollment token
+          content: {application/json: {schema: {$ref: '#/components/schemas/EnrollmentToken'}}}
+  /api/v1/workspaces:
+    get:
+      operationId: listWorkspaces
+      tags: [Security]
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Workspaces, content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/Workspace'}}}}}
+    post:
+      operationId: createWorkspace
+      tags: [Security]
+      security: [{bearerAuth: []}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/CreateWorkspace'}}}}
+      responses:
+        '201': {description: Workspace created, content: {application/json: {schema: {$ref: '#/components/schemas/Workspace'}}}}
+  /api/v1/workspaces/{workspaceId}:
+    get:
+      operationId: getWorkspace
+      tags: [Security]
+      parameters: [{$ref: '#/components/parameters/WorkspaceId'}]
+      responses:
+        '200': {description: Workspace, content: {application/json: {schema: {$ref: '#/components/schemas/Workspace'}}}}
   /api/v1/providers:
     get:
       operationId: listProviders
@@ -300,6 +373,56 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/Run'}
         '409': {$ref: '#/components/responses/Conflict'}
+  /api/v1/workspaces/{workspaceId}/schedules:
+    parameters: [{$ref: '#/components/parameters/WorkspaceId'}]
+    get:
+      operationId: listSchedules
+      tags: [Schedules]
+      responses:
+        '200':
+          description: Workspace schedules
+          content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/Schedule'}}}}
+    post:
+      operationId: createSchedule
+      tags: [Schedules]
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/CreateSchedule'}}}
+      responses:
+        '201':
+          description: Schedule created
+          content: {application/json: {schema: {$ref: '#/components/schemas/Schedule'}}}
+  /api/v1/workspaces/{workspaceId}/schedules/{scheduleId}:
+    parameters:
+      - {$ref: '#/components/parameters/WorkspaceId'}
+      - {name: scheduleId, in: path, required: true, schema: {type: string}}
+    patch:
+      operationId: setScheduleEnabled
+      tags: [Schedules]
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/UpdateSchedule'}}}
+      responses:
+        '200':
+          description: Schedule state updated
+          content: {application/json: {schema: {$ref: '#/components/schemas/Schedule'}}}
+    delete:
+      operationId: deleteSchedule
+      tags: [Schedules]
+      responses:
+        '204': {description: Schedule deleted}
+  /api/v1/workspaces/{workspaceId}/audit-events:
+    get:
+      operationId: listAuditEvents
+      tags: [Security]
+      security: [{bearerAuth: []}]
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+        - {name: limit, in: query, required: false, schema: {type: integer, minimum: 1, maximum: 1000, default: 100}}
+      responses:
+        '200':
+          description: Append-only security and mutation audit events
+          content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/AuditEvent'}}}}
   /api/v1/workspaces/{workspaceId}/runs:
     get:
       operationId: listRuns
@@ -529,7 +652,86 @@ paths:
         '202': {$ref: '#/components/responses/CommandAccepted'}
         '200': {$ref: '#/components/responses/CommandReplay'}
         '409': {$ref: '#/components/responses/CommandRejected'}
+  /internal/agent/v1/enroll:
+    post:
+      operationId: enrollAgent
+      tags: [Agent Internal]
+      security: [{enrollmentAuth: []}]
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/AgentEnrollmentRequest'}}}
+      responses:
+        '201':
+          description: Agent credential and mTLS certificate chain
+          content: {application/json: {schema: {$ref: '#/components/schemas/AgentCredential'}}}
+  /internal/agent/v1/credentials/rotate:
+    post:
+      operationId: rotateAgentCredential
+      tags: [Agent Internal]
+      security: [{agentAuth: []}]
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/RotateAgentCredential'}}}
+      responses:
+        '200':
+          description: Rotated Agent credential and certificate chain
+          content: {application/json: {schema: {$ref: '#/components/schemas/AgentCredential'}}}
+  /internal/agent/v1/leases/{leaseId}/artifacts:
+    post:
+      operationId: planAgentArtifactUpload
+      tags: [Agent Internal, Artifacts]
+      security: [{agentHeaderAuth: []}]
+      parameters: [{name: leaseId, in: path, required: true, schema: {type: string}}]
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/PlanAgentArtifact'}}}
+      responses:
+        '201':
+          description: Signed upload plan, optionally directly targeting S3
+          content: {application/json: {schema: {$ref: '#/components/schemas/AgentArtifactUploadPlan'}}}
+  /internal/agent/v1/leases/{leaseId}/execution-spec:
+    get:
+      operationId: downloadAgentExecutionSpec
+      tags: [Agent Internal]
+      security: [{agentHeaderAuth: []}]
+      parameters: [{name: leaseId, in: path, required: true, schema: {type: string}}]
+      responses:
+        '200': {description: Immutable canonical execution specification, content: {application/json: {schema: {type: object}}}}
+  /internal/agent/v1/leases/{leaseId}/audience:
+    get:
+      operationId: downloadAgentAudience
+      tags: [Agent Internal]
+      security: [{agentHeaderAuth: []}]
+      parameters: [{name: leaseId, in: path, required: true, schema: {type: string}}]
+      responses:
+        '200': {description: Immutable audience snapshot, content: {application/json: {schema: {type: object}}}}
+  /internal/agent/v1/artifacts/{artifactId}/content:
+    put:
+      operationId: uploadAgentArtifactContent
+      tags: [Agent Internal, Artifacts]
+      parameters:
+        - {name: artifactId, in: path, required: true, schema: {type: string}}
+        - {name: upload_token, in: query, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content: {application/octet-stream: {schema: {type: string, format: binary}}}
+      responses:
+        '200': {description: Content accepted; commit is still required, content: {application/json: {schema: {$ref: '#/components/schemas/AgentArtifactUploadResult'}}}}
+  /internal/agent/v1/artifacts/{artifactId}/commit:
+    post:
+      operationId: commitAgentArtifact
+      tags: [Agent Internal, Artifacts]
+      parameters:
+        - {name: artifactId, in: path, required: true, schema: {type: string}}
+        - {name: upload_token, in: query, required: true, schema: {type: string}}
+      responses:
+        '200': {description: Artifact checksum verified and READY, content: {application/json: {schema: {$ref: '#/components/schemas/AgentArtifactCommitResult'}}}}
 components:
+  securitySchemes:
+    bearerAuth: {type: http, scheme: bearer}
+    enrollmentAuth: {type: http, scheme: Enrollment}
+    agentAuth: {type: http, scheme: Agent}
+    agentHeaderAuth: {type: apiKey, in: header, name: x-wepush-agent-token}
   parameters:
     WorkspaceId: {name: workspaceId, in: path, required: true, schema: {type: string}}
     ProviderId: {name: providerId, in: path, required: true, schema: {type: string}}
@@ -853,7 +1055,7 @@ components:
         workspaceId: {type: string}
         runId: {type: string}
         type: {type: string, enum: [RUN_RESULTS_CSV]}
-        backend: {type: string, enum: [LOCAL_FILE]}
+        backend: {type: string, enum: [LOCAL_FILE, S3]}
         originalName: {type: string}
         contentType: {type: string}
         size: {type: integer, format: int64, minimum: 0}
@@ -874,6 +1076,162 @@ components:
         claimed: {type: integer, minimum: 0}
         deleted: {type: integer, minimum: 0}
         failed: {type: integer, minimum: 0}
+    CreateSchedule:
+      type: object
+      required: [name, jobId, cronExpression, timezone, misfirePolicy]
+      properties:
+        name: {type: string}
+        jobId: {type: string}
+        cronExpression: {type: string, description: Spring six-field cron expression}
+        timezone: {type: string, examples: [Asia/Shanghai]}
+        misfirePolicy: {type: string, enum: [FIRE_ONCE, SKIP]}
+        enabled: {type: boolean, default: true}
+    UpdateSchedule:
+      type: object
+      required: [enabled]
+      properties: {enabled: {type: boolean}}
+    Schedule:
+      type: object
+      required: [id, workspaceId, jobId, name, cronExpression, timezone, misfirePolicy, enabled,
+                 nextFireAt, createdAt, updatedAt, version]
+      properties:
+        id: {type: string}
+        workspaceId: {type: string}
+        jobId: {type: string}
+        name: {type: string}
+        cronExpression: {type: string}
+        timezone: {type: string}
+        misfirePolicy: {type: string, enum: [FIRE_ONCE, SKIP]}
+        enabled: {type: boolean}
+        nextFireAt: {type: string, format: date-time}
+        lastFireAt: {type: [string, 'null'], format: date-time}
+        createdAt: {type: string, format: date-time}
+        updatedAt: {type: string, format: date-time}
+        version: {type: integer, format: int64}
+    CreateApiToken:
+      type: object
+      required: [name, role, ttl]
+      properties:
+        name: {type: string}
+        role: {type: string, enum: [VIEWER, OPERATOR, ADMIN]}
+        ttl: {type: string, format: duration, examples: [P30D]}
+    IssuedApiToken:
+      type: object
+      required: [tokenId, principalId, token, expiresAt, workspaceId, role]
+      properties:
+        tokenId: {type: string}
+        principalId: {type: string}
+        token: {type: string, writeOnly: true}
+        expiresAt: {type: string, format: date-time}
+        workspaceId: {type: string}
+        role: {type: string, enum: [VIEWER, OPERATOR, ADMIN]}
+    ApiTokenSummary:
+      type: object
+      required: [tokenId, principalId, name, expiresAt, createdAt]
+      properties:
+        tokenId: {type: string}
+        principalId: {type: string}
+        name: {type: string}
+        expiresAt: {type: string, format: date-time}
+        revokedAt: {type: [string, 'null'], format: date-time}
+        createdAt: {type: string, format: date-time}
+        lastUsedAt: {type: [string, 'null'], format: date-time}
+    AuditEvent:
+      type: object
+      required: [id, actorType, actorId, action, resourceType, resourceId, result, detailsJson, occurredAt]
+      properties:
+        id: {type: string}
+        workspaceId: {type: [string, 'null']}
+        actorType: {type: string}
+        actorId: {type: string}
+        action: {type: string}
+        resourceType: {type: string}
+        resourceId: {type: string}
+        result: {type: string}
+        detailsJson: {type: string}
+        occurredAt: {type: string, format: date-time}
+    CreateEnrollmentToken:
+      type: object
+      required: [name, ttl]
+      properties:
+        name: {type: string}
+        ttl: {type: string, format: duration, examples: [PT15M]}
+    EnrollmentToken:
+      type: object
+      required: [id, token, expiresAt]
+      properties:
+        id: {type: string}
+        token: {type: string, writeOnly: true}
+        expiresAt: {type: string, format: date-time}
+    CreateWorkspace:
+      type: object
+      required: [name]
+      properties: {name: {type: string}}
+    Workspace:
+      type: object
+      required: [id, name, status, createdAt, version]
+      properties:
+        id: {type: string}
+        name: {type: string}
+        status: {type: string, enum: [ACTIVE, SUSPENDED, ARCHIVED]}
+        createdAt: {type: string, format: date-time}
+        version: {type: integer, format: int64, minimum: 0}
+    AgentEnrollmentRequest:
+      type: object
+      required: [requestedAgentId, publicKeyBase64]
+      properties:
+        requestedAgentId: {type: string}
+        publicKeyBase64: {type: string}
+    RotateAgentCredential:
+      type: object
+      required: [publicKeyBase64]
+      properties: {publicKeyBase64: {type: string}}
+    AgentCredential:
+      type: object
+      required: [agentId, credential, credentialExpiresAt, certificatePem, caCertificatePem, certificateExpiresAt]
+      properties:
+        agentId: {type: string}
+        credential: {type: string, writeOnly: true}
+        credentialExpiresAt: {type: string, format: date-time}
+        certificatePem: {type: string}
+        caCertificatePem: {type: string}
+        certificateExpiresAt: {type: string, format: date-time}
+    PlanAgentArtifact:
+      type: object
+      required: [runId, epoch, fencingToken, type, originalName, contentType, size, sha256]
+      properties:
+        runId: {type: string}
+        epoch: {type: integer, format: int64, minimum: 1}
+        fencingToken: {type: string}
+        type: {type: string}
+        originalName: {type: string}
+        contentType: {type: string}
+        size: {type: integer, format: int64, minimum: 0}
+        sha256: {type: string, pattern: '^[a-f0-9]{64}$'}
+    AgentArtifactUploadPlan:
+      type: object
+      required: [artifactId, uploadUrl, uploadHeaders, commitUrl, expiresAt]
+      properties:
+        artifactId: {type: string}
+        uploadUrl: {type: string, format: uri}
+        uploadHeaders: {type: object, additionalProperties: {type: string}}
+        commitUrl: {type: string, format: uri}
+        expiresAt: {type: string, format: date-time}
+    AgentArtifactUploadResult:
+      type: object
+      required: [size, sha256]
+      properties:
+        size: {type: integer, format: int64, minimum: 0}
+        sha256: {type: string, pattern: '^[a-f0-9]{64}$'}
+    AgentArtifactCommitResult:
+      type: object
+      required: [artifactId, size, sha256, state, readyAt]
+      properties:
+        artifactId: {type: string}
+        size: {type: integer, format: int64, minimum: 0}
+        sha256: {type: string, pattern: '^[a-f0-9]{64}$'}
+        state: {type: string, enum: [READY]}
+        readyAt: {type: string, format: date-time}
     Problem:
       type: object
       required: [type, title, status, code, detail, traceId, errors]

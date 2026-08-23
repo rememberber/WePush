@@ -14,7 +14,7 @@ final class AgentLeaseRegistry {
         this.leases = new HashMap<>(recovered);
     }
 
-    synchronized void offer(AgentFrames.LeaseOffer offer, Instant now) {
+    synchronized boolean offer(AgentFrames.LeaseOffer offer, Instant now) {
         if (!offer.expiresAt().isAfter(now)) {
             throw new StaleLeaseException("lease offer is already expired");
         }
@@ -28,11 +28,22 @@ final class AgentLeaseRegistry {
                 throw new StaleLeaseException("same lease epoch has a different fencing token");
             }
             if (current.fence().sameAuthority(offer.fence())) {
-                return;
+                return false;
             }
         }
         leases.put(offer.fence().leaseId(), new AgentJournalState.PersistedLease(
                 offer.fence(), offer.expiresAt(), LeaseState.OFFERED));
+        return true;
+    }
+
+    synchronized void prepared(LeaseFence fence, String executionSpecSha256, String audienceSha256,
+                               long totalRecipients, Instant startedAt, Instant now) {
+        AgentJournalState.PersistedLease lease = requireAuthority(fence, now);
+        if (lease.state() != LeaseState.OFFERED) {
+            throw new IllegalStateException("lease can only be prepared before acknowledgement");
+        }
+        leases.put(fence.leaseId(), new AgentJournalState.PersistedLease(fence, lease.expiresAt(),
+                lease.state(), executionSpecSha256, audienceSha256, totalRecipients, startedAt));
     }
 
     synchronized void acknowledge(LeaseFence fence, Instant now) {
@@ -55,6 +66,15 @@ final class AgentLeaseRegistry {
         AgentJournalState.PersistedLease lease = requireAuthority(fence, Instant.MIN);
         if (lease.state() != LeaseState.RUNNING) {
             throw new IllegalStateException("only a running lease can complete");
+        }
+        transition(lease, LeaseState.COMPLETED);
+    }
+
+    synchronized void completeRecovered(LeaseFence fence) {
+        AgentJournalState.PersistedLease lease = requireAuthority(fence, Instant.MIN);
+        if (lease.state() == LeaseState.COMPLETED) return;
+        if (lease.state() != LeaseState.RUNNING && lease.state() != LeaseState.ACKNOWLEDGED) {
+            throw new IllegalStateException("lease is not awaiting process recovery completion");
         }
         transition(lease, LeaseState.COMPLETED);
     }
@@ -96,6 +116,7 @@ final class AgentLeaseRegistry {
 
     private void transition(AgentJournalState.PersistedLease lease, LeaseState state) {
         leases.put(lease.fence().leaseId(), new AgentJournalState.PersistedLease(
-                lease.fence(), lease.expiresAt(), state));
+                lease.fence(), lease.expiresAt(), state, lease.executionSpecSha256(),
+                lease.audienceSha256(), lease.totalRecipients(), lease.executionStartedAt()));
     }
 }
