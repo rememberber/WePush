@@ -25,6 +25,20 @@ WePush 采用 Classic 与 Next 双轨发展。两条产品线彼此独立，允�
 
 Next 是位于 [`next/`](next/) 的完整新架构产品线，包含 Core Engine、Provider SPI、可安装 Service、远程 Agent、Java SDK、React WebUI 和 Electron Desktop。当前内置 HTTP Provider，支持可视化配置、运行中心、Cron 调度、动态调试 API 文档，以及 Standalone 和 Server/HA 两种部署基线。
 
+#### Next 组件
+
+| 组件 | 主要职责 | 形态与边界 |
+| --- | --- | --- |
+| [Core / Engine](next/core/) | 执行批量任务，管理并发、重试、暂停、恢复、取消、结果与运行事件 | 纯 Java 无界面执行内核，不直接提供网络 API，也不依赖 Service、UI 或具体 Provider |
+| [Provider SPI / Provider](next/providers/) | 定义消息渠道扩展契约，负责账号校验、消息渲染和实际发送 | Core 只面向 SPI；当前内置 HTTP Provider，其他渠道可以作为独立插件发展 |
+| [Service](next/service/) | 提供配置、调度、运行控制、Secret、Artifact、审计、REST/SSE、OpenAPI 和 Agent 控制面 | 可前台运行或安装为 Linux systemd、macOS launchd、Windows Service；本机模式可内嵌 Core Engine |
+| [Agent](next/agent/) | 在独立主机接收 Lease，使用 Core Engine 执行任务并回传事件、结果和 Artifact | 可独立安装，通过 gRPC 主动连接 Service；本机内嵌执行时不需要 Agent |
+| [Java SDK](next/sdk/) | 让 Java 应用通过强类型客户端调用 Service API | 只依赖公开的 `service-api` 契约，不依赖 Core、Engine 或具体 Provider |
+| [WebUI](next/ui/apps/web/) | 提供可视化配置、任务与调度、运行中心、Agent 观察和动态调试 API 文档 | TypeScript + Vite + React，可由 Service 直接托管，也可在开发环境独立运行 |
+| [Desktop UI](next/ui/apps/desktop/) | 提供与 WebUI 一致的桌面管理体验和安全 Electron 外壳 | 连接本机 Service；当前不内嵌、不安装也不自动启动 Service |
+
+典型调用关系为：`WebUI / Desktop UI / Java SDK → Service API → Service → 内嵌 Core Engine`；远程执行时则由 `Service → Agent → Core Engine → Provider` 完成发送。
+
 第一次使用请从[《WePush Next 对外使用指南》](next/docs/user-guide.md)开始。当前预览版未使用商业代码签名，不建议直接用于关键生产业务。
 
 - [Next 项目说明](next/README.md)
