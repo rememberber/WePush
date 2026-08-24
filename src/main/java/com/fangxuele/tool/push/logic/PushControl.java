@@ -29,7 +29,7 @@ public class PushControl {
 
     /**
      * 发送预览消息。previewUserText 须由调用方在 EDT 上读取后传入，避免后台线程访问 Swing。
-     * 跳过空分段（如尾部分号）；若过滤后为空，仍保留一条空数据以兼容 HTTP / 钉钉机器人。
+     * 跳过空分段（如尾部分号）；若过滤后为空，仍保留一条空数据以兼容 HTTP / 钉钉机器人 / 飞书机器人。
      */
     public static List<SendResult> preview(Integer tMsgId, String previewUserText) {
         List<SendResult> sendResultList = new ArrayList<>();

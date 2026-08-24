@@ -78,6 +78,9 @@ public class MsgSenderFactory {
             case MessageTypeEnum.DING_CODE:
                 iMsgSender = new DingMsgSender(msgId, dryRun);
                 break;
+            case MessageTypeEnum.FEISHU_CODE:
+                iMsgSender = new FeishuMsgSender(msgId, dryRun);
+                break;
             case MessageTypeEnum.BD_YUN_CODE:
                 iMsgSender = new BdYunMsgSender(msgId, dryRun);
                 break;

@@ -97,7 +97,9 @@ public class MessageEditListener {
                     }
 
                     if (tMsg.getMsgType() != MessageTypeEnum.HTTP_CODE && "".equals(previewUserText.trim())) {
-                        if (!(tMsg.getMsgType() == MessageTypeEnum.DING_CODE && dingRobotSelected)) {
+                        boolean allowsEmptyTarget = (tMsg.getMsgType() == MessageTypeEnum.DING_CODE && dingRobotSelected)
+                                || tMsg.getMsgType() == MessageTypeEnum.FEISHU_CODE;
+                        if (!allowsEmptyTarget) {
                             UiThreadUtil.runOnUi(() -> JOptionPane.showMessageDialog(messagePanel, "预览用户不能为空！", "提示",
                                     JOptionPane.INFORMATION_MESSAGE));
                             return;
@@ -194,6 +196,9 @@ public class MessageEditListener {
                 } else if (msgType == MessageTypeEnum.DING_CODE) {
                     fillParaName = "预览消息用户的UserId(如果是聊天机器人消息，填写需要@ 的用户的手机号，如果@所有人 可不填写)";
                     paraDemo = "manager9115|manager9116|manager9117";
+                } else if (msgType == MessageTypeEnum.FEISHU_CODE) {
+                    fillParaName = "消息变量（第 1 列是 $var0；若消息选择“@数据第1列open_id”，第 1 列须填写飞书 open_id）";
+                    paraDemo = "ou_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx|变量1|变量2";
                 } else if (msgType == MessageTypeEnum.ALI_YUN_CODE || msgType == MessageTypeEnum.TX_YUN_CODE
                         || msgType == MessageTypeEnum.TX_YUN_3_CODE
                         || msgType == MessageTypeEnum.HW_YUN_CODE || msgType == MessageTypeEnum.BD_YUN_CODE

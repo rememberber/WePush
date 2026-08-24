@@ -148,6 +148,9 @@ public class MessageEditForm {
             case MessageTypeEnum.DING_CODE:
                 messageEditForm.getMsgEditorPanel().add(DingMsgForm.getInstance().getDingMsgPanel(), gridConstraintsRow0);
                 break;
+            case MessageTypeEnum.FEISHU_CODE:
+                messageEditForm.getMsgEditorPanel().add(FeishuMsgForm.getInstance().getFeishuMsgPanel(), gridConstraintsRow0);
+                break;
             case MessageTypeEnum.BD_YUN_CODE:
                 messageEditForm.getMsgEditorPanel().add(BdYunMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
                 break;
