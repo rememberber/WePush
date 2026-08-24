@@ -12,7 +12,32 @@
 
 <a href="https://hellogithub.com/repository/dd22b383e37a4dedb7d2774363796c74" target="_blank"><img src="https://api.hellogithub.com/v1/widgets/recommend.svg?rid=dd22b383e37a4dedb7d2774363796c74&claim_uid=0UhXFJvP9ndHtiB" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 
-## 支持的平台
+## 产品线与版本选择
+
+WePush 采用 Classic 与 Next 双轨发展。两条产品线彼此独立，允许按各自需要演进和拥有重复代码；Next 不会影响 Classic 的安装与使用。
+
+| 产品线 | 当前定位 | 适合场景 | 入口 |
+| --- | --- | --- | --- |
+| WePush Classic | 稳定桌面客户端 | 微信、短信、邮件、HTTP 等成熟批量推送场景 | [Classic 下载](https://gitee.com/zhoubochina/WePush/releases) |
+| WePush Next | `0.1.0-alpha.1` Public Preview | Service/Agent、WebUI/Desktop、Service API、Java SDK 和新消息能力验证 | [Next 下载](https://github.com/rememberber/WePush/releases/tag/next-v0.1.0-alpha.1) |
+
+### WePush Next Public Preview
+
+Next 是位于 [`next/`](next/) 的完整新架构产品线，包含 Core Engine、Provider SPI、可安装 Service、远程 Agent、Java SDK、React WebUI 和 Electron Desktop。当前内置 HTTP Provider，支持可视化配置、运行中心、Cron 调度、动态调试 API 文档，以及 Standalone 和 Server/HA 两种部署基线。
+
+第一次使用请从[《WePush Next 对外使用指南》](next/docs/user-guide.md)开始。当前预览版未使用商业代码签名，不建议直接用于关键生产业务。
+
+- [Next 项目说明](next/README.md)
+- [架构与概要设计](next/docs/architecture-and-high-level-design.md)
+- [详细设计](next/docs/detailed-design.md)
+- [部署与运维](next/docs/deployment-and-operations.md)
+- [`0.1.0-alpha.1` Release Notes](next/docs/releases/0.1.0-alpha.1.md)
+
+## WePush Classic
+
+Classic 是现有稳定客户端，继续在仓库原有目录中独立维护和演进。
+
+### 支持的平台
 Windows • Linux • macOS
 
 ### 目前已经支持的消息类型
@@ -65,9 +90,10 @@ Windows • Linux • macOS
 ![Overview](assets/screen_shoot/7.png)
 ![Overview](assets/screen_shoot/6.png)
 ![Overview](assets/screen_shoot/theme.png)
+
 ### 安装文件下载
 
-[WePush下载地址](https://gitee.com/zhoubochina/WePush/releases)  
+[WePush Classic 下载地址](https://gitee.com/zhoubochina/WePush/releases)
 
 ### 使用到的一些小技术点
 + Java  

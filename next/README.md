@@ -4,6 +4,8 @@ WePush Next 是与 Classic 完全独立的新产品线。Classic 与 Next 可以
 
 > 当前版本：`0.1.0-alpha.1` Public Preview。它不是稳定版，Desktop 与安装包未使用商业代码签名。下载、校验和已知边界见 [`PREVIEW-NOTICE.md`](PREVIEW-NOTICE.md) 与 [`docs/releases/0.1.0-alpha.1.md`](docs/releases/0.1.0-alpha.1.md)。
 
+第一次下载和使用请从[《WePush Next 对外使用指南》](docs/user-guide.md)开始。该指南覆盖发行物选择、三平台启动/安装、Desktop 连接、首个 HTTP Provider Dry Run、正式 API 调用、数据备份和常见问题。
+
 ## 验证 Java 工程
 
 ```bash

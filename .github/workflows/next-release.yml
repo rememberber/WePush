@@ -89,6 +89,7 @@ jobs:
           sha256sum --check *.sha256
           tar_listing=$(tar -tzf "wepush-next-${{ steps.metadata.outputs.version }}.tar.gz")
           grep -Eq '^wepush-next-[^/]+/PREVIEW-NOTICE.md$' <<< "$tar_listing"
+          grep -Eq '^wepush-next-[^/]+/docs/user-guide.md$' <<< "$tar_listing"
           unzip -t "wepush-next-${{ steps.metadata.outputs.version }}.zip"
       - name: Stage distribution assets
         env:

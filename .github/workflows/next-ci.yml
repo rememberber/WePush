@@ -218,6 +218,7 @@ jobs:
           test -n "$tar_archive" && test -n "$zip_archive"
           tar_listing=$(tar -tzf "$tar_archive")
           grep -Eq '^wepush-next-[^/]+/web/index.html$' <<< "$tar_listing"
+          grep -Eq '^wepush-next-[^/]+/docs/user-guide.md$' <<< "$tar_listing"
           grep -Eq '^wepush-next-[^/]+/LICENSE.txt$' <<< "$tar_listing"
           grep -Eq '^wepush-next-[^/]+/PREVIEW-NOTICE.md$' <<< "$tar_listing"
           grep -Eq '^wepush-next-[^/]+/SECURITY.md$' <<< "$tar_listing"
