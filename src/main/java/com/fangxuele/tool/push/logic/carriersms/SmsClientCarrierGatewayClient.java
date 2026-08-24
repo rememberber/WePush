@@ -7,20 +7,23 @@ import com.zx.sms.BaseMessage;
 import io.netty.util.concurrent.Promise;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /** 基于 sms-client 的四协议长连接实现。 */
 public final class SmsClientCarrierGatewayClient implements CarrierSmsGatewayClient {
-    private static final ExecutorService SUBMIT_EXECUTOR = Executors.newVirtualThreadPerTaskExecutor();
-
     private final SmsClient client;
+    private final ExecutorService operationExecutor;
+    private final AtomicBoolean closed = new AtomicBoolean();
 
     public SmsClientCarrierGatewayClient(int accountId, CarrierSmsAccountConfig config) {
         GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
@@ -34,16 +37,33 @@ public final class SmsClientCarrierGatewayClient implements CarrierSmsGatewayCli
         if (client == null) {
             throw new IllegalStateException("创建运营商短信客户端失败");
         }
+        operationExecutor = Executors.newThreadPerTaskExecutor(
+                Thread.ofVirtual().name("carrier-sms-" + accountId + "-", 0).factory());
+    }
+
+    @Override
+    public void connect(int timeoutMillis) throws Exception {
+        Boolean connected = executeWithTimeout(client::open, timeoutMillis, "登录网关");
+        if (!Boolean.TRUE.equals(connected)) {
+            throw new IOException("网关登录失败");
+        }
     }
 
     @Override
     public List<BaseMessage> submit(BaseMessage request, int timeoutMillis) throws Exception {
-        Future<List<BaseMessage>> task = SUBMIT_EXECUTOR.submit(() -> submitAndAwait(request));
+        return executeWithTimeout(() -> submitAndAwait(request), timeoutMillis, "等待网关提交应答");
+    }
+
+    private <T> T executeWithTimeout(Callable<T> operation, int timeoutMillis, String operationName) throws Exception {
+        if (closed.get()) {
+            throw new IllegalStateException("运营商短信客户端已关闭");
+        }
+        Future<T> task = operationExecutor.submit(operation);
         try {
             return task.get(timeoutMillis, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
             task.cancel(true);
-            throw new TimeoutException("等待网关提交应答超时（" + timeoutMillis + " ms）");
+            throw new TimeoutException(operationName + "超时（" + timeoutMillis + " ms）");
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
             if (cause instanceof Exception exception) {
@@ -82,10 +102,13 @@ public final class SmsClientCarrierGatewayClient implements CarrierSmsGatewayCli
 
     @Override
     public void close() throws Exception {
-        client.close();
-    }
-
-    static void shutdownExecutor() {
-        SUBMIT_EXECUTOR.shutdownNow();
+        if (!closed.compareAndSet(false, true)) {
+            return;
+        }
+        try {
+            client.close();
+        } finally {
+            operationExecutor.shutdownNow();
+        }
     }
 }

@@ -9,9 +9,12 @@ import com.fangxuele.tool.push.ui.form.MainWindow;
 import com.fangxuele.tool.push.ui.form.MessageEditForm;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 
 /** 运营商协议短信内容编辑表单。 */
@@ -21,6 +24,7 @@ public class CarrierSmsMsgForm implements IMsgForm {
 
     private final JPanel mainPanel = new JPanel(new BorderLayout());
     private final JTextArea contentTextArea = new JTextArea();
+    private final JLabel characterCountLabel = new JLabel("字符数：0；长短信将由协议层自动分片");
 
     private CarrierSmsMsgForm() {
         mainPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(),
@@ -30,6 +34,24 @@ public class CarrierSmsMsgForm implements IMsgForm {
         contentTextArea.setWrapStyleWord(true);
         contentTextArea.setRows(12);
         mainPanel.add(new JScrollPane(contentTextArea), BorderLayout.CENTER);
+        characterCountLabel.setBorder(BorderFactory.createEmptyBorder(6, 4, 0, 4));
+        mainPanel.add(characterCountLabel, BorderLayout.SOUTH);
+        contentTextArea.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                updateCharacterCount();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                updateCharacterCount();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                updateCharacterCount();
+            }
+        });
     }
 
     public static CarrierSmsMsgForm getInstance() {
@@ -63,6 +85,9 @@ public class CarrierSmsMsgForm implements IMsgForm {
 
     @Override
     public void save(Integer accountId, String msgName) {
+        if (StringUtils.isBlank(contentTextArea.getText())) {
+            throw new IllegalArgumentException("短信内容不能为空");
+        }
         TMsg existing = MSG_MAPPER.selectByUnique(MessageTypeEnum.CARRIER_SMS_CODE, accountId, msgName);
         if (existing != null) {
             int cover = JOptionPane.showConfirmDialog(MainWindow.getInstance().getMessagePanel(),
@@ -96,5 +121,11 @@ public class CarrierSmsMsgForm implements IMsgForm {
     @Override
     public void clearAllField() {
         contentTextArea.setText("");
+    }
+
+    private void updateCharacterCount() {
+        String content = contentTextArea.getText();
+        int characters = content.codePointCount(0, content.length());
+        characterCountLabel.setText("字符数：" + characters + "；长短信将由协议层自动分片");
     }
 }

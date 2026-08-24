@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /** 每个账号共享一个协议客户端，避免 Classic 工作线程重复建连。 */
 @Slf4j
@@ -19,7 +20,7 @@ public final class CarrierSmsSessionRegistry {
     public static List<BaseMessage> submit(int accountId, CarrierSmsAccountConfig config, BaseMessage request) throws Exception {
         Entry entry = getOrCreate(accountId, config);
         try {
-            return entry.client().submit(request, config.getRequestTimeoutMillis());
+            return entry.submit(request, config.getRequestTimeoutMillis());
         } catch (Exception e) {
             // 异常后丢弃当前连接池，下次发送会重建，不在本次自动重发。
             invalidate(accountId, entry);
@@ -33,8 +34,15 @@ public final class CarrierSmsSessionRegistry {
             if (current != null && current.fingerprint().equals(fingerprint)) {
                 return current;
             }
+            if (current != null) {
+                log.info("运营商短信账号配置已变化，重建连接池，accountId={}", id);
+            }
+            log.info("创建运营商短信连接池，accountId={}，protocol={}，gateway={}:{}，maxChannels={}，window={}",
+                    id, config.getProtocol(), config.getHost(), config.getPort(), config.getMaxChannels(),
+                    config.getWindowSize());
+            Entry replacement = new Entry(fingerprint, clientFactory.create(id, config));
             closeQuietly(current, id);
-            return new Entry(fingerprint, clientFactory.create(id, config));
+            return replacement;
         });
     }
 
@@ -51,7 +59,6 @@ public final class CarrierSmsSessionRegistry {
     public static void shutdown() {
         CLIENTS.forEach((accountId, entry) -> closeQuietly(entry, accountId));
         CLIENTS.clear();
-        SmsClientCarrierGatewayClient.shutdownExecutor();
     }
 
     private static void closeQuietly(Entry entry, int accountId) {
@@ -59,13 +66,43 @@ public final class CarrierSmsSessionRegistry {
             return;
         }
         try {
-            entry.client().close();
+            entry.close();
         } catch (Exception e) {
             log.warn("关闭运营商短信账号连接失败，accountId={}", accountId, e);
         }
     }
 
-    private record Entry(String fingerprint, CarrierSmsGatewayClient client) {
+    private static final class Entry {
+        private final String fingerprint;
+        private final CarrierSmsGatewayClient client;
+        private final ReentrantReadWriteLock lifecycleLock = new ReentrantReadWriteLock();
+
+        private Entry(String fingerprint, CarrierSmsGatewayClient client) {
+            this.fingerprint = fingerprint;
+            this.client = client;
+        }
+
+        private String fingerprint() {
+            return fingerprint;
+        }
+
+        private List<BaseMessage> submit(BaseMessage request, int timeoutMillis) throws Exception {
+            lifecycleLock.readLock().lock();
+            try {
+                return client.submit(request, timeoutMillis);
+            } finally {
+                lifecycleLock.readLock().unlock();
+            }
+        }
+
+        private void close() throws Exception {
+            lifecycleLock.writeLock().lock();
+            try {
+                client.close();
+            } finally {
+                lifecycleLock.writeLock().unlock();
+            }
+        }
     }
 
     @FunctionalInterface

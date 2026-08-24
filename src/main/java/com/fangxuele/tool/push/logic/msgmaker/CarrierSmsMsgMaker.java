@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgSms;
 import com.fangxuele.tool.push.util.TemplateUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.VelocityContext;
 
 /** 运营商协议短信文本模板加工器。 */
@@ -12,7 +13,7 @@ public class CarrierSmsMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
     public CarrierSmsMsgMaker(TMsg tMsg) {
         TMsgSms sms = JSON.parseObject(tMsg.getContent(), TMsgSms.class);
-        content = sms == null ? "" : sms.getContent();
+        content = sms == null ? "" : StringUtils.defaultString(sms.getContent());
     }
 
     @Override

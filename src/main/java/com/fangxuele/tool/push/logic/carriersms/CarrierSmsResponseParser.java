@@ -49,7 +49,8 @@ public final class CarrierSmsResponseParser {
             return unexpected(CarrierSmsProtocol.CMPP, response, part);
         }
         if (submitResponse.getResult() != 0) {
-            return fail(CarrierSmsProtocol.CMPP, part, "Result=" + submitResponse.getResult());
+            return fail(CarrierSmsProtocol.CMPP, part,
+                    CarrierSmsErrorTranslator.submitStatus(CarrierSmsProtocol.CMPP, submitResponse.getResult()));
         }
         return new CarrierSmsSubmitResult(true, String.valueOf(submitResponse.getMsgId()));
     }
@@ -59,7 +60,8 @@ public final class CarrierSmsResponseParser {
             return unexpected(CarrierSmsProtocol.SMGP, response, part);
         }
         if (submitResponse.getStatus() != 0) {
-            return fail(CarrierSmsProtocol.SMGP, part, "Status=" + submitResponse.getStatus());
+            return fail(CarrierSmsProtocol.SMGP, part,
+                    CarrierSmsErrorTranslator.submitStatus(CarrierSmsProtocol.SMGP, submitResponse.getStatus()));
         }
         return new CarrierSmsSubmitResult(true, String.valueOf(submitResponse.getMsgId()));
     }
@@ -69,7 +71,8 @@ public final class CarrierSmsResponseParser {
             return unexpected(CarrierSmsProtocol.SGIP, response, part);
         }
         if (submitResponse.getResult() != 0) {
-            return fail(CarrierSmsProtocol.SGIP, part, "Result=" + submitResponse.getResult());
+            return fail(CarrierSmsProtocol.SGIP, part,
+                    CarrierSmsErrorTranslator.submitStatus(CarrierSmsProtocol.SGIP, submitResponse.getResult()));
         }
         return new CarrierSmsSubmitResult(true, "sequence=" + submitResponse.getSequenceNo());
     }
@@ -79,7 +82,8 @@ public final class CarrierSmsResponseParser {
             return unexpected(CarrierSmsProtocol.SMPP, response, part);
         }
         if (submitResponse.getCommandStatus() != 0) {
-            return fail(CarrierSmsProtocol.SMPP, part, "command_status=" + submitResponse.getCommandStatus());
+            return fail(CarrierSmsProtocol.SMPP, part,
+                    CarrierSmsErrorTranslator.submitStatus(CarrierSmsProtocol.SMPP, submitResponse.getCommandStatus()));
         }
         return new CarrierSmsSubmitResult(true, submitResponse.getMessageId());
     }

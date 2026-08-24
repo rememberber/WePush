@@ -68,6 +68,9 @@
         <sms-client.version>0.1</sms-client.version>
         <guava.version>33.3.1-jre</guava.version>
         <netty.version>4.1.137.Final</netty.version>
+        <commons-pool2.version>2.13.1</commons-pool2.version>
+        <commons-beanutils.version>1.11.0</commons-beanutils.version>
+        <commons-codec.version>1.22.1</commons-codec.version>
     </properties>
 
     <dependencyManagement>
@@ -155,6 +158,23 @@
                     <artifactId>slf4j-api</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <!-- 覆盖 sms-client/sms-core 锁定的老版本，同时保持其使用的 1.x/2.x 二进制兼容 API。 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+            <version>${commons-pool2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>${commons-beanutils.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>${commons-codec.version}</version>
         </dependency>
 
         <dependency>

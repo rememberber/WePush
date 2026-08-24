@@ -11,6 +11,7 @@ import com.fangxuele.tool.push.logic.carriersms.CarrierSmsRequestFactory;
 import com.fangxuele.tool.push.logic.carriersms.CarrierSmsResponseParser;
 import com.fangxuele.tool.push.logic.carriersms.CarrierSmsSessionRegistry;
 import com.fangxuele.tool.push.logic.carriersms.CarrierSmsSubmitResult;
+import com.fangxuele.tool.push.logic.carriersms.CarrierSmsErrorTranslator;
 import com.fangxuele.tool.push.logic.msgmaker.CarrierSmsMsgMaker;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.zx.sms.BaseMessage;
@@ -52,6 +53,18 @@ public class CarrierSmsMsgSender implements IMsgSender {
         }
     }
 
+    CarrierSmsMsgSender(int accountId, int dryRun, CarrierSmsAccountConfig accountConfig,
+                        CarrierSmsMsgMaker msgMaker) {
+        this.accountId = accountId;
+        this.dryRun = dryRun;
+        this.accountConfig = accountConfig;
+        this.msgMaker = msgMaker;
+        List<String> errors = accountConfig.validate();
+        if (!errors.isEmpty()) {
+            throw new IllegalArgumentException(String.join("；", errors));
+        }
+    }
+
     @Override
     public SendResult send(String[] msgData) {
         SendResult result = new SendResult();
@@ -68,16 +81,21 @@ public class CarrierSmsMsgSender implements IMsgSender {
             }
 
             BaseMessage request = CarrierSmsRequestFactory.create(accountConfig, mobile, content);
+            long startedAt = System.nanoTime();
             List<BaseMessage> responses = CarrierSmsSessionRegistry.submit(accountId, accountConfig, request);
             CarrierSmsSubmitResult submitResult = CarrierSmsResponseParser.parse(accountConfig.getProtocol(), responses);
             result.setSuccess(submitResult.success());
             result.setInfo(submitResult.info());
-            if (!submitResult.success()) {
+            long elapsedMillis = (System.nanoTime() - startedAt) / 1_000_000L;
+            if (submitResult.success()) {
+                log.info("运营商短信网关已受理，protocol={}，accountId={}，fragments={}，elapsedMs={}",
+                        accountConfig.getProtocol(), accountId, responses.size(), elapsedMillis);
+            } else {
                 log.error("{}", submitResult.info());
             }
         } catch (Exception e) {
             result.setSuccess(false);
-            result.setInfo(e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
+            result.setInfo(CarrierSmsErrorTranslator.connectionFailure(accountConfig.getProtocol(), e));
             log.error("运营商协议短信发送失败，protocol={}, accountId={}", accountConfig.getProtocol(), accountId,
                     ExceptionUtils.getRootCause(e) == null ? e : ExceptionUtils.getRootCause(e));
         }

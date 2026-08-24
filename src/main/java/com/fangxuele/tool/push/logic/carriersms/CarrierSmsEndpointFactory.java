@@ -27,8 +27,11 @@ public final class CarrierSmsEndpointFactory {
         entity.setChannelType(EndpointEntity.ChannelType.DUPLEX);
         entity.setMaxChannels((short) config.getMaxChannels());
         entity.setWindow(config.getWindowSize());
+        entity.setIdleTimeSec((short) config.getHeartbeatIntervalSeconds());
+        entity.setSupportLongmsg(EndpointEntity.SupportLongMessage.SEND);
         // 提交结果不明时不自动重发，避免重复短信。
         entity.setReSendFailMsg(false);
+        entity.setMaxRetryCnt((short) 0);
         return entity;
     }
 

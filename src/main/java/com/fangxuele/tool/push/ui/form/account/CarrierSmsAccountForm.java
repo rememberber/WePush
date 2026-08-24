@@ -5,6 +5,8 @@ import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.account.CarrierSmsAccountConfig;
 import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import com.fangxuele.tool.push.logic.carriersms.CarrierSmsConnectionTestResult;
+import com.fangxuele.tool.push.logic.carriersms.CarrierSmsConnectionTester;
 import com.fangxuele.tool.push.logic.carriersms.CarrierSmsProtocol;
 import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.ui.form.MainWindow;
@@ -15,7 +17,11 @@ import org.apache.commons.lang3.StringUtils;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.util.EnumSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 /** CMPP/SMGP/SGIP/SMPP 统一账号表单。 */
 public class CarrierSmsAccountForm implements IAccountForm {
@@ -31,6 +37,9 @@ public class CarrierSmsAccountForm implements IAccountForm {
     private final JTextField maxChannelsField = new JTextField();
     private final JTextField windowSizeField = new JTextField();
     private final JTextField timeoutField = new JTextField();
+    private final JTextField heartbeatField = new JTextField();
+    private final JButton testLoginButton = new JButton("测试登录（不发送短信）");
+    private final JLabel testLoginResultLabel = new JLabel(" ");
 
     private final JTextField sourceAddressField = new JTextField();
     private final JTextField serviceIdField = new JTextField();
@@ -39,7 +48,6 @@ public class CarrierSmsAccountForm implements IAccountForm {
     private final JTextField corpIdField = new JTextField();
     private final JTextField systemTypeField = new JTextField();
     private final JCheckBox addZeroByteCheckBox = new JCheckBox("SMPP short_message 末尾追加 0 字节");
-    private final JCheckBox registeredDeliveryCheckBox = new JCheckBox("请求状态报告（首期仅由网关接收，不落库）");
 
     private final JTextField chargeNumberField = new JTextField();
     private final JTextField feeTypeField = new JTextField();
@@ -50,10 +58,12 @@ public class CarrierSmsAccountForm implements IAccountForm {
     private final JTextField sourceNpiField = new JTextField();
     private final JTextField destinationTonField = new JTextField();
     private final JTextField destinationNpiField = new JTextField();
+    private final Map<Component, EnumSet<CarrierSmsProtocol>> protocolVisibility = new LinkedHashMap<>();
 
     private CarrierSmsAccountForm() {
         buildUi();
-        protocolComboBox.addActionListener(e -> applyProtocolDefaults());
+        protocolComboBox.addActionListener(e -> protocolChanged());
+        testLoginButton.addActionListener(e -> testLogin());
     }
 
     public static CarrierSmsAccountForm getInstance() {
@@ -78,32 +88,42 @@ public class CarrierSmsAccountForm implements IAccountForm {
         addRow(connection, 6, "TCP 连接数 *", maxChannelsField, "每个账号长连接池的最大连接数");
         addRow(connection, 7, "发送窗口 *", windowSizeField, "每条连接可同时等待的未应答请求数");
         addRow(connection, 8, "应答超时(ms) *", timeoutField, null);
+        addRow(connection, 9, "心跳间隔(s) *", heartbeatField, "连接空闲时发送协议心跳的间隔，建议 30 秒");
+        JPanel testPanel = new JPanel(new BorderLayout(8, 0));
+        testPanel.add(testLoginButton, BorderLayout.WEST);
+        testPanel.add(testLoginResultLabel, BorderLayout.CENTER);
+        addFullRow(connection, 10, testPanel);
         connection.setMaximumSize(new Dimension(Integer.MAX_VALUE, connection.getPreferredSize().height));
         mainPanel.add(connection);
 
         JPanel submit = section("提交参数");
         addRow(submit, 0, "接入号/源地址 *", sourceAddressField, "CMPP Src_Id / SMGP SrcTermID / SGIP SPNumber / SMPP source_addr");
         addRow(submit, 1, "业务代码", serviceIdField, "CMPP/SMGP ServiceId，SGIP ServiceType，SMPP service_type");
-        addRow(submit, 2, "企业代码 MsgSrc", msgSrcField, "CMPP 必填；SMGP 可选 TLV");
-        addRow(submit, 3, "SGIP NodeId", nodeIdField, "SGIP 必填，数字");
-        addRow(submit, 4, "SGIP CorpId", corpIdField, null);
-        addRow(submit, 5, "SMPP SystemType", systemTypeField, null);
-        addFullRow(submit, 6, registeredDeliveryCheckBox);
-        addFullRow(submit, 7, addZeroByteCheckBox);
+        showFor(addRow(submit, 2, "企业代码 MsgSrc", msgSrcField, "CMPP 必填；SMGP 可选 TLV"),
+                CarrierSmsProtocol.CMPP, CarrierSmsProtocol.SMGP);
+        showFor(addRow(submit, 3, "SGIP NodeId *", nodeIdField, "1-4294967295"), CarrierSmsProtocol.SGIP);
+        showFor(addRow(submit, 4, "SGIP CorpId *", corpIdField, "最长 5 个字符"), CarrierSmsProtocol.SGIP);
+        showFor(addRow(submit, 5, "SMPP SystemType", systemTypeField, null), CarrierSmsProtocol.SMPP);
+        showFor(addFullRow(submit, 6, addZeroByteCheckBox), CarrierSmsProtocol.SMPP);
         submit.setMaximumSize(new Dimension(Integer.MAX_VALUE, submit.getPreferredSize().height));
         mainPanel.add(submit);
 
         JPanel advanced = section("计费与 SMPP 地址参数（按网关要求填写）");
-        addRow(advanced, 0, "SGIP ChargeNumber", chargeNumberField, null);
-        addRow(advanced, 1, "FeeType", feeTypeField, "CMPP/SMGP 为字符码，SGIP 为数字");
-        addRow(advanced, 2, "FeeCode", feeCodeField, "CMPP/SMGP");
-        addRow(advanced, 3, "SGIP FeeValue", feeValueField, null);
-        addRow(advanced, 4, "SMGP FixedFee", fixedFeeField, null);
-        addRow(advanced, 5, "SMPP 源 TON / NPI", pair(sourceTonField, sourceNpiField), "0-255");
-        addRow(advanced, 6, "SMPP 目标 TON / NPI", pair(destinationTonField, destinationNpiField), "0-255");
+        showFor(addRow(advanced, 0, "SGIP ChargeNumber", chargeNumberField, null), CarrierSmsProtocol.SGIP);
+        showFor(addRow(advanced, 1, "FeeType", feeTypeField, "CMPP/SMGP 为字符码，SGIP 为数字"),
+                CarrierSmsProtocol.CMPP, CarrierSmsProtocol.SMGP, CarrierSmsProtocol.SGIP);
+        showFor(addRow(advanced, 2, "FeeCode", feeCodeField, "CMPP/SMGP"),
+                CarrierSmsProtocol.CMPP, CarrierSmsProtocol.SMGP);
+        showFor(addRow(advanced, 3, "SGIP FeeValue", feeValueField, null), CarrierSmsProtocol.SGIP);
+        showFor(addRow(advanced, 4, "SMGP FixedFee", fixedFeeField, null), CarrierSmsProtocol.SMGP);
+        showFor(addRow(advanced, 5, "SMPP 源 TON / NPI", pair(sourceTonField, sourceNpiField), "0-255"),
+                CarrierSmsProtocol.SMPP);
+        showFor(addRow(advanced, 6, "SMPP 目标 TON / NPI", pair(destinationTonField, destinationNpiField), "0-255"),
+                CarrierSmsProtocol.SMPP);
         advanced.setMaximumSize(new Dimension(Integer.MAX_VALUE, advanced.getPreferredSize().height));
         mainPanel.add(advanced);
         mainPanel.add(Box.createVerticalGlue());
+        updateProtocolVisibility();
     }
 
     private static JPanel section(String title) {
@@ -121,7 +141,7 @@ public class CarrierSmsAccountForm implements IAccountForm {
         return pair;
     }
 
-    private static void addRow(JPanel panel, int row, String labelText, JComponent component, String tooltip) {
+    private static List<Component> addRow(JPanel panel, int row, String labelText, JComponent component, String tooltip) {
         GridBagConstraints labelConstraints = new GridBagConstraints();
         labelConstraints.gridx = 0;
         labelConstraints.gridy = row;
@@ -141,15 +161,41 @@ public class CarrierSmsAccountForm implements IAccountForm {
         component.setToolTipText(tooltip);
         component.setPreferredSize(new Dimension(420, component.getPreferredSize().height));
         panel.add(component, fieldConstraints);
+        return List.of(label, component);
     }
 
-    private static void addFullRow(JPanel panel, int row, JComponent component) {
+    private static List<Component> addFullRow(JPanel panel, int row, JComponent component) {
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 1;
         constraints.gridy = row;
         constraints.anchor = GridBagConstraints.WEST;
         constraints.insets = new Insets(4, 0, 4, 8);
         panel.add(component, constraints);
+        return List.of(component);
+    }
+
+    private void showFor(List<Component> components, CarrierSmsProtocol... protocols) {
+        EnumSet<CarrierSmsProtocol> visibleFor = EnumSet.noneOf(CarrierSmsProtocol.class);
+        visibleFor.addAll(List.of(protocols));
+        components.forEach(component -> protocolVisibility.put(component, visibleFor));
+    }
+
+    private void protocolChanged() {
+        applyProtocolDefaults();
+        updateProtocolVisibility();
+        testLoginResultLabel.setText(" ");
+    }
+
+    private void updateProtocolVisibility() {
+        CarrierSmsProtocol protocol = selectedProtocol();
+        protocolVisibility.forEach((component, protocols) -> component.setVisible(protocols.contains(protocol)));
+        for (Component component : mainPanel.getComponents()) {
+            if (component instanceof JPanel section) {
+                section.setMaximumSize(new Dimension(Integer.MAX_VALUE, section.getPreferredSize().height));
+            }
+        }
+        mainPanel.revalidate();
+        mainPanel.repaint();
     }
 
     private void applyProtocolDefaults() {
@@ -160,6 +206,47 @@ public class CarrierSmsAccountForm implements IAccountForm {
         if (StringUtils.isBlank(versionField.getText()) || isKnownVersion(versionField.getText())) {
             versionField.setText(protocol.getDefaultVersion());
         }
+    }
+
+    private void testLogin() {
+        final CarrierSmsAccountConfig config;
+        try {
+            config = readConfig();
+            List<String> errors = config.validate();
+            if (!errors.isEmpty()) {
+                throw new IllegalArgumentException(String.join("\n", errors));
+            }
+        } catch (RuntimeException e) {
+            JOptionPane.showMessageDialog(mainPanel, e.getMessage(), "参数错误", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        testLoginButton.setEnabled(false);
+        testLoginResultLabel.setText("正在连接并登录……");
+        new SwingWorker<CarrierSmsConnectionTestResult, Void>() {
+            @Override
+            protected CarrierSmsConnectionTestResult doInBackground() {
+                return CarrierSmsConnectionTester.test(config);
+            }
+
+            @Override
+            protected void done() {
+                testLoginButton.setEnabled(true);
+                try {
+                    CarrierSmsConnectionTestResult result = get();
+                    testLoginResultLabel.setText(result.info() + "（" + result.elapsedMillis() + " ms）");
+                    if (!result.success()) {
+                        JOptionPane.showMessageDialog(mainPanel, result.info(), "测试登录失败", JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    testLoginResultLabel.setText("测试已中断");
+                } catch (ExecutionException e) {
+                    testLoginResultLabel.setText("测试失败");
+                    JOptionPane.showMessageDialog(mainPanel, "测试登录失败", "失败", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }.execute();
     }
 
     private static boolean isDefaultPort(String text) {
@@ -203,6 +290,7 @@ public class CarrierSmsAccountForm implements IAccountForm {
         maxChannelsField.setText(String.valueOf(config.getMaxChannels()));
         windowSizeField.setText(String.valueOf(config.getWindowSize()));
         timeoutField.setText(String.valueOf(config.getRequestTimeoutMillis()));
+        heartbeatField.setText(String.valueOf(config.getHeartbeatIntervalSeconds()));
         sourceAddressField.setText(config.getSourceAddress());
         serviceIdField.setText(config.getServiceId());
         msgSrcField.setText(config.getMsgSrc());
@@ -210,7 +298,6 @@ public class CarrierSmsAccountForm implements IAccountForm {
         corpIdField.setText(config.getCorpId());
         systemTypeField.setText(config.getSystemType());
         addZeroByteCheckBox.setSelected(config.isAddZeroByte());
-        registeredDeliveryCheckBox.setSelected(config.isRegisteredDelivery());
         chargeNumberField.setText(config.getChargeNumber());
         feeTypeField.setText(config.getFeeType());
         feeCodeField.setText(config.getFeeCode());
@@ -220,6 +307,7 @@ public class CarrierSmsAccountForm implements IAccountForm {
         sourceNpiField.setText(String.valueOf(config.getSourceNpi()));
         destinationTonField.setText(String.valueOf(config.getDestinationTon()));
         destinationNpiField.setText(String.valueOf(config.getDestinationNpi()));
+        updateProtocolVisibility();
     }
 
     @Override
@@ -268,6 +356,7 @@ public class CarrierSmsAccountForm implements IAccountForm {
             config.setMaxChannels(integer(maxChannelsField, "TCP 连接数"));
             config.setWindowSize(integer(windowSizeField, "发送窗口"));
             config.setRequestTimeoutMillis(integer(timeoutField, "应答超时"));
+            config.setHeartbeatIntervalSeconds(integer(heartbeatField, "心跳间隔"));
             config.setSourceAddress(trim(sourceAddressField));
             config.setServiceId(trim(serviceIdField));
             config.setMsgSrc(trim(msgSrcField));
@@ -275,7 +364,6 @@ public class CarrierSmsAccountForm implements IAccountForm {
             config.setCorpId(trim(corpIdField));
             config.setSystemType(trim(systemTypeField));
             config.setAddZeroByte(addZeroByteCheckBox.isSelected());
-            config.setRegisteredDelivery(registeredDeliveryCheckBox.isSelected());
             config.setChargeNumber(trim(chargeNumberField));
             config.setFeeType(trim(feeTypeField));
             config.setFeeCode(trim(feeCodeField));
@@ -326,6 +414,7 @@ public class CarrierSmsAccountForm implements IAccountForm {
         maxChannelsField.setText("1");
         windowSizeField.setText("16");
         timeoutField.setText("10000");
+        heartbeatField.setText("30");
         sourceAddressField.setText("");
         serviceIdField.setText("");
         msgSrcField.setText("");
@@ -333,7 +422,6 @@ public class CarrierSmsAccountForm implements IAccountForm {
         corpIdField.setText("");
         systemTypeField.setText("");
         addZeroByteCheckBox.setSelected(false);
-        registeredDeliveryCheckBox.setSelected(true);
         chargeNumberField.setText("000000000000000000000");
         feeTypeField.setText("");
         feeCodeField.setText("");
@@ -343,6 +431,8 @@ public class CarrierSmsAccountForm implements IAccountForm {
         sourceNpiField.setText("0");
         destinationTonField.setText("0");
         destinationNpiField.setText("1");
+        testLoginResultLabel.setText(" ");
+        updateProtocolVisibility();
     }
 
     @Override
