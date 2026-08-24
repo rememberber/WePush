@@ -216,12 +216,13 @@ jobs:
           tar_archive=$(find . -maxdepth 1 -name '*.tar.gz' -print -quit)
           zip_archive=$(find . -maxdepth 1 -name '*.zip' -print -quit)
           test -n "$tar_archive" && test -n "$zip_archive"
-          tar -tzf "$tar_archive" | grep -Eq '^wepush-next-[^/]+/web/index.html$'
-          tar -tzf "$tar_archive" | grep -Eq '^wepush-next-[^/]+/LICENSE.txt$'
-          tar -tzf "$tar_archive" | grep -Eq '^wepush-next-[^/]+/PREVIEW-NOTICE.md$'
-          tar -tzf "$tar_archive" | grep -Eq '^wepush-next-[^/]+/SECURITY.md$'
-          tar -tzf "$tar_archive" | grep -Eq '^wepush-next-[^/]+/api/openapi.yaml$'
-          tar -tzf "$tar_archive" | grep -Eq '^wepush-next-[^/]+/sdk/sdk-java-[^/]+\.jar$'
+          tar_listing=$(tar -tzf "$tar_archive")
+          grep -Eq '^wepush-next-[^/]+/web/index.html$' <<< "$tar_listing"
+          grep -Eq '^wepush-next-[^/]+/LICENSE.txt$' <<< "$tar_listing"
+          grep -Eq '^wepush-next-[^/]+/PREVIEW-NOTICE.md$' <<< "$tar_listing"
+          grep -Eq '^wepush-next-[^/]+/SECURITY.md$' <<< "$tar_listing"
+          grep -Eq '^wepush-next-[^/]+/api/openapi.yaml$' <<< "$tar_listing"
+          grep -Eq '^wepush-next-[^/]+/sdk/sdk-java-[^/]+\.jar$' <<< "$tar_listing"
           unzip -t "$zip_archive"
       - uses: actions/upload-artifact@v4
         with:
