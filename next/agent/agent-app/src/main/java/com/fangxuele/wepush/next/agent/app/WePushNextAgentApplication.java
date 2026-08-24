@@ -87,7 +87,7 @@ public final class WePushNextAgentApplication {
         try (pluginManager;
              AgentRuntime runtime = new AgentRuntime(
                 new AgentId(configuredId),
-                "0.1.0-SNAPSHOT",
+                productVersion(),
                 maximumRuns,
                 new DefaultExecutionEngine(providers),
                 new FileAgentJournal(journalPath));
@@ -123,6 +123,11 @@ public final class WePushNextAgentApplication {
         } catch (InterruptedException interrupted) {
             Thread.currentThread().interrupt();
         }
+    }
+
+    private static String productVersion() {
+        String version = WePushNextAgentApplication.class.getPackage().getImplementationVersion();
+        return version == null || version.isBlank() ? "development" : version;
     }
 
     private static ProviderCapability capability(ProviderDescriptor descriptor) {

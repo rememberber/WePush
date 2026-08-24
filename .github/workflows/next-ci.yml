@@ -5,10 +5,12 @@ on:
     paths:
       - 'next/**'
       - '.github/workflows/next-ci.yml'
+      - '.github/workflows/next-release.yml'
   pull_request:
     paths:
       - 'next/**'
       - '.github/workflows/next-ci.yml'
+      - '.github/workflows/next-release.yml'
   workflow_dispatch:
 
 permissions:
@@ -27,7 +29,9 @@ jobs:
           cache: maven
       - name: Verify Next reactor
         working-directory: next
-        run: ./mvnw --batch-mode --no-transfer-progress verify
+        run: >-
+          ./mvnw --batch-mode --no-transfer-progress
+          -pl '!distribution' verify
 
   postgres:
     name: PostgreSQL 18 migrations
@@ -135,6 +139,9 @@ jobs:
       - name: Install UI dependencies
         working-directory: next/ui
         run: pnpm install --frozen-lockfile
+      - name: Install pinned Electron runtime
+        working-directory: next/ui
+        run: node apps/desktop/node_modules/electron/install.js
       - name: Package native Desktop shell
         working-directory: next/ui
         run: pnpm --filter @wepush-next/desktop package
@@ -204,11 +211,17 @@ jobs:
         working-directory: next/distribution/target
         shell: bash
         run: |
+          set -euo pipefail
           sha256sum --check *.sha256
           tar_archive=$(find . -maxdepth 1 -name '*.tar.gz' -print -quit)
           zip_archive=$(find . -maxdepth 1 -name '*.zip' -print -quit)
           test -n "$tar_archive" && test -n "$zip_archive"
           tar -tzf "$tar_archive" | grep -Eq '^wepush-next-[^/]+/web/index.html$'
+          tar -tzf "$tar_archive" | grep -Eq '^wepush-next-[^/]+/LICENSE.txt$'
+          tar -tzf "$tar_archive" | grep -Eq '^wepush-next-[^/]+/PREVIEW-NOTICE.md$'
+          tar -tzf "$tar_archive" | grep -Eq '^wepush-next-[^/]+/SECURITY.md$'
+          tar -tzf "$tar_archive" | grep -Eq '^wepush-next-[^/]+/api/openapi.yaml$'
+          tar -tzf "$tar_archive" | grep -Eq '^wepush-next-[^/]+/sdk/sdk-java-[^/]+\.jar$'
           unzip -t "$zip_archive"
       - uses: actions/upload-artifact@v4
         with:

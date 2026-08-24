@@ -1,0 +1,251 @@
+name: WePush Next Public Preview Release
+
+on:
+  push:
+    tags:
+      - 'next-v*'
+
+concurrency:
+  group: wepush-next-release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  PNPM_VERSION: '11.22.0'
+
+jobs:
+  distribution:
+    name: Verified server distribution and SBOM
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: wepush
+          POSTGRES_USER: wepush
+          POSTGRES_PASSWORD: wepush-test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U wepush"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      WEPUSH_TEST_POSTGRES_URL: jdbc:postgresql://127.0.0.1:5432/wepush
+      WEPUSH_TEST_POSTGRES_USERNAME: wepush
+      WEPUSH_TEST_POSTGRES_PASSWORD: wepush-test
+      WEPUSH_TEST_S3_ENDPOINT: http://127.0.0.1:9000
+      WEPUSH_TEST_S3_ACCESS_KEY: wepush-test
+      WEPUSH_TEST_S3_SECRET_KEY: wepush-test-secret
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install pinned pnpm
+        run: npm install --global pnpm@${{ env.PNPM_VERSION }}
+      - name: Resolve and validate release version
+        id: metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          version=${GITHUB_REF_NAME#next-v}
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          next/scripts/validate-release.sh "$GITHUB_REF_NAME"
+      - name: Start pinned MinIO
+        run: >-
+          docker run --detach --name wepush-next-minio -p 9000:9000
+          -e MINIO_ROOT_USER=wepush-test
+          -e MINIO_ROOT_PASSWORD=wepush-test-secret
+          quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z server /data
+      - name: Wait for MinIO
+        shell: bash
+        run: |
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:9000/minio/health/ready >/dev/null; then exit 0; fi
+            sleep 2
+          done
+          docker logs wepush-next-minio
+          exit 1
+      - name: Verify and build WebUI
+        working-directory: next/ui
+        run: pnpm install --frozen-lockfile && pnpm check
+      - name: Verify Java, PostgreSQL, S3 and build distributions
+        working-directory: next
+        run: ./mvnw --batch-mode --no-transfer-progress verify
+      - name: Verify release archives
+        working-directory: next/distribution/target
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum --check *.sha256
+          tar -tzf "wepush-next-${{ steps.metadata.outputs.version }}.tar.gz" |
+            grep -Eq '^wepush-next-[^/]+/PREVIEW-NOTICE.md$'
+          unzip -t "wepush-next-${{ steps.metadata.outputs.version }}.zip"
+      - name: Stage distribution assets
+        env:
+          VERSION: ${{ steps.metadata.outputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p release-assets
+          cp next/distribution/target/*.tar.gz release-assets/
+          cp next/distribution/target/*.zip release-assets/
+          cp next/distribution/target/*.sha256 release-assets/
+          sdk_name="wepush-next-java-sdk-$VERSION"
+          mkdir -p "$sdk_name"
+          cp next/sdk/README.md "$sdk_name/"
+          cp next/pom.xml "$sdk_name/wepush-next-parent-$VERSION.pom"
+          cp next/service/service-api/pom.xml "$sdk_name/service-api-$VERSION.pom"
+          cp next/service/service-api/target/service-api-$VERSION.jar "$sdk_name/"
+          cp next/sdk/sdk-java/pom.xml "$sdk_name/sdk-java-$VERSION.pom"
+          cp next/sdk/sdk-java/target/sdk-java-$VERSION.jar "$sdk_name/"
+          cp next/service/service-api/src/main/resources/openapi/openapi.yaml "$sdk_name/"
+          cp LICENSE.txt next/PREVIEW-NOTICE.md next/SECURITY.md next/THIRD-PARTY-NOTICES.md "$sdk_name/"
+          zip -qr "release-assets/$sdk_name.zip" "$sdk_name"
+      - name: Generate CycloneDX SBOM
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610
+        with:
+          path: next
+          format: cyclonedx-json
+          output-file: release-assets/wepush-next-${{ steps.metadata.outputs.version }}-sbom.cdx.json
+          upload-artifact: false
+          upload-release-assets: false
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wepush-next-distribution
+          path: release-assets/*
+          if-no-files-found: error
+          retention-days: 30
+
+  desktop:
+    name: Unsigned Desktop (${{ matrix.platform }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux
+          - os: macos-latest
+            platform: macos
+          - os: windows-latest
+            platform: windows
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install pinned pnpm
+        run: npm install --global pnpm@${{ env.PNPM_VERSION }}
+      - name: Install UI dependencies
+        working-directory: next/ui
+        run: pnpm install --frozen-lockfile
+      - name: Resolve release metadata
+        id: metadata
+        run: |
+          node -e 'const fs=require("fs");const p=require("./next/ui/apps/desktop/package.json");fs.appendFileSync(process.env.GITHUB_OUTPUT,"version="+p.version+"\narch="+process.arch+"\n")'
+      - name: Validate release tag
+        shell: bash
+        run: next/scripts/validate-release.sh "$GITHUB_REF_NAME"
+      - name: Install pinned Electron runtime
+        working-directory: next/ui
+        run: node apps/desktop/node_modules/electron/install.js
+      - name: Package native Desktop shell
+        working-directory: next/ui
+        run: pnpm --filter @wepush-next/desktop package
+      - name: Verify Linux package and stage archive
+        if: runner.os == 'Linux'
+        shell: bash
+        env:
+          VERSION: ${{ steps.metadata.outputs.version }}
+          ARCH: ${{ steps.metadata.outputs.arch }}
+        run: |
+          set -euo pipefail
+          test -x next/ui/apps/desktop/release/linux-unpacked/wepush-next
+          name="wepush-next-desktop-$VERSION-linux-$ARCH"
+          mkdir -p "release-assets" "$name"
+          cp -a next/ui/apps/desktop/release/linux-unpacked "$name/WePush Next"
+          cp LICENSE.txt next/PREVIEW-NOTICE.md next/SECURITY.md next/THIRD-PARTY-NOTICES.md "$name/"
+          tar -czf "release-assets/$name.tar.gz" "$name"
+      - name: Verify macOS package and stage archive
+        if: runner.os == 'macOS'
+        shell: bash
+        env:
+          VERSION: ${{ steps.metadata.outputs.version }}
+          ARCH: ${{ steps.metadata.outputs.arch }}
+        run: |
+          set -euo pipefail
+          codesign --verify --deep --strict --verbose=2 'next/ui/apps/desktop/release/WePush Next.app'
+          name="wepush-next-desktop-$VERSION-macos-$ARCH"
+          mkdir -p "release-assets" "$name"
+          cp -R 'next/ui/apps/desktop/release/WePush Next.app' "$name/"
+          cp LICENSE.txt next/PREVIEW-NOTICE.md next/SECURITY.md next/THIRD-PARTY-NOTICES.md "$name/"
+          ditto -c -k --sequesterRsrc --keepParent "$name" "release-assets/$name.zip"
+      - name: Verify Windows package and stage archive
+        if: runner.os == 'Windows'
+        shell: pwsh
+        env:
+          VERSION: ${{ steps.metadata.outputs.version }}
+          ARCH: ${{ steps.metadata.outputs.arch }}
+        run: |
+          if (-not (Test-Path 'next/ui/apps/desktop/release/win-unpacked/WePush Next.exe')) {
+            throw 'Packaged Windows application is missing'
+          }
+          $name = "wepush-next-desktop-$env:VERSION-windows-$env:ARCH"
+          New-Item -ItemType Directory -Force -Path release-assets, $name | Out-Null
+          Copy-Item next/ui/apps/desktop/release/win-unpacked "$name/WePush Next" -Recurse
+          Copy-Item LICENSE.txt,next/PREVIEW-NOTICE.md,next/SECURITY.md,next/THIRD-PARTY-NOTICES.md $name
+          Compress-Archive -Path $name -DestinationPath "release-assets/$name.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wepush-next-desktop-${{ matrix.platform }}-${{ steps.metadata.outputs.arch }}
+          path: release-assets/*
+          if-no-files-found: error
+          retention-days: 30
+
+  publish:
+    name: Publish GitHub Pre-release
+    needs: [distribution, desktop]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: wepush-next-*
+          path: release-assets
+          merge-multiple: true
+      - name: Generate and verify unified checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd release-assets
+          find . -maxdepth 1 -type f ! -name SHA256SUMS -print0 |
+            sort -z | xargs -0 sha256sum | sed 's#  \./#  #' > SHA256SUMS
+          sha256sum --check SHA256SUMS
+      - name: Publish unsigned public preview
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          version=${GITHUB_REF_NAME#next-v}
+          notes="next/docs/releases/$version.md"
+          test -s "$notes"
+          gh release create "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --verify-tag \
+            --prerelease \
+            --title "WePush Next $version (Public Preview)" \
+            --notes-file "$notes" \
+            release-assets/*

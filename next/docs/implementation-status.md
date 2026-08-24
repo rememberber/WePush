@@ -4,7 +4,7 @@
 
 ## 1. 里程碑结论
 
-`next/` 的 `0.1.0` 目标架构基线已经形成完整、可独立构建的产品纵向链路。Classic 源码和构建保持不动；两条产品线不共享源码依赖，允许各自存在相似实现。
+`next/` 的 `0.1.0-alpha.1` 公开预览目标架构基线已经形成完整、可独立构建的产品纵向链路。Classic 源码和构建保持不动；两条产品线不共享源码依赖，允许各自存在相似实现。
 
 ```text
 React WebUI / Electron Desktop / Java SDK
@@ -109,6 +109,7 @@ Standalone 默认是单 Service + SQLite + Local Artifact + Embedded Engine；Se
 - PostgreSQL 全量迁移、默认 Workspace、V10 Workspace 列、V11 系统角色列和 outbox 外键；
 - S3 Presigned Put、Range、Head/Checksum、Delete 和 100 MiB Multipart；
 - Java/UI 门禁通过后才生成发行归档。
+- `next-v*` Tag 由独立预发布流水线生成三平台未签名 Desktop 包、CycloneDX SBOM、统一 `SHA256SUMS`，并发布为 GitHub Pre-release。
 
 ## 8. 本轮完成边界与后续演进
 
@@ -118,7 +119,7 @@ Standalone 默认是单 Service + SQLite + Local Artifact + Embedded Engine；Se
 
 - 增加邮件、短信、微信等正式 Provider，以及对应模拟服务和 Schema 组件。
 - Message/Audience/Job 编辑、修订 Diff、大文件 CSV 导入和正式发送二次确认体验。
-- macOS/Windows 商业发行签名、公证、自动更新渠道和品牌资产。
+- macOS/Windows 商业发行签名、公证、自动更新渠道和品牌资产；公开预览版明确以未签名附件发布。
 - 外部 Vault/云 KMS/OS Keychain 适配器，以及非受信 Provider 独立进程 Runner。
 - 公共 SaaS 的自助注册、计费、订阅、恶意租户物理隔离和跨区域 Active-Active。
 

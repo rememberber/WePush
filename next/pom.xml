@@ -6,11 +6,30 @@
 
     <groupId>com.fangxuele.wepush.next</groupId>
     <artifactId>wepush-next-parent</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0-alpha.1</version>
     <packaging>pom</packaging>
 
     <name>WePush Next</name>
     <description>Independent next-generation WePush architecture</description>
+    <url>https://github.com/rememberber/WePush</url>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/license/mit</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <scm>
+        <connection>scm:git:https://github.com/rememberber/WePush.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/rememberber/WePush.git</developerConnection>
+        <url>https://github.com/rememberber/WePush</url>
+        <tag>next-v0.1.0-alpha.1</tag>
+    </scm>
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/rememberber/WePush/issues</url>
+    </issueManagement>
 
     <modules>
         <module>core/core-api</module>
@@ -114,6 +133,18 @@
             </plugins>
         </pluginManagement>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.5.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

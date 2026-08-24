@@ -1,4 +1,4 @@
-import { chmod, cp, mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+import { access, chmod, cp, mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { execFile } from "node:child_process";
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
@@ -12,6 +12,17 @@ const electronRoot = dirname(require.resolve("electron/package.json"));
 const electronDist = join(electronRoot, "dist");
 const releaseRoot = join(appRoot, "release");
 const webDist = join(appRoot, "..", "web", "dist");
+const repositoryRoot = join(appRoot, "..", "..", "..", "..");
+const nextRoot = join(repositoryRoot, "next");
+const desktopMetadata = JSON.parse(await readFile(join(appRoot, "package.json"), "utf8"));
+
+try {
+  await access(electronDist);
+} catch {
+  console.log("Electron runtime is missing; installing the pinned runtime before packaging");
+  await execFileAsync(process.execPath, [join(electronRoot, "install.js")], { cwd: electronRoot });
+  await access(electronDist);
+}
 
 await rm(releaseRoot, { recursive: true, force: true });
 await mkdir(releaseRoot, { recursive: true });
@@ -46,8 +57,12 @@ const packagedApp = join(resources, "app");
 await mkdir(packagedApp, { recursive: true });
 await cp(join(appRoot, "dist"), join(packagedApp, "dist"), { recursive: true });
 await cp(webDist, join(resources, "web", "dist"), { recursive: true });
+await cp(join(repositoryRoot, "LICENSE.txt"), join(resources, "LICENSE.txt"));
+await cp(join(nextRoot, "PREVIEW-NOTICE.md"), join(resources, "PREVIEW-NOTICE.md"));
+await cp(join(nextRoot, "SECURITY.md"), join(resources, "SECURITY.md"));
+await cp(join(nextRoot, "THIRD-PARTY-NOTICES.md"), join(resources, "THIRD-PARTY-NOTICES.md"));
 await writeFile(join(packagedApp, "package.json"), JSON.stringify({
-  name: "wepush-next-desktop", version: "0.1.0", private: true,
+  name: "wepush-next-desktop", version: desktopMetadata.version, private: true,
   type: "module", main: "dist/main/index.js",
 }, null, 2));
 if (process.platform === "darwin") {

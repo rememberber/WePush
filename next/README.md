@@ -2,6 +2,8 @@
 
 WePush Next 是与 Classic 完全独立的新产品线。Classic 与 Next 可以按需拥有重复代码，彼此不建立共享源码依赖。
 
+> 当前版本：`0.1.0-alpha.1` Public Preview。它不是稳定版，Desktop 与安装包未使用商业代码签名。下载、校验和已知边界见 [`PREVIEW-NOTICE.md`](PREVIEW-NOTICE.md) 与 [`docs/releases/0.1.0-alpha.1.md`](docs/releases/0.1.0-alpha.1.md)。
+
 ## 验证 Java 工程
 
 ```bash
@@ -9,7 +11,7 @@ cd next
 ./mvnw verify
 ```
 
-完整构建、三平台安装、Server/HA、Agent Enrollment、插件升级和恢复步骤见 [`docs/deployment-and-operations.md`](docs/deployment-and-operations.md)。
+完整构建、三平台安装、Server/HA、Agent Enrollment、插件升级和恢复步骤见 [`docs/deployment-and-operations.md`](docs/deployment-and-operations.md)。安全问题请按 [`SECURITY.md`](SECURITY.md) 私下报告。
 
 ## 启动 Service
 
@@ -81,6 +83,8 @@ java -jar service/service-app/target/wepush-next-service.jar
 ## Java SDK
 
 远程 SDK 只依赖公开 `service-api`，不依赖 Core、Engine 或具体 Provider：
+
+公开预览发行包在 `sdk/` 中附带可安装到本地 Maven Repository 的 POM/JAR，步骤见 [`sdk/README.md`](sdk/README.md)。
 
 ```java
 try (var client = WePushClient.builder()

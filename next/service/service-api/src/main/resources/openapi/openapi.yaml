@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: WePush Next Service API
-  version: 0.1.0
+  version: 0.1.0-alpha.1
   description: Local-first control plane API shared by Web UI, Desktop UI and remote SDKs.
 servers:
   - url: /

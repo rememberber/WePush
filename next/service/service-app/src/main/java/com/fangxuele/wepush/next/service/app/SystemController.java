@@ -26,7 +26,12 @@ final class SystemController {
 
     @GetMapping("/info")
     SystemInfoResponse info() {
-        return new SystemInfoResponse("WePush Next", "0.1.0-SNAPSHOT", mode, Instant.now());
+        return new SystemInfoResponse("WePush Next", productVersion(), mode, Instant.now());
+    }
+
+    private static String productVersion() {
+        String version = SystemController.class.getPackage().getImplementationVersion();
+        return version == null || version.isBlank() ? "development" : version;
     }
 
     @PostMapping("/maintenance/artifacts/retention")
