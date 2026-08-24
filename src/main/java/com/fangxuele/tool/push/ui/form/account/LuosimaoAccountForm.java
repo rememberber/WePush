@@ -73,7 +73,7 @@ public class LuosimaoAccountForm implements IAccountForm {
 
                 if (existSameAccount) {
                     accountMapper.updateByMsgTypeAndAccountName(tAccount1);
-                    LuosimaoMsgSender.removeAccount(tAccount1.getId());
+                    LuosimaoMsgSender.removeAccount(tAccount.getId());
                 } else {
                     tAccount1.setCreateTime(now);
                     accountMapper.insertSelective(tAccount1);

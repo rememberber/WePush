@@ -57,7 +57,6 @@
         <mybatis.version>3.5.19</mybatis.version>
         <sqlite-jdbc.version>3.53.2.0</sqlite-jdbc.version>
         <junit.version>4.13.1</junit.version>
-        <httpasyncclient.version>4.1.4</httpasyncclient.version>
         <HikariCP.version>3.4.5</HikariCP.version>
         <quartz.version>2.3.2</quartz.version>
         <okhttp.version>5.4.0</okhttp.version>
@@ -65,6 +64,7 @@
         <flatlaf-extras.version>3.7.2</flatlaf-extras.version>
         <flatlaf-intellij-themes.version>3.7.2</flatlaf-intellij-themes.version>
         <json-path.version>2.6.0</json-path.version>
+        <gson.version>2.13.1</gson.version>
     </properties>
 
     <dependencies>
@@ -119,6 +119,13 @@
             <groupId>com.github.binarywang</groupId>
             <artifactId>weixin-java-cp</artifactId>
             <version>${weixin-java-cp.version}</version>
+        </dependency>
+
+        <!-- WxCpMessage.toJson() 运行时依赖；此前经 weixin-java-mp 的排除路径未进入最终依赖树 -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gson.version}</version>
         </dependency>
 
         <dependency>
@@ -223,11 +230,6 @@
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
             <version>${sqlite-jdbc.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpasyncclient</artifactId>
-            <version>${httpasyncclient.version}</version>
         </dependency>
         <!--        <dependency>-->
         <!--            <groupId>com.zaxxer</groupId>-->

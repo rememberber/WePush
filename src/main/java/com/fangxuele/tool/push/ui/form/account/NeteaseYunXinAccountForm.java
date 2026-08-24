@@ -76,7 +76,7 @@ public class NeteaseYunXinAccountForm implements IAccountForm {
 
                 if (existSameAccount) {
                     accountMapper.updateByMsgTypeAndAccountName(tAccount1);
-                    NeteaseYunXinMsgSender.removeAccount(tAccount1.getId());
+                    NeteaseYunXinMsgSender.removeAccount(tAccount.getId());
                 } else {
                     tAccount1.setCreateTime(now);
                     accountMapper.insertSelective(tAccount1);

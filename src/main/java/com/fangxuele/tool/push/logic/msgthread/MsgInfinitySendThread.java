@@ -7,6 +7,9 @@ import com.fangxuele.tool.push.logic.msgsender.SendResult;
 import com.fangxuele.tool.push.util.ConsoleUtil;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * <pre>
  * 消息异步发送服务线程
@@ -34,34 +37,54 @@ public class MsgInfinitySendThread extends Thread {
 
     @Override
     public void run() {
-
-        while (infinityTaskRunThread.running && Boolean.TRUE.equals(infinityTaskRunThread.threadStatusMap.get(workerName)) && !infinityTaskRunThread.toSendConcurrentLinkedQueue.isEmpty()) {
-            String[] msgData = infinityTaskRunThread.toSendConcurrentLinkedQueue.poll();
-            if (msgData == null) {
-                continue;
-            }
-            try {
-                SendResult sendResult = iMsgSender.send(msgData);
-                if (sendResult.isSuccess()) {
-                    infinityTaskRunThread.increaseSuccess();
-                    // 保存发送成功
-                    infinityTaskRunThread.sendSuccessList.add(msgData);
-                } else {
-                    infinityTaskRunThread.increaseFail();
-                    // 保存发送失败
-                    infinityTaskRunThread.sendFailList.add(msgData);
-                    ConsoleUtil.pushLog(infinityTaskRunThread.getLogWriter(), "发送失败:" + sendResult.getInfo() + ";msgData:" + JSONUtil.toJsonStr(msgData));
+        try {
+            int batchSize = Math.max(1, iMsgSender.recommendedBatchSize());
+            while (infinityTaskRunThread.running
+                    && Boolean.TRUE.equals(infinityTaskRunThread.threadStatusMap.get(workerName))
+                    && !infinityTaskRunThread.toSendConcurrentLinkedQueue.isEmpty()) {
+                List<String[]> batch = new ArrayList<>(batchSize);
+                for (int i = 0; i < batchSize; i++) {
+                    String[] msgData = infinityTaskRunThread.toSendConcurrentLinkedQueue.poll();
+                    if (msgData == null) {
+                        break;
+                    }
+                    batch.add(msgData);
                 }
-            } catch (Exception e) {
-                infinityTaskRunThread.increaseFail();
-                ConsoleUtil.pushLog(infinityTaskRunThread.getLogWriter(), "发送异常：" + ExceptionUtils.getStackTrace(e));
-                // 保存发送失败
-                infinityTaskRunThread.sendFailList.add(msgData);
+                if (batch.isEmpty()) {
+                    continue;
+                }
+                try {
+                    List<SendResult> results = iMsgSender.sendBatch(batch);
+                    if (results.size() != batch.size()) {
+                        throw new IllegalStateException("批量发送返回结果数量不一致：请求=" + batch.size() + "，结果=" + results.size());
+                    }
+                    for (int i = 0; i < batch.size(); i++) {
+                        recordResult(batch.get(i), results.get(i));
+                    }
+                } catch (Exception e) {
+                    ConsoleUtil.pushLog(infinityTaskRunThread.getLogWriter(), "发送异常：" + ExceptionUtils.getStackTrace(e));
+                    for (String[] msgData : batch) {
+                        infinityTaskRunThread.increaseFail();
+                        infinityTaskRunThread.sendFailList.add(msgData);
+                        infinityTaskRunThread.increaseProcessed();
+                    }
+                }
             }
-            // 已处理+1
-            infinityTaskRunThread.increaseProcessed();
+        } finally {
+            infinityTaskRunThread.activeThreadConcurrentLinkedQueue.remove(workerName);
+            infinityTaskRunThread.threadStatusMap.put(workerName, false);
         }
-        infinityTaskRunThread.activeThreadConcurrentLinkedQueue.remove(workerName);
-        infinityTaskRunThread.threadStatusMap.put(workerName, false);
+    }
+
+    private void recordResult(String[] msgData, SendResult sendResult) {
+        if (sendResult.isSuccess()) {
+            infinityTaskRunThread.increaseSuccess();
+            infinityTaskRunThread.sendSuccessList.add(msgData);
+        } else {
+            infinityTaskRunThread.increaseFail();
+            infinityTaskRunThread.sendFailList.add(msgData);
+            ConsoleUtil.pushLog(infinityTaskRunThread.getLogWriter(), "发送失败:" + sendResult.getInfo() + ";msgData:" + JSONUtil.toJsonStr(msgData));
+        }
+        infinityTaskRunThread.increaseProcessed();
     }
 }

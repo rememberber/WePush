@@ -18,6 +18,7 @@ import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.importway.*;
 import com.fangxuele.tool.push.ui.form.TaskForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
+import com.fangxuele.tool.push.util.HttpClientRegistry;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
@@ -139,6 +140,8 @@ public class TaskRunThread extends Thread {
 
     private TMsg tMsg;
 
+    private HttpClientRegistry.MetricsSnapshot httpMetricsStart;
+
     private String logFilePath;
 
     private BufferedWriter logWriter;
@@ -179,6 +182,7 @@ public class TaskRunThread extends Thread {
         ConsoleUtil.pushLog(logWriter, "推送开始……");
         // 消息数据分片以及线程纷发
         tMsg = msgMapper.selectByPrimaryKey(tTask.getMessageId());
+        httpMetricsStart = HttpClientRegistry.snapshotAccount(tMsg.getAccountId());
         shardingAndMsgThread(tMsg);
 
         taskRunThreadMap.put(taskHis.getId(), this);
@@ -350,6 +354,11 @@ public class TaskRunThread extends Thread {
                     logger.error(e);
                 }
 
+                String metrics = HttpClientRegistry.formatAccountDelta(tMsg.getAccountId(), httpMetricsStart);
+                if (!metrics.isEmpty()) {
+                    ConsoleUtil.pushLog(logWriter, metrics);
+                }
+
                 // 关闭logWriter
                 if (logWriter != null) {
                     try {
@@ -431,6 +440,7 @@ public class TaskRunThread extends Thread {
         sendFailList = Collections.synchronizedList(new ArrayList<>());
         startTime = 0L;
         endTime = 0;
+        httpMetricsStart = null;
     }
 
     private void savePushData() throws IOException {

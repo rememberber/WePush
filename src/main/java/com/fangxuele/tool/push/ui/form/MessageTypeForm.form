@@ -19,7 +19,7 @@
         </properties>
         <border type="empty"/>
         <children>
-          <grid id="c7ec0" binding="msgTypeListPanel" layout-manager="GridLayoutManager" row-count="24" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="c7ec0" binding="msgTypeListPanel" layout-manager="GridLayoutManager" row-count="25" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="10" left="0" bottom="0" right="0"/>
             <constraints/>
             <properties>
@@ -247,6 +247,15 @@
                 </constraints>
                 <properties>
                   <text value="小程序-统一服务消息（BETA）"/>
+                </properties>
+              </component>
+              <component id="feishuBot" class="javax.swing.JRadioButton" binding="feishuRadioButton">
+                <constraints>
+                  <grid row="24" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <enabled value="true"/>
+                  <text value="飞书机器人"/>
                 </properties>
               </component>
             </children>

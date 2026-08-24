@@ -7,25 +7,17 @@ import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.dao.TMsgMapper;
 import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.msgmaker.LuosimaoMsgMaker;
+import com.fangxuele.tool.push.util.HttpClientRegistry;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.OkHttpRequestUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.binary.Base64;
+import okhttp3.Credentials;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
-
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * <pre>
@@ -43,7 +35,7 @@ public class LuosimaoMsgSender implements IMsgSender {
      */
     private static final String SEND_URL = "https://sms-api.luosimao.com/v1/send.json";
 
-    private CloseableHttpClient closeableHttpClient;
+    private final OkHttpClient httpClient;
 
     private LuosimaoMsgMaker luosimaoMsgMaker;
 
@@ -63,12 +55,12 @@ public class LuosimaoMsgSender implements IMsgSender {
         String accountConfig = tAccount.getAccountConfig();
         luosimaoAccountConfig = JSON.parseObject(accountConfig, LuosimaoAccountConfig.class);
 
-        closeableHttpClient = HttpClients.createDefault();
+        httpClient = HttpClientRegistry.get(MessageTypeEnum.LUOSIMAO_CODE, tMsg.getAccountId());
     }
 
-    public static void removeAccount(Integer account1Id) {
-
-        // do nothing
+    public static void removeAccount(Integer accountId) {
+        HttpClientRegistry.invalidate(MessageTypeEnum.LUOSIMAO_CODE, accountId);
+        ProviderTrafficController.invalidate(MessageTypeEnum.LUOSIMAO_CODE, accountId);
     }
 
     @Override
@@ -84,24 +76,16 @@ public class LuosimaoMsgSender implements IMsgSender {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
-                List<NameValuePair> keyValues = new ArrayList<>();
-                keyValues.add(new BasicNameValuePair("mobile", mobile));
-                keyValues.add(new BasicNameValuePair("message", message));
-                String body = URLEncodedUtils.format(keyValues, Charset.forName("UTF-8"));
-
-                // HTTP Basic Auth，用户名固定为api，密码为API KEY
-                String auth = "api:" + luosimaoAccountConfig.getApiKey();
-                String authorization = "Basic " + Base64.encodeBase64String(auth.getBytes(Charset.forName("UTF-8")));
-
-                HttpResponse response = closeableHttpClient.execute(RequestBuilder.create("POST")
-                        .setUri(SEND_URL)
-                        .addHeader(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=utf-8")
-                        .addHeader(HttpHeaders.AUTHORIZATION, authorization)
-                        .setEntity(new StringEntity(body, Charset.forName("UTF-8"))).build());
-
-                String responseBody = EntityUtils.toString(response.getEntity(), "UTF-8");
+                Request request = new Request.Builder().url(SEND_URL)
+                        .header("Authorization", Credentials.basic("api", luosimaoAccountConfig.getApiKey()))
+                        .post(new FormBody.Builder().add("mobile", mobile).add("message", message).build())
+                        .build();
+                OkHttpRequestUtil.ResponseData response = OkHttpRequestUtil.execute(httpClient, request);
+                String responseBody = response.body();
                 JSONObject result = JSON.parseObject(responseBody);
-                if (result != null && result.getIntValue("error") == 0) {
+                sendResult.setHttpStatus(response.statusCode());
+                sendResult.setRetryAfterMillis(response.retryAfterMillis());
+                if (response.isSuccessful() && result != null && result.getIntValue("error") == 0) {
                     sendResult.setSuccess(true);
                 } else {
                     sendResult.setSuccess(false);

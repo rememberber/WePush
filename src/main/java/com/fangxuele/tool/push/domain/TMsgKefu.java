@@ -26,6 +26,12 @@ public class TMsgKefu {
 
     private String thumbMediaId;
 
+    private String mediaId;
+
+    private String musicUrl;
+
+    private String hqMusicUrl;
+
     public String getKefuMsgType() {
         return kefuMsgType;
     }
@@ -120,5 +126,29 @@ public class TMsgKefu {
 
     public void setThumbMediaId(String thumbMediaId) {
         this.thumbMediaId = thumbMediaId == null ? null : thumbMediaId.trim();
+    }
+
+    public String getMediaId() {
+        return mediaId;
+    }
+
+    public void setMediaId(String mediaId) {
+        this.mediaId = mediaId == null ? null : mediaId.trim();
+    }
+
+    public String getMusicUrl() {
+        return musicUrl;
+    }
+
+    public void setMusicUrl(String musicUrl) {
+        this.musicUrl = musicUrl == null ? null : musicUrl.trim();
+    }
+
+    public String getHqMusicUrl() {
+        return hqMusicUrl;
+    }
+
+    public void setHqMusicUrl(String hqMusicUrl) {
+        this.hqMusicUrl = hqMusicUrl == null ? null : hqMusicUrl.trim();
     }
 }

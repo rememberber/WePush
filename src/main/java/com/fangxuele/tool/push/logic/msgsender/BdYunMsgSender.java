@@ -7,28 +7,28 @@ import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.dao.TMsgMapper;
 import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.msgmaker.BdYunMsgMaker;
+import com.fangxuele.tool.push.util.HttpClientRegistry;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.OkHttpRequestUtil;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.SimpleTimeZone;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <pre>
@@ -47,7 +47,7 @@ public class BdYunMsgSender implements IMsgSender {
      */
     private static final String SEND_PATH = "/bce/v2/message";
 
-    private CloseableHttpClient closeableHttpClient;
+    private final OkHttpClient httpClient;
 
     private BdYunMsgMaker bdYunMsgMaker;
 
@@ -56,7 +56,7 @@ public class BdYunMsgSender implements IMsgSender {
 
     private Integer dryRun;
 
-    private static Map<Integer, BdYunAccountConfig> accountConfigMap = new HashMap<>();
+    private static final Map<Integer, BdYunAccountConfig> accountConfigMap = new ConcurrentHashMap<>();
 
     private BdYunAccountConfig bdYunAccountConfig;
 
@@ -66,11 +66,13 @@ public class BdYunMsgSender implements IMsgSender {
         bdYunAccountConfig = getAccountConfig(tMsg.getAccountId());
         this.dryRun = dryRun;
 
-        closeableHttpClient = HttpClients.createDefault();
+        httpClient = HttpClientRegistry.get(MessageTypeEnum.BD_YUN_CODE, tMsg.getAccountId());
     }
 
     public static void removeAccount(Integer accountId) {
         accountConfigMap.remove(accountId);
+        HttpClientRegistry.invalidate(MessageTypeEnum.BD_YUN_CODE, accountId);
+        ProviderTrafficController.invalidate(MessageTypeEnum.BD_YUN_CODE, accountId);
     }
 
     @Override
@@ -116,17 +118,18 @@ public class BdYunMsgSender implements IMsgSender {
 
                 String authorization = authStringPrefix + "/host/" + signature;
 
-                HttpResponse response = closeableHttpClient.execute(RequestBuilder.create("POST")
-                        .setUri(scheme + "://" + host + SEND_PATH)
-                        .addHeader(HttpHeaders.HOST, host)
-                        .addHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-                        .addHeader("x-bce-date", timestamp)
-                        .addHeader(HttpHeaders.AUTHORIZATION, authorization)
-                        .setEntity(new StringEntity(payload, Charset.forName("UTF-8"))).build());
-
-                String responseBody = EntityUtils.toString(response.getEntity(), "UTF-8");
+                Request request = new Request.Builder().url(scheme + "://" + host + SEND_PATH)
+                        .header("Host", host)
+                        .header("x-bce-date", timestamp)
+                        .header("Authorization", authorization)
+                        .post(RequestBody.create(payload, MediaType.get("application/json; charset=utf-8")))
+                        .build();
+                OkHttpRequestUtil.ResponseData response = OkHttpRequestUtil.execute(httpClient, request);
+                String responseBody = response.body();
                 JSONObject result = StringUtils.isBlank(responseBody) ? null : JSON.parseObject(responseBody);
-                if (result != null && result.getBooleanValue("success")) {
+                sendResult.setHttpStatus(response.statusCode());
+                sendResult.setRetryAfterMillis(response.retryAfterMillis());
+                if (response.isSuccessful() && result != null && result.getBooleanValue("success")) {
                     sendResult.setSuccess(true);
                 } else {
                     sendResult.setSuccess(false);
@@ -149,16 +152,11 @@ public class BdYunMsgSender implements IMsgSender {
     }
 
     private BdYunAccountConfig getAccountConfig(Integer accountId) {
-        if (accountConfigMap.containsKey(accountId)) {
-            return accountConfigMap.get(accountId);
-        } else {
+        return accountConfigMap.computeIfAbsent(accountId, ignored -> {
             TAccount tAccount = accountMapper.selectByPrimaryKey(accountId);
             String accountConfig = tAccount.getAccountConfig();
-            BdYunAccountConfig bdYunAccountConfig = JSON.parseObject(accountConfig, BdYunAccountConfig.class);
-
-            accountConfigMap.put(accountId, bdYunAccountConfig);
-            return bdYunAccountConfig;
-        }
+            return JSON.parseObject(accountConfig, BdYunAccountConfig.class);
+        });
     }
 
     /**

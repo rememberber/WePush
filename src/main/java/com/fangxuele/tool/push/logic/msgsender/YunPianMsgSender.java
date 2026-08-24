@@ -7,23 +7,19 @@ import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.dao.TMsgMapper;
 import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.msgmaker.YunPianMsgMaker;
+import com.fangxuele.tool.push.util.HttpClientRegistry;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.OkHttpRequestUtil;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-
-import java.net.URLEncoder;
-import java.nio.charset.Charset;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <pre>
@@ -41,7 +37,7 @@ public class YunPianMsgSender implements IMsgSender {
      */
     private static final String SEND_URL = "https://sms.yunpian.com/v2/sms/single_send.json";
 
-    private CloseableHttpClient closeableHttpClient;
+    private final OkHttpClient httpClient;
 
     private YunPianMsgMaker yunPianMsgMaker;
 
@@ -52,7 +48,7 @@ public class YunPianMsgSender implements IMsgSender {
 
     private String apiKey;
 
-    private static Map<Integer, String> apiKeyMap = new HashMap<>();
+    private static final Map<Integer, String> apiKeyMap = new ConcurrentHashMap<>();
 
 
     public YunPianMsgSender(Integer msgId, Integer dryRun) {
@@ -61,11 +57,13 @@ public class YunPianMsgSender implements IMsgSender {
         apiKey = getApiKey(tMsg.getAccountId());
         this.dryRun = dryRun;
 
-        closeableHttpClient = HttpClients.createDefault();
+        httpClient = HttpClientRegistry.get(MessageTypeEnum.YUN_PIAN_CODE, tMsg.getAccountId());
     }
 
     public static void removeAccount(Integer account1Id) {
         apiKeyMap.remove(account1Id);
+        HttpClientRegistry.invalidate(MessageTypeEnum.YUN_PIAN_CODE, account1Id);
+        ProviderTrafficController.invalidate(MessageTypeEnum.YUN_PIAN_CODE, account1Id);
     }
 
 
@@ -80,17 +78,15 @@ public class YunPianMsgSender implements IMsgSender {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
-                String body = "apikey=" + URLEncoder.encode(apiKey, "UTF-8")
-                        + "&mobile=" + URLEncoder.encode(telNum, "UTF-8")
-                        + "&text=" + URLEncoder.encode(text, "UTF-8");
-
-                HttpResponse response = closeableHttpClient.execute(RequestBuilder.create("POST")
-                        .setUri(SEND_URL)
-                        .setEntity(new StringEntity(body, ContentType.APPLICATION_FORM_URLENCODED.withCharset(Charset.forName("UTF-8")))).build());
-
-                String responseBody = EntityUtils.toString(response.getEntity(), "UTF-8");
+                Request request = new Request.Builder().url(SEND_URL)
+                        .post(new FormBody.Builder().add("apikey", apiKey).add("mobile", telNum).add("text", text).build())
+                        .build();
+                OkHttpRequestUtil.ResponseData response = OkHttpRequestUtil.execute(httpClient, request);
+                String responseBody = response.body();
                 JSONObject result = StringUtils.isBlank(responseBody) ? null : JSON.parseObject(responseBody);
-                if (result != null && result.getIntValue("code") == 0) {
+                sendResult.setHttpStatus(response.statusCode());
+                sendResult.setRetryAfterMillis(response.retryAfterMillis());
+                if (response.isSuccessful() && result != null && result.getIntValue("code") == 0) {
                     sendResult.setSuccess(true);
                 } else {
                     sendResult.setSuccess(false);
@@ -113,18 +109,12 @@ public class YunPianMsgSender implements IMsgSender {
     }
 
     private String getApiKey(Integer accountId) {
-        if (apiKeyMap.containsKey(accountId)) {
-            return apiKeyMap.get(accountId);
-        } else {
+        return apiKeyMap.computeIfAbsent(accountId, ignored -> {
             TAccount tAccount = accountMapper.selectByPrimaryKey(accountId);
             String accountConfig = tAccount.getAccountConfig();
             YunPianAccountConfig yunPianAccountConfig = JSON.parseObject(accountConfig, YunPianAccountConfig.class);
-
-            String apiKey = yunPianAccountConfig.getApiKey();
-
-            apiKeyMap.put(accountId, apiKey);
-            return apiKey;
-        }
+            return yunPianAccountConfig.getApiKey();
+        });
 
     }
 }

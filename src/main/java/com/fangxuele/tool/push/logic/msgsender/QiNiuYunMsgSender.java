@@ -8,25 +8,25 @@ import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.dao.TMsgMapper;
 import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.msgmaker.QiNiuYunMsgMaker;
+import com.fangxuele.tool.push.util.HttpClientRegistry;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.OkHttpRequestUtil;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 
 import java.nio.charset.Charset;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <pre>
@@ -44,7 +44,7 @@ public class QiNiuYunMsgSender implements IMsgSender {
      */
     private static final String SEND_URL = "https://sms.qiniuapi.com/v1/message";
 
-    private CloseableHttpClient closeableHttpClient;
+    private final OkHttpClient httpClient;
 
     private QiNiuYunMsgMaker qiNiuYunMsgMaker;
 
@@ -53,7 +53,7 @@ public class QiNiuYunMsgSender implements IMsgSender {
 
     private Integer dryRun;
 
-    private static Map<Integer, QiniuYunAccountConfig> accountConfigMap = new HashMap<>();
+    private static final Map<Integer, QiniuYunAccountConfig> accountConfigMap = new ConcurrentHashMap<>();
 
     private QiniuYunAccountConfig qiniuYunAccountConfig;
 
@@ -63,11 +63,13 @@ public class QiNiuYunMsgSender implements IMsgSender {
         qiniuYunAccountConfig = getAccountConfig(tMsg.getAccountId());
         this.dryRun = dryRun;
 
-        closeableHttpClient = HttpClients.createDefault();
+        httpClient = HttpClientRegistry.get(MessageTypeEnum.QI_NIU_YUN_CODE, tMsg.getAccountId());
     }
 
     public static void removeAccount(Integer account1Id) {
         accountConfigMap.remove(account1Id);
+        HttpClientRegistry.invalidate(MessageTypeEnum.QI_NIU_YUN_CODE, account1Id);
+        ProviderTrafficController.invalidate(MessageTypeEnum.QI_NIU_YUN_CODE, account1Id);
     }
 
     @Override
@@ -99,15 +101,15 @@ public class QiNiuYunMsgSender implements IMsgSender {
                         .hmac(signingStr.getBytes(Charset.forName("UTF-8")));
                 String authorization = "Qiniu " + qiniuYunAccountConfig.getAccessKey() + ":" + Base64.encodeBase64URLSafeString(sign);
 
-                HttpResponse response = closeableHttpClient.execute(RequestBuilder.create("POST")
-                        .setUri(SEND_URL)
-                        .addHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-                        .addHeader(HttpHeaders.AUTHORIZATION, authorization)
-                        .setEntity(new StringEntity(body, Charset.forName("UTF-8"))).build());
-
-                String responseBody = EntityUtils.toString(response.getEntity(), "UTF-8");
-                int statusCode = response.getStatusLine().getStatusCode();
-                if (statusCode == 200 && !responseBody.contains("error")) {
+                Request request = new Request.Builder().url(SEND_URL)
+                        .header("Authorization", authorization)
+                        .post(RequestBody.create(body, MediaType.get("application/json")))
+                        .build();
+                OkHttpRequestUtil.ResponseData response = OkHttpRequestUtil.execute(httpClient, request);
+                String responseBody = response.body();
+                sendResult.setHttpStatus(response.statusCode());
+                sendResult.setRetryAfterMillis(response.retryAfterMillis());
+                if (response.statusCode() == 200 && !responseBody.contains("error")) {
                     sendResult.setSuccess(true);
                 } else {
                     sendResult.setSuccess(false);
@@ -130,16 +132,11 @@ public class QiNiuYunMsgSender implements IMsgSender {
     }
 
     private QiniuYunAccountConfig getAccountConfig(Integer accountId) {
-        if (accountConfigMap.containsKey(accountId)) {
-            return accountConfigMap.get(accountId);
-        } else {
+        return accountConfigMap.computeIfAbsent(accountId, ignored -> {
             TAccount tAccount = accountMapper.selectByPrimaryKey(accountId);
             String accountConfig = tAccount.getAccountConfig();
-            QiniuYunAccountConfig qiniuYunAccountConfig = JSON.parseObject(accountConfig, QiniuYunAccountConfig.class);
-
-            accountConfigMap.put(accountId, qiniuYunAccountConfig);
-            return qiniuYunAccountConfig;
-        }
+            return JSON.parseObject(accountConfig, QiniuYunAccountConfig.class);
+        });
 
     }
 }

@@ -7,28 +7,22 @@ import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.dao.TMsgMapper;
 import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.msgmaker.HwYunMsgMaker;
+import com.fangxuele.tool.push.util.HttpClientRegistry;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.OkHttpRequestUtil;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.ssl.SSLContextBuilder;
 
-import java.nio.charset.Charset;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -43,10 +37,7 @@ import java.util.*;
  */
 @Slf4j
 public class HwYunMsgSender implements IMsgSender {
-    /**
-     * CloseableHttpClient
-     */
-    private CloseableHttpClient closeableHttpClient;
+    private final OkHttpClient httpClient;
 
     /**
      * 无需修改,用于格式化鉴权头域,给"X-WSSE"参数赋值
@@ -75,12 +66,13 @@ public class HwYunMsgSender implements IMsgSender {
         String accountConfig = tAccount.getAccountConfig();
         hwYunAccountConfig = JSON.parseObject(accountConfig, HwYunAccountConfig.class);
 
-        closeableHttpClient = getHttpClient();
+        // 保留历史兼容行为：华为云部分私有接入点使用自签证书。
+        httpClient = HttpClientRegistry.getInsecure(MessageTypeEnum.HW_YUN_CODE, tMsg.getAccountId());
     }
 
-    public static void removeAccount(Integer account1Id) {
-
-        // do nothing
+    public static void removeAccount(Integer accountId) {
+        HttpClientRegistry.invalidate(MessageTypeEnum.HW_YUN_CODE, accountId);
+        ProviderTrafficController.invalidate(MessageTypeEnum.HW_YUN_CODE, accountId);
     }
 
     @Override
@@ -123,21 +115,19 @@ public class HwYunMsgSender implements IMsgSender {
                     return sendResult;
                 }
 
-                HttpResponse response = closeableHttpClient.execute(RequestBuilder.create("POST")
-                        .setUri(url)
-                        .addHeader(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded")
-                        .addHeader(HttpHeaders.AUTHORIZATION, AUTH_HEADER_VALUE)
-                        .addHeader("X-WSSE", wsseHeader)
-                        .setEntity(new StringEntity(body)).build());
-
-//                System.out.println(response.toString()); //打印响应头域信息
-//                System.out.println(EntityUtils.toString(response.getEntity())); //打印响应消息实体
-//                if (result.result == 0) {
-                sendResult.setSuccess(true);
-//                } else {
-//                    sendResult.setSuccess(false);
-//                    sendResult.setInfo(result.toString());
-//                }
+                Request request = new Request.Builder().url(url)
+                        .header("Authorization", AUTH_HEADER_VALUE)
+                        .header("X-WSSE", wsseHeader)
+                        .post(RequestBody.create(body, MediaType.get("application/x-www-form-urlencoded")))
+                        .build();
+                OkHttpRequestUtil.ResponseData response = OkHttpRequestUtil.execute(httpClient, request);
+                sendResult.setHttpStatus(response.statusCode());
+                sendResult.setRetryAfterMillis(response.retryAfterMillis());
+                sendResult.setSuccess(response.isSuccessful());
+                sendResult.setInfo(response.body());
+                if (!response.isSuccessful()) {
+                    log.error(response.body());
+                }
             }
         } catch (Exception e) {
             sendResult.setSuccess(false);
@@ -151,31 +141,6 @@ public class HwYunMsgSender implements IMsgSender {
     @Override
     public SendResult asyncSend(String[] msgData) {
         return null;
-    }
-
-    /**
-     * 获取CloseableHttpClient
-     *
-     * @return CloseableHttpClient
-     */
-    private CloseableHttpClient getHttpClient() {
-        if (closeableHttpClient == null) {
-            synchronized (HwYunMsgSender.class) {
-                if (closeableHttpClient == null) {
-                    try {
-                        // 为防止因HTTPS证书认证失败造成API调用失败,需要先忽略证书信任问题
-                        closeableHttpClient = HttpClients.custom()
-                                .setSSLContext(new SSLContextBuilder().loadTrustMaterial(null,
-                                        (x509CertChain, authType) -> true).build())
-                                .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
-                                .build();
-                    } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-        return closeableHttpClient;
     }
 
     /**
@@ -196,22 +161,27 @@ public class HwYunMsgSender implements IMsgSender {
             System.out.println("buildRequestBody(): sender, receiver or templateId is null.");
             return null;
         }
-        List<NameValuePair> keyValues = new ArrayList<>();
+        List<String> keyValues = new ArrayList<>();
 
-        keyValues.add(new BasicNameValuePair("from", sender));
-        keyValues.add(new BasicNameValuePair("to", receiver));
-        keyValues.add(new BasicNameValuePair("templateId", templateId));
+        keyValues.add(formParam("from", sender));
+        keyValues.add(formParam("to", receiver));
+        keyValues.add(formParam("templateId", templateId));
         if (null != templateParas && !templateParas.isEmpty()) {
-            keyValues.add(new BasicNameValuePair("templateParas", templateParas));
+            keyValues.add(formParam("templateParas", templateParas));
         }
         if (null != statusCallbackUrl && !statusCallbackUrl.isEmpty()) {
-            keyValues.add(new BasicNameValuePair("statusCallback", statusCallbackUrl));
+            keyValues.add(formParam("statusCallback", statusCallbackUrl));
         }
         if (null != signature && !signature.isEmpty()) {
-            keyValues.add(new BasicNameValuePair("signature", signature));
+            keyValues.add(formParam("signature", signature));
         }
 
-        return URLEncodedUtils.format(keyValues, Charset.forName("UTF-8"));
+        return String.join("&", keyValues);
+    }
+
+    private static String formParam(String name, String value) {
+        return URLEncoder.encode(name, StandardCharsets.UTF_8) + "="
+                + URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 
     /**

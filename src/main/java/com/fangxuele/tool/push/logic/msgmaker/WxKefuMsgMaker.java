@@ -5,6 +5,7 @@ import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.domain.TMsgKefu;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.VelocityContext;
 
 /**
@@ -35,6 +36,12 @@ public class WxKefuMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
     private String msgKefuThumbMediaId;
 
+    private String msgKefuMediaId;
+
+    private String msgKefuMusicUrl;
+
+    private String msgKefuHqMusicUrl;
+
     public WxKefuMsgMaker(TMsg tMsg) {
         TMsgKefu tMsgKefu = JSON.parseObject(tMsg.getContent(), TMsgKefu.class);
 
@@ -47,6 +54,9 @@ public class WxKefuMsgMaker extends BaseMsgMaker implements IMsgMaker {
         msgKefuAppid = tMsgKefu.getAppId();
         msgKefuPagepath = tMsgKefu.getPagePath();
         msgKefuThumbMediaId = tMsgKefu.getThumbMediaId();
+        msgKefuMediaId = tMsgKefu.getMediaId();
+        msgKefuMusicUrl = tMsgKefu.getMusicUrl();
+        msgKefuHqMusicUrl = tMsgKefu.getHqMusicUrl();
     }
 
     /**
@@ -82,13 +92,55 @@ public class WxKefuMsgMaker extends BaseMsgMaker implements IMsgMaker {
         } else if ("文本消息".equals(msgKefuMsgType)) {
             String content = TemplateUtil.evaluate(msgKefuMsgContent, velocityContext);
             kefuMessage = WxMpKefuMessage.TEXT().content(content).build();
+        } else if ("图片消息".equals(msgKefuMsgType)) {
+            String mediaId = evaluateRequired(msgKefuMediaId, "图片媒体ID", velocityContext);
+            kefuMessage = WxMpKefuMessage.IMAGE().mediaId(mediaId).build();
+        } else if ("语音消息".equals(msgKefuMsgType)) {
+            String mediaId = evaluateRequired(msgKefuMediaId, "语音媒体ID", velocityContext);
+            kefuMessage = WxMpKefuMessage.VOICE().mediaId(mediaId).build();
+        } else if ("视频消息".equals(msgKefuMsgType)) {
+            String mediaId = evaluateRequired(msgKefuMediaId, "视频媒体ID", velocityContext);
+            String thumbMediaId = evaluateRequired(msgKefuThumbMediaId, "视频缩略图媒体ID", velocityContext);
+            String title = evaluateOptional(msgKefuMsgTitle, velocityContext);
+            String description = evaluateOptional(msgKefuDesc, velocityContext);
+            kefuMessage = WxMpKefuMessage.VIDEO().mediaId(mediaId).thumbMediaId(thumbMediaId).build();
+            if (StringUtils.isNotBlank(title)) {
+                kefuMessage.setTitle(title);
+            }
+            if (StringUtils.isNotBlank(description)) {
+                kefuMessage.setDescription(description);
+            }
+        } else if ("音乐消息".equals(msgKefuMsgType)) {
+            String title = evaluateRequired(msgKefuMsgTitle, "音乐标题", velocityContext);
+            String description = evaluateRequired(msgKefuDesc, "音乐描述", velocityContext);
+            String musicUrl = evaluateRequired(msgKefuMusicUrl, "音乐链接", velocityContext);
+            String hqMusicUrl = evaluateOptional(msgKefuHqMusicUrl, velocityContext);
+            String thumbMediaId = evaluateRequired(msgKefuThumbMediaId, "音乐缩略图媒体ID", velocityContext);
+            kefuMessage = WxMpKefuMessage.MUSIC().title(title).description(description)
+                    .musicUrl(musicUrl).thumbMediaId(thumbMediaId).build();
+            if (StringUtils.isNotBlank(hqMusicUrl)) {
+                kefuMessage.setHqMusicUrl(hqMusicUrl);
+            }
         } else if ("小程序卡片消息".equals(msgKefuMsgType)) {
-            String title = TemplateUtil.evaluate(msgKefuMsgTitle, velocityContext);
-            String pagePath = TemplateUtil.evaluate(msgKefuPagepath, velocityContext);
-            String thumbMediaId = TemplateUtil.evaluate(msgKefuThumbMediaId, velocityContext);
-            kefuMessage = WxMpKefuMessage.MINIPROGRAMPAGE().title(title).appId(msgKefuAppid).pagePath(pagePath).thumbMediaId(thumbMediaId).build();
+            String title = evaluateRequired(msgKefuMsgTitle, "小程序卡片标题", velocityContext);
+            String appId = evaluateRequired(msgKefuAppid, "小程序AppId", velocityContext);
+            String pagePath = evaluateRequired(msgKefuPagepath, "小程序页面路径", velocityContext);
+            String thumbMediaId = evaluateRequired(msgKefuThumbMediaId, "小程序卡片图片媒体ID", velocityContext);
+            kefuMessage = WxMpKefuMessage.MINIPROGRAMPAGE().title(title).appId(appId).pagePath(pagePath).thumbMediaId(thumbMediaId).build();
         }
 
         return kefuMessage;
+    }
+
+    private static String evaluateRequired(String template, String fieldName, VelocityContext velocityContext) {
+        String value = evaluateOptional(template, velocityContext);
+        if (StringUtils.isBlank(value)) {
+            throw new IllegalArgumentException(fieldName + "不能为空");
+        }
+        return value;
+    }
+
+    private static String evaluateOptional(String template, VelocityContext velocityContext) {
+        return TemplateUtil.evaluate(StringUtils.defaultString(template), velocityContext).trim();
     }
 }

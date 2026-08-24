@@ -73,7 +73,7 @@ public class YunPianAccountForm implements IAccountForm {
 
                 if (existSameAccount) {
                     accountMapper.updateByMsgTypeAndAccountName(tAccount1);
-                    YunPianMsgSender.removeAccount(tAccount1.getId());
+                    YunPianMsgSender.removeAccount(tAccount.getId());
                 } else {
                     tAccount1.setCreateTime(now);
                     accountMapper.insertSelective(tAccount1);

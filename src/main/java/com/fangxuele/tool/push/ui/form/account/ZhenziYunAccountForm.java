@@ -79,7 +79,7 @@ public class ZhenziYunAccountForm implements IAccountForm {
 
                 if (existSameAccount) {
                     accountMapper.updateByMsgTypeAndAccountName(tAccount1);
-                    ZhenziYunMsgSender.removeAccount(tAccount1.getId());
+                    ZhenziYunMsgSender.removeAccount(tAccount.getId());
                 } else {
                     tAccount1.setCreateTime(now);
                     accountMapper.insertSelective(tAccount1);

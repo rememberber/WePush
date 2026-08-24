@@ -59,6 +59,9 @@ public class AccountFormFactory {
             case MessageTypeEnum.DING_CODE:
                 iAccountForm = DingAccountForm.getInstance();
                 break;
+            case MessageTypeEnum.FEISHU_CODE:
+                iAccountForm = FeishuAccountForm.getInstance();
+                break;
             case MessageTypeEnum.BD_YUN_CODE:
                 iAccountForm = BdYunAccountForm.getInstance();
                 break;

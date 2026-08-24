@@ -1,24 +1,27 @@
 package com.fangxuele.tool.push.logic.msgsender;
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
-import cn.binarywang.wx.miniapp.api.impl.WxMaServiceImpl;
+import cn.binarywang.wx.miniapp.api.impl.WxMaServiceOkHttpImpl;
 import cn.binarywang.wx.miniapp.bean.WxMaSubscribeMessage;
 import cn.binarywang.wx.miniapp.config.impl.WxMaDefaultConfigImpl;
 import com.alibaba.fastjson.JSON;
-import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.account.WxMaAccountConfig;
 import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.dao.TMsgMapper;
 import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.msgmaker.WxMaSubscribeMsgMaker;
+import com.fangxuele.tool.push.util.HttpClientRegistry;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import lombok.extern.slf4j.Slf4j;
-import me.chanjar.weixin.common.util.http.apache.DefaultApacheHttpClientBuilder;
+import okhttp3.OkHttpClient;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import java.util.HashMap;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <pre>
@@ -40,7 +43,7 @@ public class WxMaSubscribeMsgSender implements IMsgSender {
 
     private Integer dryRun;
 
-    private static Map<Integer, WxMaService> wxMaServiceMap = new HashMap<>();
+    private static final Map<Integer, WxMaService> wxMaServiceMap = new ConcurrentHashMap<>();
 
     public WxMaSubscribeMsgSender(Integer msgId, Integer dryRun) {
         TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
@@ -51,6 +54,8 @@ public class WxMaSubscribeMsgSender implements IMsgSender {
 
     public static void removeAccount(Integer accountId) {
         wxMaServiceMap.remove(accountId);
+        HttpClientRegistry.invalidateAccount(accountId);
+        ProviderTrafficController.invalidateAccount(accountId);
     }
 
     @Override
@@ -84,9 +89,7 @@ public class WxMaSubscribeMsgSender implements IMsgSender {
     }
 
     public static WxMaService getWxMaService(Integer accountId) {
-        if (wxMaServiceMap.containsKey(accountId)) {
-            return wxMaServiceMap.get(accountId);
-        } else {
+        return wxMaServiceMap.computeIfAbsent(accountId, ignored -> {
             TAccount tAccount = accountMapper.selectByPrimaryKey(accountId);
             String accountConfig = tAccount.getAccountConfig();
             WxMaAccountConfig wxMaAccountConfig = JSON.parseObject(accountConfig, WxMaAccountConfig.class);
@@ -103,30 +106,35 @@ public class WxMaSubscribeMsgSender implements IMsgSender {
                 configStorage.setHttpProxyUsername(wxMaAccountConfig.getMaProxyUserName());
                 configStorage.setHttpProxyPassword(wxMaAccountConfig.getMaProxyPassword());
             }
-            DefaultApacheHttpClientBuilder clientBuilder = DefaultApacheHttpClientBuilder.get();
-            //从连接池获取链接的超时时间(单位ms)
-            clientBuilder.setConnectionRequestTimeout(10000);
-            //建立链接的超时时间(单位ms)
-            clientBuilder.setConnectionTimeout(5000);
-            //连接池socket超时时间(单位ms)
-            clientBuilder.setSoTimeout(5000);
-            //空闲链接的超时时间(单位ms)
-            clientBuilder.setIdleConnTimeout(60000);
-            //空闲链接的检测周期(单位ms)
-            clientBuilder.setCheckWaitTime(60000);
-            //每路最大连接数
-            clientBuilder.setMaxConnPerHost(App.config.getMaxThreads());
-            //连接池最大连接数
-            clientBuilder.setMaxTotalConn(App.config.getMaxThreads());
-            //HttpClient请求时使用的User Agent
-//        clientBuilder.setUserAgent(..)
-            configStorage.setApacheHttpClientBuilder(clientBuilder);
-
-            WxMaService wxMaService = new WxMaServiceImpl();
+            HttpClientRegistry.ClientOptions options = HttpClientRegistry.ClientOptions.defaults();
+            if (wxMaAccountConfig.isMaUseProxy()) {
+                Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(
+                        wxMaAccountConfig.getMaProxyHost(), Integer.parseInt(wxMaAccountConfig.getMaProxyPort())));
+                options = options.withProxy(proxy, wxMaAccountConfig.getMaProxyUserName(),
+                        wxMaAccountConfig.getMaProxyPassword());
+            }
+            OkHttpClient sharedClient = HttpClientRegistry.get(MessageTypeEnum.MA_SUBSCRIBE_CODE, accountId, options);
+            WxMaService wxMaService = new SharedClientWxMaService(sharedClient);
             wxMaService.setWxMaConfig(configStorage);
-
-            wxMaServiceMap.put(accountId, wxMaService);
             return wxMaService;
+        });
+    }
+
+    private static final class SharedClientWxMaService extends WxMaServiceOkHttpImpl {
+        private final OkHttpClient sharedClient;
+
+        private SharedClientWxMaService(OkHttpClient sharedClient) {
+            this.sharedClient = sharedClient;
+        }
+
+        @Override
+        public OkHttpClient getRequestHttpClient() {
+            return sharedClient;
+        }
+
+        @Override
+        public void initHttp() {
+            // 客户端由 HttpClientRegistry 管理，不允许 WxJava 另建连接池。
         }
     }
 }

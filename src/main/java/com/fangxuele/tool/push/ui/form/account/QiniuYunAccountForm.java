@@ -76,7 +76,7 @@ public class QiniuYunAccountForm implements IAccountForm {
 
                 if (existSameAccount) {
                     accountMapper.updateByMsgTypeAndAccountName(tAccount1);
-                    QiNiuYunMsgSender.removeAccount(tAccount1.getId());
+                    QiNiuYunMsgSender.removeAccount(tAccount.getId());
                 } else {
                     tAccount1.setCreateTime(now);
                     accountMapper.insertSelective(tAccount1);

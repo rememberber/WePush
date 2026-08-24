@@ -73,6 +73,9 @@ public class MsgMakerFactory {
             case MessageTypeEnum.DING_CODE:
                 iMsgMaker = new DingMsgMaker(tMsg);
                 break;
+            case MessageTypeEnum.FEISHU_CODE:
+                iMsgMaker = new FeishuMsgMaker(tMsg);
+                break;
             case MessageTypeEnum.BD_YUN_CODE:
                 iMsgMaker = new BdYunMsgMaker(tMsg);
                 break;

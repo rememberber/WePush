@@ -18,6 +18,7 @@ import com.fangxuele.tool.push.ui.UiConsts;
 import com.fangxuele.tool.push.ui.dialog.importway.*;
 import com.fangxuele.tool.push.ui.form.TaskForm;
 import com.fangxuele.tool.push.util.ConsoleUtil;
+import com.fangxuele.tool.push.util.HttpClientRegistry;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.SqliteUtil;
 import com.fangxuele.tool.push.util.SystemUtil;
@@ -156,6 +157,8 @@ public class InfinityTaskRunThread extends Thread {
 
     private TMsg tMsg;
 
+    private HttpClientRegistry.MetricsSnapshot httpMetricsStart;
+
     private String logFilePath;
 
     private BufferedWriter logWriter;
@@ -209,6 +212,7 @@ public class InfinityTaskRunThread extends Thread {
         ConsoleUtil.pushLog(logWriter, "推送过程中可随时拖拽下方滑动条调整线程数量，以达到最佳推送速度。");
         // 虚拟线程并发初始化
         tMsg = msgMapper.selectByPrimaryKey(tTask.getMessageId());
+        httpMetricsStart = HttpClientRegistry.snapshotAccount(tMsg.getAccountId());
 
         maxThreadCount = tTask.getMaxThreadCnt();
         int initThreadCount = tTask.getThreadCnt();
@@ -355,7 +359,7 @@ public class InfinityTaskRunThread extends Thread {
     private void timeMonitor() {
         // 计时
         while (true) {
-            if ((!running && activeThreadConcurrentLinkedQueue.isEmpty()) || toSendConcurrentLinkedQueue.isEmpty()) {
+            if ((!running && activeThreadConcurrentLinkedQueue.isEmpty()) || processedRecords.sum() >= totalRecords) {
                 endTime = System.currentTimeMillis();
                 taskHis.setEndTime(SqliteUtil.nowDateForSqlite());
                 taskHis.setSuccessCnt(successRecords.intValue());
@@ -382,6 +386,11 @@ public class InfinityTaskRunThread extends Thread {
                     logger.error(e);
                 } finally {
                     ConsoleUtil.pushLog(logWriter, "推送结束！");
+                }
+
+                String metrics = HttpClientRegistry.formatAccountDelta(tMsg.getAccountId(), httpMetricsStart);
+                if (!metrics.isEmpty()) {
+                    ConsoleUtil.pushLog(logWriter, metrics);
                 }
 
                 // 关闭logWriter
@@ -588,5 +597,6 @@ public class InfinityTaskRunThread extends Thread {
         sendFailList = Collections.synchronizedList(new ArrayList<>());
         startTime = 0L;
         endTime = 0;
+        httpMetricsStart = null;
     }
 }

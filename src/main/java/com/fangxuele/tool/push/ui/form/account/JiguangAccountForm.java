@@ -76,7 +76,7 @@ public class JiguangAccountForm implements IAccountForm {
 
                 if (existSameAccount) {
                     accountMapper.updateByMsgTypeAndAccountName(tAccount1);
-                    JiguangMsgSender.removeAccount(tAccount1.getId());
+                    JiguangMsgSender.removeAccount(tAccount.getId());
                 } else {
                     tAccount1.setCreateTime(now);
                     accountMapper.insertSelective(tAccount1);
