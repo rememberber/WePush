@@ -188,7 +188,7 @@ public class MessageEditListener {
                     fillParaName = "预览消息用户的邮箱地址";
                     paraDemo = "abc@163.com;def@163.com";
                 } else if (msgType == MessageTypeEnum.WX_CP_CODE) {
-                    fillParaName = "预览消息用户的UserId";
+                    fillParaName = "预览消息用户的UserId（小程序通知消息不支持@all）";
                     paraDemo = "zhoubo;rememberber";
                 } else if (msgType == MessageTypeEnum.HTTP_CODE) {
                     fillParaName = "消息变量(如果是变量消息)";

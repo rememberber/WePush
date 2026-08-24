@@ -8,7 +8,7 @@
     <properties/>
     <border type="none"/>
     <children>
-      <grid id="eafc9" binding="wxCpMsgPanel" layout-manager="GridLayoutManager" row-count="8" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="eafc9" binding="wxCpMsgPanel" layout-manager="GridLayoutManager" row-count="9" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="10" left="8" bottom="0" right="8"/>
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -29,7 +29,7 @@
           </component>
           <vspacer id="ba599">
             <constraints>
-              <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+              <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
             </constraints>
           </vspacer>
           <component id="a26ee" class="javax.swing.JComboBox" binding="msgTypeComboBox">
@@ -42,6 +42,7 @@
                 <item value="文本消息"/>
                 <item value="文本卡片消息"/>
                 <item value="markdown消息"/>
+                <item value="小程序通知消息"/>
               </model>
             </properties>
           </component>
@@ -155,6 +156,14 @@
               <toolTipText value="可不填。默认为“详情”， 不超过4个文字，超过自动截断"/>
             </properties>
           </component>
+          <grid id="wxCpMiniProgram" binding="miniProgramPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
+            <constraints>
+              <grid row="7" column="0" row-span="1" col-span="2" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children/>
+          </grid>
         </children>
       </grid>
     </children>
