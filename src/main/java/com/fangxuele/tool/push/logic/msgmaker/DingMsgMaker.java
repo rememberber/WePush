@@ -59,11 +59,7 @@ public class DingMsgMaker extends BaseMsgMaker implements IMsgMaker {
 
         TMsgDing dingMsg = new TMsgDing();
         VelocityContext velocityContext = getVelocityContext(msgData);
-        if ("markdown消息".equals(msgType)) {
-            dingMsg.setContent(msgContent);
-        } else {
-            dingMsg.setContent(TemplateUtil.evaluate(msgContent, velocityContext));
-        }
+        dingMsg.setContent(TemplateUtil.evaluate(msgContent, velocityContext));
         dingMsg.setMsgTitle(TemplateUtil.evaluate(msgTitle, velocityContext));
         dingMsg.setPicUrl(TemplateUtil.evaluate(picUrl, velocityContext));
         dingMsg.setUrl(TemplateUtil.evaluate(url, velocityContext));
