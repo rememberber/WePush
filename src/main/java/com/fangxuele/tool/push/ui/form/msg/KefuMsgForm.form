@@ -8,7 +8,7 @@
     <properties/>
     <border type="none"/>
     <children>
-      <grid id="eafc9" binding="kefuMsgPanel" layout-manager="GridLayoutManager" row-count="11" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="eafc9" binding="kefuMsgPanel" layout-manager="GridLayoutManager" row-count="12" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="10" left="15" bottom="0" right="0"/>
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -29,7 +29,7 @@
           </component>
           <vspacer id="ba599">
             <constraints>
-              <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+              <grid row="11" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
             </constraints>
           </vspacer>
           <component id="a26ee" class="javax.swing.JComboBox" binding="msgKefuMsgTypeComboBox">
@@ -41,6 +41,9 @@
                 <item value="图文消息"/>
                 <item value="文本消息"/>
                 <item value="图片消息"/>
+                <item value="语音消息"/>
+                <item value="视频消息"/>
+                <item value="音乐消息"/>
                 <item value="小程序卡片消息"/>
               </model>
             </properties>

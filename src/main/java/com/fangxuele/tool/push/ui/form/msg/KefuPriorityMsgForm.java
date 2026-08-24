@@ -52,11 +52,19 @@ public class KefuPriorityMsgForm implements IMsgForm {
             String kefuMsgType = tMsgKefuPriority.getKefuMsgType();
             KefuMsgForm.getInstance().getMsgKefuMsgTypeComboBox().setSelectedItem(kefuMsgType);
             if ("文本消息".equals(kefuMsgType)) {
-                KefuMsgForm.getInstance().getContentTextArea().setText(tMsg.getContent());
+                KefuMsgForm.getInstance().getContentTextArea().setText(tMsgKefuPriority.getContent());
             } else if ("图文消息".equals(kefuMsgType)) {
                 KefuMsgForm.getInstance().getMsgKefuMsgTitleTextField().setText(tMsgKefuPriority.getTitle());
-            } else if ("图片消息".equals(kefuMsgType)) {
+            } else if ("图片消息".equals(kefuMsgType) || "语音消息".equals(kefuMsgType)) {
                 KefuMsgForm.getInstance().getMsgKefuMediaIdTextField().setText(tMsgKefuPriority.getMediaId());
+            } else if ("视频消息".equals(kefuMsgType)) {
+                KefuMsgForm.getInstance().getMsgKefuMediaIdTextField().setText(tMsgKefuPriority.getMediaId());
+                KefuMsgForm.getInstance().getMsgKefuMsgTitleTextField().setText(tMsgKefuPriority.getTitle());
+                KefuMsgForm.getInstance().getMsgKefuThumbMediaIdTextField().setText(tMsgKefuPriority.getThumbMediaId());
+            } else if ("音乐消息".equals(kefuMsgType)) {
+                KefuMsgForm.getInstance().getMsgKefuMsgTitleTextField().setText(tMsgKefuPriority.getTitle());
+                KefuMsgForm.getInstance().getMsgKefuThumbMediaIdTextField().setText(tMsgKefuPriority.getThumbMediaId());
+                KefuMsgForm.getInstance().getMsgKefuHqMusicUrlTextField().setText(tMsgKefuPriority.getHqMusicUrl());
             } else if ("小程序卡片消息".equals(kefuMsgType)) {
                 KefuMsgForm.getInstance().getMsgKefuMsgTitleTextField().setText(tMsgKefuPriority.getTitle());
                 KefuMsgForm.getInstance().getMsgKefuAppidTextField().setText(tMsgKefuPriority.getAppId());
@@ -65,7 +73,8 @@ public class KefuPriorityMsgForm implements IMsgForm {
             }
             KefuMsgForm.getInstance().getMsgKefuPicUrlTextField().setText(tMsgKefuPriority.getImgUrl());
             KefuMsgForm.getInstance().getMsgKefuDescTextField().setText(tMsgKefuPriority.getDescribe());
-            KefuMsgForm.getInstance().getMsgKefuUrlTextField().setText(tMsgKefuPriority.getKefuUrl());
+            KefuMsgForm.getInstance().getMsgKefuUrlTextField().setText("音乐消息".equals(kefuMsgType)
+                    ? tMsgKefuPriority.getMusicUrl() : tMsgKefuPriority.getKefuUrl());
 
             KefuMsgForm.switchKefuMsgType(kefuMsgType);
 
@@ -129,11 +138,12 @@ public class KefuPriorityMsgForm implements IMsgForm {
             String kefuPagePath = KefuMsgForm.getInstance().getMsgKefuPagepathTextField().getText();
             String kefuThumbMediaId = KefuMsgForm.getInstance().getMsgKefuThumbMediaIdTextField().getText();
             String kefuMediaId = KefuMsgForm.getInstance().getMsgKefuMediaIdTextField().getText();
+            String kefuHqMusicUrl = KefuMsgForm.getInstance().getMsgKefuHqMusicUrlTextField().getText();
             String templateMiniAppid = MpTemplateMsgForm.getInstance().getMsgTemplateMiniAppidTextField().getText();
             String templateMiniPagePath = MpTemplateMsgForm.getInstance().getMsgTemplateMiniPagePathTextField().getText();
 
-            KefuMsgForm.validateRequiredFields(kefuMsgType, kefuMsgTitle, kefuAppId, kefuPagePath,
-                    kefuThumbMediaId, kefuMediaId);
+            KefuMsgForm.validateRequiredFields(kefuMsgType, kefuMsgTitle, kefuDesc, kefuAppId, kefuPagePath,
+                    kefuThumbMediaId, kefuMediaId, kefuUrl);
 
             String now = SqliteUtil.nowDateForSqlite();
 
@@ -160,6 +170,10 @@ public class KefuPriorityMsgForm implements IMsgForm {
             tMsgKefuPriority.setPagePath(kefuPagePath);
             tMsgKefuPriority.setThumbMediaId(kefuThumbMediaId);
             tMsgKefuPriority.setMediaId(kefuMediaId);
+            if ("音乐消息".equals(kefuMsgType)) {
+                tMsgKefuPriority.setMusicUrl(kefuUrl);
+                tMsgKefuPriority.setHqMusicUrl(kefuHqMusicUrl);
+            }
 
             // 如果table为空，则初始化
             if (MpTemplateMsgForm.getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {

@@ -33,6 +33,10 @@ public class TMsgKefuPriority {
 
     private String mediaId;
 
+    private String musicUrl;
+
+    private String hqMusicUrl;
+
     private List<TemplateData> templateDataList;
 
     public String getTemplateId() {
@@ -145,6 +149,22 @@ public class TMsgKefuPriority {
 
     public void setMediaId(String mediaId) {
         this.mediaId = mediaId == null ? null : mediaId.trim();
+    }
+
+    public String getMusicUrl() {
+        return musicUrl;
+    }
+
+    public void setMusicUrl(String musicUrl) {
+        this.musicUrl = musicUrl == null ? null : musicUrl.trim();
+    }
+
+    public String getHqMusicUrl() {
+        return hqMusicUrl;
+    }
+
+    public void setHqMusicUrl(String hqMusicUrl) {
+        this.hqMusicUrl = hqMusicUrl == null ? null : hqMusicUrl.trim();
     }
 
     public List<TemplateData> getTemplateDataList() {

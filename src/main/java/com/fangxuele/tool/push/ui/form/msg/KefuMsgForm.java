@@ -1,6 +1,5 @@
 package com.fangxuele.tool.push.ui.form.msg;
 
-import cn.binarywang.wx.miniapp.constant.WxMaConstants;
 import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
@@ -18,6 +17,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import lombok.Getter;
+import me.chanjar.weixin.common.api.WxConsts;
 import me.chanjar.weixin.common.bean.result.WxMediaUploadResult;
 import org.apache.commons.lang3.StringUtils;
 
@@ -68,6 +68,8 @@ public class KefuMsgForm implements IMsgForm {
     private JTextField msgKefuMediaIdTextField;
     private JButton uploadMessageImageButton;
     private JPanel mediaPanel;
+    private JLabel kefuMsgHqMusicUrlLabel;
+    private JTextField msgKefuHqMusicUrlTextField;
 
     private static final Log logger = LogFactory.get();
     private static KefuMsgForm kefuMsgForm;
@@ -75,15 +77,15 @@ public class KefuMsgForm implements IMsgForm {
     private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
 
     public KefuMsgForm() {
-        initImageMediaPanel();
+        initExtendedMediaFields();
         // 客服消息类型切换事件
         msgKefuMsgTypeComboBox.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 switchKefuMsgType(e.getItem().toString());
             }
         });
-        uploadImageButton.addActionListener(e -> uploadImage(msgKefuThumbMediaIdTextField));
-        uploadMessageImageButton.addActionListener(e -> uploadImage(msgKefuMediaIdTextField));
+        uploadImageButton.addActionListener(e -> uploadThumbMedia());
+        uploadMessageImageButton.addActionListener(e -> uploadMainMedia());
     }
 
     @Override
@@ -98,8 +100,16 @@ public class KefuMsgForm implements IMsgForm {
                 getInstance().getContentTextArea().setText(tMsgKefu.getContent());
             } else if ("图文消息".equals(kefuMsgType)) {
                 getInstance().getMsgKefuMsgTitleTextField().setText(tMsgKefu.getTitle());
-            } else if ("图片消息".equals(kefuMsgType)) {
+            } else if ("图片消息".equals(kefuMsgType) || "语音消息".equals(kefuMsgType)) {
                 getInstance().getMsgKefuMediaIdTextField().setText(tMsgKefu.getMediaId());
+            } else if ("视频消息".equals(kefuMsgType)) {
+                getInstance().getMsgKefuMediaIdTextField().setText(tMsgKefu.getMediaId());
+                getInstance().getMsgKefuMsgTitleTextField().setText(tMsgKefu.getTitle());
+                getInstance().getMsgKefuThumbMediaIdTextField().setText(tMsgKefu.getThumbMediaId());
+            } else if ("音乐消息".equals(kefuMsgType)) {
+                getInstance().getMsgKefuMsgTitleTextField().setText(tMsgKefu.getTitle());
+                getInstance().getMsgKefuThumbMediaIdTextField().setText(tMsgKefu.getThumbMediaId());
+                getInstance().getMsgKefuHqMusicUrlTextField().setText(tMsgKefu.getHqMusicUrl());
             } else if ("小程序卡片消息".equals(kefuMsgType)) {
                 getInstance().getMsgKefuMsgTitleTextField().setText(tMsgKefu.getTitle());
                 getInstance().getMsgKefuAppidTextField().setText(tMsgKefu.getAppId());
@@ -108,7 +118,8 @@ public class KefuMsgForm implements IMsgForm {
             }
             getInstance().getMsgKefuPicUrlTextField().setText(tMsgKefu.getImgUrl());
             getInstance().getMsgKefuDescTextField().setText(tMsgKefu.getDescribe());
-            getInstance().getMsgKefuUrlTextField().setText(tMsgKefu.getUrl());
+            getInstance().getMsgKefuUrlTextField().setText("音乐消息".equals(kefuMsgType)
+                    ? tMsgKefu.getMusicUrl() : tMsgKefu.getUrl());
 
             switchKefuMsgType(kefuMsgType);
 
@@ -148,9 +159,10 @@ public class KefuMsgForm implements IMsgForm {
             String kefuPagePath = getInstance().getMsgKefuPagepathTextField().getText();
             String kefuThumbMediaId = getInstance().getMsgKefuThumbMediaIdTextField().getText();
             String kefuMediaId = getInstance().getMsgKefuMediaIdTextField().getText();
+            String kefuHqMusicUrl = getInstance().getMsgKefuHqMusicUrlTextField().getText();
 
-            validateRequiredFields(kefuMsgType, kefuMsgTitle, kefuAppId, kefuPagePath,
-                    kefuThumbMediaId, kefuMediaId);
+            validateRequiredFields(kefuMsgType, kefuMsgTitle, kefuDesc, kefuAppId, kefuPagePath,
+                    kefuThumbMediaId, kefuMediaId, kefuUrl);
 
             String now = SqliteUtil.nowDateForSqlite();
 
@@ -170,6 +182,10 @@ public class KefuMsgForm implements IMsgForm {
             tMsgKefu.setPagePath(kefuPagePath);
             tMsgKefu.setThumbMediaId(kefuThumbMediaId);
             tMsgKefu.setMediaId(kefuMediaId);
+            if ("音乐消息".equals(kefuMsgType)) {
+                tMsgKefu.setMusicUrl(kefuUrl);
+                tMsgKefu.setHqMusicUrl(kefuHqMusicUrl);
+            }
 
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
             tMsgKefu.setPreviewUser(messageEditForm.getPreviewUserField().getText());
@@ -219,6 +235,11 @@ public class KefuMsgForm implements IMsgForm {
         getInstance().getThumbMediaPanel().setVisible(false);
         getInstance().getKefuMsgMediaIdLabel().setVisible(false);
         getInstance().getMediaPanel().setVisible(false);
+        getInstance().getKefuMsgHqMusicUrlLabel().setVisible(false);
+        getInstance().getMsgKefuHqMusicUrlTextField().setVisible(false);
+        getInstance().getKefuMsgUrlLabel().setText("跳转URL");
+        getInstance().getKefuMsgThumbMediaIdLabel().setText("卡片图片的媒体ID");
+        getInstance().getUploadImageButton().setText("上传图片");
         switch (msgType) {
             case "文本消息":
                 getInstance().getContentLabel().setVisible(true);
@@ -235,8 +256,30 @@ public class KefuMsgForm implements IMsgForm {
                 getInstance().getMsgKefuMsgTitleTextField().setVisible(true);
                 break;
             case "图片消息":
-                getInstance().getKefuMsgMediaIdLabel().setVisible(true);
-                getInstance().getMediaPanel().setVisible(true);
+                showMainMediaField("图片媒体ID", "上传图片");
+                break;
+            case "语音消息":
+                showMainMediaField("语音媒体ID", "上传语音");
+                break;
+            case "视频消息":
+                showMainMediaField("视频媒体ID", "上传视频");
+                getInstance().getKefuMsgTitleLabel().setVisible(true);
+                getInstance().getMsgKefuMsgTitleTextField().setVisible(true);
+                getInstance().getKefuMsgDescLabel().setVisible(true);
+                getInstance().getMsgKefuDescTextField().setVisible(true);
+                showThumbMediaField("视频缩略图媒体ID", "上传缩略图");
+                break;
+            case "音乐消息":
+                getInstance().getKefuMsgTitleLabel().setVisible(true);
+                getInstance().getMsgKefuMsgTitleTextField().setVisible(true);
+                getInstance().getKefuMsgDescLabel().setVisible(true);
+                getInstance().getMsgKefuDescTextField().setVisible(true);
+                getInstance().getKefuMsgUrlLabel().setText("音乐链接");
+                getInstance().getKefuMsgUrlLabel().setVisible(true);
+                getInstance().getMsgKefuUrlTextField().setVisible(true);
+                getInstance().getKefuMsgHqMusicUrlLabel().setVisible(true);
+                getInstance().getMsgKefuHqMusicUrlTextField().setVisible(true);
+                showThumbMediaField("音乐缩略图媒体ID", "上传缩略图");
                 break;
             case "小程序卡片消息":
                 getInstance().getKefuMsgTitleLabel().setVisible(true);
@@ -269,9 +312,24 @@ public class KefuMsgForm implements IMsgForm {
         getInstance().getMsgKefuPagepathTextField().setText("");
         getInstance().getMsgKefuThumbMediaIdTextField().setText("");
         getInstance().getMsgKefuMediaIdTextField().setText("");
+        getInstance().getMsgKefuHqMusicUrlTextField().setText("");
     }
 
-    private void initImageMediaPanel() {
+    private static void showMainMediaField(String label, String buttonText) {
+        getInstance().getKefuMsgMediaIdLabel().setText(label);
+        getInstance().getUploadMessageImageButton().setText(buttonText);
+        getInstance().getKefuMsgMediaIdLabel().setVisible(true);
+        getInstance().getMediaPanel().setVisible(true);
+    }
+
+    private static void showThumbMediaField(String label, String buttonText) {
+        getInstance().getKefuMsgThumbMediaIdLabel().setText(label);
+        getInstance().getUploadImageButton().setText(buttonText);
+        getInstance().getKefuMsgThumbMediaIdLabel().setVisible(true);
+        getInstance().getThumbMediaPanel().setVisible(true);
+    }
+
+    private void initExtendedMediaFields() {
         kefuMsgMediaIdLabel = new JLabel("图片媒体ID");
         kefuMsgMediaIdLabel.setToolTipText("media_id；上传得到的临时素材有效期为 3 天");
         kefuMsgPanel.add(kefuMsgMediaIdLabel,
@@ -286,7 +344,7 @@ public class KefuMsgForm implements IMsgForm {
                         GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                         null, null, null, 0, false));
         msgKefuMediaIdTextField = new JTextField();
-        msgKefuMediaIdTextField.setToolTipText("支持变量；也可选择图片上传后自动填写");
+        msgKefuMediaIdTextField.setToolTipText("支持变量；也可选择对应素材上传后自动填写");
         mediaPanel.add(msgKefuMediaIdTextField,
                 new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
                         GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
@@ -299,12 +357,67 @@ public class KefuMsgForm implements IMsgForm {
         kefuMsgMediaIdLabel.setLabelFor(msgKefuMediaIdTextField);
         kefuMsgMediaIdLabel.setVisible(false);
         mediaPanel.setVisible(false);
+
+        kefuMsgHqMusicUrlLabel = new JLabel("高品质音乐链接");
+        kefuMsgHqMusicUrlLabel.setToolTipText("可选；支持变量");
+        kefuMsgPanel.add(kefuMsgHqMusicUrlLabel,
+                new GridConstraints(10, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                        GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED,
+                        null, null, null, 0, false));
+        msgKefuHqMusicUrlTextField = new JTextField();
+        msgKefuHqMusicUrlTextField.setToolTipText("可选；支持变量");
+        kefuMsgPanel.add(msgKefuHqMusicUrlTextField,
+                new GridConstraints(10, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+                        GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
+                        GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        kefuMsgHqMusicUrlLabel.setLabelFor(msgKefuHqMusicUrlTextField);
+        kefuMsgHqMusicUrlLabel.setVisible(false);
+        msgKefuHqMusicUrlTextField.setVisible(false);
     }
 
-    private void uploadImage(JTextField targetField) {
+    private void uploadMainMedia() {
+        String messageType = Objects.requireNonNull(msgKefuMsgTypeComboBox.getSelectedItem()).toString();
+        switch (messageType) {
+            case "图片消息":
+                uploadMedia(msgKefuMediaIdTextField, WxConsts.MediaFileType.IMAGE,
+                        "图片 (*.gif,*.jpeg,*.jpg,*.png)", 10L * 1024 * 1024,
+                        "gif", "jpeg", "jpg", "png");
+                break;
+            case "语音消息":
+                uploadMedia(msgKefuMediaIdTextField, WxConsts.MediaFileType.VOICE,
+                        "语音 (*.amr,*.mp3，最长60秒)", 2L * 1024 * 1024,
+                        "amr", "mp3");
+                break;
+            case "视频消息":
+                uploadMedia(msgKefuMediaIdTextField, WxConsts.MediaFileType.VIDEO,
+                        "视频 (*.mp4)", 10L * 1024 * 1024, "mp4");
+                break;
+            default:
+                JOptionPane.showMessageDialog(kefuMsgPanel, "当前消息类型不需要上传主素材", "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
+                break;
+        }
+    }
+
+    private void uploadThumbMedia() {
+        String messageType = Objects.requireNonNull(msgKefuMsgTypeComboBox.getSelectedItem()).toString();
+        if ("小程序卡片消息".equals(messageType)) {
+            uploadMedia(msgKefuThumbMediaIdTextField, WxConsts.MediaFileType.IMAGE,
+                    "卡片图片 (*.gif,*.jpeg,*.jpg,*.png)", 10L * 1024 * 1024,
+                    "gif", "jpeg", "jpg", "png");
+        } else if ("视频消息".equals(messageType) || "音乐消息".equals(messageType)) {
+            uploadMedia(msgKefuThumbMediaIdTextField, WxConsts.MediaFileType.THUMB,
+                    "缩略图 (*.jpg，最大64KB)", 64L * 1024, "jpg");
+        } else {
+            JOptionPane.showMessageDialog(kefuMsgPanel, "当前消息类型不需要上传缩略图", "提示",
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    private void uploadMedia(JTextField targetField, String mediaType, String filterDescription,
+                             long maxBytes, String... extensions) {
         JFileChooser fileChooser = new JFileChooser();
-        FileFilter filter = new FileNameExtensionFilter("*.gif,*.jpeg,*.jpg,*.png",
-                "gif", "jpeg", "jpg", "png", "GIF", "JPEG", "JPG", "PNG");
+        FileFilter filter = new FileNameExtensionFilter(filterDescription, extensions);
         fileChooser.setFileFilter(filter);
         fileChooser.setAcceptAllFileFilterUsed(false);
 
@@ -315,8 +428,11 @@ public class KefuMsgForm implements IMsgForm {
         try {
             Integer accountId = getSelectedAccountId();
             File selectedFile = fileChooser.getSelectedFile();
+            if (selectedFile.length() > maxBytes) {
+                throw new IllegalArgumentException("文件大小超过微信接口限制：" + filterDescription);
+            }
             WxMediaUploadResult uploadResult = WxMpTemplateMsgSender.getWxMpService(accountId)
-                    .getMaterialService().mediaUpload(WxMaConstants.MediaType.IMAGE, selectedFile);
+                    .getMaterialService().mediaUpload(mediaType, selectedFile);
             String mediaId = uploadResult == null ? null : uploadResult.getMediaId();
             if (StringUtils.isBlank(mediaId)) {
                 throw new IllegalStateException("微信接口未返回有效的 MediaId");
@@ -343,16 +459,34 @@ public class KefuMsgForm implements IMsgForm {
         return accountId;
     }
 
-    static void validateRequiredFields(String messageType, String title, String appId, String pagePath,
-                                       String thumbMediaId, String mediaId) {
-        if ("图片消息".equals(messageType) && StringUtils.isBlank(mediaId)) {
-            throw new IllegalArgumentException("图片媒体ID不能为空");
-        }
-        if ("小程序卡片消息".equals(messageType)) {
-            requireNotBlank(title, "小程序卡片标题");
-            requireNotBlank(appId, "小程序AppId");
-            requireNotBlank(pagePath, "小程序页面路径");
-            requireNotBlank(thumbMediaId, "小程序卡片图片媒体ID");
+    static void validateRequiredFields(String messageType, String title, String description,
+                                       String appId, String pagePath, String thumbMediaId,
+                                       String mediaId, String musicUrl) {
+        switch (messageType) {
+            case "图片消息":
+                requireNotBlank(mediaId, "图片媒体ID");
+                break;
+            case "语音消息":
+                requireNotBlank(mediaId, "语音媒体ID");
+                break;
+            case "视频消息":
+                requireNotBlank(mediaId, "视频媒体ID");
+                requireNotBlank(thumbMediaId, "视频缩略图媒体ID");
+                break;
+            case "音乐消息":
+                requireNotBlank(title, "音乐标题");
+                requireNotBlank(description, "音乐描述");
+                requireNotBlank(musicUrl, "音乐链接");
+                requireNotBlank(thumbMediaId, "音乐缩略图媒体ID");
+                break;
+            case "小程序卡片消息":
+                requireNotBlank(title, "小程序卡片标题");
+                requireNotBlank(appId, "小程序AppId");
+                requireNotBlank(pagePath, "小程序页面路径");
+                requireNotBlank(thumbMediaId, "小程序卡片图片媒体ID");
+                break;
+            default:
+                break;
         }
     }
 
@@ -380,19 +514,22 @@ public class KefuMsgForm implements IMsgForm {
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         kefuMsgPanel = new JPanel();
-        kefuMsgPanel.setLayout(new GridLayoutManager(11, 2, new Insets(10, 15, 0, 0), -1, -1));
+        kefuMsgPanel.setLayout(new GridLayoutManager(12, 2, new Insets(10, 15, 0, 0), -1, -1));
         panel1.add(kefuMsgPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         kefuMsgPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "客服消息编辑", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, this.$$$getFont$$$(null, Font.BOLD, -1, kefuMsgPanel.getFont()), null));
         kefuMsgTypeLabel = new JLabel();
         kefuMsgTypeLabel.setText("消息类型");
         kefuMsgPanel.add(kefuMsgTypeLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
-        kefuMsgPanel.add(spacer1, new GridConstraints(10, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        kefuMsgPanel.add(spacer1, new GridConstraints(11, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         msgKefuMsgTypeComboBox = new JComboBox();
         final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
         defaultComboBoxModel1.addElement("图文消息");
         defaultComboBoxModel1.addElement("文本消息");
         defaultComboBoxModel1.addElement("图片消息");
+        defaultComboBoxModel1.addElement("语音消息");
+        defaultComboBoxModel1.addElement("视频消息");
+        defaultComboBoxModel1.addElement("音乐消息");
         defaultComboBoxModel1.addElement("小程序卡片消息");
         msgKefuMsgTypeComboBox.setModel(defaultComboBoxModel1);
         kefuMsgPanel.add(msgKefuMsgTypeComboBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
