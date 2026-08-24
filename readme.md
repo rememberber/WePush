@@ -19,11 +19,11 @@ WePush 采用 Classic 与 Next 双轨发展。两条产品线彼此独立，允�
 | 产品线 | 当前定位 | 适合场景 | 入口 |
 | --- | --- | --- | --- |
 | WePush Classic | 稳定桌面客户端 | 微信、短信、邮件、HTTP 等成熟批量推送场景 | [Classic 下载](https://gitee.com/zhoubochina/WePush/releases) |
-| WePush Next | `0.1.0-alpha.1` Public Preview | Service/Agent、WebUI/Desktop、Service API、Java SDK 和新消息能力验证 | [Next 下载](https://github.com/rememberber/WePush/releases/tag/next-v0.1.0-alpha.1) |
+| WePush Next | `0.1.0-alpha.1` Public Preview | Service/Agent、WebUI/Desktop、Service API、Remote Java SDK 和新消息能力验证；Embedded Java SDK 尚待实现 | [Next 下载](https://github.com/rememberber/WePush/releases/tag/next-v0.1.0-alpha.1) |
 
 ### WePush Next Public Preview
 
-Next 是位于 [`next/`](next/) 的完整新架构产品线，包含 Core Engine、Provider SPI、可安装 Service、远程 Agent、Java SDK、React WebUI 和 Electron Desktop。当前内置 HTTP Provider，支持可视化配置、运行中心、Cron 调度、动态调试 API 文档，以及 Standalone 和 Server/HA 两种部署基线。
+Next 是位于 [`next/`](next/) 的完整新架构产品线，包含 Core Engine、Provider SPI、可安装 Service、远程 Agent、Remote Java SDK、规划中的 Embedded Java SDK、React WebUI 和 Electron Desktop。当前内置 HTTP Provider，支持可视化配置、运行中心、Cron 调度、动态调试 API 文档，以及 Standalone 和 Server/HA 两种部署基线。
 
 #### Next 组件
 
@@ -33,11 +33,12 @@ Next 是位于 [`next/`](next/) 的完整新架构产品线，包含 Core Engine
 | [Provider SPI / Provider](next/providers/) | 定义消息渠道扩展契约，负责账号校验、消息渲染和实际发送 | Core 只面向 SPI；当前内置 HTTP Provider，其他渠道可以作为独立插件发展 |
 | [Service](next/service/) | 提供配置、调度、运行控制、Secret、Artifact、审计、REST/SSE、OpenAPI 和 Agent 控制面 | 可前台运行或安装为 Linux systemd、macOS launchd、Windows Service；本机模式可内嵌 Core Engine |
 | [Agent](next/agent/) | 在独立主机接收 Lease，使用 Core Engine 执行任务并回传事件、结果和 Artifact | 可独立安装，通过 gRPC 主动连接 Service；本机内嵌执行时不需要 Agent |
-| [Java SDK](next/sdk/) | 让 Java 应用通过强类型客户端调用 Service API | 只依赖公开的 `service-api` 契约，不依赖 Core、Engine 或具体 Provider |
+| [Remote Java SDK](next/sdk/sdk-java/) | 让 Java 应用通过强类型客户端调用远程 Service API | 已实现；只依赖公开的 `service-api` 契约，不依赖 Core、Engine 或具体 Provider |
+| Embedded Java SDK | 让 Java 应用在自己的进程内直接装配 Core Engine 和选定 Provider，无需启动 Service | **尚待实现**；规划模块为 `next/sdk/embedded-java`，允许依赖 Engine 和业务应用显式选择的 Provider |
 | [WebUI](next/ui/apps/web/) | 提供可视化配置、任务与调度、运行中心、Agent 观察和动态调试 API 文档 | TypeScript + Vite + React，可由 Service 直接托管，也可在开发环境独立运行 |
 | [Desktop UI](next/ui/apps/desktop/) | 提供与 WebUI 一致的桌面管理体验和安全 Electron 外壳 | 连接本机 Service；当前不内嵌、不安装也不自动启动 Service |
 
-典型调用关系为：`WebUI / Desktop UI / Java SDK → Service API → Service → 内嵌 Core Engine`；远程执行时则由 `Service → Agent → Core Engine → Provider` 完成发送。
+当前典型调用关系为：`WebUI / Desktop UI / Remote Java SDK → Service API → Service → 内嵌 Core Engine`；远程执行时则由 `Service → Agent → Core Engine → Provider` 完成发送。Embedded Java SDK 完成后将支持 `业务 Java 应用 → Embedded Java SDK → Core Engine → Provider`，不经过 Service。
 
 第一次使用请从[《WePush Next 对外使用指南》](next/docs/user-guide.md)开始。当前预览版未使用商业代码签名，不建议直接用于关键生产业务。
 
