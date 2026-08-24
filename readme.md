@@ -116,12 +116,25 @@ Windows • Linux • macOS
 + Java  
 + Java Swing  
 + 线程池  
-+ 连接池（数据库：HikariCP、HTTP：PoolingHttpClient）  
-+ HttpClient  
-+ HttpAsyncClient  
++ 连接池（HTTP：按通道/账号共享 OkHttp 连接池）
++ HTTP/2（ALPN 自动协商，并自动回退 HTTP/1.1）
 + 定时任务  
 + SQLite  
 + MyBatis  
+
+### Classic HTTP 性能对照
+
+Classic 默认使用 HTTP/2 + HTTP/1.1 自动协商，任务结束时会在日志中输出协议命中、新建/复用连接、429 以及 p50/p95/p99 耗时。可用同一批数据强制 HTTP/1.1 作为对照组：
+
+```bash
+java -Dwepush.http.protocol=http1 -jar WePush.jar
+```
+
+并发上限默认沿用全局最大线程数，也可按消息类型覆盖（`<msgType>` 为消息类型数值）：
+
+```bash
+java -Dwepush.http.maxConcurrency.<msgType>=20 -jar WePush.jar
+```
 
 ### 遇到的麻烦和挑战
 + Swing界面不好控制，导致需要投入较多精力和耐心

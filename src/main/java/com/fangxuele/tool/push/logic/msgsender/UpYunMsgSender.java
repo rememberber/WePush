@@ -8,6 +8,9 @@ import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.logic.msgmaker.UpYunMsgMaker;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.HttpClientRegistry;
+import com.fangxuele.tool.push.util.OkHttpRequestUtil;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -25,7 +28,7 @@ public class UpYunMsgSender implements IMsgSender {
     /**
      * 又拍云短信sender
      */
-    private OkHttpClient okHttpClint;
+    private final OkHttpClient okHttpClient;
 
     private UpYunMsgMaker upYunMsgMaker;
 
@@ -41,7 +44,7 @@ public class UpYunMsgSender implements IMsgSender {
     public UpYunMsgSender(Integer msgId, Integer dryRun) {
         TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
         upYunMsgMaker = new UpYunMsgMaker(tMsg);
-        okHttpClint = HttpMsgSender.getOkHttpClient();
+        okHttpClient = HttpClientRegistry.get(MessageTypeEnum.UP_YUN_CODE, tMsg.getAccountId());
         this.dryRun = dryRun;
 
         TAccount tAccount = accountMapper.selectByPrimaryKey(tMsg.getAccountId());
@@ -50,7 +53,8 @@ public class UpYunMsgSender implements IMsgSender {
     }
 
     public static void removeAccount(Integer account1Id) {
-        // do nothing
+        HttpClientRegistry.invalidate(MessageTypeEnum.UP_YUN_CODE, account1Id);
+        ProviderTrafficController.invalidate(MessageTypeEnum.UP_YUN_CODE, account1Id);
     }
 
     @Override
@@ -74,12 +78,15 @@ public class UpYunMsgSender implements IMsgSender {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
-                Response response = okHttpClint.newCall(request).execute();
+                OkHttpRequestUtil.ResponseData response = OkHttpRequestUtil.execute(okHttpClient, request);
+                sendResult.setHttpStatus(response.statusCode());
+                sendResult.setRetryAfterMillis(response.retryAfterMillis());
                 if (response.isSuccessful()) {
                     sendResult.setSuccess(true);
+                    sendResult.setInfo(response.body());
                 } else {
                     sendResult.setSuccess(false);
-                    sendResult.setInfo(response.toString());
+                    sendResult.setInfo(response.body());
                 }
             }
         } catch (Exception e) {

@@ -1,12 +1,8 @@
 package com.fangxuele.tool.push.logic.msgsender;
 
-import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.Header;
-import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson.JSON;
-import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.account.HttpAccountConfig;
 import com.fangxuele.tool.push.bean.msg.HttpMsg;
 import com.fangxuele.tool.push.dao.TAccountMapper;
@@ -15,6 +11,8 @@ import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TMsg;
 import com.fangxuele.tool.push.logic.msgmaker.HttpMsgMaker;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.HttpClientRegistry;
+import com.fangxuele.tool.push.util.OkHttpRequestUtil;
 import com.fangxuele.tool.push.util.ProxyUtil;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
@@ -24,10 +22,9 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import java.net.HttpCookie;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 /**
  * <pre>
@@ -40,30 +37,37 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class HttpMsgSender implements IMsgSender {
 
-    private HttpMsgMaker httpMsgMaker;
+    private final HttpMsgMaker httpMsgMaker;
 
-    private static OkHttpClient okHttpClient;
-    private static Map<Integer, OkHttpClient> okHttpClientMap = new HashMap<>();
+    private final OkHttpClient okHttpClient;
 
     private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
     private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
 
-    private Integer dryRun;
+    private final Integer dryRun;
 
-    private HttpAccountConfig httpAccountConfig;
+    private final HttpAccountConfig httpAccountConfig;
 
     public HttpMsgSender(Integer msgId, Integer dryRun) {
         TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
         httpMsgMaker = new HttpMsgMaker(tMsg);
-        okHttpClient = getOkHttpClient(tMsg.getAccountId());
         TAccount tAccount = accountMapper.selectByPrimaryKey(tMsg.getAccountId());
         String accountConfig = tAccount.getAccountConfig();
         httpAccountConfig = JSON.parseObject(accountConfig, HttpAccountConfig.class);
+        HttpClientRegistry.ClientOptions options = HttpClientRegistry.ClientOptions.defaults()
+                .withTimeouts(Duration.ofMinutes(3), Duration.ofMinutes(3), Duration.ofMinutes(3), Duration.ofMinutes(5));
+        if (httpAccountConfig.isUseProxy()) {
+            Proxy proxy = new Proxy(ProxyUtil.getProxyType(httpAccountConfig.getProxyType()),
+                    new InetSocketAddress(httpAccountConfig.getProxyHost(), Integer.parseInt(httpAccountConfig.getProxyPort())));
+            options = options.withProxy(proxy, httpAccountConfig.getProxyUserName(), httpAccountConfig.getProxyPassword());
+        }
+        okHttpClient = HttpClientRegistry.get(tMsg.getMsgType(), tMsg.getAccountId(), options);
         this.dryRun = dryRun;
     }
 
     public static void removeAccount(Integer tAccount1Id) {
-        okHttpClientMap.remove(tAccount1Id);
+        HttpClientRegistry.invalidate(com.fangxuele.tool.push.logic.MessageTypeEnum.HTTP_CODE, tAccount1Id);
+        ProviderTrafficController.invalidate(com.fangxuele.tool.push.logic.MessageTypeEnum.HTTP_CODE, tAccount1Id);
     }
 
     @Override
@@ -74,98 +78,6 @@ public class HttpMsgSender implements IMsgSender {
     @Override
     public SendResult asyncSend(String[] msgData) {
         return null;
-    }
-
-    public HttpSendResult sendUseHutool(String[] msgData) {
-        HttpSendResult sendResult = new HttpSendResult();
-        HttpResponse httpResponse;
-        try {
-            HttpMsg httpMsg = httpMsgMaker.makeMsg(msgData);
-            HttpRequest httpRequest;
-            switch (httpMsgMaker.getMethod()) {
-                case "GET":
-                    httpRequest = HttpRequest.get(httpMsg.getUrl());
-                    break;
-                case "POST":
-                    httpRequest = HttpRequest.post(httpMsg.getUrl());
-                    break;
-                case "PUT":
-                    httpRequest = HttpRequest.put(httpMsg.getUrl());
-                    break;
-                case "PATCH":
-                    httpRequest = HttpRequest.patch(httpMsg.getUrl());
-                    break;
-                case "DELETE":
-                    httpRequest = HttpRequest.delete(httpMsg.getUrl());
-                    break;
-                case "HEAD":
-                    httpRequest = HttpRequest.head(httpMsg.getUrl());
-                    break;
-                case "OPTIONS":
-                    httpRequest = HttpRequest.options(httpMsg.getUrl());
-                    break;
-                default:
-                    httpRequest = HttpRequest.get(httpMsg.getUrl()).form(httpMsg.getParamMap());
-            }
-            if (httpMsg.getParamMap() != null && !httpMsg.getParamMap().isEmpty()) {
-                httpRequest.form(httpMsg.getParamMap());
-            }
-            if (httpMsg.getHeaderMap() != null && !httpMsg.getHeaderMap().isEmpty()) {
-                for (Map.Entry<String, Object> entry : httpMsg.getHeaderMap().entrySet()) {
-                    httpRequest.header(entry.getKey(), (String) entry.getValue());
-                }
-            }
-            if (httpMsg.getCookies() != null && !httpMsg.getCookies().isEmpty()) {
-                HttpCookie[] cookies = ArrayUtil.toArray(httpMsg.getCookies(), HttpCookie.class);
-                httpRequest.cookie(cookies);
-            }
-            if (StringUtils.isNotEmpty(httpMsg.getBody())) {
-                httpRequest.body(httpMsg.getBody());
-            }
-            if (httpAccountConfig.isUseProxy()) {
-                Proxy proxy = new Proxy(ProxyUtil.getProxyType(httpAccountConfig.getProxyType()), new InetSocketAddress(httpAccountConfig.getProxyHost(), Integer.parseInt(httpAccountConfig.getProxyPort())));
-                httpRequest.setProxy(proxy);
-            }
-
-            if (dryRun == 1) {
-                sendResult.setSuccess(true);
-                return sendResult;
-            } else {
-                httpResponse = httpRequest.execute();
-                if (!httpResponse.isOk()) {
-                    sendResult.setSuccess(false);
-                    sendResult.setInfo(httpResponse.toString());
-                    return sendResult;
-                }
-            }
-        } catch (Exception e) {
-            sendResult.setSuccess(false);
-            sendResult.setInfo(e.toString());
-            log.error(ExceptionUtils.getStackTrace(e));
-            return sendResult;
-        }
-        StringBuilder headerBuilder = StrUtil.builder();
-        for (Map.Entry<String, List<String>> entry : httpResponse.headers().entrySet()) {
-            headerBuilder.append(entry).append(StrUtil.CRLF);
-        }
-        sendResult.setHeaders(headerBuilder.toString());
-
-        String body = httpResponse.body();
-        sendResult.setInfo(body);
-        sendResult.setBody(body);
-
-        StringBuilder cookiesBuilder = StrUtil.builder();
-        List<String> headerList = httpResponse.headerList(Header.SET_COOKIE.toString());
-        if (headerList != null) {
-            for (String cookieStr : headerList) {
-                cookiesBuilder.append(cookieStr).append(StrUtil.CRLF);
-            }
-        }
-
-        sendResult.setCookies(cookiesBuilder.toString());
-
-        sendResult.setSuccess(true);
-        return sendResult;
     }
 
     public HttpSendResult sendUseOkHttp(String[] msgData) {
@@ -222,7 +134,8 @@ public class HttpMsgSender implements IMsgSender {
                     requestBuilder.url(httpMsg.getUrl()).head();
                     break;
                 case "OPTIONS":
-                    return sendUseHutool(msgData);
+                    requestBuilder.url(httpMsg.getUrl()).method("OPTIONS", requestBody);
+                    break;
                 default:
                     requestBuilder.url(httpMsg.getUrl());
             }
@@ -233,24 +146,23 @@ public class HttpMsgSender implements IMsgSender {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
-                Response response = okHttpClient.newCall(request).execute();
+                OkHttpRequestUtil.ResponseData response = OkHttpRequestUtil.execute(okHttpClient, request);
+                sendResult.setHttpStatus(response.statusCode());
+                sendResult.setRetryAfterMillis(response.retryAfterMillis());
                 if (!response.isSuccessful()) {
                     sendResult.setSuccess(false);
-                    sendResult.setInfo(response.toString());
+                    sendResult.setInfo(response.body());
                     return sendResult;
                 }
 
-                String responseBody = "";
-                if (response.body() != null) {
-                    responseBody = response.body().string();
-                }
+                String responseBody = response.body();
                 sendResult.setInfo(responseBody);
                 sendResult.setBody(responseBody);
 
                 sendResult.setHeaders(response.headers().toString());
 
                 StringBuilder cookiesBuilder = StrUtil.builder();
-                List<String> headerList = response.headers(Header.SET_COOKIE.toString());
+                List<String> headerList = response.headers().values(Header.SET_COOKIE.toString());
                 for (String cookieStr : headerList) {
                     cookiesBuilder.append(cookieStr).append(StrUtil.CRLF);
                 }
@@ -280,43 +192,4 @@ public class HttpMsgSender implements IMsgSender {
         return cookieHeader.toString();
     }
 
-    public static OkHttpClient getOkHttpClient() {
-        if (okHttpClient == null) {
-            synchronized (HttpMsgSender.class) {
-                if (okHttpClient == null) {
-                    OkHttpClient.Builder builder = new OkHttpClient.Builder();
-                    builder.connectTimeout(3, TimeUnit.MINUTES);
-
-                    ConnectionPool pool = new ConnectionPool(App.config.getMaxThreads(), 10, TimeUnit.MINUTES);
-                    builder.connectionPool(pool);
-                    okHttpClient = builder.build();
-                }
-            }
-        }
-        return okHttpClient;
-    }
-
-    private OkHttpClient getOkHttpClient(Integer accountId) {
-        if (okHttpClientMap.containsKey(accountId)) {
-            return okHttpClientMap.get(accountId);
-        } else {
-            TAccount tAccount = accountMapper.selectByPrimaryKey(accountId);
-            String accountConfig = tAccount.getAccountConfig();
-            HttpAccountConfig httpAccountConfig = JSON.parseObject(accountConfig, HttpAccountConfig.class);
-            OkHttpClient.Builder builder = new OkHttpClient.Builder();
-            builder.connectTimeout(3, TimeUnit.MINUTES);
-            if (httpAccountConfig.isUseProxy()) {
-                Proxy proxy = new Proxy(ProxyUtil.getProxyType(httpAccountConfig.getProxyType()), new InetSocketAddress(httpAccountConfig.getProxyHost(), Integer.parseInt(httpAccountConfig.getProxyPort())));
-                builder.proxy(proxy);
-            }
-
-            ConnectionPool pool = new ConnectionPool(App.config.getMaxThreads(), 10, TimeUnit.MINUTES);
-            builder.connectionPool(pool);
-            OkHttpClient okHttpClient = builder.build();
-
-            okHttpClientMap.put(accountId, okHttpClient);
-            return okHttpClient;
-        }
-
-    }
 }

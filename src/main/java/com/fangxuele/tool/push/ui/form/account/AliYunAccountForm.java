@@ -81,7 +81,7 @@ public class AliYunAccountForm implements IAccountForm {
 
                 if (existSameAccount) {
                     accountMapper.updateByMsgTypeAndAccountName(tAccount1);
-                    AliYunMsgSender.removeAccount(tAccount1.getId());
+                    AliYunMsgSender.removeAccount(tAccount.getId());
                 } else {
                     tAccount1.setCreateTime(now);
                     accountMapper.insertSelective(tAccount1);

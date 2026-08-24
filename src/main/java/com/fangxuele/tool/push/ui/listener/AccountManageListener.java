@@ -5,6 +5,8 @@ import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.dao.TAccountMapper;
+import com.fangxuele.tool.push.domain.TAccount;
+import com.fangxuele.tool.push.logic.msgsender.MsgSenderFactory;
 import com.fangxuele.tool.push.ui.form.*;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.UiThreadUtil;
@@ -67,7 +69,11 @@ public class AccountManageListener {
             ThreadUtil.execute(() -> {
                 try {
                     for (String accountName : accountNames) {
+                        TAccount account = accountMapper.selectByMsgTypeAndAccountName(msgType, accountName);
                         accountMapper.deleteByMsgTypeAndAccountName(msgType, accountName);
+                        if (account != null) {
+                            MsgSenderFactory.removeAccount(msgType, account.getId());
+                        }
                     }
                     UiThreadUtil.runOnUi(() -> {
                         for (int i = rowsToDelete.length - 1; i >= 0; i--) {

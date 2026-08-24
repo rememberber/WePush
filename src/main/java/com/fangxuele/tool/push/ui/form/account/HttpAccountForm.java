@@ -95,7 +95,7 @@ public class HttpAccountForm implements IAccountForm {
 
                 if (existSameAccount) {
                     accountMapper.updateByMsgTypeAndAccountName(tAccount1);
-                    HttpMsgSender.removeAccount(tAccount1.getId());
+                    HttpMsgSender.removeAccount(tAccount.getId());
                 } else {
                     tAccount1.setCreateTime(now);
                     accountMapper.insertSelective(tAccount1);

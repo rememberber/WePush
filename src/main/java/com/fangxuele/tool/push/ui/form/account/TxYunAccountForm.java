@@ -79,7 +79,7 @@ public class TxYunAccountForm implements IAccountForm {
 
                 if (existSameAccount) {
                     accountMapper.updateByMsgTypeAndAccountName(tAccount1);
-                    TxYunMsgSender.removeAccount(tAccount1.getId());
+                    TxYunMsgSender.removeAccount(tAccount.getId());
                 } else {
                     tAccount1.setCreateTime(now);
                     accountMapper.insertSelective(tAccount1);

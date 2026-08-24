@@ -109,7 +109,7 @@ public class WxMaAccountForm implements IAccountForm {
 
                 if (existSameAccount) {
                     accountMapper.updateByMsgTypeAndAccountName(tAccount1);
-                    WxMaSubscribeMsgSender.removeAccount(tAccount1.getId());
+                    WxMaSubscribeMsgSender.removeAccount(tAccount.getId());
                 } else {
                     tAccount1.setCreateTime(now);
                     accountMapper.insertSelective(tAccount1);

@@ -1,25 +1,27 @@
 package com.fangxuele.tool.push.logic.msgsender;
 
 import com.alibaba.fastjson.JSON;
-import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.bean.account.WxMpAccountConfig;
 import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.dao.TMsgMapper;
 import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.msgmaker.WxMpTemplateMsgMaker;
+import com.fangxuele.tool.push.util.HttpClientRegistry;
 import com.fangxuele.tool.push.util.MybatisUtil;
 import com.fangxuele.tool.push.util.TemplateUtil;
 import com.fangxuele.tool.push.util.WeWxMpServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import me.chanjar.weixin.common.util.http.apache.DefaultApacheHttpClientBuilder;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
 import me.chanjar.weixin.mp.config.impl.WxMpDefaultConfigImpl;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import java.util.HashMap;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <pre>
@@ -34,7 +36,7 @@ public class WxMpTemplateMsgSender implements IMsgSender {
     private WxMpService wxMpService;
     private WxMpTemplateMsgMaker wxMpTemplateMsgMaker;
 
-    private static Map<Integer, WxMpService> wxMpServiceMap = new HashMap<>();
+    private static final Map<Integer, WxMpService> wxMpServiceMap = new ConcurrentHashMap<>();
 
     private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
     private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
@@ -89,9 +91,7 @@ public class WxMpTemplateMsgSender implements IMsgSender {
     }
 
     public static WxMpService getWxMpService(Integer accountId) {
-        if (wxMpServiceMap.containsKey(accountId)) {
-            return wxMpServiceMap.get(accountId);
-        } else {
+        return wxMpServiceMap.computeIfAbsent(accountId, ignored -> {
             TAccount tAccount = accountMapper.selectByPrimaryKey(accountId);
             String accountConfig = tAccount.getAccountConfig();
             WxMpAccountConfig wxMpAccountConfig = JSON.parseObject(accountConfig, WxMpAccountConfig.class);
@@ -107,34 +107,25 @@ public class WxMpTemplateMsgSender implements IMsgSender {
                 wxMpConfigStorage.setHttpProxyUsername(wxMpAccountConfig.getMpProxyUserName());
                 wxMpConfigStorage.setHttpProxyPassword(wxMpAccountConfig.getMpProxyPassword());
             }
-            DefaultApacheHttpClientBuilder clientBuilder = DefaultApacheHttpClientBuilder.get();
-            //从连接池获取链接的超时时间(单位ms)
-            clientBuilder.setConnectionRequestTimeout(10000);
-            //建立链接的超时时间(单位ms)
-            clientBuilder.setConnectionTimeout(5000);
-            //连接池socket超时时间(单位ms)
-            clientBuilder.setSoTimeout(5000);
-            //空闲链接的超时时间(单位ms)
-            clientBuilder.setIdleConnTimeout(60000);
-            //空闲链接的检测周期(单位ms)
-            clientBuilder.setCheckWaitTime(3000);
-            //每路最大连接数
-            clientBuilder.setMaxConnPerHost(App.config.getMaxThreads());
-            //连接池最大连接数
-            clientBuilder.setMaxTotalConn(App.config.getMaxThreads());
-            //HttpClient请求时使用的User Agent
-//        clientBuilder.setUserAgent(..)
-            wxMpConfigStorage.setApacheHttpClientBuilder(clientBuilder);
-            WxMpService wxMpService = new WeWxMpServiceImpl(wxMpAccountConfig);
+            HttpClientRegistry.ClientOptions options = HttpClientRegistry.ClientOptions.defaults();
+            if (wxMpAccountConfig.isMpUseProxy()) {
+                Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(
+                        wxMpAccountConfig.getMpProxyHost(), Integer.parseInt(wxMpAccountConfig.getMpProxyPort())));
+                options = options.withProxy(proxy, wxMpAccountConfig.getMpProxyUserName(),
+                        wxMpAccountConfig.getMpProxyPassword());
+            }
+            WxMpService wxMpService = new WeWxMpServiceImpl(wxMpAccountConfig,
+                    HttpClientRegistry.get(MessageTypeEnum.MP_TEMPLATE_CODE, accountId, options));
             wxMpService.setWxMpConfigStorage(wxMpConfigStorage);
-            wxMpServiceMap.put(accountId, wxMpService);
             return wxMpService;
-        }
+        });
 
     }
 
     public static void removeAccount(Integer accountId) {
         wxMpServiceMap.remove(accountId);
+        HttpClientRegistry.invalidateAccount(accountId);
+        ProviderTrafficController.invalidateAccount(accountId);
         TemplateUtil.clearNickNameCache();
     }
 

@@ -14,6 +14,8 @@ import com.fangxuele.tool.push.domain.TMsgDing;
 import com.fangxuele.tool.push.logic.msgmaker.DingMsgMaker;
 import com.fangxuele.tool.push.util.DingTalkApiUtil;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.HttpClientRegistry;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -21,6 +23,8 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import okhttp3.OkHttpClient;
 
 /**
  * <pre>
@@ -46,7 +50,7 @@ public class DingMsgSender implements IMsgSender {
     private TimedCache<String, String> accessTokenTimedCache;
     private DingMsgMaker dingMsgMaker;
 
-    private static Map<Integer, TimedCache<String, String>> timedCacheMap = new HashMap<>();
+    private static final Map<Integer, TimedCache<String, String>> timedCacheMap = new ConcurrentHashMap<>();
 
     private static TAccountMapper accountMapper = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
     private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
@@ -58,6 +62,8 @@ public class DingMsgSender implements IMsgSender {
     private TAccount tAccount;
 
     private TMsgDing tMsgDing;
+
+    private final OkHttpClient httpClient;
 
 
     public DingMsgSender(Integer msgId, Integer dryRun) {
@@ -71,10 +77,13 @@ public class DingMsgSender implements IMsgSender {
         dingAccountConfig = JSON.parseObject(accountConfig, DingAccountConfig.class);
 
         tMsgDing = JSON.parseObject(tMsg.getContent(), TMsgDing.class);
+        httpClient = HttpClientRegistry.get(MessageTypeEnum.DING_CODE, tMsg.getAccountId());
     }
 
     public static void removeAccount(Integer account1Id) {
         timedCacheMap.remove(account1Id);
+        HttpClientRegistry.invalidate(MessageTypeEnum.DING_CODE, account1Id);
+        ProviderTrafficController.invalidate(MessageTypeEnum.DING_CODE, account1Id);
     }
 
     @Override
@@ -105,7 +114,11 @@ public class DingMsgSender implements IMsgSender {
                 requestJson.put("msg", buildWorkMsg(dingMsg));
 
                 String accessToken = getAccessTokenTimedCache(tAccount.getId()).get("accessToken");
-                JSONObject response = DingTalkApiUtil.postJson(WORK_MSG_URL + "?access_token=" + accessToken, requestJson);
+                DingTalkApiUtil.JsonResponse apiResponse = DingTalkApiUtil.postJsonResponse(
+                        httpClient, WORK_MSG_URL + "?access_token=" + accessToken, requestJson);
+                sendResult.setHttpStatus(apiResponse.statusCode());
+                sendResult.setRetryAfterMillis(apiResponse.retryAfterMillis());
+                JSONObject response = apiResponse.body();
                 if (response.getIntValue("errcode") != 0) {
                     sendResult.setSuccess(false);
                     sendResult.setInfo(response.getString("errmsg"));
@@ -172,7 +185,11 @@ public class DingMsgSender implements IMsgSender {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
-                JSONObject response = DingTalkApiUtil.postJson(tMsgDing.getWebHook(), requestJson);
+                DingTalkApiUtil.JsonResponse apiResponse = DingTalkApiUtil.postJsonResponse(
+                        httpClient, tMsgDing.getWebHook(), requestJson);
+                sendResult.setHttpStatus(apiResponse.statusCode());
+                sendResult.setRetryAfterMillis(apiResponse.retryAfterMillis());
+                JSONObject response = apiResponse.body();
                 if (response.getIntValue("errcode") != 0) {
                     sendResult.setSuccess(false);
                     sendResult.setInfo(response.getString("errmsg"));
@@ -233,9 +250,10 @@ public class DingMsgSender implements IMsgSender {
     }
 
     public static TimedCache<String, String> getAccessTokenTimedCache(Integer accountId) {
-        if (timedCacheMap.containsKey(accountId)) {
-            return timedCacheMap.get(accountId);
-        } else {
+        return timedCacheMap.compute(accountId, (ignored, cached) -> {
+            if (cached != null && cached.get("accessToken") != null) {
+                return cached;
+            }
             TAccount tAccount = accountMapper.selectByPrimaryKey(accountId);
             String accountConfig = tAccount.getAccountConfig();
             DingAccountConfig dingAccountConfig = JSON.parseObject(accountConfig, DingAccountConfig.class);
@@ -243,7 +261,8 @@ public class DingMsgSender implements IMsgSender {
             try {
                 String url = GET_TOKEN_URL + "?appkey=" + URLEncoder.encode(dingAccountConfig.getAppKey(), "UTF-8")
                         + "&appsecret=" + URLEncoder.encode(dingAccountConfig.getAppSecret(), "UTF-8");
-                JSONObject response = DingTalkApiUtil.get(url);
+                OkHttpClient httpClient = HttpClientRegistry.get(MessageTypeEnum.DING_CODE, accountId);
+                JSONObject response = DingTalkApiUtil.get(httpClient, url);
                 if (response.getIntValue("errcode") != 0) {
                     log.error("获取钉钉accessToken失败：{}", response.getString("errmsg"));
                     throw new RuntimeException("获取钉钉accessToken失败：" + response.getString("errmsg"));
@@ -251,13 +270,11 @@ public class DingMsgSender implements IMsgSender {
                 TimedCache<String, String> accessTokenTimedCache = CacheUtil.newTimedCache((response.getLongValue("expires_in") - 60) * 1000);
                 accessTokenTimedCache.put("accessToken", response.getString("access_token"));
 
-                timedCacheMap.put(accountId, accessTokenTimedCache);
                 return accessTokenTimedCache;
             } catch (Exception e) {
                 log.error(ExceptionUtils.getStackTrace(e));
                 throw new RuntimeException(e);
             }
-        }
-
+        });
     }
 }

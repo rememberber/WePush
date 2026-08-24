@@ -11,6 +11,9 @@ import com.fangxuele.tool.push.domain.TMsgFeishu;
 import com.fangxuele.tool.push.logic.msgmaker.FeishuMsgMaker;
 import com.fangxuele.tool.push.util.FeishuBotSupport;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.HttpClientRegistry;
+import com.fangxuele.tool.push.util.OkHttpRequestUtil;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -36,18 +39,14 @@ import java.util.concurrent.TimeUnit;
 public class FeishuMsgSender implements IMsgSender {
     private static final MediaType JSON_MEDIA_TYPE = MediaType.get("application/json; charset=utf-8");
     private static final Map<String, FeishuRateLimiter> RATE_LIMITERS = new ConcurrentHashMap<>();
-    private static final OkHttpClient HTTP_CLIENT = new OkHttpClient.Builder()
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(30, TimeUnit.SECONDS)
-            .build();
-
+    private static final Map<Integer, String> ACCOUNT_WEBHOOKS = new ConcurrentHashMap<>();
     private static final TAccountMapper ACCOUNT_MAPPER = MybatisUtil.getSqlSession().getMapper(TAccountMapper.class);
     private static final TMsgMapper MSG_MAPPER = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
 
     private final FeishuMsgMaker messageMaker;
     private final FeishuAccountConfig accountConfig;
     private final Integer dryRun;
+    private final OkHttpClient httpClient;
 
     public FeishuMsgSender(Integer msgId, Integer dryRun) {
         TMsg tMsg = MSG_MAPPER.selectByPrimaryKey(msgId);
@@ -64,6 +63,8 @@ public class FeishuMsgSender implements IMsgSender {
             throw new IllegalArgumentException("飞书机器人账号配置为空");
         }
         FeishuBotSupport.validateWebhook(this.accountConfig.getWebhook());
+        ACCOUNT_WEBHOOKS.put(account.getId(), this.accountConfig.getWebhook().trim());
+        this.httpClient = HttpClientRegistry.get(MessageTypeEnum.FEISHU_CODE, account.getId());
         this.dryRun = dryRun;
     }
 
@@ -71,6 +72,12 @@ public class FeishuMsgSender implements IMsgSender {
         if (StringUtils.isNotBlank(webhook)) {
             RATE_LIMITERS.remove(webhook.trim());
         }
+    }
+
+    public static void removeAccount(Integer accountId) {
+        removeWebhook(ACCOUNT_WEBHOOKS.remove(accountId));
+        HttpClientRegistry.invalidate(MessageTypeEnum.FEISHU_CODE, accountId);
+        ProviderTrafficController.invalidate(MessageTypeEnum.FEISHU_CODE, accountId);
     }
 
     @Override
@@ -100,16 +107,16 @@ public class FeishuMsgSender implements IMsgSender {
                     .url(accountConfig.getWebhook().trim())
                     .post(RequestBody.create(requestJson, JSON_MEDIA_TYPE))
                     .build();
-            try (Response response = HTTP_CLIENT.newCall(request).execute()) {
-                String body = response.body() == null ? "" : response.body().string();
-                if (!response.isSuccessful()) {
-                    throw new IllegalStateException("飞书 HTTP 请求失败（" + response.code() + "）：" + body);
-                }
-                FeishuBotSupport.validateResponse(body);
-                result.setSuccess(true);
-                result.setInfo(body);
-                return result;
+            OkHttpRequestUtil.ResponseData response = OkHttpRequestUtil.execute(httpClient, request);
+            result.setHttpStatus(response.statusCode());
+            result.setRetryAfterMillis(response.retryAfterMillis());
+            if (!response.isSuccessful()) {
+                throw new IllegalStateException("飞书 HTTP 请求失败（" + response.statusCode() + "）：" + response.body());
             }
+            FeishuBotSupport.validateResponse(response.body());
+            result.setSuccess(true);
+            result.setInfo(response.body());
+            return result;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             result.setSuccess(false);

@@ -8,12 +8,10 @@ import me.chanjar.weixin.common.bean.WxAccessToken;
 import me.chanjar.weixin.common.enums.WxType;
 import me.chanjar.weixin.common.error.WxError;
 import me.chanjar.weixin.common.error.WxErrorException;
-import me.chanjar.weixin.mp.api.impl.WxMpServiceImpl;
+import me.chanjar.weixin.mp.api.impl.WxMpServiceOkHttpImpl;
 import me.chanjar.weixin.mp.config.WxMpConfigStorage;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 import java.io.IOException;
 import java.util.concurrent.locks.Lock;
@@ -28,15 +26,28 @@ import static me.chanjar.weixin.mp.enums.WxMpApiUrl.Other.GET_ACCESS_TOKEN_URL;
  * @author <a href="https://github.com/rememberber">RememBerBer</a>
  * @since 2019/7/21.
  */
-public class WeWxMpServiceImpl extends WxMpServiceImpl {
+public class WeWxMpServiceImpl extends WxMpServiceOkHttpImpl {
     private TimedCache<String, String> timedCache = CacheUtil.newTimedCache(2000);
 
     private int count;
 
     private WxMpAccountConfig wxMpAccountConfig;
 
-    public WeWxMpServiceImpl(WxMpAccountConfig wxMpAccountConfig) {
+    private final OkHttpClient sharedClient;
+
+    public WeWxMpServiceImpl(WxMpAccountConfig wxMpAccountConfig, OkHttpClient sharedClient) {
         this.wxMpAccountConfig = wxMpAccountConfig;
+        this.sharedClient = sharedClient;
+    }
+
+    @Override
+    public OkHttpClient getRequestHttpClient() {
+        return sharedClient;
+    }
+
+    @Override
+    public void initHttp() {
+        // 客户端由 HttpClientRegistry 管理，不允许 WxJava 另建连接池。
     }
 
     @Override
@@ -76,26 +87,19 @@ public class WeWxMpServiceImpl extends WxMpServiceImpl {
                     if (wxMpAccountConfig.isMpUseOutSideAt() && wxMpAccountConfig.isMpApiAt()) {
                         url = wxMpAccountConfig.getMpAtApiUrl();
                     }
-                    HttpGet httpGet = new HttpGet(url);
-                    if (this.getRequestHttpProxy() != null) {
-                        RequestConfig requestConfig = RequestConfig.custom().setProxy(this.getRequestHttpProxy()).build();
-                        httpGet.setConfig(requestConfig);
-                    }
-                    try (CloseableHttpResponse response = getRequestHttpClient().execute(httpGet)) {
-                        String resultContent = new BasicResponseHandler().handleResponse(response);
-                        WxError error = WxError.fromJson(resultContent, WxType.MP);
-                        if (error.getErrorCode() != 0) {
-                            if (wxMpAccountConfig.isMpUseOutSideAt() && wxMpAccountConfig.isMpApiAt()) {
-                                error = WxError.builder().errorCode(99).errorMsg("通过接口" + url + "获取AccessToken失败").errorMsgEn("Fail to get AccessToken from:" + url).json(resultContent).build();
-                                throw new WxErrorException(error);
-                            } else {
-                                throw new WxErrorException(error);
-                            }
+                    OkHttpRequestUtil.ResponseData response = OkHttpRequestUtil.execute(getRequestHttpClient(),
+                            new Request.Builder().url(url).get().build());
+                    String resultContent = response.body();
+                    WxError error = WxError.fromJson(resultContent, WxType.MP);
+                    if (!response.isSuccessful() || error.getErrorCode() != 0) {
+                        if (wxMpAccountConfig.isMpUseOutSideAt() && wxMpAccountConfig.isMpApiAt()) {
+                            error = WxError.builder().errorCode(99).errorMsg("通过接口" + url + "获取AccessToken失败").errorMsgEn("Fail to get AccessToken from:" + url).json(resultContent).build();
+                            throw new WxErrorException(error);
+                        } else {
+                            throw new WxErrorException(error);
                         }
-                        accessToken = JSONUtil.toBean(resultContent, WxAccessToken.class);
-                    } finally {
-                        httpGet.releaseConnection();
                     }
+                    accessToken = JSONUtil.toBean(resultContent, WxAccessToken.class);
                 }
 
                 config.updateAccessToken(accessToken.getAccessToken(), accessToken.getExpiresIn());

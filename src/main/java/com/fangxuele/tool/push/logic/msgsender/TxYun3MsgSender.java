@@ -8,28 +8,28 @@ import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.dao.TMsgMapper;
 import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.msgmaker.TxYun3MsgMaker;
+import com.fangxuele.tool.push.util.HttpClientRegistry;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.OkHttpRequestUtil;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.SimpleTimeZone;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <pre>
@@ -52,7 +52,7 @@ public class TxYun3MsgSender implements IMsgSender {
     private static final String ALGORITHM = "TC3-HMAC-SHA256";
     private static final String CONTENT_TYPE = "application/json; charset=utf-8";
 
-    private CloseableHttpClient closeableHttpClient;
+    private final OkHttpClient httpClient;
 
     private TxYun3MsgMaker txYun3MsgMaker;
 
@@ -61,7 +61,7 @@ public class TxYun3MsgSender implements IMsgSender {
 
     private Integer dryRun;
 
-    private static Map<Integer, TxYun3AccountConfig> accountConfigMap = new HashMap<>();
+    private static final Map<Integer, TxYun3AccountConfig> accountConfigMap = new ConcurrentHashMap<>();
 
     private TxYun3AccountConfig txYun3AccountConfig;
 
@@ -72,11 +72,13 @@ public class TxYun3MsgSender implements IMsgSender {
         txYun3AccountConfig = getAccountConfig(tMsg.getAccountId());
         this.dryRun = dryRun;
 
-        closeableHttpClient = HttpClients.createDefault();
+        httpClient = HttpClientRegistry.get(MessageTypeEnum.TX_YUN_3_CODE, tMsg.getAccountId());
     }
 
     public static void removeAccount(Integer account1Id) {
         accountConfigMap.remove(account1Id);
+        HttpClientRegistry.invalidate(MessageTypeEnum.TX_YUN_3_CODE, account1Id);
+        ProviderTrafficController.invalidate(MessageTypeEnum.TX_YUN_3_CODE, account1Id);
     }
 
     @Override
@@ -134,22 +136,23 @@ public class TxYun3MsgSender implements IMsgSender {
                 String authorization = ALGORITHM + " Credential=" + txYun3AccountConfig.getSecretId() + "/" + credentialScope
                         + ", SignedHeaders=" + signedHeaders + ", Signature=" + signature;
 
-                HttpResponse response = closeableHttpClient.execute(RequestBuilder.create("POST")
-                        .setUri("https://" + endpoint)
-                        .addHeader(HttpHeaders.AUTHORIZATION, authorization)
-                        .addHeader(HttpHeaders.CONTENT_TYPE, CONTENT_TYPE)
-                        .addHeader(HttpHeaders.HOST, endpoint)
-                        .addHeader("X-TC-Action", ACTION)
-                        .addHeader("X-TC-Timestamp", String.valueOf(timestamp))
-                        .addHeader("X-TC-Version", VERSION)
-                        .addHeader("X-TC-Region", region)
-                        .setEntity(new StringEntity(payload, Charset.forName("UTF-8"))).build());
-
-                String responseBody = EntityUtils.toString(response.getEntity(), "UTF-8");
+                Request request = new Request.Builder().url("https://" + endpoint)
+                        .header("Authorization", authorization)
+                        .header("Host", endpoint)
+                        .header("X-TC-Action", ACTION)
+                        .header("X-TC-Timestamp", String.valueOf(timestamp))
+                        .header("X-TC-Version", VERSION)
+                        .header("X-TC-Region", region)
+                        .post(RequestBody.create(payload, MediaType.get(CONTENT_TYPE)))
+                        .build();
+                OkHttpRequestUtil.ResponseData response = OkHttpRequestUtil.execute(httpClient, request);
+                String responseBody = response.body();
                 JSONObject result = StringUtils.isBlank(responseBody) ? null : JSON.parseObject(responseBody);
                 JSONObject responseObj = result == null ? null : result.getJSONObject("Response");
                 JSONArray sendStatusSet = responseObj == null ? null : responseObj.getJSONArray("SendStatusSet");
-                if (sendStatusSet != null && !sendStatusSet.isEmpty()
+                sendResult.setHttpStatus(response.statusCode());
+                sendResult.setRetryAfterMillis(response.retryAfterMillis());
+                if (response.isSuccessful() && sendStatusSet != null && !sendStatusSet.isEmpty()
                         && "Ok".equals(sendStatusSet.getJSONObject(0).getString("Code"))) {
                     sendResult.setSuccess(true);
                 } else {
@@ -173,16 +176,11 @@ public class TxYun3MsgSender implements IMsgSender {
     }
 
     private TxYun3AccountConfig getAccountConfig(Integer accountId) {
-        if (accountConfigMap.containsKey(accountId)) {
-            return accountConfigMap.get(accountId);
-        } else {
+        return accountConfigMap.computeIfAbsent(accountId, ignored -> {
             TAccount tAccount = accountMapper.selectByPrimaryKey(accountId);
             String accountConfig = tAccount.getAccountConfig();
-            TxYun3AccountConfig txYun3AccountConfig = JSON.parseObject(accountConfig, TxYun3AccountConfig.class);
-
-            accountConfigMap.put(accountId, txYun3AccountConfig);
-            return txYun3AccountConfig;
-        }
+            return JSON.parseObject(accountConfig, TxYun3AccountConfig.class);
+        });
     }
 
     private static byte[] hmacSha256(byte[] key, String data) throws Exception {

@@ -117,6 +117,7 @@ public class FeishuAccountForm implements IAccountForm {
             FeishuAccountConfig oldConfig = JSONUtil.toBean(existing.getAccountConfig(), FeishuAccountConfig.class);
             accountMapper.updateByMsgTypeAndAccountName(account);
             FeishuMsgSender.removeWebhook(oldConfig.getWebhook());
+            FeishuMsgSender.removeAccount(existing.getId());
         } else {
             account.setCreateTime(now);
             accountMapper.insertSelective(account);

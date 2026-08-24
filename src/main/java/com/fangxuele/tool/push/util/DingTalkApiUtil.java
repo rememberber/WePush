@@ -3,16 +3,13 @@ package com.fangxuele.tool.push.util;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 
 /**
  * <pre>
@@ -24,6 +21,8 @@ import java.nio.charset.Charset;
  */
 public class DingTalkApiUtil {
 
+    private static final MediaType JSON_MEDIA_TYPE = MediaType.get("application/json; charset=utf-8");
+
     private DingTalkApiUtil() {
     }
 
@@ -34,11 +33,18 @@ public class DingTalkApiUtil {
      * @return 响应JSON
      */
     public static JSONObject get(String url) throws IOException {
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            HttpResponse response = httpClient.execute(RequestBuilder.create("GET").setUri(url).build());
-            String responseBody = EntityUtils.toString(response.getEntity(), "UTF-8");
-            return StringUtils.isBlank(responseBody) ? new JSONObject() : JSON.parseObject(responseBody);
-        }
+        return get(HttpClientRegistry.get(MessageTypeEnum.DING_CODE, 0), url);
+    }
+
+    public static JSONObject get(OkHttpClient httpClient, String url) throws IOException {
+        return getResponse(httpClient, url).body();
+    }
+
+    public static JsonResponse getResponse(OkHttpClient httpClient, String url) throws IOException {
+        Request request = new Request.Builder().url(url).get().build();
+        OkHttpRequestUtil.ResponseData response = OkHttpRequestUtil.execute(httpClient, request);
+        ensureSuccessful(response);
+        return jsonResponse(response);
     }
 
     /**
@@ -49,13 +55,32 @@ public class DingTalkApiUtil {
      * @return 响应JSON
      */
     public static JSONObject postJson(String url, JSONObject body) throws IOException {
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            HttpResponse response = httpClient.execute(RequestBuilder.create("POST")
-                    .setUri(url)
-                    .addHeader(HttpHeaders.CONTENT_TYPE, "application/json;charset=utf-8")
-                    .setEntity(new StringEntity(body.toJSONString(), Charset.forName("UTF-8"))).build());
-            String responseBody = EntityUtils.toString(response.getEntity(), "UTF-8");
-            return StringUtils.isBlank(responseBody) ? new JSONObject() : JSON.parseObject(responseBody);
+        return postJson(HttpClientRegistry.get(MessageTypeEnum.DING_CODE, 0), url, body);
+    }
+
+    public static JSONObject postJson(OkHttpClient httpClient, String url, JSONObject body) throws IOException {
+        return postJsonResponse(httpClient, url, body).body();
+    }
+
+    public static JsonResponse postJsonResponse(OkHttpClient httpClient, String url, JSONObject body) throws IOException {
+        Request request = new Request.Builder().url(url)
+                .post(RequestBody.create(body.toJSONString(), JSON_MEDIA_TYPE)).build();
+        OkHttpRequestUtil.ResponseData response = OkHttpRequestUtil.execute(httpClient, request);
+        ensureSuccessful(response);
+        return jsonResponse(response);
+    }
+
+    private static JsonResponse jsonResponse(OkHttpRequestUtil.ResponseData response) {
+        JSONObject body = StringUtils.isBlank(response.body()) ? new JSONObject() : JSON.parseObject(response.body());
+        return new JsonResponse(body, response.statusCode(), response.retryAfterMillis());
+    }
+
+    private static void ensureSuccessful(OkHttpRequestUtil.ResponseData response) throws IOException {
+        if (!response.isSuccessful()) {
+            throw new IOException("钉钉 HTTP 请求失败（" + response.statusCode() + "）：" + response.body());
         }
+    }
+
+    public record JsonResponse(JSONObject body, int statusCode, Long retryAfterMillis) {
     }
 }

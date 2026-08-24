@@ -7,28 +7,28 @@ import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.dao.TMsgMapper;
 import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.msgmaker.AliyunMsgMaker;
+import com.fangxuele.tool.push.util.HttpClientRegistry;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.OkHttpRequestUtil;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.SimpleTimeZone;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <pre>
@@ -47,7 +47,7 @@ public class AliYunMsgSender implements IMsgSender {
      */
     private static final String ENDPOINT = "https://dysmsapi.aliyuncs.com";
 
-    private CloseableHttpClient closeableHttpClient;
+    private final OkHttpClient httpClient;
 
     private AliyunMsgMaker aliyunMsgMaker;
 
@@ -56,7 +56,7 @@ public class AliYunMsgSender implements IMsgSender {
 
     private Integer dryRun;
 
-    private static Map<Integer, AliYunAccountConfig> accountConfigMap = new HashMap<>();
+    private static final Map<Integer, AliYunAccountConfig> accountConfigMap = new ConcurrentHashMap<>();
 
     private AliYunAccountConfig aliYunAccountConfig;
 
@@ -66,11 +66,13 @@ public class AliYunMsgSender implements IMsgSender {
         aliYunAccountConfig = getAccountConfig(tMsg.getAccountId());
         this.dryRun = dryRun;
 
-        closeableHttpClient = HttpClients.createDefault();
+        httpClient = HttpClientRegistry.get(MessageTypeEnum.ALI_YUN_CODE, tMsg.getAccountId());
     }
 
     public static void removeAccount(Integer accountId) {
         accountConfigMap.remove(accountId);
+        HttpClientRegistry.invalidate(MessageTypeEnum.ALI_YUN_CODE, accountId);
+        ProviderTrafficController.invalidate(MessageTypeEnum.ALI_YUN_CODE, accountId);
     }
 
     @Override
@@ -114,11 +116,13 @@ public class AliYunMsgSender implements IMsgSender {
 
                 String url = ENDPOINT + "/?Signature=" + percentEncode(signature) + canonicalizedQueryString;
 
-                HttpResponse response = closeableHttpClient.execute(RequestBuilder.create("GET").setUri(url).build());
-
-                String responseBody = EntityUtils.toString(response.getEntity(), "UTF-8");
+                OkHttpRequestUtil.ResponseData response = OkHttpRequestUtil.execute(httpClient,
+                        new Request.Builder().url(url).get().build());
+                String responseBody = response.body();
                 JSONObject result = StringUtils.isBlank(responseBody) ? null : JSON.parseObject(responseBody);
-                if (result != null && "OK".equals(result.getString("Code"))) {
+                sendResult.setHttpStatus(response.statusCode());
+                sendResult.setRetryAfterMillis(response.retryAfterMillis());
+                if (response.isSuccessful() && result != null && "OK".equals(result.getString("Code"))) {
                     sendResult.setSuccess(true);
                 } else {
                     sendResult.setSuccess(false);
@@ -141,16 +145,11 @@ public class AliYunMsgSender implements IMsgSender {
     }
 
     private AliYunAccountConfig getAccountConfig(Integer accountId) {
-        if (accountConfigMap.containsKey(accountId)) {
-            return accountConfigMap.get(accountId);
-        } else {
+        return accountConfigMap.computeIfAbsent(accountId, ignored -> {
             TAccount tAccount = accountMapper.selectByPrimaryKey(accountId);
             String accountConfig = tAccount.getAccountConfig();
-            AliYunAccountConfig aliYunAccountConfig = JSON.parseObject(accountConfig, AliYunAccountConfig.class);
-
-            accountConfigMap.put(accountId, aliYunAccountConfig);
-            return aliYunAccountConfig;
-        }
+            return JSON.parseObject(accountConfig, AliYunAccountConfig.class);
+        });
 
     }
 

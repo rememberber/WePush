@@ -10,6 +10,9 @@ import com.fangxuele.tool.push.util.ConsoleUtil;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bouncycastle.util.Arrays;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * <pre>
  * 消息发送服务线程
@@ -37,7 +40,8 @@ public class MsgSendThread extends BaseMsgThread {
             // 间隔推送
             boolean isIntervalPush = tTask.getIntervalPush() != null && tTask.getIntervalPush() == 1 && tTask.getIntervalTime() != null;
 
-            for (String[] rawMsgData : list) {
+            int batchSize = isIntervalPush ? 1 : Math.max(1, iMsgSender.recommendedBatchSize());
+            for (int offset = 0; offset < list.size(); offset += batchSize) {
                 if (!taskRunThread.running) {
                     // 停止
                     return;
@@ -48,30 +52,31 @@ public class MsgSendThread extends BaseMsgThread {
                     Thread.sleep(tTask.getIntervalTime() * 1000);
                 }
 
-                // 本条消息所需的数据
-                String[] msgData = rawMsgData;
-                SendResult sendResult = iMsgSender.send(msgData);
-
-                if (tTask.getMsgType() == MessageTypeEnum.HTTP_CODE && tTask.getSaveResult() == 1) {
-                    String body = sendResult.getInfo() == null ? "" : sendResult.getInfo();
-                    msgData = Arrays.append(msgData, body);
+                int batchEnd = Math.min(list.size(), offset + batchSize);
+                List<String[]> batch = new ArrayList<>(list.subList(offset, batchEnd));
+                List<SendResult> results = iMsgSender.sendBatch(batch);
+                if (results.size() != batch.size()) {
+                    throw new IllegalStateException("批量发送返回结果数量不一致：请求=" + batch.size() + "，结果=" + results.size());
                 }
 
-                if (sendResult.isSuccess()) {
-                    // 总发送成功+1
-                    taskRunThread.increaseSuccess();
+                for (int i = 0; i < batch.size(); i++) {
+                    String[] msgData = batch.get(i);
+                    SendResult sendResult = results.get(i);
 
-                    // 保存发送成功
-                    taskRunThread.sendSuccessList.add(msgData);
-                } else {
-                    // 总发送失败+1
-                    taskRunThread.increaseFail();
+                    if (tTask.getMsgType() == MessageTypeEnum.HTTP_CODE && tTask.getSaveResult() == 1) {
+                        String body = sendResult.getInfo() == null ? "" : sendResult.getInfo();
+                        msgData = Arrays.append(msgData, body);
+                    }
 
-                    // 保存发送失败
-                    taskRunThread.sendFailList.add(msgData);
+                    if (sendResult.isSuccess()) {
+                        taskRunThread.increaseSuccess();
+                        taskRunThread.sendSuccessList.add(msgData);
+                    } else {
+                        taskRunThread.increaseFail();
+                        taskRunThread.sendFailList.add(msgData);
 
-                    // 失败异常信息输出控制台
-                    ConsoleUtil.pushLog(taskRunThread.getLogWriter(), "发送失败:" + sendResult.getInfo() + ";msgData:" + JSONUtil.toJsonStr(msgData));
+                        ConsoleUtil.pushLog(taskRunThread.getLogWriter(), "发送失败:" + sendResult.getInfo() + ";msgData:" + JSONUtil.toJsonStr(msgData));
+                    }
                 }
             }
 

@@ -8,25 +8,17 @@ import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.dao.TMsgMapper;
 import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.msgmaker.NeteaseYunXinMsgMaker;
+import com.fangxuele.tool.push.util.HttpClientRegistry;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.OkHttpRequestUtil;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
-
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -45,7 +37,7 @@ public class NeteaseYunXinMsgSender implements IMsgSender {
      */
     private static final String SEND_TEMPLATE_URL = "https://api.netease.im/sms/sendtemplate.action";
 
-    private CloseableHttpClient closeableHttpClient;
+    private final OkHttpClient httpClient;
 
     private NeteaseYunXinMsgMaker neteaseYunXinMsgMaker;
 
@@ -65,12 +57,12 @@ public class NeteaseYunXinMsgSender implements IMsgSender {
         String accountConfig = tAccount.getAccountConfig();
         neteaseYunXinAccountConfig = JSON.parseObject(accountConfig, NeteaseYunXinAccountConfig.class);
 
-        closeableHttpClient = HttpClients.createDefault();
+        httpClient = HttpClientRegistry.get(MessageTypeEnum.NETEASE_YUN_XIN_CODE, tMsg.getAccountId());
     }
 
-    public static void removeAccount(Integer account1Id) {
-
-        // do nothing
+    public static void removeAccount(Integer accountId) {
+        HttpClientRegistry.invalidate(MessageTypeEnum.NETEASE_YUN_XIN_CODE, accountId);
+        ProviderTrafficController.invalidate(MessageTypeEnum.NETEASE_YUN_XIN_CODE, accountId);
     }
 
     @Override
@@ -88,12 +80,6 @@ public class NeteaseYunXinMsgSender implements IMsgSender {
                 sendResult.setSuccess(true);
                 return sendResult;
             } else {
-                List<NameValuePair> keyValues = new ArrayList<>();
-                keyValues.add(new BasicNameValuePair("templateid", templateId));
-                keyValues.add(new BasicNameValuePair("mobiles", mobiles));
-                keyValues.add(new BasicNameValuePair("params", params));
-                String body = URLEncodedUtils.format(keyValues, Charset.forName("UTF-8"));
-
                 String appKey = neteaseYunXinAccountConfig.getAppKey();
                 String appSecret = neteaseYunXinAccountConfig.getAppSecret();
                 String nonce = UUID.randomUUID().toString().replace("-", "");
@@ -101,18 +87,23 @@ public class NeteaseYunXinMsgSender implements IMsgSender {
                 // CheckSum = sha1(AppSecret + Nonce + CurTime)
                 String checkSum = DigestUtils.sha1Hex(appSecret + nonce + curTime);
 
-                HttpResponse response = closeableHttpClient.execute(RequestBuilder.create("POST")
-                        .setUri(SEND_TEMPLATE_URL)
-                        .addHeader(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=utf-8")
-                        .addHeader("AppKey", appKey)
-                        .addHeader("Nonce", nonce)
-                        .addHeader("CurTime", curTime)
-                        .addHeader("CheckSum", checkSum)
-                        .setEntity(new StringEntity(body, Charset.forName("UTF-8"))).build());
-
-                String responseBody = EntityUtils.toString(response.getEntity(), "UTF-8");
+                Request request = new Request.Builder().url(SEND_TEMPLATE_URL)
+                        .header("AppKey", appKey)
+                        .header("Nonce", nonce)
+                        .header("CurTime", curTime)
+                        .header("CheckSum", checkSum)
+                        .post(new FormBody.Builder()
+                                .add("templateid", templateId)
+                                .add("mobiles", mobiles)
+                                .add("params", params)
+                                .build())
+                        .build();
+                OkHttpRequestUtil.ResponseData response = OkHttpRequestUtil.execute(httpClient, request);
+                String responseBody = response.body();
                 JSONObject result = JSON.parseObject(responseBody);
-                if (result != null && result.getIntValue("code") == 200) {
+                sendResult.setHttpStatus(response.statusCode());
+                sendResult.setRetryAfterMillis(response.retryAfterMillis());
+                if (response.isSuccessful() && result != null && result.getIntValue("code") == 200) {
                     sendResult.setSuccess(true);
                 } else {
                     sendResult.setSuccess(false);

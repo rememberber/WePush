@@ -73,7 +73,7 @@ public class UpYunAccountForm implements IAccountForm {
 
                 if (existSameAccount) {
                     accountMapper.updateByMsgTypeAndAccountName(tAccount1);
-                    UpYunMsgSender.removeAccount(tAccount1.getId());
+                    UpYunMsgSender.removeAccount(tAccount.getId());
                 } else {
                     tAccount1.setCreateTime(now);
                     accountMapper.insertSelective(tAccount1);

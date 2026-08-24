@@ -122,11 +122,13 @@ public class UpdateDownloadManager {
         try {
             openPackage(file);
             Thread.sleep(500);
+            HttpClientRegistry.shutdown();
             System.exit(0);
         } catch (IOException e) {
             throw new IllegalStateException(e.getMessage(), e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            HttpClientRegistry.shutdown();
             System.exit(0);
         }
     }

@@ -57,7 +57,6 @@
         <mybatis.version>3.5.19</mybatis.version>
         <sqlite-jdbc.version>3.53.2.0</sqlite-jdbc.version>
         <junit.version>4.13.1</junit.version>
-        <httpasyncclient.version>4.1.4</httpasyncclient.version>
         <HikariCP.version>3.4.5</HikariCP.version>
         <quartz.version>2.3.2</quartz.version>
         <okhttp.version>5.4.0</okhttp.version>
@@ -231,11 +230,6 @@
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
             <version>${sqlite-jdbc.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpasyncclient</artifactId>
-            <version>${httpasyncclient.version}</version>
         </dependency>
         <!--        <dependency>-->
         <!--            <groupId>com.zaxxer</groupId>-->

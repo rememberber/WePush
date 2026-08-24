@@ -8,23 +8,21 @@ import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.dao.TMsgMapper;
 import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.msgmaker.TxYunMsgMaker;
+import com.fangxuele.tool.push.util.HttpClientRegistry;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.OkHttpRequestUtil;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-
-import java.nio.charset.Charset;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -43,7 +41,7 @@ public class TxYunMsgSender implements IMsgSender {
      */
     private static final String SEND_URL = "https://yun.tim.qq.com/v5/tlssmssvr/sendsms";
 
-    private CloseableHttpClient closeableHttpClient;
+    private final OkHttpClient httpClient;
 
     private TxYunMsgMaker txYunMsgMaker;
 
@@ -52,7 +50,7 @@ public class TxYunMsgSender implements IMsgSender {
 
     private Integer dryRun;
 
-    private static Map<Integer, TxYunAccountConfig> accountConfigMap = new HashMap<>();
+    private static final Map<Integer, TxYunAccountConfig> accountConfigMap = new ConcurrentHashMap<>();
 
     private TxYunAccountConfig txYunAccountConfig;
 
@@ -63,11 +61,13 @@ public class TxYunMsgSender implements IMsgSender {
         txYunAccountConfig = getAccountConfig(tMsg.getAccountId());
         this.dryRun = dryRun;
 
-        closeableHttpClient = HttpClients.createDefault();
+        httpClient = HttpClientRegistry.get(MessageTypeEnum.TX_YUN_CODE, tMsg.getAccountId());
     }
 
     public static void removeAccount(Integer account1Id) {
         accountConfigMap.remove(account1Id);
+        HttpClientRegistry.invalidate(MessageTypeEnum.TX_YUN_CODE, account1Id);
+        ProviderTrafficController.invalidate(MessageTypeEnum.TX_YUN_CODE, account1Id);
     }
 
     @Override
@@ -108,14 +108,17 @@ public class TxYunMsgSender implements IMsgSender {
                 requestJson.put("extend", "");
                 requestJson.put("ext", "");
 
-                HttpResponse response = closeableHttpClient.execute(RequestBuilder.create("POST")
-                        .setUri(SEND_URL + "?sdkappid=" + txYunAccountConfig.getAppId() + "&random=" + random)
-                        .addHeader(HttpHeaders.CONTENT_TYPE, "application/json;charset=utf-8")
-                        .setEntity(new StringEntity(requestJson.toJSONString(), Charset.forName("UTF-8"))).build());
-
-                String responseBody = EntityUtils.toString(response.getEntity(), "UTF-8");
+                Request request = new Request.Builder()
+                        .url(SEND_URL + "?sdkappid=" + txYunAccountConfig.getAppId() + "&random=" + random)
+                        .post(RequestBody.create(requestJson.toJSONString(),
+                                MediaType.get("application/json; charset=utf-8")))
+                        .build();
+                OkHttpRequestUtil.ResponseData response = OkHttpRequestUtil.execute(httpClient, request);
+                String responseBody = response.body();
                 JSONObject result = StringUtils.isBlank(responseBody) ? null : JSON.parseObject(responseBody);
-                if (result != null && result.getIntValue("result") == 0) {
+                sendResult.setHttpStatus(response.statusCode());
+                sendResult.setRetryAfterMillis(response.retryAfterMillis());
+                if (response.isSuccessful() && result != null && result.getIntValue("result") == 0) {
                     sendResult.setSuccess(true);
                 } else {
                     sendResult.setSuccess(false);
@@ -138,15 +141,10 @@ public class TxYunMsgSender implements IMsgSender {
     }
 
     public TxYunAccountConfig getAccountConfig(Integer accountId) {
-        if (accountConfigMap.containsKey(accountId)) {
-            return accountConfigMap.get(accountId);
-        } else {
+        return accountConfigMap.computeIfAbsent(accountId, ignored -> {
             TAccount tAccount = accountMapper.selectByPrimaryKey(accountId);
             String accountConfig = tAccount.getAccountConfig();
-            TxYunAccountConfig txYunAccountConfig = JSON.parseObject(accountConfig, TxYunAccountConfig.class);
-
-            accountConfigMap.put(accountId, txYunAccountConfig);
-            return txYunAccountConfig;
-        }
+            return JSON.parseObject(accountConfig, TxYunAccountConfig.class);
+        });
     }
 }

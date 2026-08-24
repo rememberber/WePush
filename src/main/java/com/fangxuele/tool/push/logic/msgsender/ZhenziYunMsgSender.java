@@ -7,25 +7,17 @@ import com.fangxuele.tool.push.dao.TAccountMapper;
 import com.fangxuele.tool.push.dao.TMsgMapper;
 import com.fangxuele.tool.push.domain.TAccount;
 import com.fangxuele.tool.push.domain.TMsg;
+import com.fangxuele.tool.push.logic.MessageTypeEnum;
 import com.fangxuele.tool.push.logic.msgmaker.ZhenziYunMsgMaker;
+import com.fangxuele.tool.push.util.HttpClientRegistry;
 import com.fangxuele.tool.push.util.MybatisUtil;
+import com.fangxuele.tool.push.util.OkHttpRequestUtil;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
-
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * <pre>
@@ -43,7 +35,7 @@ public class ZhenziYunMsgSender implements IMsgSender {
      */
     private static final String DEFAULT_API_URL = "https://sms_developer.zhenzisms.com";
 
-    private CloseableHttpClient closeableHttpClient;
+    private final OkHttpClient httpClient;
 
     private ZhenziYunMsgMaker zhenziYunMsgMaker;
 
@@ -63,12 +55,12 @@ public class ZhenziYunMsgSender implements IMsgSender {
         String accountConfig = tAccount.getAccountConfig();
         zhenziYunAccountConfig = JSON.parseObject(accountConfig, ZhenziYunAccountConfig.class);
 
-        closeableHttpClient = HttpClients.createDefault();
+        httpClient = HttpClientRegistry.get(MessageTypeEnum.ZHENZI_YUN_CODE, tMsg.getAccountId());
     }
 
-    public static void removeAccount(Integer account1Id) {
-
-        // do nothing
+    public static void removeAccount(Integer accountId) {
+        HttpClientRegistry.invalidate(MessageTypeEnum.ZHENZI_YUN_CODE, accountId);
+        ProviderTrafficController.invalidate(MessageTypeEnum.ZHENZI_YUN_CODE, accountId);
     }
 
     @Override
@@ -91,22 +83,21 @@ public class ZhenziYunMsgSender implements IMsgSender {
                     apiUrl = DEFAULT_API_URL;
                 }
 
-                List<NameValuePair> keyValues = new ArrayList<>();
-                keyValues.add(new BasicNameValuePair("appId", zhenziYunAccountConfig.getAppId()));
-                keyValues.add(new BasicNameValuePair("appSecret", zhenziYunAccountConfig.getAppSecret()));
-                keyValues.add(new BasicNameValuePair("templateId", templateId));
-                keyValues.add(new BasicNameValuePair("templateParams", templateParams));
-                keyValues.add(new BasicNameValuePair("number", number));
-                String body = URLEncodedUtils.format(keyValues, Charset.forName("UTF-8"));
-
-                HttpResponse response = closeableHttpClient.execute(RequestBuilder.create("POST")
-                        .setUri(apiUrl + "/sms/send.html")
-                        .addHeader(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=utf-8")
-                        .setEntity(new StringEntity(body, Charset.forName("UTF-8"))).build());
-
-                String responseBody = EntityUtils.toString(response.getEntity(), "UTF-8");
+                Request request = new Request.Builder().url(apiUrl + "/sms/send.html")
+                        .post(new FormBody.Builder()
+                                .add("appId", zhenziYunAccountConfig.getAppId())
+                                .add("appSecret", zhenziYunAccountConfig.getAppSecret())
+                                .add("templateId", templateId)
+                                .add("templateParams", templateParams)
+                                .add("number", number)
+                                .build())
+                        .build();
+                OkHttpRequestUtil.ResponseData response = OkHttpRequestUtil.execute(httpClient, request);
+                String responseBody = response.body();
                 JSONObject result = JSON.parseObject(responseBody);
-                if (result != null && result.getIntValue("code") == 0) {
+                sendResult.setHttpStatus(response.statusCode());
+                sendResult.setRetryAfterMillis(response.retryAfterMillis());
+                if (response.isSuccessful() && result != null && result.getIntValue("code") == 0) {
                     sendResult.setSuccess(true);
                 } else {
                     sendResult.setSuccess(false);

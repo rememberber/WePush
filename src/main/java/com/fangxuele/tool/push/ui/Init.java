@@ -3,8 +3,10 @@ package com.fangxuele.tool.push.ui;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
+import com.fangxuele.tool.push.logic.msgsender.ProviderTrafficController;
 import com.fangxuele.tool.push.ui.dialog.FontSizeAdjustDialog;
 import com.fangxuele.tool.push.ui.form.*;
+import com.fangxuele.tool.push.util.HttpClientRegistry;
 import com.fangxuele.tool.push.util.SystemUtil;
 import com.fangxuele.tool.push.util.UpgradeUtil;
 import com.formdev.flatlaf.*;
@@ -283,6 +285,8 @@ public class Init {
     }
 
     public static void shutdown() {
+        HttpClientRegistry.shutdown();
+        ProviderTrafficController.resetAll();
         App.config.save();
         App.sqlSession.close();
         App.mainFrame.dispose();

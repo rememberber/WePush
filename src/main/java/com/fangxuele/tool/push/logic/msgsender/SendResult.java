@@ -19,4 +19,10 @@ public class SendResult {
     private boolean success = false;
 
     private String info;
+
+    /** HTTP 状态码；非 HTTP 发送器可为空。 */
+    private Integer httpStatus;
+
+    /** 服务端 Retry-After 换算后的毫秒数；未返回时为空。 */
+    private Long retryAfterMillis;
 }

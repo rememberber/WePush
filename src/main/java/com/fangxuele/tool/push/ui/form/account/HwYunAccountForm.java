@@ -86,7 +86,7 @@ public class HwYunAccountForm implements IAccountForm {
 
                 if (existSameAccount) {
                     accountMapper.updateByMsgTypeAndAccountName(tAccount1);
-                    HwYunMsgSender.removeAccount(tAccount1.getId());
+                    HwYunMsgSender.removeAccount(tAccount.getId());
                 } else {
                     tAccount1.setCreateTime(now);
                     accountMapper.insertSelective(tAccount1);
