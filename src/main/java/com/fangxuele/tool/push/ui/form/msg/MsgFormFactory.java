@@ -95,6 +95,9 @@ public class MsgFormFactory {
             case MessageTypeEnum.MP_SUBSCRIBE_CODE:
                 iMsgForm = MpSubscribeMsgForm.getInstance();
                 break;
+            case MessageTypeEnum.CARRIER_SMS_CODE:
+                iMsgForm = CarrierSmsMsgForm.getInstance();
+                break;
             case MessageTypeEnum.HTTP_CODE:
             default:
                 iMsgForm = HttpMsgForm.getInstance();

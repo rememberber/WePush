@@ -94,6 +94,9 @@ public class MsgSenderFactory {
             case MessageTypeEnum.MP_SUBSCRIBE_CODE:
                 iMsgSender = new WxMpSubscribeMsgSender(msgId, dryRun);
                 break;
+            case MessageTypeEnum.CARRIER_SMS_CODE:
+                iMsgSender = new CarrierSmsMsgSender(msgId, dryRun);
+                break;
             default:
                 break;
         }
@@ -129,6 +132,7 @@ public class MsgSenderFactory {
                 case MessageTypeEnum.JIGUANG_CODE -> JiguangMsgSender.removeAccount(accountId);
                 case MessageTypeEnum.JIGUANG_PUSH_CODE -> JiguangPushMsgSender.removeAccount(accountId);
                 case MessageTypeEnum.FEISHU_CODE -> FeishuMsgSender.removeAccount(accountId);
+                case MessageTypeEnum.CARRIER_SMS_CODE -> CarrierSmsMsgSender.removeAccount(accountId);
                 default -> {
                 }
             }

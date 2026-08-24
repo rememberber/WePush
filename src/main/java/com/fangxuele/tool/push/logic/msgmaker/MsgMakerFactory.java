@@ -88,6 +88,9 @@ public class MsgMakerFactory {
             case MessageTypeEnum.MP_SUBSCRIBE_CODE:
                 iMsgMaker = new WxMpSubscribeMsgMaker(tMsg);
                 break;
+            case MessageTypeEnum.CARRIER_SMS_CODE:
+                iMsgMaker = new CarrierSmsMsgMaker(tMsg);
+                break;
             default:
         }
         return iMsgMaker;

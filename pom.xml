@@ -65,7 +65,22 @@
         <flatlaf-intellij-themes.version>3.7.2</flatlaf-intellij-themes.version>
         <json-path.version>2.6.0</json-path.version>
         <gson.version>2.13.1</gson.version>
+        <sms-client.version>0.1</sms-client.version>
+        <guava.version>33.3.1-jre</guava.version>
+        <netty.version>4.1.137.Final</netty.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-bom</artifactId>
+                <version>${netty.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -73,6 +88,73 @@
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
+        </dependency>
+
+        <!-- 防止 sms-core 将现有 WeChat SDK 使用的 Guava 33 降级为 16。 -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+
+        <!-- sms-core 所需的 Netty 最小模块集，避免 netty-all 打入与短信无关的 HTTP/2、DNS、RXTX 和多平台 native 包。 -->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-buffer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-haproxy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-handler</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-handler-proxy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-transport</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-transport-classes-epoll</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.chinamobile.cmos</groupId>
+            <artifactId>sms-client</artifactId>
+            <version>${sms-client.version}</version>
+            <exclusions>
+                <!-- Classic 首期仅发送文本短信，不打包 WAP/MMS 和 Berkeley DB 组件。 -->
+                <exclusion>
+                    <groupId>com.chinamobile.cmos</groupId>
+                    <artifactId>wbxml-stream</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sleepycat</groupId>
+                    <artifactId>je</artifactId>
+                </exclusion>
+                <!-- FST 仅被已排除的持久化组件使用，且会在 Java 21 下引入反射开放需求。 -->
+                <exclusion>
+                    <groupId>de.ruedigermoeller</groupId>
+                    <artifactId>fst</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty-all</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

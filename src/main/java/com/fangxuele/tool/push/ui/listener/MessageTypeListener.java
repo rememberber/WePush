@@ -123,6 +123,10 @@ public class MessageTypeListener {
             App.config.setMsgType(MessageTypeEnum.FEISHU_CODE);
             saveType();
         });
+        messageTypeForm.getCarrierSmsRadioButton().addActionListener(e -> {
+            App.config.setMsgType(MessageTypeEnum.CARRIER_SMS_CODE);
+            saveType();
+        });
         messageTypeForm.getTxYun3RadioButton().addActionListener(e -> {
             App.config.setMsgType(MessageTypeEnum.TX_YUN_3_CODE);
             saveType();

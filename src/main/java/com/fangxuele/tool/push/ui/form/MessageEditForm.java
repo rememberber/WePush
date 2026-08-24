@@ -154,6 +154,9 @@ public class MessageEditForm {
             case MessageTypeEnum.BD_YUN_CODE:
                 messageEditForm.getMsgEditorPanel().add(BdYunMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
                 break;
+            case MessageTypeEnum.CARRIER_SMS_CODE:
+                messageEditForm.getMsgEditorPanel().add(CarrierSmsMsgForm.getInstance().getMainPanel(), gridConstraintsRow0);
+                break;
             default:
                 break;
         }

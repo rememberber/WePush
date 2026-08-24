@@ -51,6 +51,7 @@ public class MessageTypeForm {
     private JRadioButton mpSubscribeRadioButton;
     private JRadioButton txYun3RadioButton;
     private JRadioButton feishuRadioButton;
+    private JRadioButton carrierSmsRadioButton;
 
     private static MessageTypeForm messageTypeForm;
 
@@ -152,6 +153,9 @@ public class MessageTypeForm {
             case MessageTypeEnum.FEISHU_CODE:
                 messageTypeForm.getFeishuRadioButton().setSelected(true);
                 break;
+            case MessageTypeEnum.CARRIER_SMS_CODE:
+                messageTypeForm.getCarrierSmsRadioButton().setSelected(true);
+                break;
 
             default:
         }
@@ -216,7 +220,7 @@ public class MessageTypeForm {
         messageTypePanel.add(messageTypeScrollPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         messageTypeScrollPane.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), null, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
         msgTypeListPanel = new JPanel();
-        msgTypeListPanel.setLayout(new GridLayoutManager(25, 3, new Insets(10, 0, 0, 0), -1, -1));
+        msgTypeListPanel.setLayout(new GridLayoutManager(26, 3, new Insets(10, 0, 0, 0), -1, -1));
         msgTypeListPanel.setAutoscrolls(true);
         messageTypeScrollPane.setViewportView(msgTypeListPanel);
         mpTemplateRadioButton = new JRadioButton();
@@ -317,6 +321,10 @@ public class MessageTypeForm {
         feishuRadioButton.setEnabled(true);
         feishuRadioButton.setText("飞书机器人");
         msgTypeListPanel.add(feishuRadioButton, new GridConstraints(24, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        carrierSmsRadioButton = new JRadioButton();
+        carrierSmsRadioButton.setEnabled(true);
+        carrierSmsRadioButton.setText("运营商协议短信");
+        msgTypeListPanel.add(carrierSmsRadioButton, new GridConstraints(25, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(3, 1, new Insets(10, 0, 0, 0), -1, -1));
         messageTypePanel.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));

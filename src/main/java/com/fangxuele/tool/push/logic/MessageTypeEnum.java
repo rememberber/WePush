@@ -36,7 +36,8 @@ public enum MessageTypeEnum {
     LUOSIMAO(22, "Luosimao短信"),
     JIGUANG(23, "极光短信"),
     JIGUANG_PUSH(24, "极光推送"),
-    FEISHU(25, "飞书机器人");
+    FEISHU(25, "飞书机器人"),
+    CARRIER_SMS(26, "运营商协议短信");
 
     private int code;
 
@@ -67,6 +68,7 @@ public enum MessageTypeEnum {
     public static final int JIGUANG_CODE = 23;
     public static final int JIGUANG_PUSH_CODE = 24;
     public static final int FEISHU_CODE = 25;
+    public static final int CARRIER_SMS_CODE = 26;
 
     MessageTypeEnum(int code, String name) {
         this.code = code;
@@ -154,6 +156,9 @@ public enum MessageTypeEnum {
                 break;
             case 25:
                 name = FEISHU.name;
+                break;
+            case 26:
+                name = CARRIER_SMS.name;
                 break;
             default:
                 name = "";

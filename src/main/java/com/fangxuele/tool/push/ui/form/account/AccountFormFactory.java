@@ -86,6 +86,9 @@ public class AccountFormFactory {
             case MessageTypeEnum.JIGUANG_PUSH_CODE:
                 iAccountForm = JiguangPushAccountForm.getInstance();
                 break;
+            case MessageTypeEnum.CARRIER_SMS_CODE:
+                iAccountForm = CarrierSmsAccountForm.getInstance();
+                break;
             default:
                 break;
         }

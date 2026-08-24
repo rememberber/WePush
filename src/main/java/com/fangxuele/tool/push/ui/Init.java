@@ -4,6 +4,7 @@ import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import com.fangxuele.tool.push.App;
 import com.fangxuele.tool.push.logic.msgsender.ProviderTrafficController;
+import com.fangxuele.tool.push.logic.carriersms.CarrierSmsSessionRegistry;
 import com.fangxuele.tool.push.ui.dialog.FontSizeAdjustDialog;
 import com.fangxuele.tool.push.ui.form.*;
 import com.fangxuele.tool.push.util.HttpClientRegistry;
@@ -285,6 +286,7 @@ public class Init {
     }
 
     public static void shutdown() {
+        CarrierSmsSessionRegistry.shutdown();
         HttpClientRegistry.shutdown();
         ProviderTrafficController.resetAll();
         App.config.save();
