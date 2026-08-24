@@ -88,6 +88,21 @@ class CoreArchitectureTest {
     }
 
     @Test
+    void embeddedJavaSdkDependsOnCoreAndSpiButNotServiceAgentOrConcreteProviders() {
+        noClasses()
+                .that().resideInAPackage("..next.embedded..")
+                .should().dependOnClassesThat().resideInAnyPackage(
+                        "..agent..",
+                        "..service..",
+                        "..next.sdk..",
+                        "..provider.http..",
+                        "org.springframework..",
+                        "org.mybatis..",
+                        "jakarta.persistence..")
+                .check(classes);
+    }
+
+    @Test
     void agentProtocolAndRuntimeRemainIndependentFromServiceAndFrameworks() {
         noClasses()
                 .that().resideInAnyPackage("..agent.protocol..", "..agent.runtime..")

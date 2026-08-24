@@ -90,6 +90,7 @@ jobs:
           tar_listing=$(tar -tzf "wepush-next-${{ steps.metadata.outputs.version }}.tar.gz")
           grep -Eq '^wepush-next-[^/]+/PREVIEW-NOTICE.md$' <<< "$tar_listing"
           grep -Eq '^wepush-next-[^/]+/docs/user-guide.md$' <<< "$tar_listing"
+          grep -Eq '^wepush-next-[^/]+/sdk/embedded-java-[^/]+\.jar$' <<< "$tar_listing"
           unzip -t "wepush-next-${{ steps.metadata.outputs.version }}.zip"
       - name: Stage distribution assets
         env:
@@ -102,13 +103,24 @@ jobs:
           cp next/distribution/target/*.zip release-assets/
           cp next/distribution/target/*.sha256 release-assets/
           sdk_name="wepush-next-java-sdk-$VERSION"
-          mkdir -p "$sdk_name"
+          mkdir -p "$sdk_name/embedded-java"
           cp next/sdk/README.md "$sdk_name/"
+          cp next/sdk/embedded-java/README.md "$sdk_name/embedded-java/README.md"
           cp next/pom.xml "$sdk_name/wepush-next-parent-$VERSION.pom"
           cp next/service/service-api/pom.xml "$sdk_name/service-api-$VERSION.pom"
           cp next/service/service-api/target/service-api-$VERSION.jar "$sdk_name/"
           cp next/sdk/sdk-java/pom.xml "$sdk_name/sdk-java-$VERSION.pom"
           cp next/sdk/sdk-java/target/sdk-java-$VERSION.jar "$sdk_name/"
+          cp next/core/core-api/pom.xml "$sdk_name/core-api-$VERSION.pom"
+          cp next/core/core-api/target/core-api-$VERSION.jar "$sdk_name/"
+          cp next/core/provider-spi/pom.xml "$sdk_name/provider-spi-$VERSION.pom"
+          cp next/core/provider-spi/target/provider-spi-$VERSION.jar "$sdk_name/"
+          cp next/core/engine/pom.xml "$sdk_name/engine-$VERSION.pom"
+          cp next/core/engine/target/engine-$VERSION.jar "$sdk_name/"
+          cp next/providers/provider-http/pom.xml "$sdk_name/provider-http-$VERSION.pom"
+          cp next/providers/provider-http/target/provider-http-$VERSION.jar "$sdk_name/"
+          cp next/sdk/embedded-java/pom.xml "$sdk_name/embedded-java-$VERSION.pom"
+          cp next/sdk/embedded-java/target/embedded-java-$VERSION.jar "$sdk_name/"
           cp next/service/service-api/src/main/resources/openapi/openapi.yaml "$sdk_name/"
           cp LICENSE.txt next/PREVIEW-NOTICE.md next/SECURITY.md next/THIRD-PARTY-NOTICES.md "$sdk_name/"
           zip -qr "release-assets/$sdk_name.zip" "$sdk_name"

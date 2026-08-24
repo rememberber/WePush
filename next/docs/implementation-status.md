@@ -1,13 +1,13 @@
 # WePush Next 实现状态
 
-更新时间：2026-08-23
+更新时间：2026-08-24
 
 ## 1. 里程碑结论
 
 `next/` 的 `0.1.0-alpha.1` 公开预览目标架构基线已经形成完整、可独立构建的产品纵向链路。Classic 源码和构建保持不动；两条产品线不共享源码依赖，允许各自存在相似实现。
 
 ```text
-React WebUI / Electron Desktop / Java SDK
+React WebUI / Electron Desktop / Remote Java SDK
                   │ REST + Bearer RBAC + SSE
                   ▼
        Spring Boot Service API（1..N 实例）
@@ -22,6 +22,8 @@ React WebUI / Electron Desktop / Java SDK
                     Core Engine
                          │
                    Provider SPI
+
+业务 Java 应用 → Embedded Java SDK → Core Engine → Provider SPI
 ```
 
 Standalone 默认是单 Service + SQLite + Local Artifact + Embedded Engine；Server 默认模型是 PostgreSQL 18 + S3-compatible Store + 多 Service + Remote Agent。PostgreSQL 和 S3 不是使用 Next 的前置条件，只是 Server/HA 形态的共享事实源。
@@ -34,7 +36,8 @@ Standalone 默认是单 Service + SQLite + Local Artifact + Embedded Engine；Se
 | Provider | 独立 SPI、HTTP Provider、JSON Schema、SSRF/响应上限；PF4J 外部插件发现、Ed25519 签名、Zip Slip/共享包校验、受控滚动激活与失败回滚 |
 | Agent | gRPC 双向流、Sequence/Fence Journal、磁盘 Event/Completion Outbox、重连恢复、Secret Envelope、远端 Artifact 上传、Enrollment/轮换、TLS/mTLS |
 | Service | Spring Boot 4.1.1、分层应用服务、SQLite/PostgreSQL、Local/S3 Artifact、RBAC/审计/Scheduler、Agent HA outbox、跨实例 SSE 补偿 |
-| Java SDK | 只依赖公开 `service-api`；覆盖 System、Provider、Agent、Workspace、资源、Run、Artifact、Schedule、Security |
+| Remote Java SDK | 只依赖公开 `service-api`；覆盖 System、Provider、Agent、Workspace、资源、Run、Artifact、Schedule、Security |
+| Embedded Java SDK | Framework-free 进程内 Engine 门面；显式 Provider、SecretResolver、Result/Event/Artifact Sink，支持列表或流式 Recipient 与完整 RunHandle 控制 |
 | WebUI | TypeScript/Vite/React；可视化配置、任务/调度、运行监控、Bearer SSE、Token/Enrollment/审计、动态 API 调试文档 |
 | Desktop | Electron 安全外壳，共用 WebUI；目标系统原生目录打包、相对 Framework 链接、macOS ad-hoc/Developer ID 签名入口，不依赖 Core 或 Service 内部实现 |
 | Distribution | tar.gz/zip + 标准 SHA-256 校验；内含 WebUI；Linux systemd、macOS 非 root launchd、Windows LocalService/WinSW 安装/升级/备份/卸载；容器 Server/HA 拓扑 |
@@ -71,7 +74,8 @@ Standalone 默认是单 Service + SQLite + Local Artifact + Embedded Engine；Se
 
 - OpenAPI 3.1 覆盖公开控制面、Schedule/Security/Workspace 与 Agent Internal Enrollment/Lease/Artifact API；全局 Bearer Security 和内部自定义认证显式声明。
 - Maven 契约测试拒绝 YAML 重复键、重复/缺失 `operationId`、无 Response 和不可解析的本地 `$ref`。
-- Java SDK 只有 `service-api` 依赖，绝不依赖 Core/Engine/Provider；新增 `SecurityClient`、`WorkspacesClient`、Schedule CRUD、Token 撤销、Enrollment Token 和通用 PATCH/DELETE Transport。
+- Remote Java SDK 只有 `service-api` 依赖，绝不依赖 Core/Engine/Provider；新增 `SecurityClient`、`WorkspacesClient`、Schedule CRUD、Token 撤销、Enrollment Token 和通用 PATCH/DELETE Transport。
+- Embedded Java SDK 依赖 Core API、Provider SPI 和 Engine，但不依赖 Service、Agent、Spring 或具体 Provider；应用显式注册允许的 Provider，并选择共享或按 Run 创建的 Sink。
 - TypeScript Client 使用可更新 Bearer Token；SSE 使用自定义 Fetch Parser，因此 Server 安全模式不受原生 `EventSource` 无法设置 Authorization Header 的限制。
 - WebUI 接入 Account/Message/Audience/Job/Run/Artifact 全链路、Schedule 创建/启停、API Token 创建/列表/撤销、Agent Enrollment、审计查看与动态 GET/POST/PUT/PATCH/DELETE API 调试。
 - Desktop 主进程保持 `contextIsolation=true`、`nodeIntegration=false`，开发加载 Vite，发行加载 `process.resourcesPath` 下的共享 WebUI。布局和视觉 Token 使用接近 Codex 客户端的紧凑侧栏、内容工作区、柔和边界和低噪声状态样式。
@@ -102,7 +106,7 @@ Standalone 默认是单 Service + SQLite + Local Artifact + Embedded Engine；Se
 - 真实 gRPC 纵向链路覆盖 Hello/Welcome、Lease Ack、受保护文档、Secret、Command Ack、Event 去重、Agent Artifact 上传/Commit、Run Completion。
 - 插件测试覆盖有效签名、未知签名者、Zip Slip 和空目录。
 - 安装脚本通过 POSIX shell 语法、launchd plist、WinSW XML 与 Compose 配置静态校验。
-- 发行归档生成 tar.gz、zip 与 SHA-256，并检查 Service/Agent/WebUI/安装脚本均存在。
+- 发行归档生成 tar.gz、zip 与 SHA-256，并检查 Service/Agent/WebUI/安装脚本及 Remote/Embedded Java SDK 均存在。
 
 `.github/workflows/next-ci.yml` 另外使用真实 PostgreSQL 18 和固定 MinIO 版本验证：
 
@@ -123,4 +127,4 @@ Standalone 默认是单 Service + SQLite + Local Artifact + Embedded Engine；Se
 - 外部 Vault/云 KMS/OS Keychain 适配器，以及非受信 Provider 独立进程 Runner。
 - 公共 SaaS 的自助注册、计费、订阅、恶意租户物理隔离和跨区域 Active-Active。
 
-这些增量继续遵守 Classic/Next 双轨独立、Java SDK 不依赖 Core、Workspace 显式隔离、Lease Fencing、Secret 最小暴露和 Artifact 完整性边界。
+这些增量继续遵守 Classic/Next 双轨独立、Remote Java SDK 不依赖 Core、Embedded Java SDK 不依赖 Service、Workspace 显式隔离、Lease Fencing、Secret 最小暴露和 Artifact 完整性边界。

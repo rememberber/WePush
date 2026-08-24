@@ -2,6 +2,18 @@
 
 本文件仅记录 `next/` 产品线；Classic 继续独立演进。
 
+## Unreleased
+
+### Added
+
+- 新增 Embedded Java SDK：Java 应用可在本进程显式装配 Core Engine 和 Provider，无需启动 Service、Agent 或数据库。
+- 新增共享/按 Run 创建的 Result、Event、Artifact Sink 生命周期模型，以及测试/小任务使用的 `InMemoryExecutionStore`。
+- 发行归档和独立 Java SDK 包开始携带 Embedded SDK、Core、Provider SPI、Engine 与 HTTP Provider 的 POM/JAR。
+
+### Changed
+
+- HTTP Provider 纵向集成测试改为通过 Embedded SDK 公开入口执行，架构测试新增 Embedded SDK 边界约束。
+
 ## 0.1.0-alpha.1 — 2026-08-24
 
 首个公开预览版本。

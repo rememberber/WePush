@@ -46,6 +46,7 @@
         <module>service/service-infrastructure</module>
         <module>service/service-app</module>
         <module>sdk/sdk-java</module>
+        <module>sdk/embedded-java</module>
         <module>tests/architecture-tests</module>
         <module>tests/integration-tests</module>
         <module>distribution</module>

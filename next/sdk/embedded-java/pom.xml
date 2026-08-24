@@ -9,17 +9,23 @@
         <version>0.1.0-alpha.1</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
-    <artifactId>integration-tests</artifactId>
-    <name>WePush Next :: Integration Tests</name>
+    <artifactId>embedded-java</artifactId>
+    <name>WePush Next :: Embedded Java SDK</name>
+    <description>In-process Java facade for WePush Core Engine and explicitly selected Providers</description>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>embedded-java</artifactId>
+            <artifactId>core-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>provider-http</artifactId>
+            <artifactId>provider-spi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>engine</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

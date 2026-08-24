@@ -1072,7 +1072,7 @@ service/service-api/src/main/openapi/
     └── event.yaml
 ```
 
-构建时先校验和打包 OpenAPI，再生成 Server Stub 与 Java SDK。生成代码不得手工修改。
+构建时先校验和打包 OpenAPI，再生成 Server Stub 与 Remote Java SDK。生成代码不得手工修改。
 
 ### 24.2 创建 Run
 
@@ -1480,7 +1480,7 @@ schedule:<scheduleId>:<scheduledInstant>
 - 不在调度事务中物化大型 Audience；Run 创建后异步准备 Snapshot。
 - Cron 解析和 Next Fire 计算使用同一库和版本，保存测试样例防止升级行为变化。
 
-## 32. Java SDK 详细设计
+## 32. Remote 与 Embedded Java SDK 详细设计
 
 ### 32.1 包结构
 
@@ -1530,18 +1530,19 @@ try (WePushClient client = WePushClient.builder()
 ### 32.4 Embedded SDK
 
 ```java
-WePushEngine engine = WePushEngine.builder()
+try (WePushEngine engine = WePushEngine.builder()
         .provider(new HttpProviderFactory())
         .secretResolver(secretResolver)
         .resultSink(resultSink)
-        .build();
-
-RunHandle handle = engine.start(spec, recipients);
-handle.submit(new ChangeConcurrency(commandId, 50));
-RunSummary summary = handle.completion().toCompletableFuture().join();
+        .eventSink(eventSink)
+        .build()) {
+    RunHandle handle = engine.start(spec, recipients);
+    handle.submit(new RunCommand.ChangeConcurrency(commandId, 50));
+    RunSummary summary = handle.completion().toCompletableFuture().join();
+}
 ```
 
-Embedded SDK 不创建数据库、不读取 Next Service 配置目录，也不自动发现未显式允许的第三方 Provider。
+Embedded SDK 不创建数据库、不读取 Next Service 配置目录，也不自动发现未显式允许的第三方 Provider。共享 Sink 与 Engine 同生命周期且必须支持并发 Run；使用 `resultSinkFactory`、`eventSinkFactory` 或 `artifactSinkFactory` 创建的 Sink 归单个 Run 所有，并在完成或启动拒绝后关闭。
 
 ## 33. WebUI 详细设计
 

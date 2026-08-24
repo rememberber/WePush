@@ -79,7 +79,7 @@ Core 不直接更新 UI。进度、日志、告警和状态变化都以结构化
 flowchart LR
     Operator[操作人员] --> WebUI[WebUI]
     Operator --> Desktop[Desktop UI]
-    JavaApp[Java 应用] --> SDK[Java SDK]
+    JavaApp[Java 应用] --> SDK[Remote Java SDK]
 
     WebUI --> API[Service API]
     Desktop --> API
@@ -104,7 +104,7 @@ flowchart LR
 | Provider | 渠道协议适配、认证、请求构建和响应解释 | Service CRUD、UI 控件 |
 | Agent | 注册、心跳、任务租约、Core 执行、事件上报 | 面向用户的业务管理 API |
 | Service | 配置管理、调度、Run 编排、Agent 管理、持久化、认证 | 直接调用渠道发送消息 |
-| Java SDK | Service API 的类型安全客户端 | 本地执行引擎 |
+| Remote Java SDK | Service API 的类型安全客户端 | 本地执行引擎 |
 | Embedded Java SDK | 在 Java 进程内使用 Core 和 Provider | 远程 Service 管理能力 |
 | WebUI | 浏览器管理、配置、监控和 API 调试 | 直接访问数据库或 Core |
 | Desktop UI | 桌面入口、本地 Service 管理、远程 Service 连接 | 直接执行 Provider |
@@ -390,7 +390,7 @@ Enrollment 和凭据轮换使用 HTTPS REST；WebUI、Desktop UI 和远程 SDK �
 - `service-infrastructure`：数据库、Secret、Artifact、Agent 通信等适配器。
 - `service-app`：Web 框架、配置、启动和部署入口。
 
-Service 基线固定为 Java 21 和 Spring Boot 4.1.x，初始实现版本为 4.1.1；数据库迁移使用显式版本化迁移工具，依赖版本由 BOM 统一管理。Spring 只存在于 Service App、Web 和 Infrastructure 层，不进入 Core、Provider SPI、Agent Runtime、Java SDK 或 Embedded SDK。详见 [ADR-0002](adr/0002-technology-baseline.md)。
+Service 基线固定为 Java 21 和 Spring Boot 4.1.x，初始实现版本为 4.1.1；数据库迁移使用显式版本化迁移工具，依赖版本由 BOM 统一管理。Spring 只存在于 Service App、Web 和 Infrastructure 层，不进入 Core、Provider SPI、Agent Runtime、Remote Java SDK 或 Embedded SDK。详见 [ADR-0002](adr/0002-technology-baseline.md)。
 
 ### 13.2 主要领域对象
 
@@ -499,7 +499,7 @@ Service 提供：
 
 生产环境中，API 调试页面必须经过权限控制。危险操作需要二次确认，Secret 不得写入浏览器持久化存储或出现在生成的示例中。
 
-## 15. Java SDK 设计
+## 15. Remote Java SDK 设计
 
 ### 15.1 远程 SDK
 
@@ -672,7 +672,7 @@ Run 的状态摘要、事件和结果制品允许短暂最终一致，但终态�
 
 - Next 在架构建设期使用独立的 `0.x` 版本。
 - 公开 API 使用路径主版本，例如 `/api/v1`。
-- Java SDK 与 API 兼容矩阵独立于 Service 内部模块版本。
+- Remote Java SDK 与 API 兼容矩阵独立于 Service 内部模块版本。
 - Agent 协议单独版本化，Service 应允许一个受控范围内的新旧 Agent 共存。
 - Provider SPI 的不兼容变化必须提升 SPI 主版本。
 - Run Snapshot 保存必要的 Provider 和 Schema 版本，便于结果追溯。
@@ -685,7 +685,7 @@ Run 的状态摘要、事件和结果制品允许短暂最终一致，但终态�
 2. Core Engine 能流式执行、限流、取消并输出事件。
 3. Embedded Agent 能领取并执行 Run。
 4. Service 能管理账号、消息、受众、任务和 Run。
-5. Java SDK 能创建任务、启动 Run 和订阅事件。
+5. Remote Java SDK 能创建任务、启动 Run 和订阅事件。
 6. WebUI 能动态配置 HTTP Provider、启动 Run 并查看实时结果。
 7. Standalone 安装包能在至少一个平台完成安装和重启恢复。
 
@@ -703,7 +703,7 @@ Run 的状态摘要、事件和结果制品允许短暂最终一致，但终态�
 
 - 实现 Core Engine、HTTP Provider 和 Embedded Agent。
 - 实现 Service、SQLite、Artifact 和基础 Secret 存储。
-- 完成远程 Java SDK 和最小 WebUI。
+- 完成 Remote Java SDK 和最小 WebUI。
 
 ### 阶段 C：产品化单机版本
 
@@ -746,12 +746,12 @@ Run 的状态摘要、事件和结果制品允许短暂最终一致，但终态�
 - Core 可以在纯单元测试中使用内存适配器执行完整 Run。
 - Provider 不通过数据库 ID 自行加载账号或消息配置。
 - 同一个 HTTP Run 可以由 Embedded Agent 和 Remote Agent 使用相同 Core 行为执行。
-- WebUI、Desktop UI 和 Java SDK 通过同一公开 API 管理任务。
+- WebUI、Desktop UI 和 Remote Java SDK 通过同一公开 API 管理任务。
 - Service 重启后能够恢复非终态 Run，并明确区分可重试和结果未知状态。
 - Agent 失联不会导致 Service 无限等待，也不会未经判断立即重复发送。
 - 大受众执行不要求将全部 Recipient 和结果加载到内存。
 - Secret 不出现在查询响应、日志、事件和结果制品中。
-- OpenAPI 能生成 Java SDK，并通过 API 契约测试。
+- OpenAPI 能生成 Remote Java SDK，并通过 API 契约测试。
 - Classic 与 Next 能在同一台机器上同时安装和运行，配置和数据互不影响。
 
 ## 30. 文档维护

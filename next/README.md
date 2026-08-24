@@ -4,6 +4,8 @@ WePush Next 是与 Classic 完全独立的新产品线。Classic 与 Next 可以
 
 > 当前版本：`0.1.0-alpha.1` Public Preview。它不是稳定版，Desktop 与安装包未使用商业代码签名。下载、校验和已知边界见 [`PREVIEW-NOTICE.md`](PREVIEW-NOTICE.md) 与 [`docs/releases/0.1.0-alpha.1.md`](docs/releases/0.1.0-alpha.1.md)。
 
+> 当前分支还包含 `alpha.1` 发布后的 Embedded Java SDK 等增量；已发布的 `alpha.1` 附件不包含这些增量，它们将进入后续预览发行版。
+
 第一次下载和使用请从[《WePush Next 对外使用指南》](docs/user-guide.md)开始。该指南覆盖发行物选择、三平台启动/安装、Desktop 连接、首个 HTTP Provider Dry Run、正式 API 调用、数据备份和常见问题。
 
 ## 验证 Java 工程
@@ -82,9 +84,9 @@ java -jar service/service-app/target/wepush-next-service.jar
 
 需要 Secret 的远端 Run 会使用 Agent 在 Hello 中发布的会话级 X25519 公钥。Service 只解析冻结配置中实际引用的最小 Secret 集，使用一次性 X25519、HKDF-SHA-256 和 AES-256-GCM 加密，并绑定 Agent、Run、Lease、Epoch、Fencing Token 与过期时间。Agent 仅在内存中解密，运行结束立即清零，不写入 Journal。正式跨主机部署仍应关闭明文 gRPC 并配置 TLS；Secret Envelope 不替代 Agent 身份认证和传输层安全。
 
-## Java SDK
+## Java SDKs
 
-远程 SDK 只依赖公开 `service-api`，不依赖 Core、Engine 或具体 Provider：
+Next 提供两种独立 SDK。Remote SDK 通过 HTTP 调用 Service，只依赖公开 `service-api`，不依赖 Core、Engine 或具体 Provider：
 
 公开预览发行包在 `sdk/` 中附带可安装到本地 Maven Repository 的 POM/JAR，步骤见 [`sdk/README.md`](sdk/README.md)。
 
@@ -101,12 +103,28 @@ try (var client = WePushClient.builder()
 }
 ```
 
+Embedded SDK 则在调用方 JVM 内直接运行 Engine，显式装配所需 Provider，不启动 Service、Agent 或数据库：
+
+```java
+var store = new InMemoryExecutionStore();
+try (var engine = WePushEngine.builder()
+        .provider(new HttpProviderFactory())
+        .resultSink(store)
+        .eventSink(store)
+        .build()) {
+    var summary = engine.start(spec, recipients)
+            .completion().toCompletableFuture().join();
+}
+```
+
+从源码安装、依赖声明和完整示例见 [`sdk/README.md`](sdk/README.md) 与 [`sdk/embedded-java/README.md`](sdk/embedded-java/README.md)。已发布的 `alpha.1` SDK 附件只有 Remote SDK；Embedded SDK 从当前源码和后续预览发行版提供。
+
 ## 当前开发基线
 
 - Core API、Provider SPI、虚拟线程 Engine 与 HTTP Provider。
 - Agent Protocol、Protobuf/gRPC 双向控制流、Sequence/Fencing Runtime、持久 Journal、加密 Secret Envelope、远端 Core 执行适配与常驻 Agent 包。
 - Service 分层、SQLite/Flyway、控制面 CRUD、Agent 注册/心跳/持久 Lease、信封加密 Secret Store、Result/Command/Artifact 持久化、本地 Artifact Store、Run 幂等创建、SSE，以及可切换的内嵌/远端执行器。
-- 独立远程 Java SDK 和 TypeScript API Client。
+- 相互独立的 Remote Java SDK、Embedded Java SDK 和 TypeScript API Client。
 - React WebUI、可视化 Account/Message/Audience/Job 创建闭环、可控制运行中心、动态 API 文档、Electron 安全外壳和共享前端 packages。
 - 架构、单元、契约、Service 冒烟与 Account→Run→Engine→Provider 纵向测试。
 

@@ -53,6 +53,11 @@
             <destName>README.md</destName>
         </file>
         <file>
+            <source>../sdk/embedded-java/README.md</source>
+            <outputDirectory>sdk/embedded-java</outputDirectory>
+            <destName>README.md</destName>
+        </file>
+        <file>
             <source>../pom.xml</source>
             <outputDirectory>sdk</outputDirectory>
             <destName>wepush-next-parent-${project.version}.pom</destName>
@@ -76,6 +81,56 @@
             <source>../sdk/sdk-java/target/sdk-java-${project.version}.jar</source>
             <outputDirectory>sdk</outputDirectory>
             <destName>sdk-java-${project.version}.jar</destName>
+        </file>
+        <file>
+            <source>../core/core-api/pom.xml</source>
+            <outputDirectory>sdk</outputDirectory>
+            <destName>core-api-${project.version}.pom</destName>
+        </file>
+        <file>
+            <source>../core/core-api/target/core-api-${project.version}.jar</source>
+            <outputDirectory>sdk</outputDirectory>
+            <destName>core-api-${project.version}.jar</destName>
+        </file>
+        <file>
+            <source>../core/provider-spi/pom.xml</source>
+            <outputDirectory>sdk</outputDirectory>
+            <destName>provider-spi-${project.version}.pom</destName>
+        </file>
+        <file>
+            <source>../core/provider-spi/target/provider-spi-${project.version}.jar</source>
+            <outputDirectory>sdk</outputDirectory>
+            <destName>provider-spi-${project.version}.jar</destName>
+        </file>
+        <file>
+            <source>../core/engine/pom.xml</source>
+            <outputDirectory>sdk</outputDirectory>
+            <destName>engine-${project.version}.pom</destName>
+        </file>
+        <file>
+            <source>../core/engine/target/engine-${project.version}.jar</source>
+            <outputDirectory>sdk</outputDirectory>
+            <destName>engine-${project.version}.jar</destName>
+        </file>
+        <file>
+            <source>../providers/provider-http/pom.xml</source>
+            <outputDirectory>sdk</outputDirectory>
+            <destName>provider-http-${project.version}.pom</destName>
+        </file>
+        <file>
+            <source>../providers/provider-http/target/provider-http-${project.version}.jar</source>
+            <outputDirectory>sdk</outputDirectory>
+            <destName>provider-http-${project.version}.jar</destName>
+        </file>
+        <file>
+            <source>../sdk/embedded-java/pom.xml</source>
+            <outputDirectory>sdk</outputDirectory>
+            <destName>embedded-java-${project.version}.pom</destName>
+        </file>
+        <file>
+            <source>../sdk/embedded-java/target/embedded-java-${project.version}.jar</source>
+            <outputDirectory>sdk</outputDirectory>
+            <destName>embedded-java-${project.version}.jar</destName>
         </file>
         <file>
             <source>../service/service-app/target/wepush-next-service.jar</source>

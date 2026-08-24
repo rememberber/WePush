@@ -224,6 +224,8 @@ jobs:
           grep -Eq '^wepush-next-[^/]+/SECURITY.md$' <<< "$tar_listing"
           grep -Eq '^wepush-next-[^/]+/api/openapi.yaml$' <<< "$tar_listing"
           grep -Eq '^wepush-next-[^/]+/sdk/sdk-java-[^/]+\.jar$' <<< "$tar_listing"
+          grep -Eq '^wepush-next-[^/]+/sdk/embedded-java-[^/]+\.jar$' <<< "$tar_listing"
+          grep -Eq '^wepush-next-[^/]+/sdk/provider-http-[^/]+\.jar$' <<< "$tar_listing"
           unzip -t "$zip_archive"
       - uses: actions/upload-artifact@v4
         with:
