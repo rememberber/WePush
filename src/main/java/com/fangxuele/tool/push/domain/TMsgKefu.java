@@ -26,6 +26,8 @@ public class TMsgKefu {
 
     private String thumbMediaId;
 
+    private String mediaId;
+
     public String getKefuMsgType() {
         return kefuMsgType;
     }
@@ -120,5 +122,13 @@ public class TMsgKefu {
 
     public void setThumbMediaId(String thumbMediaId) {
         this.thumbMediaId = thumbMediaId == null ? null : thumbMediaId.trim();
+    }
+
+    public String getMediaId() {
+        return mediaId;
+    }
+
+    public void setMediaId(String mediaId) {
+        this.mediaId = mediaId == null ? null : mediaId.trim();
     }
 }

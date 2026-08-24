@@ -31,6 +31,8 @@ public class TMsgKefuPriority {
 
     private String thumbMediaId;
 
+    private String mediaId;
+
     private List<TemplateData> templateDataList;
 
     public String getTemplateId() {
@@ -135,6 +137,14 @@ public class TMsgKefuPriority {
 
     public void setThumbMediaId(String thumbMediaId) {
         this.thumbMediaId = thumbMediaId == null ? null : thumbMediaId.trim();
+    }
+
+    public String getMediaId() {
+        return mediaId;
+    }
+
+    public void setMediaId(String mediaId) {
+        this.mediaId = mediaId == null ? null : mediaId.trim();
     }
 
     public List<TemplateData> getTemplateDataList() {

@@ -55,6 +55,8 @@ public class KefuPriorityMsgForm implements IMsgForm {
                 KefuMsgForm.getInstance().getContentTextArea().setText(tMsg.getContent());
             } else if ("图文消息".equals(kefuMsgType)) {
                 KefuMsgForm.getInstance().getMsgKefuMsgTitleTextField().setText(tMsgKefuPriority.getTitle());
+            } else if ("图片消息".equals(kefuMsgType)) {
+                KefuMsgForm.getInstance().getMsgKefuMediaIdTextField().setText(tMsgKefuPriority.getMediaId());
             } else if ("小程序卡片消息".equals(kefuMsgType)) {
                 KefuMsgForm.getInstance().getMsgKefuMsgTitleTextField().setText(tMsgKefuPriority.getTitle());
                 KefuMsgForm.getInstance().getMsgKefuAppidTextField().setText(tMsgKefuPriority.getAppId());
@@ -126,8 +128,12 @@ public class KefuPriorityMsgForm implements IMsgForm {
             String kefuAppId = KefuMsgForm.getInstance().getMsgKefuAppidTextField().getText();
             String kefuPagePath = KefuMsgForm.getInstance().getMsgKefuPagepathTextField().getText();
             String kefuThumbMediaId = KefuMsgForm.getInstance().getMsgKefuThumbMediaIdTextField().getText();
+            String kefuMediaId = KefuMsgForm.getInstance().getMsgKefuMediaIdTextField().getText();
             String templateMiniAppid = MpTemplateMsgForm.getInstance().getMsgTemplateMiniAppidTextField().getText();
             String templateMiniPagePath = MpTemplateMsgForm.getInstance().getMsgTemplateMiniPagePathTextField().getText();
+
+            KefuMsgForm.validateRequiredFields(kefuMsgType, kefuMsgTitle, kefuAppId, kefuPagePath,
+                    kefuThumbMediaId, kefuMediaId);
 
             String now = SqliteUtil.nowDateForSqlite();
 
@@ -153,6 +159,7 @@ public class KefuPriorityMsgForm implements IMsgForm {
             tMsgKefuPriority.setAppId(kefuAppId);
             tMsgKefuPriority.setPagePath(kefuPagePath);
             tMsgKefuPriority.setThumbMediaId(kefuThumbMediaId);
+            tMsgKefuPriority.setMediaId(kefuMediaId);
 
             // 如果table为空，则初始化
             if (MpTemplateMsgForm.getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
