@@ -19,11 +19,11 @@ WePush 采用 Classic 与 Next 双轨发展。两条产品线彼此独立，允�
 | 产品线 | 当前定位 | 适合场景 | 入口 |
 | --- | --- | --- | --- |
 | WePush Classic | 稳定桌面客户端 | 微信、短信、邮件、HTTP 等成熟批量推送场景 | [Classic 下载](https://gitee.com/zhoubochina/WePush/releases) |
-| WePush Next | `0.1.0-alpha.2` Public Preview | Service/Agent、WebUI/Desktop、Service API、Remote/Embedded Java SDK 和新消息能力验证 | [Next 下载](https://github.com/rememberber/WePush/releases/tag/next-v0.1.0-alpha.2) |
+| WePush Next | `0.1.0-alpha.3` Public Preview | 自部署 Service/Agent、WebUI/Desktop、文件导入、发送确认与失败重发闭环 | [Next 下载](https://github.com/rememberber/WePush/releases/tag/next-v0.1.0-alpha.3) |
 
 ### WePush Next Public Preview
 
-Next 是位于 [`next/`](next/) 的完整新架构产品线，包含 Core Engine、Provider SPI、可安装 Service、远程 Agent、Remote/Embedded Java SDK、React WebUI 和 Electron Desktop。当前内置 HTTP Provider，支持可视化配置、运行中心、Cron 调度、动态调试 API 文档，以及 Standalone 和 Server/HA 两种部署基线。
+Next 是位于 [`next/`](next/) 的完整新架构产品线，包含 Core Engine、Provider SPI、可安装 Service、远程 Agent、Remote/Embedded Java SDK、React WebUI 和 Electron Desktop。当前 `0.1.0-alpha.3` 内置 HTTP Provider，支持资源编辑与不可变修订、CSV/TXT 受众导入、Dry Run、正式发送确认、失败项重发、分页筛选、真实运行总览和 Cron 调度，以及 Standalone 和 Server/HA 两种自部署基线。
 
 Next 的长期定位是由用户自行下载、安装、部署和运维的开源产品。项目不建设承载用户业务数据的官方公共 SaaS，不提供注册、计费、订阅或公共租户平台，也不规划云 KMS/Secret Manager 集成。用户可以在自己的环境中运行 Standalone，或自行搭建 Server/HA 和远程 Agent。
 
@@ -36,7 +36,7 @@ Next 的长期定位是由用户自行下载、安装、部署和运维的开源
 | [Service](next/service/) | 提供配置、调度、运行控制、Secret、Artifact、审计、REST/SSE、OpenAPI 和 Agent 控制面 | 可前台运行或安装为 Linux systemd、macOS launchd、Windows Service；本机模式可内嵌 Core Engine |
 | [Agent](next/agent/) | 在独立主机接收 Lease，使用 Core Engine 执行任务并回传事件、结果和 Artifact | 可独立安装，通过 gRPC 主动连接 Service；本机内嵌执行时不需要 Agent |
 | [Remote Java SDK](next/sdk/sdk-java/) | 让 Java 应用通过强类型客户端调用远程 Service API | 已实现；只依赖公开的 `service-api` 契约，不依赖 Core、Engine 或具体 Provider |
-| [Embedded Java SDK](next/sdk/embedded-java/) | 让 Java 应用在自己的进程内直接装配 Core Engine 和选定 Provider，无需启动 Service | `alpha.2` 发行附件已包含；允许依赖 Engine，Provider 必须由业务应用显式选择 |
+| [Embedded Java SDK](next/sdk/embedded-java/) | 让 Java 应用在自己的进程内直接装配 Core Engine 和选定 Provider，无需启动 Service | `alpha.3` 发行附件已包含；允许依赖 Engine，Provider 必须由业务应用显式选择 |
 | [WebUI](next/ui/apps/web/) | 提供可视化配置、任务与调度、运行中心、Agent 观察和动态调试 API 文档 | TypeScript + Vite + React，可由 Service 直接托管，也可在开发环境独立运行 |
 | [Desktop UI](next/ui/apps/desktop/) | 提供与 WebUI 一致的桌面管理体验和安全 Electron 外壳 | 连接本机 Service；当前不内嵌、不安装也不自动启动 Service |
 
@@ -49,7 +49,7 @@ Next 的长期定位是由用户自行下载、安装、部署和运维的开源
 - [架构与概要设计](next/docs/architecture-and-high-level-design.md)
 - [详细设计](next/docs/detailed-design.md)
 - [部署与运维](next/docs/deployment-and-operations.md)
-- [`0.1.0-alpha.2` Release Notes](next/docs/releases/0.1.0-alpha.2.md)
+- [`0.1.0-alpha.3` Release Notes](next/docs/releases/0.1.0-alpha.3.md)
 
 ## WePush Classic
 
