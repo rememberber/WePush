@@ -6,7 +6,7 @@
 
     <groupId>com.fangxuele.wepush.next</groupId>
     <artifactId>wepush-next-parent</artifactId>
-    <version>0.1.0-alpha.1</version>
+    <version>0.1.0-alpha.2</version>
     <packaging>pom</packaging>
 
     <name>WePush Next</name>
@@ -24,7 +24,7 @@
         <connection>scm:git:https://github.com/rememberber/WePush.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/rememberber/WePush.git</developerConnection>
         <url>https://github.com/rememberber/WePush</url>
-        <tag>next-v0.1.0-alpha.1</tag>
+        <tag>next-v0.1.0-alpha.2</tag>
     </scm>
     <issueManagement>
         <system>GitHub</system>

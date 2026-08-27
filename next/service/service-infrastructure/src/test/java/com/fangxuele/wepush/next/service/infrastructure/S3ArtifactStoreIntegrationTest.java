@@ -46,7 +46,7 @@ final class S3ArtifactStoreIntegrationTest {
             administration.createBucket(CreateBucketRequest.builder().bucket(bucket).build());
             try (S3ArtifactStore store = new S3ArtifactStore(new S3ArtifactStore.Configuration(
                     bucket, "us-east-1", endpoint, true, accessKey, secretKey,
-                    "", "integration", "NONE"))) {
+                    "integration", "NONE"))) {
                 verifyServiceWriteAndRange(store);
                 verifyPresignedUpload(store);
                 verifyMultipart(store);

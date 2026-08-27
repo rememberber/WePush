@@ -184,6 +184,7 @@ jobs:
         run: |
           set -euo pipefail
           test -x next/ui/apps/desktop/release/linux-unpacked/wepush-next
+          node -e 'const p=require("./next/ui/apps/desktop/release/linux-unpacked/resources/app/package.json");if(p.version!==process.env.VERSION)process.exit(1)'
           name="wepush-next-desktop-$VERSION-linux-$ARCH"
           mkdir -p "release-assets" "$name"
           cp -a next/ui/apps/desktop/release/linux-unpacked "$name/WePush Next"
@@ -198,6 +199,10 @@ jobs:
         run: |
           set -euo pipefail
           codesign --verify --deep --strict --verbose=2 'next/ui/apps/desktop/release/WePush Next.app'
+          test -x 'next/ui/apps/desktop/release/WePush Next.app/Contents/MacOS/WePush Next'
+          test "$(plutil -extract CFBundleExecutable raw 'next/ui/apps/desktop/release/WePush Next.app/Contents/Info.plist')" = 'WePush Next'
+          test "$(plutil -extract CFBundleShortVersionString raw 'next/ui/apps/desktop/release/WePush Next.app/Contents/Info.plist')" = "${VERSION%%-*}"
+          node -e 'const p=require("./next/ui/apps/desktop/release/WePush Next.app/Contents/Resources/app/package.json");if(p.version!==process.env.VERSION)process.exit(1)'
           name="wepush-next-desktop-$VERSION-macos-$ARCH"
           mkdir -p "release-assets" "$name"
           cp -R 'next/ui/apps/desktop/release/WePush Next.app' "$name/"
@@ -212,6 +217,10 @@ jobs:
         run: |
           if (-not (Test-Path 'next/ui/apps/desktop/release/win-unpacked/WePush Next.exe')) {
             throw 'Packaged Windows application is missing'
+          }
+          $metadata = Get-Content 'next/ui/apps/desktop/release/win-unpacked/resources/app/package.json' | ConvertFrom-Json
+          if ($metadata.version -ne $env:VERSION) {
+            throw "Packaged Windows version is $($metadata.version), expected $env:VERSION"
           }
           $name = "wepush-next-desktop-$env:VERSION-windows-$env:ARCH"
           New-Item -ItemType Directory -Force -Path release-assets, $name | Out-Null

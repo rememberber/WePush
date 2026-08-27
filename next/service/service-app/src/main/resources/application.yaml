@@ -59,7 +59,6 @@ wepush:
       path-style-access: ${WEPUSH_S3_PATH_STYLE_ACCESS:false}
       access-key: ${WEPUSH_S3_ACCESS_KEY:}
       secret-key: ${WEPUSH_S3_SECRET_KEY:}
-      kms-key-id: ${WEPUSH_S3_KMS_KEY_ID:}
       server-side-encryption: ${WEPUSH_S3_SERVER_SIDE_ENCRYPTION:AUTO}
   agent:
     public-base-url: ${WEPUSH_AGENT_PUBLIC_BASE_URL:http://127.0.0.1:18990}

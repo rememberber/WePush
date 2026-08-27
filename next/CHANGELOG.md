@@ -4,6 +4,8 @@
 
 ## Unreleased
 
+## 0.1.0-alpha.2 — 2026-08-27
+
 ### Added
 
 - 新增 Embedded Java SDK：Java 应用可在本进程显式装配 Core Engine 和 Provider，无需启动 Service、Agent 或数据库。
@@ -14,6 +16,12 @@
 
 - HTTP Provider 纵向集成测试改为通过 Embedded SDK 公开入口执行，架构测试新增 Embedded SDK 边界约束。
 - 明确 WePush Next 以用户自部署为长期产品定位，新增产品边界与分版本路线图，并将公共 SaaS、计费订阅、云 KMS/Secret Manager 和恶意公共租户物理隔离列为长期非目标。
+- S3-compatible Artifact Store 的服务端加密配置收口为 `AUTO`/`AES256`/`NONE`，移除 AWS KMS 配置和请求路径。
+
+### Fixed
+
+- WebUI 下载 Artifact 时改用携带 Bearer Token 的认证请求，安全模式下可正常下载结果导出。
+- macOS Desktop 打包会正确重命名主可执文件、保留 Electron Asar 完整性元数据，并写入 WePush 产品版本。三平台发布工作流新增打包后版本校验。
 
 ## 0.1.0-alpha.1 — 2026-08-24
 

@@ -77,7 +77,7 @@ PostgreSQL、S3-compatible Store 和多节点 HA 是可选的用户自建形态�
 
 ## 5. 当前基线
 
-`0.1.0-alpha.1` 已形成独立构建的纵向架构闭环：
+`0.1.0-alpha.2` 已形成独立构建的纵向架构闭环：
 
 - Core API、Provider SPI、虚拟线程 Engine 和 HTTP Provider。
 - Standalone Service、SQLite、Local Artifact、Local Envelope Secret Store。

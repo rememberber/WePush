@@ -4,9 +4,7 @@ WePush Next 是与 Classic 完全独立的新产品线。Classic 与 Next 可以
 
 > 产品定位：WePush Next 是开源、可下载、可安装、由用户自行部署和运维的消息推送产品。项目不建设官方公共 SaaS、注册计费订阅、公共租户平台或云 KMS/Secret Manager 集成。正式范围和分版本计划见[《产品目标、边界与路线图》](docs/product-scope-and-roadmap.md)。
 
-> 当前版本：`0.1.0-alpha.1` Public Preview。它不是稳定版，Desktop 与安装包未使用商业代码签名。下载、校验和已知边界见 [`PREVIEW-NOTICE.md`](PREVIEW-NOTICE.md) 与 [`docs/releases/0.1.0-alpha.1.md`](docs/releases/0.1.0-alpha.1.md)。
-
-> 当前分支还包含 `alpha.1` 发布后的 Embedded Java SDK 等增量；已发布的 `alpha.1` 附件不包含这些增量，它们将进入后续预览发行版。
+> 当前版本：`0.1.0-alpha.2` Public Preview。它不是稳定版，Desktop 与安装包未使用商业代码签名。下载、校验和已知边界见 [`PREVIEW-NOTICE.md`](PREVIEW-NOTICE.md) 与 [`docs/releases/0.1.0-alpha.2.md`](docs/releases/0.1.0-alpha.2.md)。
 
 第一次下载和使用请从[《WePush Next 对外使用指南》](docs/user-guide.md)开始。该指南覆盖发行物选择、三平台启动/安装、Desktop 连接、首个 HTTP Provider Dry Run、正式 API 调用、数据备份和常见问题。
 
@@ -119,7 +117,7 @@ try (var engine = WePushEngine.builder()
 }
 ```
 
-从源码安装、依赖声明和完整示例见 [`sdk/README.md`](sdk/README.md) 与 [`sdk/embedded-java/README.md`](sdk/embedded-java/README.md)。已发布的 `alpha.1` SDK 附件只有 Remote SDK；Embedded SDK 从当前源码和后续预览发行版提供。
+从源码安装、依赖声明和完整示例见 [`sdk/README.md`](sdk/README.md) 与 [`sdk/embedded-java/README.md`](sdk/embedded-java/README.md)。`alpha.2` 发行包和独立 Java SDK 附件同时提供 Remote SDK 与 Embedded SDK。
 
 ## 当前开发基线
 

@@ -61,7 +61,6 @@ public final class S3ArtifactStore implements ArtifactStore, AutoCloseable {
 
     private final String bucket;
     private final String environment;
-    private final String kmsKeyId;
     private final Encryption encryption;
     private final S3Client client;
     private final S3Presigner presigner;
@@ -73,8 +72,7 @@ public final class S3ArtifactStore implements ArtifactStore, AutoCloseable {
         }
         this.bucket = configuration.bucket();
         this.environment = safeSegment(configuration.environment(), "environment");
-        this.kmsKeyId = configuration.kmsKeyId() == null ? "" : configuration.kmsKeyId().trim();
-        this.encryption = Encryption.resolve(configuration.serverSideEncryption(), kmsKeyId);
+        this.encryption = Encryption.resolve(configuration.serverSideEncryption());
         var credentials = configuration.accessKey() == null || configuration.accessKey().isBlank()
                 ? DefaultCredentialsProvider.create()
                 : StaticCredentialsProvider.create(AwsBasicCredentials.create(
@@ -286,16 +284,10 @@ public final class S3ArtifactStore implements ArtifactStore, AutoCloseable {
 
     private void applyEncryption(PutObjectRequest.Builder request) {
         if (encryption == Encryption.AES256) request.serverSideEncryption(ServerSideEncryption.AES256);
-        if (encryption == Encryption.AWS_KMS) {
-            request.serverSideEncryption(ServerSideEncryption.AWS_KMS).ssekmsKeyId(kmsKeyId);
-        }
     }
 
     private void applyEncryption(CreateMultipartUploadRequest.Builder request) {
         if (encryption == Encryption.AES256) request.serverSideEncryption(ServerSideEncryption.AES256);
-        if (encryption == Encryption.AWS_KMS) {
-            request.serverSideEncryption(ServerSideEncryption.AWS_KMS).ssekmsKeyId(kmsKeyId);
-        }
     }
 
     private static IOException io(String message, S3Exception problem) {
@@ -317,7 +309,7 @@ public final class S3ArtifactStore implements ArtifactStore, AutoCloseable {
 
     public record Configuration(String bucket, String region, String endpoint,
                                 boolean pathStyleAccess, String accessKey, String secretKey,
-                                String kmsKeyId, String environment, String serverSideEncryption) {
+                                String environment, String serverSideEncryption) {
         public Configuration {
             if (region == null || region.isBlank()) region = "us-east-1";
             if (environment == null || environment.isBlank()) environment = "server";
@@ -330,25 +322,19 @@ public final class S3ArtifactStore implements ArtifactStore, AutoCloseable {
 
     private enum Encryption {
         NONE,
-        AES256,
-        AWS_KMS;
+        AES256;
 
-        private static Encryption resolve(String configured, String kmsKeyId) {
+        private static Encryption resolve(String configured) {
             String value = configured == null || configured.isBlank()
                     ? "AUTO" : configured.trim().toUpperCase(java.util.Locale.ROOT);
-            Encryption resolved = "AUTO".equals(value)
-                    ? (kmsKeyId.isBlank() ? AES256 : AWS_KMS)
+            return "AUTO".equals(value)
+                    ? AES256
                     : switch (value) {
                         case "NONE" -> NONE;
                         case "AES256", "SSE_S3" -> AES256;
-                        case "AWS_KMS", "SSE_KMS" -> AWS_KMS;
                         default -> throw new IllegalArgumentException(
-                                "S3 server-side encryption must be AUTO, NONE, AES256, or AWS_KMS");
+                                "S3 server-side encryption must be AUTO, NONE, or AES256");
                     };
-            if (resolved == AWS_KMS && kmsKeyId.isBlank()) {
-                throw new IllegalArgumentException("S3 KMS encryption requires a KMS key id");
-            }
-            return resolved;
         }
     }
 }

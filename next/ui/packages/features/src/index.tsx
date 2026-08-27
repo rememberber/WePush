@@ -706,6 +706,7 @@ function RunsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
   const [artifacts, setArtifacts] = useState<Artifact[]>([]);
   const [artifactsLoading, setArtifactsLoading] = useState(false);
   const [exportBusy, setExportBusy] = useState(false);
+  const [downloadBusy, setDownloadBusy] = useState<string>();
   const [commandBusy, setCommandBusy] = useState<string>();
   const [commandError, setCommandError] = useState<string>();
   const [concurrency, setConcurrency] = useState(8);
@@ -833,6 +834,25 @@ function RunsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
     }
   }
 
+  async function downloadArtifact(artifact: Artifact) {
+    setDownloadBusy(artifact.id); setCommandError(undefined);
+    try {
+      const blob = await client.downloadArtifact(artifact.id);
+      const objectUrl = window.URL.createObjectURL(blob);
+      const download = document.createElement("a");
+      download.href = objectUrl;
+      download.download = artifact.originalName;
+      document.body.append(download);
+      download.click();
+      download.remove();
+      window.setTimeout(() => window.URL.revokeObjectURL(objectUrl), 0);
+    } catch (nextError) {
+      setCommandError(nextError instanceof Error ? nextError.message : "Artifact 下载失败");
+    } finally {
+      setDownloadBusy(undefined);
+    }
+  }
+
   return (
     <div className="page runs-page">
       <section className="page-heading page-heading--compact">
@@ -884,7 +904,7 @@ function RunsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
                 <span className="artifact-file-icon">CSV</span>
                 <span><strong>{artifact.originalName}</strong><small>{formatBytes(artifact.size)} · SHA {artifact.sha256.slice(0, 12)}… · {formatTime(artifact.expiresAt)} 过期</small></span>
                 <Badge tone={artifact.state === "READY" ? "success" : artifact.state === "FAILED" ? "danger" : "neutral"}>{artifact.state}</Badge>
-                {artifact.state === "READY" ? <a className="wp-button wp-button--secondary" href={client.artifactDownloadUrl(artifact.id)}>下载</a> : null}
+                {artifact.state === "READY" ? <Button disabled={downloadBusy === artifact.id} onClick={() => void downloadArtifact(artifact)}>{downloadBusy === artifact.id ? "下载中…" : "下载"}</Button> : null}
               </article>)}</div>
             </div>
             <div className="event-heading"><div><h3>事件流</h3><p>SSE 实时订阅 · 断线后按 Last-Event-ID 回放</p></div><Badge tone="info">{events.length} events</Badge></div>

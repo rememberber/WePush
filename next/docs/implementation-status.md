@@ -6,7 +6,7 @@
 
 ## 1. 里程碑结论
 
-`next/` 的 `0.1.0-alpha.1` 公开预览目标架构基线已经形成完整、可独立构建的产品纵向链路。Classic 源码和构建保持不动；两条产品线不共享源码依赖，允许各自存在相似实现。
+`next/` 的 `0.1.0-alpha.2` 公开预览目标架构基线已经形成完整、可独立构建的产品纵向链路。Classic 源码和构建保持不动；两条产品线不共享源码依赖，允许各自存在相似实现。
 
 ```text
 React WebUI / Electron Desktop / Remote Java SDK
@@ -68,7 +68,7 @@ Standalone 默认是单 Service + SQLite + Local Artifact + Embedded Engine；Se
 - 无认证开发模式只能绑定回环地址；HTTP 对外监听强制 API Security，Server 模式进一步强制 PostgreSQL、S3 与 Agent gRPC TLS，误配置时失败关闭。
 - Workspace 有正式列表/创建/详情 API。Account、Secret、Message、Audience、Job、Schedule、Run、Artifact、API Token 与 Agent Enrollment Binding 均显式带 Workspace 边界；旧的未绑定开发 Agent 只兼容 `ws_default`。
 - 默认且正式的 Secret Store 为 Local Envelope：随机 DEK + AES-256-GCM + 主密钥封装。主密钥来自 owner-only 文件或显式注入；密文存在而主密钥丢失/权限不安全时失败关闭。`SecretStore` Port 用于模块隔离和测试，官方产品不规划 OS Keychain、Vault、云 KMS 或 Secret Manager 形式的 Service Adapter。
-- Local Artifact 采用受控路径、临时写、fsync、SHA-256 与原子移动。S3 Store 支持 Put/Get/Range/Head/Delete、Presigned Put、100 MiB Multipart、Abort、原生 AES256 和对象元数据校验。当前源码仍包含 AWS_KMS 兼容配置路径，按路线图在下一预览发布前清理，不作为正式产品能力。
+- Local Artifact 采用受控路径、临时写、fsync、SHA-256 与原子移动。S3 Store 支持 Put/Get/Range/Head/Delete、Presigned Put、100 MiB Multipart、Abort、原生 AES256 和对象元数据校验；不包含云 KMS 集成。
 - Artifact 状态是 `UPLOADING → READY → DELETING → DELETED`，失败进入 `FAILED`；TTL 清理尊重 Pin/Legal Hold。对象存储 Lifecycle 是兜底，不替代数据库事实源。
 - Actuator 暴露 Health/Readiness/Prometheus，指标带稳定 application 标签；Server HAProxy 对 Readiness 做后端摘除。
 

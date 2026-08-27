@@ -423,8 +423,16 @@ export class WePushClient {
     );
   }
 
-  artifactDownloadUrl(artifactId: string, workspaceId = "ws_default"): string {
-    return this.resolve(this.workspacePath(workspaceId, `/artifacts/${pathId(artifactId)}/content`));
+  async downloadArtifact(artifactId: string, workspaceId = "ws_default",
+    signal?: AbortSignal): Promise<Blob> {
+    const response = await fetch(this.resolve(
+      this.workspacePath(workspaceId, `/artifacts/${pathId(artifactId)}/content`),
+    ), {
+      headers: this.headers({ Accept: "application/octet-stream" }),
+      signal,
+    });
+    if (!response.ok) throw new ApiError(response.status, await response.text());
+    return response.blob();
   }
 
   pauseRun(runId: string, idempotencyKey: string, workspaceId = "ws_default",

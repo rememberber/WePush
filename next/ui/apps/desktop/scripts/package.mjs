@@ -16,6 +16,16 @@ const repositoryRoot = join(appRoot, "..", "..", "..", "..");
 const nextRoot = join(repositoryRoot, "next");
 const desktopMetadata = JSON.parse(await readFile(join(appRoot, "package.json"), "utf8"));
 
+function macBundleVersions(version) {
+  const match = /^(\d+)\.(\d+)\.(\d+)(?:-(alpha|beta|rc)\.(\d+))?$/.exec(version);
+  if (!match) throw new Error(`Unsupported Desktop version for macOS packaging: ${version}`);
+  const [, major, minor, patch, channel, iteration] = match;
+  if (!channel) return { marketing: `${major}.${minor}.${patch}`, build: `${major}.${minor}.${patch}` };
+  const channelOffset = { alpha: 10_000, beta: 20_000, rc: 30_000 }[channel];
+  const build = Number(patch) * 100_000 + channelOffset + Number(iteration);
+  return { marketing: `${major}.${minor}.${patch}`, build: `${major}.${minor}.${build}` };
+}
+
 try {
   await access(electronDist);
 } catch {
@@ -37,10 +47,21 @@ if (process.platform === "darwin") {
   });
   resources = join(destination, "Contents", "Resources");
   const plistPath = join(destination, "Contents", "Info.plist");
-  const plist = (await readFile(plistPath, "utf8"))
-    .replaceAll("com.github.Electron", "com.fangxuele.wepush.next.desktop")
-    .replaceAll("Electron", "WePush Next");
-  await writeFile(plistPath, plist);
+  const executableName = "WePush Next";
+  await rename(join(destination, "Contents", "MacOS", "Electron"),
+    join(destination, "Contents", "MacOS", executableName));
+  const versions = macBundleVersions(desktopMetadata.version);
+  const plistValues = {
+    CFBundleDisplayName: "WePush Next",
+    CFBundleExecutable: executableName,
+    CFBundleIdentifier: "com.fangxuele.wepush.next.desktop",
+    CFBundleName: "WePush Next",
+    CFBundleShortVersionString: versions.marketing,
+    CFBundleVersion: versions.build,
+  };
+  for (const [key, value] of Object.entries(plistValues)) {
+    await execFileAsync("plutil", ["-replace", key, "-string", value, plistPath]);
+  }
 } else {
   const directory = process.platform === "win32" ? "win-unpacked" : "linux-unpacked";
   destination = join(releaseRoot, directory);

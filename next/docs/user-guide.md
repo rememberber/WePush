@@ -2,7 +2,7 @@
 
 WePush Next 是由用户自行下载、安装、部署和运维的开源产品，不依赖官方公共 SaaS、账号注册、计费订阅或云 KMS/Secret Manager。数据、密钥和运行环境均由用户掌控；完整定位和后续计划见[《产品目标、边界与路线图》](product-scope-and-roadmap.md)。
 
-本文面向第一次下载和使用 WePush Next 的用户，适用于 `0.1.0-alpha.1` Public Preview。
+本文面向第一次下载和使用 WePush Next 的用户，适用于 `0.1.0-alpha.2` Public Preview。
 
 > WePush Next 仍是公开预览版，API、数据结构和升级路径可能变化，不建议直接承载关键生产业务。Desktop 与发行包未使用商业代码签名；请只从官方 GitHub Release 下载，并在运行前校验 `SHA256SUMS`。
 
@@ -16,8 +16,8 @@ WePush Next 由多个可以独立使用的组件组成：
 | WebUI | 浏览器中的可视化配置、运行中心、动态 API 文档 | 已包含在 Service 发行包中 |
 | Desktop UI | Electron 桌面管理界面，连接本机 `127.0.0.1:18990` Service | 可选 |
 | Agent | 从 Service 接收任务并在独立节点执行，适合远程或分布式部署 | 本地体验不需要 |
-| Remote Java SDK | 供其他 Java 应用通过 Service API 集成 WePush | 按需，`alpha.1` 附件已包含 |
-| Embedded Java SDK | 在 Java 应用进程内直接装配 Engine 和 Provider，不需要 Service | 按需，当前源码已实现，`alpha.1` 附件未包含 |
+| Remote Java SDK | 供其他 Java 应用通过 Service API 集成 WePush | 按需，`alpha.2` 附件已包含 |
+| Embedded Java SDK | 在 Java 应用进程内直接装配 Engine 和 Provider，不需要 Service | 按需，`alpha.2` 附件已包含 |
 | Core / Engine | Service 与 Agent 内部的执行引擎 | 不需要单独安装 |
 
 Desktop UI 目前不是一体化安装器，也不会自动启动 Service。无论使用浏览器还是 Desktop UI，都应先启动或安装 Service。
@@ -28,20 +28,20 @@ Classic 与 Next 是彼此独立的两条产品线。Classic 继续提供成熟�
 
 官方下载页：
 
-- [WePush Next `0.1.0-alpha.1` Public Preview](https://github.com/rememberber/WePush/releases/tag/next-v0.1.0-alpha.1)
+- [WePush Next `0.1.0-alpha.2` Public Preview](https://github.com/rememberber/WePush/releases/tag/next-v0.1.0-alpha.2)
 
 发行附件：
 
 | 文件 | 内容或平台 |
 | --- | --- |
-| `wepush-next-0.1.0-alpha.1.tar.gz` | Service、Agent、WebUI、安装脚本、OpenAPI 与 SDK，适合 Linux/macOS |
-| `wepush-next-0.1.0-alpha.1.zip` | 与上面内容相同，适合 Windows |
-| `wepush-next-desktop-0.1.0-alpha.1-linux-x64.tar.gz` | Linux x64 Desktop |
-| `wepush-next-desktop-0.1.0-alpha.1-macos-arm64.zip` | macOS Apple Silicon Desktop |
-| `wepush-next-desktop-0.1.0-alpha.1-windows-x64.zip` | Windows x64 Desktop |
-| `wepush-next-java-sdk-0.1.0-alpha.1.zip` | Remote Java SDK 与公开 Service API 契约；不含后续实现的 Embedded SDK |
+| `wepush-next-0.1.0-alpha.2.tar.gz` | Service、Agent、WebUI、安装脚本、OpenAPI 与 SDK，适合 Linux/macOS |
+| `wepush-next-0.1.0-alpha.2.zip` | 与上面内容相同，适合 Windows |
+| `wepush-next-desktop-0.1.0-alpha.2-linux-x64.tar.gz` | Linux x64 Desktop |
+| `wepush-next-desktop-0.1.0-alpha.2-macos-arm64.zip` | macOS Apple Silicon Desktop |
+| `wepush-next-desktop-0.1.0-alpha.2-windows-x64.zip` | Windows x64 Desktop |
+| `wepush-next-java-sdk-0.1.0-alpha.2.zip` | Remote Java SDK、Embedded Java SDK 及其 POM/JAR 依赖闭包 |
 | `SHA256SUMS` | 全部附件的 SHA-256 |
-| `wepush-next-0.1.0-alpha.1-sbom.cdx.json` | CycloneDX SBOM |
+| `wepush-next-0.1.0-alpha.2-sbom.cdx.json` | CycloneDX SBOM |
 
 运行 Service、Agent 或任一种 Java SDK 需要 Java 21 或更高版本：
 
@@ -58,22 +58,22 @@ java -version
 Linux：
 
 ```bash
-sha256sum wepush-next-0.1.0-alpha.1.tar.gz
-grep 'wepush-next-0.1.0-alpha.1.tar.gz$' SHA256SUMS
+sha256sum wepush-next-0.1.0-alpha.2.tar.gz
+grep 'wepush-next-0.1.0-alpha.2.tar.gz$' SHA256SUMS
 ```
 
 macOS：
 
 ```bash
-shasum -a 256 wepush-next-0.1.0-alpha.1.tar.gz
-grep 'wepush-next-0.1.0-alpha.1.tar.gz$' SHA256SUMS
+shasum -a 256 wepush-next-0.1.0-alpha.2.tar.gz
+grep 'wepush-next-0.1.0-alpha.2.tar.gz$' SHA256SUMS
 ```
 
 Windows PowerShell：
 
 ```powershell
-Get-FileHash .\wepush-next-0.1.0-alpha.1.zip -Algorithm SHA256
-Select-String -Path .\SHA256SUMS -Pattern 'wepush-next-0.1.0-alpha.1.zip$'
+Get-FileHash .\wepush-next-0.1.0-alpha.2.zip -Algorithm SHA256
+Select-String -Path .\SHA256SUMS -Pattern 'wepush-next-0.1.0-alpha.2.zip$'
 ```
 
 两个值必须完全一致。Desktop 包也使用相同方法校验。
@@ -85,24 +85,24 @@ Standalone 默认只监听 `127.0.0.1:18990`，使用 SQLite、本地 Artifact S
 ### Linux
 
 ```bash
-tar -xzf wepush-next-0.1.0-alpha.1.tar.gz
-cd wepush-next-0.1.0-alpha.1
+tar -xzf wepush-next-0.1.0-alpha.2.tar.gz
+cd wepush-next-0.1.0-alpha.2
 ./bin/wepush-service
 ```
 
 ### macOS
 
 ```bash
-tar -xzf wepush-next-0.1.0-alpha.1.tar.gz
-cd wepush-next-0.1.0-alpha.1
+tar -xzf wepush-next-0.1.0-alpha.2.tar.gz
+cd wepush-next-0.1.0-alpha.2
 ./bin/wepush-service
 ```
 
 ### Windows PowerShell
 
 ```powershell
-Expand-Archive .\wepush-next-0.1.0-alpha.1.zip .\wepush-next
-Set-Location .\wepush-next\wepush-next-0.1.0-alpha.1
+Expand-Archive .\wepush-next-0.1.0-alpha.2.zip .\wepush-next
+Set-Location .\wepush-next\wepush-next-0.1.0-alpha.2
 $releaseRoot = (Get-Location).Path.Replace('\', '/')
 $env:WEPUSH_WEB_ROOT = "file:$releaseRoot/web/"
 java -jar .\lib\wepush-next-service.jar
@@ -127,9 +127,9 @@ curl --fail http://127.0.0.1:18990/api/v1/system/info
 
 先按上一节启动 Service，再解压对应平台的 Desktop 附件：
 
-- Linux：运行 `wepush-next-desktop-0.1.0-alpha.1-linux-x64/WePush Next/wepush-next`。
-- macOS：打开 `wepush-next-desktop-0.1.0-alpha.1-macos-arm64/WePush Next.app`。
-- Windows：运行 `wepush-next-desktop-0.1.0-alpha.1-windows-x64\WePush Next\WePush Next.exe`。
+- Linux：运行 `wepush-next-desktop-0.1.0-alpha.2-linux-x64/WePush Next/wepush-next`。
+- macOS：打开 `wepush-next-desktop-0.1.0-alpha.2-macos-arm64/WePush Next.app`。
+- Windows：运行 `wepush-next-desktop-0.1.0-alpha.2-windows-x64\WePush Next\WePush Next.exe`。
 
 Desktop 会连接本机 `http://127.0.0.1:18990`。出现“Service 未连接”时，先确认 Service 终端没有退出，并检查健康地址。
 
@@ -210,7 +210,7 @@ Desktop 会连接本机 `http://127.0.0.1:18990`。出现“Service 未连接”
 
 ## 6. 正式 HTTP 发送
 
-当前 `0.1.0-alpha.1` WebUI 的任务卡片只提供 Dry Run。正式运行可通过“API 文档”页中的 `createRun` 操作、Java SDK 或直接调用 Service API 发起。
+当前 `0.1.0-alpha.2` WebUI 的任务卡片只提供 Dry Run。正式运行可通过“API 文档”页中的 `createRun` 操作、Java SDK 或直接调用 Service API 发起。
 
 > 将 `dryRun` 设为 `false` 会真实访问 HTTP 目标。请先使用专用测试端点、小范围受众和服务端幂等机制验证，不要把上面的 `example.com` 示例用于正式运行。
 
@@ -234,7 +234,7 @@ HTTP Provider 不跟随重定向，默认阻止私有地址，限制响应体大
 
 WebUI 的“API 文档”会读取 Service 提供的 OpenAPI，支持查看请求 Schema、生成请求和动态调试。写操作发送前会二次确认；权限、审计和同源限制仍由 Service 强制执行。
 
-Remote Java SDK 是 Service API 客户端，不依赖 Core、Engine 或具体 Provider。`alpha.1` 发行包和独立 SDK 压缩包都包含它，安装说明见 [Java SDK README](../sdk/README.md)。
+Remote Java SDK 是 Service API 客户端，不依赖 Core、Engine 或具体 Provider。`alpha.2` 发行包和独立 SDK 压缩包都包含它，安装说明见 [Java SDK README](../sdk/README.md)。
 
 最小示例：
 
@@ -249,7 +249,7 @@ try (var client = WePushClient.builder()
 }
 ```
 
-当前源码还提供 Embedded Java SDK。它依赖 Core Engine，但不依赖 Service、Agent、数据库或 Spring；应用显式注册允许的 Provider，并直接传入执行快照和 Recipient：
+Embedded Java SDK 依赖 Core Engine，但不依赖 Service、Agent、数据库或 Spring；应用显式注册允许的 Provider，并直接传入执行快照和 Recipient：
 
 ```java
 var store = new InMemoryExecutionStore();
@@ -263,7 +263,7 @@ try (var engine = WePushEngine.builder()
 }
 ```
 
-Embedded SDK 尚未进入已经发布的 `alpha.1` 附件。需要提前使用时请从源码构建，完整依赖、配置、资源所有权和示例见 [Embedded Java SDK README](../sdk/embedded-java/README.md)；后续预览附件会同时携带两个 SDK。
+`alpha.2` 发行包和独立 Java SDK 附件同时包含 Embedded SDK 与所需依赖。完整依赖、配置、资源所有权和示例见 [Embedded Java SDK README](../sdk/embedded-java/README.md)。
 
 ## 8. 何时需要 Agent
 
@@ -283,8 +283,8 @@ Agent 使用 Service 的 `19090` gRPC 控制流。跨主机部署必须使用 En
 ### Linux / systemd
 
 ```bash
-tar -xzf wepush-next-0.1.0-alpha.1.tar.gz
-sudo ./wepush-next-0.1.0-alpha.1/install/linux/install.sh service
+tar -xzf wepush-next-0.1.0-alpha.2.tar.gz
+sudo ./wepush-next-0.1.0-alpha.2/install/linux/install.sh service
 systemctl status wepush-next-service
 ```
 
@@ -293,8 +293,8 @@ systemctl status wepush-next-service
 从普通登录用户的终端使用 `sudo`，安装器会将该用户作为非 root 服务用户：
 
 ```bash
-tar -xzf wepush-next-0.1.0-alpha.1.tar.gz
-sudo ./wepush-next-0.1.0-alpha.1/install/macos/install.sh service
+tar -xzf wepush-next-0.1.0-alpha.2.tar.gz
+sudo ./wepush-next-0.1.0-alpha.2/install/macos/install.sh service
 launchctl print system/com.fangxuele.wepush-next.service
 ```
 
@@ -305,9 +305,9 @@ launchctl print system/com.fangxuele.wepush-next.service
 以管理员 PowerShell 执行：
 
 ```powershell
-Expand-Archive .\wepush-next-0.1.0-alpha.1.zip .\release
+Expand-Archive .\wepush-next-0.1.0-alpha.2.zip .\release
 Set-ExecutionPolicy -Scope Process Bypass
-& .\release\wepush-next-0.1.0-alpha.1\install\windows\install.ps1 -Component service
+& .\release\wepush-next-0.1.0-alpha.2\install\windows\install.ps1 -Component service
 Get-Service WePushNextService
 ```
 
@@ -362,7 +362,7 @@ Service 已开启安全模式。把 Bootstrap Token 或已签发 Token 填入 We
 - [详细设计](detailed-design.md)
 - [部署与运维](deployment-and-operations.md)
 - [实现状态](implementation-status.md)
-- [本版本 Release Notes](releases/0.1.0-alpha.1.md)
+- [本版本 Release Notes](releases/0.1.0-alpha.2.md)
 - [安全策略](../SECURITY.md)
 
 普通问题和功能建议可提交 GitHub Issue。安全漏洞不要公开披露，请按 `SECURITY.md` 中的方式私下报告。

@@ -280,13 +280,11 @@ class ServiceComposition {
             @Value("${wepush.artifact.s3.path-style-access:false}") boolean pathStyleAccess,
             @Value("${wepush.artifact.s3.access-key:}") String accessKey,
             @Value("${wepush.artifact.s3.secret-key:}") String secretKey,
-            @Value("${wepush.artifact.s3.kms-key-id:}") String kmsKeyId,
             @Value("${wepush.artifact.s3.server-side-encryption:AUTO}") String serverSideEncryption) {
         if ("local".equalsIgnoreCase(kind)) return new LocalFileArtifactStore(Path.of(root), environment);
         if ("s3".equalsIgnoreCase(kind)) {
             return new S3ArtifactStore(new S3ArtifactStore.Configuration(bucket, region, endpoint,
-                    pathStyleAccess, accessKey, secretKey, kmsKeyId, environment,
-                    serverSideEncryption));
+                    pathStyleAccess, accessKey, secretKey, environment, serverSideEncryption));
         }
         throw new IllegalArgumentException("wepush.artifact.kind must be local or s3");
     }

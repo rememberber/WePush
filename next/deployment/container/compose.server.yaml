@@ -57,8 +57,7 @@ services:
       WEPUSH_S3_PATH_STYLE_ACCESS: "true"
       WEPUSH_S3_ACCESS_KEY: ${MINIO_ROOT_USER}
       WEPUSH_S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
-      # The local MinIO smoke topology has no KMS. Production must use AES256
-      # or AWS_KMS against an object store configured for that encryption mode.
+      # Local MinIO smoke testing disables SSE; production should use AES256.
       WEPUSH_S3_SERVER_SIDE_ENCRYPTION: NONE
       WEPUSH_SECURITY_ENABLED: "true"
       WEPUSH_BOOTSTRAP_TOKEN: ${WEPUSH_BOOTSTRAP_TOKEN:?set WEPUSH_BOOTSTRAP_TOKEN}

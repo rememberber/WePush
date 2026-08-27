@@ -110,22 +110,38 @@ describe("WePushClient", () => {
     );
   });
 
-  it("creates result exports and exposes their download URL", async () => {
-    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({
-      id: "artifact_1", type: "RUN_RESULTS_CSV", state: "READY",
-    }), { status: 201 }));
+  it("creates and downloads result exports with authentication", async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(new Response(JSON.stringify({
+        id: "artifact_1", type: "RUN_RESULTS_CSV", state: "READY",
+      }), { status: 201 }))
+      .mockResolvedValueOnce(new Response("item,state\nalice,SUCCEEDED\n", {
+        headers: { "Content-Type": "text/csv" },
+      }));
     vi.stubGlobal("fetch", fetchMock);
 
-    const client = new WePushClient("http://localhost:18990/");
+    const client = new WePushClient("http://localhost:18990/", "secret-token");
     const artifact = await client.createResultExport("run_1");
+    const download = await client.downloadArtifact(artifact.id);
 
     expect(artifact.id).toBe("artifact_1");
+    expect(await download.text()).toBe("item,state\nalice,SUCCEEDED\n");
     expect(fetchMock).toHaveBeenCalledWith(
       "http://localhost:18990/api/v1/workspaces/ws_default/runs/run_1/artifacts/result-export",
-      expect.objectContaining({ method: "POST", body: "{}" }),
+      expect.objectContaining({
+        method: "POST",
+        body: "{}",
+        headers: expect.objectContaining({ Authorization: "Bearer secret-token" }),
+      }),
     );
-    expect(client.artifactDownloadUrl("artifact_1")).toBe(
+    expect(fetchMock).toHaveBeenLastCalledWith(
       "http://localhost:18990/api/v1/workspaces/ws_default/artifacts/artifact_1/content",
+      expect.objectContaining({
+        headers: {
+          Accept: "application/octet-stream",
+          Authorization: "Bearer secret-token",
+        },
+      }),
     );
   });
 });
