@@ -1,10 +1,11 @@
 # WePush Next 架构与概要设计
 
 - 文档状态：已接受基线
-- 文档版本：0.2
-- 日期：2026-08-22
+- 文档版本：0.3
+- 日期：2026-08-27
 - 适用范围：`next/`
 - 关联决策：见 [ADR 索引](adr/README.md)
+- 产品范围：[产品目标、边界与路线图](product-scope-and-roadmap.md)
 
 ## 1. 文档目的
 
@@ -14,7 +15,7 @@ WePush Next 是独立于当前 Classic 客户端的新产品线。本文档不�
 
 ## 2. 建设目标
 
-WePush Next 的目标是从单机桌面推送工具发展为同时支持本地使用、服务化部署和分布式执行的消息推送平台。
+WePush Next 的目标是从单机桌面推送工具发展为同时支持本地使用、用户自建服务化部署和分布式执行的消息推送产品。产品始终由用户自行下载、安装和运维，不建设官方公共 SaaS 或承载用户业务数据的集中平台。
 
 主要目标如下：
 
@@ -31,7 +32,7 @@ WePush Next 的目标是从单机桌面推送工具发展为同时支持本地�
 
 ## 3. 非目标
 
-首期不以以下能力为目标：
+以下项目不属于当前架构目标：
 
 - 不追求与 Classic 的内部代码、数据模型或 UI 实现兼容。
 - 不要求首个版本迁移 Classic 的全部消息类型。
@@ -40,6 +41,12 @@ WePush Next 的目标是从单机桌面推送工具发展为同时支持本地�
 - 不在首期建设通用工作流编排平台。
 - 不在 Core 中实现用户、权限、租户、HTTP API 或数据库管理。
 - 不要求 WebUI 与 Desktop UI 使用完全相同的外壳技术，但应尽量共享前端能力。
+- 不建设官方公共 SaaS、用户注册、计费、套餐、订阅、账单或公共市场。
+- 不提供面向互不信任或恶意公共租户的物理隔离和跨区域 Active-Active 控制面。
+- 不建设云 KMS、云 Secret Manager、Vault 或操作系统凭据库形式的 Service Secret Store 官方适配器。
+- 不引入强制自动更新、远程配置下发或使用遥测回传。
+
+长期产品边界及其变更规则以[《产品目标、边界与路线图》](product-scope-and-roadmap.md)为准。
 
 ## 4. 架构原则
 
@@ -333,7 +340,7 @@ Core 通过 `RunEventSink` 输出结构化事件，例如：
 
 Provider 实例应按账号和执行上下文创建，禁止使用可变全局单例保存 Token、连接和运行进度。连接池可以共享，但必须具有明确的关闭和隔离策略。
 
-外部 Provider 使用 PF4J 3.15.x 发现，每个插件使用独立 ClassLoader 隔离私有厂商 SDK。正式环境仅装载清单与 Ed25519 签名均通过验证的版本。更新采用版本化目录、Agent Drain、重启、验证和激活流程，多 Agent 场景滚动执行；不在 JVM 内热替换正在使用的 Provider。ClassLoader 隔离不是恶意代码沙箱，非受信插件需要未来的独立进程 Runner。详见 [ADR-0005](adr/0005-provider-plugin-lifecycle.md)。
+外部 Provider 使用 PF4J 3.15.x 发现，每个插件使用独立 ClassLoader 隔离私有厂商 SDK。正式环境仅装载清单与 Ed25519 签名均通过验证的版本。更新采用版本化目录、Agent Drain、重启、验证和激活流程，多 Agent 场景滚动执行；不在 JVM 内热替换正在使用的 Provider。ClassLoader 隔离不是恶意代码沙箱；如果用户自建安全场景需要运行非受信插件，必须单独评审独立进程 Runner，当前不将其列为既定路线图。详见 [ADR-0005](adr/0005-provider-plugin-lifecycle.md)。
 
 ## 12. Agent 概要设计
 
@@ -557,7 +564,7 @@ Desktop 外壳固定为 Electron 43.x，并复用 WebUI 的 React 页面、Schem
 ### 18.1 数据库
 
 - Standalone 默认 SQLite。
-- Server 模式固定使用 PostgreSQL 18.x；数据库自身复制、故障转移和备份由托管数据库或独立运维方案负责。
+- Server 模式固定使用 PostgreSQL 18.x；数据库自身复制、故障转移和备份由部署者选择并负责运维。
 - 通过 Repository Port 隔离数据库实现，但不以支持任意数据库为目标。
 - 所有 Schema 变化必须使用版本化迁移，不允许运行时拼接临时升级逻辑。
 - 数据库事务以应用用例为边界，不共享全局 Session。
@@ -578,7 +585,7 @@ Standalone 默认使用 `LocalFileArtifactStore`；Server 默认使用受控 S3-
 - 默认实现为 `LocalEnvelopeSecretStore`，每个 Secret 使用独立随机 DEK 和 AES-256-GCM 加密，AAD 绑定 Workspace、Secret ID、类型和版本。
 - 数据库保存密文、Nonce、加密后的 DEK 和主密钥版本；主密钥只来自独立受保护文件或显式外部注入。
 - Standalone 首启可创建仅当前用户可读的主密钥文件；Server 不得静默生成新主密钥，缺失或权限不安全时 Fail Closed。
-- `SecretStore` 保持 Port，可扩展 Vault、云 KMS 和操作系统凭据存储适配器；Electron `safeStorage` 不作为 Service 默认实现。
+- `SecretStore` 保持 Port 以维持模块边界和可测试性；官方产品实现固定为本地信封加密，不规划 Vault、云 KMS、云 Secret Manager 或操作系统凭据存储适配器。Electron `safeStorage` 不作为 Service Secret 实现。
 - Agent 只在执行期间获取最小范围 Secret，并在内存中短期持有。
 
 密钥轮换默认只重包裹 DEK，不重写业务密文。详见 [ADR-0003](adr/0003-default-secret-store.md)。
@@ -595,7 +602,7 @@ Standalone 默认使用 `LocalFileArtifactStore`；Server 默认使用受控 S3-
 - HTTP Provider 对目标地址提供可配置的 SSRF 防护策略。
 - API 调试功能遵循当前用户权限，不提供绕过权限的内部调用通道。
 
-Workspace 逻辑多租户进入正式 Server 产品范围；Standalone 自动使用隐藏的 Default Workspace。Account、Secret、Message、Audience、Job、Schedule、Run、Artifact、Agent Pool 和 API Token 均必须归属 Workspace，所有 Repository、唯一索引、缓存键和授权检查显式携带 `workspaceId`。首期不建设公共 SaaS 的计费、自助注册或恶意租户物理隔离。详见 [ADR-0008](adr/0008-workspace-multitenancy-scope.md)。
+Workspace 逻辑隔离进入正式 Server 产品范围；Standalone 自动使用隐藏的 Default Workspace。Account、Secret、Message、Audience、Job、Schedule、Run、Artifact、Agent Pool 和 API Token 均必须归属 Workspace，所有 Repository、唯一索引、缓存键和授权检查显式携带 `workspaceId`。Workspace 只服务于同一用户自建实例内的团队和权限分组，不演进为公共 SaaS 租户；计费、自助注册和恶意租户物理隔离属于长期非目标。详见 [ADR-0008](adr/0008-workspace-multitenancy-scope.md)。
 
 ## 20. 可观测性
 
@@ -628,7 +635,7 @@ Next 必须使用独立于 Classic 的：
 - 默认配置目录和数据目录。
 - 默认端口。
 - 日志目录。
-- 自动更新通道和发布资产名称。
+- 用户可控的版本检查标识和发布资产名称；不使用与 Classic 混合的更新元数据。
 
 安装、升级和卸载不得读取、覆盖或删除 Classic 的文件。
 
@@ -736,7 +743,7 @@ Run 的状态摘要、事件和结果制品允许短暂最终一致，但终态�
 - [ADR-0007：Artifact Store 协议和保留策略](adr/0007-artifact-store-and-retention.md)
 - [ADR-0008：Workspace 多租户范围](adr/0008-workspace-multitenancy-scope.md)
 
-这些决策是 Next 初始实现的正式基线。外部 KMS 的具体厂商适配、非受信 Provider 的进程级沙箱、公共 SaaS 能力和跨地域控制面不在本轮基线内；需要进入范围时再新增 ADR，不得通过临时代码隐式引入。
+这些决策是 Next 初始实现的正式基线。公共 SaaS、计费订阅、外部 Vault/云 KMS/Secret Manager、恶意租户物理隔离和跨地域控制面属于长期非目标，不得通过临时代码或普通功能 ADR 隐式引入。非受信 Provider 的进程级隔离只有在明确服务于用户自建安全场景时才可以单独评审，且不得改变产品定位。
 
 ## 29. 架构验收条件
 

@@ -1,6 +1,8 @@
 # WePush Next 实现状态
 
-更新时间：2026-08-24
+更新时间：2026-08-27
+
+产品范围和后续优先级以[《产品目标、边界与路线图》](product-scope-and-roadmap.md)为准。Next 的长期定位是用户自行下载、安装、部署和运维；不建设官方公共 SaaS、注册计费订阅、云 KMS/Secret Manager 或恶意公共租户物理隔离。
 
 ## 1. 里程碑结论
 
@@ -65,8 +67,8 @@ Standalone 默认是单 Service + SQLite + Local Artifact + Embedded Engine；Se
 - API Token 只保存 SHA-256，明文仅签发时返回一次。VIEWER/OPERATOR/ADMIN 按 Workspace 授权；Bootstrap `SYSTEM_ADMIN` 只承担全局治理。启用安全时按系统管理员是否存在而非“任意 Token 是否存在”初始化 Bootstrap，避免先创建普通 Token 后锁死全局治理。Token 与 Enrollment 管理 API 进入 Workspace 路径，普通 ADMIN 无法跨 Workspace 签发、枚举或吊销；写操作和拒绝结果进入审计日志。
 - 无认证开发模式只能绑定回环地址；HTTP 对外监听强制 API Security，Server 模式进一步强制 PostgreSQL、S3 与 Agent gRPC TLS，误配置时失败关闭。
 - Workspace 有正式列表/创建/详情 API。Account、Secret、Message、Audience、Job、Schedule、Run、Artifact、API Token 与 Agent Enrollment Binding 均显式带 Workspace 边界；旧的未绑定开发 Agent 只兼容 `ws_default`。
-- 默认 Secret Store 为 Local Envelope：随机 DEK + AES-256-GCM + 主密钥封装。主密钥来自 owner-only 文件或显式注入；密文存在而主密钥丢失/权限不安全时失败关闭。OS Keychain、Vault/KMS 是可替换主密钥适配器，不影响默认方案成立。
-- Local Artifact 采用受控路径、临时写、fsync、SHA-256 与原子移动。S3 Store 支持 Put/Get/Range/Head/Delete、Presigned Put、100 MiB Multipart、Abort、可选 AES256/AWS_KMS 和对象元数据校验。
+- 默认且正式的 Secret Store 为 Local Envelope：随机 DEK + AES-256-GCM + 主密钥封装。主密钥来自 owner-only 文件或显式注入；密文存在而主密钥丢失/权限不安全时失败关闭。`SecretStore` Port 用于模块隔离和测试，官方产品不规划 OS Keychain、Vault、云 KMS 或 Secret Manager 形式的 Service Adapter。
+- Local Artifact 采用受控路径、临时写、fsync、SHA-256 与原子移动。S3 Store 支持 Put/Get/Range/Head/Delete、Presigned Put、100 MiB Multipart、Abort、原生 AES256 和对象元数据校验。当前源码仍包含 AWS_KMS 兼容配置路径，按路线图在下一预览发布前清理，不作为正式产品能力。
 - Artifact 状态是 `UPLOADING → READY → DELETING → DELETED`，失败进入 `FAILED`；TTL 清理尊重 Pin/Legal Hold。对象存储 Lifecycle 是兜底，不替代数据库事实源。
 - Actuator 暴露 Health/Readiness/Prometheus，指标带稳定 application 标签；Server HAProxy 对 Readiness 做后端摘除。
 
@@ -119,12 +121,14 @@ Standalone 默认是单 Service + SQLite + Local Artifact + Embedded Engine；Se
 
 本轮详细设计的阶段 A–D 基线已经实现并进入可验证状态：工程契约、Standalone 纵向闭环、Web/Desktop 产品壳、远程 Agent、安全、Artifact、Scheduler、三平台安装和 Server/HA 参考拓扑均已收口。部署、升级、备份、插件和故障验收见 [`deployment-and-operations.md`](deployment-and-operations.md)。
 
-以下属于后续产品增量，不是本轮目标架构的未完成项：
+以下属于正式路线图内的后续产品增量，不是本轮目标架构的未完成项：
 
 - 增加邮件、短信、微信等正式 Provider，以及对应模拟服务和 Schema 组件。
 - Message/Audience/Job 编辑、修订 Diff、大文件 CSV 导入和正式发送二次确认体验。
-- macOS/Windows 商业发行签名、公证、自动更新渠道和品牌资产；公开预览版明确以未签名附件发布。
-- 外部 Vault/云 KMS/OS Keychain 适配器，以及非受信 Provider 独立进程 Runner。
-- 公共 SaaS 的自助注册、计费、订阅、恶意租户物理隔离和跨区域 Active-Active。
+- 运行历史分页筛选、失败项重发、真实总览数据和 Workspace UI 收口。
+- 一体化/离线安装、升级健康验证与回滚、正式恢复工具和本地插件管理。
+- macOS/Windows 商业发行签名与公证；更新由用户主动触发，公开预览版继续以未签名附件发布。
 
-这些增量继续遵守 Classic/Next 双轨独立、Remote Java SDK 不依赖 Core、Embedded Java SDK 不依赖 Service、Workspace 显式隔离、Lease Fencing、Secret 最小暴露和 Artifact 完整性边界。
+公共 SaaS、自助注册、计费订阅、公共市场、云 KMS/Secret Manager、恶意公共租户物理隔离、跨区域 Active-Active、强制自动更新和遥测回传属于长期非目标，不进入后续产品增量。
+
+路线图内的增量继续遵守 Classic/Next 双轨独立、Remote Java SDK 不依赖 Core、Embedded Java SDK 不依赖 Service、Workspace 显式隔离、Lease Fencing、Secret 最小暴露和 Artifact 完整性边界。

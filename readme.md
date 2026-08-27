@@ -25,6 +25,8 @@ WePush 采用 Classic 与 Next 双轨发展。两条产品线彼此独立，允�
 
 Next 是位于 [`next/`](next/) 的完整新架构产品线，包含 Core Engine、Provider SPI、可安装 Service、远程 Agent、Remote/Embedded Java SDK、React WebUI 和 Electron Desktop。当前内置 HTTP Provider，支持可视化配置、运行中心、Cron 调度、动态调试 API 文档，以及 Standalone 和 Server/HA 两种部署基线。
 
+Next 的长期定位是由用户自行下载、安装、部署和运维的开源产品。项目不建设承载用户业务数据的官方公共 SaaS，不提供注册、计费、订阅或公共租户平台，也不规划云 KMS/Secret Manager 集成。用户可以在自己的环境中运行 Standalone，或自行搭建 Server/HA 和远程 Agent。
+
 #### Next 组件
 
 | 组件 | 主要职责 | 形态与边界 |
@@ -43,6 +45,7 @@ Next 是位于 [`next/`](next/) 的完整新架构产品线，包含 Core Engine
 第一次使用请从[《WePush Next 对外使用指南》](next/docs/user-guide.md)开始。当前预览版未使用商业代码签名，不建议直接用于关键生产业务。
 
 - [Next 项目说明](next/README.md)
+- [产品目标、边界与路线图](next/docs/product-scope-and-roadmap.md)
 - [架构与概要设计](next/docs/architecture-and-high-level-design.md)
 - [详细设计](next/docs/detailed-design.md)
 - [部署与运维](next/docs/deployment-and-operations.md)

@@ -2,6 +2,7 @@
 
 - 状态：已接受
 - 日期：2026-08-22
+- 修订：2026-08-27，明确外部 Secret Store 属于长期非目标
 - 决策者：WePush 项目维护者
 
 ## 背景
@@ -46,9 +47,9 @@ WePush 需要保存短信、微信、邮件、HTTP 等 Provider 的 Token、密�
 - Agent 不将解密 Secret 写入 Local Journal。
 - Electron 的 `safeStorage` 不作为 Service Secret Store，因为 Service 必须能在无 Desktop 会话的 Headless 环境运行。
 
-### 扩展
+### 产品边界
 
-`SecretStore` 保持 Port 接口，未来可以增加 HashiCorp Vault、云 KMS 或操作系统凭据存储适配器，但默认安装不依赖它们。
+`SecretStore` 保持 Port 接口，用于维持模块边界、测试替身和本地实现可替换性。WePush Next 的官方产品实现固定为 `LocalEnvelopeSecretStore`，不规划 HashiCorp Vault、云 KMS、云 Secret Manager 或操作系统凭据存储形式的 Service Adapter。Master Key 由用户控制的受保护文件或显式注入提供。
 
 ## 失败策略
 
@@ -59,4 +60,4 @@ WePush 需要保存短信、微信、邮件、HTTP 等 Provider 的 Token、密�
 
 ## 结果
 
-该方案跨平台、可离线、适合安装包和 Headless Service，同时为以后接入外部 Secret Manager 保留接口。代价是项目需要自行实现密钥初始化、备份、权限检查和轮换流程。
+该方案跨平台、可离线、适合安装包和 Headless Service，并确保默认安装不依赖官方或第三方托管密钥服务。代价是项目需要提供完整的密钥初始化、备份、权限检查和轮换流程，部署者也必须把 Master Key 纳入自己的备份与恢复制度。

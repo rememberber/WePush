@@ -1,5 +1,7 @@
 # WePush Next 对外使用指南
 
+WePush Next 是由用户自行下载、安装、部署和运维的开源产品，不依赖官方公共 SaaS、账号注册、计费订阅或云 KMS/Secret Manager。数据、密钥和运行环境均由用户掌控；完整定位和后续计划见[《产品目标、边界与路线图》](product-scope-and-roadmap.md)。
+
 本文面向第一次下载和使用 WePush Next 的用户，适用于 `0.1.0-alpha.1` Public Preview。
 
 > WePush Next 仍是公开预览版，API、数据结构和升级路径可能变化，不建议直接承载关键生产业务。Desktop 与发行包未使用商业代码签名；请只从官方 GitHub Release 下载，并在运行前校验 `SHA256SUMS`。
@@ -355,6 +357,7 @@ Service 已开启安全模式。把 Bootstrap Token 或已签发 Token 填入 We
 ## 12. 反馈与进一步文档
 
 - [Next README](../README.md)
+- [产品目标、边界与路线图](product-scope-and-roadmap.md)
 - [架构与概要设计](architecture-and-high-level-design.md)
 - [详细设计](detailed-design.md)
 - [部署与运维](deployment-and-operations.md)

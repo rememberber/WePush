@@ -2,6 +2,7 @@
 
 - 状态：已接受
 - 日期：2026-08-22
+- 修订：2026-08-27，明确 HA 只服务于用户自建信任域
 - 决策者：WePush 项目维护者
 
 ## 背景
@@ -15,7 +16,7 @@ Standalone 模式使用单 Service 和 SQLite，不需要控制面集群。Serve
 - Server 模式数据库基线为 PostgreSQL 18.x。
 - 正式 HA 至少部署两个无状态 Service 实例，位于支持 HTTP/2 和 gRPC 的负载均衡器后。
 - PostgreSQL 是业务状态和协调状态的唯一持久化事实源。
-- PostgreSQL 自身的复制、故障转移和备份交给托管数据库或独立数据库运维方案，不由 WePush 安装包自行组建数据库集群。
+- PostgreSQL 自身的复制、故障转移和备份由部署者自行选择并运维，不由 WePush 安装包组建数据库集群，也不依赖 WePush 官方托管服务。
 - Artifact 使用 S3-compatible Store，不使用 Service 本地磁盘共享状态。
 - 首期 HA 不强制引入 Redis、Kafka、ZooKeeper 或独立任务队列。
 
@@ -69,7 +70,7 @@ Standalone 模式使用单 Service 和 SQLite，不需要控制面集群。Serve
 ## 非目标
 
 - 不在 WePush 内实现 PostgreSQL 选主和数据复制。
-- 不承诺跨区域 Active-Active 控制面。
+- 跨区域 Active-Active 控制面不属于产品范围。
 - 不通过分布式锁实现外部渠道 Exactly Once。
 - SQLite Standalone 不支持多 Service 实例并发访问同一个数据库文件。
 

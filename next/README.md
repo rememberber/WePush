@@ -2,6 +2,8 @@
 
 WePush Next 是与 Classic 完全独立的新产品线。Classic 与 Next 可以按需拥有重复代码，彼此不建立共享源码依赖。
 
+> 产品定位：WePush Next 是开源、可下载、可安装、由用户自行部署和运维的消息推送产品。项目不建设官方公共 SaaS、注册计费订阅、公共租户平台或云 KMS/Secret Manager 集成。正式范围和分版本计划见[《产品目标、边界与路线图》](docs/product-scope-and-roadmap.md)。
+
 > 当前版本：`0.1.0-alpha.1` Public Preview。它不是稳定版，Desktop 与安装包未使用商业代码签名。下载、校验和已知边界见 [`PREVIEW-NOTICE.md`](PREVIEW-NOTICE.md) 与 [`docs/releases/0.1.0-alpha.1.md`](docs/releases/0.1.0-alpha.1.md)。
 
 > 当前分支还包含 `alpha.1` 发布后的 Embedded Java SDK 等增量；已发布的 `alpha.1` 附件不包含这些增量，它们将进入后续预览发行版。
@@ -128,4 +130,4 @@ try (var engine = WePushEngine.builder()
 - React WebUI、可视化 Account/Message/Audience/Job 创建闭环、可控制运行中心、动态 API 文档、Electron 安全外壳和共享前端 packages。
 - 架构、单元、契约、Service 冒烟与 Account→Run→Engine→Provider 纵向测试。
 
-模块边界和后续迭代以 [`docs/architecture-and-high-level-design.md`](docs/architecture-and-high-level-design.md)、[`docs/detailed-design.md`](docs/detailed-design.md)、[`docs/implementation-status.md`](docs/implementation-status.md)、[`docs/deployment-and-operations.md`](docs/deployment-and-operations.md) 及 [`docs/adr/`](docs/adr/) 为准。
+产品范围和迭代优先级以 [`docs/product-scope-and-roadmap.md`](docs/product-scope-and-roadmap.md) 为准；模块边界和实现细节以 [`docs/architecture-and-high-level-design.md`](docs/architecture-and-high-level-design.md)、[`docs/detailed-design.md`](docs/detailed-design.md)、[`docs/implementation-status.md`](docs/implementation-status.md)、[`docs/deployment-and-operations.md`](docs/deployment-and-operations.md) 及 [`docs/adr/`](docs/adr/) 为准。

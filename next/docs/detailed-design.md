@@ -1,11 +1,12 @@
 # WePush Next 详细设计
 
 - 文档状态：已接受基线，随实现演进
-- 文档版本：0.2
-- 日期：2026-08-22
+- 文档版本：0.3
+- 日期：2026-08-27
 - 适用范围：`next/`
 - 上位文档：[WePush Next 架构与概要设计](architecture-and-high-level-design.md)
 - 关联决策：见 [ADR 索引](adr/README.md)
+- 产品范围：[产品目标、边界与路线图](product-scope-and-roadmap.md)
 
 ## 1. 文档目的
 
@@ -37,7 +38,7 @@
 | 单机执行 | Service 内嵌 Agent |
 | 分布式执行 | 远程 Agent 主动连接 Service |
 
-上述基线分别由 [ADR-0002](adr/0002-technology-baseline.md) 至 [ADR-0008](adr/0008-workspace-multitenancy-scope.md) 固化。外部 Secret Manager、公共 SaaS 和非受信插件进程沙箱是可选扩展，不影响首期基线。
+上述基线分别由 [ADR-0002](adr/0002-technology-baseline.md) 至 [ADR-0008](adr/0008-workspace-multitenancy-scope.md) 固化。WePush Next 只面向用户自建和自运维场景；公共 SaaS、计费订阅、外部 Vault/云 KMS/Secret Manager、恶意公共租户物理隔离和跨区域控制面属于长期非目标。
 
 ## 3. 命名与代码约定
 
@@ -1337,7 +1338,7 @@ Server 中只有持有 PostgreSQL Session-level Advisory Lock 的 Service 实例
 
 - 正式 Server HA 至少运行两个无状态 Service 实例，并置于支持 HTTP/2 与 gRPC 的负载均衡器后。
 - 业务状态、Agent Sequence、Lease、Command、Event 和幂等记录都持久化在 PostgreSQL；Service 本地缓存不是事实源。
-- PostgreSQL 自身复制、备份和故障转移交给托管数据库或独立运维层，WePush 安装包不自行组建数据库集群。
+- PostgreSQL 自身复制、备份和故障转移由部署者选择并负责运维，WePush 安装包不自行组建数据库集群。
 - Schema Migration 以集群级单例执行，采用 Expand → Migrate → Contract，滚动升级期间保持相邻版本兼容。
 - 一个 Service 退出时 REST/SSE 客户端重连，Agent gRPC 自动重连；系统不要求连接粘滞。
 
@@ -1379,7 +1380,7 @@ data/artifacts/
 - 对象键格式为 `workspaces/{workspaceId}/{artifactType}/{yyyy}/{mm}/{artifactId}`，不含用户文件名和 Secret。
 - Agent 不持有长期对象存储 Credential；Service 签发最小权限、短期有效的上传或下载 URL。
 - Service 托管流式写入达到 100 MiB 时默认使用 Multipart；Agent 当前使用绑定长度和 SHA-256 的单次 Presigned Put，单 Artifact 上限 1 GiB。提高上限时可扩展 Presigned Multipart Plan；未完成 Multipart 由对象存储 Lifecycle 在 24 小时后终止。
-- Server 模式启用对象存储服务端加密；可用时允许配置 KMS Key。
+- Server 模式启用对象存储原生 AES256 或由部署方自行保证等价的存储端加密；WePush 不对接或管理云 KMS Key。
 - 数据库元数据是生命周期事实源，对象存储 List 只能用于对账和孤儿清理。
 
 ### 29.4 下载
@@ -1414,7 +1415,7 @@ encrypted DEK + key version
 - Server HA 的所有 Service 实例挂载相同的 Active/Retained Key Ring；轮换由单一管理操作生成新版本，再通过受控部署传播到所有实例。
 - Server 发现密钥缺失、权限过宽或 Key Version 不可解析时 Fail Closed，不静默生成新密钥。
 - Master Key 轮换默认只重新包裹各 Secret 的 DEK，并保留旧 Key Version 直到验证和回滚窗口结束。
-- Electron `safeStorage` 不用于 Service Secret；未来 Vault、云 KMS 和操作系统凭据存储通过 `SecretStore` Adapter 扩展。
+- Electron `safeStorage` 只可用于 Desktop 自身的本地 UI Credential，不用于 Service Secret。Service 不规划 Vault、云 KMS、云 Secret Manager 或操作系统凭据存储 Adapter。
 
 ### 30.2 API 行为
 
@@ -2033,7 +2034,7 @@ Next CI 使用 `next/**` 路径过滤，Classic 和 Next 互不依赖对方构�
 - Desktop 和三平台 Service 安装。
 - PostgreSQL 18 HA、S3-compatible Artifact Store 和部署文档。
 
-当前进度：Iteration 6 基线已完成。Workspace API 与 Agent Binding、Bearer API Token、VIEWER/OPERATOR/ADMIN、审计、Cron/Misfire Scheduler、PostgreSQL Advisory Lock、跨实例 SSE 补偿、S3 Store、Prometheus、三平台安装/升级/备份/卸载、WebUI Security/Schedule/API Debug 页面、Electron 目标平台目录打包、容器 HA 参考拓扑和运维手册均已落地。商业代码签名、公证、云 KMS/Vault 和公共 SaaS 属于后续产品增量。
+当前进度：Iteration 6 基线已完成。Workspace API 与 Agent Binding、Bearer API Token、VIEWER/OPERATOR/ADMIN、审计、Cron/Misfire Scheduler、PostgreSQL Advisory Lock、跨实例 SSE 补偿、S3 Store、Prometheus、三平台安装/升级/备份/卸载、WebUI Security/Schedule/API Debug 页面、Electron 目标平台目录打包、容器 HA 参考拓扑和运维手册均已落地。后续产品增量聚焦真实 Provider、配置编辑与导入、发送确认、自部署安装升级、备份恢复和稳定发行；具体版本边界见[产品路线图](product-scope-and-roadmap.md)。
 
 ## 45. 完成定义
 
@@ -2048,19 +2049,17 @@ Next CI 使用 `next/**` 路径过滤，Classic 和 Next 互不依赖对方构�
 - 文档、示例和升级说明同步更新。
 - 不需要 Classic 源码或构建产物即可编译和运行。
 
-## 46. 已决 ADR 与后续非基线事项
+## 46. 已决 ADR 与后续事项
 
 本轮技术基线已由 [ADR-0002](adr/0002-technology-baseline.md) 至 [ADR-0008](adr/0008-workspace-multitenancy-scope.md) 确认，包括 Web/Desktop/Service、Secret、Agent 协议、Provider 插件、PostgreSQL HA、Artifact 和 Workspace 多租户。
 
 以下事项可以在对应能力进入迭代前继续形成独立 ADR，但不阻塞当前架构：
 
 1. OpenAPI Generator、数据库迁移工具、路由和 Server State 库的具体版本。
-2. Desktop 本地 Bootstrap Channel 的平台实现和签名更新服务。
-3. 外部 Vault/云 KMS 的首个适配器。
-4. 非受信 Provider 的独立进程 Runner。
-5. 公共 SaaS 的计费、自助注册、物理隔离和跨地域控制面。
+2. Desktop 本地 Bootstrap Channel、平台安装和发行签名实现。
+3. 非受信 Provider 的独立进程 Runner；只有明确服务于用户自建安全场景时才进入评审。
 
-这些扩展不得反向污染 Core API，也不得削弱 Workspace、Lease Fencing、Secret 和 Artifact 的既定安全边界。
+公共 SaaS、计费订阅、外部 Vault/云 KMS/Secret Manager、恶意公共租户物理隔离和跨地域控制面不是“后续非基线事项”，而是长期产品非目标。任何后续 ADR 不得把它们重新引入。允许评审的扩展不得反向污染 Core API，也不得削弱 Workspace、Lease Fencing、Secret 和 Artifact 的既定安全边界。
 
 ## 47. 文档演进规则
 

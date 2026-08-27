@@ -1,6 +1,6 @@
 # WePush Next 部署与运维
 
-本文是 `0.1.0-alpha.1` 公开预览版的可执行部署说明。Standalone 使用 SQLite 和本地 Artifact；Server 使用 PostgreSQL、S3-compatible Artifact、两个以上 Service 实例以及外部负载均衡器。Classic 不参与 Next 的构建、安装或运行。
+本文是 `0.1.0-alpha.1` 公开预览版的可执行部署说明。Standalone 使用 SQLite 和本地 Artifact；用户自建 Server 使用 PostgreSQL、S3-compatible Artifact、两个以上 Service 实例以及外部负载均衡器。Classic 不参与 Next 的构建、安装或运行。WePush 不提供官方托管控制面，所有部署、数据、密钥和备份均由用户掌控；产品边界见[《产品目标、边界与路线图》](product-scope-and-roadmap.md)。
 
 Service 的无认证开发模式仅允许绑定回环地址。任何非回环 HTTP 监听都必须启用 API Security；`server` 模式还会强制 PostgreSQL、S3-compatible Artifact Store 和 Agent gRPC TLS，缺少任一项均启动失败。
 
@@ -157,11 +157,11 @@ curl --fail http://127.0.0.1:18990/actuator/prometheus
 
 Schedule Scanner 使用 PostgreSQL Advisory Lock 单 Leader；Agent 命令和 Lease Offer 使用持久 outbox，只有持有当前 gRPC 流的实例发送；SSE 以数据库事件日志和周期轮询跨实例补偿。
 
-该 Compose 的 MinIO 未配置 KMS，因此明确使用 `WEPUSH_S3_SERVER_SIDE_ENCRYPTION=NONE`，仅用于协议验收。生产对象存储必须设为 `AES256`，或同时设置 `AWS_KMS` 与 `WEPUSH_S3_KMS_KEY_ID`。生产还必须：
+该 Compose 为本地协议验收拓扑，明确使用 `WEPUSH_S3_SERVER_SIDE_ENCRYPTION=NONE`。正式自建环境应配置对象存储原生 `AES256`，或由部署者在其存储层保证等价的静态加密；WePush 不对接或管理云 KMS。正式环境还必须：
 
-- 使用托管/独立运维的 PostgreSQL HA 和备份恢复；
+- 使用由部署者负责的 PostgreSQL HA 和备份恢复；
 - 在 HTTP API 前终止受信 TLS，保留 gRPC TLS 透传或等价的受控 mTLS 方案；
-- 将所有密钥放入 Secret Manager/KMS，不使用 Compose env 文件；
+- 将 Master Key、Agent CA 和其他密钥放入权限受控的只读挂载文件，不使用提交到源码或共享目录的 Compose env 文件；
 - 配置 S3 Lifecycle 作为未完成 Multipart 与误删保护的兜底；
 - 至少两个 Service 跨故障域部署并配置 Readiness/Prometheus 告警。
 

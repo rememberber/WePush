@@ -2,6 +2,7 @@
 
 - 状态：已接受
 - 日期：2026-08-22
+- 修订：2026-08-27，移除云 KMS 产品方向
 - 决策者：WePush 项目维护者
 
 ## 背景
@@ -24,7 +25,7 @@ S3-compatible 最小能力：
 - Delete Object
 - Multipart Upload、Complete 和 Abort
 - Presigned Upload/Download URL
-- 对象校验和与服务端加密配置
+- 对象校验和与原生服务端加密配置
 
 ### 对象命名
 
@@ -49,7 +50,7 @@ S3-compatible 最小能力：
 
 - Artifact 元数据保存 SHA-256、大小和 Content Type。
 - 传输使用 TLS。
-- Server 模式启用对象存储服务端加密；支持时使用 KMS Key。
+- Server 模式启用对象存储原生 AES256，或由部署者在其存储层保证等价加密。WePush 不对接或管理云 KMS Key。
 - 极敏感 Artifact 可以在客户端加密后再上传，具体类型另行配置。
 
 ### 生命周期状态

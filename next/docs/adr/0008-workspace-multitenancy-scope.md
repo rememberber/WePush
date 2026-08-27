@@ -2,15 +2,16 @@
 
 - 状态：已接受
 - 日期：2026-08-22
+- 修订：2026-08-27，明确 Workspace 不是公共 SaaS 租户
 - 决策者：WePush 项目维护者
 
 ## 背景
 
-Standalone 通常只有一个用户，但 Server 模式会出现多个团队、账号、Agent 和权限边界。如果完全按单租户实现，后续增加隔离需要修改所有表、唯一索引、Repository、API、Artifact 和 Secret。另一方面，首期直接建设公共 SaaS 的计费、租户自助和物理隔离会显著扩大范围。
+Standalone 通常只有一个用户，但用户自建的 Server 模式可能出现多个团队、账号、Agent 和权限边界。如果完全按单 Workspace 实现，后续增加团队 Scope 需要修改所有表、唯一索引、Repository、API、Artifact 和 Secret。Workspace 因此是同一部署信任域内的逻辑边界，不是公共 SaaS 租户模型。
 
 ## 决策
 
-Workspace 逻辑多租户进入 WePush Next 正式产品范围，但公共多租户 SaaS 不进入首期范围。
+Workspace 逻辑隔离进入 WePush Next 正式产品范围，但公共多租户 SaaS 长期不进入产品范围。
 
 ### Standalone
 
@@ -67,15 +68,15 @@ workspace.jobs().startRun(jobId, request);
 
 ### 配额
 
-Server 支持 Workspace 级策略入口，包括最大 Agent、并发 Run、总并发、Artifact 容量和保留期。首期可以只实现默认策略，但模型和校验入口必须存在。
+Server 支持 Workspace 级策略入口，包括最大 Agent、并发 Run、总并发、Artifact 容量和保留期。早期版本可以只实现默认策略，但模型和校验入口必须存在。这些限制用于自建实例的资源治理，不用于计费套餐。
 
 ## 明确不做
 
-- 首期不提供计费、订阅套餐、租户自助注册和公共市场。
-- 不承诺恶意租户之间的进程级或数据库级物理隔离。
+- 不提供计费、订阅套餐、租户自助注册和公共市场。
+- 不提供恶意租户之间的进程级、数据库级、主机级物理隔离。
 - 不为每个 Workspace 自动创建独立数据库。
 - 不允许 Provider 插件执行任意跨 Workspace 查询。
 
 ## 结果
 
-Workspace 从第一张表、第一条 API 和第一个 Artifact 开始成为正式边界，可以避免未来代价高昂的数据改造。Standalone 通过 Default Workspace 保持简单体验。代价是每个用例、Repository 和测试都必须验证 Workspace Scope。
+Workspace 从第一张表、第一条 API 和第一个 Artifact 开始成为正式边界，可以避免团队资源相互混淆。Standalone 通过 Default Workspace 保持简单体验。代价是每个用例、Repository 和测试都必须验证 Workspace Scope；这一成本只服务于用户自建实例内的权限和资源管理，不为公共 SaaS 铺路。
