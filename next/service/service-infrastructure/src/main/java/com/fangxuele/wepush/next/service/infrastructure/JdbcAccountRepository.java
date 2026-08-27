@@ -2,6 +2,7 @@ package com.fangxuele.wepush.next.service.infrastructure;
 
 import com.fangxuele.wepush.next.service.domain.AccountDefinition;
 import com.fangxuele.wepush.next.service.domain.AccountRepository;
+import com.fangxuele.wepush.next.service.domain.ResourcePageQuery;
 import com.fangxuele.wepush.next.service.domain.WorkspaceId;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -37,5 +38,22 @@ public final class JdbcAccountRepository implements AccountRepository {
     public List<AccountDefinition> list(WorkspaceId workspaceId) {
         return jdbc.query("SELECT * FROM account_definition WHERE workspace_id = ? ORDER BY created_at DESC, id",
                 JdbcRows.ACCOUNT, workspaceId.value());
+    }
+
+    @Override
+    public List<AccountDefinition> page(WorkspaceId workspaceId, ResourcePageQuery query) {
+        JdbcPageQueries.Query page = JdbcPageQueries.build("SELECT * FROM account_definition",
+                "workspace_id", workspaceId.value(), "name", "status", "created_at", "id", query);
+        return jdbc.query(page.sql(), JdbcRows.ACCOUNT, page.parameters());
+    }
+
+    @Override
+    public boolean update(AccountDefinition account, long expectedVersion) {
+        return jdbc.update("""
+                UPDATE account_definition
+                SET name = ?, configuration_json = ?, status = ?, updated_at = ?, version = version + 1
+                WHERE workspace_id = ? AND id = ? AND version = ?
+                """, account.name(), account.configuration().value(), account.status().name(),
+                account.updatedAt().toString(), account.workspaceId().value(), account.id(), expectedVersion) == 1;
     }
 }

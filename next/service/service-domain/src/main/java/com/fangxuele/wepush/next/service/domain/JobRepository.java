@@ -9,4 +9,8 @@ public interface JobRepository {
     Optional<JobDefinition> findById(WorkspaceId workspaceId, String jobId);
 
     List<JobDefinition> list(WorkspaceId workspaceId);
+
+    List<JobDefinition> page(WorkspaceId workspaceId, ResourcePageQuery query);
+
+    boolean update(JobDefinition job, long expectedVersion);
 }

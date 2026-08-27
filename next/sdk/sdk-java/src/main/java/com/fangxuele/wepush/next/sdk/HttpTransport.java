@@ -9,11 +9,18 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 final class HttpTransport implements AutoCloseable {
@@ -95,6 +102,52 @@ final class HttpTransport implements AutoCloseable {
 
     <T> T patchJson(String path, Object requestBody, Class<T> responseType) {
         return writeJson(path, requestBody, null, "PATCH", responseType);
+    }
+
+    <T> T postMultipart(String path, Map<String, ?> fields, String fileName, Path file,
+                        Class<T> responseType) {
+        if (file == null || !Files.isRegularFile(file)) {
+            throw new IllegalArgumentException("file must reference a regular file");
+        }
+        String boundary = "wepush-" + UUID.randomUUID();
+        List<HttpRequest.BodyPublisher> parts = new ArrayList<>();
+        try {
+            for (Map.Entry<String, ?> field : fields.entrySet()) {
+                String value = field.getValue() instanceof String text ? text
+                        : mapper.writeValueAsString(field.getValue());
+                parts.add(HttpRequest.BodyPublishers.ofString("--" + boundary + "\r\n"
+                        + "Content-Disposition: form-data; name=\"" + disposition(field.getKey())
+                        + "\"\r\n\r\n" + value + "\r\n", StandardCharsets.UTF_8));
+            }
+            String contentType = Files.probeContentType(file);
+            parts.add(HttpRequest.BodyPublishers.ofString("--" + boundary + "\r\n"
+                    + "Content-Disposition: form-data; name=\"file\"; filename=\""
+                    + disposition(fileName) + "\"\r\nContent-Type: "
+                    + (contentType == null ? "application/octet-stream" : contentType) + "\r\n\r\n",
+                    StandardCharsets.UTF_8));
+            parts.add(HttpRequest.BodyPublishers.ofFile(file));
+            parts.add(HttpRequest.BodyPublishers.ofString("\r\n--" + boundary + "--\r\n",
+                    StandardCharsets.UTF_8));
+        } catch (IOException exception) {
+            throw new WePushException("Unable to prepare multipart upload", exception);
+        }
+        HttpRequest request = requestBuilder(path).header("Accept", "application/json")
+                .header("Content-Type", "multipart/form-data; boundary=" + boundary)
+                .POST(HttpRequest.BodyPublishers.concat(parts.toArray(HttpRequest.BodyPublisher[]::new)))
+                .build();
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() >= 200 && response.statusCode() < 300) {
+                return decode(response.body(), responseType);
+            }
+            throw new WePushException("WePush Service returned HTTP " + response.statusCode(),
+                    response.statusCode(), response.body());
+        } catch (IOException exception) {
+            throw new WePushException("Unable to reach WePush Service", exception);
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+            throw new WePushException("Interrupted while calling WePush Service", exception);
+        }
     }
 
     void delete(String path) {
@@ -213,6 +266,13 @@ final class HttpTransport implements AutoCloseable {
             throw new IllegalArgumentException(name + " is blank or contains prohibited control characters");
         }
         return value;
+    }
+
+    private static String disposition(String value) {
+        if (value == null || value.isBlank() || value.indexOf('\r') >= 0 || value.indexOf('\n') >= 0) {
+            throw new IllegalArgumentException("multipart name is blank or contains prohibited control characters");
+        }
+        return value.replace("\\", "_").replace("\"", "_");
     }
 
     private Duration retryDelay(HttpResponse<?> response, int attempt) {

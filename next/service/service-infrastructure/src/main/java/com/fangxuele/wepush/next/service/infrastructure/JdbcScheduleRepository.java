@@ -2,6 +2,7 @@ package com.fangxuele.wepush.next.service.infrastructure;
 
 import com.fangxuele.wepush.next.service.domain.ScheduleDefinition;
 import com.fangxuele.wepush.next.service.domain.ScheduleRepository;
+import com.fangxuele.wepush.next.service.domain.ResourcePageQuery;
 import com.fangxuele.wepush.next.service.domain.WorkspaceId;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -46,6 +47,15 @@ public final class JdbcScheduleRepository implements ScheduleRepository {
     }
 
     @Override
+    public List<ScheduleDefinition> page(WorkspaceId workspaceId, ResourcePageQuery query) {
+        JdbcPageQueries.Query page = JdbcPageQueries.build("SELECT * FROM schedule_definition",
+                "workspace_id", workspaceId.value(), "name",
+                "CASE WHEN enabled = 1 THEN 'ACTIVE' ELSE 'DISABLED' END",
+                "created_at", "id", query);
+        return jdbc.query(page.sql(), JdbcScheduleRepository::row, page.parameters());
+    }
+
+    @Override
     public List<ScheduleDefinition> listDue(Instant now, int limit) {
         return jdbc.query("""
                 SELECT * FROM schedule_definition
@@ -72,6 +82,18 @@ public final class JdbcScheduleRepository implements ScheduleRepository {
                     version = version + 1 WHERE workspace_id = ? AND id = ?
                 """, enabled ? 1 : 0, nextFireAt.toString(), updatedAt.toString(),
                 workspaceId.value(), scheduleId) == 1;
+    }
+
+    @Override
+    public boolean update(ScheduleDefinition schedule, long expectedVersion) {
+        return jdbc.update("""
+                UPDATE schedule_definition
+                SET job_id = ?, name = ?, cron_expression = ?, timezone = ?, misfire_policy = ?,
+                    enabled = ?, next_fire_at = ?, updated_at = ?, version = version + 1
+                WHERE workspace_id = ? AND id = ? AND version = ?
+                """, schedule.jobId(), schedule.name(), schedule.cronExpression(), schedule.timezone(),
+                schedule.misfirePolicy().name(), schedule.enabled() ? 1 : 0, text(schedule.nextFireAt()),
+                text(schedule.updatedAt()), schedule.workspaceId().value(), schedule.id(), expectedVersion) == 1;
     }
 
     @Override

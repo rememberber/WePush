@@ -37,6 +37,7 @@ import com.fangxuele.wepush.next.service.domain.RunRepository;
 import com.fangxuele.wepush.next.service.domain.RunResultRepository;
 import com.fangxuele.wepush.next.service.domain.RunSnapshot;
 import com.fangxuele.wepush.next.service.domain.RunStatus;
+import com.fangxuele.wepush.next.service.domain.ResourcePageQuery;
 import com.fangxuele.wepush.next.service.domain.WorkspaceId;
 import com.fangxuele.wepush.next.service.domain.WorkspaceRepository;
 
@@ -94,9 +95,24 @@ public final class StandaloneRunExecutor implements RunDispatcher, RunCommandGat
     }
 
     public void recoverPending() {
-        workspaces.list().forEach(workspace -> runs.list(workspace.id()).stream()
-                .filter(run -> run.status() == RunStatus.PENDING || run.status() == RunStatus.RECOVERING)
-                .forEach(run -> dispatch(workspace.id(), run.id())));
+        workspaces.list().forEach(workspace -> {
+            recover(workspace.id(), RunStatus.PENDING);
+            recover(workspace.id(), RunStatus.RECOVERING);
+        });
+    }
+
+    private void recover(WorkspaceId workspaceId, RunStatus status) {
+        Instant afterCreatedAt = null;
+        String afterId = null;
+        while (true) {
+            List<RunDefinition> page = runs.page(workspaceId, new ResourcePageQuery(
+                    null, status.name(), null, null, afterCreatedAt, afterId, 100));
+            page.forEach(run -> dispatch(workspaceId, run.id()));
+            if (page.size() < 100) return;
+            RunDefinition last = page.getLast();
+            afterCreatedAt = last.createdAt();
+            afterId = last.id();
+        }
     }
 
     @Override
@@ -124,8 +140,8 @@ public final class StandaloneRunExecutor implements RunDispatcher, RunCommandGat
             }
             RunSnapshot snapshot = runs.findSnapshot(workspaceId, runId)
                     .orElseThrow(() -> new IllegalStateException("run snapshot is missing"));
-            List<AudienceRecipient> storedRecipients = audiences.recipients(
-                    workspaceId, snapshot.audienceSnapshotId());
+            List<AudienceRecipient> storedRecipients = audiences.recipientsForRun(
+                    workspaceId, snapshot.audienceSnapshotId(), runId);
             List<RecipientRecord> recipients = storedRecipients.stream().map(this::recipient).toList();
             ExecutionPolicies policies = ExecutionPolicyReader.read(json.read(snapshot.policies(), Map.class));
             RunExecutionSpec spec = new RunExecutionSpec(runId, snapshot.provider(),

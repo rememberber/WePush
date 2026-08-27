@@ -11,6 +11,7 @@ public record JobDefinition(
         String audienceId,
         JsonDocument policies,
         boolean enabled,
+        boolean archived,
         Instant createdAt,
         Instant updatedAt,
         long version
@@ -26,5 +27,12 @@ public record JobDefinition(
             throw new IllegalArgumentException("job definition is incomplete");
         }
         DomainChecks.nonNegative(version, "job version");
+        if (archived && enabled) {
+            throw new IllegalArgumentException("archived job cannot be enabled");
+        }
+    }
+
+    public String status() {
+        return archived ? "ARCHIVED" : enabled ? "ACTIVE" : "DISABLED";
     }
 }

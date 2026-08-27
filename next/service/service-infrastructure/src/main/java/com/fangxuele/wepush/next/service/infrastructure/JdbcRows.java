@@ -52,13 +52,15 @@ final class JdbcRows {
     static final RowMapper<JobDefinition> JOB = (rs, row) -> new JobDefinition(
             rs.getString("id"), workspaceId(rs), rs.getString("name"), rs.getString("account_id"),
             rs.getString("message_id"), rs.getString("audience_id"), json(rs, "policies_json"),
-            rs.getInt("enabled") != 0, instant(rs, "created_at"), instant(rs, "updated_at"),
+            rs.getInt("enabled") != 0, rs.getInt("archived") != 0,
+            instant(rs, "created_at"), instant(rs, "updated_at"),
             rs.getLong("version"));
 
     static final RowMapper<RunDefinition> RUN = (rs, row) -> new RunDefinition(
             rs.getString("id"), workspaceId(rs), rs.getString("job_id"),
             RunStatus.valueOf(rs.getString("status")), rs.getString("state_reason"),
-            rs.getInt("dry_run") != 0, rs.getLong("total"), rs.getLong("succeeded"),
+            rs.getInt("dry_run") != 0, rs.getString("source_run_id"), rs.getString("retry_states"),
+            rs.getLong("total"), rs.getLong("succeeded"),
             rs.getLong("failed"), rs.getLong("unknown_count"), rs.getLong("unsent"),
             rs.getLong("skipped"), rs.getLong("retried"), instant(rs, "created_at"),
             nullableInstant(rs, "started_at"), nullableInstant(rs, "ended_at"),

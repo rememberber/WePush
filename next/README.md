@@ -4,9 +4,9 @@ WePush Next 是与 Classic 完全独立的新产品线。Classic 与 Next 可以
 
 > 产品定位：WePush Next 是开源、可下载、可安装、由用户自行部署和运维的消息推送产品。项目不建设官方公共 SaaS、注册计费订阅、公共租户平台或云 KMS/Secret Manager 集成。正式范围和分版本计划见[《产品目标、边界与路线图》](docs/product-scope-and-roadmap.md)。
 
-> 当前版本：`0.1.0-alpha.2` Public Preview。它不是稳定版，Desktop 与安装包未使用商业代码签名。下载、校验和已知边界见 [`PREVIEW-NOTICE.md`](PREVIEW-NOTICE.md) 与 [`docs/releases/0.1.0-alpha.2.md`](docs/releases/0.1.0-alpha.2.md)。
+> 当前版本：`0.1.0-alpha.3` Public Preview。它不是稳定版，Desktop 与安装包未使用商业代码签名。下载、校验和已知边界见 [`PREVIEW-NOTICE.md`](PREVIEW-NOTICE.md) 与 [`docs/releases/0.1.0-alpha.3.md`](docs/releases/0.1.0-alpha.3.md)。
 
-第一次下载和使用请从[《WePush Next 对外使用指南》](docs/user-guide.md)开始。该指南覆盖发行物选择、三平台启动/安装、Desktop 连接、首个 HTTP Provider Dry Run、正式 API 调用、数据备份和常见问题。
+第一次下载和使用请从[《WePush Next 对外使用指南》](docs/user-guide.md)开始。该指南覆盖发行物选择、三平台启动/安装、Desktop 连接、CSV/TXT 受众导入、HTTP Provider Dry Run、正式确认发送、失败重发、数据备份和常见问题。
 
 ## 验证 Java 工程
 
@@ -117,15 +117,15 @@ try (var engine = WePushEngine.builder()
 }
 ```
 
-从源码安装、依赖声明和完整示例见 [`sdk/README.md`](sdk/README.md) 与 [`sdk/embedded-java/README.md`](sdk/embedded-java/README.md)。`alpha.2` 发行包和独立 Java SDK 附件同时提供 Remote SDK 与 Embedded SDK。
+从源码安装、依赖声明和完整示例见 [`sdk/README.md`](sdk/README.md) 与 [`sdk/embedded-java/README.md`](sdk/embedded-java/README.md)。`alpha.3` 发行包和独立 Java SDK 附件同时提供 Remote SDK 与 Embedded SDK。
 
 ## 当前开发基线
 
 - Core API、Provider SPI、虚拟线程 Engine 与 HTTP Provider。
 - Agent Protocol、Protobuf/gRPC 双向控制流、Sequence/Fencing Runtime、持久 Journal、加密 Secret Envelope、远端 Core 执行适配与常驻 Agent 包。
-- Service 分层、SQLite/Flyway、控制面 CRUD、Agent 注册/心跳/持久 Lease、信封加密 Secret Store、Result/Command/Artifact 持久化、本地 Artifact Store、Run 幂等创建、SSE，以及可切换的内嵌/远端执行器。
+- Service 分层、SQLite/Flyway、资源编辑/不可变修订/分页、流式 Audience Import、正式发送确认、关联重发、真实总览、Agent 注册/心跳/持久 Lease、信封加密 Secret Store、Result/Command/Artifact 持久化、SSE，以及可切换的内嵌/远端执行器。
 - 相互独立的 Remote Java SDK、Embedded Java SDK 和 TypeScript API Client。
-- React WebUI、可视化 Account/Message/Audience/Job 创建闭环、可控制运行中心、动态 API 文档、Electron 安全外壳和共享前端 packages。
+- React WebUI、资源生命周期、CSV/TXT 导入、Dry Run/正式确认/结果/失败重发闭环、真实 Workspace 和运行总览、动态 API 文档、Electron 安全外壳和共享前端 packages。
 - 架构、单元、契约、Service 冒烟与 Account→Run→Engine→Provider 纵向测试。
 
 产品范围和迭代优先级以 [`docs/product-scope-and-roadmap.md`](docs/product-scope-and-roadmap.md) 为准；模块边界和实现细节以 [`docs/architecture-and-high-level-design.md`](docs/architecture-and-high-level-design.md)、[`docs/detailed-design.md`](docs/detailed-design.md)、[`docs/implementation-status.md`](docs/implementation-status.md)、[`docs/deployment-and-operations.md`](docs/deployment-and-operations.md) 及 [`docs/adr/`](docs/adr/) 为准。

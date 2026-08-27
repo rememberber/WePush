@@ -4,6 +4,26 @@
 
 ## Unreleased
 
+## 0.1.0-alpha.3 — 2026-08-27
+
+### Added
+
+- Account 编辑、连接测试、启停与归档；Message 新 Revision、历史、Diff、复制；Job 编辑、复制、启停与归档；Schedule 完整编辑。
+- CSV/TXT 流式 Audience 导入、字段映射、预览、数据库去重、错误行 CSV 下载，以及创建或更新不可变 Snapshot。
+- 正式发送影响预览和五分钟确认令牌；FAILED、UNKNOWN、UNSENT Item 可创建保留来源与冻结快照的新 Run。
+- Run/资源/Schedule/审计签名游标分页、名称/状态/时间筛选，以及真实 Run 总览、活动列表、最近运行和 14 天趋势。
+- Remote Java SDK 与 TypeScript Client 同步覆盖资源生命周期、分页、受众文件上传、发送确认、重发和总览。
+
+### Changed
+
+- WebUI 形成文件导入 → Dry Run → 正式确认 → 结果 → 失败重发闭环；Standalone 隐藏 Workspace 选择，用户自建 Server 可切换真实 Workspace。
+- Message 和 Audience 内容更新创建不可变版本；已创建 Run 始终使用冻结 Snapshot。
+- 启动恢复改为分批扫描待恢复 Run，避免随历史规模增长而一次性载入。
+
+### Fixed
+
+- 资源与审计列表契约统一为 `{items,page}`，Cursor 使用 HMAC 并绑定当前筛选条件，篡改或跨筛选复用会返回明确错误。
+
 ## 0.1.0-alpha.2 — 2026-08-27
 
 ### Added

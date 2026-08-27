@@ -480,8 +480,8 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
     }
 
     private byte[] audienceDocument(AgentLease lease, RunSnapshot snapshot) {
-        List<RemoteRunDocuments.Recipient> recipients = audiences.recipients(
-                        lease.workspaceId(), snapshot.audienceSnapshotId()).stream()
+        List<RemoteRunDocuments.Recipient> recipients = audiences.recipientsForRun(
+                        lease.workspaceId(), snapshot.audienceSnapshotId(), lease.runId()).stream()
                 .map(this::recipient).toList();
         return json.canonicalize(new RemoteRunDocuments.Audience(recipients))
                 .value().getBytes(StandardCharsets.UTF_8);

@@ -9,7 +9,7 @@ WePush Next 提供两种边界不同、彼此独立的 Java SDK：
 
 两者不是上下级关系，也不会合并成一个 Artifact。Remote SDK 保持稳定的网络契约边界；Embedded SDK 提供进程内执行能力。
 
-> `0.1.0-alpha.2` 发行包和独立 Java SDK 附件同时提供 Remote Java SDK 与 Embedded Java SDK。
+> `0.1.0-alpha.3` 发行包和独立 Java SDK 附件同时提供 Remote Java SDK 与 Embedded Java SDK。
 
 ## 从源码安装
 
@@ -25,7 +25,7 @@ cd next
 进入包含 POM/JAR 的 `sdk/` 目录（独立 Java SDK 压缩包则进入其根目录），先安装 Parent，再按需要安装 Remote 或 Embedded 依赖闭包：
 
 ```bash
-VERSION=0.1.0-alpha.2
+VERSION=0.1.0-alpha.3
 
 mvn install:install-file \
   -Dfile="wepush-next-parent-$VERSION.pom" \
@@ -58,7 +58,7 @@ Windows PowerShell 可以对相同文件逐条执行 `mvn install:install-file`�
 <dependency>
     <groupId>com.fangxuele.wepush.next</groupId>
     <artifactId>sdk-java</artifactId>
-    <version>0.1.0-alpha.2</version>
+    <version>0.1.0-alpha.3</version>
 </dependency>
 ```
 
@@ -74,18 +74,35 @@ try (var client = WePushClient.builder()
 }
 ```
 
+`alpha.3` 的 Remote SDK 同步支持资源分页/编辑、CSV/TXT 文件上传、正式发送确认、筛选重发和真实总览。例如上传文件不会先把完整内容读入 SDK 内存：
+
+```java
+var workspace = client.workspace("ws_default");
+var preview = workspace.uploadAudience(
+        Path.of("recipients.csv"), "Imported", null, "CSV", "itemId",
+        Map.of("mobile", "mobile"), null);
+var audience = workspace.commitAudienceImport(preview.id());
+
+var confirmation = workspace.confirmRun("job-id");
+var run = workspace.createRun("job-id", UUID.randomUUID().toString(),
+        new ControlPlaneApi.CreateRunRequest(false, Map.of(), "manual",
+                confirmation.confirmationToken()));
+```
+
+每个 Cursor Page 最多 100 条；正式发送和失败重发的确认令牌只短期有效，并绑定当前资源或来源 Run 状态。
+
 ## Embedded Java SDK
 
 ```xml
 <dependency>
     <groupId>com.fangxuele.wepush.next</groupId>
     <artifactId>embedded-java</artifactId>
-    <version>0.1.0-alpha.2</version>
+    <version>0.1.0-alpha.3</version>
 </dependency>
 <dependency>
     <groupId>com.fangxuele.wepush.next</groupId>
     <artifactId>provider-http</artifactId>
-    <version>0.1.0-alpha.2</version>
+    <version>0.1.0-alpha.3</version>
 </dependency>
 ```
 

@@ -11,6 +11,8 @@ public interface ScheduleRepository {
 
     List<ScheduleDefinition> list(WorkspaceId workspaceId);
 
+    List<ScheduleDefinition> page(WorkspaceId workspaceId, ResourcePageQuery query);
+
     List<ScheduleDefinition> listDue(Instant now, int limit);
 
     boolean advance(String scheduleId, long expectedVersion, Instant lastFireAt,
@@ -18,6 +20,8 @@ public interface ScheduleRepository {
 
     boolean setEnabled(WorkspaceId workspaceId, String scheduleId, boolean enabled,
                        Instant nextFireAt, Instant updatedAt);
+
+    boolean update(ScheduleDefinition schedule, long expectedVersion);
 
     boolean delete(WorkspaceId workspaceId, String scheduleId);
 }

@@ -17,6 +17,11 @@ public final class ControlPlaneApi {
                                   Instant createdAt, Instant updatedAt, long version) {
     }
 
+    public record UpdateAccountRequest(String name, Object configuration, String status) { }
+    public record ConnectionTestRequest(String timeout) { }
+    public record ConnectionTestResponse(boolean successful, String code, String diagnostic,
+                                         long latencyMillis) { }
+
     public record CreateMessageRequest(String name, String providerId, String providerVersion,
                                        Object content) {
     }
@@ -26,6 +31,15 @@ public final class ControlPlaneApi {
                                   Object content, String contentHash, String status,
                                   Instant createdAt, Instant updatedAt, long version) {
     }
+
+    public record UpdateMessageRequest(String name, Object content, String status) { }
+    public record CopyResourceRequest(String name) { }
+    public record MessageRevisionResponse(String messageId, int revision, String schemaVersion,
+                                          Object content, String contentHash, Instant createdAt) { }
+    public record RevisionPage(List<MessageRevisionResponse> items, Integer nextBeforeRevision,
+                               boolean hasMore) { }
+    public record MessageDiffResponse(MessageRevisionResponse from, MessageRevisionResponse to,
+                                      List<String> changedPaths) { }
 
     public record CreateAudienceRequest(String name, List<RecipientRequest> recipients) {
     }
@@ -50,20 +64,47 @@ public final class ControlPlaneApi {
                                    Instant createdAt, Instant updatedAt, long version) {
     }
 
+    public record UpdateAudienceRequest(String name, List<RecipientRequest> recipients, String status) { }
+    public record AudienceImportRowResponse(long sequence, String itemId, Object fields, String rawLine,
+                                            boolean accepted, String errorCode, String errorMessage) { }
+    public record AudienceImportResponse(String id, String workspaceId, String audienceId, String name,
+                                         String format, String itemIdColumn, Object fieldMapping, String status,
+                                         long totalRows, long acceptedRows, long rejectedRows, long duplicateRows,
+                                         List<AudienceImportRowResponse> acceptedPreview,
+                                         List<AudienceImportRowResponse> errorPreview,
+                                         Instant createdAt, Instant updatedAt, String errorsUrl) { }
+
     public record CreateJobRequest(String name, String accountId, String messageId, String audienceId,
                                    Object policies, Boolean enabled) {
     }
 
     public record JobResponse(String id, String workspaceId, String name, String accountId,
                               String messageId, String audienceId, Object policies, boolean enabled,
+                              boolean archived, String status,
                               Instant createdAt, Instant updatedAt, long version) {
     }
 
-    public record CreateRunRequest(Boolean dryRun, Object policyOverrides, String reason) {
+    public record UpdateJobRequest(String name, String accountId, String messageId, String audienceId,
+                                   Object policies, Boolean enabled, Boolean archived) { }
+
+    public record CreateRunRequest(Boolean dryRun, Object policyOverrides, String reason,
+                                   String confirmationToken) {
     }
 
-    public record RunResponse(String id, String workspaceId, String jobId, String state,
+    public record LiveConfirmationResponse(String jobId, String jobName, String providerId,
+                                           String providerVersion, String accountId, String accountName,
+                                           String audienceId, String audienceName, long audienceCount,
+                                           Object policies, int targetConcurrency, long rateLimitPermits,
+                                           String rateLimitPeriod, long estimatedItems, Instant expiresAt,
+                                           String confirmationToken) { }
+    public record RetryRequest(java.util.Set<String> states, String confirmationToken) { }
+    public record RetryConfirmationResponse(String sourceRunId, java.util.Set<String> states,
+                                             long itemCount, Instant expiresAt,
+                                             String confirmationToken) { }
+
+    public record RunResponse(String id, String workspaceId, String jobId, String jobName, String state,
                               String stateReason, boolean dryRun, RunCounters counters,
+                              String sourceRunId, String retryStates,
                               Instant createdAt, Instant startedAt, Instant endedAt, Instant updatedAt,
                               long version, Map<String, String> links) {
     }
@@ -83,6 +124,13 @@ public final class ControlPlaneApi {
 
     public record CursorPage(String nextCursor, boolean hasMore) {
     }
+
+    public record ResourcePageResponse<T>(List<T> items, CursorPage page) { }
+
+    public record RunTrendResponse(String day, long total, long succeeded, long problem) { }
+    public record OverviewResponse(long activeRuns, long totalRuns, long succeededRuns, long problemRuns,
+                                   List<RunResponse> active, List<RunResponse> recent,
+                                   List<RunTrendResponse> trend) { }
 
     public record RunItemResultPage(List<RunItemResultResponse> items, CursorPage page) {
     }

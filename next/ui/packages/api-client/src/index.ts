@@ -70,6 +70,24 @@ export interface ResourceMetadata {
   version: number;
 }
 
+export interface ResourcePage<T> {
+  items: T[];
+  page: { nextCursor?: string; hasMore: boolean };
+}
+
+export interface PageFilters {
+  cursor?: string;
+  limit?: number;
+  name?: string;
+  status?: string;
+  from?: string;
+  to?: string;
+}
+
+export interface Workspace {
+  id: string; name: string; status: string; createdAt: string; version: number;
+}
+
 export interface Account extends ResourceMetadata {
   providerId: string;
   providerVersion: string;
@@ -101,6 +119,8 @@ export interface Job extends ResourceMetadata {
   audienceId: string;
   policies: Record<string, unknown>;
   enabled: boolean;
+  archived: boolean;
+  status: "ACTIVE" | "DISABLED" | "ARCHIVED";
 }
 
 export interface RunCounters {
@@ -117,16 +137,38 @@ export interface Run {
   id: string;
   workspaceId: string;
   jobId: string;
+  jobName: string;
   state: string;
   stateReason: string;
   dryRun: boolean;
   counters: RunCounters;
+  sourceRunId?: string;
+  retryStates: string;
   createdAt: string;
   startedAt?: string;
   endedAt?: string;
   updatedAt: string;
   version: number;
   links: Record<string, string>;
+}
+
+export interface LiveConfirmation {
+  jobId: string; jobName: string; providerId: string; providerVersion: string;
+  accountId: string; accountName: string; audienceId: string; audienceName: string;
+  audienceCount: number; policies: Record<string, unknown>; targetConcurrency: number;
+  rateLimitPermits: number; rateLimitPeriod: string; estimatedItems: number;
+  expiresAt: string; confirmationToken: string;
+}
+
+export interface RetryConfirmation {
+  sourceRunId: string; states: Array<"FAILED" | "UNKNOWN" | "UNSENT">;
+  itemCount: number; expiresAt: string; confirmationToken: string;
+}
+
+export interface RunOverview {
+  activeRuns: number; totalRuns: number; succeededRuns: number; problemRuns: number;
+  active: Run[]; recent: Run[];
+  trend: Array<{ day: string; total: number; succeeded: number; problem: number }>;
 }
 
 export interface RunItemResult {
@@ -238,6 +280,24 @@ export interface AuditEvent {
   occurredAt: string;
 }
 
+export interface MessageRevision {
+  messageId: string; revision: number; schemaVersion: string;
+  content: Record<string, unknown>; contentHash: string; createdAt: string;
+}
+
+export interface AudienceImportRow {
+  sequence: number; itemId: string; fields: Record<string, unknown>; rawLine: string;
+  accepted: boolean; errorCode: string; errorMessage: string;
+}
+
+export interface AudienceImport {
+  id: string; workspaceId: string; audienceId?: string; name: string; format: "CSV" | "TXT";
+  itemIdColumn: string; fieldMapping: Record<string, string>; status: string;
+  totalRows: number; acceptedRows: number; rejectedRows: number; duplicateRows: number;
+  acceptedPreview: AudienceImportRow[]; errorPreview: AudienceImportRow[];
+  createdAt: string; updatedAt: string; errorsUrl: string;
+}
+
 export interface RecipientInput {
   itemId?: string;
   fields: Record<string, unknown>;
@@ -284,12 +344,22 @@ export class WePushClient {
     return this.getJson<Agent[]>("/api/v1/agents", signal);
   }
 
+  workspaces(signal?: AbortSignal): Promise<Workspace[]> {
+    return this.getJson<Workspace[]>("/api/v1/workspaces", signal);
+  }
+
   agent(agentId: string, signal?: AbortSignal): Promise<Agent> {
     return this.getJson<Agent>(`/api/v1/agents/${pathId(agentId)}`, signal);
   }
 
-  accounts(workspaceId = "ws_default", signal?: AbortSignal): Promise<Account[]> {
-    return this.getJson<Account[]>(this.workspacePath(workspaceId, "/accounts"), signal);
+  async accounts(workspaceId = "ws_default", signal?: AbortSignal): Promise<Account[]> {
+    return (await this.accountPage({}, workspaceId, signal)).items;
+  }
+
+  accountPage(filters: PageFilters = {}, workspaceId = "ws_default",
+    signal?: AbortSignal): Promise<ResourcePage<Account>> {
+    return this.getJson<ResourcePage<Account>>(
+      this.workspacePath(workspaceId, `/accounts${pageQuery(filters)}`), signal);
   }
 
   createAccount(request: {
@@ -301,8 +371,26 @@ export class WePushClient {
     return this.postJson<Account>(this.workspacePath(workspaceId, "/accounts"), request, undefined, signal);
   }
 
-  messages(workspaceId = "ws_default", signal?: AbortSignal): Promise<Message[]> {
-    return this.getJson<Message[]>(this.workspacePath(workspaceId, "/messages"), signal);
+  updateAccount(accountId: string, request: { name?: string; configuration?: Record<string, unknown>;
+    status?: Account["status"] }, workspaceId = "ws_default", signal?: AbortSignal): Promise<Account> {
+    return this.patchJson<Account>(this.workspacePath(workspaceId, `/accounts/${pathId(accountId)}`),
+      request, signal);
+  }
+
+  testAccount(accountId: string, timeout = "PT10S", workspaceId = "ws_default",
+    signal?: AbortSignal): Promise<{ successful: boolean; code: string; diagnostic: string; latencyMillis: number }> {
+    return this.postJson(this.workspacePath(workspaceId, `/accounts/${pathId(accountId)}/connection-test`),
+      { timeout }, undefined, signal);
+  }
+
+  async messages(workspaceId = "ws_default", signal?: AbortSignal): Promise<Message[]> {
+    return (await this.messagePage({}, workspaceId, signal)).items;
+  }
+
+  messagePage(filters: PageFilters = {}, workspaceId = "ws_default",
+    signal?: AbortSignal): Promise<ResourcePage<Message>> {
+    return this.getJson<ResourcePage<Message>>(
+      this.workspacePath(workspaceId, `/messages${pageQuery(filters)}`), signal);
   }
 
   createMessage(request: {
@@ -314,8 +402,41 @@ export class WePushClient {
     return this.postJson<Message>(this.workspacePath(workspaceId, "/messages"), request, undefined, signal);
   }
 
-  audiences(workspaceId = "ws_default", signal?: AbortSignal): Promise<Audience[]> {
-    return this.getJson<Audience[]>(this.workspacePath(workspaceId, "/audiences"), signal);
+  updateMessage(messageId: string, request: { name?: string; content?: Record<string, unknown>;
+    status?: Message["status"] }, workspaceId = "ws_default", signal?: AbortSignal): Promise<Message> {
+    return this.patchJson<Message>(this.workspacePath(workspaceId, `/messages/${pathId(messageId)}`),
+      request, signal);
+  }
+
+  copyMessage(messageId: string, name: string, workspaceId = "ws_default",
+    signal?: AbortSignal): Promise<Message> {
+    return this.postJson<Message>(this.workspacePath(workspaceId, `/messages/${pathId(messageId)}/copy`),
+      { name }, undefined, signal);
+  }
+
+  messageRevisions(messageId: string, beforeRevision = 0, limit = 25,
+    workspaceId = "ws_default", signal?: AbortSignal): Promise<{
+      items: MessageRevision[]; nextBeforeRevision?: number; hasMore: boolean;
+    }> {
+    const query = new URLSearchParams({ beforeRevision: String(beforeRevision), limit: String(limit) });
+    return this.getJson(this.workspacePath(workspaceId,
+      `/messages/${pathId(messageId)}/revisions?${query}`), signal);
+  }
+
+  messageDiff(messageId: string, from: number, to: number, workspaceId = "ws_default",
+    signal?: AbortSignal): Promise<{ from: MessageRevision; to: MessageRevision; changedPaths: string[] }> {
+    return this.getJson(this.workspacePath(workspaceId,
+      `/messages/${pathId(messageId)}/diff?from=${from}&to=${to}`), signal);
+  }
+
+  async audiences(workspaceId = "ws_default", signal?: AbortSignal): Promise<Audience[]> {
+    return (await this.audiencePage({}, workspaceId, signal)).items;
+  }
+
+  audiencePage(filters: PageFilters = {}, workspaceId = "ws_default",
+    signal?: AbortSignal): Promise<ResourcePage<Audience>> {
+    return this.getJson<ResourcePage<Audience>>(
+      this.workspacePath(workspaceId, `/audiences${pageQuery(filters)}`), signal);
   }
 
   createAudience(request: { name: string; recipients: RecipientInput[] },
@@ -323,8 +444,49 @@ export class WePushClient {
     return this.postJson<Audience>(this.workspacePath(workspaceId, "/audiences"), request, undefined, signal);
   }
 
-  jobs(workspaceId = "ws_default", signal?: AbortSignal): Promise<Job[]> {
-    return this.getJson<Job[]>(this.workspacePath(workspaceId, "/jobs"), signal);
+  updateAudience(audienceId: string, request: { name?: string; recipients?: RecipientInput[];
+    status?: Audience["status"] }, workspaceId = "ws_default", signal?: AbortSignal): Promise<Audience> {
+    return this.patchJson<Audience>(this.workspacePath(workspaceId, `/audiences/${pathId(audienceId)}`),
+      request, signal);
+  }
+
+  async uploadAudience(file: File, request: { name: string; audienceId?: string; format: "CSV" | "TXT";
+    itemIdColumn?: string; fieldMapping?: Record<string, string>; delimiter?: string },
+    workspaceId = "ws_default", signal?: AbortSignal): Promise<AudienceImport> {
+    const form = new FormData();
+    form.set("file", file); form.set("name", request.name); form.set("format", request.format);
+    if (request.audienceId) form.set("audienceId", request.audienceId);
+    if (request.itemIdColumn) form.set("itemIdColumn", request.itemIdColumn);
+    if (request.delimiter) form.set("delimiter", request.delimiter);
+    form.set("fieldMapping", JSON.stringify(request.fieldMapping ?? {}));
+    const response = await fetch(this.resolve(this.workspacePath(workspaceId, "/audience-imports")),
+      { method: "POST", headers: this.headers({ Accept: "application/json" }), body: form, signal });
+    const body = await response.text();
+    if (!response.ok) throw new ApiError(response.status, body);
+    return JSON.parse(body) as AudienceImport;
+  }
+
+  commitAudienceImport(importId: string, workspaceId = "ws_default",
+    signal?: AbortSignal): Promise<Audience> {
+    return this.postJson<Audience>(this.workspacePath(workspaceId,
+      `/audience-imports/${pathId(importId)}/commit`), {}, undefined, signal);
+  }
+
+  async downloadAudienceImportErrors(importId: string, workspaceId = "ws_default",
+    signal?: AbortSignal): Promise<Blob> {
+    const response = await fetch(this.resolve(this.workspacePath(workspaceId,
+      `/audience-imports/${pathId(importId)}/errors.csv`)), { headers: this.headers(), signal });
+    if (!response.ok) throw new ApiError(response.status, await response.text());
+    return response.blob();
+  }
+
+  async jobs(workspaceId = "ws_default", signal?: AbortSignal): Promise<Job[]> {
+    return (await this.jobPage({}, workspaceId, signal)).items;
+  }
+
+  jobPage(filters: PageFilters = {}, workspaceId = "ws_default",
+    signal?: AbortSignal): Promise<ResourcePage<Job>> {
+    return this.getJson<ResourcePage<Job>>(this.workspacePath(workspaceId, `/jobs${pageQuery(filters)}`), signal);
   }
 
   createJob(request: {
@@ -338,8 +500,25 @@ export class WePushClient {
     return this.postJson<Job>(this.workspacePath(workspaceId, "/jobs"), request, undefined, signal);
   }
 
-  runs(workspaceId = "ws_default", signal?: AbortSignal): Promise<Run[]> {
-    return this.getJson<Run[]>(this.workspacePath(workspaceId, "/runs"), signal);
+  updateJob(jobId: string, request: Partial<Pick<Job, "name" | "accountId" | "messageId" | "audienceId"
+    | "policies" | "enabled" | "archived">>, workspaceId = "ws_default",
+    signal?: AbortSignal): Promise<Job> {
+    return this.patchJson<Job>(this.workspacePath(workspaceId, `/jobs/${pathId(jobId)}`), request, signal);
+  }
+
+  copyJob(jobId: string, name: string, workspaceId = "ws_default",
+    signal?: AbortSignal): Promise<Job> {
+    return this.postJson<Job>(this.workspacePath(workspaceId, `/jobs/${pathId(jobId)}/copy`),
+      { name }, undefined, signal);
+  }
+
+  async runs(workspaceId = "ws_default", signal?: AbortSignal): Promise<Run[]> {
+    return (await this.runPage({}, workspaceId, signal)).items;
+  }
+
+  runPage(filters: PageFilters = {}, workspaceId = "ws_default",
+    signal?: AbortSignal): Promise<ResourcePage<Run>> {
+    return this.getJson<ResourcePage<Run>>(this.workspacePath(workspaceId, `/runs${pageQuery(filters)}`), signal);
   }
 
   run(runId: string, workspaceId = "ws_default", signal?: AbortSignal): Promise<Run> {
@@ -350,9 +529,33 @@ export class WePushClient {
     dryRun?: boolean;
     policyOverrides?: Record<string, unknown>;
     reason?: string;
+    confirmationToken?: string;
   }, idempotencyKey: string, workspaceId = "ws_default", signal?: AbortSignal): Promise<Run> {
     return this.postJson<Run>(this.workspacePath(workspaceId, `/jobs/${pathId(jobId)}/runs`),
       request, idempotencyKey, signal);
+  }
+
+  confirmRun(jobId: string, workspaceId = "ws_default",
+    signal?: AbortSignal): Promise<LiveConfirmation> {
+    return this.postJson<LiveConfirmation>(this.workspacePath(workspaceId,
+      `/jobs/${pathId(jobId)}/run-confirmation`), {}, undefined, signal);
+  }
+
+  confirmRetry(runId: string, states: Array<"FAILED" | "UNKNOWN" | "UNSENT">,
+    workspaceId = "ws_default", signal?: AbortSignal): Promise<RetryConfirmation> {
+    return this.postJson<RetryConfirmation>(this.workspacePath(workspaceId,
+      `/runs/${pathId(runId)}/retry-confirmation`), { states }, undefined, signal);
+  }
+
+  retryRun(runId: string, states: Array<"FAILED" | "UNKNOWN" | "UNSENT">,
+    confirmationToken: string, idempotencyKey: string, workspaceId = "ws_default",
+    signal?: AbortSignal): Promise<Run> {
+    return this.postJson<Run>(this.workspacePath(workspaceId, `/runs/${pathId(runId)}/retries`),
+      { states, confirmationToken }, idempotencyKey, signal);
+  }
+
+  overview(workspaceId = "ws_default", signal?: AbortSignal): Promise<RunOverview> {
+    return this.getJson<RunOverview>(this.workspacePath(workspaceId, "/overview"), signal);
   }
 
   runEventsUrl(runId: string, workspaceId = "ws_default"): string {
@@ -466,8 +669,14 @@ export class WePushClient {
     return this.getJson<SecretMetadata>(this.secretPath(workspaceId, namespace, name, version), signal);
   }
 
-  schedules(workspaceId = "ws_default", signal?: AbortSignal): Promise<Schedule[]> {
-    return this.getJson<Schedule[]>(this.workspacePath(workspaceId, "/schedules"), signal);
+  async schedules(workspaceId = "ws_default", signal?: AbortSignal): Promise<Schedule[]> {
+    return (await this.schedulePage({}, workspaceId, signal)).items;
+  }
+
+  schedulePage(filters: PageFilters = {}, workspaceId = "ws_default",
+    signal?: AbortSignal): Promise<ResourcePage<Schedule>> {
+    return this.getJson<ResourcePage<Schedule>>(
+      this.workspacePath(workspaceId, `/schedules${pageQuery(filters)}`), signal);
   }
 
   createSchedule(request: { name: string; jobId: string; cronExpression: string; timezone: string;
@@ -480,6 +689,13 @@ export class WePushClient {
     signal?: AbortSignal): Promise<Schedule> {
     return this.patchJson<Schedule>(this.workspacePath(workspaceId, `/schedules/${pathId(scheduleId)}`),
       { enabled }, signal);
+  }
+
+  updateSchedule(scheduleId: string, request: Partial<Pick<Schedule, "name" | "jobId"
+    | "cronExpression" | "timezone" | "misfirePolicy" | "enabled">>, workspaceId = "ws_default",
+    signal?: AbortSignal): Promise<Schedule> {
+    return this.patchJson<Schedule>(this.workspacePath(workspaceId, `/schedules/${pathId(scheduleId)}`),
+      request, signal);
   }
 
   deleteSchedule(scheduleId: string, workspaceId = "ws_default", signal?: AbortSignal): Promise<void> {
@@ -510,9 +726,14 @@ export class WePushClient {
       { name, ttl }, undefined, signal);
   }
 
-  auditEvents(limit = 100, workspaceId = "ws_default", signal?: AbortSignal): Promise<AuditEvent[]> {
-    if (!Number.isInteger(limit) || limit < 1 || limit > 1000) throw new Error("Audit limit must be 1..1000");
-    return this.getJson<AuditEvent[]>(this.workspacePath(workspaceId, `/audit-events?limit=${limit}`), signal);
+  async auditEvents(limit = 50, workspaceId = "ws_default", signal?: AbortSignal): Promise<AuditEvent[]> {
+    return (await this.auditPage({ limit }, workspaceId, signal)).items;
+  }
+
+  auditPage(filters: PageFilters = {}, workspaceId = "ws_default",
+    signal?: AbortSignal): Promise<ResourcePage<AuditEvent>> {
+    return this.getJson<ResourcePage<AuditEvent>>(
+      this.workspacePath(workspaceId, `/audit-events${pageQuery(filters)}`), signal);
   }
 
   providerSchema(path: string, signal?: AbortSignal): Promise<Record<string, unknown>> {
@@ -655,6 +876,20 @@ export class WePushClient {
 function pathId(value: string): string {
   if (!/^[A-Za-z0-9._-]+$/.test(value)) throw new Error("Resource ID contains unsupported path characters");
   return value;
+}
+
+function pageQuery(filters: PageFilters): string {
+  const limit = filters.limit ?? 50;
+  if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
+    throw new Error("Resource page limit must be between 1 and 100");
+  }
+  const query = new URLSearchParams({ limit: String(limit) });
+  if (filters.cursor) query.set("cursor", filters.cursor);
+  if (filters.name) query.set("name", filters.name);
+  if (filters.status) query.set("status", filters.status);
+  if (filters.from) query.set("from", filters.from);
+  if (filters.to) query.set("to", filters.to);
+  return `?${query}`;
 }
 
 function defaultBaseUrl(): string {

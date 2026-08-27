@@ -2,6 +2,9 @@ package com.fangxuele.wepush.next.service.app;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.net.httpserver.HttpServer;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,12 +16,16 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.net.InetSocketAddress;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -31,6 +38,9 @@ class ControlPlaneApiTest {
             "wepush-next-control-plane-key-" + UUID.randomUUID() + ".json");
     private static final Path ARTIFACT_ROOT = Path.of(System.getProperty("java.io.tmpdir"),
             "wepush-next-artifacts-" + UUID.randomUUID());
+    private static final AtomicBoolean FAIL_BOB = new AtomicBoolean(true);
+    private static final AtomicInteger PROVIDER_SENDS = new AtomicInteger();
+    private static HttpServer providerServer;
 
     private final HttpClient client = HttpClient.newHttpClient();
     private final ObjectMapper json = new ObjectMapper().findAndRegisterModules();
@@ -40,6 +50,24 @@ class ControlPlaneApiTest {
 
     @LocalServerPort
     private int port;
+
+    @BeforeAll
+    static void startProvider() throws Exception {
+        providerServer = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        providerServer.createContext("/", exchange -> {
+            exchange.getRequestBody().readAllBytes();
+            boolean fails = !exchange.getRequestMethod().equals("HEAD") && FAIL_BOB.get()
+                    && PROVIDER_SENDS.incrementAndGet() == 2;
+            exchange.sendResponseHeaders(fails ? 500 : 204, -1);
+            exchange.close();
+        });
+        providerServer.start();
+    }
+
+    @AfterAll
+    static void stopProvider() {
+        if (providerServer != null) providerServer.stop(0);
+    }
 
     @DynamicPropertySource
     static void database(DynamicPropertyRegistry registry) {
@@ -67,9 +95,14 @@ class ControlPlaneApiTest {
                   "name":"Local HTTP",
                   "providerId":"wepush.http",
                   "providerVersion":"0.1.0",
-                  "configuration":{"baseUrl":"https://example.com","auth":{"type":"NONE"}}
+                  "configuration":{"baseUrl":"http://127.0.0.1:%d","allowPrivateAddresses":true,
+                                   "auth":{"type":"NONE"}}
                 }
-                """, null), 201);
+                """.formatted(providerServer.getAddress().getPort()), null), 201);
+        String accountPath = "/api/v1/workspaces/ws_default/accounts/" + account.get("id").textValue();
+        JsonNode connection = accepted(post(accountPath + "/connection-test",
+                "{\"timeout\":\"PT2S\"}", null), 200);
+        assertTrue(connection.get("successful").booleanValue(), connection.toString());
         JsonNode message = accepted(post("/api/v1/workspaces/ws_default/messages", """
                 {
                   "name":"Welcome",
@@ -95,12 +128,26 @@ class ControlPlaneApiTest {
                   "audienceId":"%s",
                   "policies":{
                     "concurrency":{"minimum":1,"target":1,"maximum":4},
-                    "rateLimit":{"permits":1,"period":"PT1S"}
+                    "rateLimit":{"permits":1,"period":"PT1S"},
+                    "retry":{"maxAttempts":1}
                   },
                   "enabled":true
                 }
                 """.formatted(account.get("id").textValue(), message.get("id").textValue(),
                 audience.get("id").textValue()), null), 201);
+
+        String schedulesPath = "/api/v1/workspaces/ws_default/schedules";
+        JsonNode schedule = accepted(post(schedulesPath, """
+                {"name":"Nightly","jobId":"%s","cronExpression":"0 0 0 1 1 *",
+                 "timezone":"UTC","misfirePolicy":"SKIP","enabled":false}
+                """.formatted(job.get("id").textValue()), null), 201);
+        JsonNode editedSchedule = accepted(patch(schedulesPath + "/" + schedule.get("id").textValue(), """
+                {"name":"Annual check","cronExpression":"0 30 0 1 1 *","timezone":"Asia/Shanghai",
+                 "misfirePolicy":"FIRE_ONCE","enabled":false}
+                """), 200);
+        assertEquals("Annual check", editedSchedule.get("name").textValue());
+        assertEquals("Asia/Shanghai", editedSchedule.get("timezone").textValue());
+        assertTrue(accepted(get(schedulesPath + "?limit=1"), 200).get("items").isArray());
 
         String runPath = "/api/v1/workspaces/ws_default/jobs/" + job.get("id").textValue() + "/runs";
         String request = "{\"dryRun\":true,\"reason\":\"integration-test\"}";
@@ -129,6 +176,50 @@ class ControlPlaneApiTest {
         JsonNode completed = awaitTerminalRun(run.get("id").textValue());
         assertEquals("SUCCEEDED", completed.get("state").textValue());
         assertEquals(2, completed.at("/counters/succeeded").intValue());
+
+        String messagePath = "/api/v1/workspaces/ws_default/messages/" + message.get("id").textValue();
+        JsonNode revisedMessage = accepted(patch(messagePath, """
+                {"name":"Welcome v2","content":{"method":"POST","path":"/notify",
+                 "bodyTemplate":"{\\"recipient\\":\\"{{mobile}}\\"}"}}
+                """), 200);
+        assertEquals(2, revisedMessage.get("revision").intValue());
+        JsonNode revisions = accepted(get(messagePath + "/revisions?limit=10"), 200);
+        assertEquals(2, revisions.get("items").size());
+        JsonNode diff = accepted(get(messagePath + "/diff?from=1&to=2"), 200);
+        assertTrue(diff.get("changedPaths").toString().contains("bodyTemplate"));
+        accepted(post(messagePath + "/copy", "{\"name\":\"Welcome copy\"}", null),
+                201);
+        JsonNode firstMessagePage = accepted(get(
+                "/api/v1/workspaces/ws_default/messages?limit=1&name=Welcome"), 200);
+        assertEquals(1, firstMessagePage.get("items").size());
+        assertTrue(firstMessagePage.at("/page/hasMore").booleanValue());
+
+        String importPath = "/api/v1/workspaces/ws_default/audience-imports";
+        JsonNode preview = accepted(multipart(importPath, Map.of(
+                "name", "Imported audience", "audienceId", audience.get("id").textValue(),
+                "format", "CSV", "itemIdColumn", "itemId",
+                "fieldMapping", "{\"mobile\":\"mobile\"}"),
+                "recipients.csv", "itemId,mobile\nalice,13900000000\nalice,duplicate\n,blank\nbob,13100000000\n"), 201);
+        assertEquals(4, preview.get("totalRows").longValue());
+        assertEquals(2, preview.get("acceptedRows").longValue());
+        assertEquals(2, preview.get("rejectedRows").longValue());
+        assertEquals(1, preview.get("duplicateRows").longValue());
+        HttpResponse<String> importErrors = get(preview.get("errorsUrl").textValue());
+        assertEquals(200, importErrors.statusCode(), importErrors.body());
+        assertTrue(importErrors.body().contains("DUPLICATE_ITEM_ID"));
+        JsonNode importedAudience = accepted(post(importPath + "/" + preview.get("id").textValue()
+                + "/commit", "{}", null), 200);
+        assertEquals(2, importedAudience.get("revision").intValue());
+        assertEquals(2, importedAudience.get("recordCount").longValue());
+
+        String frozenMessage = jdbc.queryForObject(
+                "SELECT message_content_json FROM run_snapshot WHERE run_id = ?", String.class,
+                run.get("id").textValue());
+        String frozenAudience = jdbc.queryForObject(
+                "SELECT audience_snapshot_id FROM run_snapshot WHERE run_id = ?", String.class,
+                run.get("id").textValue());
+        assertTrue(frozenMessage.contains("\\\"to\\\""), frozenMessage);
+        assertEquals(audience.get("snapshotId").textValue(), frozenAudience);
 
         String itemPath = "/api/v1/workspaces/ws_default/runs/" + run.get("id").textValue() + "/items";
         JsonNode firstResultPage = accepted(get(itemPath + "?limit=1"), 200);
@@ -180,10 +271,57 @@ class ControlPlaneApiTest {
         assertEquals("DELETED", deletedArtifact.get("state").textValue());
         assertEquals(409, get(contentPath).statusCode());
 
-        HttpResponse<String> conflictingReplay = post(runPath,
-                "{\"dryRun\":false,\"reason\":\"integration-test\"}", "control-plane-test");
+        HttpResponse<String> missingConfirmation = post(runPath,
+                "{\"dryRun\":false,\"reason\":\"integration-test\"}", "live-no-confirm");
+        assertEquals(409, missingConfirmation.statusCode());
+        assertTrue(missingConfirmation.body().contains("LIVE_CONFIRMATION_REQUIRED"));
+
+        JsonNode livePreview = accepted(post(
+                "/api/v1/workspaces/ws_default/jobs/" + job.get("id").textValue() + "/run-confirmation",
+                "{}", null), 200);
+        assertEquals(2, livePreview.get("audienceCount").longValue());
+        assertEquals(1, livePreview.get("targetConcurrency").intValue());
+        String liveRequest = """
+                {"dryRun":false,"reason":"integration-live","confirmationToken":"%s"}
+                """.formatted(livePreview.get("confirmationToken").textValue());
+        HttpResponse<String> conflictingReplay = post(runPath, liveRequest, "control-plane-test");
         assertEquals(409, conflictingReplay.statusCode());
         assertTrue(conflictingReplay.body().contains("IDEMPOTENCY_KEY_REUSED"));
+
+        PROVIDER_SENDS.set(0);
+        JsonNode liveRun = accepted(post(runPath, liveRequest, "live-run-test"), 202);
+        JsonNode partial = awaitTerminalRun(liveRun.get("id").textValue());
+        assertEquals("PARTIAL", partial.get("state").textValue());
+        assertEquals(1, partial.at("/counters/failed").longValue());
+
+        String retryBase = "/api/v1/workspaces/ws_default/runs/" + liveRun.get("id").textValue();
+        JsonNode retryPreview = accepted(post(retryBase + "/retry-confirmation",
+                "{\"states\":[\"FAILED\"]}", null), 200);
+        assertEquals(1, retryPreview.get("itemCount").longValue());
+        FAIL_BOB.set(false);
+        JsonNode retryRun = accepted(post(retryBase + "/retries", """
+                {"states":["FAILED"],"confirmationToken":"%s"}
+                """.formatted(retryPreview.get("confirmationToken").textValue()), "retry-run-test"), 202);
+        assertEquals(liveRun.get("id").textValue(), retryRun.get("sourceRunId").textValue());
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM run_retry_item WHERE run_id = ?",
+                Long.class, retryRun.get("id").textValue()));
+        JsonNode retried = awaitTerminalRun(retryRun.get("id").textValue());
+        assertEquals("SUCCEEDED", retried.get("state").textValue());
+        assertEquals(1, retried.at("/counters/total").longValue());
+
+        JsonNode overview = accepted(get("/api/v1/workspaces/ws_default/overview"), 200);
+        assertTrue(overview.get("totalRuns").longValue() >= 3);
+        assertTrue(overview.get("recent").isArray());
+
+        JsonNode jobCopy = accepted(post("/api/v1/workspaces/ws_default/jobs/"
+                + job.get("id").textValue() + "/copy", "{\"name\":\"Archived copy\"}", null), 201);
+        JsonNode archivedJob = accepted(patch("/api/v1/workspaces/ws_default/jobs/"
+                + jobCopy.get("id").textValue(), "{\"enabled\":false,\"archived\":true}"), 200);
+        assertEquals("ARCHIVED", archivedJob.get("status").textValue());
+        JsonNode disabledAccount = accepted(patch(accountPath, "{\"status\":\"DISABLED\"}"), 200);
+        assertEquals("DISABLED", disabledAccount.get("status").textValue());
+        JsonNode archivedAccount = accepted(patch(accountPath, "{\"status\":\"ARCHIVED\"}"), 200);
+        assertEquals("ARCHIVED", archivedAccount.get("status").textValue());
 
         String eventsPath = "/api/v1/workspaces/ws_default/runs/" + run.get("id").textValue() + "/events";
         HttpRequest eventsRequest = HttpRequest.newBuilder(uri(eventsPath))
@@ -215,6 +353,33 @@ class ControlPlaneApiTest {
         return client.send(request.build(), HttpResponse.BodyHandlers.ofString());
     }
 
+    private HttpResponse<String> patch(String path, String body) throws Exception {
+        HttpRequest request = HttpRequest.newBuilder(uri(path))
+                .header("Content-Type", "application/json")
+                .method("PATCH", HttpRequest.BodyPublishers.ofString(body))
+                .build();
+        return client.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    private HttpResponse<String> multipart(String path, Map<String, String> fields,
+                                           String fileName, String fileContent) throws Exception {
+        String boundary = "wepush-" + UUID.randomUUID();
+        StringBuilder body = new StringBuilder();
+        fields.forEach((name, value) -> body.append("--").append(boundary).append("\r\n")
+                .append("Content-Disposition: form-data; name=\"").append(name).append("\"\r\n\r\n")
+                .append(value).append("\r\n"));
+        body.append("--").append(boundary).append("\r\n")
+                .append("Content-Disposition: form-data; name=\"file\"; filename=\"")
+                .append(fileName).append("\"\r\n")
+                .append("Content-Type: text/csv\r\n\r\n")
+                .append(fileContent).append("\r\n--").append(boundary).append("--\r\n");
+        HttpRequest request = HttpRequest.newBuilder(uri(path))
+                .header("Content-Type", "multipart/form-data; boundary=" + boundary)
+                .POST(HttpRequest.BodyPublishers.ofString(body.toString(), StandardCharsets.UTF_8))
+                .build();
+        return client.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
     private HttpResponse<String> put(String path, String body) throws Exception {
         HttpRequest request = HttpRequest.newBuilder(uri(path))
                 .header("Content-Type", "application/json")
@@ -230,7 +395,7 @@ class ControlPlaneApiTest {
 
     private JsonNode awaitTerminalRun(String runId) throws Exception {
         URI runUri = uri("/api/v1/workspaces/ws_default/runs/" + runId);
-        for (int attempt = 0; attempt < 50; attempt++) {
+        for (int attempt = 0; attempt < 400; attempt++) {
             HttpResponse<String> response = client.send(HttpRequest.newBuilder(runUri).GET().build(),
                     HttpResponse.BodyHandlers.ofString());
             assertEquals(200, response.statusCode(), response.body());

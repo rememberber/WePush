@@ -469,17 +469,27 @@ GET    /api/v1/providers/{providerId}/schemas
 
 POST   /api/v1/workspaces/{workspaceId}/accounts
 GET    /api/v1/workspaces/{workspaceId}/accounts
-POST   /api/v1/workspaces/{workspaceId}/accounts/{id}/test
+PATCH  /api/v1/workspaces/{workspaceId}/accounts/{id}
+POST   /api/v1/workspaces/{workspaceId}/accounts/{id}/connection-test
 
 POST   /api/v1/workspaces/{workspaceId}/messages
+PATCH  /api/v1/workspaces/{workspaceId}/messages/{id}
+GET    /api/v1/workspaces/{workspaceId}/messages/{id}/revisions
 POST   /api/v1/workspaces/{workspaceId}/audiences
-POST   /api/v1/workspaces/{workspaceId}/audiences/{id}/snapshots
+PATCH  /api/v1/workspaces/{workspaceId}/audiences/{id}
+POST   /api/v1/workspaces/{workspaceId}/audience-imports
+POST   /api/v1/workspaces/{workspaceId}/audience-imports/{id}/commit
 
 POST   /api/v1/workspaces/{workspaceId}/jobs
+PATCH  /api/v1/workspaces/{workspaceId}/jobs/{id}
+POST   /api/v1/workspaces/{workspaceId}/jobs/{id}/run-confirmation
 POST   /api/v1/workspaces/{workspaceId}/jobs/{id}/runs
 POST   /api/v1/workspaces/{workspaceId}/schedules
 
+GET    /api/v1/workspaces/{workspaceId}/overview
 GET    /api/v1/workspaces/{workspaceId}/runs/{id}
+POST   /api/v1/workspaces/{workspaceId}/runs/{id}/retry-confirmation
+POST   /api/v1/workspaces/{workspaceId}/runs/{id}/retries
 POST   /api/v1/workspaces/{workspaceId}/runs/{id}/commands/cancel
 POST   /api/v1/workspaces/{workspaceId}/runs/{id}/commands/pause
 POST   /api/v1/workspaces/{workspaceId}/runs/{id}/commands/resume

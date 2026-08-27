@@ -5,8 +5,13 @@ import com.fangxuele.wepush.next.service.api.ControlPlaneApi;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.Arrays;
 import java.time.Instant;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.util.Set;
 
 public final class WorkspaceClient {
     private final HttpTransport transport;
@@ -21,39 +26,134 @@ public final class WorkspaceClient {
     }
 
     public List<ControlPlaneApi.AccountResponse> accounts() {
-        return List.of(transport.getJson(base + "/accounts", ControlPlaneApi.AccountResponse[].class));
+        return List.of(transport.getJson(base + "/accounts", AccountPage.class).items());
+    }
+
+    public AccountPage accountPage(PageQuery query) {
+        return transport.getJson(base + "/accounts" + query.queryString(), AccountPage.class);
     }
 
     public ControlPlaneApi.AccountResponse createAccount(ControlPlaneApi.CreateAccountRequest request) {
         return transport.postJson(base + "/accounts", request, null, ControlPlaneApi.AccountResponse.class);
     }
 
+    public ControlPlaneApi.AccountResponse updateAccount(String accountId, ControlPlaneApi.UpdateAccountRequest request) {
+        return transport.patchJson(base + "/accounts/" + pathId(accountId), request,
+                ControlPlaneApi.AccountResponse.class);
+    }
+
+    public ControlPlaneApi.ConnectionTestResponse testAccount(String accountId, String timeout) {
+        return transport.postJson(base + "/accounts/" + pathId(accountId) + "/connection-test",
+                new ControlPlaneApi.ConnectionTestRequest(timeout), null,
+                ControlPlaneApi.ConnectionTestResponse.class);
+    }
+
     public List<ControlPlaneApi.MessageResponse> messages() {
-        return List.of(transport.getJson(base + "/messages", ControlPlaneApi.MessageResponse[].class));
+        return List.of(transport.getJson(base + "/messages", MessagePage.class).items());
+    }
+
+    public MessagePage messagePage(PageQuery query) {
+        return transport.getJson(base + "/messages" + query.queryString(), MessagePage.class);
     }
 
     public ControlPlaneApi.MessageResponse createMessage(ControlPlaneApi.CreateMessageRequest request) {
         return transport.postJson(base + "/messages", request, null, ControlPlaneApi.MessageResponse.class);
     }
 
+    public ControlPlaneApi.MessageResponse updateMessage(String messageId, ControlPlaneApi.UpdateMessageRequest request) {
+        return transport.patchJson(base + "/messages/" + pathId(messageId), request,
+                ControlPlaneApi.MessageResponse.class);
+    }
+
+    public ControlPlaneApi.MessageResponse copyMessage(String messageId, String name) {
+        return transport.postJson(base + "/messages/" + pathId(messageId) + "/copy",
+                new ControlPlaneApi.CopyResourceRequest(name), null, ControlPlaneApi.MessageResponse.class);
+    }
+
+    public ControlPlaneApi.RevisionPage messageRevisions(String messageId, int beforeRevision, int limit) {
+        return transport.getJson(base + "/messages/" + pathId(messageId) + "/revisions?beforeRevision="
+                + beforeRevision + "&limit=" + limit, ControlPlaneApi.RevisionPage.class);
+    }
+
+    public ControlPlaneApi.MessageDiffResponse messageDiff(String messageId, int from, int to) {
+        return transport.getJson(base + "/messages/" + pathId(messageId) + "/diff?from=" + from + "&to=" + to,
+                ControlPlaneApi.MessageDiffResponse.class);
+    }
+
     public List<ControlPlaneApi.AudienceResponse> audiences() {
-        return List.of(transport.getJson(base + "/audiences", ControlPlaneApi.AudienceResponse[].class));
+        return List.of(transport.getJson(base + "/audiences", AudiencePage.class).items());
+    }
+
+    public AudiencePage audiencePage(PageQuery query) {
+        return transport.getJson(base + "/audiences" + query.queryString(), AudiencePage.class);
     }
 
     public ControlPlaneApi.AudienceResponse createAudience(ControlPlaneApi.CreateAudienceRequest request) {
         return transport.postJson(base + "/audiences", request, null, ControlPlaneApi.AudienceResponse.class);
     }
 
+    public ControlPlaneApi.AudienceResponse updateAudience(String audienceId,
+                                                            ControlPlaneApi.UpdateAudienceRequest request) {
+        return transport.patchJson(base + "/audiences/" + pathId(audienceId), request,
+                ControlPlaneApi.AudienceResponse.class);
+    }
+
+    public ControlPlaneApi.AudienceImportResponse uploadAudience(
+            Path file, String name, String audienceId, String format, String itemIdColumn,
+            Map<String, String> fieldMapping, String delimiter) {
+        Map<String, Object> fields = new LinkedHashMap<>();
+        fields.put("name", name);
+        if (audienceId != null && !audienceId.isBlank()) fields.put("audienceId", audienceId);
+        fields.put("format", format == null ? "CSV" : format);
+        if (itemIdColumn != null && !itemIdColumn.isBlank()) fields.put("itemIdColumn", itemIdColumn);
+        fields.put("fieldMapping", fieldMapping == null ? Map.of() : fieldMapping);
+        if (delimiter != null && !delimiter.isEmpty()) fields.put("delimiter", delimiter);
+        return transport.postMultipart(base + "/audience-imports", fields,
+                file.getFileName().toString(), file, ControlPlaneApi.AudienceImportResponse.class);
+    }
+
+    public ControlPlaneApi.AudienceImportResponse audienceImport(String importId) {
+        return transport.getJson(base + "/audience-imports/" + pathId(importId),
+                ControlPlaneApi.AudienceImportResponse.class);
+    }
+
+    public ControlPlaneApi.AudienceResponse commitAudienceImport(String importId) {
+        return transport.postJson(base + "/audience-imports/" + pathId(importId) + "/commit",
+                Map.of(), null, ControlPlaneApi.AudienceResponse.class);
+    }
+
+    /** The caller owns and must close the returned stream. */
+    public InputStream downloadAudienceImportErrors(String importId) {
+        return transport.getStream(base + "/audience-imports/" + pathId(importId) + "/errors.csv");
+    }
+
     public List<ControlPlaneApi.JobResponse> jobs() {
-        return List.of(transport.getJson(base + "/jobs", ControlPlaneApi.JobResponse[].class));
+        return List.of(transport.getJson(base + "/jobs", JobPage.class).items());
+    }
+
+    public JobPage jobPage(PageQuery query) {
+        return transport.getJson(base + "/jobs" + query.queryString(), JobPage.class);
     }
 
     public ControlPlaneApi.JobResponse createJob(ControlPlaneApi.CreateJobRequest request) {
         return transport.postJson(base + "/jobs", request, null, ControlPlaneApi.JobResponse.class);
     }
 
+    public ControlPlaneApi.JobResponse updateJob(String jobId, ControlPlaneApi.UpdateJobRequest request) {
+        return transport.patchJson(base + "/jobs/" + pathId(jobId), request, ControlPlaneApi.JobResponse.class);
+    }
+
+    public ControlPlaneApi.JobResponse copyJob(String jobId, String name) {
+        return transport.postJson(base + "/jobs/" + pathId(jobId) + "/copy",
+                new ControlPlaneApi.CopyResourceRequest(name), null, ControlPlaneApi.JobResponse.class);
+    }
+
     public List<ControlPlaneApi.RunResponse> runs() {
-        return List.of(transport.getJson(base + "/runs", ControlPlaneApi.RunResponse[].class));
+        return List.of(transport.getJson(base + "/runs", RunPage.class).items());
+    }
+
+    public RunPage runPage(PageQuery query) {
+        return transport.getJson(base + "/runs" + query.queryString(), RunPage.class);
     }
 
     public ControlPlaneApi.RunResponse run(String runId) {
@@ -64,6 +164,28 @@ public final class WorkspaceClient {
                                                  ControlPlaneApi.CreateRunRequest request) {
         return transport.postJson(base + "/jobs/" + pathId(jobId) + "/runs", request,
                 idempotencyKey, ControlPlaneApi.RunResponse.class);
+    }
+
+    public ControlPlaneApi.LiveConfirmationResponse confirmRun(String jobId) {
+        return transport.postJson(base + "/jobs/" + pathId(jobId) + "/run-confirmation", Map.of(), null,
+                ControlPlaneApi.LiveConfirmationResponse.class);
+    }
+
+    public ControlPlaneApi.RetryConfirmationResponse confirmRetry(String runId, Set<String> states) {
+        return transport.postJson(base + "/runs/" + pathId(runId) + "/retry-confirmation",
+                new ControlPlaneApi.RetryRequest(states, null), null,
+                ControlPlaneApi.RetryConfirmationResponse.class);
+    }
+
+    public ControlPlaneApi.RunResponse retryRun(String runId, Set<String> states,
+                                                String confirmationToken, String idempotencyKey) {
+        return transport.postJson(base + "/runs/" + pathId(runId) + "/retries",
+                new ControlPlaneApi.RetryRequest(states, confirmationToken), idempotencyKey,
+                ControlPlaneApi.RunResponse.class);
+    }
+
+    public ControlPlaneApi.OverviewResponse overview() {
+        return transport.getJson(base + "/overview", ControlPlaneApi.OverviewResponse.class);
     }
 
     public String runEventsPath(String runId) {
@@ -144,7 +266,11 @@ public final class WorkspaceClient {
     }
 
     public List<Schedule> schedules() {
-        return List.of(transport.getJson(base + "/schedules", Schedule[].class));
+        return List.of(transport.getJson(base + "/schedules", SchedulePage.class).items());
+    }
+
+    public SchedulePage schedulePage(PageQuery query) {
+        return transport.getJson(base + "/schedules" + query.queryString(), SchedulePage.class);
     }
 
     public Schedule createSchedule(String name, String jobId, String cronExpression,
@@ -158,14 +284,22 @@ public final class WorkspaceClient {
                 Map.of("enabled", enabled), Schedule.class);
     }
 
+    public Schedule updateSchedule(String scheduleId, UpdateSchedule request) {
+        return transport.patchJson(base + "/schedules/" + pathId(scheduleId), request, Schedule.class);
+    }
+
     public void deleteSchedule(String scheduleId) {
         transport.delete(base + "/schedules/" + pathId(scheduleId));
     }
 
     public List<AuditEvent> auditEvents(int limit) {
-        if (limit < 1 || limit > 1_000) throw new IllegalArgumentException("limit must be 1..1000");
+        if (limit < 1 || limit > 100) throw new IllegalArgumentException("limit must be 1..100");
         return List.of(transport.getJson(base + "/audit-events?limit=" + limit,
-                AuditEvent[].class));
+                AuditPage.class).items());
+    }
+
+    public AuditPage auditPage(PageQuery query) {
+        return transport.getJson(base + "/audit-events" + query.queryString(), AuditPage.class);
     }
 
     private ControlPlaneApi.RunCommandResponse runCommand(
@@ -196,4 +330,28 @@ public final class WorkspaceClient {
     public record AuditEvent(String id, String workspaceId, String actorType, String actorId,
                              String action, String resourceType, String resourceId, String result,
                              String detailsJson, Instant occurredAt) {}
+
+    public record PageQuery(String cursor, int limit, String name, String status, Instant from, Instant to) {
+        public PageQuery { if (limit < 1 || limit > 100) throw new IllegalArgumentException("limit must be 1..100"); }
+        String queryString() {
+            StringBuilder value = new StringBuilder("?limit=").append(limit);
+            parameter(value, "cursor", cursor); parameter(value, "name", name); parameter(value, "status", status);
+            parameter(value, "from", from == null ? null : from.toString());
+            parameter(value, "to", to == null ? null : to.toString()); return value.toString();
+        }
+    }
+    public record UpdateSchedule(String name, String jobId, String cronExpression, String timezone,
+                                 String misfirePolicy, Boolean enabled) { }
+    public record AccountPage(ControlPlaneApi.AccountResponse[] items, ControlPlaneApi.CursorPage page) { }
+    public record MessagePage(ControlPlaneApi.MessageResponse[] items, ControlPlaneApi.CursorPage page) { }
+    public record AudiencePage(ControlPlaneApi.AudienceResponse[] items, ControlPlaneApi.CursorPage page) { }
+    public record JobPage(ControlPlaneApi.JobResponse[] items, ControlPlaneApi.CursorPage page) { }
+    public record RunPage(ControlPlaneApi.RunResponse[] items, ControlPlaneApi.CursorPage page) { }
+    public record SchedulePage(Schedule[] items, ControlPlaneApi.CursorPage page) { }
+    public record AuditPage(AuditEvent[] items, ControlPlaneApi.CursorPage page) { }
+
+    private static void parameter(StringBuilder target, String name, String value) {
+        if (value != null && !value.isBlank()) target.append('&').append(name).append('=')
+                .append(URLEncoder.encode(value, StandardCharsets.UTF_8));
+    }
 }

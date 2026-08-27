@@ -78,6 +78,7 @@
 
 .workspace-switcher:hover,
 .profile-row:hover { background: var(--wp-surface); border-color: var(--wp-border-strong); }
+.workspace-switcher select { width: 82px; border: 0; outline: none; background: transparent; color: var(--wp-text-secondary); font-size: 9px; }
 
 .workspace-switcher > span:nth-child(2),
 .profile-row > span:nth-child(2),
@@ -372,6 +373,8 @@
 .split-layout { display: grid; grid-template-columns: 310px minmax(0, 1fr); align-items: start; gap: 12px; }
 .provider-list-panel { min-height: 450px; padding: 9px; }
 .list-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 12px; color: var(--wp-text-secondary); font-size: 10px; }
+.list-toolbar input, .list-toolbar select { min-width: 110px; height: 29px; padding: 0 8px; border: 1px solid var(--wp-border); border-radius: 7px; outline: none; background: var(--wp-surface); color: var(--wp-text); font-size: 9px; }
+.list-toolbar input:focus, .list-toolbar select:focus { border-color: var(--wp-border-strong); }
 .provider-list-item { display: flex; width: 100%; align-items: center; gap: 10px; padding: 9px; border: 1px solid transparent; border-radius: 9px; background: transparent; color: var(--wp-text); cursor: pointer; text-align: left; }
 .provider-list-item:hover { background: var(--wp-surface-muted); }
 .provider-list-item--active { border-color: var(--wp-border); background: var(--wp-surface-muted); }
@@ -427,6 +430,15 @@
 .simple-field input, .simple-field select { height: 34px; }
 .simple-field textarea { padding: 11px; font-family: var(--wp-mono); font-size: 9px; line-height: 1.55; resize: vertical; }
 .simple-field input:focus, .simple-field select:focus, .simple-field textarea:focus { border-color: #94948c; box-shadow: 0 0 0 3px rgb(32 32 30 / 7%); }
+.field-mapping { display: grid; gap: 8px; margin: 2px 0 17px; padding: 12px; border: 1px solid var(--wp-border); border-radius: 9px; background: var(--wp-surface-muted); }
+.field-mapping > strong { font-size: 10px; }
+.field-mapping .simple-field { display: grid; grid-template-columns: minmax(90px, .7fr) 1fr; align-items: center; margin: 0; }
+.import-preview { margin-top: 18px; padding-top: 2px; border-top: 1px solid var(--wp-border); }
+.import-preview .result-table { max-height: 230px; }
+.live-confirmation { margin-top: 14px; padding: 15px; border: 1px solid #d9d3bd; border-radius: 9px; background: #faf7ed; }
+.live-confirmation h3 { margin: 0 0 10px; font-size: 12px; }
+.live-confirmation p { margin: 5px 0; color: var(--wp-text-secondary); font-size: 9px; }
+.live-confirmation pre { max-height: 150px; overflow: auto; padding: 9px; border-radius: 7px; background: rgb(255 255 255 / 70%); color: var(--wp-text-secondary); font-family: var(--wp-mono); font-size: 8px; white-space: pre-wrap; }
 
 .composer-layout { display: grid; grid-template-columns: minmax(410px, .95fr) minmax(430px, 1.05fr); align-items: start; gap: 12px; }
 .composer-panel, .resource-list-panel { min-height: 590px; padding: 22px 24px; }

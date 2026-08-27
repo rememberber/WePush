@@ -65,6 +65,36 @@ public final class AudienceApplicationService {
         return audiences.list(workspaceId);
     }
 
+    public AudienceDefinition update(WorkspaceId workspaceId, String audienceId, UpdateAudience command) {
+        return transactions.required(() -> {
+            AudienceDefinition current = get(workspaceId, audienceId);
+            String name = command.name() == null ? current.name() : ApplicationSupport.text(command.name(), "name");
+            AudienceDefinition.Status status = command.status() == null ? current.status()
+                    : AudienceDefinition.Status.valueOf(command.status().toUpperCase());
+            if (command.recipients() == null) {
+                AudienceDefinition updated = new AudienceDefinition(current.id(), workspaceId, name,
+                        current.snapshotId(), current.revision(), current.recordCount(), current.contentHash(),
+                        status, current.createdAt(), clock.instant(), current.version() + 1);
+                if (!audiences.updateMetadata(updated, current.version())) conflict(audienceId);
+                return updated;
+            }
+            List<AudienceRecipient> recipients = canonicalRecipients(command.recipients());
+            JsonDocument content = json.canonicalize(recipients.stream().map(recipient ->
+                    new RecipientInput(recipient.itemId(), json.read(recipient.fields(), Object.class))).toList());
+            AudienceDefinition updated = new AudienceDefinition(current.id(), workspaceId, name,
+                    ids.next("audsnap"), current.revision() + 1, recipients.size(),
+                    ApplicationSupport.sha256(content.value()), status, current.createdAt(),
+                    clock.instant(), current.version() + 1);
+            if (!audiences.createRevision(updated, recipients, current.version())) conflict(audienceId);
+            return updated;
+        });
+    }
+
+    private static void conflict(String id) {
+        throw new ApplicationProblem(ApplicationProblem.Kind.CONFLICT, "RESOURCE_VERSION_CONFLICT",
+                "Audience was changed concurrently: " + id);
+    }
+
     private List<AudienceRecipient> canonicalRecipients(List<RecipientInput> input) {
         List<AudienceRecipient> recipients = new ArrayList<>(input.size());
         Set<String> itemIds = new HashSet<>();
@@ -95,4 +125,6 @@ public final class AudienceApplicationService {
 
     public record RecipientInput(String itemId, Object fields) {
     }
+
+    public record UpdateAudience(String name, List<RecipientInput> recipients, String status) { }
 }

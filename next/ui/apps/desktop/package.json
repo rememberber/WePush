@@ -1,6 +1,6 @@
 {
   "name": "@wepush-next/desktop",
-  "version": "0.1.0-alpha.2",
+  "version": "0.1.0-alpha.3",
   "private": true,
   "type": "module",
   "main": "dist/main/index.js",

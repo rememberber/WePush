@@ -6,6 +6,8 @@ import com.fangxuele.wepush.next.service.domain.RunEventRecord;
 import com.fangxuele.wepush.next.service.domain.RunRepository;
 import com.fangxuele.wepush.next.service.domain.RunSnapshot;
 import com.fangxuele.wepush.next.service.domain.RunStatus;
+import com.fangxuele.wepush.next.service.domain.RunOverview;
+import com.fangxuele.wepush.next.service.domain.ResourcePageQuery;
 import com.fangxuele.wepush.next.service.domain.WorkspaceId;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -27,11 +29,13 @@ public final class JdbcRunRepository implements RunRepository {
                        IdempotencyRecord idempotencyRecord) {
         jdbc.update("""
                 INSERT INTO run_instance
-                (id, workspace_id, job_id, status, state_reason, dry_run, total, succeeded, failed,
-                 unknown_count, unsent, skipped, retried, created_at, started_at, ended_at, updated_at, version)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                (id, workspace_id, job_id, status, state_reason, dry_run, source_run_id, retry_states,
+                 total, succeeded, failed, unknown_count, unsent, skipped, retried,
+                 created_at, started_at, ended_at, updated_at, version)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, run.id(), run.workspaceId().value(), run.jobId(), run.status().name(), run.stateReason(),
-                run.dryRun() ? 1 : 0, run.total(), run.succeeded(), run.failed(), run.unknown(), run.unsent(),
+                run.dryRun() ? 1 : 0, run.sourceRunId(), run.retryStates(),
+                run.total(), run.succeeded(), run.failed(), run.unknown(), run.unsent(),
                 run.skipped(), run.retried(), text(run.createdAt()), text(run.startedAt()), text(run.endedAt()),
                 text(run.updatedAt()), run.version());
         jdbc.update("""
@@ -79,6 +83,66 @@ public final class JdbcRunRepository implements RunRepository {
     public List<RunDefinition> list(WorkspaceId workspaceId) {
         return jdbc.query("SELECT * FROM run_instance WHERE workspace_id = ? ORDER BY created_at DESC, id",
                 JdbcRows.RUN, workspaceId.value());
+    }
+
+    @Override
+    public List<RunDefinition> page(WorkspaceId workspaceId, ResourcePageQuery query) {
+        JdbcPageQueries.Query page = JdbcPageQueries.build("""
+                SELECT r.* FROM run_instance r JOIN job_definition j ON j.id = r.job_id
+                """, "r.workspace_id", workspaceId.value(), "j.name", "r.status",
+                "r.created_at", "r.id", query);
+        return jdbc.query(page.sql(), JdbcRows.RUN, page.parameters());
+    }
+
+    @Override
+    public List<RunDefinition> active(WorkspaceId workspaceId, int limit) {
+        if (limit < 1 || limit > 100) {
+            throw new IllegalArgumentException("active run limit must be between 1 and 100");
+        }
+        return jdbc.query("""
+                SELECT * FROM run_instance
+                WHERE workspace_id = ? AND status IN ('PENDING','RECOVERING','RUNNING','PAUSED')
+                ORDER BY created_at DESC, id DESC LIMIT ?
+                """, JdbcRows.RUN, workspaceId.value(), limit);
+    }
+
+    @Override
+    public RunOverview overview(WorkspaceId workspaceId, Instant from) {
+        long[] summary = jdbc.queryForObject("""
+                SELECT COUNT(*),
+                       COALESCE(SUM(CASE WHEN status IN ('PENDING','RECOVERING','RUNNING','PAUSED') THEN 1 ELSE 0 END), 0),
+                       COALESCE(SUM(CASE WHEN status = 'SUCCEEDED' THEN 1 ELSE 0 END), 0),
+                       COALESCE(SUM(CASE WHEN status IN ('PARTIAL','FAILED') THEN 1 ELSE 0 END), 0)
+                FROM run_instance WHERE workspace_id = ?
+                """, (rs, ignored) -> new long[]{rs.getLong(1), rs.getLong(2), rs.getLong(3), rs.getLong(4)},
+                workspaceId.value());
+        List<RunOverview.TrendPoint> trend = jdbc.query("""
+                SELECT SUBSTRING(created_at, 1, 10) AS day, COUNT(*) AS total,
+                       COALESCE(SUM(CASE WHEN status = 'SUCCEEDED' THEN 1 ELSE 0 END), 0) AS succeeded,
+                       COALESCE(SUM(CASE WHEN status IN ('PARTIAL','FAILED') THEN 1 ELSE 0 END), 0) AS problem
+                FROM run_instance WHERE workspace_id = ? AND created_at >= ?
+                GROUP BY SUBSTRING(created_at, 1, 10) ORDER BY day
+                """, (rs, ignored) -> new RunOverview.TrendPoint(java.time.LocalDate.parse(rs.getString("day")),
+                        rs.getLong("total"), rs.getLong("succeeded"), rs.getLong("problem")),
+                workspaceId.value(), from.toString());
+        return new RunOverview(summary[1], summary[0], summary[2], summary[3], trend);
+    }
+
+    @Override
+    public void createRetry(RunDefinition run, RunSnapshot snapshot, RunEventRecord createdEvent,
+                            IdempotencyRecord idempotencyRecord, String sourceRunId,
+                            Set<String> retryStates) {
+        create(run, snapshot, createdEvent, idempotencyRecord);
+        String markers = String.join(",", java.util.Collections.nCopies(retryStates.size(), "?"));
+        String sql = "INSERT INTO run_retry_item(run_id, workspace_id, item_id) "
+                + "SELECT ?, workspace_id, item_id FROM run_item_result "
+                + "WHERE workspace_id = ? AND run_id = ? AND state IN (" + markers + ")";
+        List<Object> parameters = new ArrayList<>();
+        parameters.add(run.id());
+        parameters.add(run.workspaceId().value());
+        parameters.add(sourceRunId);
+        retryStates.stream().sorted().forEach(parameters::add);
+        jdbc.update(sql, parameters.toArray());
     }
 
     @Override

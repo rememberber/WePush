@@ -10,5 +10,14 @@ public interface AudienceRepository {
 
     List<AudienceDefinition> list(WorkspaceId workspaceId);
 
+    List<AudienceDefinition> page(WorkspaceId workspaceId, ResourcePageQuery query);
+
+    boolean updateMetadata(AudienceDefinition audience, long expectedVersion);
+
+    boolean createRevision(AudienceDefinition audience, List<AudienceRecipient> recipients,
+                           long expectedVersion);
+
     List<AudienceRecipient> recipients(WorkspaceId workspaceId, String snapshotId);
+
+    List<AudienceRecipient> recipientsForRun(WorkspaceId workspaceId, String snapshotId, String runId);
 }

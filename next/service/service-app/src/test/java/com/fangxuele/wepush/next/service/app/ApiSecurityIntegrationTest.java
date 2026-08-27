@@ -92,7 +92,7 @@ class ApiSecurityIntegrationTest {
                 "/api/v1/workspaces/ws_default/audit-events?limit=100", ADMIN);
         assertEquals(200, audit.statusCode(), audit.body());
         JsonNode events = json.readTree(audit.body());
-        assertTrue(events.isArray());
+        assertTrue(events.get("items").isArray());
         assertTrue(events.toString().contains("DENIED"));
     }
 

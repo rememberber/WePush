@@ -19,6 +19,16 @@ public interface RunRepository {
 
     List<RunDefinition> list(WorkspaceId workspaceId);
 
+    List<RunDefinition> page(WorkspaceId workspaceId, ResourcePageQuery query);
+
+    List<RunDefinition> active(WorkspaceId workspaceId, int limit);
+
+    RunOverview overview(WorkspaceId workspaceId, Instant from);
+
+    void createRetry(RunDefinition run, RunSnapshot snapshot, RunEventRecord createdEvent,
+                     IdempotencyRecord idempotencyRecord, String sourceRunId,
+                     Set<String> retryStates);
+
     Optional<IdempotencyRecord> findIdempotency(WorkspaceId workspaceId, String scope, String keyHash);
 
     boolean transition(

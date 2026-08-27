@@ -1,8 +1,8 @@
 openapi: 3.1.0
 info:
   title: WePush Next Service API
-  version: 0.1.0-alpha.2
-  description: Local-first control plane API shared by Web UI, Desktop UI and remote SDKs.
+  version: 0.1.0-alpha.3
+  description: Self-hosted control plane API shared by Web UI, Desktop UI and remote SDKs. It does not expose SaaS registration, billing, subscription or public-cloud platform services.
 servers:
   - url: /
 security:
@@ -159,6 +159,13 @@ paths:
     get:
       operationId: listAccounts
       tags: [Accounts]
+      parameters: &ResourcePageParameters
+        - {$ref: '#/components/parameters/CursorQuery'}
+        - {$ref: '#/components/parameters/LimitQuery'}
+        - {$ref: '#/components/parameters/NameQuery'}
+        - {$ref: '#/components/parameters/StatusQuery'}
+        - {$ref: '#/components/parameters/FromQuery'}
+        - {$ref: '#/components/parameters/ToQuery'}
       responses:
         '200': {$ref: '#/components/responses/AccountList'}
     post:
@@ -180,12 +187,12 @@ paths:
         '409': {$ref: '#/components/responses/Conflict'}
         '422': {$ref: '#/components/responses/Unprocessable'}
   /api/v1/workspaces/{workspaceId}/accounts/{accountId}:
+    parameters:
+      - {$ref: '#/components/parameters/WorkspaceId'}
+      - {name: accountId, in: path, required: true, schema: {type: string}}
     get:
       operationId: getAccount
       tags: [Accounts]
-      parameters:
-        - {$ref: '#/components/parameters/WorkspaceId'}
-        - {name: accountId, in: path, required: true, schema: {type: string}}
       responses:
         '200':
           description: Account detail
@@ -193,6 +200,24 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/Account'}
         '404': {$ref: '#/components/responses/NotFound'}
+    patch:
+      operationId: updateAccount
+      tags: [Accounts]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/UpdateAccount'}}}}
+      responses:
+        '200': {description: Account updated, content: {application/json: {schema: {$ref: '#/components/schemas/Account'}}}}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/Unprocessable'}
+  /api/v1/workspaces/{workspaceId}/accounts/{accountId}/connection-test:
+    post:
+      operationId: testAccountConnection
+      tags: [Accounts]
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+        - {name: accountId, in: path, required: true, schema: {type: string}}
+      requestBody: {required: false, content: {application/json: {schema: {$ref: '#/components/schemas/ConnectionTestRequest'}}}}
+      responses:
+        '200': {description: Provider connection result, content: {application/json: {schema: {$ref: '#/components/schemas/ConnectionTest'}}}}
   /api/v1/workspaces/{workspaceId}/secrets/{namespace}/{name}/versions/{version}:
     parameters:
       - {$ref: '#/components/parameters/WorkspaceId'}
@@ -232,12 +257,13 @@ paths:
     get:
       operationId: listMessages
       tags: [Messages]
+      parameters: *ResourcePageParameters
       responses:
         '200':
           description: Messages
           content:
             application/json:
-              schema: {type: array, items: {$ref: '#/components/schemas/Message'}}
+              schema: {$ref: '#/components/schemas/MessagePage'}
     post:
       operationId: createMessage
       tags: [Messages]
@@ -254,12 +280,12 @@ paths:
               schema: {$ref: '#/components/schemas/Message'}
         '422': {$ref: '#/components/responses/Unprocessable'}
   /api/v1/workspaces/{workspaceId}/messages/{messageId}:
+    parameters:
+      - {$ref: '#/components/parameters/WorkspaceId'}
+      - {name: messageId, in: path, required: true, schema: {type: string}}
     get:
       operationId: getMessage
       tags: [Messages]
-      parameters:
-        - {$ref: '#/components/parameters/WorkspaceId'}
-        - {name: messageId, in: path, required: true, schema: {type: string}}
       responses:
         '200':
           description: Message detail
@@ -267,18 +293,57 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/Message'}
         '404': {$ref: '#/components/responses/NotFound'}
+    patch:
+      operationId: updateMessage
+      tags: [Messages]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/UpdateMessage'}}}}
+      responses:
+        '200': {description: Message metadata updated or immutable revision created, content: {application/json: {schema: {$ref: '#/components/schemas/Message'}}}}
+  /api/v1/workspaces/{workspaceId}/messages/{messageId}/copy:
+    post:
+      operationId: copyMessage
+      tags: [Messages]
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+        - {name: messageId, in: path, required: true, schema: {type: string}}
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/CopyResource'}}}}
+      responses:
+        '201': {description: Independent Message copy, content: {application/json: {schema: {$ref: '#/components/schemas/Message'}}}}
+  /api/v1/workspaces/{workspaceId}/messages/{messageId}/revisions:
+    get:
+      operationId: listMessageRevisions
+      tags: [Messages]
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+        - {name: messageId, in: path, required: true, schema: {type: string}}
+        - {name: beforeRevision, in: query, required: false, schema: {type: integer, minimum: 0, default: 0}}
+        - {name: limit, in: query, required: false, schema: {type: integer, minimum: 1, maximum: 100, default: 25}}
+      responses:
+        '200': {description: Bounded newest-first revision history, content: {application/json: {schema: {$ref: '#/components/schemas/MessageRevisionPage'}}}}
+  /api/v1/workspaces/{workspaceId}/messages/{messageId}/diff:
+    get:
+      operationId: diffMessageRevisions
+      tags: [Messages]
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+        - {name: messageId, in: path, required: true, schema: {type: string}}
+        - {name: from, in: query, required: true, schema: {type: integer, minimum: 1}}
+        - {name: to, in: query, required: true, schema: {type: integer, minimum: 1}}
+      responses:
+        '200': {description: Revision content and changed top-level paths, content: {application/json: {schema: {$ref: '#/components/schemas/MessageDiff'}}}}
   /api/v1/workspaces/{workspaceId}/audiences:
     parameters:
       - {$ref: '#/components/parameters/WorkspaceId'}
     get:
       operationId: listAudiences
       tags: [Audiences]
+      parameters: *ResourcePageParameters
       responses:
         '200':
           description: Audiences
           content:
             application/json:
-              schema: {type: array, items: {$ref: '#/components/schemas/Audience'}}
+              schema: {$ref: '#/components/schemas/AudiencePage'}
     post:
       operationId: createAudience
       tags: [Audiences]
@@ -294,12 +359,12 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/Audience'}
   /api/v1/workspaces/{workspaceId}/audiences/{audienceId}:
+    parameters:
+      - {$ref: '#/components/parameters/WorkspaceId'}
+      - {name: audienceId, in: path, required: true, schema: {type: string}}
     get:
       operationId: getAudience
       tags: [Audiences]
-      parameters:
-        - {$ref: '#/components/parameters/WorkspaceId'}
-        - {name: audienceId, in: path, required: true, schema: {type: string}}
       responses:
         '200':
           description: Audience detail
@@ -307,18 +372,76 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/Audience'}
         '404': {$ref: '#/components/responses/NotFound'}
+    patch:
+      operationId: updateAudience
+      tags: [Audiences]
+      description: Metadata changes update the resource; replacing recipients creates a new immutable snapshot.
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/UpdateAudience'}}}}
+      responses:
+        '200': {description: Audience updated, content: {application/json: {schema: {$ref: '#/components/schemas/Audience'}}}}
+  /api/v1/workspaces/{workspaceId}/audience-imports:
+    post:
+      operationId: uploadAudienceImport
+      tags: [Audiences]
+      parameters: [{$ref: '#/components/parameters/WorkspaceId'}]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file, name, format]
+              properties:
+                file: {type: string, format: binary}
+                name: {type: string}
+                audienceId: {type: string, description: Existing Audience to revise; omit to create one.}
+                format: {type: string, enum: [CSV, TXT]}
+                itemIdColumn: {type: string}
+                fieldMapping: {type: string, description: JSON object mapping source columns to recipient fields.}
+                delimiter: {type: string, minLength: 1, maxLength: 1}
+      responses:
+        '201': {description: Streamed import staged, deduplicated and ready for preview, content: {application/json: {schema: {$ref: '#/components/schemas/AudienceImport'}}}}
+  /api/v1/workspaces/{workspaceId}/audience-imports/{importId}:
+    get:
+      operationId: getAudienceImport
+      tags: [Audiences]
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+        - {name: importId, in: path, required: true, schema: {type: string}}
+      responses:
+        '200': {description: Import counters and bounded row previews, content: {application/json: {schema: {$ref: '#/components/schemas/AudienceImport'}}}}
+  /api/v1/workspaces/{workspaceId}/audience-imports/{importId}/commit:
+    post:
+      operationId: commitAudienceImport
+      tags: [Audiences]
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+        - {name: importId, in: path, required: true, schema: {type: string}}
+      responses:
+        '200': {description: New immutable Audience snapshot committed, content: {application/json: {schema: {$ref: '#/components/schemas/Audience'}}}}
+        '409': {$ref: '#/components/responses/Conflict'}
+  /api/v1/workspaces/{workspaceId}/audience-imports/{importId}/errors.csv:
+    get:
+      operationId: downloadAudienceImportErrors
+      tags: [Audiences]
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+        - {name: importId, in: path, required: true, schema: {type: string}}
+      responses:
+        '200': {description: Streamed rejected and duplicate rows, content: {text/csv: {schema: {type: string, format: binary}}}}
   /api/v1/workspaces/{workspaceId}/jobs:
     parameters:
       - {$ref: '#/components/parameters/WorkspaceId'}
     get:
       operationId: listJobs
       tags: [Jobs]
+      parameters: *ResourcePageParameters
       responses:
         '200':
           description: Jobs
           content:
             application/json:
-              schema: {type: array, items: {$ref: '#/components/schemas/Job'}}
+              schema: {$ref: '#/components/schemas/JobPage'}
     post:
       operationId: createJob
       tags: [Jobs]
@@ -335,12 +458,12 @@ paths:
               schema: {$ref: '#/components/schemas/Job'}
         '422': {$ref: '#/components/responses/Unprocessable'}
   /api/v1/workspaces/{workspaceId}/jobs/{jobId}:
+    parameters:
+      - {$ref: '#/components/parameters/WorkspaceId'}
+      - {name: jobId, in: path, required: true, schema: {type: string}}
     get:
       operationId: getJob
       tags: [Jobs]
-      parameters:
-        - {$ref: '#/components/parameters/WorkspaceId'}
-        - {name: jobId, in: path, required: true, schema: {type: string}}
       responses:
         '200':
           description: Job detail
@@ -348,6 +471,32 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/Job'}
         '404': {$ref: '#/components/responses/NotFound'}
+    patch:
+      operationId: updateJob
+      tags: [Jobs]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/UpdateJob'}}}}
+      responses:
+        '200': {description: Job updated, content: {application/json: {schema: {$ref: '#/components/schemas/Job'}}}}
+  /api/v1/workspaces/{workspaceId}/jobs/{jobId}/copy:
+    post:
+      operationId: copyJob
+      tags: [Jobs]
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+        - {name: jobId, in: path, required: true, schema: {type: string}}
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/CopyResource'}}}}
+      responses:
+        '201': {description: Independent Job copy, content: {application/json: {schema: {$ref: '#/components/schemas/Job'}}}}
+  /api/v1/workspaces/{workspaceId}/jobs/{jobId}/run-confirmation:
+    post:
+      operationId: confirmLiveRun
+      tags: [Runs]
+      description: Returns the frozen live-send impact preview and a five-minute confirmation token.
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+        - {name: jobId, in: path, required: true, schema: {type: string}}
+      responses:
+        '200': {description: Live-send confirmation context, content: {application/json: {schema: {$ref: '#/components/schemas/LiveConfirmation'}}}}
   /api/v1/workspaces/{workspaceId}/jobs/{jobId}/runs:
     post:
       operationId: createRun
@@ -378,10 +527,11 @@ paths:
     get:
       operationId: listSchedules
       tags: [Schedules]
+      parameters: *ResourcePageParameters
       responses:
         '200':
           description: Workspace schedules
-          content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/Schedule'}}}}
+          content: {application/json: {schema: {$ref: '#/components/schemas/SchedulePage'}}}
     post:
       operationId: createSchedule
       tags: [Schedules]
@@ -397,14 +547,14 @@ paths:
       - {$ref: '#/components/parameters/WorkspaceId'}
       - {name: scheduleId, in: path, required: true, schema: {type: string}}
     patch:
-      operationId: setScheduleEnabled
+      operationId: updateSchedule
       tags: [Schedules]
       requestBody:
         required: true
         content: {application/json: {schema: {$ref: '#/components/schemas/UpdateSchedule'}}}
       responses:
         '200':
-          description: Schedule state updated
+          description: Schedule definition updated and next fire time recalculated
           content: {application/json: {schema: {$ref: '#/components/schemas/Schedule'}}}
     delete:
       operationId: deleteSchedule
@@ -418,23 +568,34 @@ paths:
       security: [{bearerAuth: []}]
       parameters:
         - {$ref: '#/components/parameters/WorkspaceId'}
-        - {name: limit, in: query, required: false, schema: {type: integer, minimum: 1, maximum: 1000, default: 100}}
+        - {$ref: '#/components/parameters/CursorQuery'}
+        - {$ref: '#/components/parameters/LimitQuery'}
+        - {$ref: '#/components/parameters/NameQuery'}
+        - {$ref: '#/components/parameters/StatusQuery'}
+        - {$ref: '#/components/parameters/FromQuery'}
+        - {$ref: '#/components/parameters/ToQuery'}
       responses:
         '200':
           description: Append-only security and mutation audit events
-          content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/AuditEvent'}}}}
+          content: {application/json: {schema: {$ref: '#/components/schemas/AuditEventPage'}}}
   /api/v1/workspaces/{workspaceId}/runs:
     get:
       operationId: listRuns
       tags: [Runs]
       parameters:
         - {$ref: '#/components/parameters/WorkspaceId'}
+        - {$ref: '#/components/parameters/CursorQuery'}
+        - {$ref: '#/components/parameters/LimitQuery'}
+        - {$ref: '#/components/parameters/NameQuery'}
+        - {$ref: '#/components/parameters/StatusQuery'}
+        - {$ref: '#/components/parameters/FromQuery'}
+        - {$ref: '#/components/parameters/ToQuery'}
       responses:
         '200':
           description: Runs ordered newest first
           content:
             application/json:
-              schema: {type: array, items: {$ref: '#/components/schemas/Run'}}
+              schema: {$ref: '#/components/schemas/RunPage'}
   /api/v1/workspaces/{workspaceId}/runs/{runId}:
     get:
       operationId: getRun
@@ -449,6 +610,37 @@ paths:
             application/json:
               schema: {$ref: '#/components/schemas/Run'}
         '404': {$ref: '#/components/responses/NotFound'}
+  /api/v1/workspaces/{workspaceId}/overview:
+    get:
+      operationId: getRunOverview
+      tags: [Runs]
+      parameters: [{$ref: '#/components/parameters/WorkspaceId'}]
+      responses:
+        '200': {description: Real Run totals, active/recent lists and 14-day trend, content: {application/json: {schema: {$ref: '#/components/schemas/RunOverview'}}}}
+  /api/v1/workspaces/{workspaceId}/runs/{runId}/retry-confirmation:
+    post:
+      operationId: confirmRunRetry
+      tags: [Runs]
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+        - {$ref: '#/components/parameters/RunId'}
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/RetryRequest'}}}}
+      responses:
+        '200': {description: Retryable item count and five-minute confirmation token, content: {application/json: {schema: {$ref: '#/components/schemas/RetryConfirmation'}}}}
+        '422': {$ref: '#/components/responses/Unprocessable'}
+  /api/v1/workspaces/{workspaceId}/runs/{runId}/retries:
+    post:
+      operationId: retryRunItems
+      tags: [Runs]
+      parameters:
+        - {$ref: '#/components/parameters/WorkspaceId'}
+        - {$ref: '#/components/parameters/RunId'}
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/RetryRequest'}}}}
+      responses:
+        '202': {description: Linked retry Run created from the source Run snapshot, content: {application/json: {schema: {$ref: '#/components/schemas/Run'}}}}
+        '200': {description: Idempotent retry replay, content: {application/json: {schema: {$ref: '#/components/schemas/Run'}}}}
+        '409': {$ref: '#/components/responses/Conflict'}
   /api/v1/workspaces/{workspaceId}/runs/{runId}/events:
     get:
       operationId: streamRunEvents
@@ -738,6 +930,17 @@ components:
     ProviderVersion: {name: version, in: path, required: true, schema: {type: string}}
     RunId: {name: runId, in: path, required: true, schema: {type: string}}
     ArtifactId: {name: artifactId, in: path, required: true, schema: {type: string}}
+    CursorQuery:
+      name: cursor
+      in: query
+      required: false
+      description: Opaque HMAC-protected cursor bound to the current filters.
+      schema: {type: string}
+    LimitQuery: {name: limit, in: query, required: false, schema: {type: integer, minimum: 1, maximum: 100, default: 50}}
+    NameQuery: {name: name, in: query, required: false, schema: {type: string}}
+    StatusQuery: {name: status, in: query, required: false, schema: {type: string}}
+    FromQuery: {name: from, in: query, required: false, schema: {type: string, format: date-time}}
+    ToQuery: {name: to, in: query, required: false, schema: {type: string, format: date-time}}
     IdempotencyKey:
       name: Idempotency-Key
       in: header
@@ -753,7 +956,7 @@ components:
       description: Accounts
       content:
         application/json:
-          schema: {type: array, items: {$ref: '#/components/schemas/Account'}}
+          schema: {$ref: '#/components/schemas/AccountPage'}
     NotFound:
       description: Resource not found
       content:
@@ -871,6 +1074,23 @@ components:
             providerVersion: {type: string}
             configuration: {$ref: '#/components/schemas/JsonObject'}
             status: {type: string, enum: [ACTIVE, DISABLED, ARCHIVED]}
+    UpdateAccount:
+      type: object
+      properties:
+        name: {type: string}
+        configuration: {$ref: '#/components/schemas/JsonObject'}
+        status: {type: string, enum: [ACTIVE, DISABLED, ARCHIVED]}
+    ConnectionTestRequest:
+      type: object
+      properties: {timeout: {type: string, format: duration, default: PT10S}}
+    ConnectionTest:
+      type: object
+      required: [successful, code, diagnostic, latencyMillis]
+      properties:
+        successful: {type: boolean}
+        code: {type: string}
+        diagnostic: {type: string}
+        latencyMillis: {type: integer, format: int64, minimum: 0}
     SecretWrite:
       type: object
       required: [value]
@@ -912,6 +1132,40 @@ components:
             content: {$ref: '#/components/schemas/JsonObject'}
             contentHash: {type: string}
             status: {type: string, enum: [ACTIVE, DISABLED, ARCHIVED]}
+    UpdateMessage:
+      type: object
+      properties:
+        name: {type: string}
+        content: {$ref: '#/components/schemas/JsonObject'}
+        status: {type: string, enum: [ACTIVE, DISABLED, ARCHIVED]}
+    CopyResource:
+      type: object
+      required: [name]
+      properties: {name: {type: string}}
+    MessageRevision:
+      type: object
+      required: [messageId, revision, schemaVersion, content, contentHash, createdAt]
+      properties:
+        messageId: {type: string}
+        revision: {type: integer, minimum: 1}
+        schemaVersion: {type: string}
+        content: {$ref: '#/components/schemas/JsonObject'}
+        contentHash: {type: string}
+        createdAt: {type: string, format: date-time}
+    MessageRevisionPage:
+      type: object
+      required: [items, hasMore]
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/MessageRevision'}}
+        nextBeforeRevision: {type: [integer, 'null'], minimum: 1}
+        hasMore: {type: boolean}
+    MessageDiff:
+      type: object
+      required: [from, to, changedPaths]
+      properties:
+        from: {$ref: '#/components/schemas/MessageRevision'}
+        to: {$ref: '#/components/schemas/MessageRevision'}
+        changedPaths: {type: array, items: {type: string}}
     Recipient:
       type: object
       required: [fields]
@@ -935,6 +1189,46 @@ components:
             recordCount: {type: integer, format: int64, minimum: 0}
             contentHash: {type: string}
             status: {type: string, enum: [ACTIVE, DISABLED, ARCHIVED]}
+    UpdateAudience:
+      type: object
+      properties:
+        name: {type: string}
+        recipients: {type: array, items: {$ref: '#/components/schemas/Recipient'}}
+        status: {type: string, enum: [ACTIVE, DISABLED, ARCHIVED]}
+    AudienceImportRow:
+      type: object
+      required: [sequence, itemId, fields, rawLine, accepted, errorCode, errorMessage]
+      properties:
+        sequence: {type: integer, format: int64, minimum: 1}
+        itemId: {type: string}
+        fields: {$ref: '#/components/schemas/JsonObject'}
+        rawLine: {type: string}
+        accepted: {type: boolean}
+        errorCode: {type: string}
+        errorMessage: {type: string}
+    AudienceImport:
+      type: object
+      required: [id, workspaceId, name, format, itemIdColumn, fieldMapping, status, totalRows,
+                 acceptedRows, rejectedRows, duplicateRows, acceptedPreview, errorPreview,
+                 createdAt, updatedAt, errorsUrl]
+      properties:
+        id: {type: string}
+        workspaceId: {type: string}
+        audienceId: {type: [string, 'null']}
+        name: {type: string}
+        format: {type: string, enum: [CSV, TXT]}
+        itemIdColumn: {type: string}
+        fieldMapping: {$ref: '#/components/schemas/JsonObject'}
+        status: {type: string, enum: [UPLOADING, PREVIEW_READY, COMMITTED]}
+        totalRows: {type: integer, format: int64, minimum: 0}
+        acceptedRows: {type: integer, format: int64, minimum: 0}
+        rejectedRows: {type: integer, format: int64, minimum: 0}
+        duplicateRows: {type: integer, format: int64, minimum: 0}
+        acceptedPreview: {type: array, maxItems: 20, items: {$ref: '#/components/schemas/AudienceImportRow'}}
+        errorPreview: {type: array, maxItems: 20, items: {$ref: '#/components/schemas/AudienceImportRow'}}
+        createdAt: {type: string, format: date-time}
+        updatedAt: {type: string, format: date-time}
+        errorsUrl: {type: string}
     CreateJob:
       type: object
       required: [name, accountId, messageId, audienceId]
@@ -949,19 +1243,69 @@ components:
       allOf:
         - {$ref: '#/components/schemas/ResourceMetadata'}
         - type: object
-          required: [accountId, messageId, audienceId, policies, enabled]
+          required: [accountId, messageId, audienceId, policies, enabled, archived, status]
           properties:
             accountId: {type: string}
             messageId: {type: string}
             audienceId: {type: string}
             policies: {$ref: '#/components/schemas/JsonObject'}
             enabled: {type: boolean}
+            archived: {type: boolean}
+            status: {type: string, enum: [ACTIVE, DISABLED, ARCHIVED]}
+    UpdateJob:
+      type: object
+      properties:
+        name: {type: string}
+        accountId: {type: string}
+        messageId: {type: string}
+        audienceId: {type: string}
+        policies: {$ref: '#/components/schemas/JsonObject'}
+        enabled: {type: boolean}
+        archived: {type: boolean}
     CreateRun:
       type: object
       properties:
         dryRun: {type: boolean, default: false}
         policyOverrides: {$ref: '#/components/schemas/JsonObject'}
         reason: {type: string, default: manual}
+        confirmationToken: {type: string, description: Required for non-dry manual Runs.}
+    LiveConfirmation:
+      type: object
+      required: [jobId, jobName, providerId, providerVersion, accountId, accountName, audienceId,
+                 audienceName, audienceCount, policies, targetConcurrency, rateLimitPermits,
+                 rateLimitPeriod, estimatedItems, expiresAt, confirmationToken]
+      properties:
+        jobId: {type: string}
+        jobName: {type: string}
+        providerId: {type: string}
+        providerVersion: {type: string}
+        accountId: {type: string}
+        accountName: {type: string}
+        audienceId: {type: string}
+        audienceName: {type: string}
+        audienceCount: {type: integer, format: int64, minimum: 0}
+        policies: {$ref: '#/components/schemas/JsonObject'}
+        targetConcurrency: {type: integer, minimum: 1}
+        rateLimitPermits: {type: integer, format: int64, minimum: 1}
+        rateLimitPeriod: {type: string, format: duration}
+        estimatedItems: {type: integer, format: int64, minimum: 0}
+        expiresAt: {type: string, format: date-time}
+        confirmationToken: {type: string}
+    RetryRequest:
+      type: object
+      required: [states]
+      properties:
+        states: {type: array, minItems: 1, uniqueItems: true, items: {type: string, enum: [FAILED, UNKNOWN, UNSENT]}}
+        confirmationToken: {type: string}
+    RetryConfirmation:
+      type: object
+      required: [sourceRunId, states, itemCount, expiresAt, confirmationToken]
+      properties:
+        sourceRunId: {type: string}
+        states: {type: array, items: {type: string, enum: [FAILED, UNKNOWN, UNSENT]}, uniqueItems: true}
+        itemCount: {type: integer, format: int64, minimum: 1}
+        expiresAt: {type: string, format: date-time}
+        confirmationToken: {type: string}
     RunCounters:
       type: object
       required: [total, succeeded, failed, unknown, unsent, skipped, retried]
@@ -975,15 +1319,19 @@ components:
         retried: {type: integer, format: int64, minimum: 0}
     Run:
       type: object
-      required: [id, workspaceId, jobId, state, stateReason, dryRun, counters, createdAt, updatedAt, version, links]
+      required: [id, workspaceId, jobId, jobName, state, stateReason, dryRun, counters, retryStates,
+                 createdAt, updatedAt, version, links]
       properties:
         id: {type: string}
         workspaceId: {type: string}
         jobId: {type: string}
+        jobName: {type: string}
         state: {type: string}
         stateReason: {type: string}
         dryRun: {type: boolean}
         counters: {$ref: '#/components/schemas/RunCounters'}
+        sourceRunId: {type: [string, 'null']}
+        retryStates: {type: string}
         createdAt: {type: string, format: date-time}
         startedAt: {type: [string, 'null'], format: date-time}
         endedAt: {type: [string, 'null'], format: date-time}
@@ -1019,6 +1367,67 @@ components:
       properties:
         nextCursor: {type: [string, 'null']}
         hasMore: {type: boolean}
+    AccountPage:
+      type: object
+      required: [items, page]
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/Account'}}
+        page: {$ref: '#/components/schemas/CursorPage'}
+    MessagePage:
+      type: object
+      required: [items, page]
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/Message'}}
+        page: {$ref: '#/components/schemas/CursorPage'}
+    AudiencePage:
+      type: object
+      required: [items, page]
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/Audience'}}
+        page: {$ref: '#/components/schemas/CursorPage'}
+    JobPage:
+      type: object
+      required: [items, page]
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/Job'}}
+        page: {$ref: '#/components/schemas/CursorPage'}
+    RunPage:
+      type: object
+      required: [items, page]
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/Run'}}
+        page: {$ref: '#/components/schemas/CursorPage'}
+    SchedulePage:
+      type: object
+      required: [items, page]
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/Schedule'}}
+        page: {$ref: '#/components/schemas/CursorPage'}
+    AuditEventPage:
+      type: object
+      required: [items, page]
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/AuditEvent'}}
+        page: {$ref: '#/components/schemas/CursorPage'}
+    RunTrend:
+      type: object
+      required: [day, total, succeeded, problem]
+      properties:
+        day: {type: string, format: date}
+        total: {type: integer, format: int64, minimum: 0}
+        succeeded: {type: integer, format: int64, minimum: 0}
+        problem: {type: integer, format: int64, minimum: 0}
+    RunOverview:
+      type: object
+      required: [activeRuns, totalRuns, succeededRuns, problemRuns, active, recent, trend]
+      properties:
+        activeRuns: {type: integer, format: int64, minimum: 0}
+        totalRuns: {type: integer, format: int64, minimum: 0}
+        succeededRuns: {type: integer, format: int64, minimum: 0}
+        problemRuns: {type: integer, format: int64, minimum: 0}
+        active: {type: array, maxItems: 10, items: {$ref: '#/components/schemas/Run'}}
+        recent: {type: array, maxItems: 10, items: {$ref: '#/components/schemas/Run'}}
+        trend: {type: array, items: {$ref: '#/components/schemas/RunTrend'}}
     RunItemResultPage:
       type: object
       required: [items, page]
@@ -1088,8 +1497,13 @@ components:
         enabled: {type: boolean, default: true}
     UpdateSchedule:
       type: object
-      required: [enabled]
-      properties: {enabled: {type: boolean}}
+      properties:
+        name: {type: string}
+        jobId: {type: string}
+        cronExpression: {type: string, description: Spring six-field cron expression}
+        timezone: {type: string}
+        misfirePolicy: {type: string, enum: [FIRE_ONCE, SKIP]}
+        enabled: {type: boolean}
     Schedule:
       type: object
       required: [id, workspaceId, jobId, name, cronExpression, timezone, misfirePolicy, enabled,

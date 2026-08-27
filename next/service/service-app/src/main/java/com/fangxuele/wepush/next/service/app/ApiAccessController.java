@@ -1,6 +1,9 @@
 package com.fangxuele.wepush.next.service.app;
 
 import com.fangxuele.wepush.next.service.application.ApiAccessService;
+import com.fangxuele.wepush.next.service.application.ControlPlaneQueryService;
+import com.fangxuele.wepush.next.service.api.ControlPlaneApi;
+import com.fangxuele.wepush.next.service.domain.WorkspaceId;
 import com.fangxuele.wepush.next.service.domain.ApiAccessRepository;
 import com.fangxuele.wepush.next.service.domain.AuditEventRepository;
 import org.springframework.http.HttpStatus;
@@ -21,10 +24,12 @@ import java.util.List;
 final class ApiAccessController {
     private final ApiAccessService access;
     private final AuditEventRepository audits;
+    private final ControlPlaneQueryService queries;
 
-    ApiAccessController(ApiAccessService access, AuditEventRepository audits) {
+    ApiAccessController(ApiAccessService access, AuditEventRepository audits, ControlPlaneQueryService queries) {
         this.access = access;
         this.audits = audits;
+        this.queries = queries;
     }
 
     @PostMapping("/api/v1/workspaces/{workspaceId}/api-tokens")
@@ -51,12 +56,17 @@ final class ApiAccessController {
     }
 
     @GetMapping("/api/v1/workspaces/{workspaceId}/audit-events")
-    List<AuditResponse> audits(@org.springframework.web.bind.annotation.PathVariable String workspaceId,
-                               @RequestParam(defaultValue = "100") int limit) {
-        return audits.list(workspaceId, limit).stream().map(value -> new AuditResponse(value.id(),
+    ControlPlaneApi.ResourcePageResponse<AuditResponse> audits(
+            @org.springframework.web.bind.annotation.PathVariable String workspaceId,
+            @RequestParam(required = false) String cursor, @RequestParam(defaultValue = "50") int limit,
+            @RequestParam(required = false) String name, @RequestParam(required = false) String status,
+            @RequestParam(required = false) Instant from, @RequestParam(required = false) Instant to) {
+        var page = queries.audits(new WorkspaceId(workspaceId),
+                new ControlPlaneQueryService.Filters(cursor, limit, name, status, from, to));
+        return new ControlPlaneApi.ResourcePageResponse<>(page.items().stream().map(value -> new AuditResponse(value.id(),
                 value.workspaceId(), value.actorType(), value.actorId(), value.action(),
                 value.resourceType(), value.resourceId(), value.result(), value.details().value(),
-                value.occurredAt())).toList();
+                value.occurredAt())).toList(), new ControlPlaneApi.CursorPage(page.nextCursor(), page.hasMore()));
     }
 
     record CreateTokenRequest(String name, String role, String ttl) {

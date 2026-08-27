@@ -15,6 +15,10 @@ import {
   type ApiTokenSummary,
   type AuditEvent,
   type SystemInfo,
+  type Workspace,
+  type RunOverview,
+  type AudienceImport,
+  type LiveConfirmation,
   WePushClient,
 } from "@wepush-next/api-client";
 import { defaultsForSchema, SchemaForm, type JsonSchema } from "@wepush-next/schema-renderer";
@@ -68,20 +72,29 @@ export function WePushApp({ apiBaseUrl }: { apiBaseUrl?: string }) {
   const [system, setSystem] = useState<SystemInfo>();
   const [providers, setProviders] = useState<ProviderSummary[]>([]);
   const [agents, setAgents] = useState<Agent[]>([]);
+  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+  const [workspaceId, setWorkspaceId] = useState("ws_default");
+  const [overview, setOverview] = useState<RunOverview>();
   const [loading, setLoading] = useState(true);
   const [connectionError, setConnectionError] = useState<string>();
 
   const refresh = useCallback(async (signal?: AbortSignal) => {
     setLoading(true);
     try {
-      const [nextSystem, nextProviders, nextAgents] = await Promise.all([
-        client.systemInfo(signal),
+      const nextSystem = await client.systemInfo(signal);
+      const [nextProviders, nextAgents, nextWorkspaces] = await Promise.all([
         client.providers(signal),
         client.agents(signal),
+        client.workspaces(signal),
       ]);
+      const nextWorkspaceId = nextSystem.mode.toLowerCase() === "standalone" ? "ws_default"
+        : nextWorkspaces.some((item) => item.id === workspaceId) ? workspaceId : nextWorkspaces[0]?.id ?? "ws_default";
       setSystem(nextSystem);
       setProviders(nextProviders);
       setAgents(nextAgents);
+      setWorkspaces(nextWorkspaces);
+      setWorkspaceId(nextWorkspaceId);
+      setOverview(await client.overview(nextWorkspaceId, signal));
       setConnectionError(undefined);
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") return;
@@ -89,7 +102,7 @@ export function WePushApp({ apiBaseUrl }: { apiBaseUrl?: string }) {
     } finally {
       setLoading(false);
     }
-  }, [client]);
+  }, [client, workspaceId]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -99,7 +112,9 @@ export function WePushApp({ apiBaseUrl }: { apiBaseUrl?: string }) {
 
   return (
     <div className="app-shell">
-      <Sidebar activePage={activePage} onNavigate={setActivePage} connected={!connectionError && Boolean(system)} />
+      <Sidebar activePage={activePage} onNavigate={setActivePage} connected={!connectionError && Boolean(system)}
+        system={system} workspaces={workspaces} workspaceId={workspaceId} onWorkspaceChange={setWorkspaceId}
+        activeRuns={overview?.activeRuns ?? 0} />
       <div className="app-workspace">
         <Topbar title={pageTitles[activePage]} connected={!connectionError && Boolean(system)} />
         <main className="app-content">
@@ -108,21 +123,23 @@ export function WePushApp({ apiBaseUrl }: { apiBaseUrl?: string }) {
               system={system}
               providers={providers}
               agents={agents}
+              overview={overview}
+              workspaceId={workspaceId}
               loading={loading}
               error={connectionError}
               onRefresh={() => void refresh()}
               onNavigate={setActivePage}
             />
           ) : null}
-          {activePage === "providers" ? <ProvidersPage client={client} providers={providers} loading={loading} /> : null}
-          {activePage === "accounts" ? <AccountsPage client={client} onNavigate={setActivePage} /> : null}
-          {activePage === "messages" ? <MessagesPage client={client} providers={providers} /> : null}
-          {activePage === "audiences" ? <AudiencesPage client={client} /> : null}
-          {activePage === "jobs" ? <JobsPage client={client} onNavigate={setActivePage} /> : null}
-          {activePage === "runs" ? <RunsPage client={client} onNavigate={setActivePage} /> : null}
+          {activePage === "providers" ? <ProvidersPage key={workspaceId} client={client} workspaceId={workspaceId} providers={providers} loading={loading} /> : null}
+          {activePage === "accounts" ? <AccountsPage key={workspaceId} client={client} workspaceId={workspaceId} onNavigate={setActivePage} /> : null}
+          {activePage === "messages" ? <MessagesPage key={workspaceId} client={client} workspaceId={workspaceId} providers={providers} /> : null}
+          {activePage === "audiences" ? <AudiencesPage key={workspaceId} client={client} workspaceId={workspaceId} /> : null}
+          {activePage === "jobs" ? <JobsPage key={workspaceId} client={client} workspaceId={workspaceId} onNavigate={setActivePage} /> : null}
+          {activePage === "runs" ? <RunsPage key={workspaceId} client={client} workspaceId={workspaceId} onNavigate={setActivePage} /> : null}
           {activePage === "agents" ? <AgentsPage client={client} /> : null}
           {activePage === "docs" ? <ApiDocsPage client={client} /> : null}
-          {activePage === "settings" ? <SettingsPage client={client} /> : null}
+          {activePage === "settings" ? <SettingsPage key={workspaceId} client={client} workspaceId={workspaceId} /> : null}
           {!implementedPages.includes(activePage) ? (
             <ComingSoon page={activePage} onNavigate={setActivePage} />
           ) : null}
@@ -132,7 +149,12 @@ export function WePushApp({ apiBaseUrl }: { apiBaseUrl?: string }) {
   );
 }
 
-function Sidebar({ activePage, onNavigate, connected }: { activePage: PageId; onNavigate: (page: PageId) => void; connected: boolean }) {
+function Sidebar({ activePage, onNavigate, connected, system, workspaces, workspaceId, onWorkspaceChange,
+  activeRuns }: { activePage: PageId; onNavigate: (page: PageId) => void; connected: boolean;
+    system?: SystemInfo; workspaces: Workspace[]; workspaceId: string; onWorkspaceChange: (id: string) => void;
+    activeRuns: number }) {
+  const standalone = system?.mode.toLowerCase() === "standalone";
+  const selected = workspaces.find((workspace) => workspace.id === workspaceId);
   return (
     <aside className="sidebar">
       <div className="brand-row">
@@ -140,11 +162,13 @@ function Sidebar({ activePage, onNavigate, connected }: { activePage: PageId; on
         <span>WePush</span>
         <Badge tone="neutral">Next</Badge>
       </div>
-      <button className="workspace-switcher" type="button">
+      <label className="workspace-switcher">
         <span className="workspace-avatar">L</span>
-        <span><strong>Local workspace</strong><small>Standalone</small></span>
-        <span className="chevrons">⌃⌄</span>
-      </button>
+        <span><strong>{standalone ? "Local workspace" : selected?.name ?? workspaceId}</strong><small>{standalone ? "Standalone" : "Self-hosted Server"}</small></span>
+        {!standalone ? <select aria-label="选择 Workspace" value={workspaceId}
+          onChange={(event) => onWorkspaceChange(event.target.value)}>{workspaces.map((workspace) =>
+            <option key={workspace.id} value={workspace.id}>{workspace.name}</option>)}</select> : null}
+      </label>
       <nav className="sidebar-nav" aria-label="主导航">
         {navigation.map((group) => (
           <section key={group.label}>
@@ -158,7 +182,7 @@ function Sidebar({ activePage, onNavigate, connected }: { activePage: PageId; on
               >
                 <Icon name={item.icon} />
                 <span>{item.label}</span>
-                {item.id === "runs" ? <span className="nav-count">0</span> : null}
+                {item.id === "runs" ? <span className="nav-count">{activeRuns}</span> : null}
               </button>
             ))}
           </section>
@@ -198,17 +222,19 @@ interface OverviewProps {
   system?: SystemInfo;
   providers: ProviderSummary[];
   agents: Agent[];
+  overview?: RunOverview;
+  workspaceId: string;
   loading: boolean;
   error?: string;
   onRefresh: () => void;
   onNavigate: (page: PageId) => void;
 }
 
-function Overview({ system, providers, agents, loading, error, onRefresh, onNavigate }: OverviewProps) {
+function Overview({ system, providers, agents, overview, workspaceId, loading, error, onRefresh, onNavigate }: OverviewProps) {
   return (
     <div className="page page--overview">
       <section className="page-heading">
-        <div><p className="eyebrow">LOCAL WORKSPACE</p><h2>开始使用 WePush Next</h2><p>配置消息通道，创建发送任务，并在一个工作台中观察执行情况。</p></div>
+        <div><p className="eyebrow">{workspaceId}</p><h2>开始使用 WePush Next</h2><p>配置消息通道，创建发送任务，并在一个工作台中观察执行情况。</p></div>
         <Button variant="primary" onClick={() => onNavigate("providers")}><span>＋</span> 配置 Provider</Button>
       </section>
 
@@ -223,22 +249,22 @@ function Overview({ system, providers, agents, loading, error, onRefresh, onNavi
       <section className="metric-grid" aria-label="系统概况">
         <MetricCard label="Service" value={loading ? "—" : system ? "运行中" : "离线"} detail={system ? `${system.mode} · ${system.version}` : "等待连接"} tone={system ? "success" : "neutral"} />
         <MetricCard label="Providers" value={loading ? "—" : String(providers.length)} detail={providers.length ? `${providers[0]?.displayName ?? ""} 已就绪` : "尚未发现 Provider"} />
-        <MetricCard label="活动 Runs" value="0" detail="当前没有执行中的任务" />
+        <MetricCard label="活动 Runs" value={loading ? "—" : String(overview?.activeRuns ?? 0)} detail={`${overview?.totalRuns ?? 0} total runs`} />
         <MetricCard label="Agents" value={loading ? "—" : String(agents.length)} detail={`${agents.filter((agent) => agent.status === "ONLINE").length} online · ${agents.reduce((sum, agent) => sum + agent.activeRuns, 0)} active runs`} tone="info" />
       </section>
 
       <div className="dashboard-grid">
         <section className="panel activity-panel">
-          <PanelHeader title="运行情况" description="最近 24 小时" action={<button type="button" className="text-button" onClick={() => onNavigate("runs")}>查看全部 <span>→</span></button>} />
-          <div className="activity-summary"><strong>0</strong><span>次发送</span><span className="delta neutral">暂无运行数据</span></div>
-          <div className="chart-empty" aria-label="暂无运行趋势数据">
+          <PanelHeader title="运行情况" description="最近 14 天" action={<button type="button" className="text-button" onClick={() => onNavigate("runs")}>查看全部 <span>→</span></button>} />
+          <div className="activity-summary"><strong>{overview?.totalRuns ?? 0}</strong><span>次运行</span><span className="delta neutral">成功 {overview?.succeededRuns ?? 0} · 问题 {overview?.problemRuns ?? 0}</span></div>
+          <div className="chart-empty" aria-label="运行趋势数据">
             <div className="chart-grid-lines"><i /><i /><i /><i /></div>
             <svg viewBox="0 0 640 120" preserveAspectRatio="none" role="img" aria-label="空趋势线">
-              <path d="M0,95 C100,94 130,96 220,95 S380,95 460,95 S560,95 640,95" fill="none" stroke="currentColor" strokeWidth="2" />
+              <polyline points={trendPoints(overview?.trend ?? [])} fill="none" stroke="currentColor" strokeWidth="2" />
             </svg>
             <div className="chart-labels"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>现在</span></div>
           </div>
-          <div className="chart-legend"><span><i className="legend-dot success" />成功 0</span><span><i className="legend-dot danger" />失败 0</span><span><i className="legend-dot unknown" />未知 0</span></div>
+          <div className="chart-legend"><span><i className="legend-dot success" />成功 {overview?.succeededRuns ?? 0}</span><span><i className="legend-dot danger" />问题 {overview?.problemRuns ?? 0}</span></div>
         </section>
 
         <section className="panel quick-start-panel">
@@ -254,13 +280,15 @@ function Overview({ system, providers, agents, loading, error, onRefresh, onNavi
 
       <section className="panel recent-panel">
         <PanelHeader title="最近运行" description="任务执行历史与实时状态" action={<Button variant="ghost" onClick={() => onNavigate("runs")}>运行中心</Button>} />
-        <EmptyState icon={<Icon name="pulse" />} title="还没有运行记录" description="创建 Provider、消息与受众后，即可从任务页启动第一次 Dry Run。" action={<Button onClick={() => onNavigate("providers")}>从 Provider 开始</Button>} />
+        {overview?.recent.length ? <div className="resource-card-list">{overview.recent.map((run) => <article key={run.id}>
+          <span className="resource-card-icon"><Icon name="pulse" /></span><div><strong>{run.jobName}</strong><small>{formatTime(run.createdAt)} · {run.counters.total} items</small><code>{shortId(run.id)}</code></div><Badge tone={runTone(run.state)}>{run.state}</Badge>
+        </article>)}</div> : <EmptyState icon={<Icon name="pulse" />} title="还没有运行记录" description="创建 Provider、消息与受众后，即可从任务页启动第一次 Dry Run。" action={<Button onClick={() => onNavigate("providers")}>从 Provider 开始</Button>} />}
       </section>
     </div>
   );
 }
 
-function ProvidersPage({ client, providers, loading }: { client: WePushClient; providers: ProviderSummary[]; loading: boolean }) {
+function ProvidersPage({ client, workspaceId, providers, loading }: { client: WePushClient; workspaceId: string; providers: ProviderSummary[]; loading: boolean }) {
   const [selectedId, setSelectedId] = useState<string>();
   const selected = providers.find((provider) => provider.providerId === selectedId) ?? providers[0];
   const [schema, setSchema] = useState<JsonSchema>();
@@ -298,7 +326,7 @@ function ProvidersPage({ client, providers, loading }: { client: WePushClient; p
         providerId: selected.providerId,
         providerVersion: selected.implementationVersion,
         configuration: formValue,
-      });
+      }, workspaceId);
       setSavedAccount(account);
     } catch (error) {
       setSchemaError(error instanceof Error ? error.message : "账号保存失败");
@@ -350,7 +378,7 @@ function ProvidersPage({ client, providers, loading }: { client: WePushClient; p
               {savedAccount ? <div className="inline-success">账号 {savedAccount.name} 已保存，可以继续创建消息和受众。</div> : null}
               {!schema && !schemaError ? <div className="loading-row"><Spinner />正在加载配置 Schema…</div> : null}
               {schema ? <SchemaForm schema={schema} value={formValue} onChange={setFormValue} /> : null}
-              <div className="form-actions"><Button>测试连接</Button><Button variant="primary" onClick={() => void saveAccount()} disabled={saving || !schema}>{saving ? "保存中…" : "保存账号"}</Button></div>
+              <div className="form-actions"><Button disabled={!savedAccount} onClick={() => savedAccount && void client.testAccount(savedAccount.id, "PT10S", workspaceId).then((result) => window.alert(result.successful ? "连接成功" : result.diagnostic))}>测试已保存连接</Button><Button variant="primary" onClick={() => void saveAccount()} disabled={saving || !schema}>{saving ? "保存中…" : "保存账号"}</Button></div>
             </>
           ) : <EmptyState icon={<Icon name="plug" />} title="选择一个 Provider" description="发现 Provider 后即可查看并渲染其实时配置 Schema。" />}
         </section>
@@ -359,24 +387,47 @@ function ProvidersPage({ client, providers, loading }: { client: WePushClient; p
   );
 }
 
-function AccountsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (page: PageId) => void }) {
+function AccountsPage({ client, workspaceId, onNavigate }: { client: WePushClient; workspaceId: string; onNavigate: (page: PageId) => void }) {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
+  const [search, setSearch] = useState("");
+  const [nextCursor, setNextCursor] = useState<string>();
+  const [action, setAction] = useState<string>();
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (append = false) => {
     setLoading(true);
     try {
-      setAccounts(await client.accounts());
+      const page = await client.accountPage({ name: search || undefined, cursor: append ? nextCursor : undefined }, workspaceId);
+      setAccounts((current) => append ? [...current, ...page.items] : page.items);
+      setNextCursor(page.page.nextCursor);
       setError(undefined);
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : "账号加载失败");
     } finally {
       setLoading(false);
     }
-  }, [client]);
+  }, [client, nextCursor, search, workspaceId]);
 
-  useEffect(() => { void load(); }, [load]);
+  useEffect(() => { void load(); }, [client, workspaceId]);
+
+  async function mutate(account: Account, kind: "test" | "edit" | "enable" | "disable" | "archive") {
+    setAction(account.id); setError(undefined);
+    try {
+      if (kind === "test") {
+        const result = await client.testAccount(account.id, "PT10S", workspaceId);
+        window.alert(result.successful ? `连接成功（${result.latencyMillis} ms）` : `${result.code}: ${result.diagnostic}`);
+      } else {
+        const name = kind === "edit" ? window.prompt("账号名称", account.name) : undefined;
+        if (kind === "edit" && !name) return;
+        await client.updateAccount(account.id, { name: name ?? undefined,
+          status: kind === "enable" ? "ACTIVE" : kind === "disable" ? "DISABLED"
+            : kind === "archive" ? "ARCHIVED" : undefined }, workspaceId);
+        await load();
+      }
+    } catch (nextError) { setError(nextError instanceof Error ? nextError.message : "账号操作失败"); }
+    finally { setAction(undefined); }
+  }
 
   return (
     <div className="page resource-page">
@@ -385,25 +436,26 @@ function AccountsPage({ client, onNavigate }: { client: WePushClient; onNavigate
         <Button variant="primary" onClick={() => onNavigate("providers")}>＋ 新建账号</Button>
       </section>
       <section className="panel resource-table-panel">
-        <div className="list-toolbar"><strong>全部账号</strong><Badge>{accounts.length}</Badge><Button variant="ghost" onClick={() => void load()}>刷新</Button></div>
+        <div className="list-toolbar"><strong>全部账号</strong><Badge>{accounts.length}</Badge><input placeholder="按名称筛选" value={search} onChange={(event) => setSearch(event.target.value)} /><Button variant="ghost" onClick={() => void load()}>筛选</Button></div>
         {loading ? <div className="loading-row"><Spinner />正在读取账号…</div> : null}
         {error ? <div className="inline-error">{error}</div> : null}
         {!loading && !error && accounts.length === 0 ? <EmptyState icon={<Icon name="key" />} title="还没有账号" description="从 Provider 页面打开动态 Schema 表单，保存第一个渠道账号。" action={<Button onClick={() => onNavigate("providers")}>配置 Provider</Button>} /> : null}
         {accounts.length ? <div className="resource-table">
-          <div className="resource-row resource-row--header"><span>名称</span><span>Provider</span><span>状态</span><span>更新时间</span></div>
+          <div className="resource-row resource-row--header"><span>名称</span><span>Provider</span><span>状态</span><span>操作</span></div>
           {accounts.map((account) => <div className="resource-row" key={account.id}>
             <span><strong>{account.name}</strong><small>{account.id}</small></span>
             <span>{account.providerId}<small>v{account.providerVersion}</small></span>
             <span><Badge tone="success">{account.status}</Badge></span>
-            <span>{formatTime(account.updatedAt)}</span>
+            <span className="heading-actions"><Button variant="ghost" disabled={action === account.id} onClick={() => void mutate(account, "test")}>测试</Button><Button variant="ghost" onClick={() => void mutate(account, "edit")}>编辑</Button>{account.status === "ACTIVE" ? <Button variant="ghost" onClick={() => void mutate(account, "disable")}>停用</Button> : account.status === "DISABLED" ? <Button variant="ghost" onClick={() => void mutate(account, "enable")}>启用</Button> : null}{account.status !== "ARCHIVED" ? <Button variant="ghost" onClick={() => void mutate(account, "archive")}>归档</Button> : null}</span>
           </div>)}
         </div> : null}
+        {nextCursor ? <div className="load-more-row"><Button variant="ghost" onClick={() => void load(true)}>加载更多</Button></div> : null}
       </section>
     </div>
   );
 }
 
-function MessagesPage({ client, providers }: { client: WePushClient; providers: ProviderSummary[] }) {
+function MessagesPage({ client, workspaceId, providers }: { client: WePushClient; workspaceId: string; providers: ProviderSummary[] }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [providerId, setProviderId] = useState<string>();
   const [schema, setSchema] = useState<JsonSchema>();
@@ -411,17 +463,23 @@ function MessagesPage({ client, providers }: { client: WePushClient; providers: 
   const [name, setName] = useState("Welcome message");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string>();
+  const [editing, setEditing] = useState<Message>();
+  const [revisions, setRevisions] = useState<import("@wepush-next/api-client").MessageRevision[]>([]);
+  const [diff, setDiff] = useState<string[]>();
+  const [nextCursor, setNextCursor] = useState<string>();
   const selected = providers.find((provider) => provider.providerId === providerId) ?? providers[0];
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (append = false) => {
     try {
-      setMessages(await client.messages());
+      const page = await client.messagePage({ cursor: append ? nextCursor : undefined }, workspaceId);
+      setMessages((current) => append ? [...current, ...page.items] : page.items);
+      setNextCursor(page.page.nextCursor);
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : "消息加载失败");
     }
-  }, [client]);
+  }, [client, nextCursor, workspaceId]);
 
-  useEffect(() => { void load(); }, [load]);
+  useEffect(() => { void load(); }, [client, workspaceId]);
   useEffect(() => {
     if (!selected) return;
     setProviderId(selected.providerId);
@@ -445,19 +503,39 @@ function MessagesPage({ client, providers }: { client: WePushClient; providers: 
     setSaving(true);
     setError(undefined);
     try {
-      await client.createMessage({
-        name,
-        providerId: selected.providerId,
-        providerVersion: selected.implementationVersion,
-        content,
-      });
+      if (editing) await client.updateMessage(editing.id, { name, content }, workspaceId);
+      else await client.createMessage({ name, providerId: selected.providerId,
+        providerVersion: selected.implementationVersion, content }, workspaceId);
       await load();
+      setEditing(undefined);
       setName(`Message ${messages.length + 2}`);
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : "消息保存失败");
     } finally {
       setSaving(false);
     }
+  }
+
+  async function inspect(message: Message) {
+    setEditing(message); setName(message.name); setProviderId(message.providerId); setContent(message.content);
+    try {
+      const history = await client.messageRevisions(message.id, 0, 100, workspaceId);
+      setRevisions(history.items);
+      if (history.items.length > 1) setDiff((await client.messageDiff(message.id,
+        history.items[1]!.revision, history.items[0]!.revision, workspaceId)).changedPaths);
+      else setDiff([]);
+    } catch (nextError) { setError(nextError instanceof Error ? nextError.message : "修订历史加载失败"); }
+  }
+
+  async function messageAction(message: Message, kind: "copy" | "status") {
+    try {
+      if (kind === "copy") {
+        const copyName = window.prompt("副本名称", `${message.name} copy`); if (!copyName) return;
+        await client.copyMessage(message.id, copyName, workspaceId);
+      } else await client.updateMessage(message.id,
+        { status: message.status === "ACTIVE" ? "DISABLED" : "ACTIVE" }, workspaceId);
+      await load();
+    } catch (nextError) { setError(nextError instanceof Error ? nextError.message : "消息操作失败"); }
   }
 
   return (
@@ -468,7 +546,7 @@ function MessagesPage({ client, providers }: { client: WePushClient; providers: 
       </section>
       <div className="composer-layout">
         <section className="panel composer-panel">
-          <PanelHeader title="新建消息" description="选择 Provider 后动态渲染内容字段" />
+          <PanelHeader title={editing ? `编辑 revision ${editing.revision}` : "新建消息"} description="保存内容变更会创建新的不可变 Revision" />
           <label className="simple-field"><span>名称</span><input value={name} onChange={(event) => setName(event.target.value)} /></label>
           <label className="simple-field"><span>Provider</span><select value={selected?.providerId ?? ""} onChange={(event) => setProviderId(event.target.value)}>
             {providers.map((provider) => <option value={provider.providerId} key={provider.providerId}>{provider.displayName} · {provider.implementationVersion}</option>)}
@@ -476,7 +554,8 @@ function MessagesPage({ client, providers }: { client: WePushClient; providers: 
           {error ? <div className="inline-error">{error}</div> : null}
           {!schema && selected ? <div className="loading-row"><Spinner />正在读取 Message Schema…</div> : null}
           {schema ? <SchemaForm schema={schema} value={content} onChange={setContent} /> : null}
-          <div className="form-actions"><Button variant="primary" disabled={!schema || saving || !name.trim()} onClick={() => void createMessage()}>{saving ? "保存中…" : "保存消息"}</Button></div>
+          <div className="form-actions"><Button variant="primary" disabled={!schema || saving || !name.trim()} onClick={() => void createMessage()}>{saving ? "保存中…" : editing ? "保存新 Revision" : "保存消息"}</Button>{editing ? <Button onClick={() => setEditing(undefined)}>取消编辑</Button> : null}</div>
+          {editing ? <div className="api-safety-note"><span>Δ</span><p><strong>修订历史</strong><br />{revisions.map((item) => `r${item.revision}`).join(" → ") || "加载中"}<br />最近 Diff: {diff?.join(", ") || "无顶层字段变化"}</p></div> : null}
         </section>
         <section className="panel resource-list-panel">
           <div className="list-toolbar"><strong>消息修订</strong><Badge>{messages.length}</Badge><Button variant="ghost" onClick={() => void load()}>刷新</Button></div>
@@ -484,67 +563,110 @@ function MessagesPage({ client, providers }: { client: WePushClient; providers: 
           <div className="resource-card-list">{messages.map((message) => <article key={message.id}>
             <span className="resource-card-icon"><Icon name="message" /></span>
             <div><strong>{message.name}</strong><small>{message.providerId} · revision {message.revision}</small><code>{shortId(message.contentHash)}</code></div>
-            <Badge tone="success">{message.status}</Badge>
+            <div className="heading-actions"><Badge tone="success">{message.status}</Badge><Button variant="ghost" onClick={() => void inspect(message)}>编辑/历史</Button><Button variant="ghost" onClick={() => void messageAction(message, "copy")}>复制</Button><Button variant="ghost" onClick={() => void messageAction(message, "status")}>{message.status === "ACTIVE" ? "停用" : "启用"}</Button></div>
           </article>)}</div>
+          {nextCursor ? <div className="load-more-row"><Button variant="ghost" onClick={() => void load(true)}>加载更多</Button></div> : null}
         </section>
       </div>
     </div>
   );
 }
 
-function AudiencesPage({ client }: { client: WePushClient }) {
+function AudiencesPage({ client, workspaceId }: { client: WePushClient; workspaceId: string }) {
   const [audiences, setAudiences] = useState<Audience[]>([]);
   const [name, setName] = useState("Sample audience");
-  const [source, setSource] = useState(`[
-  { "itemId": "alice", "fields": { "mobile": "13000000000", "name": "Alice" } },
-  { "itemId": "bob", "fields": { "mobile": "13100000000", "name": "Bob" } }
-]`);
+  const [file, setFile] = useState<File>();
+  const [format, setFormat] = useState<"CSV" | "TXT">("CSV");
+  const [headers, setHeaders] = useState<string[]>([]);
+  const [itemIdColumn, setItemIdColumn] = useState("itemId");
+  const [mapping, setMapping] = useState<Record<string, string>>({});
+  const [targetAudienceId, setTargetAudienceId] = useState("");
+  const [preview, setPreview] = useState<AudienceImport>();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string>();
+  const [nextCursor, setNextCursor] = useState<string>();
 
   const load = useCallback(async () => {
     try {
-      setAudiences(await client.audiences());
+      const page = await client.audiencePage({}, workspaceId);
+      setAudiences(page.items); setNextCursor(page.page.nextCursor);
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : "受众加载失败");
     }
-  }, [client]);
+  }, [client, workspaceId]);
   useEffect(() => { void load(); }, [load]);
 
-  async function createAudience() {
+  async function loadMore() {
+    if (!nextCursor) return;
+    try {
+      const page = await client.audiencePage({ cursor: nextCursor }, workspaceId);
+      setAudiences((current) => [...current, ...page.items]);
+      setNextCursor(page.page.nextCursor);
+    } catch (nextError) {
+      setError(nextError instanceof Error ? nextError.message : "受众加载失败");
+    }
+  }
+
+  async function chooseFile(nextFile?: File) {
+    setFile(nextFile); setPreview(undefined);
+    if (!nextFile) return;
+    const nextFormat = nextFile.name.toLowerCase().endsWith(".txt") ? "TXT" : "CSV";
+    setFormat(nextFormat);
+    const nextHeaders = nextFormat === "TXT" ? ["value"]
+      : (await nextFile.slice(0, 65_536).text()).split(/\r?\n/, 1)[0]!.split(",").map((item) => item.trim().replace(/^"|"$/g, ""));
+    setHeaders(nextHeaders);
+    const guessed = nextHeaders.find((item) => /^(item_?id|id|mobile|email|phone)$/i.test(item)) ?? nextHeaders[0] ?? "itemId";
+    setItemIdColumn(nextFormat === "TXT" ? "value" : guessed);
+    setMapping(Object.fromEntries(nextHeaders.filter((item) => item !== guessed)
+      .map((item) => [item, item])));
+  }
+
+  async function uploadAudience() {
+    if (!file) return;
     setSaving(true);
     setError(undefined);
     try {
-      const parsed = JSON.parse(source) as unknown;
-      if (!Array.isArray(parsed) || parsed.some((item) => !item || typeof item !== "object" || !("fields" in item))) {
-        throw new Error("受众必须是包含 fields 的 JSON 数组");
-      }
-      await client.createAudience({
-        name,
-        recipients: parsed as { itemId?: string; fields: Record<string, unknown> }[],
-      });
-      await load();
-      setName(`Audience ${audiences.length + 2}`);
+      setPreview(await client.uploadAudience(file, { name, audienceId: targetAudienceId || undefined,
+        format, itemIdColumn, fieldMapping: mapping }, workspaceId));
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : "受众保存失败");
+      setError(nextError instanceof Error ? nextError.message : "受众导入失败");
     } finally {
       setSaving(false);
     }
   }
 
+  async function commitImport() {
+    if (!preview) return; setSaving(true);
+    try { await client.commitAudienceImport(preview.id, workspaceId); setPreview(undefined); await load(); }
+    catch (nextError) { setError(nextError instanceof Error ? nextError.message : "快照提交失败"); }
+    finally { setSaving(false); }
+  }
+
+  async function downloadErrors() {
+    if (!preview) return;
+    const blob = await client.downloadAudienceImportErrors(preview.id, workspaceId);
+    downloadBlob(blob, `audience-import-${preview.id}-errors.csv`);
+  }
+
   return (
     <div className="page resource-page">
       <section className="page-heading page-heading--compact">
-        <div><p className="eyebrow">SNAPSHOT INPUT</p><h2>受众</h2><p>导入结构化 Recipient，Service 会生成不可变快照和内容哈希。</p></div>
-        <Badge tone="neutral">JSON · CSV next</Badge>
+        <div><p className="eyebrow">STREAMING SNAPSHOT INPUT</p><h2>受众</h2><p>CSV/TXT 由 Service 流式导入，预览、去重和错误处理后再生成不可变快照。</p></div>
+        <Badge tone="success">CSV · TXT</Badge>
       </section>
       <div className="composer-layout">
         <section className="panel composer-panel">
-          <PanelHeader title="导入受众" description="itemId 可省略，字段会按 Provider Recipient Schema 校验" />
+          <PanelHeader title="导入受众" description="选择文件 → 字段映射 → 预览 → 提交快照" />
           <label className="simple-field"><span>名称</span><input value={name} onChange={(event) => setName(event.target.value)} /></label>
-          <label className="simple-field"><span>Recipients JSON</span><textarea rows={14} value={source} onChange={(event) => setSource(event.target.value)} spellCheck={false} /></label>
+          <label className="simple-field"><span>更新已有受众（可选）</span><select value={targetAudienceId} onChange={(event) => setTargetAudienceId(event.target.value)}><option value="">创建新受众</option>{audiences.map((item) => <option key={item.id} value={item.id}>{item.name} · r{item.revision}</option>)}</select></label>
+          <label className="simple-field"><span>CSV / TXT 文件</span><input type="file" accept=".csv,.txt,text/csv,text/plain" onChange={(event) => void chooseFile(event.target.files?.[0])} /></label>
+          {headers.length ? <><label className="simple-field"><span>itemId 字段</span><select value={itemIdColumn} onChange={(event) => setItemIdColumn(event.target.value)}>{headers.map((header) => <option key={header}>{header}</option>)}</select></label>
+            <div className="field-mapping"><strong>字段映射</strong>{headers.filter((header) => header !== itemIdColumn).map((header) => <label className="simple-field" key={header}><span>{header} →</span><input value={mapping[header] ?? ""} onChange={(event) => setMapping((current) => ({ ...current, [header]: event.target.value }))} /></label>)}</div></> : null}
           {error ? <div className="inline-error">{error}</div> : null}
-          <div className="form-actions"><Button variant="primary" disabled={saving || !name.trim()} onClick={() => void createAudience()}>{saving ? "生成快照中…" : "创建受众快照"}</Button></div>
+          <div className="form-actions"><Button variant="primary" disabled={saving || !name.trim() || !file} onClick={() => void uploadAudience()}>{saving ? "流式导入中…" : "上传并预览"}</Button></div>
+          {preview ? <div className="import-preview"><div className="run-counter-grid"><div><span>总行数</span><strong>{preview.totalRows}</strong></div><div><span>接受</span><strong>{preview.acceptedRows}</strong></div><div><span>错误</span><strong>{preview.rejectedRows}</strong></div><div><span>重复</span><strong>{preview.duplicateRows}</strong></div></div>
+            <div className="result-table"><div className="result-row result-row--header"><span>Item</span><span>字段</span><span>状态</span><span>行</span><span>说明</span></div>{[...preview.acceptedPreview, ...preview.errorPreview].slice(0, 20).map((row) => <div className="result-row" key={row.sequence}><span>{row.itemId}</span><span>{Object.keys(row.fields).join(", ")}</span><span><Badge tone={row.accepted ? "success" : "danger"}>{row.accepted ? "ACCEPT" : "ERROR"}</Badge></span><span>{row.sequence}</span><span>{row.errorMessage || "—"}</span></div>)}</div>
+            <div className="form-actions"><Button variant="primary" disabled={!preview.acceptedRows || saving} onClick={() => void commitImport()}>确认并生成 Snapshot</Button>{preview.rejectedRows ? <Button onClick={() => void downloadErrors()}>下载错误行 CSV</Button> : null}</div></div> : null}
         </section>
         <section className="panel resource-list-panel">
           <div className="list-toolbar"><strong>受众快照</strong><Badge>{audiences.length}</Badge><Button variant="ghost" onClick={() => void load()}>刷新</Button></div>
@@ -554,13 +676,14 @@ function AudiencesPage({ client }: { client: WePushClient }) {
             <div><strong>{audience.name}</strong><small>{audience.recordCount} recipients · revision {audience.revision}</small><code>{shortId(audience.contentHash)}</code></div>
             <Badge tone="success">{audience.status}</Badge>
           </article>)}</div>
+          {nextCursor ? <div className="load-more-row"><Button variant="ghost" onClick={() => void loadMore()}>加载更多</Button></div> : null}
         </section>
       </div>
     </div>
   );
 }
 
-function JobsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (page: PageId) => void }) {
+function JobsPage({ client, workspaceId, onNavigate }: { client: WePushClient; workspaceId: string; onNavigate: (page: PageId) => void }) {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [audiences, setAudiences] = useState<Audience[]>([]);
@@ -576,11 +699,14 @@ function JobsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
   const [error, setError] = useState<string>();
   const [scheduleJobId, setScheduleJobId] = useState("");
   const [cronExpression, setCronExpression] = useState("0 0 9 * * *");
+  const [editingJob, setEditingJob] = useState<Job>();
+  const [confirmation, setConfirmation] = useState<LiveConfirmation>();
 
   const load = useCallback(async () => {
     try {
       const [nextAccounts, nextMessages, nextAudiences, nextJobs, nextSchedules] = await Promise.all([
-        client.accounts(), client.messages(), client.audiences(), client.jobs(), client.schedules(),
+        client.accounts(workspaceId), client.messages(workspaceId), client.audiences(workspaceId),
+        client.jobs(workspaceId), client.schedules(workspaceId),
       ]);
       setAccounts(nextAccounts); setMessages(nextMessages); setAudiences(nextAudiences); setJobs(nextJobs);
       setSchedules(nextSchedules);
@@ -592,18 +718,19 @@ function JobsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : "任务资源加载失败");
     }
-  }, [client]);
+  }, [client, workspaceId]);
   useEffect(() => { void load(); }, [load]);
 
   async function createJob() {
     setSaving(true); setError(undefined);
     try {
-      await client.createJob({
-        name, accountId, messageId, audienceId,
+      const request = { name, accountId, messageId, audienceId,
         policies: { concurrency: { minimum: 1, target: concurrency, maximum: Math.max(16, concurrency) } },
-        enabled: true,
-      });
+        enabled: true };
+      if (editingJob) await client.updateJob(editingJob.id, request, workspaceId);
+      else await client.createJob(request, workspaceId);
       await load();
+      setEditingJob(undefined);
       setName(`Job ${jobs.length + 2}`);
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : "任务创建失败");
@@ -615,13 +742,46 @@ function JobsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
   async function dryRun(job: Job) {
     setRunningJob(job.id); setError(undefined);
     try {
-      await client.createRun(job.id, { dryRun: true, reason: "web-ui" }, crypto.randomUUID());
+      await client.createRun(job.id, { dryRun: true, reason: "web-ui" }, crypto.randomUUID(), workspaceId);
       onNavigate("runs");
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : "Dry Run 创建失败");
     } finally {
       setRunningJob(undefined);
     }
+  }
+
+  async function prepareLive(job: Job) {
+    setRunningJob(job.id); setError(undefined);
+    try { setConfirmation(await client.confirmRun(job.id, workspaceId)); }
+    catch (nextError) { setError(nextError instanceof Error ? nextError.message : "发送确认加载失败"); }
+    finally { setRunningJob(undefined); }
+  }
+
+  async function sendLive() {
+    if (!confirmation) return; setRunningJob(confirmation.jobId);
+    try {
+      await client.createRun(confirmation.jobId, { dryRun: false, reason: "web-ui-live",
+        confirmationToken: confirmation.confirmationToken }, crypto.randomUUID(), workspaceId);
+      setConfirmation(undefined); onNavigate("runs");
+    } catch (nextError) { setError(nextError instanceof Error ? nextError.message : "正式运行创建失败"); }
+    finally { setRunningJob(undefined); }
+  }
+
+  function editJob(job: Job) {
+    setEditingJob(job); setName(job.name); setAccountId(job.accountId); setMessageId(job.messageId);
+    setAudienceId(job.audienceId);
+    const policy = job.policies.concurrency as { target?: number } | undefined;
+    setConcurrency(policy?.target ?? 8);
+  }
+
+  async function jobAction(job: Job, kind: "copy" | "toggle" | "archive") {
+    try {
+      if (kind === "copy") { const copyName = window.prompt("任务副本名称", `${job.name} copy`); if (!copyName) return; await client.copyJob(job.id, copyName, workspaceId); }
+      else await client.updateJob(job.id, kind === "archive" ? { archived: true }
+        : { enabled: !job.enabled }, workspaceId);
+      await load();
+    } catch (nextError) { setError(nextError instanceof Error ? nextError.message : "任务操作失败"); }
   }
 
   async function createSchedule() {
@@ -632,7 +792,7 @@ function JobsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
         name: `Schedule ${schedules.length + 1}`, jobId: scheduleJobId,
         cronExpression, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
         misfirePolicy: "FIRE_ONCE", enabled: true,
-      });
+      }, workspaceId);
       await load();
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : "调度创建失败");
@@ -640,8 +800,18 @@ function JobsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
   }
 
   async function toggleSchedule(schedule: Schedule) {
-    try { await client.setScheduleEnabled(schedule.id, !schedule.enabled); await load(); }
+    try { await client.setScheduleEnabled(schedule.id, !schedule.enabled, workspaceId); await load(); }
     catch (nextError) { setError(nextError instanceof Error ? nextError.message : "调度更新失败"); }
+  }
+
+  async function editSchedule(schedule: Schedule) {
+    const nextName = window.prompt("调度名称", schedule.name); if (!nextName) return;
+    const nextCron = window.prompt("六段 Cron", schedule.cronExpression); if (!nextCron) return;
+    const timezone = window.prompt("时区", schedule.timezone); if (!timezone) return;
+    try { await client.updateSchedule(schedule.id, { name: nextName, cronExpression: nextCron,
+      timezone, jobId: schedule.jobId, misfirePolicy: schedule.misfirePolicy,
+      enabled: schedule.enabled }, workspaceId); await load(); }
+    catch (nextError) { setError(nextError instanceof Error ? nextError.message : "调度编辑失败"); }
   }
 
   const ready = Boolean(accountId && messageId && audienceId && name.trim());
@@ -654,22 +824,23 @@ function JobsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
       {error ? <div className="inline-error">{error}</div> : null}
       <div className="composer-layout">
         <section className="panel composer-panel compact-form">
-          <PanelHeader title="新建任务" description="Run 创建时会冻结所有资源修订" />
+          <PanelHeader title={editingJob ? "编辑任务" : "新建任务"} description="Run 创建时会冻结所有资源修订" />
           <label className="simple-field"><span>名称</span><input value={name} onChange={(event) => setName(event.target.value)} /></label>
           <label className="simple-field"><span>账号</span><select value={accountId} onChange={(event) => setAccountId(event.target.value)}><option value="">请选择</option>{accounts.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
           <label className="simple-field"><span>消息</span><select value={messageId} onChange={(event) => setMessageId(event.target.value)}><option value="">请选择</option>{messages.map((item) => <option key={item.id} value={item.id}>{item.name} · r{item.revision}</option>)}</select></label>
           <label className="simple-field"><span>受众</span><select value={audienceId} onChange={(event) => setAudienceId(event.target.value)}><option value="">请选择</option>{audiences.map((item) => <option key={item.id} value={item.id}>{item.name} · {item.recordCount} items</option>)}</select></label>
           <label className="simple-field"><span>目标并发</span><input type="number" min={1} max={256} value={concurrency} onChange={(event) => setConcurrency(Number(event.target.value))} /></label>
-          <div className="form-actions"><Button variant="primary" disabled={!ready || saving} onClick={() => void createJob()}>{saving ? "保存中…" : "保存任务"}</Button></div>
+          <div className="form-actions"><Button variant="primary" disabled={!ready || saving} onClick={() => void createJob()}>{saving ? "保存中…" : editingJob ? "保存修改" : "保存任务"}</Button>{editingJob ? <Button onClick={() => setEditingJob(undefined)}>取消</Button> : null}</div>
         </section>
         <section className="panel resource-list-panel">
           <div className="list-toolbar"><strong>任务定义</strong><Badge>{jobs.length}</Badge><Button variant="ghost" onClick={() => void load()}>刷新</Button></div>
           {jobs.length === 0 ? <EmptyState icon={<Icon name="task" />} title="还没有任务" description="先创建账号、消息和受众，再在左侧组合执行定义。" /> : null}
           <div className="job-card-list">{jobs.map((job) => <article key={job.id}>
-            <div className="job-card-heading"><div><strong>{job.name}</strong><small>{shortId(job.id)}</small></div><Badge tone={job.enabled ? "success" : "neutral"}>{job.enabled ? "ENABLED" : "DISABLED"}</Badge></div>
+            <div className="job-card-heading"><div><strong>{job.name}</strong><small>{shortId(job.id)}</small></div><Badge tone={job.enabled ? "success" : "neutral"}>{job.status}</Badge></div>
             <div className="job-links"><span>Account <code>{shortId(job.accountId)}</code></span><span>Message <code>{shortId(job.messageId)}</code></span><span>Audience <code>{shortId(job.audienceId)}</code></span></div>
-            <div className="job-actions"><Button variant="primary" disabled={!job.enabled || runningJob === job.id} onClick={() => void dryRun(job)}>{runningJob === job.id ? "启动中…" : "Dry Run"}</Button></div>
+            <div className="job-actions"><Button disabled={!job.enabled || runningJob === job.id} onClick={() => void dryRun(job)}>Dry Run</Button><Button variant="primary" disabled={!job.enabled || runningJob === job.id} onClick={() => void prepareLive(job)}>正式发送</Button><Button variant="ghost" onClick={() => editJob(job)}>编辑</Button><Button variant="ghost" onClick={() => void jobAction(job, "copy")}>复制</Button><Button variant="ghost" onClick={() => void jobAction(job, "toggle")}>{job.enabled ? "停用" : "启用"}</Button>{!job.archived ? <Button variant="ghost" onClick={() => void jobAction(job, "archive")}>归档</Button> : null}</div>
           </article>)}</div>
+          {confirmation ? <div className="live-confirmation"><h3>正式发送确认</h3><p>Provider: {confirmation.providerId} {confirmation.providerVersion}</p><p>账号: {confirmation.accountName}</p><p>受众: {confirmation.audienceName} · {confirmation.audienceCount} 人</p><p>目标并发: {confirmation.targetConcurrency} · 限速: {confirmation.rateLimitPermits === Number.MAX_SAFE_INTEGER ? "无限制" : `${confirmation.rateLimitPermits}/${confirmation.rateLimitPeriod}`}</p><p>预计发送规模: {confirmation.estimatedItems}</p><pre>{JSON.stringify(confirmation.policies, null, 2)}</pre><div className="form-actions"><Button variant="primary" onClick={() => void sendLive()}>我已核对，开始发送</Button><Button onClick={() => setConfirmation(undefined)}>取消</Button></div></div> : null}
         </section>
       </div>
       <section className="panel recent-panel schedule-panel">
@@ -683,7 +854,7 @@ function JobsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
         <div className="resource-card-list">{schedules.map((schedule) => <article key={schedule.id}>
           <span className="resource-card-icon"><Icon name="task" /></span>
           <div><strong>{schedule.name}</strong><small>{schedule.cronExpression} · {schedule.timezone}</small><code>next {new Date(schedule.nextFireAt).toLocaleString()}</code></div>
-          <Button variant="ghost" onClick={() => void toggleSchedule(schedule)}>{schedule.enabled ? "停用" : "启用"}</Button>
+          <div className="heading-actions"><Button variant="ghost" onClick={() => void editSchedule(schedule)}>完整编辑</Button><Button variant="ghost" onClick={() => void toggleSchedule(schedule)}>{schedule.enabled ? "停用" : "启用"}</Button><Button variant="ghost" onClick={() => void client.deleteSchedule(schedule.id, workspaceId).then(load)}>删除</Button></div>
         </article>)}</div>
       </section>
     </div>
@@ -696,12 +867,15 @@ interface VisibleRunEvent {
   data: string;
 }
 
-function RunsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (page: PageId) => void }) {
+function RunsPage({ client, workspaceId, onNavigate }: { client: WePushClient; workspaceId: string; onNavigate: (page: PageId) => void }) {
   const [runs, setRuns] = useState<Run[]>([]);
   const [selectedId, setSelectedId] = useState<string>();
   const [events, setEvents] = useState<VisibleRunEvent[]>([]);
   const [results, setResults] = useState<RunItemResult[]>([]);
-  const [nextCursor, setNextCursor] = useState<string>();
+  const [resultsCursor, setResultsCursor] = useState<string>();
+  const [runsCursor, setRunsCursor] = useState<string>();
+  const [runSearch, setRunSearch] = useState("");
+  const [runStatus, setRunStatus] = useState("");
   const [resultsLoading, setResultsLoading] = useState(false);
   const [artifacts, setArtifacts] = useState<Artifact[]>([]);
   const [artifactsLoading, setArtifactsLoading] = useState(false);
@@ -712,20 +886,23 @@ function RunsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
   const [concurrency, setConcurrency] = useState(8);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
+  const [retryConfirmation, setRetryConfirmation] = useState<import("@wepush-next/api-client").RetryConfirmation>();
   const selected = runs.find((run) => run.id === selectedId) ?? runs[0];
 
-  const refreshRuns = useCallback(async () => {
+  const refreshRuns = useCallback(async (append = false) => {
     try {
-      const nextRuns = await client.runs();
-      setRuns(nextRuns);
-      setSelectedId((current) => current ?? nextRuns[0]?.id);
+      const page = await client.runPage({ cursor: append ? runsCursor : undefined,
+        name: runSearch || undefined, status: runStatus || undefined }, workspaceId);
+      setRuns((current) => append ? [...current, ...page.items] : page.items);
+      setRunsCursor(page.page.nextCursor);
+      setSelectedId((current) => current ?? page.items[0]?.id);
       setError(undefined);
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : "运行记录加载失败");
     } finally {
       setLoading(false);
     }
-  }, [client]);
+  }, [client, runSearch, runStatus, runsCursor, workspaceId]);
 
   useEffect(() => {
     void refreshRuns();
@@ -734,18 +911,18 @@ function RunsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
   }, [refreshRuns]);
 
   const refreshResults = useCallback(async () => {
-    if (!selectedId) { setResults([]); setNextCursor(undefined); return; }
+    if (!selectedId) { setResults([]); setResultsCursor(undefined); return; }
     setResultsLoading(true);
     try {
-      const page = await client.runItems(selectedId, undefined, 100);
+      const page = await client.runItems(selectedId, undefined, 100, workspaceId);
       setResults(page.items);
-      setNextCursor(page.page.nextCursor);
+      setResultsCursor(page.page.nextCursor);
     } catch (nextError) {
       setCommandError(nextError instanceof Error ? nextError.message : "Item Result 加载失败");
     } finally {
       setResultsLoading(false);
     }
-  }, [client, selectedId]);
+  }, [client, selectedId, workspaceId]);
 
   useEffect(() => {
     void refreshResults();
@@ -757,13 +934,13 @@ function RunsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
     if (!selectedId) { setArtifacts([]); return; }
     setArtifactsLoading(true);
     try {
-      setArtifacts(await client.runArtifacts(selectedId));
+      setArtifacts(await client.runArtifacts(selectedId, workspaceId));
     } catch (nextError) {
       setCommandError(nextError instanceof Error ? nextError.message : "Artifact 加载失败");
     } finally {
       setArtifactsLoading(false);
     }
-  }, [client, selectedId]);
+  }, [client, selectedId, workspaceId]);
 
   useEffect(() => {
     void refreshArtifacts();
@@ -780,7 +957,7 @@ function RunsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
           lastSequence = await client.streamRunEvents(selected.id, lastSequence, (event) => {
             setEvents((current) => [...current, event].slice(-200));
             void refreshRuns();
-          }, "ws_default", controller.signal);
+          }, workspaceId, controller.signal);
         } catch (problem) {
           if (controller.signal.aborted) return;
           await new Promise((resolve) => window.setTimeout(resolve, 1_000));
@@ -788,15 +965,15 @@ function RunsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
       }
     })();
     return () => controller.abort();
-  }, [client, refreshRuns, selected?.id]);
+  }, [client, refreshRuns, selected?.id, workspaceId]);
 
   async function loadMoreResults() {
-    if (!selected?.id || !nextCursor) return;
+    if (!selected?.id || !resultsCursor) return;
     setResultsLoading(true);
     try {
-      const page = await client.runItems(selected.id, nextCursor, 100);
+      const page = await client.runItems(selected.id, resultsCursor, 100, workspaceId);
       setResults((current) => [...current, ...page.items]);
-      setNextCursor(page.page.nextCursor);
+      setResultsCursor(page.page.nextCursor);
     } catch (nextError) {
       setCommandError(nextError instanceof Error ? nextError.message : "下一页加载失败");
     } finally {
@@ -809,10 +986,10 @@ function RunsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
     setCommandBusy(type); setCommandError(undefined);
     try {
       const key = crypto.randomUUID();
-      if (type === "pause") await client.pauseRun(selected.id, key);
-      if (type === "resume") await client.resumeRun(selected.id, key);
-      if (type === "cancel") await client.cancelRun(selected.id, "web-ui", key);
-      if (type === "concurrency") await client.changeRunConcurrency(selected.id, concurrency, key);
+      if (type === "pause") await client.pauseRun(selected.id, key, workspaceId);
+      if (type === "resume") await client.resumeRun(selected.id, key, workspaceId);
+      if (type === "cancel") await client.cancelRun(selected.id, "web-ui", key, workspaceId);
+      if (type === "concurrency") await client.changeRunConcurrency(selected.id, concurrency, key, workspaceId);
       await refreshRuns();
     } catch (nextError) {
       setCommandError(nextError instanceof Error ? nextError.message : "运行命令失败");
@@ -825,7 +1002,7 @@ function RunsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
     if (!selected) return;
     setExportBusy(true); setCommandError(undefined);
     try {
-      await client.createResultExport(selected.id);
+      await client.createResultExport(selected.id, workspaceId);
       await refreshArtifacts();
     } catch (nextError) {
       setCommandError(nextError instanceof Error ? nextError.message : "结果导出失败");
@@ -837,20 +1014,30 @@ function RunsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
   async function downloadArtifact(artifact: Artifact) {
     setDownloadBusy(artifact.id); setCommandError(undefined);
     try {
-      const blob = await client.downloadArtifact(artifact.id);
-      const objectUrl = window.URL.createObjectURL(blob);
-      const download = document.createElement("a");
-      download.href = objectUrl;
-      download.download = artifact.originalName;
-      document.body.append(download);
-      download.click();
-      download.remove();
-      window.setTimeout(() => window.URL.revokeObjectURL(objectUrl), 0);
+      const blob = await client.downloadArtifact(artifact.id, workspaceId);
+      downloadBlob(blob, artifact.originalName);
     } catch (nextError) {
       setCommandError(nextError instanceof Error ? nextError.message : "Artifact 下载失败");
     } finally {
       setDownloadBusy(undefined);
     }
+  }
+
+  async function prepareRetry() {
+    if (!selected) return;
+    try { setRetryConfirmation(await client.confirmRetry(selected.id,
+      ["FAILED", "UNKNOWN", "UNSENT"], workspaceId)); }
+    catch (nextError) { setCommandError(nextError instanceof Error ? nextError.message : "重发预览失败"); }
+  }
+
+  async function retryFailedItems() {
+    if (!retryConfirmation) return; setCommandBusy("retry");
+    try {
+      const created = await client.retryRun(retryConfirmation.sourceRunId, retryConfirmation.states,
+        retryConfirmation.confirmationToken, crypto.randomUUID(), workspaceId);
+      setRetryConfirmation(undefined); await refreshRuns(); setSelectedId(created.id);
+    } catch (nextError) { setCommandError(nextError instanceof Error ? nextError.message : "重发创建失败"); }
+    finally { setCommandBusy(undefined); }
   }
 
   return (
@@ -862,7 +1049,7 @@ function RunsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
       {error ? <div className="connection-banner"><div className="banner-icon">!</div><div><strong>运行数据暂不可用</strong><p>{error}</p></div><Button onClick={() => void refreshRuns()}>重试</Button></div> : null}
       <div className="runs-layout">
         <section className="panel runs-list-panel">
-          <div className="list-toolbar"><strong>最近运行</strong><Badge>{runs.length}</Badge></div>
+          <div className="list-toolbar"><strong>最近运行</strong><Badge>{runs.length}</Badge><input placeholder="任务名" value={runSearch} onChange={(event) => setRunSearch(event.target.value)} /><select value={runStatus} onChange={(event) => setRunStatus(event.target.value)}><option value="">全部状态</option>{["PENDING", "RUNNING", "PAUSED", "SUCCEEDED", "PARTIAL", "FAILED", "CANCELLED"].map((state) => <option key={state}>{state}</option>)}</select><Button variant="ghost" onClick={() => void refreshRuns()}>筛选</Button></div>
           {loading ? <div className="loading-row"><Spinner />正在加载运行…</div> : null}
           {!loading && runs.length === 0 ? <EmptyState icon={<Icon name="pulse" />} title="还没有运行" description="创建 Job 后先发起一次 Dry Run 验证完整链路。" action={<Button onClick={() => onNavigate("jobs")}>创建任务</Button>} /> : null}
           {runs.map((run) => <button type="button" key={run.id} className={selected?.id === run.id ? "run-list-item run-list-item--active" : "run-list-item"} onClick={() => setSelectedId(run.id)}>
@@ -870,18 +1057,21 @@ function RunsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
             <span><strong>{run.dryRun ? "Dry Run" : "Run"} · {shortId(run.id)}</strong><small>{formatTime(run.createdAt)} · {run.counters.total} items</small></span>
             <Badge tone={runTone(run.state)}>{run.state}</Badge>
           </button>)}
+          {runsCursor ? <div className="load-more-row"><Button variant="ghost" onClick={() => void refreshRuns(true)}>加载更多 Runs</Button></div> : null}
         </section>
         <section className="panel run-detail-panel">
           {selected ? <>
-            <div className="run-detail-heading"><div><p className="eyebrow">{selected.dryRun ? "DRY RUN" : "LIVE RUN"}</p><h3>{selected.id}</h3><p>Job {selected.jobId}</p></div><Badge tone={runTone(selected.state)}>{selected.state}</Badge></div>
+            <div className="run-detail-heading"><div><p className="eyebrow">{selected.dryRun ? "DRY RUN" : selected.sourceRunId ? "RETRY RUN" : "LIVE RUN"}</p><h3>{selected.id}</h3><p>{selected.jobName} · {selected.sourceRunId ? `source ${selected.sourceRunId}` : selected.jobId}</p></div><Badge tone={runTone(selected.state)}>{selected.state}</Badge></div>
             <div className="run-command-bar">
               {selected.state === "RUNNING" ? <Button disabled={Boolean(commandBusy)} onClick={() => void issueCommand("pause")}>暂停</Button> : null}
               {selected.state === "PAUSED" ? <Button disabled={Boolean(commandBusy)} onClick={() => void issueCommand("resume")}>恢复</Button> : null}
               {["RUNNING", "PAUSED"].includes(selected.state) ? <><label><span>并发</span><input type="number" min={1} max={256} value={concurrency} onChange={(event) => setConcurrency(Number(event.target.value))} /></label><Button disabled={Boolean(commandBusy)} onClick={() => void issueCommand("concurrency")}>应用</Button></> : null}
               {["PENDING", "RUNNING", "PAUSED", "RECOVERING"].includes(selected.state) ? <Button variant="ghost" disabled={Boolean(commandBusy)} onClick={() => void issueCommand("cancel")}>取消运行</Button> : null}
+              {["CANCELLED", "SUCCEEDED", "PARTIAL", "FAILED"].includes(selected.state) && (selected.counters.failed + selected.counters.unknown + selected.counters.unsent > 0) ? <Button variant="primary" disabled={Boolean(commandBusy)} onClick={() => void prepareRetry()}>重发失败项</Button> : null}
               {commandBusy ? <span><Spinner />正在提交 {commandBusy}…</span> : null}
             </div>
             {commandError ? <div className="inline-error">{commandError}</div> : null}
+            {retryConfirmation ? <div className="live-confirmation"><h3>重发确认</h3><p>来源 Run: {retryConfirmation.sourceRunId}</p><p>状态: {retryConfirmation.states.join(", ")}</p><p>将创建关联的新 Run，共 {retryConfirmation.itemCount} 个 Item。</p><div className="form-actions"><Button variant="primary" onClick={() => void retryFailedItems()}>确认重发</Button><Button onClick={() => setRetryConfirmation(undefined)}>取消</Button></div></div> : null}
             <div className="run-counter-grid">
               {Object.entries(selected.counters).map(([name, value]) => <div key={name}><span>{name}</span><strong>{value}</strong></div>)}
             </div>
@@ -895,7 +1085,7 @@ function RunsPage({ client, onNavigate }: { client: WePushClient; onNavigate: (p
               </div>)}
               {!resultsLoading && results.length === 0 ? <div className="result-empty">运行产生结果后会在这里逐项显示。</div> : null}
             </div>
-            {nextCursor ? <div className="load-more-row"><Button variant="ghost" disabled={resultsLoading} onClick={() => void loadMoreResults()}>{resultsLoading ? "加载中…" : "加载更多"}</Button></div> : null}
+            {resultsCursor ? <div className="load-more-row"><Button variant="ghost" disabled={resultsLoading} onClick={() => void loadMoreResults()}>{resultsLoading ? "加载中…" : "加载更多"}</Button></div> : null}
             <div className="artifact-section">
               <div className="artifact-heading"><div><h3>Artifacts</h3><p>本地文件存储 · SHA-256 校验 · 默认保留 24 小时</p></div><Badge tone="info">{artifacts.length}</Badge></div>
               {artifactsLoading ? <div className="loading-row"><Spinner />正在加载导出文件…</div> : null}
@@ -1088,22 +1278,25 @@ function ApiDocsPage({ client }: { client: WePushClient }) {
   );
 }
 
-function SettingsPage({ client }: { client: WePushClient }) {
+function SettingsPage({ client, workspaceId }: { client: WePushClient; workspaceId: string }) {
   const [token, setToken] = useState(() => { try { return localStorage.getItem("wepush.apiToken") ?? ""; } catch { return ""; } });
   const [tokens, setTokens] = useState<ApiTokenSummary[]>([]);
   const [audits, setAudits] = useState<AuditEvent[]>([]);
   const [issued, setIssued] = useState<string>();
   const [enrollment, setEnrollment] = useState<string>();
   const [error, setError] = useState<string>();
+  const [auditSearch, setAuditSearch] = useState("");
+  const [auditStatus, setAuditStatus] = useState("");
+  const [auditCursor, setAuditCursor] = useState<string>();
 
   const load = useCallback(async () => {
     try {
-      const [nextTokens, nextAudits] = await Promise.all([client.apiTokens(), client.auditEvents(50)]);
+      const [nextTokens, nextAudits] = await Promise.all([client.apiTokens(workspaceId), client.auditEvents(50, workspaceId)]);
       setTokens(nextTokens); setAudits(nextAudits); setError(undefined);
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : "安全数据加载失败");
     }
-  }, [client]);
+  }, [client, workspaceId]);
   useEffect(() => { if (token) void load(); }, [load, token]);
 
   function saveToken() {
@@ -1112,15 +1305,24 @@ function SettingsPage({ client }: { client: WePushClient }) {
     void load();
   }
 
+  async function loadAudits(append = false) {
+    try {
+      const page = await client.auditPage({ name: auditSearch || undefined,
+        status: auditStatus || undefined, cursor: append ? auditCursor : undefined }, workspaceId);
+      setAudits((current) => append ? [...current, ...page.items] : page.items);
+      setAuditCursor(page.page.nextCursor);
+    } catch (nextError) { setError(nextError instanceof Error ? nextError.message : "审计加载失败"); }
+  }
+
   async function createToken() {
     try {
-      const result = await client.createApiToken({ name: "Web UI operator", workspaceId: "ws_default", role: "OPERATOR", ttl: "P30D" });
+      const result = await client.createApiToken({ name: "Web UI operator", workspaceId, role: "OPERATOR", ttl: "P30D" });
       setIssued(result.token); await load();
     } catch (nextError) { setError(nextError instanceof Error ? nextError.message : "令牌签发失败"); }
   }
 
   async function createEnrollment() {
-    try { setEnrollment((await client.createAgentEnrollmentToken("Web UI enrollment")).token); }
+    try { setEnrollment((await client.createAgentEnrollmentToken("Web UI enrollment", "PT15M", workspaceId)).token); }
     catch (nextError) { setError(nextError instanceof Error ? nextError.message : "注册令牌签发失败"); }
   }
 
@@ -1141,8 +1343,10 @@ function SettingsPage({ client }: { client: WePushClient }) {
     <section className="panel recent-panel"><PanelHeader title="API Tokens" description="Token 明文不会再次返回" action={<Button variant="ghost" onClick={() => void load()}>刷新</Button>} />
       <div className="resource-card-list">{tokens.map((item) => <article key={item.tokenId}><span className="resource-card-icon"><Icon name="key" /></span><div><strong>{item.name}</strong><small>{shortId(item.principalId)} · expires {new Date(item.expiresAt).toLocaleString()}</small><code>{shortId(item.tokenId)}</code></div><Badge tone={item.revokedAt ? "neutral" : "success"}>{item.revokedAt ? "REVOKED" : "ACTIVE"}</Badge></article>)}</div>
     </section>
-    <section className="panel recent-panel"><PanelHeader title="Audit Events" description="最近 50 条工作区访问和变更记录" />
+    <section className="panel recent-panel"><PanelHeader title="Audit Events" description="游标分页的工作区访问和变更记录" />
+      <div className="list-toolbar"><input placeholder="Actor / action / resource" value={auditSearch} onChange={(event) => setAuditSearch(event.target.value)} /><select value={auditStatus} onChange={(event) => setAuditStatus(event.target.value)}><option value="">全部结果</option><option>SUCCESS</option><option>FAILURE</option><option>DENIED</option></select><Button variant="ghost" onClick={() => void loadAudits()}>筛选</Button></div>
       <div className="audit-list">{audits.map((item) => <article key={item.id}><Badge tone={item.result === "SUCCESS" ? "success" : item.result === "DENIED" ? "danger" : "neutral"}>{item.result}</Badge><div><strong>{item.action}</strong><small>{item.actorId} · {new Date(item.occurredAt).toLocaleString()}</small></div></article>)}</div>
+      {auditCursor ? <div className="load-more-row"><Button variant="ghost" onClick={() => void loadAudits(true)}>加载更多审计</Button></div> : null}
     </section>
   </div>;
 }
@@ -1199,6 +1403,19 @@ function formatBytes(value: number): string {
   if (value < 1024) return `${value} B`;
   if (value < 1024 * 1024) return `${(value / 1024).toFixed(1)} KB`;
   return `${(value / 1024 / 1024).toFixed(1)} MB`;
+}
+
+function downloadBlob(blob: Blob, name: string): void {
+  const objectUrl = window.URL.createObjectURL(blob);
+  const download = document.createElement("a");
+  download.href = objectUrl; download.download = name; document.body.append(download);
+  download.click(); download.remove(); window.setTimeout(() => window.URL.revokeObjectURL(objectUrl), 0);
+}
+
+function trendPoints(trend: RunOverview["trend"]): string {
+  if (!trend.length) return "0,95 640,95";
+  const maximum = Math.max(1, ...trend.map((point) => point.total));
+  return trend.map((point, index) => `${trend.length === 1 ? 320 : index * 640 / (trend.length - 1)},${105 - point.total / maximum * 90}`).join(" ");
 }
 
 function runTone(state: string): "neutral" | "success" | "warning" | "danger" | "info" {

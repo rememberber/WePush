@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.fangxuele.wepush.next</groupId>
         <artifactId>wepush-next-parent</artifactId>
-        <version>0.1.0-alpha.2</version>
+        <version>0.1.0-alpha.3</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>service-application</artifactId>
@@ -26,6 +26,10 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>agent-protocol</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

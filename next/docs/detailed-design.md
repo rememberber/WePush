@@ -1089,9 +1089,12 @@ Content-Type: application/json
   "policyOverrides": {
     "concurrency": {"target": 50}
   },
-  "reason": "manual"
+  "reason": "manual",
+  "confirmationToken": "token-from-run-confirmation"
 }
 ```
+
+手工正式发送必须先调用 `POST /jobs/{jobId}/run-confirmation`。Service 返回 Provider、Account、Audience 数量、策略、并发、限速、预计规模和五分钟令牌；令牌绑定 Workspace、Job 及 Account/Message/Audience/Policy 版本，资源发生变化或令牌过期后必须重新确认。Scheduler 使用内部可信入口，不依赖交互令牌。
 
 成功返回 `202 Accepted`：
 
@@ -1156,7 +1159,14 @@ data: {"runId":"...","succeeded":300,"failed":2,"inFlight":50}
 }
 ```
 
-Cursor 不暴露 SQL 结构并带签名或完整性校验。
+Cursor 不暴露 SQL 结构，使用 HMAC 保护，并绑定名称、状态和时间筛选。公开资源页 `limit` 为 `1..100`；服务端只读取 `limit + 1` 条判断 `hasMore`，篡改、跨资源或跨筛选复用 Cursor 会被拒绝。
+
+### 25.1.1 资源版本、文件导入与关联重发
+
+- Account、Message、Audience、Job 和 Schedule 使用乐观版本更新；Message 内容变更创建新 Revision，Audience Recipient 变更创建新 Snapshot。
+- CSV/TXT 使用流式 Reader 分批写入 staging 表，数据库保留首个 `itemId` 并标记重复行；预览最多返回 20 条接受/错误记录，完整错误通过流式 CSV 下载。
+- Import Commit 使用 `INSERT ... SELECT` 创建 Snapshot 和 Recipient，不把完整文件载入 JVM；更新已有 Audience 时再次校验资源版本。
+- FAILED、UNKNOWN、UNSENT 重发先返回匹配 Item 数量和短期确认令牌，再创建带 `sourceRunId` 的新 Run；`run_retry_item` 限定执行集合，新 Run 复制来源 Run Snapshot，不读取当前可变资源。
 
 ### 25.2 错误响应
 
@@ -2035,6 +2045,15 @@ Next CI 使用 `next/**` 路径过滤，Classic 和 Next 互不依赖对方构�
 - PostgreSQL 18 HA、S3-compatible Artifact Store 和部署文档。
 
 当前进度：Iteration 6 基线已完成。Workspace API 与 Agent Binding、Bearer API Token、VIEWER/OPERATOR/ADMIN、审计、Cron/Misfire Scheduler、PostgreSQL Advisory Lock、跨实例 SSE 补偿、S3 Store、Prometheus、三平台安装/升级/备份/卸载、WebUI Security/Schedule/API Debug 页面、Electron 目标平台目录打包、容器 HA 参考拓扑和运维手册均已落地。后续产品增量聚焦真实 Provider、配置编辑与导入、发送确认、自部署安装升级、备份恢复和稳定发行；具体版本边界见[产品路线图](product-scope-and-roadmap.md)。
+
+### 44.7 Iteration 7：日常使用闭环
+
+- Account/Message/Audience/Job/Schedule 编辑、修订、复制、状态管理。
+- CSV/TXT 流式导入、字段映射、预览、去重、错误行和不可变 Snapshot。
+- Dry Run、正式发送影响确认、结果查看和失败项关联重发。
+- 资源/Run/审计签名分页筛选、真实总览和 Standalone/Server Workspace UX。
+
+当前进度：Iteration 7 已在 `0.1.0-alpha.3` 完成。OpenAPI、Remote Java SDK、TypeScript Client、WebUI、SQLite V12/V13 和纵向集成测试同步交付；启动恢复也使用有界分页扫描。
 
 ## 45. 完成定义
 

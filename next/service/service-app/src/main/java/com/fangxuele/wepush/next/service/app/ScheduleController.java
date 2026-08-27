@@ -1,6 +1,8 @@
 package com.fangxuele.wepush.next.service.app;
 
 import com.fangxuele.wepush.next.service.application.ScheduleApplicationService;
+import com.fangxuele.wepush.next.service.application.ControlPlaneQueryService;
+import com.fangxuele.wepush.next.service.api.ControlPlaneApi;
 import com.fangxuele.wepush.next.service.domain.ScheduleDefinition;
 import com.fangxuele.wepush.next.service.domain.WorkspaceId;
 import org.springframework.http.HttpStatus;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.Instant;
 import java.util.List;
@@ -21,9 +24,11 @@ import java.util.List;
 @RequestMapping("/api/v1/workspaces/{workspaceId}/schedules")
 final class ScheduleController {
     private final ScheduleApplicationService schedules;
+    private final ControlPlaneQueryService queries;
 
-    ScheduleController(ScheduleApplicationService schedules) {
+    ScheduleController(ScheduleApplicationService schedules, ControlPlaneQueryService queries) {
         this.schedules = schedules;
+        this.queries = queries;
     }
 
     @PostMapping
@@ -37,16 +42,24 @@ final class ScheduleController {
     }
 
     @GetMapping
-    List<ScheduleResponse> list(@PathVariable String workspaceId) {
-        return schedules.list(new WorkspaceId(workspaceId)).stream()
-                .map(ScheduleController::response).toList();
+    ControlPlaneApi.ResourcePageResponse<ScheduleResponse> list(@PathVariable String workspaceId,
+            @RequestParam(required = false) String cursor, @RequestParam(defaultValue = "50") int limit,
+            @RequestParam(required = false) String name, @RequestParam(required = false) String status,
+            @RequestParam(required = false) Instant from, @RequestParam(required = false) Instant to) {
+        var page = queries.schedules(new WorkspaceId(workspaceId),
+                new ControlPlaneQueryService.Filters(cursor, limit, name, status, from, to));
+        return new ControlPlaneApi.ResourcePageResponse<>(page.items().stream().map(ScheduleController::response).toList(),
+                new ControlPlaneApi.CursorPage(page.nextCursor(), page.hasMore()));
     }
 
     @PatchMapping("/{scheduleId}")
     ScheduleResponse setEnabled(@PathVariable String workspaceId, @PathVariable String scheduleId,
                                 @RequestBody UpdateScheduleRequest request) {
-        if (request.enabled() == null) throw new IllegalArgumentException("enabled is required");
-        return response(schedules.setEnabled(new WorkspaceId(workspaceId), scheduleId, request.enabled()));
+        ScheduleDefinition.MisfirePolicy misfire = request.misfirePolicy() == null ? null
+                : ScheduleDefinition.MisfirePolicy.valueOf(request.misfirePolicy());
+        return response(schedules.update(new WorkspaceId(workspaceId), scheduleId,
+                new ScheduleApplicationService.UpdateSchedule(request.name(), request.jobId(),
+                        request.cronExpression(), request.timezone(), misfire, request.enabled())));
     }
 
     @DeleteMapping("/{scheduleId}")
@@ -65,7 +78,8 @@ final class ScheduleController {
                                  String timezone, String misfirePolicy, Boolean enabled) {
     }
 
-    record UpdateScheduleRequest(Boolean enabled) {
+    record UpdateScheduleRequest(String name, String jobId, String cronExpression,
+                                 String timezone, String misfirePolicy, Boolean enabled) {
     }
 
     record ScheduleResponse(String id, String workspaceId, String jobId, String name,

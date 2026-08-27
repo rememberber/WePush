@@ -9,6 +9,8 @@ public record RunDefinition(
         RunStatus status,
         String stateReason,
         boolean dryRun,
+        String sourceRunId,
+        String retryStates,
         long total,
         long succeeded,
         long failed,
@@ -26,6 +28,7 @@ public record RunDefinition(
         id = DomainChecks.text(id, "run id");
         jobId = DomainChecks.text(jobId, "run job id");
         stateReason = stateReason == null ? "" : stateReason;
+        retryStates = retryStates == null ? "" : retryStates;
         if (workspaceId == null || status == null || createdAt == null || updatedAt == null
                 || updatedAt.isBefore(createdAt) || (startedAt != null && startedAt.isBefore(createdAt))
                 || (endedAt != null && startedAt != null && endedAt.isBefore(startedAt))) {
@@ -41,6 +44,9 @@ public record RunDefinition(
         DomainChecks.nonNegative(version, "run version");
         if (status.terminal() && total != succeeded + failed + unknown + unsent + skipped) {
             throw new IllegalArgumentException("terminal run counters do not satisfy total invariant");
+        }
+        if (sourceRunId == null && !retryStates.isEmpty()) {
+            throw new IllegalArgumentException("retry states require a source run");
         }
     }
 }

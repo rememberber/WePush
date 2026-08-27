@@ -4,12 +4,15 @@ import com.fangxuele.wepush.next.service.api.ControlPlaneApi;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -17,6 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WePushClientTest {
     private HttpServer server;
@@ -124,7 +128,7 @@ class WePushClientTest {
                 .endpoint(URI.create("http://127.0.0.1:" + server.getAddress().getPort()))
                 .build()) {
             ControlPlaneApi.RunResponse run = client.workspace("ws_default").createRun(
-                    "job_1", "sdk-run-1", new ControlPlaneApi.CreateRunRequest(true, Map.of(), "manual"));
+                    "job_1", "sdk-run-1", new ControlPlaneApi.CreateRunRequest(true, Map.of(), "manual", null));
             assertEquals("run_1", run.id());
         }
 
@@ -232,5 +236,41 @@ class WePushClientTest {
         }
         assertEquals("{\"name\":\"operator\",\"role\":\"OPERATOR\",\"ttl\":\"P1D\"}",
                 requestBody.get());
+    }
+
+    @Test
+    void streamsAudienceMultipartImport(@TempDir Path temporary) throws IOException {
+        Path csv = temporary.resolve("recipients.csv");
+        Files.writeString(csv, "itemId,mobile\nalice,13000000000\n", StandardCharsets.UTF_8);
+        server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        AtomicReference<String> requestType = new AtomicReference<>();
+        AtomicReference<String> requestBody = new AtomicReference<>();
+        server.createContext("/api/v1/workspaces/ws_default/audience-imports", exchange -> {
+            requestType.set(exchange.getRequestHeaders().getFirst("Content-Type"));
+            requestBody.set(new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
+            byte[] body = """
+                    {"id":"audimp_1","workspaceId":"ws_default","audienceId":null,"name":"Imported",
+                    "format":"CSV","itemIdColumn":"itemId","fieldMapping":{"mobile":"mobile"},
+                    "status":"PREVIEW_READY","totalRows":1,"acceptedRows":1,"rejectedRows":0,
+                    "duplicateRows":0,"acceptedPreview":[],"errorPreview":[],
+                    "createdAt":"2026-08-27T10:00:00Z","updatedAt":"2026-08-27T10:00:00Z",
+                    "errorsUrl":"/errors.csv"}
+                    """.getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().add("Content-Type", "application/json");
+            exchange.sendResponseHeaders(201, body.length);
+            exchange.getResponseBody().write(body);
+            exchange.close();
+        });
+        server.start();
+
+        try (WePushClient client = WePushClient.builder()
+                .endpoint(URI.create("http://127.0.0.1:" + server.getAddress().getPort())).build()) {
+            ControlPlaneApi.AudienceImportResponse preview = client.workspace("ws_default").uploadAudience(
+                    csv, "Imported", null, "CSV", "itemId", Map.of("mobile", "mobile"), null);
+            assertEquals(1, preview.acceptedRows());
+        }
+        assertTrue(requestType.get().startsWith("multipart/form-data; boundary=wepush-"));
+        assertTrue(requestBody.get().contains("itemId,mobile"));
+        assertTrue(requestBody.get().contains("{\"mobile\":\"mobile\"}"));
     }
 }

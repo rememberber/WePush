@@ -6,7 +6,7 @@
 
 ## 1. 里程碑结论
 
-`next/` 的 `0.1.0-alpha.2` 公开预览目标架构基线已经形成完整、可独立构建的产品纵向链路。Classic 源码和构建保持不动；两条产品线不共享源码依赖，允许各自存在相似实现。
+`next/` 的 `0.1.0-alpha.3` 公开预览目标架构基线已经形成完整、可独立构建的产品纵向链路。Classic 源码和构建保持不动；两条产品线不共享源码依赖，允许各自存在相似实现。
 
 ```text
 React WebUI / Electron Desktop / Remote Java SDK
@@ -37,10 +37,10 @@ Standalone 默认是单 Service + SQLite + Local Artifact + Embedded Engine；Se
 | Core | Framework-free API、虚拟线程 Engine、并发/限速/重试/暂停/取消、流式 Result/Event/Artifact 端口 |
 | Provider | 独立 SPI、HTTP Provider、JSON Schema、SSRF/响应上限；PF4J 外部插件发现、Ed25519 签名、Zip Slip/共享包校验、受控滚动激活与失败回滚 |
 | Agent | gRPC 双向流、Sequence/Fence Journal、磁盘 Event/Completion Outbox、重连恢复、Secret Envelope、远端 Artifact 上传、Enrollment/轮换、TLS/mTLS |
-| Service | Spring Boot 4.1.1、分层应用服务、SQLite/PostgreSQL、Local/S3 Artifact、RBAC/审计/Scheduler、Agent HA outbox、跨实例 SSE 补偿 |
-| Remote Java SDK | 只依赖公开 `service-api`；覆盖 System、Provider、Agent、Workspace、资源、Run、Artifact、Schedule、Security |
+| Service | Spring Boot 4.1.1、分层应用服务、SQLite/PostgreSQL、资源修订/分页、流式 Audience 导入、发送确认/关联重发、Local/S3 Artifact、RBAC/审计/Scheduler、Agent HA outbox、跨实例 SSE 补偿 |
+| Remote Java SDK | 只依赖公开 `service-api`；覆盖 System、Provider、Agent、Workspace、资源生命周期/分页、Audience 文件上传、Run 确认/重发/总览、Artifact、Schedule、Security |
 | Embedded Java SDK | Framework-free 进程内 Engine 门面；显式 Provider、SecretResolver、Result/Event/Artifact Sink，支持列表或流式 Recipient 与完整 RunHandle 控制 |
-| WebUI | TypeScript/Vite/React；可视化配置、任务/调度、运行监控、Bearer SSE、Token/Enrollment/审计、动态 API 调试文档 |
+| WebUI | TypeScript/Vite/React；资源编辑/修订、CSV/TXT 导入、正式发送确认、失败重发、真实总览、分页筛选、任务/调度、Bearer SSE、Token/Enrollment/审计、动态 API 调试文档 |
 | Desktop | Electron 安全外壳，共用 WebUI；目标系统原生目录打包、相对 Framework 链接、macOS ad-hoc/Developer ID 签名入口，不依赖 Core 或 Service 内部实现 |
 | Distribution | tar.gz/zip + 标准 SHA-256 校验；内含 WebUI；Linux systemd、macOS 非 root launchd、Windows LocalService/WinSW 安装/升级/备份/卸载；容器 Server/HA 拓扑 |
 
@@ -59,7 +59,7 @@ Standalone 默认是单 Service + SQLite + Local Artifact + Embedded Engine；Se
 
 ## 4. Service、HA、安全与数据
 
-- SQLite 开启 Foreign Key、WAL、Busy Timeout 和原子 Flyway 迁移；V10 通过表重建正确增加带外键/非空默认语义的 Enrollment Workspace 列，V11 增加显式系统管理员角色，并由 PRAGMA 测试验证实际列和外键。
+- SQLite 开启 Foreign Key、WAL、Busy Timeout 和原子 Flyway 迁移；V10/V11 收口 Enrollment Workspace 和系统管理员，V12/V13 增加资源生命周期、关联重发和流式 Audience Import，并由迁移测试验证实际约束。
 - PostgreSQL 使用 Hikari；相同有序迁移由 PostgreSQL 18 CI 实库验证。Server 模式启动校验 PostgreSQL、S3、API Security 和 Agent TLS 均已启用。
 - Schedule Scanner 使用 PostgreSQL Session Advisory Lock 单 Leader；触发 Run 仍使用持久幂等键。
 - Lease Offer 和 Run Command 先写 `agent_message_outbox`。任意 Service 扫描待发送消息，只有持有 Agent 当前 gRPC 流的实例实际投递，Agent ACK 后关闭消息。
@@ -74,12 +74,12 @@ Standalone 默认是单 Service + SQLite + Local Artifact + Embedded Engine；Se
 
 ## 5. API、SDK 与 UI
 
-- OpenAPI 3.1 覆盖公开控制面、Schedule/Security/Workspace 与 Agent Internal Enrollment/Lease/Artifact API；全局 Bearer Security 和内部自定义认证显式声明。
+- OpenAPI 3.1 覆盖资源编辑/分页、Audience Import、发送确认/重发/总览、Schedule/Security/Workspace 与 Agent Internal Enrollment/Lease/Artifact API；全局 Bearer Security 和内部自定义认证显式声明。
 - Maven 契约测试拒绝 YAML 重复键、重复/缺失 `operationId`、无 Response 和不可解析的本地 `$ref`。
-- Remote Java SDK 只有 `service-api` 依赖，绝不依赖 Core/Engine/Provider；新增 `SecurityClient`、`WorkspacesClient`、Schedule CRUD、Token 撤销、Enrollment Token 和通用 PATCH/DELETE Transport。
+- Remote Java SDK 只有 `service-api` 依赖，绝不依赖 Core/Engine/Provider；支持签名分页、资源编辑、Schedule CRUD、发送确认/重发、总览和使用文件 BodyPublisher 的流式 multipart Audience 上传。
 - Embedded Java SDK 依赖 Core API、Provider SPI 和 Engine，但不依赖 Service、Agent、Spring 或具体 Provider；应用显式注册允许的 Provider，并选择共享或按 Run 创建的 Sink。
 - TypeScript Client 使用可更新 Bearer Token；SSE 使用自定义 Fetch Parser，因此 Server 安全模式不受原生 `EventSource` 无法设置 Authorization Header 的限制。
-- WebUI 接入 Account/Message/Audience/Job/Run/Artifact 全链路、Schedule 创建/启停、API Token 创建/列表/撤销、Agent Enrollment、审计查看与动态 GET/POST/PUT/PATCH/DELETE API 调试。
+- WebUI 接入 Account/Message/Audience/Job/Run/Artifact 全链路、资源编辑/复制/状态、修订历史/Diff、CSV/TXT 导入、Schedule 完整编辑、发送确认/重发、Workspace 选择、API Token、Agent Enrollment、审计与动态 API 调试。
 - Desktop 主进程保持 `contextIsolation=true`、`nodeIntegration=false`，开发加载 Vite，发行加载 `process.resourcesPath` 下的共享 WebUI。布局和视觉 Token 使用接近 Codex 客户端的紧凑侧栏、内容工作区、柔和边界和低噪声状态样式。
 
 ## 6. 当前数据库事实源
@@ -97,6 +97,8 @@ Standalone 默认是单 Service + SQLite + Local Artifact + Embedded Engine；Se
 | `api_principal` / `api_token` / `role_binding` | API 身份、Token 和 Workspace RBAC |
 | `audit_event` | 控制面安全与变更审计 |
 | `schedule_definition` | Cron、时区、Misfire、启停和下次触发时间 |
+| `audience_import_session` / `audience_import_row` | 流式文件导入会话、预览计数、数据库去重和错误行 |
+| `run_retry_item` | 关联重发 Run 的精确 Item 集合；来源与状态同时保存在 `run_instance` |
 
 ## 7. 验证与发布门禁
 
@@ -119,13 +121,11 @@ Standalone 默认是单 Service + SQLite + Local Artifact + Embedded Engine；Se
 
 ## 8. 本轮完成边界与后续演进
 
-本轮详细设计的阶段 A–D 基线已经实现并进入可验证状态：工程契约、Standalone 纵向闭环、Web/Desktop 产品壳、远程 Agent、安全、Artifact、Scheduler、三平台安装和 Server/HA 参考拓扑均已收口。部署、升级、备份、插件和故障验收见 [`deployment-and-operations.md`](deployment-and-operations.md)。
+`alpha.3` 日常使用闭环已经进入可验证状态：资源编辑与不可变修订、CSV/TXT 流式导入、Dry Run、正式发送二次确认、结果查看、失败项关联重发、分页筛选、真实总览和 Workspace UI 均已收口。部署、升级、备份、插件和故障验收见 [`deployment-and-operations.md`](deployment-and-operations.md)。
 
 以下属于正式路线图内的后续产品增量，不是本轮目标架构的未完成项：
 
 - 增加邮件、短信、微信等正式 Provider，以及对应模拟服务和 Schema 组件。
-- Message/Audience/Job 编辑、修订 Diff、大文件 CSV 导入和正式发送二次确认体验。
-- 运行历史分页筛选、失败项重发、真实总览数据和 Workspace UI 收口。
 - 一体化/离线安装、升级健康验证与回滚、正式恢复工具和本地插件管理。
 - macOS/Windows 商业发行签名与公证；更新由用户主动触发，公开预览版继续以未签名附件发布。
 

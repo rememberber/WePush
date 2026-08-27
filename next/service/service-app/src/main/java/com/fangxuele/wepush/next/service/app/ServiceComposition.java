@@ -14,6 +14,8 @@ import com.fangxuele.wepush.next.service.application.ArtifactUploadTokenCodec;
 import com.fangxuele.wepush.next.service.application.AccountApplicationService;
 import com.fangxuele.wepush.next.service.application.ApiAccessService;
 import com.fangxuele.wepush.next.service.application.AudienceApplicationService;
+import com.fangxuele.wepush.next.service.application.AudienceImportApplicationService;
+import com.fangxuele.wepush.next.service.application.ControlPlaneQueryService;
 import com.fangxuele.wepush.next.service.application.JobApplicationService;
 import com.fangxuele.wepush.next.service.application.JsonCodec;
 import com.fangxuele.wepush.next.service.application.MessageApplicationService;
@@ -39,6 +41,7 @@ import com.fangxuele.wepush.next.service.domain.AgentLeaseRepository;
 import com.fangxuele.wepush.next.service.domain.AgentOutboundMessageRepository;
 import com.fangxuele.wepush.next.service.domain.AgentIdentityRepository;
 import com.fangxuele.wepush.next.service.domain.AudienceRepository;
+import com.fangxuele.wepush.next.service.domain.AudienceImportRepository;
 import com.fangxuele.wepush.next.service.domain.JobRepository;
 import com.fangxuele.wepush.next.service.domain.MessageRepository;
 import com.fangxuele.wepush.next.service.domain.RunRepository;
@@ -56,6 +59,7 @@ import com.fangxuele.wepush.next.service.infrastructure.JdbcAgentLeaseRepository
 import com.fangxuele.wepush.next.service.infrastructure.JdbcAgentOutboundMessageRepository;
 import com.fangxuele.wepush.next.service.infrastructure.JdbcAgentIdentityRepository;
 import com.fangxuele.wepush.next.service.infrastructure.JdbcAudienceRepository;
+import com.fangxuele.wepush.next.service.infrastructure.JdbcAudienceImportRepository;
 import com.fangxuele.wepush.next.service.infrastructure.JdbcJobRepository;
 import com.fangxuele.wepush.next.service.infrastructure.JdbcMessageRepository;
 import com.fangxuele.wepush.next.service.infrastructure.JdbcRunRepository;
@@ -300,6 +304,11 @@ class ServiceComposition {
     }
 
     @Bean
+    AudienceImportRepository audienceImportRepository(JdbcTemplate jdbc, Flyway flyway) {
+        return new JdbcAudienceImportRepository(jdbc);
+    }
+
+    @Bean
     JobRepository jobRepository(JdbcTemplate jdbc, Flyway flyway) {
         return new JdbcJobRepository(jdbc);
     }
@@ -427,8 +436,10 @@ class ServiceComposition {
     @Bean
     AccountApplicationService accountApplicationService(
             WorkspaceRepository workspaces, AccountRepository accounts, ProviderRegistry providers,
-            JsonCodec json, ResourceIdGenerator ids, TransactionRunner transactions, Clock clock) {
-        return new AccountApplicationService(workspaces, accounts, providers, json, ids, transactions, clock);
+            JsonCodec json, ResourceIdGenerator ids, TransactionRunner transactions,
+            SecretStore secrets, Clock clock) {
+        return new AccountApplicationService(workspaces, accounts, providers, json, ids, transactions,
+                secrets, clock);
     }
 
     @Bean
@@ -443,6 +454,23 @@ class ServiceComposition {
             WorkspaceRepository workspaces, AudienceRepository audiences, JsonCodec json,
             ResourceIdGenerator ids, TransactionRunner transactions, Clock clock) {
         return new AudienceApplicationService(workspaces, audiences, json, ids, transactions, clock);
+    }
+
+    @Bean
+    AudienceImportApplicationService audienceImportApplicationService(
+            WorkspaceRepository workspaces, AudienceRepository audiences, AudienceImportRepository imports,
+            JsonCodec json, ResourceIdGenerator ids, TransactionRunner transactions, Clock clock) {
+        return new AudienceImportApplicationService(workspaces, audiences, imports, json, ids,
+                transactions, clock);
+    }
+
+    @Bean
+    ControlPlaneQueryService controlPlaneQueryService(
+            WorkspaceRepository workspaces, AccountRepository accounts, MessageRepository messages,
+            AudienceRepository audiences, JobRepository jobs, RunRepository runs,
+            ScheduleRepository schedules, AuditEventRepository audits, CursorCodec cursors, Clock clock) {
+        return new ControlPlaneQueryService(workspaces, accounts, messages, audiences, jobs, runs,
+                schedules, audits, cursors, clock);
     }
 
     @Bean
@@ -598,11 +626,12 @@ class ServiceComposition {
     @Bean
     RunApplicationService runApplicationService(
             WorkspaceRepository workspaces, AccountRepository accounts, MessageRepository messages,
-            AudienceRepository audiences, JobRepository jobs, RunRepository runs, ProviderRegistry providers,
+            AudienceRepository audiences, JobRepository jobs, RunRepository runs, RunResultRepository results,
+            ProviderRegistry providers,
             JsonCodec json, ResourceIdGenerator ids, TransactionRunner transactions,
-            LocalRunEventHub eventHub, RunDispatcher dispatcher, Clock clock) {
-        return new RunApplicationService(workspaces, accounts, messages, audiences, jobs, runs, providers,
-                json, ids, transactions, eventHub, dispatcher, clock);
+            LocalRunEventHub eventHub, RunDispatcher dispatcher, CursorCodec cursors, Clock clock) {
+        return new RunApplicationService(workspaces, accounts, messages, audiences, jobs, runs, results,
+                providers, json, ids, transactions, eventHub, dispatcher, cursors, clock);
     }
 
     @Bean

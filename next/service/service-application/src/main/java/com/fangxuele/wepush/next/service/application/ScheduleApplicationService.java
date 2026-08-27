@@ -71,6 +71,38 @@ public final class ScheduleApplicationService {
         return schedules.findById(workspaceId, scheduleId).orElseThrow();
     }
 
+    public ScheduleDefinition update(WorkspaceId workspaceId, String scheduleId, UpdateSchedule command) {
+        return transactions.required(() -> {
+            ApplicationSupport.requireWorkspace(workspaces, workspaceId);
+            ScheduleDefinition current = schedules.findById(workspaceId, scheduleId).orElseThrow(() ->
+                    new ApplicationProblem(ApplicationProblem.Kind.NOT_FOUND, "SCHEDULE_NOT_FOUND",
+                            "Schedule was not found: " + scheduleId));
+            String jobId = command.jobId() == null ? current.jobId() : command.jobId();
+            JobDefinition job = jobs.findById(workspaceId, jobId).orElseThrow(() ->
+                    new ApplicationProblem(ApplicationProblem.Kind.NOT_FOUND, "JOB_NOT_FOUND",
+                            "Job was not found: " + jobId));
+            boolean enabled = command.enabled() == null ? current.enabled() : command.enabled();
+            if (enabled && (!job.enabled() || job.archived())) {
+                throw new ApplicationProblem(ApplicationProblem.Kind.CONFLICT, "JOB_DISABLED",
+                        "Disabled or archived Job cannot be scheduled");
+            }
+            String cron = command.cronExpression() == null ? current.cronExpression() : command.cronExpression();
+            String timezone = command.timezone() == null ? current.timezone() : command.timezone();
+            Instant now = clock.instant();
+            Instant next = calculator.next(cron, timezone, now);
+            ScheduleDefinition updated = new ScheduleDefinition(current.id(), workspaceId, jobId,
+                    command.name() == null ? current.name() : ApplicationSupport.text(command.name(), "name"),
+                    cron, timezone, command.misfirePolicy() == null ? current.misfirePolicy()
+                    : command.misfirePolicy(), enabled, next, current.lastFireAt(), current.createdAt(),
+                    now, current.version() + 1);
+            if (!schedules.update(updated, current.version())) {
+                throw new ApplicationProblem(ApplicationProblem.Kind.CONFLICT, "RESOURCE_VERSION_CONFLICT",
+                        "Schedule was changed concurrently: " + scheduleId);
+            }
+            return updated;
+        });
+    }
+
     public void delete(WorkspaceId workspaceId, String scheduleId) {
         ApplicationSupport.requireWorkspace(workspaces, workspaceId);
         if (!transactions.required(() -> schedules.delete(workspaceId, scheduleId))) {
@@ -87,10 +119,10 @@ public final class ScheduleApplicationService {
         for (ScheduleDefinition schedule : due) {
             boolean oldMisfire = schedule.nextFireAt().plusSeconds(60).isBefore(now);
             if (!(oldMisfire && schedule.misfirePolicy() == ScheduleDefinition.MisfirePolicy.SKIP)) {
-                runs.create(schedule.workspaceId(), schedule.jobId(),
+                runs.createScheduled(schedule.workspaceId(), schedule.jobId(),
                         "schedule:" + schedule.id() + ":" + schedule.nextFireAt(),
                         new RunApplicationService.CreateRun(false, java.util.Map.of(),
-                                "schedule:" + schedule.id()));
+                                "schedule:" + schedule.id(), null));
                 fired++;
             } else {
                 skipped++;
@@ -105,6 +137,9 @@ public final class ScheduleApplicationService {
     public record CreateSchedule(String name, String jobId, String cronExpression, String timezone,
                                  ScheduleDefinition.MisfirePolicy misfirePolicy, boolean enabled) {
     }
+
+    public record UpdateSchedule(String name, String jobId, String cronExpression, String timezone,
+                                 ScheduleDefinition.MisfirePolicy misfirePolicy, Boolean enabled) { }
 
     public record FireResult(int due, int fired, int skipped) {
     }

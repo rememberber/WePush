@@ -8,6 +8,8 @@ public interface AuditEventRepository {
 
     List<AuditEvent> list(String workspaceId, int limit);
 
+    List<AuditEvent> page(String workspaceId, ResourcePageQuery query);
+
     record AuditEvent(String id, String workspaceId, String actorType, String actorId,
                       String action, String resourceType, String resourceId, String result,
                       JsonDocument details, Instant occurredAt) {

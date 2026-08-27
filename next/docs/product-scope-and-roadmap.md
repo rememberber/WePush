@@ -77,7 +77,7 @@ PostgreSQL、S3-compatible Store 和多节点 HA 是可选的用户自建形态�
 
 ## 5. 当前基线
 
-`0.1.0-alpha.2` 已形成独立构建的纵向架构闭环：
+`0.1.0-alpha.3` 已形成独立构建的日常使用闭环：
 
 - Core API、Provider SPI、虚拟线程 Engine 和 HTTP Provider。
 - Standalone Service、SQLite、Local Artifact、Local Envelope Secret Store。
@@ -85,6 +85,8 @@ PostgreSQL、S3-compatible Store 和多节点 HA 是可选的用户自建形态�
 - REST/SSE、OpenAPI、Remote Java SDK 和 Embedded Java SDK。
 - React WebUI、Electron Desktop 和三平台安装脚本。
 - Agent Enrollment、Lease/Fencing、Secret Envelope、Artifact 上传和断线恢复。
+- Account/Message/Audience/Job/Schedule 的编辑、修订、复制、启停与归档。
+- CSV/TXT 流式受众导入、正式发送二次确认、失败项关联重发、分页筛选与真实总览。
 
 当前差距集中在产品可用性、真实消息渠道、自部署运维和稳定发行，不需要继续扩大公共平台能力。
 
@@ -116,7 +118,9 @@ PostgreSQL、S3-compatible Store 和多节点 HA 是可选的用户自建形态�
 
 目标：让普通用户不编写 JSON、不直接调用 API，也能完成完整发送和结果处理。
 
-计划内容：
+状态：已完成（2026-08-27）。
+
+已交付内容：
 
 - Account 编辑、连接测试、启停和归档。
 - Message 编辑并生成新 Revision、历史查看、Diff 和复制。
@@ -128,11 +132,11 @@ PostgreSQL、S3-compatible Store 和多节点 HA 是可选的用户自建形态�
 - 总览、活动 Run、最近运行和趋势全部接入真实数据。
 - Standalone 隐藏不必要的 Workspace 复杂度；Server UI 支持真实 Workspace 选择。
 
-验收条件：
+验收结果：
 
-- 用户可通过 UI 完成 CSV 导入、Dry Run、正式确认发送、查看结果和失败重发。
-- 修改 Message 或 Audience 不影响已经创建的 Run Snapshot。
-- 大量历史 Run 和资源不会通过无界列表一次性载入内存或浏览器。
+- 集成测试已覆盖 UI 背后的 CSV 导入、去重、错误行下载、Dry Run、正式确认发送、结果查看和失败项重发 API 链路。
+- 集成测试直接断言 Message/Audience 更新后，既有 Run Snapshot 仍保存原内容和原 Audience Snapshot ID。
+- Run、资源、Schedule 和审计使用最多 100 条的签名 Cursor Page；启动恢复也按 100 条批次扫描，不再无界载入历史 Run。
 
 ### 6.3 `0.1.0-alpha.4`：真实消息渠道
 

@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 
 public final class JdbcRunResultRepository implements RunResultRepository {
     private static final String UPSERT = """
@@ -82,5 +83,18 @@ public final class JdbcRunResultRepository implements RunResultRepository {
                 ORDER BY completed_at, item_id LIMIT ?
                 """, JdbcRows.RESULT, workspaceId.value(), runId, completedAfter.toString(),
                 completedAfter.toString(), itemIdAfter, limit);
+    }
+
+    @Override
+    public long countByStates(WorkspaceId workspaceId, String runId, Set<String> states) {
+        if (states == null || states.isEmpty()) return 0;
+        String markers = String.join(",", java.util.Collections.nCopies(states.size(), "?"));
+        java.util.List<Object> parameters = new java.util.ArrayList<>();
+        parameters.add(workspaceId.value());
+        parameters.add(runId);
+        states.stream().sorted().forEach(parameters::add);
+        Long count = jdbc.queryForObject("SELECT COUNT(*) FROM run_item_result WHERE workspace_id = ? "
+                + "AND run_id = ? AND state IN (" + markers + ")", Long.class, parameters.toArray());
+        return count == null ? 0 : count;
     }
 }
