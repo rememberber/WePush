@@ -52,7 +52,7 @@ try {
   }
   if (-not (Test-Path "$temporary\payload\data" -PathType Container)) { throw "Backup payload is incomplete" }
   $actualFiles = Get-ChildItem "$temporary\payload" -File -Recurse | ForEach-Object {
-    $_.FullName.Substring($temporary.Length + 1).Replace("\", "/")
+    [IO.Path]::GetRelativePath($temporary, $_.FullName).Replace("\", "/")
   }
   if (Compare-Object @($manifestedFiles) $actualFiles -CaseSensitive) { throw "Backup payload file set differs from SHA256SUMS" }
   $expectedArchiveFiles = [Collections.Generic.HashSet[string]]::new($manifestedFiles, [StringComparer]::Ordinal)

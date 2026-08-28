@@ -35,7 +35,7 @@ try {
     "contents=config,database,master-key,artifacts,agent-identity,journal,outbox,plugins"
   ) | Set-Content -Encoding ascii "$temporary\BACKUP-MANIFEST"
   $checksums = Get-ChildItem $payload -File -Recurse | Sort-Object FullName | ForEach-Object {
-    $relative = $_.FullName.Substring($temporary.Length + 1).Replace("\", "/")
+    $relative = [IO.Path]::GetRelativePath($temporary, $_.FullName).Replace("\", "/")
     "$((Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant())  $relative"
   }
   $checksums | Set-Content -Encoding ascii "$temporary\SHA256SUMS"

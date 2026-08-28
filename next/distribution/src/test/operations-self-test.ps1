@@ -38,15 +38,15 @@ try {
   Remove-Item "$dataRoot\agent\identity.json", "$configRoot\agent.env"
   & "$tools\restore.ps1" -Archive $archive
   $expectedHashes = Get-ChildItem $expectedRoot -File -Recurse | ForEach-Object {
-    $relative = $_.FullName.Substring($expectedRoot.Length + 1)
+    $relative = [IO.Path]::GetRelativePath($expectedRoot, $_.FullName)
     "$relative=$((Get-FileHash $_.FullName -Algorithm SHA256).Hash)"
   } | Sort-Object
   $actualHashes = @(
     Get-ChildItem $configRoot -File -Recurse | ForEach-Object {
-      "config\$($_.FullName.Substring($configRoot.Length + 1))=$((Get-FileHash $_.FullName -Algorithm SHA256).Hash)"
+      "config\$([IO.Path]::GetRelativePath($configRoot, $_.FullName))=$((Get-FileHash $_.FullName -Algorithm SHA256).Hash)"
     }
     Get-ChildItem $dataRoot -File -Recurse | ForEach-Object {
-      "data\$($_.FullName.Substring($dataRoot.Length + 1))=$((Get-FileHash $_.FullName -Algorithm SHA256).Hash)"
+      "data\$([IO.Path]::GetRelativePath($dataRoot, $_.FullName))=$((Get-FileHash $_.FullName -Algorithm SHA256).Hash)"
     }
   ) | Sort-Object
   if (Compare-Object $expectedHashes $actualHashes) { throw "Restored backup differs from expected content" }
