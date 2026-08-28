@@ -174,7 +174,7 @@ jobs:
         shell: bash
         run: |
           test -x next/ui/apps/desktop/release/linux-unpacked/wepush-next
-          xvfb-run -a env WEPUSH_DESKTOP_SMOKE_TEST=true next/ui/apps/desktop/release/linux-unpacked/wepush-next
+          xvfb-run -a env WEPUSH_DESKTOP_SMOKE_TEST=true next/ui/apps/desktop/release/linux-unpacked/wepush-next --no-sandbox
       - name: Validate PowerShell, WinSW XML and Windows application
         if: runner.os == 'Windows'
         shell: pwsh

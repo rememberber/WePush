@@ -31,9 +31,14 @@ try {
   $manifestedFiles = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
   $temporaryRoot = [IO.Path]::GetFullPath($temporary).TrimEnd('\')
   foreach ($line in Get-Content "$temporary\SHA256SUMS") {
-    if ($line -notmatch '^([0-9a-f]{64})  (payload/data/.+)$') { throw "Invalid backup checksum manifest" }
-    $expectedDigest = $Matches[1]
-    $relative = $Matches[2]
+    $line = $line.TrimStart([char]0xfeff)
+    if ($line.Length -lt 67 -or $line.Substring(64, 2) -ne "  ") { throw "Invalid backup checksum manifest line" }
+    $expectedDigest = $line.Substring(0, 64)
+    $relative = $line.Substring(66)
+    if ($expectedDigest -notmatch '^[0-9a-f]{64}$' -or
+        -not $relative.StartsWith("payload/data/", [StringComparison]::Ordinal)) {
+      throw "Invalid backup checksum manifest line: $line"
+    }
     if ($relative.Contains("\") -or $relative -match '(^|/)\.\.(/|$)' -or -not $manifestedFiles.Add($relative)) {
       throw "Unsafe or duplicate backup checksum path: $relative"
     }

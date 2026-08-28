@@ -197,7 +197,7 @@ jobs:
           set -euo pipefail
           test -x next/ui/apps/desktop/release/linux-unpacked/wepush-next
           node -e 'const p=require("./next/ui/apps/desktop/release/linux-unpacked/resources/app/package.json");if(p.version!==process.env.VERSION)process.exit(1)'
-          xvfb-run -a env WEPUSH_DESKTOP_SMOKE_TEST=true next/ui/apps/desktop/release/linux-unpacked/wepush-next
+          xvfb-run -a env WEPUSH_DESKTOP_SMOKE_TEST=true next/ui/apps/desktop/release/linux-unpacked/wepush-next --no-sandbox
           name="wepush-next-desktop-$VERSION-linux-$ARCH"
           mkdir -p "release-assets" "$name"
           cp -a next/ui/apps/desktop/release/linux-unpacked "$name/WePush Next"
