@@ -1858,14 +1858,14 @@ wepush:
 
 - Service 使用专用系统用户 `wepush`，Agent 使用独立的 `wepush-agent`，配置组权限和数据目录彼此分离。
 - systemd Unit 以非 root 用户运行。
-- `ExecStart` 指向版本化发行目录；`0.1.x` 安装器校验并使用系统 Java 21+。未来若改为 `jlink` Runtime Image，作为独立发行变体提供。
+- `ExecStart` 指向版本化发行目录；完整发行变体携带 JDK 21 `jlink` Runtime Image，精简变体校验并使用系统 Java 21+，启动脚本按此顺序自动选择。
 - 配置 `Restart=on-failure` 和合理的 Stop Timeout。
 - 安装后不自动开放公网防火墙端口。
 
 ### 40.2 Windows
 
 - 使用独立 Windows Service 名称 `WePushNextService`。
-- 通过 WinSW 启动系统 Java 21+；WinSW 使用低权限 `LocalService`，`ProgramData` ACL 只授予 LocalService、SYSTEM 和 Administrators。
+- 通过发行包离线携带且固定长度/SHA-256 的 WinSW 启动包内 Runtime 或系统 Java 21+；WinSW 使用低权限 `LocalService`，`ProgramData` ACL 只授予 LocalService、SYSTEM 和 Administrators。
 - 配置滚动日志、失败重启和优雅停止。
 - 安装、卸载和 Service 控制需要管理员权限。
 
@@ -1880,11 +1880,11 @@ wepush:
 
 1. 拒绝或等待新 Run。
 2. Service 进入 Draining。
-3. 备份数据库和关键配置。
+3. 生成带 Manifest 和逐文件 SHA-256 的数据库、Master Key、Artifact、Agent Identity、Journal、Outbox、插件与配置一致性备份，并调用 Restore 校验。
 4. 停止旧进程。
 5. 替换应用并执行迁移。
-6. 启动并完成 Readiness 检查。
-7. 失败时保留可诊断信息并执行受支持的回滚策略。
+6. 启动并完成 Readiness、Flyway 当前版本和本地无网络 Provider Dry Run 检查。
+7. 失败时原子切回旧版本、恢复升级前备份、验证旧版本并保留可诊断的恢复目录。
 
 数据库迁移一旦包含不可逆变化，必须明确最低可回滚版本。
 

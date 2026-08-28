@@ -6,7 +6,7 @@
 
 ## 1. 里程碑结论
 
-`next/` 的 `0.1.0-alpha.4` 公开预览已经形成完整、可独立构建的产品纵向链路和首批真实消息渠道组合。Classic 源码和构建保持不动；两条产品线不共享源码依赖，允许各自存在相似实现。
+`next/` 的 `0.1.0-beta.1` 公开预览已经形成完整、可独立构建的产品纵向链路、首批真实消息渠道和可验证的自部署运维闭环。Classic 源码和构建保持不动；两条产品线不共享源码依赖，允许各自存在相似实现。
 
 ```text
 React WebUI / Electron Desktop / Remote Java SDK
@@ -41,8 +41,8 @@ Standalone 默认是单 Service + SQLite + Local Artifact + Embedded Engine；Se
 | Remote Java SDK | 只依赖公开 `service-api`；覆盖 System、Provider、Agent、Workspace、资源生命周期/分页、Audience 文件上传、Run 确认/重发/总览、Artifact、Schedule、Security |
 | Embedded Java SDK | Framework-free 进程内 Engine 门面；显式 Provider、SecretResolver、Result/Event/Artifact Sink，支持列表或流式 Recipient 与完整 RunHandle 控制 |
 | WebUI | TypeScript/Vite/React；资源编辑/修订、CSV/TXT 导入、正式发送确认、失败重发、真实总览、分页筛选、任务/调度、Bearer SSE、Token/Enrollment/审计、动态 Provider Schema/SecretRef 与 API 调试文档 |
-| Desktop | Electron 安全外壳，共用 WebUI；目标系统原生目录打包、相对 Framework 链接、macOS ad-hoc/Developer ID 签名入口，不依赖 Core 或 Service 内部实现 |
-| Distribution | tar.gz/zip + 标准 SHA-256 校验；内含 WebUI；Linux systemd、macOS 非 root launchd、Windows LocalService/WinSW 安装/升级/备份/卸载；容器 Server/HA 拓扑 |
+| Desktop | Electron 安全外壳，共用 WebUI；本机 Service 检测/启停/日志/诊断、系统原生 API Token 安全存储、签名插件生命周期；目标系统原生目录打包，不依赖 Core 或 Service 内部实现 |
+| Distribution | 系统 Java 精简包 + 三平台 `jlink` Runtime 完整包；统一 Standalone/高级分组件安装、离线 WinSW、正式备份/恢复、升级健康门和自动回退；容器 Server/HA 拓扑 |
 
 ## 3. Core、Provider 与 Agent
 
@@ -83,7 +83,7 @@ Standalone 默认是单 Service + SQLite + Local Artifact + Embedded Engine；Se
 - Embedded Java SDK 依赖 Core API、Provider SPI 和 Engine，但不依赖 Service、Agent、Spring 或具体 Provider；应用显式注册允许的 Provider，并选择共享或按 Run 创建的 Sink。
 - TypeScript Client 使用可更新 Bearer Token；SSE 使用自定义 Fetch Parser，因此 Server 安全模式不受原生 `EventSource` 无法设置 Authorization Header 的限制。
 - WebUI 接入 Account/Message/Audience/Job/Run/Artifact 全链路、资源编辑/复制/状态、修订历史/Diff、CSV/TXT 导入、Schedule 完整编辑、发送确认/重发、Workspace 选择、API Token、Agent Enrollment、审计与动态 API 调试；Schema Renderer 支持本地 `$ref` 和嵌套 SecretRef 默认示例。
-- Desktop 主进程保持 `contextIsolation=true`、`nodeIntegration=false`，开发加载 Vite，发行加载 `process.resourcesPath` 下的共享 WebUI。布局和视觉 Token 使用接近 Codex 客户端的紧凑侧栏、内容工作区、柔和边界和低噪声状态样式。
+- Desktop 主进程保持 `contextIsolation=true`、`nodeIntegration=false`，只暴露固定 IPC：本机 Service 状态/启停/日志/诊断、签名插件 Stage/Activate/Rollback 和 API Token `safeStorage`。渲染页不能执行任意命令；浏览器 Token 仅使用 `sessionStorage`。
 
 ## 6. 当前数据库事实源
 
@@ -113,8 +113,9 @@ Standalone 默认是单 Service + SQLite + Local Artifact + Embedded Engine；Se
 - SQLite 空库迁移断言真实列和 Foreign Key，而不只相信 Flyway 版本号。
 - 真实 gRPC 纵向链路覆盖 Hello/Welcome、Lease Ack、受保护文档、Secret、Command Ack、Event 去重、Agent Artifact 上传/Commit、Run Completion。
 - 插件测试覆盖有效签名、未知签名者、Zip Slip 和空目录。
-- 安装脚本通过 POSIX shell 语法、launchd plist、WinSW XML 与 Compose 配置静态校验。
-- 发行归档生成 tar.gz、zip 与 SHA-256，并检查 Service/Agent/WebUI/安装脚本及 Remote/Embedded Java SDK 均存在。
+- 安装脚本通过 POSIX shell 语法、PowerShell AST、launchd plist、WinSW XML 与 Compose 配置校验；三平台自测实际覆盖备份内容摘要、完整恢复和强制升级失败回退。
+- 浏览器 Playwright E2E 覆盖 Standalone/Provider/会话 Token；三平台打包后启动 Desktop 冒烟；定时矩阵在 Java 21/25、SQLite/PostgreSQL 上执行长稳健康检查。
+- 发行归档生成系统 Java 精简包和含 Runtime 的平台完整包，并检查离线 WinSW、Service/Agent/WebUI/安装/恢复脚本及 Remote/Embedded Java SDK 均存在。
 
 `.github/workflows/next-ci.yml` 另外使用真实 PostgreSQL 18 和固定 MinIO 版本验证：
 
@@ -125,13 +126,13 @@ Standalone 默认是单 Service + SQLite + Local Artifact + Embedded Engine；Se
 
 ## 8. 本轮完成边界与后续演进
 
-`alpha.4` 已在 `alpha.3` 日常使用闭环上交付 SMTP、三类群机器人、阿里云短信、微信公众号、小程序和企业微信应用消息。各渠道的 Schema、SecretRef、Dry Run、实际发送、错误语义、测试与 WebUI 示例均已收口，使用和最小配置见 [`provider-guide.md`](provider-guide.md)。
+`beta.1` 已在 `alpha.4` 真实渠道基线上完成自部署运维成熟：三平台完整/精简发行、统一离线 Standalone 安装、Desktop 本机运维与安全 Token、正式 Restore、升级健康验证/失败回退、签名插件本地生命周期和分层测试矩阵均已收口。
 
 以下属于正式路线图内的后续产品增量，不是本轮目标架构的未完成项：
 
 - 以独立签名插件继续增加其他短信、推送和运营商协议，不扩大内置核心依赖。
-- 一体化/离线安装、升级健康验证与回滚、正式恢复工具和本地插件管理。
 - macOS/Windows 商业发行签名与公证；更新由用户主动触发，公开预览版继续以未签名附件发布。
+- `1.0.0` 前继续完成最近 Beta 兼容承诺、故障注入、大受众/长任务和正式发行签名。
 
 公共 SaaS、自助注册、计费订阅、公共市场、云 KMS/Secret Manager、恶意公共租户物理隔离、跨区域 Active-Active、强制自动更新和遥测回传属于长期非目标，不进入后续产品增量。
 

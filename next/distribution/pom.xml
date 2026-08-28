@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.fangxuele.wepush.next</groupId>
         <artifactId>wepush-next-parent</artifactId>
-        <version>0.1.0-alpha.4</version>
+        <version>0.1.0-beta.1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>wepush-next-distribution</artifactId>
@@ -74,6 +74,32 @@
                                        property="wepush.web.distribution.present"/>
                             <fail unless="wepush.web.distribution.present"
                                   message="WebUI dist is missing; run pnpm --filter @wepush-next/web build first"/>
+                        </target></configuration>
+                    </execution>
+                    <execution>
+                        <id>validate-offline-windows-wrapper</id>
+                        <phase>prepare-package</phase>
+                        <goals><goal>run</goal></goals>
+                        <configuration><target>
+                            <available file="${project.basedir}/src/main/distribution/install/windows/WinSW-x64.exe"
+                                       property="wepush.winsw.present"/>
+                            <fail unless="wepush.winsw.present"
+                                  message="Pinned WinSW is missing; run next/scripts/prepare-winsw.sh before packaging"/>
+                            <length file="${project.basedir}/src/main/distribution/install/windows/WinSW-x64.exe"
+                                    property="wepush.winsw.length"/>
+                            <condition property="wepush.winsw.length.valid">
+                                <equals arg1="${wepush.winsw.length}" arg2="18243033"/>
+                            </condition>
+                            <fail unless="wepush.winsw.length.valid"
+                                  message="Pinned WinSW has an unexpected file length"/>
+                            <checksum file="${project.basedir}/src/main/distribution/install/windows/WinSW-x64.exe"
+                                      algorithm="SHA-256" property="wepush.winsw.sha256"/>
+                            <condition property="wepush.winsw.sha256.valid">
+                                <equals arg1="${wepush.winsw.sha256}"
+                                        arg2="05b82d46ad331cc16bdc00de5c6332c1ef818df8ceefcd49c726553209b3a0da"/>
+                            </condition>
+                            <fail unless="wepush.winsw.sha256.valid"
+                                  message="Pinned WinSW has an unexpected SHA-256 digest"/>
                         </target></configuration>
                     </execution>
                     <execution>

@@ -20,6 +20,10 @@ management:
       probes:
         enabled: true
       show-details: when_authorized
+      group:
+        installation:
+          include: wePushInstallation
+          show-details: always
   metrics:
     tags:
       application: wepush-next-service

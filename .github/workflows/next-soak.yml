@@ -1,0 +1,60 @@
+name: WePush Next Long-running Stability
+
+on:
+  schedule:
+    - cron: '17 18 * * 2,5'
+  workflow_dispatch:
+    inputs:
+      duration_seconds:
+        description: Duration of each matrix cell in seconds
+        required: false
+        default: '300'
+
+permissions:
+  contents: read
+
+jobs:
+  standalone-soak:
+    name: ${{ matrix.database }} / Java ${{ matrix.java }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        database: [sqlite, postgres]
+        java: ['21', '25']
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: wepush
+          POSTGRES_USER: wepush
+          POSTGRES_PASSWORD: wepush-test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U wepush"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      WEPUSH_SOAK_DATABASE: ${{ matrix.database }}
+      WEPUSH_TEST_POSTGRES_URL: jdbc:postgresql://127.0.0.1:5432/wepush
+      WEPUSH_TEST_POSTGRES_USERNAME: wepush
+      WEPUSH_TEST_POSTGRES_PASSWORD: wepush-test
+      SOAK_SECONDS: ${{ inputs.duration_seconds || '300' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: maven
+      - name: Run bounded standalone soak
+        working-directory: next
+        run: >-
+          ./mvnw --batch-mode --no-transfer-progress
+          -pl service/service-app -am
+          -Dtest=StandaloneSoakIntegrationTest
+          -Dsurefire.failIfNoSpecifiedTests=false
+          -Dwepush.soak.seconds=${SOAK_SECONDS}
+          test

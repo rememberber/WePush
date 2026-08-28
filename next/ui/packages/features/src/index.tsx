@@ -24,6 +24,30 @@ import {
 import { defaultsForSchema, SchemaForm, type JsonSchema } from "@wepush-next/schema-renderer";
 import { Badge, Button, EmptyState, Spinner } from "@wepush-next/ui";
 
+interface DesktopCommandResult { ok: boolean; message: string; output: string; name?: string }
+interface DesktopServiceStatus { installed: boolean; running: boolean; platform: string; detail: string }
+interface WePushDesktopBridge {
+  platform: string;
+  versions: { chrome: string; electron: string };
+  token: { load(): Promise<string>; save(token: string): Promise<void>; clear(): Promise<void> };
+  service: {
+    status(): Promise<DesktopServiceStatus>;
+    start(): Promise<DesktopCommandResult>;
+    stop(): Promise<DesktopCommandResult>;
+    logs(): Promise<DesktopCommandResult>;
+    diagnose(): Promise<DesktopCommandResult>;
+  };
+  plugins: {
+    selectAndStage(): Promise<DesktopCommandResult>;
+    activate(name: string): Promise<DesktopCommandResult>;
+    rollback(name: string): Promise<DesktopCommandResult>;
+  };
+}
+
+declare global {
+  interface Window { wepushDesktop?: WePushDesktopBridge }
+}
+
 type PageId =
   | "overview"
   | "providers"
@@ -68,6 +92,7 @@ const implementedPages: readonly PageId[] = [
 
 export function WePushApp({ apiBaseUrl }: { apiBaseUrl?: string }) {
   const client = useMemo(() => new WePushClient(apiBaseUrl), [apiBaseUrl]);
+  const [credentialReady, setCredentialReady] = useState(() => !window.wepushDesktop);
   const [activePage, setActivePage] = useState<PageId>("overview");
   const [system, setSystem] = useState<SystemInfo>();
   const [providers, setProviders] = useState<ProviderSummary[]>([]);
@@ -105,10 +130,26 @@ export function WePushApp({ apiBaseUrl }: { apiBaseUrl?: string }) {
   }, [client, workspaceId]);
 
   useEffect(() => {
+    try { localStorage.removeItem("wepush.apiToken"); } catch { /* remove legacy persistent browser credential when possible */ }
+    const bridge = window.wepushDesktop;
+    if (!bridge) { setCredentialReady(true); return; }
+    let active = true;
+    void bridge.token.load().then((token) => {
+      if (active) client.setToken(token);
+    }).catch(() => {
+      if (active) client.setToken("");
+    }).finally(() => {
+      if (active) setCredentialReady(true);
+    });
+    return () => { active = false; };
+  }, [client]);
+
+  useEffect(() => {
+    if (!credentialReady) return;
     const controller = new AbortController();
     void refresh(controller.signal);
     return () => controller.abort();
-  }, [refresh]);
+  }, [credentialReady, refresh]);
 
   return (
     <div className="app-shell">
@@ -297,6 +338,10 @@ function ProvidersPage({ client, workspaceId, providers, loading }: { client: We
   const [accountName, setAccountName] = useState("Local HTTP");
   const [saving, setSaving] = useState(false);
   const [savedAccount, setSavedAccount] = useState<Account>();
+  const [pluginName, setPluginName] = useState<string>();
+  const [pluginResult, setPluginResult] = useState<DesktopCommandResult>();
+  const [pluginBusy, setPluginBusy] = useState(false);
+  const desktopPlugins = window.wepushDesktop?.plugins;
 
   useEffect(() => {
     if (!selected) return;
@@ -337,11 +382,35 @@ function ProvidersPage({ client, workspaceId, providers, loading }: { client: We
     }
   }
 
+  async function stagePlugin() {
+    if (!desktopPlugins) return;
+    setPluginBusy(true);
+    try {
+      const result = await desktopPlugins.selectAndStage();
+      setPluginResult(result);
+      if (result.ok && result.name) setPluginName(result.name);
+    } catch (error) {
+      setPluginResult({ ok: false, message: error instanceof Error ? error.message : "插件校验失败", output: "" });
+    } finally { setPluginBusy(false); }
+  }
+
+  async function changePlugin(action: "activate" | "rollback") {
+    if (!desktopPlugins || !pluginName) return;
+    setPluginBusy(true);
+    try {
+      setPluginResult(await desktopPlugins[action](pluginName));
+    } catch (error) {
+      setPluginResult({ ok: false, message: error instanceof Error ? error.message : "插件操作失败", output: "" });
+    } finally { setPluginBusy(false); }
+  }
+
   return (
     <div className="page">
       <section className="page-heading page-heading--compact">
         <div><p className="eyebrow">EXTENSIBILITY</p><h2>Providers</h2><p>发现消息能力，并通过 Provider Schema 可视化配置连接。</p></div>
-        <Button variant="primary">＋ 安装 Provider</Button>
+        <Button variant="primary" disabled={!desktopPlugins || pluginBusy} onClick={() => void stagePlugin()}>
+          {pluginBusy ? "处理中…" : "＋ 本地安装 Provider"}
+        </Button>
       </section>
       <div className="split-layout">
         <section className="panel provider-list-panel">
@@ -385,6 +454,19 @@ function ProvidersPage({ client, workspaceId, providers, loading }: { client: We
           ) : <EmptyState icon={<Icon name="plug" />} title="选择一个 Provider" description="发现 Provider 后即可查看并渲染其实时配置 Schema。" />}
         </section>
       </div>
+      <section className="panel recent-panel">
+        <PanelHeader title="签名 Provider 插件" description={desktopPlugins
+          ? "选择本机 ZIP 后，Agent 会先校验清单、内容摘要和受信签名，再进入 Stage。"
+          : "插件安装只在 Desktop 提供；浏览器不会获得本机文件或服务管理权限。"} />
+        {pluginResult ? <div className={pluginResult.ok ? "inline-success" : "inline-error"}>{pluginResult.message}</div> : null}
+        {pluginResult?.output ? <pre className="response-body"><code>{pluginResult.output}</code></pre> : null}
+        <div className="form-actions">
+          <Button disabled={!desktopPlugins || pluginBusy} onClick={() => void stagePlugin()}>校验并 Stage</Button>
+          <Button variant="primary" disabled={!desktopPlugins || !pluginName || pluginBusy} onClick={() => void changePlugin("activate")}>Activate</Button>
+          <Button disabled={!desktopPlugins || !pluginName || pluginBusy} onClick={() => void changePlugin("rollback")}>Rollback</Button>
+        </div>
+        {pluginName ? <p className="api-description">当前操作目标：<code>{pluginName}</code></p> : null}
+      </section>
     </div>
   );
 }
@@ -1281,7 +1363,7 @@ function ApiDocsPage({ client }: { client: WePushClient }) {
 }
 
 function SettingsPage({ client, workspaceId }: { client: WePushClient; workspaceId: string }) {
-  const [token, setToken] = useState(() => { try { return localStorage.getItem("wepush.apiToken") ?? ""; } catch { return ""; } });
+  const [token, setToken] = useState(() => { try { return sessionStorage.getItem("wepush.apiToken") ?? ""; } catch { return ""; } });
   const [tokens, setTokens] = useState<ApiTokenSummary[]>([]);
   const [audits, setAudits] = useState<AuditEvent[]>([]);
   const [issued, setIssued] = useState<string>();
@@ -1290,6 +1372,10 @@ function SettingsPage({ client, workspaceId }: { client: WePushClient; workspace
   const [auditSearch, setAuditSearch] = useState("");
   const [auditStatus, setAuditStatus] = useState("");
   const [auditCursor, setAuditCursor] = useState<string>();
+  const [serviceStatus, setServiceStatus] = useState<DesktopServiceStatus>();
+  const [operation, setOperation] = useState<DesktopCommandResult>();
+  const [operationBusy, setOperationBusy] = useState(false);
+  const desktop = window.wepushDesktop;
 
   const load = useCallback(async () => {
     try {
@@ -1300,11 +1386,45 @@ function SettingsPage({ client, workspaceId }: { client: WePushClient; workspace
     }
   }, [client, workspaceId]);
   useEffect(() => { if (token) void load(); }, [load, token]);
+  useEffect(() => {
+    if (!desktop) return;
+    let active = true;
+    void Promise.all([desktop.token.load(), desktop.service.status()]).then(([saved, status]) => {
+      if (!active) return;
+      setToken(saved); client.setToken(saved); setServiceStatus(status);
+    }).catch((nextError: unknown) => {
+      if (active) setError(nextError instanceof Error ? nextError.message : "Desktop 本机状态读取失败");
+    });
+    return () => { active = false; };
+  }, [client, desktop]);
 
-  function saveToken() {
+  async function saveToken() {
     client.setToken(token);
-    try { localStorage.setItem("wepush.apiToken", token); } catch { /* desktop storage unavailable */ }
-    void load();
+    try {
+      if (desktop) await desktop.token.save(token);
+      else sessionStorage.setItem("wepush.apiToken", token);
+      await load();
+    } catch (nextError) { setError(nextError instanceof Error ? nextError.message : "Token 保存失败"); }
+  }
+
+  async function clearToken() {
+    client.setToken(""); setToken("");
+    try {
+      if (desktop) await desktop.token.clear();
+      else sessionStorage.removeItem("wepush.apiToken");
+    } catch (nextError) { setError(nextError instanceof Error ? nextError.message : "Token 清除失败"); }
+  }
+
+  async function serviceOperation(action: "start" | "stop" | "logs" | "diagnose") {
+    if (!desktop) return;
+    setOperationBusy(true);
+    try {
+      const result = await desktop.service[action]();
+      setOperation(result);
+      setServiceStatus(await desktop.service.status());
+    } catch (nextError) {
+      setOperation({ ok: false, message: nextError instanceof Error ? nextError.message : "本机服务操作失败", output: "" });
+    } finally { setOperationBusy(false); }
   }
 
   async function loadAudits(append = false) {
@@ -1332,9 +1452,9 @@ function SettingsPage({ client, workspaceId }: { client: WePushClient; workspace
     <section className="page-heading page-heading--compact"><div><p className="eyebrow">SECURITY & OPERATIONS</p><h2>设置</h2><p>管理本机 API 身份、Agent 注册和只追加审计日志。</p></div><Badge tone="info">Workspace RBAC</Badge></section>
     {error ? <div className="inline-error">{error}</div> : null}
     <div className="dashboard-grid">
-      <section className="panel composer-panel compact-form"><PanelHeader title="当前 API Token" description="仅保存在当前 UI 的本地存储中" />
+      <section className="panel composer-panel compact-form"><PanelHeader title="当前 API Token" description={desktop ? "由操作系统原生安全存储加密保存" : "仅保存在当前浏览器标签页会话中，关闭后清除"} />
         <label className="simple-field"><span>Bearer Token</span><input type="password" value={token} onChange={(event) => setToken(event.target.value)} placeholder="wpu.… 或 bootstrap token" /></label>
-        <div className="form-actions"><Button variant="primary" onClick={saveToken}>保存并验证</Button><Button onClick={() => void createToken()}>签发 30 天 Operator</Button></div>
+        <div className="form-actions"><Button variant="primary" onClick={() => void saveToken()}>保存并验证</Button><Button onClick={() => void clearToken()}>清除</Button><Button onClick={() => void createToken()}>签发 30 天 Operator</Button></div>
         {issued ? <div className="one-time-secret"><strong>只显示一次</strong><code>{issued}</code></div> : null}
       </section>
       <section className="panel composer-panel compact-form"><PanelHeader title="Agent Enrollment" description="一次性、短时有效，完成注册后自动失效" />
@@ -1342,6 +1462,18 @@ function SettingsPage({ client, workspaceId }: { client: WePushClient; workspace
         {enrollment ? <div className="one-time-secret"><strong>只显示一次</strong><code>{enrollment}</code></div> : null}
       </section>
     </div>
+    {desktop ? <section className="panel recent-panel">
+      <PanelHeader title="本机 WePush Next Service" description="检测、启动、停止、读取最近日志，并生成不包含 Token/Secret 的诊断结果。" action={<Badge tone={serviceStatus?.running ? "success" : serviceStatus?.installed ? "warning" : "neutral"}>{serviceStatus?.running ? "RUNNING" : serviceStatus?.installed ? "STOPPED" : "NOT INSTALLED"}</Badge>} />
+      {serviceStatus?.detail ? <pre className="response-body"><code>{serviceStatus.detail}</code></pre> : null}
+      {operation ? <div className={operation.ok ? "inline-success" : "inline-error"}>{operation.message}</div> : null}
+      {operation?.output && operation.output !== operation.message ? <pre className="response-body"><code>{operation.output}</code></pre> : null}
+      <div className="form-actions">
+        <Button variant="primary" disabled={operationBusy || serviceStatus?.running} onClick={() => void serviceOperation("start")}>启动</Button>
+        <Button disabled={operationBusy || !serviceStatus?.running} onClick={() => void serviceOperation("stop")}>停止</Button>
+        <Button disabled={operationBusy} onClick={() => void serviceOperation("logs")}>最近日志</Button>
+        <Button disabled={operationBusy} onClick={() => void serviceOperation("diagnose")}>诊断</Button>
+      </div>
+    </section> : null}
     <section className="panel recent-panel"><PanelHeader title="API Tokens" description="Token 明文不会再次返回" action={<Button variant="ghost" onClick={() => void load()}>刷新</Button>} />
       <div className="resource-card-list">{tokens.map((item) => <article key={item.tokenId}><span className="resource-card-icon"><Icon name="key" /></span><div><strong>{item.name}</strong><small>{shortId(item.principalId)} · expires {new Date(item.expiresAt).toLocaleString()}</small><code>{shortId(item.tokenId)}</code></div><Badge tone={item.revokedAt ? "neutral" : "success"}>{item.revokedAt ? "REVOKED" : "ACTIVE"}</Badge></article>)}</div>
     </section>

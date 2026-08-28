@@ -38,7 +38,7 @@
             <destName>THIRD-PARTY-NOTICES.md</destName>
         </file>
         <file>
-            <source>../docs/releases/0.1.0-alpha.4.md</source>
+            <source>../docs/releases/0.1.0-beta.1.md</source>
             <outputDirectory>/</outputDirectory>
             <destName>RELEASE-NOTES.md</destName>
         </file>

@@ -901,6 +901,6 @@ function defaultBaseUrl(): string {
 }
 
 function defaultToken(): string {
-  try { return typeof localStorage === "undefined" ? "" : localStorage.getItem("wepush.apiToken") ?? ""; }
+  try { return typeof sessionStorage === "undefined" ? "" : sessionStorage.getItem("wepush.apiToken") ?? ""; }
   catch { return ""; }
 }

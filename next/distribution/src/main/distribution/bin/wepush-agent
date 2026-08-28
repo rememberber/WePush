@@ -7,4 +7,7 @@ if [ -r "$WEPUSH_AGENT_ENV" ]; then
   . "$WEPUSH_AGENT_ENV"
   set +a
 fi
-exec "${WEPUSH_JAVA:-java}" ${WEPUSH_JAVA_OPTS:-} -jar "$WEPUSH_RELEASE_ROOT/lib/wepush-next-agent.jar" "$@"
+if [ -n "${WEPUSH_JAVA:-}" ]; then WEPUSH_JAVA_COMMAND=$WEPUSH_JAVA
+elif [ -x "$WEPUSH_RELEASE_ROOT/runtime/bin/java" ]; then WEPUSH_JAVA_COMMAND="$WEPUSH_RELEASE_ROOT/runtime/bin/java"
+else WEPUSH_JAVA_COMMAND=java; fi
+exec "$WEPUSH_JAVA_COMMAND" --enable-native-access=ALL-UNNAMED ${WEPUSH_JAVA_OPTS:-} -jar "$WEPUSH_RELEASE_ROOT/lib/wepush-next-agent.jar" "$@"

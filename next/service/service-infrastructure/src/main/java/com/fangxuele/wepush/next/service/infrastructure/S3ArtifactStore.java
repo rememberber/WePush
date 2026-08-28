@@ -74,12 +74,11 @@ public final class S3ArtifactStore implements ArtifactStore, AutoCloseable {
         this.environment = safeSegment(configuration.environment(), "environment");
         this.encryption = Encryption.resolve(configuration.serverSideEncryption());
         var credentials = configuration.accessKey() == null || configuration.accessKey().isBlank()
-                ? DefaultCredentialsProvider.create()
+                ? DefaultCredentialsProvider.builder().build()
                 : StaticCredentialsProvider.create(AwsBasicCredentials.create(
                 configuration.accessKey(), configuration.secretKey()));
         S3Configuration service = S3Configuration.builder()
-                .pathStyleAccessEnabled(configuration.pathStyleAccess())
-                .checksumValidationEnabled(true).build();
+                .pathStyleAccessEnabled(configuration.pathStyleAccess()).build();
         var clientBuilder = S3Client.builder().region(Region.of(configuration.region()))
                 .credentialsProvider(credentials).serviceConfiguration(service)
                 .httpClientBuilder(UrlConnectionHttpClient.builder());

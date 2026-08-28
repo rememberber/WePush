@@ -42,6 +42,7 @@ class ServiceSmokeTest {
     @Test
     void exposesHealthSystemInfoProviderCatalogAndSchemas() throws Exception {
         HttpResponse<String> health = get("/actuator/health");
+        HttpResponse<String> installation = get("/actuator/health/installation");
         HttpResponse<String> info = get("/api/v1/system/info");
         HttpResponse<String> providers = get("/api/v1/providers");
         HttpResponse<String> schema = get(
@@ -52,6 +53,10 @@ class ServiceSmokeTest {
         HttpResponse<String> desktopPreflight = desktopPreflight("/api/v1/system/info");
 
         assertEquals(200, health.statusCode());
+        assertEquals(200, installation.statusCode());
+        assertTrue(installation.body().contains("\"databaseVersion\":\"13\""));
+        assertTrue(installation.body().contains("\"providerCount\":9"));
+        assertTrue(installation.body().contains("\"dryRun\":\"DRY_RUN\""));
         assertTrue(health.body().contains("UP"));
         assertEquals(200, info.statusCode());
         assertTrue(info.body().contains("WePush Next"));

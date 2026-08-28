@@ -6,7 +6,7 @@
 
     <groupId>com.fangxuele.wepush.next</groupId>
     <artifactId>wepush-next-parent</artifactId>
-    <version>0.1.0-alpha.4</version>
+    <version>0.1.0-beta.1</version>
     <packaging>pom</packaging>
 
     <name>WePush Next</name>
@@ -24,7 +24,7 @@
         <connection>scm:git:https://github.com/rememberber/WePush.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/rememberber/WePush.git</developerConnection>
         <url>https://github.com/rememberber/WePush</url>
-        <tag>next-v0.1.0-alpha.4</tag>
+        <tag>next-v0.1.0-beta.1</tag>
     </scm>
     <issueManagement>
         <system>GitHub</system>
@@ -65,13 +65,15 @@
         <archunit.version>1.5.0</archunit.version>
         <spring-boot.version>4.1.1</spring-boot.version>
         <grpc.version>1.83.1</grpc.version>
-        <protoc.version>3.25.8</protoc.version>
+        <protoc.version>4.35.1</protoc.version>
         <bouncycastle.version>1.85</bouncycastle.version>
         <aws-sdk.version>2.42.35</aws-sdk.version>
         <postgresql.version>42.7.13</postgresql.version>
         <pf4j.version>3.15.0</pf4j.version>
         <commons-csv.version>1.14.1</commons-csv.version>
         <angus-mail.version>2.0.4</angus-mail.version>
+        <wepush.test.jvm.args>--enable-native-access=ALL-UNNAMED</wepush.test.jvm.args>
+        <wepush.future-jdk.test.jvm.args></wepush.future-jdk.test.jvm.args>
     </properties>
 
     <dependencyManagement>
@@ -142,6 +144,7 @@
                     <version>${maven.surefire.version}</version>
                     <configuration>
                         <useModulePath>false</useModulePath>
+                        <argLine>${wepush.test.jvm.args} ${wepush.future-jdk.test.jvm.args}</argLine>
                     </configuration>
                 </plugin>
             </plugins>
@@ -169,4 +172,15 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>future-jdk-test-compatibility</id>
+            <activation>
+                <jdk>[24,)</jdk>
+            </activation>
+            <properties>
+                <wepush.future-jdk.test.jvm.args>--sun-misc-unsafe-memory-access=allow</wepush.future-jdk.test.jvm.args>
+            </properties>
+        </profile>
+    </profiles>
 </project>

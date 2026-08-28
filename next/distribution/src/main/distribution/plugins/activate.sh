@@ -8,6 +8,11 @@ else ROOT=/var/lib/wepush-next/agent/plugins
 fi
 [ -f "$ROOT/staging/$NAME" ] || { echo "staged plugin not found: $NAME" >&2; exit 1; }
 install -d -m 0750 "$ROOT/active" "$ROOT/rollback"
+if [ "$(id -u)" -eq 0 ]; then
+  if [ "$(uname -s)" = Darwin ]; then PLUGIN_OWNER=$(stat -f '%u:%g' "$ROOT")
+  else PLUGIN_OWNER=$(stat -c '%u:%g' "$ROOT"); fi
+  chown "$PLUGIN_OWNER" "$ROOT/active" "$ROOT/rollback"
+fi
 PREVIOUS=
 if [ -f "$ROOT/active/$NAME" ]; then
   PREVIOUS="$ROOT/rollback/$NAME.$(date -u +%Y%m%dT%H%M%SZ)"
@@ -15,7 +20,9 @@ if [ -f "$ROOT/active/$NAME" ]; then
 fi
 mv "$ROOT/staging/$NAME" "$ROOT/active/$NAME"
 healthy=true
-if command -v systemctl >/dev/null 2>&1; then
+if [ "${WEPUSH_SKIP_SERVICE_CONTROL:-false}" = true ]; then
+  :
+elif command -v systemctl >/dev/null 2>&1; then
   systemctl restart wepush-next-agent.service || healthy=false
   CHECKS=0
   while [ "$healthy" = true ] && [ "$CHECKS" -lt 10 ]; do
@@ -31,7 +38,8 @@ fi
 if [ "$healthy" != true ]; then
   mv "$ROOT/active/$NAME" "$ROOT/staging/$NAME.failed"
   if [ -n "$PREVIOUS" ]; then mv "$PREVIOUS" "$ROOT/active/$NAME"; fi
-  if command -v systemctl >/dev/null 2>&1; then systemctl restart wepush-next-agent.service || true
+  if [ "${WEPUSH_SKIP_SERVICE_CONTROL:-false}" = true ]; then :
+  elif command -v systemctl >/dev/null 2>&1; then systemctl restart wepush-next-agent.service || true
   elif [ "$(uname -s)" = Darwin ]; then launchctl kickstart -k system/com.fangxuele.wepush-next.agent || true
   fi
   echo "Plugin activation failed; previous version was restored" >&2

@@ -15,6 +15,7 @@ import java.security.PublicKey;
 import java.security.Signature;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
+import java.util.HashSet;
 import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -74,7 +75,7 @@ final class SignedProviderPluginManager implements AutoCloseable {
         }
     }
 
-    void verify(Path archive) throws Exception {
+    VerifiedPlugin verify(Path archive) throws Exception {
         if (!Files.isRegularFile(archive) || Files.size(archive) > MAXIMUM_ARCHIVE_BYTES) {
             throw new IllegalStateException("Provider plugin package is not a bounded regular file: " + archive);
         }
@@ -87,10 +88,16 @@ final class SignedProviderPluginManager implements AutoCloseable {
                 throw new IllegalStateException("Provider plugin manifest is invalid");
             }
             long expanded = 0;
+            Set<String> seenEntries = new HashSet<>();
+            Set<String> archiveFiles = new HashSet<>();
             var entries = zip.entries();
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
                 safeEntry(entry);
+                if (!seenEntries.add(entry.getName())) {
+                    throw new IllegalStateException("Provider plugin contains a duplicate entry: " + entry.getName());
+                }
+                if (!entry.isDirectory()) archiveFiles.add(entry.getName());
                 if (entry.getSize() > MAXIMUM_ENTRY_BYTES) {
                     throw new IllegalStateException("Provider plugin entry is too large: " + entry.getName());
                 }
@@ -98,6 +105,19 @@ final class SignedProviderPluginManager implements AutoCloseable {
                 if (expanded > MAXIMUM_ARCHIVE_BYTES) {
                     throw new IllegalStateException("Provider plugin expanded size exceeds the limit");
                 }
+            }
+            Set<String> expectedFiles = new HashSet<>();
+            for (String name : manifest.files().keySet()) {
+                safeName(name);
+                if ("plugin.json".equals(name) || "signature.ed25519".equals(name)) {
+                    throw new IllegalStateException("Provider plugin manifest cannot checksum its control files");
+                }
+                expectedFiles.add(name);
+            }
+            expectedFiles.add("plugin.json");
+            if (archiveFiles.contains("signature.ed25519")) expectedFiles.add("signature.ed25519");
+            if (!archiveFiles.equals(expectedFiles)) {
+                throw new IllegalStateException("Provider plugin contains a file outside the signed manifest");
             }
             for (Map.Entry<String, String> file : manifest.files().entrySet()) {
                 if (!file.getValue().matches("[0-9a-f]{64}")) {
@@ -113,6 +133,7 @@ final class SignedProviderPluginManager implements AutoCloseable {
                 if (file.getKey().endsWith(".jar")) verifyJar(bytes, file.getKey());
             }
             if (!developerMode) verifySignature(zip, manifestBytes, manifest.signatureKeyId());
+            return new VerifiedPlugin(manifest.pluginId(), manifest.version());
         }
     }
 
@@ -205,5 +226,11 @@ final class SignedProviderPluginManager implements AutoCloseable {
 
     private record PluginManifest(String pluginId, String version, int spiMajor,
                                   String signatureKeyId, Map<String, String> files) {
+    }
+
+    record VerifiedPlugin(String pluginId, String version) {
+        String canonicalName() {
+            return pluginId + ".zip";
+        }
     }
 }

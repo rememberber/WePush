@@ -2,7 +2,7 @@
 
 WePush Next 是由用户自行下载、安装、部署和运维的开源产品，不依赖官方公共 SaaS、账号注册、计费订阅或云 KMS/Secret Manager。数据、密钥和运行环境均由用户掌控；完整定位和后续计划见[《产品目标、边界与路线图》](product-scope-and-roadmap.md)。
 
-本文面向第一次下载和使用 WePush Next 的用户，适用于 `0.1.0-alpha.4` Public Preview。
+本文面向第一次下载和使用 WePush Next 的用户，适用于 `0.1.0-beta.1` Public Preview。
 
 > WePush Next 仍是公开预览版，API、数据结构和升级路径可能变化，不建议直接承载关键生产业务。Desktop 与发行包未使用商业代码签名；请只从官方 GitHub Release 下载，并在运行前校验 `SHA256SUMS`。
 
@@ -14,13 +14,13 @@ WePush Next 由多个可以独立使用的组件组成：
 | --- | --- | --- |
 | Service | 保存配置和运行数据，提供 WebUI、OpenAPI 与 Service API，并可在本机执行任务 | 必需 |
 | WebUI | 浏览器中的可视化配置、运行中心、动态 API 文档 | 已包含在 Service 发行包中 |
-| Desktop UI | Electron 桌面管理界面，连接本机 `127.0.0.1:18990` Service | 可选 |
+| Desktop UI | Electron 桌面管理界面，连接并管理已安装的本机 `127.0.0.1:18990` Service | 可选 |
 | Agent | 从 Service 接收任务并在独立节点执行，适合远程或分布式部署 | 本地体验不需要 |
-| Remote Java SDK | 供其他 Java 应用通过 Service API 集成 WePush | 按需，`alpha.4` 附件已包含 |
-| Embedded Java SDK | 在 Java 应用进程内直接装配 Engine 和 Provider，不需要 Service | 按需，`alpha.4` 附件已包含 |
+| Remote Java SDK | 供其他 Java 应用通过 Service API 集成 WePush | 按需，`beta.1` 附件已包含 |
+| Embedded Java SDK | 在 Java 应用进程内直接装配 Engine 和 Provider，不需要 Service | 按需，`beta.1` 附件已包含 |
 | Core / Engine | Service 与 Agent 内部的执行引擎 | 不需要单独安装 |
 
-Desktop UI 目前不是一体化安装器，也不会自动启动 Service。无论使用浏览器还是 Desktop UI，都应先启动或安装 Service。
+发行包的统一脚本负责安装 Standalone Service；Desktop UI 不重复内嵌 Service，但可以检测、启动、停止已安装的本机 Service，读取日志和生成脱敏诊断。
 
 Classic 与 Next 是彼此独立的两条产品线。Classic 继续提供成熟的桌面批量推送能力；Next 当前内置 HTTP、SMTP Email、飞书/钉钉/企微机器人、阿里云短信、微信公众号、小程序和企业微信应用消息。两者没有自动迁移或共享数据要求，可以并行安装和使用。
 
@@ -28,28 +28,28 @@ Classic 与 Next 是彼此独立的两条产品线。Classic 继续提供成熟�
 
 官方下载页：
 
-- [WePush Next `0.1.0-alpha.4` Public Preview](https://github.com/rememberber/WePush/releases/tag/next-v0.1.0-alpha.4)
+- [WePush Next `0.1.0-beta.1` Public Preview](https://github.com/rememberber/WePush/releases/tag/next-v0.1.0-beta.1)
 
 发行附件：
 
 | 文件 | 内容或平台 |
 | --- | --- |
-| `wepush-next-0.1.0-alpha.4.tar.gz` | Service、Agent、WebUI、安装脚本、OpenAPI 与 SDK，适合 Linux/macOS |
-| `wepush-next-0.1.0-alpha.4.zip` | 与上面内容相同，适合 Windows |
-| `wepush-next-desktop-0.1.0-alpha.4-linux-x64.tar.gz` | Linux x64 Desktop |
-| `wepush-next-desktop-0.1.0-alpha.4-macos-arm64.zip` | macOS Apple Silicon Desktop |
-| `wepush-next-desktop-0.1.0-alpha.4-windows-x64.zip` | Windows x64 Desktop |
-| `wepush-next-java-sdk-0.1.0-alpha.4.zip` | Remote Java SDK、Embedded Java SDK 及其 POM/JAR 依赖闭包 |
+| `wepush-next-0.1.0-beta.1-linux-<arch>.tar.gz` | Linux 完整包，内含 Java Runtime，推荐首次安装 |
+| `wepush-next-0.1.0-beta.1-macos-<arch>.zip` | macOS 完整包，内含 Java Runtime，推荐首次安装 |
+| `wepush-next-0.1.0-beta.1-windows-<arch>.zip` | Windows 完整包，内含 Java Runtime 和离线 WinSW |
+| `wepush-next-0.1.0-beta.1.tar.gz` / `.zip` | 使用系统 Java 21+ 的精简便携包；内容不含 Java Runtime |
+| `wepush-next-desktop-0.1.0-beta.1-<os>-<arch>.*` | 对应平台的 Desktop 管理界面 |
+| `wepush-next-java-sdk-0.1.0-beta.1.zip` | Remote Java SDK、Embedded Java SDK 及其 POM/JAR 依赖闭包 |
 | `SHA256SUMS` | 全部附件的 SHA-256 |
-| `wepush-next-0.1.0-alpha.4-sbom.cdx.json` | CycloneDX SBOM |
+| `wepush-next-0.1.0-beta.1-sbom.cdx.json` | CycloneDX SBOM |
 
-运行 Service、Agent 或任一种 Java SDK 需要 Java 21 或更高版本：
+完整包运行 Service/Agent 不要求预装 Java。精简包、从源码构建和任一种 Java SDK 需要 Java 21 或更高版本：
 
 ```bash
 java -version
 ```
 
-当前 Desktop 预览包仅提供 Linux x64、Windows x64 和 macOS Apple Silicon。macOS Intel 暂无 Desktop 预览包，但仍可在满足 Java 21 的环境中运行 Service 并使用浏览器 WebUI。
+发行工作流按目标 Runner 架构生成附件；文件名中的 `<arch>` 以 Release 实际列出的 `x64` 或 `arm64` 为准。
 
 ### 校验下载文件
 
@@ -58,57 +58,58 @@ java -version
 Linux：
 
 ```bash
-sha256sum wepush-next-0.1.0-alpha.4.tar.gz
-grep 'wepush-next-0.1.0-alpha.4.tar.gz$' SHA256SUMS
+sha256sum wepush-next-0.1.0-beta.1.tar.gz
+grep 'wepush-next-0.1.0-beta.1.tar.gz$' SHA256SUMS
 ```
 
 macOS：
 
 ```bash
-shasum -a 256 wepush-next-0.1.0-alpha.4.tar.gz
-grep 'wepush-next-0.1.0-alpha.4.tar.gz$' SHA256SUMS
+shasum -a 256 wepush-next-0.1.0-beta.1.tar.gz
+grep 'wepush-next-0.1.0-beta.1.tar.gz$' SHA256SUMS
 ```
 
 Windows PowerShell：
 
 ```powershell
-Get-FileHash .\wepush-next-0.1.0-alpha.4.zip -Algorithm SHA256
-Select-String -Path .\SHA256SUMS -Pattern 'wepush-next-0.1.0-alpha.4.zip$'
+Get-FileHash .\wepush-next-0.1.0-beta.1.zip -Algorithm SHA256
+Select-String -Path .\SHA256SUMS -Pattern 'wepush-next-0.1.0-beta.1.zip$'
 ```
 
 两个值必须完全一致。Desktop 包也使用相同方法校验。
 
-## 3. 五分钟启动：便携 Standalone
+## 3. 五分钟安装：Standalone
 
 Standalone 默认只监听 `127.0.0.1:18990`，使用 SQLite、本地 Artifact Store 和内嵌 Engine，不需要 PostgreSQL、对象存储或 Agent。
+
+下载当前操作系统的完整包并解压。统一入口默认只安装 Standalone Service；安装末尾会验证 Readiness、数据库迁移版本和不会访问网络的 Provider Dry Run。
 
 ### Linux
 
 ```bash
-tar -xzf wepush-next-0.1.0-alpha.4.tar.gz
-cd wepush-next-0.1.0-alpha.4
-./bin/wepush-service
+tar -xzf wepush-next-0.1.0-beta.1-linux-x64.tar.gz
+cd wepush-next-0.1.0-beta.1
+sudo ./install/install.sh
 ```
 
 ### macOS
 
 ```bash
-tar -xzf wepush-next-0.1.0-alpha.4.tar.gz
-cd wepush-next-0.1.0-alpha.4
-./bin/wepush-service
+ditto -x -k wepush-next-0.1.0-beta.1-macos-arm64.zip .
+cd wepush-next-0.1.0-beta.1
+sudo ./install/install.sh
 ```
 
 ### Windows PowerShell
 
 ```powershell
-Expand-Archive .\wepush-next-0.1.0-alpha.4.zip .\wepush-next
-Set-Location .\wepush-next\wepush-next-0.1.0-alpha.4
-$releaseRoot = (Get-Location).Path.Replace('\', '/')
-$env:WEPUSH_WEB_ROOT = "file:$releaseRoot/web/"
-java -jar .\lib\wepush-next-service.jar
+Expand-Archive .\wepush-next-0.1.0-beta.1-windows-x64.zip .\wepush-next
+Set-Location .\wepush-next\wepush-next-0.1.0-beta.1
+Set-ExecutionPolicy -Scope Process Bypass
+& .\install\install.ps1
 ```
 
-保持终端窗口运行，然后打开：
+安装完成后打开：
 
 - WebUI：`http://127.0.0.1:18990/`
 - 健康检查：`http://127.0.0.1:18990/actuator/health/readiness`
@@ -121,17 +122,19 @@ curl --fail http://127.0.0.1:18990/actuator/health/readiness
 curl --fail http://127.0.0.1:18990/api/v1/system/info
 ```
 
-终端按 `Ctrl+C` 即可停止便携 Service。请从解压后的目录启动，以便默认 `.local` 数据目录位于该发行目录下。
+需要便携运行而不安装系统服务时，Linux/macOS 在解压目录执行 `./bin/wepush-service`；Windows 执行 `install\windows\run-service.ps1`。便携模式应从解压目录启动，使默认 `.local` 数据与该目录保持在一起。完整包优先使用内含 Runtime，精简包自动使用系统 Java。
 
 ## 4. 可选：使用 Desktop UI
 
-先按上一节启动 Service，再解压对应平台的 Desktop 附件：
+先按上一节安装 Service，再解压对应平台的 Desktop 附件：
 
-- Linux：运行 `wepush-next-desktop-0.1.0-alpha.4-linux-x64/WePush Next/wepush-next`。
-- macOS：打开 `wepush-next-desktop-0.1.0-alpha.4-macos-arm64/WePush Next.app`。
-- Windows：运行 `wepush-next-desktop-0.1.0-alpha.4-windows-x64\WePush Next\WePush Next.exe`。
+- Linux：运行 `wepush-next-desktop-0.1.0-beta.1-linux-x64/WePush Next/wepush-next`。
+- macOS：打开 `wepush-next-desktop-0.1.0-beta.1-macos-arm64/WePush Next.app`。
+- Windows：运行 `wepush-next-desktop-0.1.0-beta.1-windows-x64\WePush Next\WePush Next.exe`。
 
-Desktop 会连接本机 `http://127.0.0.1:18990`。出现“Service 未连接”时，先确认 Service 终端没有退出，并检查健康地址。
+Desktop 会连接本机 `http://127.0.0.1:18990`。设置页可以检测、启动、停止 Service，读取最近日志并生成不包含 Token/Secret 的诊断；涉及系统服务或插件目录的写操作会请求操作系统管理员授权。
+
+Desktop 的 API Token 通过 Electron `safeStorage` 写入操作系统原生安全存储；如果 Linux 桌面没有可用 Keyring，Desktop 会拒绝以弱后端持久化。浏览器 WebUI 默认只写 `sessionStorage`，关闭标签页后即清除，不再使用长期 `localStorage`。
 
 由于当前预览包没有商业签名，macOS Gatekeeper 或 Windows SmartScreen 可能显示未知开发者/发布者。只有在文件来自官方 Release 且 SHA-256 校验一致时，才使用系统提供的“打开”流程；不要全局关闭系统安全能力。
 
@@ -236,7 +239,7 @@ SMTP、机器人、短信和微信系渠道使用相同的 Account → Message �
 
 WebUI 的“API 文档”会读取 Service 提供的 OpenAPI，支持查看请求 Schema、生成请求和动态调试。写操作发送前会二次确认；权限、审计和同源限制仍由 Service 强制执行。
 
-Remote Java SDK 是 Service API 客户端，不依赖 Core、Engine 或具体 Provider。`alpha.4` 发行包和独立 SDK 压缩包都包含它，安装说明见 [Java SDK README](../sdk/README.md)。
+Remote Java SDK 是 Service API 客户端，不依赖 Core、Engine 或具体 Provider。`beta.1` 发行包和独立 SDK 压缩包都包含它，安装说明见 [Java SDK README](../sdk/README.md)。
 
 最小示例：
 
@@ -265,7 +268,7 @@ try (var engine = WePushEngine.builder()
 }
 ```
 
-`alpha.4` 发行包和独立 Java SDK 附件同时包含 Embedded SDK 与所需依赖。完整依赖、配置、资源所有权和示例见 [Embedded Java SDK README](../sdk/embedded-java/README.md)。
+`beta.1` 发行包和独立 Java SDK 附件同时包含 Embedded SDK 与所需依赖。完整依赖、配置、资源所有权和示例见 [Embedded Java SDK README](../sdk/embedded-java/README.md)。
 
 ## 8. 何时需要 Agent
 
@@ -280,13 +283,13 @@ Agent 使用 Service 的 `19090` gRPC 控制流。跨主机部署必须使用 En
 
 ## 9. 安装为系统服务
 
-长期使用时建议安装 Service，而不是保留前台终端。第一次本机体验只需安装 `service`；选择 `all` 才会同时安装 Agent。
+统一 `install/install.sh` 或 `install/install.ps1` 默认安装 Standalone Service。高级部署可直接调用平台目录下的安装器并传入 `service`、`agent` 或 `all`。
 
 ### Linux / systemd
 
 ```bash
-tar -xzf wepush-next-0.1.0-alpha.4.tar.gz
-sudo ./wepush-next-0.1.0-alpha.4/install/linux/install.sh service
+tar -xzf wepush-next-0.1.0-beta.1-linux-x64.tar.gz
+sudo ./wepush-next-0.1.0-beta.1/install/install.sh
 systemctl status wepush-next-service
 ```
 
@@ -295,8 +298,8 @@ systemctl status wepush-next-service
 从普通登录用户的终端使用 `sudo`，安装器会将该用户作为非 root 服务用户：
 
 ```bash
-tar -xzf wepush-next-0.1.0-alpha.4.tar.gz
-sudo ./wepush-next-0.1.0-alpha.4/install/macos/install.sh service
+ditto -x -k wepush-next-0.1.0-beta.1-macos-arm64.zip .
+sudo ./wepush-next-0.1.0-beta.1/install/install.sh
 launchctl print system/com.fangxuele.wepush-next.service
 ```
 
@@ -307,13 +310,13 @@ launchctl print system/com.fangxuele.wepush-next.service
 以管理员 PowerShell 执行：
 
 ```powershell
-Expand-Archive .\wepush-next-0.1.0-alpha.4.zip .\release
+Expand-Archive .\wepush-next-0.1.0-beta.1-windows-x64.zip .\release
 Set-ExecutionPolicy -Scope Process Bypass
-& .\release\wepush-next-0.1.0-alpha.4\install\windows\install.ps1 -Component service
+& .\release\wepush-next-0.1.0-beta.1\install\install.ps1
 Get-Service WePushNextService
 ```
 
-Windows 安装器会下载并校验固定版本的 WinSW，因此安装时需要能够访问对应的 GitHub Release Asset。
+Windows 发行包已经携带并再次校验固定版本 WinSW；安装阶段不访问网络。精简包也携带 WinSW，只有 Java 由系统提供。
 
 配置路径、备份、升级、卸载、Server/HA、PostgreSQL、S3 与插件步骤见[部署与运维文档](deployment-and-operations.md)。
 
@@ -325,7 +328,7 @@ Windows 安装器会下载并校验固定版本的 WinSW，因此安装时需要
 - Secret 主密钥：`.local/secrets/master-key.json`
 - Artifact：`.local/artifacts`
 
-系统服务安装后的路径因操作系统而异，具体以部署文档和生成的 `service.env` 为准。备份时必须同时保留数据库、Secret 主密钥和 Artifact；只恢复数据库而丢失主密钥，会导致已有 Secret 无法解密。
+系统服务安装后的路径因操作系统而异，具体以部署文档和生成的 `service.env` 为准。正式 `backup` 会停止相关服务，写入格式/版本/内容清单和每个文件的 SHA-256，再调用 Restore 校验；`restore` 会先保留恢复前副本，替换后执行安装健康门，失败则自动恢复原数据。数据库、Secret 主密钥、Artifact、Agent Identity、Journal、Event/Completion Outbox 和插件必须作为一个一致备份恢复。
 
 默认无认证模式仅允许 Service 监听回环地址。不要直接把 `127.0.0.1` 改成 `0.0.0.0`。非回环监听必须同时启用 API Security、设置强 Bootstrap Token，并在网络入口配置 TLS；Server 模式还会强制 PostgreSQL、S3-compatible Artifact Store 和 Agent gRPC TLS。
 
@@ -365,7 +368,7 @@ Service 已开启安全模式。把 Bootstrap Token 或已签发 Token 填入 We
 - [详细设计](detailed-design.md)
 - [部署与运维](deployment-and-operations.md)
 - [实现状态](implementation-status.md)
-- [本版本 Release Notes](releases/0.1.0-alpha.4.md)
+- [本版本 Release Notes](releases/0.1.0-beta.1.md)
 - [安全策略](../SECURITY.md)
 
 普通问题和功能建议可提交 GitHub Issue。安全漏洞不要公开披露，请按 `SECURITY.md` 中的方式私下报告。

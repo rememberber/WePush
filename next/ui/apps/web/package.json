@@ -1,13 +1,14 @@
 {
   "name": "@wepush-next/web",
-  "version": "0.1.0-alpha.4",
+  "version": "0.1.0-beta.1",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "tsc -p tsconfig.json && vite build",
     "typecheck": "tsc -p tsconfig.json",
-    "preview": "vite preview --host 127.0.0.1"
+    "preview": "vite preview --host 127.0.0.1",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@wepush-next/design-tokens": "workspace:*",
@@ -16,6 +17,7 @@
     "react-dom": "catalog:"
   },
   "devDependencies": {
+    "@playwright/test": "1.62.1",
     "@tailwindcss/vite": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",

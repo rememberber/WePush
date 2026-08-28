@@ -21,6 +21,7 @@ import java.util.zip.ZipOutputStream;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 final class SignedProviderPluginManagerTest {
     @TempDir
@@ -42,7 +43,10 @@ final class SignedProviderPluginManagerTest {
 
         try (SignedProviderPluginManager manager = new SignedProviderPluginManager(
                 temporary, false, trusted, new ObjectMapper())) {
-            assertDoesNotThrow(() -> manager.verify(archive));
+            SignedProviderPluginManager.VerifiedPlugin verified = assertDoesNotThrow(() -> manager.verify(archive));
+            assertEquals("test-provider", verified.pluginId());
+            assertEquals("1.0.0", verified.version());
+            assertEquals("test-provider.zip", verified.canonicalName());
         }
     }
 
@@ -71,6 +75,21 @@ final class SignedProviderPluginManagerTest {
             IllegalStateException problem = assertThrows(IllegalStateException.class,
                     () -> manager.verify(archive));
             assertTrue(problem.getMessage().contains("not trusted"));
+        }
+    }
+
+    @Test
+    void rejectsPayloadOutsideTheSignedManifest() throws Exception {
+        byte[] content = new byte[]{1, 2, 3};
+        Path archive = archive(Map.of(
+                "plugin.json", manifest("", Map.of("payload.bin", sha256(content))),
+                "payload.bin", content,
+                "lib/unlisted.jar", new byte[]{4, 5, 6}));
+        try (SignedProviderPluginManager manager = new SignedProviderPluginManager(
+                temporary, true, "", new ObjectMapper())) {
+            IllegalStateException problem = assertThrows(IllegalStateException.class,
+                    () -> manager.verify(archive));
+            assertTrue(problem.getMessage().contains("outside the signed manifest"));
         }
     }
 

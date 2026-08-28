@@ -11,4 +11,7 @@ if [ -z "${WEPUSH_WEB_ROOT:-}" ] && [ -f "$WEPUSH_RELEASE_ROOT/web/index.html" ]
   WEPUSH_WEB_ROOT="file:$WEPUSH_RELEASE_ROOT/web/"
   export WEPUSH_WEB_ROOT
 fi
-exec "${WEPUSH_JAVA:-java}" ${WEPUSH_JAVA_OPTS:-} -jar "$WEPUSH_RELEASE_ROOT/lib/wepush-next-service.jar" "$@"
+if [ -n "${WEPUSH_JAVA:-}" ]; then WEPUSH_JAVA_COMMAND=$WEPUSH_JAVA
+elif [ -x "$WEPUSH_RELEASE_ROOT/runtime/bin/java" ]; then WEPUSH_JAVA_COMMAND="$WEPUSH_RELEASE_ROOT/runtime/bin/java"
+else WEPUSH_JAVA_COMMAND=java; fi
+exec "$WEPUSH_JAVA_COMMAND" --enable-native-access=ALL-UNNAMED ${WEPUSH_JAVA_OPTS:-} -jar "$WEPUSH_RELEASE_ROOT/lib/wepush-next-service.jar" "$@"

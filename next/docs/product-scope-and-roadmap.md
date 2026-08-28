@@ -77,7 +77,7 @@ PostgreSQL、S3-compatible Store 和多节点 HA 是可选的用户自建形态�
 
 ## 5. 当前基线
 
-`0.1.0-alpha.4` 已形成独立构建的日常使用闭环和首批真实渠道组合：
+`0.1.0-beta.1` 已形成独立构建的日常使用、真实渠道和自部署运维闭环：
 
 - Core API、Provider SPI、虚拟线程 Engine，以及 HTTP、SMTP Email、三类群机器人、阿里云短信、微信公众号、小程序和企业微信应用消息 Provider。
 - Standalone Service、SQLite、Local Artifact、Local Envelope Secret Store。
@@ -87,8 +87,12 @@ PostgreSQL、S3-compatible Store 和多节点 HA 是可选的用户自建形态�
 - Agent Enrollment、Lease/Fencing、Secret Envelope、Artifact 上传和断线恢复。
 - Account/Message/Audience/Job/Schedule 的编辑、修订、复制、启停与归档。
 - CSV/TXT 流式受众导入、正式发送二次确认、失败项关联重发、分页筛选与真实总览。
+- 三平台含 Java Runtime 完整包、系统 Java 精简包、统一 Standalone/高级分组件安装和离线 Windows Service Wrapper。
+- 正式 Backup/Restore、Payload 文件集合与逐文件内容校验、升级 Installation Health 与失败自动回退。
+- Desktop 本机 Service 运维、原生 Token 安全存储，以及签名插件 Stage/Activate/Rollback。
+- 浏览器 E2E、Desktop 冒烟、三平台恢复/失败升级和 Java 21/25 长稳矩阵。
 
-当前差距集中在自部署运维成熟、更多独立渠道插件和稳定发行，不需要继续扩大公共平台能力。
+当前差距集中在 `1.0.0` 的兼容承诺、故障注入、商业发行签名和稳定发行，不需要也不会扩大公共平台能力。
 
 ## 6. 迭代路线图
 
@@ -167,7 +171,9 @@ Classic 与 Next 可以复用业务需求、测试数据和验收经验，但不
 
 目标：让用户能够长期、可预测地安装和维护 WePush，而不依赖项目维护者远程介入。
 
-计划内容：
+状态：已完成（2026-08-28）。
+
+已交付内容：
 
 - 提供一体化 Standalone 安装体验，并保留便携包和高级分组件安装。
 - 提供包含 Java Runtime 的完整发行包，同时保留使用系统 Java 的精简包。
@@ -185,6 +191,14 @@ Classic 与 Next 可以复用业务需求、测试数据和验收经验，但不
 - Windows、Linux 和 macOS 均能在文档支持的离线条件下完成 Standalone 安装。
 - 从上一预览版本升级失败时，用户数据不丢失并可恢复旧版本运行。
 - 备份恢复后数据库、Master Key、Artifact、Agent Identity、Journal 和 Outbox 一致。
+
+验收结果：
+
+- Release 流水线在 Linux、macOS、Windows 分别用 JDK 21 `jlink` 生成完整包；精简包保留系统 Java 路径，Windows 两种包都离线携带固定摘要的 WinSW 2.12.0。
+- 统一安装入口在安装后检查 Installation Health；该健康组同时断言 Flyway 当前版本和内置 HTTP Provider 的本地无网络 Dry Run。
+- 三平台运维自测创建代表数据库、Master Key、Artifact、Agent Identity、Journal、Event/Completion Outbox 和插件的快照，验证文件集合/逐文件摘要、完整恢复，以及强制新版本健康失败后旧版本/数据回退。
+- Desktop IPC 只允许固定的服务、插件和安全存储操作；浏览器 E2E 断言 Token 不进入 `localStorage`，Desktop 三平台包执行启动冒烟。
+- Java 21/25 × SQLite/PostgreSQL 的定时长稳矩阵，以及 JDK Native Access 和 Shade 重复资源清理进入发行门禁。
 
 ### 6.5 `1.0.0`：稳定发行
 

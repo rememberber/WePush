@@ -1,20 +1,26 @@
-param([ValidateSet("service", "agent", "all")][string]$Component = "all")
+param([ValidateSet("standalone", "service", "agent", "all")][string]$Component = "standalone")
 $ErrorActionPreference = "Stop"
-$identity = [Security.Principal.WindowsIdentity]::GetCurrent()
-$principal = New-Object Security.Principal.WindowsPrincipal($identity)
-if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) { throw "Run PowerShell as Administrator" }
+if ($Component -eq "standalone") { $Component = "service" }
+if ($env:WEPUSH_SKIP_SERVICE_CONTROL -ne "true") {
+  $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
+  $principal = New-Object Security.Principal.WindowsPrincipal($identity)
+  if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) { throw "Run PowerShell as Administrator" }
+}
 $source = (Resolve-Path "$PSScriptRoot\..\..").Path
 $version = Split-Path $source -Leaf
-$installRoot = "$env:ProgramFiles\WePush Next"
+$installRoot = if ($env:WEPUSH_INSTALL_ROOT) { $env:WEPUSH_INSTALL_ROOT } else { "$env:ProgramFiles\WePush Next" }
 $release = "$installRoot\releases\$version"
-$dataRoot = "$env:ProgramData\WePush Next"
+$dataRoot = if ($env:WEPUSH_DATA_ROOT) { $env:WEPUSH_DATA_ROOT } else { "$env:ProgramData\WePush Next" }
 $wrapperRoot = "$dataRoot\winsw"
-$javaVersion = (& java.exe -version 2>&1 | Select-Object -First 1).ToString()
+$java = if ($env:WEPUSH_JAVA) { $env:WEPUSH_JAVA } elseif (Test-Path "$source\runtime\bin\java.exe") { "$source\runtime\bin\java.exe" } else { "java.exe" }
+$javaVersion = (& $java -version 2>&1 | Select-Object -First 1).ToString()
 if ($javaVersion -notmatch 'version "(\d+)') { throw "Java 21+ is required" }
 if ([int]$Matches[1] -lt 21) { throw "Java 21+ is required" }
 New-Item -ItemType Directory -Force -Path "$installRoot\releases", $dataRoot, "$dataRoot\service", "$dataRoot\agent", "$dataRoot\agent\plugins\active", "$dataRoot\logs", $wrapperRoot | Out-Null
-& icacls.exe $dataRoot /inheritance:r /grant:r '*S-1-5-18:(OI)(CI)F' '*S-1-5-32-544:(OI)(CI)F' '*S-1-5-19:(OI)(CI)M' | Out-Null
-if ($LASTEXITCODE -ne 0) { throw "Unable to secure WePush Next ProgramData ACL" }
+if ($env:WEPUSH_SKIP_SERVICE_CONTROL -ne "true") {
+  & icacls.exe $dataRoot /inheritance:r /grant:r '*S-1-5-18:(OI)(CI)F' '*S-1-5-32-544:(OI)(CI)F' '*S-1-5-19:(OI)(CI)M' | Out-Null
+  if ($LASTEXITCODE -ne 0) { throw "Unable to secure WePush Next ProgramData ACL" }
+}
 if (-not (Test-Path $release)) { Copy-Item $source $release -Recurse }
 $current = "$installRoot\current"
 if (Test-Path $current) {
@@ -57,18 +63,26 @@ WEPUSH_PLUGIN_DEVELOPER_MODE=false
 WEPUSH_JAVA_OPTS=-XX:MaxRAMPercentage=75
 "@ | Set-Content -Encoding UTF8 $agentConfig
 }
-$winsw = "$wrapperRoot\WinSW-x64.exe"
-if (-not (Test-Path $winsw)) { & "$source\install\windows\fetch-winsw.ps1" -Destination $winsw }
-foreach ($unit in @("Service", "Agent")) {
-  if ($Component -eq "all" -or $Component -eq $unit.ToLowerInvariant()) {
-    $name = "WePushNext$unit"
-    $exe = "$wrapperRoot\$name.exe"
-    Copy-Item $winsw $exe -Force
-    Copy-Item "$source\install\windows\$name.xml" "$wrapperRoot\$name.xml" -Force
-    & $exe stop 2>$null
-    & $exe uninstall 2>$null
-    & $exe install
-    & $exe start
+$bundledWinsw = "$source\install\windows\WinSW-x64.exe"
+if (-not (Test-Path $bundledWinsw -PathType Leaf)) { throw "Offline WinSW wrapper is missing from the release" }
+$expectedLength = 18243033
+$expectedSha256 = "05b82d46ad331cc16bdc00de5c6332c1ef818df8ceefcd49c726553209b3a0da"
+if ((Get-Item $bundledWinsw).Length -ne $expectedLength) { throw "Bundled WinSW file length mismatch" }
+if ((Get-FileHash $bundledWinsw -Algorithm SHA256).Hash.ToLowerInvariant() -ne $expectedSha256) { throw "Bundled WinSW SHA-256 mismatch" }
+if ($env:WEPUSH_SKIP_SERVICE_CONTROL -ne "true") {
+  $winsw = "$wrapperRoot\WinSW-x64.exe"
+  Copy-Item $bundledWinsw $winsw -Force
+  foreach ($unit in @("Service", "Agent")) {
+    if ($Component -eq "all" -or $Component -eq $unit.ToLowerInvariant()) {
+      $name = "WePushNext$unit"
+      $exe = "$wrapperRoot\$name.exe"
+      Copy-Item $winsw $exe -Force
+      Copy-Item "$source\install\windows\$name.xml" "$wrapperRoot\$name.xml" -Force
+      & $exe stop 2>$null
+      & $exe uninstall 2>$null
+      & $exe install
+      & $exe start
+    }
   }
 }
 Write-Host "Installed WePush Next $version ($Component)"

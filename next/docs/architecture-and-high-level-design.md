@@ -567,7 +567,7 @@ Desktop UI 是 Service API 的薄客户端，不直接依赖 Core 或数据库�
 - 尽量复用 WebUI 页面、Schema 渲染器和 API 客户端。
 - 本地连接使用回环地址和短期引导凭据，避免无认证端口。
 
-Desktop 外壳固定为 Electron 43.x，并复用 WebUI 的 React 页面、Schema Renderer、API Client 和设计 Token。Main、Preload、Renderer 严格分层；Renderer 禁用 Node.js 集成，启用 Context Isolation 和 Sandbox，只通过最小白名单 IPC 使用桌面能力。该选择不改变 Desktop 只能通过 Service API 访问业务能力的边界。详见 [ADR-0002](adr/0002-technology-baseline.md)。
+Desktop 外壳固定为 Electron 43.x，并复用 WebUI 的 React 页面、Schema Renderer、API Client 和设计 Token。Main、Preload、Renderer 严格分层；Renderer 禁用 Node.js 集成，启用 Context Isolation 和 Sandbox，只通过固定白名单 IPC 使用本机 Service 状态/启停/日志/诊断、签名插件生命周期和 Token `safeStorage`，不提供任意命令入口。浏览器 Token 只保存在标签页会话，Desktop 在系统安全后端不可用时拒绝弱持久化。该选择不改变 Desktop 只能通过 Service API 访问业务能力的边界。详见 [ADR-0002](adr/0002-technology-baseline.md)。
 
 ## 18. 数据与存储设计
 

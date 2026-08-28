@@ -8,3 +8,10 @@
 /jdks/
 /downloads/
 /dist/
+
+# Generated during WePush Next release packaging from a pinned upstream binary.
+/next/distribution/src/main/distribution/install/windows/WinSW-x64.exe
+
+# Playwright generates these local reports during browser end-to-end tests.
+/next/ui/apps/web/playwright-report/
+/next/ui/apps/web/test-results/

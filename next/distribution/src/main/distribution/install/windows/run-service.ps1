@@ -9,7 +9,7 @@ Get-Content $config | ForEach-Object {
 }
 $root = (Resolve-Path "$PSScriptRoot\..\..").Path
 if (-not $env:WEPUSH_WEB_ROOT -and (Test-Path "$root\web\index.html")) { $env:WEPUSH_WEB_ROOT = "file:$($root.Replace('\', '/'))/web/" }
-$java = if ($env:WEPUSH_JAVA) { $env:WEPUSH_JAVA } else { "java.exe" }
+$java = if ($env:WEPUSH_JAVA) { $env:WEPUSH_JAVA } elseif (Test-Path "$root\runtime\bin\java.exe") { "$root\runtime\bin\java.exe" } else { "java.exe" }
 $javaOptions = if ($env:WEPUSH_JAVA_OPTS) { $env:WEPUSH_JAVA_OPTS.Split(" ", [System.StringSplitOptions]::RemoveEmptyEntries) } else { @() }
-& $java @javaOptions -jar "$root\lib\wepush-next-service.jar"
+& $java --enable-native-access=ALL-UNNAMED @javaOptions -jar "$root\lib\wepush-next-service.jar"
 exit $LASTEXITCODE

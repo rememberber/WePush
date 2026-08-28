@@ -1,6 +1,6 @@
 # WePush Next 部署与运维
 
-本文是 `0.1.0-alpha.4` 公开预览版的可执行部署说明。Standalone 使用 SQLite 和本地 Artifact；用户自建 Server 使用 PostgreSQL、S3-compatible Artifact、两个以上 Service 实例以及外部负载均衡器。Classic 不参与 Next 的构建、安装或运行。WePush 不提供官方托管控制面，所有部署、数据、密钥和备份均由用户掌控；产品边界见[《产品目标、边界与路线图》](product-scope-and-roadmap.md)。
+本文是 `0.1.0-beta.1` 公开预览版的可执行部署说明。Standalone 使用 SQLite 和本地 Artifact；用户自建 Server 使用 PostgreSQL、S3-compatible Artifact、两个以上 Service 实例以及外部负载均衡器。Classic 不参与 Next 的构建、安装或运行。WePush 不提供官方托管控制面，所有部署、数据、密钥和备份均由用户掌控；产品边界见[《产品目标、边界与路线图》](product-scope-and-roadmap.md)。
 
 Service 的无认证开发模式仅允许绑定回环地址。任何非回环 HTTP 监听都必须启用 API Security；`server` 模式还会强制 PostgreSQL、S3-compatible Artifact Store 和 Agent gRPC TLS，缺少任一项均启动失败。
 
@@ -14,17 +14,20 @@ pnpm install --frozen-lockfile
 pnpm check
 
 cd ..
+./scripts/prepare-winsw.sh
 ./mvnw verify
 ./mvnw -DskipTests package
 ```
 
 测试必须先独立通过，`-DskipTests` 只用于之后的发行打包阶段。输出位于：
 
-- `distribution/target/wepush-next-0.1.0-alpha.4.tar.gz`
-- `distribution/target/wepush-next-0.1.0-alpha.4.zip`
+- `distribution/target/wepush-next-0.1.0-beta.1.tar.gz`
+- `distribution/target/wepush-next-0.1.0-beta.1.zip`
 - 对应 `.sha256` 文件
 
-归档内包含 Service/Agent Fat JAR、生产 WebUI、三平台安装脚本、配置模板和 Provider 插件生命周期工具。Desktop 原生目录包在当前操作系统执行：
+上面两个归档是使用系统 Java 21+ 的精简包。Release 流水线还在 Linux、macOS、Windows Runner 上用 JDK 21 `jlink` 生成对应架构的完整包，目录内多出 `runtime/`；两个变体都携带固定摘要的 WinSW 2.12.0，因此 Windows 用户安装时不联网。`prepare-winsw.sh` 只在源码发行构建阶段从上游下载并验证固定长度与 SHA-256。
+
+归档内包含 Service/Agent Fat JAR、生产 WebUI、统一/分组件安装脚本、正式 Backup/Restore/Upgrade、配置模板和 Provider 插件生命周期工具。Desktop 原生目录包在当前操作系统执行：
 
 ```bash
 cd next/ui
@@ -32,16 +35,16 @@ pnpm --filter @wepush-next/desktop package
 ```
 
 Desktop 打包器使用锁定版本的 Electron，不引入带 Git 构建依赖的额外打包链；缺少 Electron Runtime 时会运行该锁定版本随附的安装脚本。macOS、Windows、Linux 必须分别在目标操作系统打包。
-pnpm 已显式信任固定版本 Electron 的原生运行时下载脚本；无法访问 GitHub Release Asset 的网络可在安装依赖时设置受信 `ELECTRON_MIRROR`。`0.1.0-alpha.4` 公开预览版有意不使用商业签名：macOS 只做 ad-hoc 签名且不提交 Apple Notarization，Windows 不做 Authenticode 签名。系统可能显示未知开发者警告，请只从 GitHub Releases 下载并验证 `SHA256SUMS`。未来稳定发行仍应接入 Developer ID/Notarization 与 Authenticode。
+pnpm 已显式信任固定版本 Electron 的原生运行时下载脚本；无法访问 GitHub Release Asset 的网络可在安装依赖时设置受信 `ELECTRON_MIRROR`。`0.1.0-beta.1` 公开预览版有意不使用商业签名：macOS 只做 ad-hoc 签名且不提交 Apple Notarization，Windows 不做 Authenticode 签名。系统可能显示未知开发者警告，请只从 GitHub Releases 下载并验证 `SHA256SUMS`。未来稳定发行仍应接入 Developer ID/Notarization 与 Authenticode。
 
 ## 2. Linux Standalone
 
 解压、校验并安装：
 
 ```bash
-sha256sum -c wepush-next-0.1.0-alpha.4.tar.gz.sha256
-tar -xzf wepush-next-0.1.0-alpha.4.tar.gz
-sudo ./wepush-next-0.1.0-alpha.4/install/linux/install.sh all
+sha256sum wepush-next-0.1.0-beta.1-linux-x64.tar.gz
+tar -xzf wepush-next-0.1.0-beta.1-linux-x64.tar.gz
+sudo ./wepush-next-0.1.0-beta.1/install/install.sh
 ```
 
 安装布局：
@@ -50,19 +53,21 @@ sudo ./wepush-next-0.1.0-alpha.4/install/linux/install.sh all
 - 原子当前链接：`/opt/wepush-next/current`
 - 配置：`/etc/wepush-next/service.env`、`agent.env`
 - 数据：`/var/lib/wepush-next/service`、`agent`
-- systemd：`wepush-next-service`、`wepush-next-agent`
+- systemd：默认安装 `wepush-next-service`；高级 `all` 模式另安装 `wepush-next-agent`
 
 环境文件由 root 持有，只向相应服务组开放读取。修改配置后执行：
 
 ```bash
-sudo systemctl restart wepush-next-service wepush-next-agent
-curl --fail http://127.0.0.1:18990/actuator/health/readiness
+sudo systemctl restart wepush-next-service
+curl --fail http://127.0.0.1:18990/actuator/health/installation
 ```
 
 备份会停止两个进程以获得 SQLite、Journal、Outbox 和配置的一致快照，并恢复原先处于运行状态的服务：
 
 ```bash
 sudo /opt/wepush-next/current/install/linux/backup.sh
+sudo /opt/wepush-next/current/install/linux/restore.sh --validate-only "$BACKUP_FILE"
+sudo /opt/wepush-next/current/install/linux/restore.sh "$BACKUP_FILE" "$BACKUP_SHA256"
 sudo /opt/wepush-next/current/install/linux/upgrade.sh release.tar.gz <sha256>
 sudo /opt/wepush-next/current/install/linux/uninstall.sh
 sudo /opt/wepush-next/current/install/linux/uninstall.sh --purge  # 明确删除配置与数据
@@ -71,9 +76,9 @@ sudo /opt/wepush-next/current/install/linux/uninstall.sh --purge  # 明确删除
 ## 3. macOS Standalone
 
 ```bash
-sudo ./wepush-next-0.1.0-alpha.4/install/macos/install.sh all
+sudo ./wepush-next-0.1.0-beta.1/install/install.sh
 launchctl print system/com.fangxuele.wepush-next.service
-curl --fail http://127.0.0.1:18990/actuator/health/readiness
+curl --fail http://127.0.0.1:18990/actuator/health/installation
 ```
 
 版本、数据、配置和日志分别位于 `/Library/WePushNext`、`/Library/Preferences/wepush-next` 与 `/Library/Logs/WePushNext`。安装器用 LaunchDaemon 托管 Service/Agent，并拒绝覆盖非符号链接的 `current` 路径。
@@ -81,6 +86,8 @@ LaunchDaemon 默认以执行 `sudo` 的非 root 用户运行；无人值守安�
 
 ```bash
 sudo /Library/WePushNext/current/install/macos/backup.sh
+sudo /Library/WePushNext/current/install/macos/restore.sh --validate-only "$BACKUP_FILE"
+sudo /Library/WePushNext/current/install/macos/restore.sh "$BACKUP_FILE" "$BACKUP_SHA256"
 sudo /Library/WePushNext/current/install/macos/upgrade.sh release.tar.gz <sha256>
 sudo /Library/WePushNext/current/install/macos/uninstall.sh
 ```
@@ -90,17 +97,19 @@ sudo /Library/WePushNext/current/install/macos/uninstall.sh
 以管理员 PowerShell 执行：
 
 ```powershell
-Expand-Archive .\wepush-next-0.1.0-alpha.4.zip .\release
+Expand-Archive .\wepush-next-0.1.0-beta.1-windows-x64.zip .\release
 Set-ExecutionPolicy -Scope Process Bypass
-& .\release\wepush-next-0.1.0-alpha.4\install\windows\install.ps1 -Component all
-Get-Service WePushNextService, WePushNextAgent
-Invoke-WebRequest http://127.0.0.1:18990/actuator/health/readiness
+& .\release\wepush-next-0.1.0-beta.1\install\install.ps1
+Get-Service WePushNextService
+Invoke-WebRequest http://127.0.0.1:18990/actuator/health/installation
 ```
 
-安装器固定下载并校验 WinSW 2.12.0 的长度和 SHA-256，然后以低权限 `LocalService` 建立 Windows Service。版本目录位于 `%ProgramFiles%\WePush Next`，配置和数据位于 `%ProgramData%\WePush Next`；该目录移除继承 ACL，只允许 LocalService、SYSTEM 和 Administrators。
+安装器只使用发行包内的 WinSW 2.12.0，并在安装前再次校验固定长度和 SHA-256；缺失或被修改时失败关闭，不进行在线下载。Service 以低权限 `LocalService` 运行。版本目录位于 `%ProgramFiles%\WePush Next`，配置和数据位于 `%ProgramData%\WePush Next`；该目录移除继承 ACL，只允许 LocalService、SYSTEM 和 Administrators。备份默认写到独立的 `%ProgramData%\WePush Next Backups`。
 
 ```powershell
 & "$env:ProgramFiles\WePush Next\current\install\windows\backup.ps1"
+& "$env:ProgramFiles\WePush Next\current\install\windows\restore.ps1" -ValidateOnly -Archive '<backup>.zip'
+& "$env:ProgramFiles\WePush Next\current\install\windows\restore.ps1" -Archive '<backup>.zip' -ExpectedSha256 '<sha256>'
 & "$env:ProgramFiles\WePush Next\current\install\windows\upgrade.ps1" -Archive release.zip -ExpectedSha256 <sha256>
 & "$env:ProgramFiles\WePush Next\current\install\windows\uninstall.ps1"
 ```
@@ -126,16 +135,17 @@ Agent 生成 P-256 私钥，在 HTTPS Enrollment 后保存长期 Credential、�
 
 HTTP、SMTP Email、飞书/钉钉/企微机器人、阿里云短信、微信公众号、小程序和企业微信应用消息是发行包内置 Provider，不需要放入插件目录。内置渠道的账号、SecretRef、最小消息和验证步骤见[《内置 Provider 指南》](provider-guide.md)。
 
-正式模式必须设置 `WEPUSH_PLUGIN_TRUSTED_KEYS`，格式是 `keyId=Base64Ed25519PublicKey`，多个发布者用逗号分隔。插件 ZIP 包内 `plugin.json` 的 SHA-256 清单与 `signature.ed25519` 必须通过验证；ZIP Slip、共享 API 重复打包、未知签名者和 SPI 不兼容都会导致 Agent 失败关闭。
+正式模式必须设置 `WEPUSH_PLUGIN_TRUSTED_KEYS`，格式是 `keyId:Base64Ed25519PublicKey`，多个发布者用逗号分隔。插件 ZIP 包内 `plugin.json` 的 SHA-256 清单与 `signature.ed25519` 必须通过验证；ZIP Slip、共享 API 重复打包、未知签名者和 SPI 不兼容都会导致 Agent 失败关闭。
 
 Linux 应以 Agent 服务账号执行 Stage/Activate，确保文件所有权正确：
 
 ```bash
 sudo -u wepush-agent /opt/wepush-next/current/plugins/stage.sh provider.zip
-sudo -u wepush-agent /opt/wepush-next/current/plugins/activate.sh provider.zip
+sudo -u wepush-agent /opt/wepush-next/current/plugins/activate.sh <pluginId>.zip
+sudo -u wepush-agent /opt/wepush-next/current/plugins/rollback.sh <pluginId>.zip
 ```
 
-激活采用版本备份、Supervisor 重启和健康观察；新插件导致 Agent 退出时自动恢复旧包并再次启动。该机制是受控滚动更新，不在 JVM 内热卸载 ClassLoader。
+Stage 先调用 Agent 的生产校验器读取 `plugin.json`，验证摘要、SPI 和 Ed25519 签名，再以 `<pluginId>.zip` 作为稳定文件名落盘。激活采用版本备份、Supervisor 重启和健康观察；新插件导致 Agent 退出时自动恢复旧包并再次启动。Desktop 的 Providers 页提供相同的本地选择、校验、Stage、Activate 和 Rollback 操作，并通过系统授权写入插件目录。该机制是受控滚动更新，不在 JVM 内热卸载 ClassLoader。
 
 ## 7. Server/HA 容器拓扑
 
@@ -177,7 +187,9 @@ docker compose --env-file .env.server.local -f compose.server.yaml down
 
 ## 8. 升级、恢复与验收
 
-升级顺序：备份 → 校验发行 SHA-256 → 展开新版本目录 → 原子切换 `current` → 重启 → Readiness/最小 Run 验证。Server 滚动升级先执行单实例 Migration Job，再逐个替换 Service，最后滚动 Drain/Restart Agent。
+Standalone 升级顺序：一致性备份 → 校验发行 SHA-256 → 展开新版本目录 → 原子切换 `current` → 重启 → Installation Health（Readiness、Flyway 当前版本、内置 Provider 本地 Dry Run）→ 成功保留备份。任一步失败都会切回旧 `current`，用刚生成的备份恢复配置和数据，再验证旧版本；命令以失败状态退出并保留恢复目录供人工审计。Server 滚动升级先执行单实例 Migration Job，再逐个替换 Service，最后滚动 Drain/Restart Agent。
+
+Backup Archive 包含 `BACKUP-MANIFEST`、逐文件 `SHA256SUMS` 和配置/数据 Payload。Restore 在展开前拒绝路径穿越，并要求实际 Payload 文件集合与摘要清单完全一致；替换前保存 `pre-restore-*`，恢复后执行相同 Installation Health，失败时恢复原目录。不要分别恢复数据库和 Master Key。
 
 最低验收项：
 

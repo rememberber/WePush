@@ -1,0 +1,8 @@
+WinSW 2.12.0
+Copyright (c) 2008-2024 WinSW contributors
+License: MIT
+Source and license: https://github.com/winsw/winsw/tree/v2.12.0
+
+The release build downloads WinSW-x64.exe from the upstream GitHub Release,
+verifies its pinned byte length and SHA-256 digest, and embeds it so Windows
+installation remains fully offline.

@@ -4,6 +4,25 @@
 
 ## Unreleased
 
+## 0.1.0-beta.1 — 2026-08-28
+
+### Added
+
+- 三平台统一 Standalone 安装入口、`jlink` Java Runtime 完整包和系统 Java 精简包；Windows 离线携带固定摘要的 WinSW。
+- 正式 Backup/Restore、逐文件内容校验、恢复前副本、Installation Health，以及升级失败自动切回旧版本和数据。
+- Desktop 本机 Service 检测/启停/日志/诊断、原生安全 Token 存储和签名 Provider 插件 Stage/Activate/Rollback。
+- Playwright 浏览器 E2E、三平台 Desktop 冒烟、安装/恢复/失败升级自测和 Java 21/25 × SQLite/PostgreSQL 长稳矩阵。
+
+### Changed
+
+- 浏览器 Token 从持久 `localStorage` 收口为标签页 `sessionStorage`；Desktop 在系统安全存储不可用时拒绝弱持久化。
+- Provider 插件 Stage 先复用 Agent 生产校验器，并按清单 `pluginId` 生成稳定激活文件名。
+- Service 新增 Installation Health 组，同时检查 Flyway 当前版本和无网络 Provider Dry Run。
+
+### Fixed
+
+- 清理未来 JDK SQLite Native Access 警告、Agent Shade 重复模块/签名/许可证资源和基础设施测试日志依赖缺口。
+
 ## 0.1.0-alpha.4 — 2026-08-28
 
 ### Added

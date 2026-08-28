@@ -13,13 +13,15 @@ if (Test-Path $active) {
 }
 Move-Item $staged $active
 try {
-  Restart-Service WePushNextAgent
-  Start-Sleep -Seconds 5
-  if ((Get-Service WePushNextAgent).Status -ne "Running") { throw "Agent failed after plugin activation" }
+  if ($env:WEPUSH_SKIP_SERVICE_CONTROL -ne "true") {
+    Restart-Service WePushNextAgent
+    Start-Sleep -Seconds 5
+    if ((Get-Service WePushNextAgent).Status -ne "Running") { throw "Agent failed after plugin activation" }
+  }
 } catch {
   Move-Item $active "$staged.failed" -Force
   if ($previous) { Move-Item $previous $active -Force }
-  Restart-Service WePushNextAgent -ErrorAction SilentlyContinue
+  if ($env:WEPUSH_SKIP_SERVICE_CONTROL -ne "true") { Restart-Service WePushNextAgent -ErrorAction SilentlyContinue }
   throw "Plugin activation failed; previous version was restored: $($_.Exception.Message)"
 }
 Write-Host "Activated and verified $nameOnly"

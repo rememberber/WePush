@@ -27,6 +27,15 @@ public final class WePushNextAgentApplication {
 
     public static void main(String[] args) {
         ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
+        if (args.length > 0) {
+            if (args.length == 2 && "--verify-plugin".equals(args[0])) {
+                verifyPlugin(Path.of(args[1]), mapper);
+                return;
+            }
+            System.err.println("Usage: wepush-agent [--verify-plugin provider-plugin.zip]");
+            System.exit(2);
+            return;
+        }
         List<ProviderFactory> builtInProviders = ServiceLoader.load(ProviderFactory.class).stream()
                 .map(ServiceLoader.Provider::get)
                 .toList();
@@ -122,6 +131,19 @@ public final class WePushNextAgentApplication {
             }
         } catch (InterruptedException interrupted) {
             Thread.currentThread().interrupt();
+        }
+    }
+
+    static void verifyPlugin(Path archive, ObjectMapper mapper) {
+        SignedProviderPluginManager verifier = new SignedProviderPluginManager(
+                archive.toAbsolutePath().normalize().getParent(), false,
+                System.getenv("WEPUSH_PLUGIN_TRUSTED_KEYS"), mapper);
+        try {
+            SignedProviderPluginManager.VerifiedPlugin plugin = verifier.verify(archive.toAbsolutePath().normalize());
+            System.out.printf("{\"valid\":true,\"pluginId\":\"%s\",\"version\":\"%s\",\"canonicalName\":\"%s\"}%n",
+                    plugin.pluginId(), plugin.version(), plugin.canonicalName());
+        } catch (Exception problem) {
+            throw new IllegalStateException("Provider plugin verification failed: " + rootMessage(problem), problem);
         }
     }
 

@@ -4,9 +4,24 @@ WePush Next 是与 Classic 完全独立的新产品线。Classic 与 Next 可以
 
 > 产品定位：WePush Next 是开源、可下载、可安装、由用户自行部署和运维的消息推送产品。项目不建设官方公共 SaaS、注册计费订阅、公共租户平台或云 KMS/Secret Manager 集成。正式范围和分版本计划见[《产品目标、边界与路线图》](docs/product-scope-and-roadmap.md)。
 
-> 当前版本：`0.1.0-alpha.4` Public Preview。它不是稳定版，Desktop 与安装包未使用商业代码签名。下载、校验和已知边界见 [`PREVIEW-NOTICE.md`](PREVIEW-NOTICE.md) 与 [`docs/releases/0.1.0-alpha.4.md`](docs/releases/0.1.0-alpha.4.md)。
+> 当前版本：`0.1.0-beta.1` Public Preview。它不是稳定版，Desktop 与安装包未使用商业代码签名。下载、校验和已知边界见 [`PREVIEW-NOTICE.md`](PREVIEW-NOTICE.md) 与 [`docs/releases/0.1.0-beta.1.md`](docs/releases/0.1.0-beta.1.md)。
 
 第一次下载和使用请从[《WePush Next 对外使用指南》](docs/user-guide.md)开始。渠道账号、模板、Recipient、SecretRef、限流和错误语义见[《内置 Provider 指南》](docs/provider-guide.md)。
+
+推荐下载对应操作系统、内含 Java Runtime 的完整包；解压后执行统一 Standalone 安装入口：
+
+```bash
+# Linux / macOS
+sudo ./install/install.sh
+```
+
+```powershell
+# Windows 管理员 PowerShell
+Set-ExecutionPolicy -Scope Process Bypass
+& .\install\install.ps1
+```
+
+安装完成前会检查 Service Readiness、Flyway 数据库版本和本地 Provider Dry Run。需要便携运行或已有 Java 21+ 时，可选择精简包；分组件部署仍可直接使用 `install/<os>/install.* service|agent|all`。
 
 ## 验证 Java 工程
 
@@ -117,7 +132,7 @@ try (var engine = WePushEngine.builder()
 }
 ```
 
-从源码安装、依赖声明和完整示例见 [`sdk/README.md`](sdk/README.md) 与 [`sdk/embedded-java/README.md`](sdk/embedded-java/README.md)。`alpha.4` 发行包和独立 Java SDK 附件同时提供 Remote SDK、Embedded SDK、HTTP Provider 与标准渠道 Provider。
+从源码安装、依赖声明和完整示例见 [`sdk/README.md`](sdk/README.md) 与 [`sdk/embedded-java/README.md`](sdk/embedded-java/README.md)。`beta.1` 发行包和独立 Java SDK 附件同时提供 Remote SDK、Embedded SDK、HTTP Provider 与标准渠道 Provider。
 
 ## 当前开发基线
 
@@ -126,6 +141,7 @@ try (var engine = WePushEngine.builder()
 - Service 分层、SQLite/Flyway、资源编辑/不可变修订/分页、流式 Audience Import、正式发送确认、关联重发、真实总览、Agent 注册/心跳/持久 Lease、信封加密 Secret Store、Result/Command/Artifact 持久化、SSE，以及可切换的内嵌/远端执行器。
 - 相互独立的 Remote Java SDK、Embedded Java SDK 和 TypeScript API Client。
 - React WebUI、动态 Provider/SecretRef Schema、渠道消息示例、资源生命周期、CSV/TXT 导入、Dry Run/正式确认/结果/失败重发闭环、真实 Workspace 和运行总览、动态 API 文档、Electron 安全外壳和共享前端 packages。
-- 架构、单元、契约、Service 冒烟与 Account→Run→Engine→Provider 纵向测试。
+- 一体化 Standalone/离线 Windows 安装、含 Java Runtime 完整包、正式备份恢复、升级健康门与自动回退；Desktop 提供本机 Service 运维、系统安全 Token 存储和签名插件 Stage/Activate/Rollback。
+- 架构、单元、契约、浏览器 E2E、Desktop 冒烟、三平台安装/恢复/失败升级以及定时长稳矩阵。
 
 产品范围和迭代优先级以 [`docs/product-scope-and-roadmap.md`](docs/product-scope-and-roadmap.md) 为准；模块边界和实现细节以 [`docs/architecture-and-high-level-design.md`](docs/architecture-and-high-level-design.md)、[`docs/detailed-design.md`](docs/detailed-design.md)、[`docs/implementation-status.md`](docs/implementation-status.md)、[`docs/deployment-and-operations.md`](docs/deployment-and-operations.md) 及 [`docs/adr/`](docs/adr/) 为准。
