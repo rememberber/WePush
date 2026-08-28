@@ -307,6 +307,8 @@ function ProvidersPage({ client, workspaceId, providers, loading }: { client: We
         const nextSchema = document as JsonSchema;
         setSchema(nextSchema);
         setFormValue(defaultsForSchema(nextSchema));
+        setAccountName(selected.displayName);
+        setSavedAccount(undefined);
         setSchemaError(undefined);
       })
       .catch((error: unknown) => {

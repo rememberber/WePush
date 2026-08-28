@@ -1,0 +1,13 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://wepush.dev/schemas/providers/wechat-official/message/1",
+  "title":"WeChat Official Account Message",
+  "type":"object",
+  "additionalProperties":false,
+  "required":["type","payloadJsonTemplate"],
+  "properties":{
+    "type":{"type":"string","enum":["TEMPLATE","SUBSCRIBE","CUSTOM"],"default":"TEMPLATE"},
+    "payloadJsonTemplate":{"type":"string","minLength":2,"x-wepush-code-language":"json","x-wepush-variable":true,
+      "default":"{\"template_id\":\"TEMPLATE_ID\",\"data\":{\"name\":{\"value\":\"{{name}}\"}}}"}
+  }
+}

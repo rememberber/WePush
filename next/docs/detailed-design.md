@@ -671,6 +671,8 @@ META-INF/wepush/schemas/recipient.schema.json
 META-INF/wepush/schemas/ui.schema.json
 ```
 
+一个内置模块包含多个 Provider 时，可以使用 `META-INF/wepush/providers/<slug>/` 分目录保存各自 Descriptor 和三类 Schema；Factory 仍通过标准 ServiceLoader 文件发现。`provider-standard` 使用该布局。
+
 ### 14.2 扩展字段
 
 ```text
@@ -1743,6 +1745,7 @@ flowchart TD
 - CSV/Excel 导出防止公式注入。
 - 模板引擎禁止任意类访问、文件访问和反射。
 - HTTP Provider 实施 SSRF 保护和响应大小限制。
+- 标准渠道生产实现固定或严格校验厂商官方端点；响应体有界，诊断不包含 Secret、Token URL 或完整远端响应。
 - 上传文件名仅作为展示信息，不作为真实路径。
 - 日志字段使用结构化参数，不拼接未清理的控制字符。
 - OpenAPI 文档和 UI Schema 中的富文本需要清理危险 HTML。
@@ -2044,7 +2047,7 @@ Next CI 使用 `next/**` 路径过滤，Classic 和 Next 互不依赖对方构�
 - Desktop 和三平台 Service 安装。
 - PostgreSQL 18 HA、S3-compatible Artifact Store 和部署文档。
 
-当前进度：Iteration 6 基线已完成。Workspace API 与 Agent Binding、Bearer API Token、VIEWER/OPERATOR/ADMIN、审计、Cron/Misfire Scheduler、PostgreSQL Advisory Lock、跨实例 SSE 补偿、S3 Store、Prometheus、三平台安装/升级/备份/卸载、WebUI Security/Schedule/API Debug 页面、Electron 目标平台目录打包、容器 HA 参考拓扑和运维手册均已落地。后续产品增量聚焦真实 Provider、配置编辑与导入、发送确认、自部署安装升级、备份恢复和稳定发行；具体版本边界见[产品路线图](product-scope-and-roadmap.md)。
+当前进度：Iteration 6 基线已完成。Workspace API 与 Agent Binding、Bearer API Token、VIEWER/OPERATOR/ADMIN、审计、Cron/Misfire Scheduler、PostgreSQL Advisory Lock、跨实例 SSE 补偿、S3 Store、Prometheus、三平台安装/升级/备份/卸载、WebUI Security/Schedule/API Debug 页面、Electron 目标平台目录打包、容器 HA 参考拓扑和运维手册均已落地。配置编辑、导入、发送确认和首批真实 Provider 也已在后续 Alpha 完成；下一阶段聚焦自部署安装升级、备份恢复和稳定发行，具体版本边界见[产品路线图](product-scope-and-roadmap.md)。
 
 ### 44.7 Iteration 7：日常使用闭环
 
@@ -2054,6 +2057,14 @@ Next CI 使用 `next/**` 路径过滤，Classic 和 Next 互不依赖对方构�
 - 资源/Run/审计签名分页筛选、真实总览和 Standalone/Server Workspace UX。
 
 当前进度：Iteration 7 已在 `0.1.0-alpha.3` 完成。OpenAPI、Remote Java SDK、TypeScript Client、WebUI、SQLite V12/V13 和纵向集成测试同步交付；启动恢复也使用有界分页扫描。
+
+### 44.8 Iteration 8：真实消息渠道
+
+- 内置 SMTP、飞书/钉钉/企微机器人、阿里云短信、微信公众号、小程序和企业微信应用消息。
+- 每个 Provider 同步交付 Account/Message/Recipient Schema、SecretRef、Dry Run、真实发送、错误分类和本地协议测试。
+- Service/Agent 通过 ServiceLoader 发现，Embedded SDK 由调用方显式选择；WebUI 继续按实时 Schema 渲染。
+
+当前进度：Iteration 8 已在 `0.1.0-alpha.4` 完成。标准渠道集中在独立 `provider-standard` 模块，生产端点受限于厂商官方域名；微信系 Token 只在 Session 内缓存并在明确失效后刷新一次。协议、重试、限流、幂等和最小配置见[内置 Provider 指南](provider-guide.md)。
 
 ## 45. 完成定义
 

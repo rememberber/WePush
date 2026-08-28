@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.fangxuele.wepush.next</groupId>
         <artifactId>wepush-next-parent</artifactId>
-        <version>0.1.0-alpha.3</version>
+        <version>0.1.0-alpha.4</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>architecture-tests</artifactId>

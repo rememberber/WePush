@@ -13,15 +13,15 @@ Embedded Java SDK 让 Java 应用在自己的 JVM 进程内直接运行 WePush C
 
 它刻意不包含 Service API、数据库、Spring、Agent、调度器、多租户控制面和 Provider 插件发现。应用只获得执行内核，其他生命周期由应用自己管理。
 
-> `0.1.0-alpha.3` 发行包和独立 Java SDK 附件包含 Embedded SDK 及所需 POM/JAR。
+> `0.1.0-alpha.4` 发行包和独立 Java SDK 附件包含 Embedded SDK 及所需 POM/JAR。
 
 ## 要求与依赖
 
-需要 Java 21 或更高版本。从源码安装当前模块和内置 HTTP Provider：
+需要 Java 21 或更高版本。从源码安装当前模块、HTTP Provider 和标准渠道 Provider：
 
 ```bash
 cd next
-./mvnw -pl sdk/embedded-java,providers/provider-http -am install
+./mvnw -pl sdk/embedded-java,providers/provider-http,providers/provider-standard -am install
 ```
 
 调用方声明 SDK，并只加入自己允许使用的 Provider：
@@ -30,14 +30,21 @@ cd next
 <dependency>
     <groupId>com.fangxuele.wepush.next</groupId>
     <artifactId>embedded-java</artifactId>
-    <version>0.1.0-alpha.3</version>
+    <version>0.1.0-alpha.4</version>
 </dependency>
 <dependency>
     <groupId>com.fangxuele.wepush.next</groupId>
     <artifactId>provider-http</artifactId>
-    <version>0.1.0-alpha.3</version>
+    <version>0.1.0-alpha.4</version>
+</dependency>
+<dependency>
+    <groupId>com.fangxuele.wepush.next</groupId>
+    <artifactId>provider-standard</artifactId>
+    <version>0.1.0-alpha.4</version>
 </dependency>
 ```
+
+`provider-standard` 中包含 SMTP、飞书/钉钉/企微机器人、阿里云短信、微信公众号、小程序和企业微信应用消息。它只加入 Classpath，不会被 Embedded SDK 自动启用；调用方仍须显式 `.provider(new SmtpProviderFactory())` 或注册其他允许的 Factory。Account、Message、Recipient 和 SecretRef 示例见[内置 Provider 指南](../../docs/provider-guide.md)。
 
 ## 最小可运行示例
 

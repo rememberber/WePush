@@ -1,6 +1,6 @@
 {
   "name": "@wepush-next/design-tokens",
-  "version": "0.1.0-alpha.3",
+  "version": "0.1.0-alpha.4",
   "private": true,
   "sideEffects": ["*.css"],
   "exports": {

@@ -1,6 +1,6 @@
 # WePush Next 部署与运维
 
-本文是 `0.1.0-alpha.3` 公开预览版的可执行部署说明。Standalone 使用 SQLite 和本地 Artifact；用户自建 Server 使用 PostgreSQL、S3-compatible Artifact、两个以上 Service 实例以及外部负载均衡器。Classic 不参与 Next 的构建、安装或运行。WePush 不提供官方托管控制面，所有部署、数据、密钥和备份均由用户掌控；产品边界见[《产品目标、边界与路线图》](product-scope-and-roadmap.md)。
+本文是 `0.1.0-alpha.4` 公开预览版的可执行部署说明。Standalone 使用 SQLite 和本地 Artifact；用户自建 Server 使用 PostgreSQL、S3-compatible Artifact、两个以上 Service 实例以及外部负载均衡器。Classic 不参与 Next 的构建、安装或运行。WePush 不提供官方托管控制面，所有部署、数据、密钥和备份均由用户掌控；产品边界见[《产品目标、边界与路线图》](product-scope-and-roadmap.md)。
 
 Service 的无认证开发模式仅允许绑定回环地址。任何非回环 HTTP 监听都必须启用 API Security；`server` 模式还会强制 PostgreSQL、S3-compatible Artifact Store 和 Agent gRPC TLS，缺少任一项均启动失败。
 
@@ -20,8 +20,8 @@ cd ..
 
 测试必须先独立通过，`-DskipTests` 只用于之后的发行打包阶段。输出位于：
 
-- `distribution/target/wepush-next-0.1.0-alpha.3.tar.gz`
-- `distribution/target/wepush-next-0.1.0-alpha.3.zip`
+- `distribution/target/wepush-next-0.1.0-alpha.4.tar.gz`
+- `distribution/target/wepush-next-0.1.0-alpha.4.zip`
 - 对应 `.sha256` 文件
 
 归档内包含 Service/Agent Fat JAR、生产 WebUI、三平台安装脚本、配置模板和 Provider 插件生命周期工具。Desktop 原生目录包在当前操作系统执行：
@@ -32,16 +32,16 @@ pnpm --filter @wepush-next/desktop package
 ```
 
 Desktop 打包器使用锁定版本的 Electron，不引入带 Git 构建依赖的额外打包链；缺少 Electron Runtime 时会运行该锁定版本随附的安装脚本。macOS、Windows、Linux 必须分别在目标操作系统打包。
-pnpm 已显式信任固定版本 Electron 的原生运行时下载脚本；无法访问 GitHub Release Asset 的网络可在安装依赖时设置受信 `ELECTRON_MIRROR`。`0.1.0-alpha.3` 公开预览版有意不使用商业签名：macOS 只做 ad-hoc 签名且不提交 Apple Notarization，Windows 不做 Authenticode 签名。系统可能显示未知开发者警告，请只从 GitHub Releases 下载并验证 `SHA256SUMS`。未来稳定发行仍应接入 Developer ID/Notarization 与 Authenticode。
+pnpm 已显式信任固定版本 Electron 的原生运行时下载脚本；无法访问 GitHub Release Asset 的网络可在安装依赖时设置受信 `ELECTRON_MIRROR`。`0.1.0-alpha.4` 公开预览版有意不使用商业签名：macOS 只做 ad-hoc 签名且不提交 Apple Notarization，Windows 不做 Authenticode 签名。系统可能显示未知开发者警告，请只从 GitHub Releases 下载并验证 `SHA256SUMS`。未来稳定发行仍应接入 Developer ID/Notarization 与 Authenticode。
 
 ## 2. Linux Standalone
 
 解压、校验并安装：
 
 ```bash
-sha256sum -c wepush-next-0.1.0-alpha.3.tar.gz.sha256
-tar -xzf wepush-next-0.1.0-alpha.3.tar.gz
-sudo ./wepush-next-0.1.0-alpha.3/install/linux/install.sh all
+sha256sum -c wepush-next-0.1.0-alpha.4.tar.gz.sha256
+tar -xzf wepush-next-0.1.0-alpha.4.tar.gz
+sudo ./wepush-next-0.1.0-alpha.4/install/linux/install.sh all
 ```
 
 安装布局：
@@ -71,7 +71,7 @@ sudo /opt/wepush-next/current/install/linux/uninstall.sh --purge  # 明确删除
 ## 3. macOS Standalone
 
 ```bash
-sudo ./wepush-next-0.1.0-alpha.3/install/macos/install.sh all
+sudo ./wepush-next-0.1.0-alpha.4/install/macos/install.sh all
 launchctl print system/com.fangxuele.wepush-next.service
 curl --fail http://127.0.0.1:18990/actuator/health/readiness
 ```
@@ -90,9 +90,9 @@ sudo /Library/WePushNext/current/install/macos/uninstall.sh
 以管理员 PowerShell 执行：
 
 ```powershell
-Expand-Archive .\wepush-next-0.1.0-alpha.3.zip .\release
+Expand-Archive .\wepush-next-0.1.0-alpha.4.zip .\release
 Set-ExecutionPolicy -Scope Process Bypass
-& .\release\wepush-next-0.1.0-alpha.3\install\windows\install.ps1 -Component all
+& .\release\wepush-next-0.1.0-alpha.4\install\windows\install.ps1 -Component all
 Get-Service WePushNextService, WePushNextAgent
 Invoke-WebRequest http://127.0.0.1:18990/actuator/health/readiness
 ```
@@ -123,6 +123,8 @@ WEPUSH_AGENT_GRPC_PLAINTEXT=false
 Agent 生成 P-256 私钥，在 HTTPS Enrollment 后保存长期 Credential、客户端证书与 CA；证书或 Credential 距到期不足 14 天时自动轮换。身份文件、私钥、Event Outbox、Completion Outbox 和 Lease Journal 均必须位于持久卷。非回环部署不允许匿名 Agent；gRPC 必须启用 TLS，生产基线要求 mTLS。
 
 ## 6. Provider 插件
+
+HTTP、SMTP Email、飞书/钉钉/企微机器人、阿里云短信、微信公众号、小程序和企业微信应用消息是发行包内置 Provider，不需要放入插件目录。内置渠道的账号、SecretRef、最小消息和验证步骤见[《内置 Provider 指南》](provider-guide.md)。
 
 正式模式必须设置 `WEPUSH_PLUGIN_TRUSTED_KEYS`，格式是 `keyId=Base64Ed25519PublicKey`，多个发布者用逗号分隔。插件 ZIP 包内 `plugin.json` 的 SHA-256 清单与 `signature.ed25519` 必须通过验证；ZIP Slip、共享 API 重复打包、未知签名者和 SPI 不兼容都会导致 Agent 失败关闭。
 

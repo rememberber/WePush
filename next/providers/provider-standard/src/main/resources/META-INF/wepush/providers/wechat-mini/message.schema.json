@@ -1,0 +1,11 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://wepush.dev/schemas/providers/wechat-mini/message/1",
+  "title":"WeChat Mini Program Message",
+  "type":"object","additionalProperties":false,"required":["type","payloadJsonTemplate"],
+  "properties":{
+    "type":{"type":"string","enum":["SUBSCRIBE","UNIFORM"],"default":"SUBSCRIBE"},
+    "payloadJsonTemplate":{"type":"string","minLength":2,"x-wepush-code-language":"json","x-wepush-variable":true,
+      "default":"{\"template_id\":\"TEMPLATE_ID\",\"page\":\"pages/index/index\",\"data\":{\"thing1\":{\"value\":\"{{content}}\"}}}"}
+  }
+}

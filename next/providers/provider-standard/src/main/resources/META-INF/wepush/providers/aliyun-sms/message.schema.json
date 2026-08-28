@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wepush.dev/schemas/providers/aliyun-sms/message/1",
+  "title": "Aliyun SMS Message",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["signName", "templateCode"],
+  "properties": {
+    "signName": {"type": "string", "minLength": 1, "default":"YOUR_SIGN_NAME"},
+    "templateCode": {"type": "string", "minLength": 1, "default":"SMS_TEMPLATE_CODE"},
+    "templateParamJsonTemplate": {"type": "string", "default": "{}", "x-wepush-code-language": "json", "x-wepush-variable": true},
+    "smsUpExtendCode": {"type": "string"}
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://wepush.dev/schemas/providers/wecom-bot/account/1",
+  "title":"WeCom Group Bot Account","type":"object","additionalProperties":false,"required":["webhook"],
+  "properties":{"webhook":{"$ref":"#/$defs/secretRef"}},
+  "$defs":{"secretRef":{"type":"object","additionalProperties":false,"required":["namespace","name","version"],"properties":{"namespace":{"type":"string","default":"wecom-bot"},"name":{"type":"string","x-wepush-secret":true},"version":{"type":"string","default":"v1"}}}}
+}

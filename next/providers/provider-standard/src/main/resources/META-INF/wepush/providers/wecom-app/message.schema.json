@@ -1,0 +1,13 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://wepush.dev/schemas/providers/wecom-app/message/1",
+  "title":"WeCom Application Message",
+  "type":"object","additionalProperties":false,"required":["type","payloadJsonTemplate"],
+  "properties":{
+    "type":{"type":"string","enum":["APP"],"default":"APP"},
+    "payloadJsonTemplate":{"type":"string","minLength":2,"x-wepush-code-language":"json","x-wepush-variable":true,
+      "default":"{\"msgtype\":\"text\",\"text\":{\"content\":\"{{content}}\"}}"},
+    "enableDuplicateCheck":{"type":"boolean","default":true},
+    "duplicateCheckInterval":{"type":"integer","minimum":1,"maximum":14400,"default":1800}
+  }
+}

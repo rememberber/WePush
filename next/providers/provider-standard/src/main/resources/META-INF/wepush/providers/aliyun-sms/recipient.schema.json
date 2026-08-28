@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wepush.dev/schemas/providers/aliyun-sms/recipient/1",
+  "title": "Aliyun SMS Recipient",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["phoneNumber"],
+  "properties": {
+    "phoneNumber": {"type": "string", "pattern": "^\\+?[0-9 -]{6,24}$"}
+  }
+}

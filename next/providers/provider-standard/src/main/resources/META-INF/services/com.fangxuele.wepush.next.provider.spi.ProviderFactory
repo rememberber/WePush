@@ -1,0 +1,8 @@
+com.fangxuele.wepush.next.provider.standard.SmtpProviderFactory
+com.fangxuele.wepush.next.provider.standard.FeishuBotProviderFactory
+com.fangxuele.wepush.next.provider.standard.DingTalkBotProviderFactory
+com.fangxuele.wepush.next.provider.standard.WeComBotProviderFactory
+com.fangxuele.wepush.next.provider.standard.AliyunSmsProviderFactory
+com.fangxuele.wepush.next.provider.standard.WeChatOfficialProviderFactory
+com.fangxuele.wepush.next.provider.standard.WeChatMiniProviderFactory
+com.fangxuele.wepush.next.provider.standard.WeComAppProviderFactory

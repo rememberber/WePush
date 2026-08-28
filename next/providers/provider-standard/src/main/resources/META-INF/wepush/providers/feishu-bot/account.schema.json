@@ -1,0 +1,12 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://wepush.dev/schemas/providers/feishu-bot/account/1",
+  "title":"Feishu / Lark Bot Account","type":"object","additionalProperties":false,
+  "required":["webhook"],
+  "properties":{
+    "webhook":{"$ref":"#/$defs/secretRef"},
+    "signingSecret":{"$ref":"#/$defs/secretRef"},
+    "keyword":{"type":"string","description":"Optional keyword required by the bot security policy."}
+  },
+  "$defs":{"secretRef":{"type":"object","additionalProperties":false,"required":["namespace","name","version"],"properties":{"namespace":{"type":"string","default":"feishu"},"name":{"type":"string","x-wepush-secret":true},"version":{"type":"string","default":"v1"}}}}
+}

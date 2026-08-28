@@ -45,7 +45,7 @@ class CoreArchitectureTest {
     @Test
     void providersDoNotReachIntoAgentOrService() {
         noClasses()
-                .that().resideInAPackage("..provider.http..")
+                .that().resideInAnyPackage("..provider.http..", "..provider.standard..")
                 .should().dependOnClassesThat().resideInAnyPackage("..agent..", "..service..")
                 .check(classes);
     }
@@ -96,6 +96,7 @@ class CoreArchitectureTest {
                         "..service..",
                         "..next.sdk..",
                         "..provider.http..",
+                        "..provider.standard..",
                         "org.springframework..",
                         "org.mybatis..",
                         "jakarta.persistence..")

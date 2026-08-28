@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wepush.dev/schemas/providers/smtp/message/1",
+  "title": "SMTP Message",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["subjectTemplate"],
+  "properties": {
+    "subjectTemplate": {"type": "string", "minLength": 1, "default":"Hello {{name}}", "x-wepush-variable": true},
+    "textBodyTemplate": {"type": "string", "default":"Welcome {{name}}", "x-wepush-variable": true},
+    "htmlBodyTemplate": {"type": "string", "x-wepush-code-language": "html", "x-wepush-variable": true},
+    "replyTo": {"type": "string", "format": "email"},
+    "cc": {"type": "array", "items": {"type": "string", "format": "email"}, "uniqueItems": true},
+    "bcc": {"type": "array", "items": {"type": "string", "format": "email"}, "uniqueItems": true}
+  },
+  "anyOf": [
+    {"required": ["textBodyTemplate"]},
+    {"required": ["htmlBodyTemplate"]}
+  ]
+}

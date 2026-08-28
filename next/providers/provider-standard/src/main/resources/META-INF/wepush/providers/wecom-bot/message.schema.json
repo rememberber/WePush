@@ -1,0 +1,12 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://wepush.dev/schemas/providers/wecom-bot/message/1",
+  "title":"WeCom Group Bot Message","type":"object","additionalProperties":false,"required":["type"],
+  "properties":{
+    "type":{"type":"string","enum":["TEXT","MARKDOWN","RAW"],"default":"TEXT"},
+    "contentTemplate":{"type":"string","default":"Hello {{name}}","x-wepush-variable":true},
+    "rawJsonTemplate":{"type":"string","x-wepush-code-language":"json","x-wepush-variable":true},
+    "mentionAll":{"type":"boolean","default":false},
+    "mentionField":{"type":"string","description":"Recipient field containing a mobile number."}
+  }
+}

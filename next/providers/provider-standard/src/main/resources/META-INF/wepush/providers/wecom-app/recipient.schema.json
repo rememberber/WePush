@@ -1,0 +1,12 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://wepush.dev/schemas/providers/wecom-app/recipient/1",
+  "title":"WeCom Application Recipient",
+  "type":"object","additionalProperties":true,
+  "properties":{
+    "userId":{"type":"string","minLength":1},
+    "partyId":{"type":"string","minLength":1},
+    "tagId":{"type":"string","minLength":1}
+  },
+  "anyOf":[{"required":["userId"]},{"required":["partyId"]},{"required":["tagId"]}]
+}

@@ -1,6 +1,6 @@
 {
   "name": "wepush-next-ui",
-  "version": "0.1.0-alpha.3",
+  "version": "0.1.0-alpha.4",
   "private": true,
   "packageManager": "pnpm@11.22.0",
   "engines": {

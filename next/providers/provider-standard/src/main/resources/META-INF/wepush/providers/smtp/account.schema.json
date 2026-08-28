@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wepush.dev/schemas/providers/smtp/account/1",
+  "title": "SMTP Account",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["host", "port", "security", "fromAddress"],
+  "properties": {
+    "host": {"type": "string", "minLength": 1},
+    "port": {"type": "integer", "minimum": 1, "maximum": 65535, "default": 587},
+    "security": {"type": "string", "enum": ["NONE", "STARTTLS", "TLS"], "default": "STARTTLS"},
+    "username": {"type": "string"},
+    "password": {"$ref": "#/$defs/secretRef"},
+    "fromAddress": {"type": "string", "format": "email"},
+    "fromName": {"type": "string"},
+    "connectionTimeout": {"type": "string", "default": "PT10S"},
+    "readTimeout": {"type": "string", "default": "PT30S"}
+  },
+  "$defs": {
+    "secretRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["namespace", "name", "version"],
+      "properties": {
+        "namespace": {"type": "string", "default": "smtp"},
+        "name": {"type": "string", "x-wepush-secret": true},
+        "version": {"type": "string", "default": "v1"}
+      }
+    }
+  }
+}

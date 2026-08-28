@@ -1,0 +1,17 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://wepush.dev/schemas/providers/dingtalk-bot/message/1",
+  "title":"DingTalk Bot Message","type":"object","additionalProperties":false,"required":["type"],
+  "properties":{
+    "type":{"type":"string","enum":["TEXT","MARKDOWN","LINK","ACTION_CARD","RAW"],"default":"TEXT"},
+    "titleTemplate":{"type":"string","x-wepush-variable":true},
+    "contentTemplate":{"type":"string","default":"Hello {{name}}","x-wepush-variable":true},
+    "rawJsonTemplate":{"type":"string","x-wepush-code-language":"json","x-wepush-variable":true},
+    "urlTemplate":{"type":"string","x-wepush-variable":true},
+    "pictureUrlTemplate":{"type":"string","x-wepush-variable":true},
+    "buttonTextTemplate":{"type":"string","x-wepush-variable":true},
+    "buttonUrlTemplate":{"type":"string","x-wepush-variable":true},
+    "mentionAll":{"type":"boolean","default":false},
+    "mentionField":{"type":"string","description":"Recipient field containing a mobile number."}
+  }
+}

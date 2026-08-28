@@ -4,6 +4,27 @@
 
 ## Unreleased
 
+## 0.1.0-alpha.4 — 2026-08-28
+
+### Added
+
+- 新增独立 `provider-standard` 模块，内置 SMTP Email、飞书/钉钉/企业微信群机器人、阿里云短信、微信公众号、小程序和企业微信应用消息，共 8 个真实渠道 Provider。
+- 全部标准渠道提供 Account/Message/Recipient JSON Schema、SecretRef、Dry Run、实际发送、结构化错误分类和最小 WebUI 示例。
+- 新增本地 SMTP/HTTP mock 契约测试，覆盖 SMTP Multipart、机器人签名与限流、阿里云 POP 签名、微信 Token 缓存及失效后单次刷新。
+- 新增标准渠道 Engine 纵向测试、Service Provider Catalog 冒烟和 Agent 内置 Provider 发现测试。
+- 新增《内置 Provider 指南》，记录账号、消息、Recipient、幂等、限流、重试、未知结果和 Provider Code 语义。
+
+### Changed
+
+- Service 与 Agent 随发行包装载全部 9 个内置 Provider；Embedded SDK 发行附件增加 `provider-standard` POM/JAR，仍由调用方显式注册所需 Provider。
+- WebUI Schema Renderer 支持本地 `$ref` 和嵌套 SecretRef 默认值；Message Schema 提供可直接修改的渠道示例。
+- 机器人生产请求限制到厂商官方 Webhook，阿里云和微信系 API 固定官方端点；测试端点仅对包内回环 mock 开放。
+
+### Security
+
+- Dry Run 不解析渠道 Secret、不获取 Access Token 且不访问网络；诊断不包含 Secret、完整远端响应或带 Token URL。
+- 提交后超时、I/O 中断或远端 `5xx` 统一保守标记为 `UNKNOWN`，不自动重发可能已经送达的消息。
+
 ## 0.1.0-alpha.3 — 2026-08-27
 
 ### Added

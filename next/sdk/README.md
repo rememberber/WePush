@@ -9,7 +9,7 @@ WePush Next 提供两种边界不同、彼此独立的 Java SDK：
 
 两者不是上下级关系，也不会合并成一个 Artifact。Remote SDK 保持稳定的网络契约边界；Embedded SDK 提供进程内执行能力。
 
-> `0.1.0-alpha.3` 发行包和独立 Java SDK 附件同时提供 Remote Java SDK 与 Embedded Java SDK。
+> `0.1.0-alpha.4` 发行包和独立 Java SDK 附件同时提供 Remote Java SDK 与 Embedded Java SDK。
 
 ## 从源码安装
 
@@ -17,7 +17,7 @@ WePush Next 提供两种边界不同、彼此独立的 Java SDK：
 
 ```bash
 cd next
-./mvnw -pl sdk/sdk-java,sdk/embedded-java,providers/provider-http -am install
+./mvnw -pl sdk/sdk-java,sdk/embedded-java,providers/provider-http,providers/provider-standard -am install
 ```
 
 ## 从预览发行附件安装
@@ -25,7 +25,7 @@ cd next
 进入包含 POM/JAR 的 `sdk/` 目录（独立 Java SDK 压缩包则进入其根目录），先安装 Parent，再按需要安装 Remote 或 Embedded 依赖闭包：
 
 ```bash
-VERSION=0.1.0-alpha.3
+VERSION=0.1.0-alpha.4
 
 mvn install:install-file \
   -Dfile="wepush-next-parent-$VERSION.pom" \
@@ -42,12 +42,13 @@ install_jar() {
 install_jar service-api
 install_jar sdk-java
 
-# Embedded Java SDK 与内置 HTTP Provider
+# Embedded Java SDK 与内置 Provider
 install_jar core-api
 install_jar provider-spi
 install_jar engine
 install_jar embedded-java
 install_jar provider-http
+install_jar provider-standard
 ```
 
 Windows PowerShell 可以对相同文件逐条执行 `mvn install:install-file`。
@@ -58,7 +59,7 @@ Windows PowerShell 可以对相同文件逐条执行 `mvn install:install-file`�
 <dependency>
     <groupId>com.fangxuele.wepush.next</groupId>
     <artifactId>sdk-java</artifactId>
-    <version>0.1.0-alpha.3</version>
+    <version>0.1.0-alpha.4</version>
 </dependency>
 ```
 
@@ -74,7 +75,7 @@ try (var client = WePushClient.builder()
 }
 ```
 
-`alpha.3` 的 Remote SDK 同步支持资源分页/编辑、CSV/TXT 文件上传、正式发送确认、筛选重发和真实总览。例如上传文件不会先把完整内容读入 SDK 内存：
+`alpha.4` 的 Remote SDK 同步支持资源分页/编辑、CSV/TXT 文件上传、正式发送确认、筛选重发和真实总览。例如上传文件不会先把完整内容读入 SDK 内存：
 
 ```java
 var workspace = client.workspace("ws_default");
@@ -97,16 +98,21 @@ var run = workspace.createRun("job-id", UUID.randomUUID().toString(),
 <dependency>
     <groupId>com.fangxuele.wepush.next</groupId>
     <artifactId>embedded-java</artifactId>
-    <version>0.1.0-alpha.3</version>
+    <version>0.1.0-alpha.4</version>
 </dependency>
 <dependency>
     <groupId>com.fangxuele.wepush.next</groupId>
     <artifactId>provider-http</artifactId>
-    <version>0.1.0-alpha.3</version>
+    <version>0.1.0-alpha.4</version>
+</dependency>
+<dependency>
+    <groupId>com.fangxuele.wepush.next</groupId>
+    <artifactId>provider-standard</artifactId>
+    <version>0.1.0-alpha.4</version>
 </dependency>
 ```
 
-Embedded SDK 不创建数据库、不启动 Web Server、不读取 Service 配置，也不自动扫描第三方 Provider。应用必须显式注册 Provider，并负责持久化结果、事件、Artifact 和 Secret 的适配器。
+`provider-standard` 提供 SMTP Email、飞书/钉钉/企微机器人、阿里云短信、微信公众号、小程序和企业微信应用消息。Embedded SDK 不创建数据库、不启动 Web Server、不读取 Service 配置，也不自动扫描第三方 Provider。应用必须通过 `.provider(new SmtpProviderFactory())` 等方式显式注册允许的实现，并负责持久化结果、事件、Artifact 和 Secret 的适配器。渠道配置见[内置 Provider 指南](../docs/provider-guide.md)。
 
 完整示例、资源所有权和生产接入说明见 [Embedded Java SDK README](embedded-java/README.md)。
 

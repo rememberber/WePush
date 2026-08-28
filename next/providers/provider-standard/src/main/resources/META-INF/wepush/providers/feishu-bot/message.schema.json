@@ -1,0 +1,14 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://wepush.dev/schemas/providers/feishu-bot/message/1",
+  "title":"Feishu / Lark Bot Message","type":"object","additionalProperties":false,
+  "required":["type"],
+  "properties":{
+    "type":{"type":"string","enum":["TEXT","POST","INTERACTIVE","RAW"],"default":"TEXT"},
+    "titleTemplate":{"type":"string","x-wepush-variable":true},
+    "contentTemplate":{"type":"string","default":"Hello {{name}}","x-wepush-variable":true},
+    "rawJsonTemplate":{"type":"string","x-wepush-code-language":"json","x-wepush-variable":true},
+    "mentionAll":{"type":"boolean","default":false},
+    "mentionField":{"type":"string","description":"Recipient field containing a Feishu open_id."}
+  }
+}

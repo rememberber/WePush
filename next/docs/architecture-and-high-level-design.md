@@ -133,7 +133,7 @@ next/
 │   └── engine/
 ├── providers/
 │   ├── provider-http/
-│   ├── provider-mail/
+│   ├── provider-standard/
 │   └── ...
 ├── agent/
 │   ├── agent-protocol/
@@ -610,6 +610,7 @@ Standalone 默认使用 `LocalFileArtifactStore`；Server 默认使用受控 S3-
 - 所有日志、事件、异常和 API 响应经过 Secret Redactor。
 - 文件上传限制大小、类型和解析资源，防止压缩炸弹和超大内存占用。
 - HTTP Provider 对目标地址提供可配置的 SSRF 防护策略。
+- 机器人 Webhook 必须匹配厂商官方 HTTPS 域名与路径；短信和微信系生产 API 固定官方端点，测试回环端点不进入公开构造接口。
 - API 调试功能遵循当前用户权限，不提供绕过权限的内部调用通道。
 
 Workspace 逻辑隔离进入正式 Server 产品范围；Standalone 自动使用隐藏的 Default Workspace。Account、Secret、Message、Audience、Job、Schedule、Run、Artifact、Agent Pool 和 API Token 均必须归属 Workspace，所有 Repository、唯一索引、缓存键和授权检查显式携带 `workspaceId`。Workspace 只服务于同一用户自建实例内的团队和权限分组，不演进为公共 SaaS 租户；计费、自助注册和恶意租户物理隔离属于长期非目标。详见 [ADR-0008](adr/0008-workspace-multitenancy-scope.md)。
@@ -706,7 +707,7 @@ Run 的状态摘要、事件和结果制品允许短暂最终一致，但终态�
 6. WebUI 能动态配置 HTTP Provider、启动 Run 并查看实时结果。
 7. Standalone 安装包能在至少一个平台完成安装和重启恢复。
 
-该纵向链路通过后，再依次增加 Mail、短信、微信等 Provider，以及远程 Agent 和三平台完整安装。
+该纵向链路已完成；`0.1.0-alpha.4` 进一步交付 SMTP、三类群机器人、阿里云短信、微信公众号、小程序和企业微信应用消息，详见[内置 Provider 指南](provider-guide.md)。
 
 ## 27. 阶段规划
 

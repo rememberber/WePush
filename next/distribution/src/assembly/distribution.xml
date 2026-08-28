@@ -38,7 +38,7 @@
             <destName>THIRD-PARTY-NOTICES.md</destName>
         </file>
         <file>
-            <source>../docs/releases/0.1.0-alpha.3.md</source>
+            <source>../docs/releases/0.1.0-alpha.4.md</source>
             <outputDirectory>/</outputDirectory>
             <destName>RELEASE-NOTES.md</destName>
         </file>
@@ -121,6 +121,16 @@
             <source>../providers/provider-http/target/provider-http-${project.version}.jar</source>
             <outputDirectory>sdk</outputDirectory>
             <destName>provider-http-${project.version}.jar</destName>
+        </file>
+        <file>
+            <source>../providers/provider-standard/pom.xml</source>
+            <outputDirectory>sdk</outputDirectory>
+            <destName>provider-standard-${project.version}.pom</destName>
+        </file>
+        <file>
+            <source>../providers/provider-standard/target/provider-standard-${project.version}.jar</source>
+            <outputDirectory>sdk</outputDirectory>
+            <destName>provider-standard-${project.version}.jar</destName>
         </file>
         <file>
             <source>../sdk/embedded-java/pom.xml</source>

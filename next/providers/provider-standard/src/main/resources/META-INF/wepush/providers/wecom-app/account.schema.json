@@ -1,0 +1,18 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://wepush.dev/schemas/providers/wecom-app/account/1",
+  "title":"WeCom Application Account",
+  "type":"object","additionalProperties":false,"required":["corpId","corpSecret","agentId"],
+  "properties":{
+    "corpId":{"type":"string","minLength":1},
+    "corpSecret":{"$ref":"#/$defs/secretRef"},
+    "agentId":{"type":"integer","minimum":0},
+    "connectTimeout":{"type":"string","default":"PT10S"}
+  },
+  "$defs":{"secretRef":{"type":"object","additionalProperties":false,
+    "required":["namespace","name","version"],"properties":{
+      "namespace":{"type":"string","default":"wecom"},
+      "name":{"type":"string","x-wepush-secret":true},
+      "version":{"type":"string","default":"v1"}
+  }}}
+}

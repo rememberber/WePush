@@ -91,6 +91,7 @@ jobs:
           grep -Eq '^wepush-next-[^/]+/PREVIEW-NOTICE.md$' <<< "$tar_listing"
           grep -Eq '^wepush-next-[^/]+/docs/user-guide.md$' <<< "$tar_listing"
           grep -Eq '^wepush-next-[^/]+/sdk/embedded-java-[^/]+\.jar$' <<< "$tar_listing"
+          grep -Eq '^wepush-next-[^/]+/sdk/provider-standard-[^/]+\.jar$' <<< "$tar_listing"
           unzip -t "wepush-next-${{ steps.metadata.outputs.version }}.zip"
       - name: Stage distribution assets
         env:
@@ -119,6 +120,8 @@ jobs:
           cp next/core/engine/target/engine-$VERSION.jar "$sdk_name/"
           cp next/providers/provider-http/pom.xml "$sdk_name/provider-http-$VERSION.pom"
           cp next/providers/provider-http/target/provider-http-$VERSION.jar "$sdk_name/"
+          cp next/providers/provider-standard/pom.xml "$sdk_name/provider-standard-$VERSION.pom"
+          cp next/providers/provider-standard/target/provider-standard-$VERSION.jar "$sdk_name/"
           cp next/sdk/embedded-java/pom.xml "$sdk_name/embedded-java-$VERSION.pom"
           cp next/sdk/embedded-java/target/embedded-java-$VERSION.jar "$sdk_name/"
           cp next/service/service-api/src/main/resources/openapi/openapi.yaml "$sdk_name/"

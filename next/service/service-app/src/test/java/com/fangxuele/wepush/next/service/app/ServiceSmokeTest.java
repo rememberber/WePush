@@ -46,6 +46,8 @@ class ServiceSmokeTest {
         HttpResponse<String> providers = get("/api/v1/providers");
         HttpResponse<String> schema = get(
                 "/api/v1/providers/wepush.http/versions/0.1.0/schemas/account");
+        HttpResponse<String> smtpSchema = get(
+                "/api/v1/providers/wepush.email.smtp/versions/0.1.0/schemas/account");
         HttpResponse<String> openApi = get("/openapi.yaml");
         HttpResponse<String> desktopPreflight = desktopPreflight("/api/v1/system/info");
 
@@ -55,8 +57,18 @@ class ServiceSmokeTest {
         assertTrue(info.body().contains("WePush Next"));
         assertEquals(200, providers.statusCode());
         assertTrue(providers.body().contains("wepush.http"));
+        assertTrue(providers.body().contains("wepush.email.smtp"));
+        assertTrue(providers.body().contains("wepush.bot.feishu"));
+        assertTrue(providers.body().contains("wepush.bot.dingtalk"));
+        assertTrue(providers.body().contains("wepush.bot.wecom"));
+        assertTrue(providers.body().contains("wepush.sms.aliyun"));
+        assertTrue(providers.body().contains("wepush.wechat.official"));
+        assertTrue(providers.body().contains("wepush.wechat.mini"));
+        assertTrue(providers.body().contains("wepush.wecom.app"));
         assertEquals(200, schema.statusCode());
         assertTrue(schema.body().contains("HTTP Account"));
+        assertEquals(200, smtpSchema.statusCode());
+        assertTrue(smtpSchema.body().contains("SMTP Account"));
         assertEquals(200, openApi.statusCode());
         assertTrue(openApi.body().contains("openapi: 3.1.0"));
         assertEquals(200, desktopPreflight.statusCode());

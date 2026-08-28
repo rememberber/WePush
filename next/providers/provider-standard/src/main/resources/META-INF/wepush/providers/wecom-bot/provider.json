@@ -1,0 +1,1 @@
+{"providerId":"wepush.bot.wecom","displayName":"WeCom Group Bot","implementationVersion":"0.1.0","spiMajorVersion":1,"capabilities":["dry-run"],"accountSchema":"account.schema.json","messageSchema":"message.schema.json","recipientSchema":"recipient.schema.json"}

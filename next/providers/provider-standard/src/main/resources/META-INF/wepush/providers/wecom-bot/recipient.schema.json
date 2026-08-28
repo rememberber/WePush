@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://wepush.dev/schemas/providers/wecom-bot/recipient/1","title":"WeCom Bot Recipient Variables","type":"object","additionalProperties":true,"properties":{"mobile":{"type":"string","pattern":"^\\+?[0-9]{5,20}$"}}}

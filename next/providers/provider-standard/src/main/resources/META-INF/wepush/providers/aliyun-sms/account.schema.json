@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wepush.dev/schemas/providers/aliyun-sms/account/1",
+  "title": "Aliyun SMS Account",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["accessKeyId", "accessKeySecret"],
+  "properties": {
+    "accessKeyId": {"type": "string", "minLength": 1},
+    "accessKeySecret": {"$ref": "#/$defs/secretRef"},
+    "regionId": {"type": "string", "default": "cn-hangzhou"},
+    "connectTimeout": {"type": "string", "default": "PT10S"}
+  },
+  "$defs": {
+    "secretRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["namespace", "name", "version"],
+      "properties": {
+        "namespace": {"type": "string", "default": "aliyun"},
+        "name": {"type": "string", "x-wepush-secret": true},
+        "version": {"type": "string", "default": "v1"}
+      }
+    }
+  }
+}

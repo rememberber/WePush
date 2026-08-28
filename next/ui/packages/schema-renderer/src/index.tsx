@@ -1,6 +1,8 @@
 import { FieldLabel } from "@wepush-next/ui";
 
 export interface JsonSchema {
+  $ref?: string;
+  $defs?: Record<string, JsonSchema>;
   title?: string;
   description?: string;
   type?: "object" | "string" | "boolean" | "integer" | "number" | "array";
@@ -31,7 +33,7 @@ export function SchemaForm({ schema, value, onChange, disabled = false }: Schema
         <SchemaField
           key={name}
           name={name}
-          schema={field}
+          schema={resolveSchema(field, schema)}
           required={required.has(name)}
           value={value[name]}
           disabled={disabled}
@@ -126,10 +128,29 @@ function SchemaField({ name, schema, value, required, disabled, onChange }: Sche
 
 export function defaultsForSchema(schema: JsonSchema): Record<string, unknown> {
   return Object.fromEntries(
-    Object.entries(schema.properties ?? {}).flatMap(([name, field]) =>
-      field.default === undefined ? [] : [[name, structuredClone(field.default)]],
-    ),
+    Object.entries(schema.properties ?? {}).flatMap(([name, field]) => {
+      const value = defaultForSchema(resolveSchema(field, schema), schema);
+      return value === undefined ? [] : [[name, value]];
+    }),
   );
+}
+
+function resolveSchema(schema: JsonSchema, root: JsonSchema): JsonSchema {
+  if (!schema.$ref?.startsWith("#/$defs/")) return schema;
+  const name = schema.$ref.slice("#/$defs/".length);
+  return root.$defs?.[name] ?? schema;
+}
+
+function defaultForSchema(schema: JsonSchema, root: JsonSchema): unknown {
+  if (schema.default !== undefined) return structuredClone(schema.default);
+  if (schema.type !== "object" || !schema.properties) return undefined;
+  const nested = Object.fromEntries(
+    Object.entries(schema.properties).flatMap(([name, field]) => {
+      const value = defaultForSchema(resolveSchema(field, root), root);
+      return value === undefined ? [] : [[name, value]];
+    }),
+  );
+  return Object.keys(nested).length ? nested : undefined;
 }
 
 function humanize(value: string): string {

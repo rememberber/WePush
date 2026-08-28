@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://wepush.dev/schemas/providers/feishu-bot/recipient/1","title":"Feishu Bot Recipient Variables","type":"object","additionalProperties":true,"properties":{"openId":{"type":"string","pattern":"^(ou_|on_|oc_).+"}}}

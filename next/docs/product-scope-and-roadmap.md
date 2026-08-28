@@ -1,7 +1,7 @@
 # WePush Next 产品目标、边界与路线图
 
 - 文档状态：已确认产品方向
-- 更新日期：2026-08-27
+- 更新日期：2026-08-28
 - 适用范围：`next/`
 
 ## 1. 产品定位
@@ -77,9 +77,9 @@ PostgreSQL、S3-compatible Store 和多节点 HA 是可选的用户自建形态�
 
 ## 5. 当前基线
 
-`0.1.0-alpha.3` 已形成独立构建的日常使用闭环：
+`0.1.0-alpha.4` 已形成独立构建的日常使用闭环和首批真实渠道组合：
 
-- Core API、Provider SPI、虚拟线程 Engine 和 HTTP Provider。
+- Core API、Provider SPI、虚拟线程 Engine，以及 HTTP、SMTP Email、三类群机器人、阿里云短信、微信公众号、小程序和企业微信应用消息 Provider。
 - Standalone Service、SQLite、Local Artifact、Local Envelope Secret Store。
 - PostgreSQL/S3-compatible Server/HA 参考拓扑和远程 Agent。
 - REST/SSE、OpenAPI、Remote Java SDK 和 Embedded Java SDK。
@@ -88,7 +88,7 @@ PostgreSQL、S3-compatible Store 和多节点 HA 是可选的用户自建形态�
 - Account/Message/Audience/Job/Schedule 的编辑、修订、复制、启停与归档。
 - CSV/TXT 流式受众导入、正式发送二次确认、失败项关联重发、分页筛选与真实总览。
 
-当前差距集中在产品可用性、真实消息渠道、自部署运维和稳定发行，不需要继续扩大公共平台能力。
+当前差距集中在自部署运维成熟、更多独立渠道插件和稳定发行，不需要继续扩大公共平台能力。
 
 ## 6. 迭代路线图
 
@@ -142,22 +142,24 @@ PostgreSQL、S3-compatible Store 和多节点 HA 是可选的用户自建形态�
 
 目标：在 HTTP Provider 之外建立可实际使用的消息渠道组合。
 
-建议顺序：
+状态：已完成（2026-08-28）。
 
-1. SMTP Email。
-2. 飞书、钉钉和企业微信机器人。
-3. 根据用户需求选择首个主流短信 Provider。
-4. 微信公众号、小程序和企业微信完整能力。
-5. 其他短信、推送和运营商协议作为独立签名插件持续增加。
+已交付内容：
 
-每个 Provider 必须同时交付：
+- `wepush.email.smtp`：无认证或账号认证 SMTP，支持 NONE/STARTTLS/TLS、文本/HTML Multipart、Reply-To、CC/BCC。
+- `wepush.bot.feishu`、`wepush.bot.dingtalk`、`wepush.bot.wecom`：固定官方 Webhook、厂商签名、常用消息类型、Raw JSON 和本地安全限流。
+- `wepush.sms.aliyun`：用户自有 AccessKey、POP HMAC-SHA1 签名、模板变量、`OutId` 追踪和业务错误映射。
+- `wepush.wechat.official`、`wepush.wechat.mini`、`wepush.wecom.app`：用户自有 App/Corp 凭据、Session Token 缓存、失效后单次安全刷新，以及任意受支持业务 Payload。
+- 全部 Provider 随 Service、Agent 和发行包内置；Embedded SDK 仍要求调用方显式选择 Provider。
+- WebUI 通过实时 Schema 渲染 SecretRef 和消息默认示例；配置、Recipient 和最小验证步骤见[《内置 Provider 指南》](provider-guide.md)。
 
-- Account、Message 和 Recipient Schema。
-- SecretRef 定义、字段校验和错误分类。
-- Dry Run 行为和真实发送实现。
-- 幂等、限流、重试和 Provider Code 映射说明。
-- 本地模拟服务、单元测试、契约测试和 Engine 纵向测试。
-- WebUI 示例、用户文档和最小可验证配置。
+验收结果：
+
+- 每个 Provider 都提供 Account、Message、Recipient JSON Schema、SecretRef、结构化字段校验、Dry Run 和真实发送。
+- Provider 模块使用本地 SMTP/HTTP mock 覆盖协议、签名、Token 刷新、错误分类、响应上限和 Secret 不解析 Dry Run；不依赖真实第三方账号。
+- Engine 纵向测试通过 ServiceLoader 发现并逐一执行 8 个标准渠道；Service 和 Agent 测试断言完整 9 Provider Catalog。
+- 重试、幂等、限流、未知结果和 Provider Code 映射已按渠道记录；提交后不确定失败不会自动重发。
+- 生产实现固定厂商官方端点，只有包内测试构造器允许回环 mock；远端响应和带 Token URL 不进入诊断。
 
 Classic 与 Next 可以复用业务需求、测试数据和验收经验，但不建立共享源码依赖。
 
