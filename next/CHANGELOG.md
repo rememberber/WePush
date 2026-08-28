@@ -22,6 +22,7 @@
 
 - Agent Event/Completion Outbox 在磁盘写入失败时不再提前提交内存变更，避免事件序号跳跃或误删未确认 Completion。
 - Linux、macOS、Windows 卸载脚本遵循自定义安装/配置/数据目录；默认保留数据，只有显式 Purge 才删除。
+- Linux、macOS、Windows 连续备份使用唯一归档名，避免同一秒内自动升级和人工备份发生文件名碰撞。
 
 ## 0.1.0-beta.1 — 2026-08-28
 

@@ -39,7 +39,8 @@ try {
     "$((Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant())  $relative"
   }
   $checksums | Set-Content -Encoding ascii "$temporary\SHA256SUMS"
-  $archive = Join-Path $Destination "wepush-next-$stamp.zip"
+  $backupId = [Guid]::NewGuid().ToString("N").Substring(0, 8)
+  $archive = Join-Path $Destination "wepush-next-$stamp-$backupId.zip"
   Compress-Archive -Path "$temporary\*" -DestinationPath $archive -CompressionLevel Optimal
   & "$PSScriptRoot\restore.ps1" -ValidateOnly -Archive $archive
   Write-Output $archive
