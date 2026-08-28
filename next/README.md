@@ -4,7 +4,7 @@ WePush Next 是与 Classic 完全独立的新产品线。Classic 与 Next 可以
 
 > 产品定位：WePush Next 是开源、可下载、可安装、由用户自行部署和运维的消息推送产品。项目不建设官方公共 SaaS、注册计费订阅、公共租户平台或云 KMS/Secret Manager 集成。正式范围和分版本计划见[《产品目标、边界与路线图》](docs/product-scope-and-roadmap.md)。
 
-> 当前版本：`0.1.0-beta.1` Public Preview。它不是稳定版，Desktop 与安装包未使用商业代码签名。下载、校验和已知边界见 [`PREVIEW-NOTICE.md`](PREVIEW-NOTICE.md) 与 [`docs/releases/0.1.0-beta.1.md`](docs/releases/0.1.0-beta.1.md)。
+> 当前版本：`1.0.0` Stable。Desktop 与安装包按项目约定不使用商业代码签名；下载后必须验证 `SHA256SUMS`。发行边界和升级承诺见 [`UNSIGNED-NOTICE.md`](UNSIGNED-NOTICE.md)、[《兼容性策略》](docs/compatibility-policy.md)、[《升级与回滚指南》](docs/upgrade-guide.md)与 [`docs/releases/1.0.0.md`](docs/releases/1.0.0.md)。
 
 第一次下载和使用请从[《WePush Next 对外使用指南》](docs/user-guide.md)开始。渠道账号、模板、Recipient、SecretRef、限流和错误语义见[《内置 Provider 指南》](docs/provider-guide.md)。
 
@@ -103,7 +103,7 @@ java -jar service/service-app/target/wepush-next-service.jar
 
 Next 提供两种独立 SDK。Remote SDK 通过 HTTP 调用 Service，只依赖公开 `service-api`，不依赖 Core、Engine 或具体 Provider：
 
-公开预览发行包在 `sdk/` 中附带可安装到本地 Maven Repository 的 POM/JAR，步骤见 [`sdk/README.md`](sdk/README.md)。
+稳定发行包在 `sdk/` 中附带可安装到本地 Maven Repository 的 POM/JAR，步骤见 [`sdk/README.md`](sdk/README.md)。
 
 ```java
 try (var client = WePushClient.builder()

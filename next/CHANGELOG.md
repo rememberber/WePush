@@ -4,6 +4,25 @@
 
 ## Unreleased
 
+## 1.0.0 — 2026-08-29
+
+### Added
+
+- 发布 1.x REST/SSE、Java SDK、Provider SPI、配置、数据库迁移和 Agent 协议兼容策略。
+- 新增 V13（`0.1.0-beta.1`）到 V14 的 SQLite/PostgreSQL 无损迁移门禁，以及 Beta 成功升级和最低回滚版本记录。
+- 新增 100,000 Recipient 流式执行、三平台默认卸载/显式 Purge 和稳定版发行门禁。
+
+### Changed
+
+- GitHub Tag 流水线对无后缀版本发布正式 Release，不再标记为 prerelease。
+- macOS Upgrade 同时接受 Release 使用的 `.zip` 和已有 `.tar.gz` 归档。
+- 将 macOS/Windows 不使用商业代码签名确认为长期发行边界，使用 GitHub Release、统一 SHA-256 和 SBOM 验证来源与完整性；Provider 插件仍强制 Ed25519 签名。
+
+### Fixed
+
+- Agent Event/Completion Outbox 在磁盘写入失败时不再提前提交内存变更，避免事件序号跳跃或误删未确认 Completion。
+- Linux、macOS、Windows 卸载脚本遵循自定义安装/配置/数据目录；默认保留数据，只有显式 Purge 才删除。
+
 ## 0.1.0-beta.1 — 2026-08-28
 
 ### Added

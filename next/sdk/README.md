@@ -9,7 +9,7 @@ WePush Next 提供两种边界不同、彼此独立的 Java SDK：
 
 两者不是上下级关系，也不会合并成一个 Artifact。Remote SDK 保持稳定的网络契约边界；Embedded SDK 提供进程内执行能力。
 
-> `0.1.0-beta.1` 发行包和独立 Java SDK 附件同时提供 Remote Java SDK 与 Embedded Java SDK。
+> `1.0.0` 发行包和独立 Java SDK 附件同时提供 Remote Java SDK 与 Embedded Java SDK。
 
 ## 从源码安装
 
@@ -25,7 +25,7 @@ cd next
 进入包含 POM/JAR 的 `sdk/` 目录（独立 Java SDK 压缩包则进入其根目录），先安装 Parent，再按需要安装 Remote 或 Embedded 依赖闭包：
 
 ```bash
-VERSION=0.1.0-beta.1
+VERSION=1.0.0
 
 mvn install:install-file \
   -Dfile="wepush-next-parent-$VERSION.pom" \
@@ -59,11 +59,11 @@ Windows PowerShell 可以对相同文件逐条执行 `mvn install:install-file`�
 <dependency>
     <groupId>com.fangxuele.wepush.next</groupId>
     <artifactId>sdk-java</artifactId>
-    <version>0.1.0-beta.1</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 
-Remote SDK 使用 `WePushClient` 连接 Service，Service 和客户端应使用相同预览版本：
+Remote SDK 使用 `WePushClient` 连接 Service；建议 Service 和客户端使用相同 `1.x` Minor，兼容范围见[《兼容性策略》](../docs/compatibility-policy.md)：
 
 ```java
 try (var client = WePushClient.builder()
@@ -98,17 +98,17 @@ var run = workspace.createRun("job-id", UUID.randomUUID().toString(),
 <dependency>
     <groupId>com.fangxuele.wepush.next</groupId>
     <artifactId>embedded-java</artifactId>
-    <version>0.1.0-beta.1</version>
+    <version>1.0.0</version>
 </dependency>
 <dependency>
     <groupId>com.fangxuele.wepush.next</groupId>
     <artifactId>provider-http</artifactId>
-    <version>0.1.0-beta.1</version>
+    <version>1.0.0</version>
 </dependency>
 <dependency>
     <groupId>com.fangxuele.wepush.next</groupId>
     <artifactId>provider-standard</artifactId>
-    <version>0.1.0-beta.1</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 

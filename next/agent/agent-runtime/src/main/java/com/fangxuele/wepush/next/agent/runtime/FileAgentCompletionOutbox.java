@@ -38,9 +38,12 @@ public final class FileAgentCompletionOutbox implements AgentCompletionOutbox {
         if (pending.size() >= MAXIMUM_COMPLETIONS && !pending.containsKey(fence)) {
             throw new IllegalStateException("Agent completion Outbox is full");
         }
-        if (pending.putIfAbsent(fence, new PendingCompletion(fence, summary, artifactReferences)) == null) {
-            persist();
-        }
+        if (pending.containsKey(fence)) return;
+        Map<LeaseFence, PendingCompletion> updated = new LinkedHashMap<>(pending);
+        updated.put(fence, new PendingCompletion(fence, summary, artifactReferences));
+        persist(updated);
+        pending.clear();
+        pending.putAll(updated);
     }
 
     @Override
@@ -50,7 +53,12 @@ public final class FileAgentCompletionOutbox implements AgentCompletionOutbox {
 
     @Override
     public synchronized void acknowledge(LeaseFence fence) {
-        if (pending.remove(fence) != null) persist();
+        if (!pending.containsKey(fence)) return;
+        Map<LeaseFence, PendingCompletion> updated = new LinkedHashMap<>(pending);
+        updated.remove(fence);
+        persist(updated);
+        pending.clear();
+        pending.putAll(updated);
     }
 
     private void load() {
@@ -80,7 +88,7 @@ public final class FileAgentCompletionOutbox implements AgentCompletionOutbox {
         }
     }
 
-    private void persist() {
+    private void persist(Map<LeaseFence, PendingCompletion> persisted) {
         Path parent = path.getParent();
         Path temporary = path.resolveSibling(path.getFileName() + ".tmp");
         try {
@@ -89,8 +97,8 @@ public final class FileAgentCompletionOutbox implements AgentCompletionOutbox {
                     Files.newOutputStream(temporary)))) {
                 output.writeInt(MAGIC);
                 output.writeInt(VERSION);
-                output.writeInt(pending.size());
-                for (PendingCompletion value : pending.values()) {
+                output.writeInt(persisted.size());
+                for (PendingCompletion value : persisted.values()) {
                     output.writeUTF(value.fence().leaseId());
                     output.writeUTF(value.fence().runId());
                     output.writeLong(value.fence().epoch());
@@ -109,6 +117,11 @@ public final class FileAgentCompletionOutbox implements AgentCompletionOutbox {
                 Files.move(temporary, path, StandardCopyOption.REPLACE_EXISTING);
             }
         } catch (IOException exception) {
+            try {
+                Files.deleteIfExists(temporary);
+            } catch (IOException ignored) {
+                // Preserve the original failure; a non-empty or locked temp path is diagnostic evidence.
+            }
             throw new IllegalStateException("Cannot save Agent completion Outbox: " + path, exception);
         }
     }

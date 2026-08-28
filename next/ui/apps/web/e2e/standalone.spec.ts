@@ -32,7 +32,7 @@ async function respond(route: Route): Promise<void> {
   const path = url.pathname;
   let body: unknown;
   if (path === "/api/v1/system/info") {
-    body = { product: "WePush Next", version: "0.1.0-beta.1", mode: "standalone", serverTime: now };
+    body = { product: "WePush Next", version: "1.0.0", mode: "standalone", serverTime: now };
   } else if (path === "/api/v1/providers") {
     body = [{ providerId: "http", displayName: "Local HTTP", implementationVersion: "1.0.0", capabilities: ["DRY_RUN"], maximumConcurrency: 16,
       links: { accountSchema: "/api/v1/schemas/http-account", messageSchema: "/api/v1/schemas/http-message", recipientSchema: "/api/v1/schemas/http-recipient" } }];

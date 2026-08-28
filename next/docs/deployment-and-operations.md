@@ -1,6 +1,6 @@
 # WePush Next 部署与运维
 
-本文是 `0.1.0-beta.1` 公开预览版的可执行部署说明。Standalone 使用 SQLite 和本地 Artifact；用户自建 Server 使用 PostgreSQL、S3-compatible Artifact、两个以上 Service 实例以及外部负载均衡器。Classic 不参与 Next 的构建、安装或运行。WePush 不提供官方托管控制面，所有部署、数据、密钥和备份均由用户掌控；产品边界见[《产品目标、边界与路线图》](product-scope-and-roadmap.md)。
+本文是 `1.0.0` 稳定自部署版的可执行部署说明。Standalone 使用 SQLite 和本地 Artifact；用户自建 Server 使用 PostgreSQL、S3-compatible Artifact、两个以上 Service 实例以及外部负载均衡器。Classic 不参与 Next 的构建、安装或运行。WePush 不提供官方托管控制面，所有部署、数据、密钥和备份均由用户掌控；产品边界见[《产品目标、边界与路线图》](product-scope-and-roadmap.md)。
 
 Service 的无认证开发模式仅允许绑定回环地址。任何非回环 HTTP 监听都必须启用 API Security；`server` 模式还会强制 PostgreSQL、S3-compatible Artifact Store 和 Agent gRPC TLS，缺少任一项均启动失败。
 
@@ -21,8 +21,8 @@ cd ..
 
 测试必须先独立通过，`-DskipTests` 只用于之后的发行打包阶段。输出位于：
 
-- `distribution/target/wepush-next-0.1.0-beta.1.tar.gz`
-- `distribution/target/wepush-next-0.1.0-beta.1.zip`
+- `distribution/target/wepush-next-1.0.0.tar.gz`
+- `distribution/target/wepush-next-1.0.0.zip`
 - 对应 `.sha256` 文件
 
 上面两个归档是使用系统 Java 21+ 的精简包。Release 流水线还在 Linux、macOS、Windows Runner 上用 JDK 21 `jlink` 生成对应架构的完整包，目录内多出 `runtime/`；两个变体都携带固定摘要的 WinSW 2.12.0，因此 Windows 用户安装时不联网。`prepare-winsw.sh` 只在源码发行构建阶段从上游下载并验证固定长度与 SHA-256。
@@ -35,16 +35,16 @@ pnpm --filter @wepush-next/desktop package
 ```
 
 Desktop 打包器使用锁定版本的 Electron，不引入带 Git 构建依赖的额外打包链；缺少 Electron Runtime 时会运行该锁定版本随附的安装脚本。macOS、Windows、Linux 必须分别在目标操作系统打包。
-pnpm 已显式信任固定版本 Electron 的原生运行时下载脚本；无法访问 GitHub Release Asset 的网络可在安装依赖时设置受信 `ELECTRON_MIRROR`。`0.1.0-beta.1` 公开预览版有意不使用商业签名：macOS 只做 ad-hoc 签名且不提交 Apple Notarization，Windows 不做 Authenticode 签名。系统可能显示未知开发者警告，请只从 GitHub Releases 下载并验证 `SHA256SUMS`。未来稳定发行仍应接入 Developer ID/Notarization 与 Authenticode。
+pnpm 已显式信任固定版本 Electron 的原生运行时下载脚本；无法访问 GitHub Release Asset 的网络可在安装依赖时设置受信 `ELECTRON_MIRROR`。按项目明确边界，`1.0.0` 不使用商业签名：macOS 只做 ad-hoc 签名且不提交 Apple Notarization，Windows 不做 Authenticode 签名。系统可能显示未知开发者警告，请只从项目 GitHub Releases 下载并验证 `SHA256SUMS`；详见 [`UNSIGNED-NOTICE.md`](../UNSIGNED-NOTICE.md)。
 
 ## 2. Linux Standalone
 
 解压、校验并安装：
 
 ```bash
-sha256sum wepush-next-0.1.0-beta.1-linux-x64.tar.gz
-tar -xzf wepush-next-0.1.0-beta.1-linux-x64.tar.gz
-sudo ./wepush-next-0.1.0-beta.1/install/install.sh
+sha256sum wepush-next-1.0.0-linux-x64.tar.gz
+tar -xzf wepush-next-1.0.0-linux-x64.tar.gz
+sudo ./wepush-next-1.0.0/install/install.sh
 ```
 
 安装布局：
@@ -76,7 +76,7 @@ sudo /opt/wepush-next/current/install/linux/uninstall.sh --purge  # 明确删除
 ## 3. macOS Standalone
 
 ```bash
-sudo ./wepush-next-0.1.0-beta.1/install/install.sh
+sudo ./wepush-next-1.0.0/install/install.sh
 launchctl print system/com.fangxuele.wepush-next.service
 curl --fail http://127.0.0.1:18990/actuator/health/installation
 ```
@@ -88,7 +88,7 @@ LaunchDaemon 默认以执行 `sudo` 的非 root 用户运行；无人值守安�
 sudo /Library/WePushNext/current/install/macos/backup.sh
 sudo /Library/WePushNext/current/install/macos/restore.sh --validate-only "$BACKUP_FILE"
 sudo /Library/WePushNext/current/install/macos/restore.sh "$BACKUP_FILE" "$BACKUP_SHA256"
-sudo /Library/WePushNext/current/install/macos/upgrade.sh release.tar.gz <sha256>
+sudo /Library/WePushNext/current/install/macos/upgrade.sh release.zip <sha256>
 sudo /Library/WePushNext/current/install/macos/uninstall.sh
 ```
 
@@ -97,9 +97,9 @@ sudo /Library/WePushNext/current/install/macos/uninstall.sh
 以管理员 PowerShell 执行：
 
 ```powershell
-Expand-Archive .\wepush-next-0.1.0-beta.1-windows-x64.zip .\release
+Expand-Archive .\wepush-next-1.0.0-windows-x64.zip .\release
 Set-ExecutionPolicy -Scope Process Bypass
-& .\release\wepush-next-0.1.0-beta.1\install\install.ps1
+& .\release\wepush-next-1.0.0\install\install.ps1
 Get-Service WePushNextService
 Invoke-WebRequest http://127.0.0.1:18990/actuator/health/installation
 ```

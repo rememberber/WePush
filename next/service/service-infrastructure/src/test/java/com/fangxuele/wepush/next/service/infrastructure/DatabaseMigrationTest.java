@@ -56,6 +56,38 @@ final class DatabaseMigrationTest {
         }
     }
 
+    @Test
+    void upgradesBetaOneSchemaToStableBaselineWithoutChangingUserData() {
+        try (var dataSource = SQLiteDatabase.create(temporaryDirectory.resolve("beta-one-upgrade.db"))) {
+            Flyway.configure().dataSource(dataSource)
+                    .locations("classpath:db/migration/sqlite")
+                    .target("13")
+                    .validateMigrationNaming(true).load().migrate();
+            JdbcTemplate jdbc = new JdbcTemplate(dataSource);
+            jdbc.update("""
+                    INSERT INTO workspace(id, name, status, created_at, version)
+                    VALUES ('ws_beta_user', 'Beta user data', 'ACTIVE', '2026-08-28T00:00:00Z', 7)
+                    """);
+
+            Flyway flyway = Flyway.configure().dataSource(dataSource)
+                    .locations("classpath:db/migration/sqlite")
+                    .validateMigrationNaming(true).load();
+            flyway.migrate();
+
+            assertEquals("14", flyway.info().current().getVersion().getVersion());
+            assertEquals("Beta user data", jdbc.queryForObject(
+                    "SELECT name FROM workspace WHERE id = 'ws_beta_user'", String.class));
+            assertEquals(7, jdbc.queryForObject(
+                    "SELECT version FROM workspace WHERE id = 'ws_beta_user'", Integer.class));
+            assertEquals("1.x", jdbc.queryForObject(
+                    "SELECT compatibility_line FROM wepush_release_compatibility WHERE id = 1",
+                    String.class));
+            assertEquals("0.1.0-beta.1", jdbc.queryForObject(
+                    "SELECT minimum_rollback_version FROM wepush_release_compatibility WHERE id = 1",
+                    String.class));
+        }
+    }
+
     private static java.util.List<String> columns(JdbcTemplate jdbc, String table) {
         return jdbc.query("PRAGMA table_info(" + table + ")", (row, ignored) -> row.getString("name"));
     }

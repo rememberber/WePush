@@ -52,12 +52,15 @@ done
 
 grep -q "version: $version" service/service-api/src/main/resources/openapi/openapi.yaml
 grep -q "当前版本：\`$version\`" README.md
+scripts/verify-compatibility.sh
 
 required_files=(
-  PREVIEW-NOTICE.md
+  UNSIGNED-NOTICE.md
   CHANGELOG.md
   SECURITY.md
   THIRD-PARTY-NOTICES.md
+  docs/compatibility-policy.md
+  docs/upgrade-guide.md
   sdk/README.md
   "docs/releases/$version.md"
 )

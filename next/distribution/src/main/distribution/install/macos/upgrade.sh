@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eu
-[ "$#" -eq 2 ] || { echo "usage: $0 release.tar.gz expected-sha256" >&2; exit 2; }
+[ "$#" -eq 2 ] || { echo "usage: $0 release.zip|release.tar.gz expected-sha256" >&2; exit 2; }
 ACTUAL=$(shasum -a 256 "$1" | awk '{print $1}')
 [ "$ACTUAL" = "$2" ] || { echo "release SHA-256 mismatch" >&2; exit 1; }
 HERE=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
@@ -11,7 +11,11 @@ BACKUP=$("$HERE/backup.sh" | tail -1)
 TEMP=$(mktemp -d "${TMPDIR:-/tmp}/wepush-next-upgrade.XXXXXX")
 cleanup() { rm -rf "$TEMP"; }
 trap cleanup EXIT HUP INT TERM
-tar -xzf "$1" -C "$TEMP"
+case "$1" in
+  *.zip) ditto -x -k "$1" "$TEMP" ;;
+  *.tar.gz|*.tgz) tar -xzf "$1" -C "$TEMP" ;;
+  *) echo "unsupported release archive; expected .zip, .tar.gz or .tgz" >&2; exit 2 ;;
+esac
 RELEASE=$(find "$TEMP" -mindepth 1 -maxdepth 1 -type d | head -1)
 VERSION=$(basename "$RELEASE" | sed 's/^wepush-next-//')
 if "$RELEASE/install/macos/install.sh" standalone && "$RELEASE/install/verify-install.sh" "$VERSION"; then

@@ -31,12 +31,28 @@ final class PostgreSQLMigrationIntegrationTest {
         try {
             String schemaUrl = url + (url.contains("?") ? "&" : "?") + "currentSchema=" + schema;
             try (var dataSource = PostgreSQLDatabase.create(schemaUrl, username, password, 4)) {
-                Flyway.configure().dataSource(dataSource).defaultSchema(schema).schemas(schema)
+                Flyway betaFlyway = Flyway.configure().dataSource(dataSource).defaultSchema(schema).schemas(schema)
                         .locations("classpath:db/migration/sqlite")
-                        .validateMigrationNaming(true).load().migrate();
+                        .target("13").validateMigrationNaming(true).load();
+                betaFlyway.migrate();
                 JdbcTemplate jdbc = new JdbcTemplate(dataSource);
+                jdbc.update("""
+                        INSERT INTO workspace(id, name, status, created_at, version)
+                        VALUES ('ws_beta_user', 'Beta PostgreSQL data', 'ACTIVE',
+                                '2026-08-28T00:00:00Z', 9)
+                        """);
+                Flyway stableFlyway = Flyway.configure().dataSource(dataSource)
+                        .defaultSchema(schema).schemas(schema)
+                        .locations("classpath:db/migration/sqlite")
+                        .validateMigrationNaming(true).load();
+                stableFlyway.migrate();
+                assertEquals("14", stableFlyway.info().current().getVersion().getVersion());
                 assertEquals(1, jdbc.queryForObject(
                         "SELECT COUNT(*) FROM workspace WHERE id = 'ws_default'", Integer.class));
+                assertEquals("Beta PostgreSQL data", jdbc.queryForObject(
+                        "SELECT name FROM workspace WHERE id = 'ws_beta_user'", String.class));
+                assertEquals(9, jdbc.queryForObject(
+                        "SELECT version FROM workspace WHERE id = 'ws_beta_user'", Integer.class));
                 assertEquals(1, jdbc.queryForObject("""
                         SELECT COUNT(*) FROM information_schema.columns
                         WHERE table_schema = ? AND table_name = 'agent_enrollment_token'
@@ -53,6 +69,12 @@ final class PostgreSQLMigrationIntegrationTest {
                           AND constraint_type = 'FOREIGN KEY'
                         """, Integer.class, schema);
                 assertTrue(foreignKeys != null && foreignKeys >= 3);
+                assertEquals("1.x", jdbc.queryForObject("""
+                        SELECT compatibility_line FROM wepush_release_compatibility WHERE id = 1
+                        """, String.class));
+                assertEquals("0.1.0-beta.1", jdbc.queryForObject("""
+                        SELECT minimum_upgrade_version FROM wepush_release_compatibility WHERE id = 1
+                        """, String.class));
             }
         } finally {
             try (var administration = PostgreSQLDatabase.create(url, username, password, 2);

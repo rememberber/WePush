@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Path;
+import java.nio.file.Files;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -53,6 +54,30 @@ class FileAgentEventOutboxTest {
         FileAgentEventOutbox recovered = new FileAgentEventOutbox(path, 13);
         assertEquals(1, recovered.pending().size());
         assertEquals(2, recovered.append(fence, List.of(bytes("1"))).firstEventSequence());
+    }
+
+    @Test
+    void writeFailureDoesNotCommitAppendOrAcknowledgementInMemory() throws Exception {
+        Path path = temporaryDirectory.resolve("transactional.bin");
+        Path temporaryPath = temporaryDirectory.resolve("transactional.bin.tmp");
+        LeaseFence fence = new LeaseFence("lease-1", "run-1", 1, "fence-1");
+        FileAgentEventOutbox outbox = new FileAgentEventOutbox(path);
+        outbox.append(fence, List.of(bytes("one")));
+
+        Files.createDirectories(temporaryPath);
+        Files.writeString(temporaryPath.resolve("block-delete"), "simulate a full or unwritable disk");
+        assertThrows(IllegalStateException.class,
+                () -> outbox.append(fence, List.of(bytes("two"))));
+        assertEquals(1, outbox.pending().size());
+        assertEquals(7, outbox.sizeBytes());
+        assertThrows(IllegalStateException.class,
+                () -> outbox.acknowledge(new AgentFrames.EventAck(fence, 1)));
+        assertEquals(1, outbox.pending().size());
+
+        Files.delete(temporaryPath.resolve("block-delete"));
+        Files.delete(temporaryPath);
+        assertEquals(2, outbox.append(fence, List.of(bytes("two"))).firstEventSequence());
+        assertEquals(2, new FileAgentEventOutbox(path).pending().size());
     }
 
     private static byte[] bytes(String value) {

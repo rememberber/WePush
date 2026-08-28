@@ -65,6 +65,7 @@ class RemoteRunGrpcIntegrationTest {
         registry.add("wepush.agent.grpc.port", () -> "0");
         registry.add("wepush.agent.grpc.token", () -> TOKEN);
         registry.add("wepush.agent.grpc.heartbeat-interval", () -> "PT1S");
+        registry.add("wepush.agent.recovery-grace", () -> "PT0S");
         registry.add("wepush.agent.lease-scan-interval", () -> "PT1H");
         registry.add("server.shutdown", () -> "immediate");
     }
@@ -74,6 +75,9 @@ class RemoteRunGrpcIntegrationTest {
 
     @Autowired
     private JdbcTemplate jdbc;
+
+    @Autowired
+    private com.fangxuele.wepush.next.service.application.RemoteRunCoordinator remoteRuns;
 
     @LocalServerPort
     private int httpPort;
@@ -259,32 +263,172 @@ class RemoteRunGrpcIntegrationTest {
         }
     }
 
+    @Test
+    void expiresDisconnectedAgentLeaseAndFencesRecoveryToAReplacementAgent() throws Exception {
+        BlockingQueue<AgentFrames.Welcome> firstWelcomes = new LinkedBlockingQueue<>();
+        BlockingQueue<AgentFrames.LeaseOffer> firstOffers = new LinkedBlockingQueue<>();
+        AtomicReference<Throwable> firstFailure = new AtomicReference<>();
+        ManagedChannel firstChannel = agentChannel();
+        StreamObserver<AgentToService> firstRequests = agentStub(firstChannel).connect(
+                responseObserver(firstWelcomes, firstOffers, firstFailure));
+        AgentId firstAgent = new AgentId("failure-agent-" + UUID.randomUUID());
+        SecretEnvelopeCodec envelopes = new SecretEnvelopeCodec();
+        KeyPair firstKey = envelopes.generateRecipientKeyPair();
+        try {
+            firstRequests.onNext(AgentProtoMapper.toProto(new AgentFrames.AgentToService(firstAgent, 1,
+                    hello(firstKey, List.of()))));
+            assertNotNull(firstWelcomes.poll(5, TimeUnit.SECONDS));
+            String runId = createRemoteRun();
+            AgentFrames.LeaseOffer original = firstOffers.poll(5, TimeUnit.SECONDS);
+            assertNotNull(original, "Service did not lease the run to the first Agent");
+            firstRequests.onNext(AgentProtoMapper.toProto(new AgentFrames.AgentToService(firstAgent, 2,
+                    new AgentFrames.LeaseAck(original.fence()))));
+            awaitRunState(runId, "RUNNING");
+
+            firstRequests.onCompleted();
+            awaitAgentStatus(firstAgent.value(), "OFFLINE");
+            Instant assignedAt = Instant.parse(jdbc.queryForObject(
+                    "SELECT assigned_at FROM agent_lease WHERE id = ?", String.class,
+                    original.fence().leaseId()));
+            jdbc.update("UPDATE agent_lease SET expires_at = ? WHERE id = ?",
+                    assignedAt.plusMillis(1).toString(), original.fence().leaseId());
+            remoteRuns.expireAndRecover();
+            awaitRunState(runId, "RECOVERING");
+
+            BlockingQueue<AgentFrames.Welcome> replacementWelcomes = new LinkedBlockingQueue<>();
+            BlockingQueue<AgentFrames.LeaseOffer> replacementOffers = new LinkedBlockingQueue<>();
+            AtomicReference<Throwable> replacementFailure = new AtomicReference<>();
+            ManagedChannel replacementChannel = agentChannel();
+            AgentId replacementAgent = new AgentId("replacement-agent-" + UUID.randomUUID());
+            KeyPair replacementKey = envelopes.generateRecipientKeyPair();
+            StreamObserver<AgentToService> replacementRequests = agentStub(replacementChannel).connect(
+                    responseObserver(replacementWelcomes, replacementOffers, replacementFailure));
+            try {
+                replacementRequests.onNext(AgentProtoMapper.toProto(new AgentFrames.AgentToService(
+                        replacementAgent, 1, hello(replacementKey, List.of()))));
+                assertNotNull(replacementWelcomes.poll(5, TimeUnit.SECONDS));
+                awaitAgentStatus(replacementAgent.value(), "ONLINE");
+                recoverPendingAfterAgentRegistration();
+                AgentFrames.LeaseOffer replacement = replacementOffers.poll(5, TimeUnit.SECONDS);
+                assertNotNull(replacement, "Recovered run was not offered to the replacement Agent");
+                assertEquals(runId, replacement.fence().runId());
+                assertTrue(replacement.fence().epoch() > original.fence().epoch());
+                assertFalse(replacement.fence().fencingToken().equals(original.fence().fencingToken()));
+                assertEquals("EXPIRED", jdbc.queryForObject(
+                        "SELECT status FROM agent_lease WHERE id = ?", String.class,
+                        original.fence().leaseId()));
+                assertEquals(null, replacementFailure.get());
+                replacementRequests.onCompleted();
+            } finally {
+                replacementChannel.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
+            }
+            assertEquals(null, firstFailure.get());
+        } finally {
+            firstChannel.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
+        }
+    }
+
     private String createRemoteRun() throws Exception {
+        String suffix = UUID.randomUUID().toString().substring(0, 8);
         accepted(put("/api/v1/workspaces/ws_default/secrets/http/authorization/versions/v1",
                 "{\"value\":\"Bearer must-not-leak\"}"), 200);
         JsonNode account = accepted(post("/api/v1/workspaces/ws_default/accounts", """
-                {"name":"Remote HTTP","providerId":"wepush.http","providerVersion":"0.1.0",
+                {"name":"Remote HTTP %s","providerId":"wepush.http","providerVersion":"0.1.0",
                  "configuration":{"baseUrl":"https://example.com","auth":{"type":"BEARER",
                  "secret":{"namespace":"http","name":"authorization","version":"v1"}}}}
-                """, null), 201);
+                """.formatted(suffix), null), 201);
         JsonNode message = accepted(post("/api/v1/workspaces/ws_default/messages", """
-                {"name":"Remote message","providerId":"wepush.http","providerVersion":"0.1.0",
+                {"name":"Remote message %s","providerId":"wepush.http","providerVersion":"0.1.0",
                  "content":{"method":"POST","path":"/notify","bodyTemplate":"{}"}}
-                """, null), 201);
+                """.formatted(suffix), null), 201);
         JsonNode audience = accepted(post("/api/v1/workspaces/ws_default/audiences", """
-                {"name":"Remote audience","recipients":[
+                {"name":"Remote audience %s","recipients":[
                   {"itemId":"alice","fields":{"mobile":"13000000000"}}]}
-                """, null), 201);
+                """.formatted(suffix), null), 201);
         JsonNode job = accepted(post("/api/v1/workspaces/ws_default/jobs", """
-                {"name":"Remote job","accountId":"%s","messageId":"%s","audienceId":"%s",
+                {"name":"Remote job %s","accountId":"%s","messageId":"%s","audienceId":"%s",
                  "policies":{"concurrency":{"minimum":1,"target":1,"maximum":2}},"enabled":true}
-                """.formatted(account.get("id").textValue(), message.get("id").textValue(),
+                """.formatted(suffix, account.get("id").textValue(), message.get("id").textValue(),
                 audience.get("id").textValue()), null), 201);
         JsonNode run = accepted(post("/api/v1/workspaces/ws_default/jobs/"
                 + job.get("id").textValue() + "/runs",
                 "{\"dryRun\":true,\"policyOverrides\":{},\"reason\":\"remote-test\"}",
-                "remote-run"), 202);
+                "remote-run-" + suffix), 202);
         return run.get("id").textValue();
+    }
+
+    private ManagedChannel agentChannel() {
+        return NettyChannelBuilder.forAddress("127.0.0.1", grpcServer.localPort())
+                .usePlaintext().build();
+    }
+
+    private AgentControlServiceGrpc.AgentControlServiceStub agentStub(ManagedChannel channel) {
+        Metadata metadata = new Metadata();
+        metadata.put(Metadata.Key.of("x-wepush-agent-token", Metadata.ASCII_STRING_MARSHALLER), TOKEN);
+        return AgentControlServiceGrpc.newStub(channel)
+                .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata));
+    }
+
+    private AgentFrames.Hello hello(KeyPair keyPair, List<com.fangxuele.wepush.next.agent.protocol.LeaseFence> recovered) {
+        return new AgentFrames.Hello("1.0.0-test", 1, 1, "TestOS", "amd64", "21",
+                2, 0, 0, List.of(new ProviderCapability("wepush.http", "0.1.0", 1, 32)),
+                new SecretEnvelopeCodec().encodePublicKey(keyPair.getPublic()), recovered);
+    }
+
+    private StreamObserver<ServiceToAgent> responseObserver(
+            BlockingQueue<AgentFrames.Welcome> welcomes,
+            BlockingQueue<AgentFrames.LeaseOffer> offers,
+            AtomicReference<Throwable> failure) {
+        return new StreamObserver<>() {
+            @Override
+            public void onNext(ServiceToAgent value) {
+                AgentFrames.ServicePayload payload = AgentProtoMapper.fromProto(value).payload();
+                if (payload instanceof AgentFrames.Welcome welcome) welcomes.add(welcome);
+                if (payload instanceof AgentFrames.LeaseOffer offer) offers.add(offer);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                failure.set(throwable);
+            }
+
+            @Override
+            public void onCompleted() {
+            }
+        };
+    }
+
+    private void awaitAgentStatus(String agentId, String expected) throws Exception {
+        String last = null;
+        for (int attempt = 0; attempt < 200; attempt++) {
+            last = jdbc.queryForObject("SELECT status FROM agent_registration WHERE id = ?",
+                    String.class, agentId);
+            if (expected.equals(last)) return;
+            Thread.sleep(20);
+        }
+        throw new AssertionError("Agent did not reach " + expected + ": " + last);
+    }
+
+    private void recoverPendingAfterAgentRegistration() throws Exception {
+        RuntimeException lastBusyFailure = null;
+        for (int attempt = 0; attempt < 200; attempt++) {
+            try {
+                remoteRuns.recoverPending();
+                return;
+            } catch (RuntimeException failure) {
+                if (!hasMessage(failure, "SQLITE_BUSY")) throw failure;
+                lastBusyFailure = failure;
+                Thread.sleep(20);
+            }
+        }
+        throw new AssertionError("SQLite remained busy while recovering the pending run", lastBusyFailure);
+    }
+
+    private boolean hasMessage(Throwable failure, String fragment) {
+        for (Throwable current = failure; current != null; current = current.getCause()) {
+            if (current.getMessage() != null && current.getMessage().contains(fragment)) return true;
+        }
+        return false;
     }
 
     private AgentFrames.EventAck requireAck(BlockingQueue<AgentFrames.EventAck> acks)

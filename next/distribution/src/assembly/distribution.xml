@@ -18,9 +18,9 @@
             <destName>README.md</destName>
         </file>
         <file>
-            <source>../PREVIEW-NOTICE.md</source>
+            <source>../UNSIGNED-NOTICE.md</source>
             <outputDirectory>/</outputDirectory>
-            <destName>PREVIEW-NOTICE.md</destName>
+            <destName>UNSIGNED-NOTICE.md</destName>
         </file>
         <file>
             <source>../CHANGELOG.md</source>
@@ -38,7 +38,7 @@
             <destName>THIRD-PARTY-NOTICES.md</destName>
         </file>
         <file>
-            <source>../docs/releases/0.1.0-beta.1.md</source>
+            <source>../docs/releases/${project.version}.md</source>
             <outputDirectory>/</outputDirectory>
             <destName>RELEASE-NOTES.md</destName>
         </file>

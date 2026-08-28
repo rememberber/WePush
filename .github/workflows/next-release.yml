@@ -1,4 +1,4 @@
-name: WePush Next Public Preview Release
+name: WePush Next Release
 
 on:
   push:
@@ -95,7 +95,9 @@ jobs:
           set -euo pipefail
           sha256sum --check *.sha256
           tar_listing=$(tar -tzf "wepush-next-${{ steps.metadata.outputs.version }}.tar.gz")
-          grep -Eq '^wepush-next-[^/]+/PREVIEW-NOTICE.md$' <<< "$tar_listing"
+          grep -Eq '^wepush-next-[^/]+/UNSIGNED-NOTICE.md$' <<< "$tar_listing"
+          grep -Eq '^wepush-next-[^/]+/docs/compatibility-policy.md$' <<< "$tar_listing"
+          grep -Eq '^wepush-next-[^/]+/docs/upgrade-guide.md$' <<< "$tar_listing"
           grep -Eq '^wepush-next-[^/]+/docs/user-guide.md$' <<< "$tar_listing"
           grep -Eq '^wepush-next-[^/]+/sdk/embedded-java-[^/]+\.jar$' <<< "$tar_listing"
           grep -Eq '^wepush-next-[^/]+/sdk/provider-standard-[^/]+\.jar$' <<< "$tar_listing"
@@ -134,7 +136,7 @@ jobs:
           cp next/sdk/embedded-java/pom.xml "$sdk_name/embedded-java-$VERSION.pom"
           cp next/sdk/embedded-java/target/embedded-java-$VERSION.jar "$sdk_name/"
           cp next/service/service-api/src/main/resources/openapi/openapi.yaml "$sdk_name/"
-          cp LICENSE.txt next/PREVIEW-NOTICE.md next/SECURITY.md next/THIRD-PARTY-NOTICES.md "$sdk_name/"
+          cp LICENSE.txt next/UNSIGNED-NOTICE.md next/SECURITY.md next/THIRD-PARTY-NOTICES.md "$sdk_name/"
           zip -qr "release-assets/$sdk_name.zip" "$sdk_name"
       - name: Generate CycloneDX SBOM
         uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610
@@ -201,7 +203,7 @@ jobs:
           name="wepush-next-desktop-$VERSION-linux-$ARCH"
           mkdir -p "release-assets" "$name"
           cp -a next/ui/apps/desktop/release/linux-unpacked "$name/WePush Next"
-          cp LICENSE.txt next/PREVIEW-NOTICE.md next/SECURITY.md next/THIRD-PARTY-NOTICES.md "$name/"
+          cp LICENSE.txt next/UNSIGNED-NOTICE.md next/SECURITY.md next/THIRD-PARTY-NOTICES.md "$name/"
           tar -czf "release-assets/$name.tar.gz" "$name"
       - name: Verify macOS package and stage archive
         if: runner.os == 'macOS'
@@ -220,7 +222,7 @@ jobs:
           name="wepush-next-desktop-$VERSION-macos-$ARCH"
           mkdir -p "release-assets" "$name"
           cp -R 'next/ui/apps/desktop/release/WePush Next.app' "$name/"
-          cp LICENSE.txt next/PREVIEW-NOTICE.md next/SECURITY.md next/THIRD-PARTY-NOTICES.md "$name/"
+          cp LICENSE.txt next/UNSIGNED-NOTICE.md next/SECURITY.md next/THIRD-PARTY-NOTICES.md "$name/"
           ditto -c -k --sequesterRsrc --keepParent "$name" "release-assets/$name.zip"
       - name: Verify Windows package and stage archive
         if: runner.os == 'Windows'
@@ -242,7 +244,7 @@ jobs:
           $name = "wepush-next-desktop-$env:VERSION-windows-$env:ARCH"
           New-Item -ItemType Directory -Force -Path release-assets, $name | Out-Null
           Copy-Item next/ui/apps/desktop/release/win-unpacked "$name/WePush Next" -Recurse
-          Copy-Item LICENSE.txt,next/PREVIEW-NOTICE.md,next/SECURITY.md,next/THIRD-PARTY-NOTICES.md $name
+          Copy-Item LICENSE.txt,next/UNSIGNED-NOTICE.md,next/SECURITY.md,next/THIRD-PARTY-NOTICES.md $name
           Compress-Archive -Path $name -DestinationPath "release-assets/$name.zip"
       - uses: actions/upload-artifact@v4
         with:
@@ -318,7 +320,7 @@ jobs:
           retention-days: 30
 
   publish:
-    name: Publish GitHub Pre-release
+    name: Publish GitHub Release
     needs: [distribution, desktop, runtime]
     runs-on: ubuntu-latest
     permissions:
@@ -338,7 +340,7 @@ jobs:
           find . -maxdepth 1 -type f ! -name SHA256SUMS -print0 |
             sort -z | xargs -0 sha256sum | sed 's#  \./#  #' > SHA256SUMS
           sha256sum --check SHA256SUMS
-      - name: Publish unsigned public preview
+      - name: Publish unsigned release
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -347,10 +349,16 @@ jobs:
           version=${GITHUB_REF_NAME#next-v}
           notes="next/docs/releases/$version.md"
           test -s "$notes"
+          title="WePush Next $version"
+          release_flags=()
+          if [[ "$version" == *-* ]]; then
+            title="$title (Public Preview)"
+            release_flags+=(--prerelease)
+          fi
           gh release create "$GITHUB_REF_NAME" \
             --repo "$GITHUB_REPOSITORY" \
             --verify-tag \
-            --prerelease \
-            --title "WePush Next $version (Public Preview)" \
+            "${release_flags[@]}" \
+            --title "$title" \
             --notes-file "$notes" \
             release-assets/*

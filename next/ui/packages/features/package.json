@@ -1,6 +1,6 @@
 {
   "name": "@wepush-next/features",
-  "version": "0.1.0-beta.1",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "exports": {

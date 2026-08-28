@@ -1874,7 +1874,7 @@ wepush:
 - 系统级 Service 使用 LaunchDaemon；用户级 Standalone 可使用 LaunchAgent。
 - 安装包明确选择一种运行级别，不能混用数据目录。
 - LaunchDaemon 必须使用明确存在的非 root 账号；安装器默认使用 `sudo` 的发起用户，也允许显式设置 `WEPUSH_SERVICE_USER`。
-- 签名、公证和升级流程单独验证。
+- 未签名告知、Release SHA-256、SBOM 和升级流程单独验证。
 
 ### 40.4 升级
 
@@ -2086,7 +2086,7 @@ Next CI 使用 `next/**` 路径过滤，Classic 和 Next 互不依赖对方构�
 以下事项可以在对应能力进入迭代前继续形成独立 ADR，但不阻塞当前架构：
 
 1. OpenAPI Generator、数据库迁移工具、路由和 Server State 库的具体版本。
-2. Desktop 本地 Bootstrap Channel、平台安装和发行签名实现。
+2. Desktop 本地 Bootstrap Channel、平台安装和未签名发行完整性验证。
 3. 非受信 Provider 的独立进程 Runner；只有明确服务于用户自建安全场景时才进入评审。
 
 公共 SaaS、计费订阅、外部 Vault/云 KMS/Secret Manager、恶意公共租户物理隔离和跨地域控制面不是“后续非基线事项”，而是长期产品非目标。任何后续 ADR 不得把它们重新引入。允许评审的扩展不得反向污染 Core API，也不得削弱 Workspace、Lease Fencing、Secret 和 Artifact 的既定安全边界。
