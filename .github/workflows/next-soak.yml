@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        database: [sqlite, postgres]
+        database: [sqlite, postgresql]
         java: ['21', '25']
     services:
       postgres:

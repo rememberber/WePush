@@ -31,8 +31,9 @@ class StandaloneSoakIntegrationTest {
 
     @DynamicPropertySource
     static void properties(DynamicPropertyRegistry registry) {
-        if ("postgres".equalsIgnoreCase(System.getenv("WEPUSH_SOAK_DATABASE"))) {
-            registry.add("wepush.database.kind", () -> "postgres");
+        String database = System.getenv("WEPUSH_SOAK_DATABASE");
+        if ("postgres".equalsIgnoreCase(database) || "postgresql".equalsIgnoreCase(database)) {
+            registry.add("wepush.database.kind", () -> "postgresql");
             registry.add("wepush.database.url", () -> System.getenv().getOrDefault(
                     "WEPUSH_TEST_POSTGRES_URL", "jdbc:postgresql://127.0.0.1:5432/wepush"));
             registry.add("wepush.database.username", () -> System.getenv().getOrDefault(
