@@ -29,6 +29,7 @@ trap cleanup EXIT HUP INT TERM
 grep -Eho 'WEPUSH_[A-Z0-9_]+' service/service-app/src/main/resources/application.yaml \
   distribution/src/main/distribution/config/*.example | sort -u > "$current_keys"
 while IFS= read -r required_key; do
+  required_key=${required_key%$'\r'}
   [[ -z "$required_key" ]] || grep -Fxq "$required_key" "$current_keys" || {
     echo "Configuration key from 0.1.0-beta.1 is no longer accepted: $required_key" >&2
     exit 1
