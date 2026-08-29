@@ -54,7 +54,7 @@ class ServiceSmokeTest {
 
         assertEquals(200, health.statusCode());
         assertEquals(200, installation.statusCode());
-        assertTrue(installation.body().contains("\"databaseVersion\":\"13\""));
+        assertTrue(installation.body().contains("\"databaseVersion\":\"14\""));
         assertTrue(installation.body().contains("\"providerCount\":9"));
         assertTrue(installation.body().contains("\"dryRun\":\"DRY_RUN\""));
         assertTrue(health.body().contains("UP"));

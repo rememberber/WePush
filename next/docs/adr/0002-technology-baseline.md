@@ -39,7 +39,7 @@ WePush Next 需要同时提供 Service、WebUI 和 Desktop UI。技术基线必�
 - Electron Main、Preload 和 Renderer 分层；Renderer 不直接获得 Node.js 权限。
 - 强制启用 `contextIsolation` 和 Renderer Sandbox，关闭 `nodeIntegration`。
 - Preload 只暴露经过白名单定义、参数校验和来源校验的最小 IPC API。
-- Desktop 只加载随安装包签名发布的本地 UI 资源；不得加载带 Node 能力的远程页面。
+- Desktop 只加载发行包内的本地 UI 资源，并通过 GitHub Release 与 `SHA256SUMS` 验证包完整性；不得加载带 Node 能力的远程页面。应用不以商业代码签名作为发行前提。
 - Electron 每个受支持主版本生命周期较短，项目持续跟随受支持稳定版本，至少每季度评估一次主版本升级。
 
 ## 前端目录
@@ -88,4 +88,3 @@ next/ui/
 - [Electron Releases](https://releases.electronjs.org/)
 - [Electron Security](https://www.electronjs.org/docs/latest/tutorial/security)
 - [shadcn/ui for Vite](https://ui.shadcn.com/docs/installation/vite)
-

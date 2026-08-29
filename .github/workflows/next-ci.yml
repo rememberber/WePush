@@ -29,6 +29,8 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: maven
+      - name: Verify beta compatibility baselines
+        run: next/scripts/verify-compatibility.sh
       - name: Verify Next reactor
         working-directory: next
         run: >-
@@ -238,7 +240,9 @@ jobs:
           grep -Eq '^wepush-next-[^/]+/web/index.html$' <<< "$tar_listing"
           grep -Eq '^wepush-next-[^/]+/docs/user-guide.md$' <<< "$tar_listing"
           grep -Eq '^wepush-next-[^/]+/LICENSE.txt$' <<< "$tar_listing"
-          grep -Eq '^wepush-next-[^/]+/PREVIEW-NOTICE.md$' <<< "$tar_listing"
+          grep -Eq '^wepush-next-[^/]+/UNSIGNED-NOTICE.md$' <<< "$tar_listing"
+          grep -Eq '^wepush-next-[^/]+/docs/compatibility-policy.md$' <<< "$tar_listing"
+          grep -Eq '^wepush-next-[^/]+/docs/upgrade-guide.md$' <<< "$tar_listing"
           grep -Eq '^wepush-next-[^/]+/SECURITY.md$' <<< "$tar_listing"
           grep -Eq '^wepush-next-[^/]+/api/openapi.yaml$' <<< "$tar_listing"
           grep -Eq '^wepush-next-[^/]+/sdk/sdk-java-[^/]+\.jar$' <<< "$tar_listing"

@@ -10,7 +10,7 @@ try {
   $backupRoot = "$temporary\backups"
   $expectedRoot = "$temporary\expected"
   New-Item -ItemType Directory -Force -Path $configRoot, "$dataRoot\service\secrets", "$dataRoot\service\artifacts\nested",
-    "$dataRoot\agent\plugins\active", "$installRoot\releases\0.1.0-old", $backupRoot, $expectedRoot | Out-Null
+    "$dataRoot\agent\plugins\active", "$installRoot\releases\0.1.0-beta.1", $backupRoot, $expectedRoot | Out-Null
   "WEPUSH_MODE=standalone" | Set-Content "$configRoot\service.env"
   "WEPUSH_PLUGIN_TRUSTED_KEYS=test-key" | Set-Content "$configRoot\agent.env"
   "sqlite-database" | Set-Content "$dataRoot\service\wepush-next.db"
@@ -21,7 +21,7 @@ try {
   "event-outbox" | Set-Content "$dataRoot\agent\event-outbox"
   "completion-outbox" | Set-Content "$dataRoot\agent\completion-outbox"
   "signed-plugin" | Set-Content "$dataRoot\agent\plugins\active\provider.zip"
-  New-Item -ItemType Junction -Path "$installRoot\current" -Target "$installRoot\releases\0.1.0-old" | Out-Null
+  New-Item -ItemType Junction -Path "$installRoot\current" -Target "$installRoot\releases\0.1.0-beta.1" | Out-Null
   Copy-Item $configRoot "$expectedRoot\config" -Recurse
   Copy-Item $dataRoot "$expectedRoot\data" -Recurse
 
@@ -87,13 +87,46 @@ New-Item -ItemType Junction -Path "$env:WEPUSH_INSTALL_ROOT\current" -Target "$e
   try { & "$tools\upgrade.ps1" -Archive $upgradeArchive -ExpectedSha256 $upgradeSha; $upgradeAccepted = $true } catch { }
   if ($upgradeAccepted) { throw "Forced failed upgrade unexpectedly succeeded" }
   $target = (Get-Item "$installRoot\current" -Force).Target
-  if ([IO.Path]::GetFullPath($target) -ne [IO.Path]::GetFullPath("$installRoot\releases\0.1.0-old")) {
+  if ([IO.Path]::GetFullPath($target) -ne [IO.Path]::GetFullPath("$installRoot\releases\0.1.0-beta.1")) {
     throw "Failed upgrade did not restore the previous release"
   }
   if ((Get-Content "$dataRoot\service\wepush-next.db" -Raw).Trim() -ne "sqlite-database") {
     throw "Failed upgrade did not restore the previous database"
   }
-  Write-Host "Backup validation, full restore and failed-upgrade rollback passed on windows"
+
+  $successRoot = "$temporary\success\wepush-next-1.0.0"
+  New-Item -ItemType Directory -Force -Path "$successRoot\install\windows" | Out-Null
+  @'
+param([string]$Component = "standalone")
+$ErrorActionPreference = "Stop"
+New-Item -ItemType Directory -Force -Path "$env:WEPUSH_INSTALL_ROOT\releases\1.0.0" | Out-Null
+Remove-Item "$env:WEPUSH_INSTALL_ROOT\current" -Force
+New-Item -ItemType Junction -Path "$env:WEPUSH_INSTALL_ROOT\current" -Target "$env:WEPUSH_INSTALL_ROOT\releases\1.0.0" | Out-Null
+'@ | Set-Content "$successRoot\install\windows\install.ps1"
+  @'
+param([string]$ExpectedVersion)
+if ($ExpectedVersion -ne "1.0.0") { throw "Expected 1.0.0" }
+'@ | Set-Content "$successRoot\install\verify-install.ps1"
+  $successArchive = "$temporary\success.zip"
+  Compress-Archive $successRoot $successArchive
+  $successSha = (Get-FileHash $successArchive -Algorithm SHA256).Hash
+  & "$tools\upgrade.ps1" -Archive $successArchive -ExpectedSha256 $successSha
+  $target = (Get-Item "$installRoot\current" -Force).Target
+  if ([IO.Path]::GetFullPath($target) -ne [IO.Path]::GetFullPath("$installRoot\releases\1.0.0")) {
+    throw "Successful beta.1 upgrade did not activate 1.0.0"
+  }
+  if ((Get-Content "$dataRoot\service\wepush-next.db" -Raw).Trim() -ne "sqlite-database") {
+    throw "Successful beta.1 upgrade changed user data"
+  }
+
+  & "$tools\uninstall.ps1"
+  if (Test-Path $installRoot) { throw "Default uninstall did not remove binaries" }
+  if (-not (Test-Path "$dataRoot\service\wepush-next.db")) { throw "Default uninstall removed user data" }
+  New-Item -ItemType Directory -Force -Path "$installRoot\releases\1.0.0" | Out-Null
+  & "$tools\uninstall.ps1" -Purge
+  if (Test-Path $installRoot) { throw "Purge did not remove binaries" }
+  if (Test-Path $dataRoot) { throw "Purge did not remove user data" }
+  Write-Host "Backup, beta.1 upgrade, rollback, uninstall and purge passed on windows"
 } finally {
   Remove-Item $temporary -Recurse -Force -ErrorAction SilentlyContinue
 }

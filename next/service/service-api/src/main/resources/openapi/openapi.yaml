@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: WePush Next Service API
-  version: 0.1.0-beta.1
+  version: 1.0.0
   description: Self-hosted control plane API shared by Web UI, Desktop UI and remote SDKs. It does not expose SaaS registration, billing, subscription or public-cloud platform services.
 servers:
   - url: /

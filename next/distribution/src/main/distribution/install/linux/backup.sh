@@ -28,6 +28,7 @@ restore_services() {
   if [ "$AGENT_ACTIVE" = true ]; then systemctl start wepush-next-agent.service; fi
 }
 TEMP=$(mktemp -d "${TMPDIR:-/tmp}/wepush-next-backup.XXXXXX")
+BACKUP_ID=${TEMP##*.}
 cleanup() { rm -rf "$TEMP"; restore_services; }
 trap cleanup EXIT HUP INT TERM
 install -d -m 0700 "$TEMP/payload/config" "$TEMP/payload/data"
@@ -43,7 +44,7 @@ createdAt=$STAMP
 contents=config,database,master-key,artifacts,agent-identity,journal,outbox,plugins
 EOF
 (cd "$TEMP" && find payload -type f -print | LC_ALL=C sort | while IFS= read -r FILE; do sha256sum "$FILE"; done > SHA256SUMS)
-ARCHIVE="$DESTINATION/wepush-next-$STAMP.tar.gz"
+ARCHIVE="$DESTINATION/wepush-next-$STAMP-$BACKUP_ID.tar.gz"
 tar -C "$TEMP" -czf "$ARCHIVE" BACKUP-MANIFEST SHA256SUMS payload
 chmod 0600 "$ARCHIVE"
 "$(dirname -- "$0")/restore.sh" --validate-only "$ARCHIVE"

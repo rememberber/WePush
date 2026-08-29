@@ -1,7 +1,7 @@
 # WePush Next 产品目标、边界与路线图
 
 - 文档状态：已确认产品方向
-- 更新日期：2026-08-28
+- 更新日期：2026-08-29
 - 适用范围：`next/`
 
 ## 1. 产品定位
@@ -53,7 +53,7 @@ WePush 项目不运营承载用户业务数据的官方集中服务，也不把�
 - 邮件、短信、微信、企业 IM、HTTP 等 Provider 及签名插件扩展机制。
 - 并发、限流、重试、暂停、恢复、取消、幂等、结果未知和失败重发语义。
 - Workspace 逻辑隔离、VIEWER/OPERATOR/ADMIN 权限和 Agent 授权。
-- TLS/mTLS、Secret 最小暴露、Artifact 完整性、安装包校验和发行签名。
+- TLS/mTLS、Secret 最小暴露、Artifact 完整性、安装包来源/校验和/SBOM 和明确签名状态；应用商业代码签名不是发布前提。
 - 用户可执行的升级、备份、恢复、回滚、日志、指标和故障诊断。
 
 PostgreSQL、S3-compatible Store 和多节点 HA 是可选的用户自建形态，不是使用 WePush 的前置条件。S3-compatible 只表示协议兼容，可以由用户在本地或私有环境中运行。
@@ -77,7 +77,7 @@ PostgreSQL、S3-compatible Store 和多节点 HA 是可选的用户自建形态�
 
 ## 5. 当前基线
 
-`0.1.0-beta.1` 已形成独立构建的日常使用、真实渠道和自部署运维闭环：
+`1.0.0` 已形成独立构建的稳定自部署产品：
 
 - Core API、Provider SPI、虚拟线程 Engine，以及 HTTP、SMTP Email、三类群机器人、阿里云短信、微信公众号、小程序和企业微信应用消息 Provider。
 - Standalone Service、SQLite、Local Artifact、Local Envelope Secret Store。
@@ -90,9 +90,11 @@ PostgreSQL、S3-compatible Store 和多节点 HA 是可选的用户自建形态�
 - 三平台含 Java Runtime 完整包、系统 Java 精简包、统一 Standalone/高级分组件安装和离线 Windows Service Wrapper。
 - 正式 Backup/Restore、Payload 文件集合与逐文件内容校验、升级 Installation Health 与失败自动回退。
 - Desktop 本机 Service 运维、原生 Token 安全存储，以及签名插件 Stage/Activate/Rollback。
+- 1.x REST/SSE、Java SDK、配置、数据库迁移、Provider SPI 和 Agent 协议兼容承诺。
+- V13→V14 无损迁移、Beta 成功升级/失败回退、100,000 Recipient 流式执行和跨平台故障门禁。
 - 浏览器 E2E、Desktop 冒烟、三平台恢复/失败升级和 Java 21/25 长稳矩阵。
 
-当前差距集中在 `1.0.0` 的兼容承诺、故障注入、商业发行签名和稳定发行，不需要也不会扩大公共平台能力。
+当前稳定基线不依赖商业代码签名，不需要也不会扩大公共平台能力。后续 1.x 只在兼容边界内改进自部署体验、可靠性和 Provider 生态。
 
 ## 6. 迭代路线图
 
@@ -204,16 +206,26 @@ Classic 与 Next 可以复用业务需求、测试数据和验收经验，但不
 
 目标：对自部署用户提供明确的兼容性、安全和运维承诺。
 
-发布条件：
+状态：已完成（2026-08-29）。
+
+已交付内容：
 
 - 明确 API、配置和数据库迁移兼容策略。
 - 至少支持从最近一个 Beta 无损升级，并记录最低可回滚版本。
 - 三平台安装、升级、备份、恢复和卸载自动化验收通过。
 - 大受众、长时间任务、断网重连、磁盘不足、进程崩溃和 Agent 失联测试通过。
 - 核心 Provider 具备稳定的限流、幂等、错误分类和重试语义。
-- macOS 和 Windows 发行物完成代码签名；更新仍由用户主动触发。
+- macOS 和 Windows 发行物明确保持未使用商业代码签名；通过项目 GitHub Release、统一 SHA-256、SBOM 和未签名告知建立可验证交付，更新仍由用户主动触发。
 - 默认运行不存在未声明的外部网络依赖或数据回传。
 - 安全、部署、升级、恢复、Provider 开发和用户指南完整且相互一致。
+
+验收结果：
+
+- `0.1.0-beta.1` OpenAPI 忽略版本号后保持精确一致，Beta 配置键逐项进入自动兼容门禁。
+- SQLite 和 PostgreSQL 都从 V13 创建用户数据后迁移到 V14，并验证原数据、版本和兼容元数据。
+- Linux、macOS、Windows 运维自测覆盖成功升级、失败自动回退、完整恢复、默认卸载保留数据和显式 Purge。
+- Core 自动执行 100,000 Recipient 流式任务；Agent 测试覆盖断网重放、进程崩溃后的 UNKNOWN、Outbox 上限和模拟磁盘写失败。
+- Java 21/25 × SQLite/PostgreSQL 长稳、浏览器 E2E、三平台 Desktop 启动和发行归档验证进入 CI/Release 门禁。
 
 ## 7. 优先级规则
 
@@ -241,7 +253,7 @@ Classic 与 Next 可以复用业务需求、测试数据和验收经验，但不
 
 ## 9. 规划维护
 
-- 每次预览版发布后更新本文件的完成状态和下一里程碑。
+- 每次版本发布后更新本文件的完成状态和下一里程碑。
 - 新功能进入实现前必须确认它属于第 3 节正式范围，且不违反第 4 节长期非目标。
 - 产品范围与其他文档冲突时，先按本文纠正文档，再开始实现。
 - 任何会把 WePush 变成官方托管公共平台的提案，均视为产品定位变更，不进入普通需求评审。

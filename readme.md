@@ -19,11 +19,11 @@ WePush 采用 Classic 与 Next 双轨发展。两条产品线彼此独立，允�
 | 产品线 | 当前定位 | 适合场景 | 入口 |
 | --- | --- | --- | --- |
 | WePush Classic | 稳定桌面客户端 | 微信、短信、邮件、HTTP 等成熟批量推送场景 | [Classic 下载](https://gitee.com/zhoubochina/WePush/releases) |
-| WePush Next | `0.1.0-beta.1` Public Preview | 三平台离线自部署、可恢复运维、Service/Agent、WebUI/Desktop 与真实渠道 | [Next 下载](https://github.com/rememberber/WePush/releases/tag/next-v0.1.0-beta.1) |
+| WePush Next | `1.0.0` Stable | 三平台离线自部署、1.x 兼容承诺、可恢复运维、Service/Agent、WebUI/Desktop 与真实渠道 | [Next 下载](https://github.com/rememberber/WePush/releases/tag/next-v1.0.0) |
 
-### WePush Next Public Preview
+### WePush Next Stable
 
-Next 是位于 [`next/`](next/) 的完整新架构产品线，包含 Core Engine、Provider SPI、可安装 Service、远程 Agent、Remote/Embedded Java SDK、React WebUI 和 Electron Desktop。当前 `0.1.0-beta.1` 在真实消息渠道和日常使用闭环之外，提供含 Java Runtime 的三平台完整包、系统 Java 精简包、统一 Standalone 安装、离线 Windows Service Wrapper、正式备份恢复、升级失败自动回退、本机服务诊断和签名插件生命周期管理。
+Next 是位于 [`next/`](next/) 的完整新架构产品线，包含 Core Engine、Provider SPI、可安装 Service、远程 Agent、Remote/Embedded Java SDK、React WebUI 和 Electron Desktop。`1.0.0` 在 Beta 自部署闭环之上明确了 1.x API、配置、数据库和 Agent 协议兼容承诺，并提供三平台完整/精简包、正式备份恢复、升级失败自动回退、故障注入门禁、本机服务诊断和签名插件生命周期管理。
 
 Next 的长期定位是由用户自行下载、安装、部署和运维的开源产品。项目不建设承载用户业务数据的官方公共 SaaS，不提供注册、计费、订阅或公共租户平台，也不规划云 KMS/Secret Manager 集成。用户可以在自己的环境中运行 Standalone，或自行搭建 Server/HA 和远程 Agent。
 
@@ -42,7 +42,7 @@ Next 的长期定位是由用户自行下载、安装、部署和运维的开源
 
 当前典型调用关系为：`WebUI / Desktop UI / Remote Java SDK → Service API → Service → 内嵌 Core Engine`；远程执行时则由 `Service → Agent → Core Engine → Provider` 完成发送。进程内集成使用 `业务 Java 应用 → Embedded Java SDK → Core Engine → Provider`，不经过 Service。
 
-第一次使用请从[《WePush Next 对外使用指南》](next/docs/user-guide.md)开始。当前预览版未使用商业代码签名，不建议直接用于关键生产业务。
+第一次使用请从[《WePush Next 对外使用指南》](next/docs/user-guide.md)开始。macOS/Windows 发行物按项目约定不使用商业代码签名，请只从项目 GitHub Releases 下载并校验 `SHA256SUMS`。
 
 - [Next 项目说明](next/README.md)
 - [产品目标、边界与路线图](next/docs/product-scope-and-roadmap.md)
@@ -50,6 +50,9 @@ Next 的长期定位是由用户自行下载、安装、部署和运维的开源
 - [架构与概要设计](next/docs/architecture-and-high-level-design.md)
 - [详细设计](next/docs/detailed-design.md)
 - [部署与运维](next/docs/deployment-and-operations.md)
+- [`1.0.0` Release Notes](next/docs/releases/1.0.0.md)
+- [1.x 兼容性策略](next/docs/compatibility-policy.md)
+- [升级与回滚指南](next/docs/upgrade-guide.md)
 - [`0.1.0-beta.1` Release Notes](next/docs/releases/0.1.0-beta.1.md)
 
 ## WePush Classic

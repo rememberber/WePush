@@ -57,10 +57,14 @@ public final class FileAgentEventOutbox implements AgentEventOutbox {
         if (added > maximumBytes - sizeBytes) {
             throw new EventOutboxFullException(maximumBytes, sizeBytes, added);
         }
+        List<PendingBatch> updatedBatches = new ArrayList<>(batches);
+        updatedBatches.add(batch);
+        Map<String, Long> updatedSequences = new HashMap<>(nextSequences);
+        updatedSequences.put(fence.leaseId(), batch.lastEventSequence() + 1L);
+        persist(updatedBatches, updatedSequences);
         batches.add(batch);
         nextSequences.put(fence.leaseId(), batch.lastEventSequence() + 1L);
         sizeBytes += added;
-        persist();
         return batch;
     }
 
@@ -72,11 +76,14 @@ public final class FileAgentEventOutbox implements AgentEventOutbox {
     @Override
     public synchronized void acknowledge(AgentFrames.EventAck acknowledgement) {
         LeaseFence fence = acknowledgement.fence();
-        boolean changed = batches.removeIf(batch -> batch.fence().equals(fence)
+        List<PendingBatch> updatedBatches = new ArrayList<>(batches);
+        boolean changed = updatedBatches.removeIf(batch -> batch.fence().equals(fence)
                 && batch.lastEventSequence() <= acknowledgement.lastEventSequence());
         if (changed) {
+            persist(updatedBatches, nextSequences);
+            batches.clear();
+            batches.addAll(updatedBatches);
             sizeBytes = batches.stream().mapToLong(FileAgentEventOutbox::encodedPayloadBytes).sum();
-            persist();
         }
     }
 
@@ -128,7 +135,7 @@ public final class FileAgentEventOutbox implements AgentEventOutbox {
         }
     }
 
-    private void persist() {
+    private void persist(List<PendingBatch> persistedBatches, Map<String, Long> persistedSequences) {
         Path parent = path.getParent();
         Path temporary = path.resolveSibling(path.getFileName() + ".tmp");
         try {
@@ -137,14 +144,14 @@ public final class FileAgentEventOutbox implements AgentEventOutbox {
                     Files.newOutputStream(temporary)))) {
                 output.writeInt(MAGIC);
                 output.writeInt(VERSION);
-                output.writeInt(nextSequences.size());
-                for (Map.Entry<String, Long> entry : nextSequences.entrySet().stream()
+                output.writeInt(persistedSequences.size());
+                for (Map.Entry<String, Long> entry : persistedSequences.entrySet().stream()
                         .sorted(Map.Entry.comparingByKey()).toList()) {
                     output.writeUTF(entry.getKey());
                     output.writeLong(entry.getValue());
                 }
-                output.writeInt(batches.size());
-                for (PendingBatch batch : batches) {
+                output.writeInt(persistedBatches.size());
+                for (PendingBatch batch : persistedBatches) {
                     output.writeUTF(batch.fence().leaseId());
                     output.writeUTF(batch.fence().runId());
                     output.writeLong(batch.fence().epoch());
@@ -165,6 +172,11 @@ public final class FileAgentEventOutbox implements AgentEventOutbox {
                 Files.move(temporary, path, StandardCopyOption.REPLACE_EXISTING);
             }
         } catch (IOException exception) {
+            try {
+                Files.deleteIfExists(temporary);
+            } catch (IOException ignored) {
+                // Preserve the original failure; a non-empty or locked temp path is diagnostic evidence.
+            }
             throw new IllegalStateException("Cannot save Agent Event Outbox: " + path, exception);
         }
     }

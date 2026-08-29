@@ -79,7 +79,7 @@ await mkdir(packagedApp, { recursive: true });
 await cp(join(appRoot, "dist"), join(packagedApp, "dist"), { recursive: true });
 await cp(webDist, join(resources, "web", "dist"), { recursive: true });
 await cp(join(repositoryRoot, "LICENSE.txt"), join(resources, "LICENSE.txt"));
-await cp(join(nextRoot, "PREVIEW-NOTICE.md"), join(resources, "PREVIEW-NOTICE.md"));
+await cp(join(nextRoot, "UNSIGNED-NOTICE.md"), join(resources, "UNSIGNED-NOTICE.md"));
 await cp(join(nextRoot, "SECURITY.md"), join(resources, "SECURITY.md"));
 await cp(join(nextRoot, "THIRD-PARTY-NOTICES.md"), join(resources, "THIRD-PARTY-NOTICES.md"));
 await writeFile(join(packagedApp, "package.json"), JSON.stringify({

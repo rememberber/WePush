@@ -1,12 +1,12 @@
 # WePush Next 实现状态
 
-更新时间：2026-08-28
+更新时间：2026-08-29
 
 产品范围和后续优先级以[《产品目标、边界与路线图》](product-scope-and-roadmap.md)为准。Next 的长期定位是用户自行下载、安装、部署和运维；不建设官方公共 SaaS、注册计费订阅、云 KMS/Secret Manager 或恶意公共租户物理隔离。
 
 ## 1. 里程碑结论
 
-`next/` 的 `0.1.0-beta.1` 公开预览已经形成完整、可独立构建的产品纵向链路、首批真实消息渠道和可验证的自部署运维闭环。Classic 源码和构建保持不动；两条产品线不共享源码依赖，允许各自存在相似实现。
+`next/` 的 `1.0.0` 已形成完整、可独立构建的稳定自部署产品：包含真实消息渠道、可验证运维闭环、1.x 兼容承诺和正式故障门禁。Classic 源码和构建保持不动；两条产品线不共享源码依赖，允许各自存在相似实现。
 
 ```text
 React WebUI / Electron Desktop / Remote Java SDK
@@ -42,7 +42,7 @@ Standalone 默认是单 Service + SQLite + Local Artifact + Embedded Engine；Se
 | Embedded Java SDK | Framework-free 进程内 Engine 门面；显式 Provider、SecretResolver、Result/Event/Artifact Sink，支持列表或流式 Recipient 与完整 RunHandle 控制 |
 | WebUI | TypeScript/Vite/React；资源编辑/修订、CSV/TXT 导入、正式发送确认、失败重发、真实总览、分页筛选、任务/调度、Bearer SSE、Token/Enrollment/审计、动态 Provider Schema/SecretRef 与 API 调试文档 |
 | Desktop | Electron 安全外壳，共用 WebUI；本机 Service 检测/启停/日志/诊断、系统原生 API Token 安全存储、签名插件生命周期；目标系统原生目录打包，不依赖 Core 或 Service 内部实现 |
-| Distribution | 系统 Java 精简包 + 三平台 `jlink` Runtime 完整包；统一 Standalone/高级分组件安装、离线 WinSW、正式备份/恢复、升级健康门和自动回退；容器 Server/HA 拓扑 |
+| Distribution | 系统 Java 精简包 + 三平台 `jlink` Runtime 完整包；统一 Standalone/高级分组件安装、离线 WinSW、正式备份/恢复、Beta 升级、升级健康门、自动回退与安全卸载；容器 Server/HA 拓扑 |
 
 ## 3. Core、Provider 与 Agent
 
@@ -122,17 +122,17 @@ Standalone 默认是单 Service + SQLite + Local Artifact + Embedded Engine；Se
 - PostgreSQL 全量迁移、默认 Workspace、V10 Workspace 列、V11 系统角色列和 outbox 外键；
 - S3 Presigned Put、Range、Head/Checksum、Delete 和 100 MiB Multipart；
 - Java/UI 门禁通过后才生成发行归档。
-- `next-v*` Tag 由独立预发布流水线生成三平台未签名 Desktop 包、CycloneDX SBOM、统一 `SHA256SUMS`，并发布为 GitHub Pre-release。
+- `next-v*` Tag 由独立发行流水线生成三平台未签名 Desktop 包、CycloneDX SBOM 和统一 `SHA256SUMS`；无后缀版本发布为稳定 GitHub Release，带后缀版本才标记为 Pre-release。
 
-## 8. 本轮完成边界与后续演进
+## 8. 稳定版完成边界与后续演进
 
-`beta.1` 已在 `alpha.4` 真实渠道基线上完成自部署运维成熟：三平台完整/精简发行、统一离线 Standalone 安装、Desktop 本机运维与安全 Token、正式 Restore、升级健康验证/失败回退、签名插件本地生命周期和分层测试矩阵均已收口。
+`1.0.0` 已在 `beta.1` 运维基线上完成稳定发行：公开 API/配置兼容摘要门禁、V13→V14 SQLite/PostgreSQL 数据保持迁移、Beta 成功升级与失败回退、100,000 Recipient 流式执行、Agent 断网/崩溃/磁盘写失败恢复、三平台卸载和长稳矩阵均已收口。
 
-以下属于正式路线图内的后续产品增量，不是本轮目标架构的未完成项：
+以下属于 1.x 内可兼容增加的产品增量，不是稳定版缺口：
 
 - 以独立签名插件继续增加其他短信、推送和运营商协议，不扩大内置核心依赖。
-- macOS/Windows 商业发行签名与公证；更新由用户主动触发，公开预览版继续以未签名附件发布。
-- `1.0.0` 前继续完成最近 Beta 兼容承诺、故障注入、大受众/长任务和正式发行签名。
+- 在兼容策略范围内增加可选 API、运维诊断和用户自建部署模板。
+- 更新始终由用户主动触发；macOS/Windows 应用保持未使用商业代码签名，并继续以 Release、SHA-256、SBOM 和明确告知提供完整性证据。
 
 公共 SaaS、自助注册、计费订阅、公共市场、云 KMS/Secret Manager、恶意公共租户物理隔离、跨区域 Active-Active、强制自动更新和遥测回传属于长期非目标，不进入后续产品增量。
 

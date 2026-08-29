@@ -42,6 +42,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -171,6 +172,78 @@ class DefaultExecutionEngineTest {
             RunSummary summary = handle.completion().toCompletableFuture().get(5, TimeUnit.SECONDS);
             assertEquals(RunState.SUCCEEDED, summary.finalState());
             assertEquals(3, calls.get());
+        }
+    }
+
+    @Test
+    void streamsOneHundredThousandRecipientsWithoutMaterializingTheAudienceOrResults() throws Exception {
+        int recipientCount = 100_000;
+        int batchSize = 256;
+        AtomicInteger cursor = new AtomicInteger();
+        AtomicInteger largestBatch = new AtomicInteger();
+        AtomicLong persistedResults = new AtomicLong();
+        AtomicLong persistedEvents = new AtomicLong();
+        RecipientSource source = new RecipientSource() {
+            @Override
+            public long totalCount() {
+                return recipientCount;
+            }
+
+            @Override
+            public List<RecipientRecord> nextBatch(int maximumSize) {
+                int start = cursor.getAndAccumulate(maximumSize,
+                        (current, increment) -> Math.min(recipientCount, current + increment));
+                if (start >= recipientCount) return List.of();
+                int end = Math.min(recipientCount, start + maximumSize);
+                largestBatch.accumulateAndGet(end - start, Math::max);
+                List<RecipientRecord> batch = new ArrayList<>(end - start);
+                for (int index = start; index < end; index++) {
+                    batch.add(new RecipientRecord("item-" + index, index,
+                            Map.of("address", new RecipientValue.TextValue("user-" + index))));
+                }
+                return batch;
+            }
+        };
+        ExecutionPorts ports = new ExecutionPorts(source, ref -> {
+            throw new AssertionError("No secret expected");
+        }, new ResultSink() {
+            @Override
+            public void append(List<ItemResult> batch) {
+                persistedResults.addAndGet(batch.size());
+            }
+
+            @Override
+            public void flush() {
+            }
+        }, ArtifactSink.none(), new RunEventSink() {
+            @Override
+            public void append(RunEvent event) {
+                persistedEvents.incrementAndGet();
+            }
+
+            @Override
+            public void flush() {
+            }
+        }, ExecutionClock.system());
+        TestProvider provider = new TestProvider((request, token) ->
+                ProviderResult.success("OK", request.itemId()));
+        ExecutionPolicies streamingPolicies = new ExecutionPolicies(
+                new ExecutionPolicies.ConcurrencyPolicy(1, 4, 4),
+                ExecutionPolicies.RateLimitPolicy.unlimited(),
+                new ExecutionPolicies.RetryPolicy(1, Duration.ZERO, Duration.ZERO, 1.0, 0.0, false),
+                new ExecutionPolicies.TimeoutPolicy(Duration.ofSeconds(5), Duration.ofMinutes(2)),
+                new ExecutionPolicies.ResultPolicy(false, batchSize));
+
+        try (DefaultExecutionEngine engine = new DefaultExecutionEngine(List.of(provider))) {
+            RunSummary summary = engine.start(spec("run-large-audience", streamingPolicies), ports)
+                    .completion().toCompletableFuture().get(2, TimeUnit.MINUTES);
+
+            assertEquals(RunState.SUCCEEDED, summary.finalState());
+            assertEquals(recipientCount, summary.total());
+            assertEquals(recipientCount, summary.succeeded());
+            assertEquals(recipientCount, persistedResults.get());
+            assertTrue(persistedEvents.get() >= recipientCount + 2L);
+            assertTrue(largestBatch.get() <= batchSize);
         }
     }
 
