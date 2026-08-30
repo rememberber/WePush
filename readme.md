@@ -19,30 +19,38 @@ WePush 采用 Classic 与 Next 双轨发展。两条产品线彼此独立，允�
 | 产品线 | 当前定位 | 适合场景 | 入口 |
 | --- | --- | --- | --- |
 | WePush Classic | 稳定桌面客户端 | 微信、短信、邮件、HTTP 等成熟批量推送场景 | [Classic 下载](https://gitee.com/zhoubochina/WePush/releases) |
-| WePush Next | `1.0.0` Stable | 三平台离线自部署、1.x 兼容承诺、可恢复运维、Service/Agent、WebUI/Desktop 与真实渠道 | [Next 下载](https://github.com/rememberber/WePush/releases/tag/next-v1.0.0) |
+| WePush Next | `1.1.0` Stable | 三平台离线自部署、1.x 兼容承诺、Service/Agent、资源治理、可恢复运维、WebUI/Desktop 与可扩展 Provider | [Next 1.1.0 下载](https://github.com/rememberber/WePush/releases/tag/next-v1.1.0) |
 
 ### WePush Next Stable
 
-Next 是位于 [`next/`](next/) 的完整新架构产品线，包含 Core Engine、Provider SPI、可安装 Service、远程 Agent、Remote/Embedded Java SDK、React WebUI 和 Electron Desktop。`1.0.0` 在 Beta 自部署闭环之上明确了 1.x API、配置、数据库和 Agent 协议兼容承诺，并提供三平台完整/精简包、正式备份恢复、升级失败自动回退、故障注入门禁、本机服务诊断和签名插件生命周期管理。
+Next 是位于 [`next/`](next/) 的完整新架构产品线，包含 Core Engine、Provider SPI、可安装 Service、远程 Agent、Remote/Embedded Java SDK、React WebUI 和 Electron Desktop。`1.1.0` 是兼容 `1.0.0` 的稳定 Minor 发行版，在 1.x API、配置、数据库和 Agent 协议兼容承诺之上，补齐运营商短信插件、Workspace 资源治理、自建运维、跨 Run 可靠性、大 Artifact 与 WebUI 可用性。
 
 Next 的长期定位是由用户自行下载、安装、部署和运维的开源产品。项目不建设承载用户业务数据的官方公共 SaaS，不提供注册、计费、订阅或公共租户平台，也不规划云 KMS/Secret Manager 集成。用户可以在自己的环境中运行 Standalone，或自行搭建 Server/HA 和远程 Agent。
+
+#### `1.1.0` 重点更新
+
+- CMPP、SMGP、SGIP、SMPP 作为四个源码独立、Ed25519 签名的 Agent Provider 插件交付。
+- Workspace 可限制 Agent 数、活动 Run、总发送并发、Artifact 容量和默认保留期；相同账号的认证失败可跨 Run 熔断。
+- 提供结构化脱敏诊断包、Nginx/Traefik/Kubernetes 自建模板和仅由用户手动触发的版本检查。
+- PostgreSQL `LISTEN/NOTIFY` 加速 Run、Agent Outbox 与 SSE 唤醒；数据库轮询、持久 Outbox 和事件游标继续保证正确性。
+- Agent Artifact 支持 Presigned Multipart，单文件上限扩展到 5 TiB；WebUI 增加暗色/跟随系统主题并改善低分辨率与可访问性。
 
 #### Next 组件
 
 | 组件 | 主要职责 | 形态与边界 |
 | --- | --- | --- |
 | [Core / Engine](next/core/) | 执行批量任务，管理并发、重试、暂停、恢复、取消、结果与运行事件 | 纯 Java 无界面执行内核，不直接提供网络 API，也不依赖 Service、UI 或具体 Provider |
-| [Provider SPI / Provider](next/providers/) | 定义消息渠道扩展契约，负责账号校验、消息渲染和实际发送 | Core 只面向 SPI；内置 HTTP 和 8 个标准渠道，其他渠道可作为独立签名插件发展 |
+| [Provider SPI / Provider](next/providers/) | 定义消息渠道扩展契约，负责账号校验、消息渲染和实际发送 | Core 只面向 SPI；内置 HTTP 和 8 个标准渠道，另有 [CMPP/SMGP/SGIP/SMPP 独立签名插件](next/plugins/) |
 | [Service](next/service/) | 提供配置、调度、运行控制、Secret、Artifact、审计、REST/SSE、OpenAPI 和 Agent 控制面 | 可前台运行或安装为 Linux systemd、macOS launchd、Windows Service；本机模式可内嵌 Core Engine |
 | [Agent](next/agent/) | 在独立主机接收 Lease，使用 Core Engine 执行任务并回传事件、结果和 Artifact | 可独立安装，通过 gRPC 主动连接 Service；本机内嵌执行时不需要 Agent |
 | [Remote Java SDK](next/sdk/sdk-java/) | 让 Java 应用通过强类型客户端调用远程 Service API | 已实现；只依赖公开的 `service-api` 契约，不依赖 Core、Engine 或具体 Provider |
-| [Embedded Java SDK](next/sdk/embedded-java/) | 让 Java 应用在自己的进程内直接装配 Core Engine 和选定 Provider，无需启动 Service | `beta.1` 发行附件包含 HTTP 与标准渠道 Provider；业务应用仍须显式选择 |
+| [Embedded Java SDK](next/sdk/embedded-java/) | 让 Java 应用在自己的进程内直接装配 Core Engine 和选定 Provider，无需启动 Service | `1.1.0` Java SDK 附件包含 HTTP 与标准渠道 Provider；业务应用仍须显式选择 |
 | [WebUI](next/ui/apps/web/) | 提供可视化配置、任务与调度、运行中心、Agent 观察和动态调试 API 文档 | TypeScript + Vite + React，可由 Service 直接托管，也可在开发环境独立运行 |
 | [Desktop UI](next/ui/apps/desktop/) | 提供与 WebUI 一致的桌面管理体验和安全 Electron 外壳 | 连接并管理已安装的本机 Service，使用系统安全存储保存 Token；不把 Service 内嵌进 UI |
 
 当前典型调用关系为：`WebUI / Desktop UI / Remote Java SDK → Service API → Service → 内嵌 Core Engine`；远程执行时则由 `Service → Agent → Core Engine → Provider` 完成发送。进程内集成使用 `业务 Java 应用 → Embedded Java SDK → Core Engine → Provider`，不经过 Service。
 
-第一次使用请从[《WePush Next 对外使用指南》](next/docs/user-guide.md)开始。macOS/Windows 发行物按项目约定不使用商业代码签名，请只从项目 GitHub Releases 下载并校验 `SHA256SUMS`。
+第一次使用请从[《WePush Next 对外使用指南》](next/docs/user-guide.md)开始。macOS/Windows 发行物按项目约定不使用商业代码签名，请只从 [`next-v1.1.0` GitHub Release](https://github.com/rememberber/WePush/releases/tag/next-v1.1.0) 下载，并使用同一 Release 中的 [`SHA256SUMS`](https://github.com/rememberber/WePush/releases/download/next-v1.1.0/SHA256SUMS) 校验完整性。
 
 - [Next 项目说明](next/README.md)
 - [产品目标、边界与路线图](next/docs/product-scope-and-roadmap.md)
@@ -50,9 +58,10 @@ Next 的长期定位是由用户自行下载、安装、部署和运维的开源
 - [架构与概要设计](next/docs/architecture-and-high-level-design.md)
 - [详细设计](next/docs/detailed-design.md)
 - [部署与运维](next/docs/deployment-and-operations.md)
-- [`1.0.0` Release Notes](next/docs/releases/1.0.0.md)
+- [`1.1.0` Release Notes](next/docs/releases/1.1.0.md)
 - [1.x 兼容性策略](next/docs/compatibility-policy.md)
 - [升级与回滚指南](next/docs/upgrade-guide.md)
+- [`1.0.0` Release Notes](next/docs/releases/1.0.0.md)
 - [`0.1.0-beta.1` Release Notes](next/docs/releases/0.1.0-beta.1.md)
 
 ## WePush Classic
