@@ -308,9 +308,8 @@ class RemoteRunGrpcIntegrationTest {
                         replacementAgent, 1, hello(replacementKey, List.of()))));
                 assertNotNull(replacementWelcomes.poll(5, TimeUnit.SECONDS));
                 awaitAgentStatus(replacementAgent.value(), "ONLINE");
-                recoverPendingAfterAgentRegistration();
-                AgentFrames.LeaseOffer replacement = replacementOffers.poll(5, TimeUnit.SECONDS);
-                assertNotNull(replacement, "Recovered run was not offered to the replacement Agent");
+                AgentFrames.LeaseOffer replacement = awaitLeaseOffer(
+                        replacementOffers, replacementFailure, 10, TimeUnit.SECONDS);
                 assertEquals(runId, replacement.fence().runId());
                 assertTrue(replacement.fence().epoch() > original.fence().epoch());
                 assertFalse(replacement.fence().fencingToken().equals(original.fence().fencingToken()));
@@ -409,26 +408,23 @@ class RemoteRunGrpcIntegrationTest {
         throw new AssertionError("Agent did not reach " + expected + ": " + last);
     }
 
-    private void recoverPendingAfterAgentRegistration() throws Exception {
-        RuntimeException lastBusyFailure = null;
-        for (int attempt = 0; attempt < 200; attempt++) {
-            try {
-                remoteRuns.recoverPending();
-                return;
-            } catch (RuntimeException failure) {
-                if (!hasMessage(failure, "SQLITE_BUSY")) throw failure;
-                lastBusyFailure = failure;
-                Thread.sleep(20);
+    private AgentFrames.LeaseOffer awaitLeaseOffer(
+            BlockingQueue<AgentFrames.LeaseOffer> offers,
+            AtomicReference<Throwable> streamFailure,
+            long timeout,
+            TimeUnit unit) throws InterruptedException {
+        long deadline = System.nanoTime() + unit.toNanos(timeout);
+        while (System.nanoTime() < deadline) {
+            AgentFrames.LeaseOffer offer = offers.poll(50, TimeUnit.MILLISECONDS);
+            if (offer != null) return offer;
+            Throwable failure = streamFailure.get();
+            if (failure != null) {
+                throw new AssertionError(
+                        "Replacement Agent stream failed before the recovered Lease was offered",
+                        failure);
             }
         }
-        throw new AssertionError("SQLite remained busy while recovering the pending run", lastBusyFailure);
-    }
-
-    private boolean hasMessage(Throwable failure, String fragment) {
-        for (Throwable current = failure; current != null; current = current.getCause()) {
-            if (current.getMessage() != null && current.getMessage().contains(fragment)) return true;
-        }
-        return false;
+        throw new AssertionError("Recovered run was not offered to the replacement Agent");
     }
 
     private AgentFrames.EventAck requireAck(BlockingQueue<AgentFrames.EventAck> acks)
