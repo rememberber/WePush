@@ -8,9 +8,11 @@ final class RunEventPoller {
     private final LocalRunEventHub events;
     private final RunApplicationService runs;
 
-    RunEventPoller(LocalRunEventHub events, RunApplicationService runs) {
+    RunEventPoller(LocalRunEventHub events, RunApplicationService runs,
+                   PostgresNotificationBus notifications) {
         this.events = events;
         this.runs = runs;
+        notifications.subscribe(PostgresNotificationBus.RUN_EVENT, this::poll);
     }
 
     @Scheduled(fixedDelayString = "${wepush.events.poll-interval:PT1S}")

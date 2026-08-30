@@ -26,6 +26,7 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.model.ServerSideEncryption;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.UploadPartPresignRequest;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,6 +57,8 @@ public final class S3ArtifactStore implements ArtifactStore, AutoCloseable {
     private static final String SHA_METADATA = "wepush-sha256";
     private static final long MULTIPART_THRESHOLD = 100L * 1024L * 1024L;
     private static final long PART_SIZE = 16L * 1024L * 1024L;
+    private static final long PRESIGNED_PART_SIZE = 64L * 1024L * 1024L;
+    private static final int MAXIMUM_PARTS = 10_000;
     private static final Set<PosixFilePermission> OWNER_ONLY = Set.of(
             PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE);
 
@@ -173,6 +176,88 @@ public final class S3ArtifactStore implements ArtifactStore, AutoCloseable {
     }
 
     @Override
+    public Optional<MultipartUpload> beginMultipartUpload(ObjectPlan plan, long size, String sha256,
+                                                          String contentType, Instant expiresAt)
+            throws IOException {
+        try {
+            long partSize = Math.max(PRESIGNED_PART_SIZE, divideRoundUp(size, MAXIMUM_PARTS));
+            long mebibyte = 1024L * 1024L;
+            partSize = divideRoundUp(partSize, mebibyte) * mebibyte;
+            int partCount = Math.toIntExact(divideRoundUp(size, partSize));
+            if (partCount < 1 || partCount > MAXIMUM_PARTS) {
+                throw new IOException("S3 multipart upload exceeds the 10,000-part limit");
+            }
+            CreateMultipartUploadRequest.Builder create = CreateMultipartUploadRequest.builder()
+                    .bucket(bucket).key(plan.location()).contentType(contentType)
+                    .metadata(Map.of(SHA_METADATA, sha256));
+            applyEncryption(create);
+            String uploadId = client.createMultipartUpload(create.build()).uploadId();
+            return Optional.of(new MultipartUpload(uploadId, partSize, partCount));
+        } catch (S3Exception problem) {
+            throw io("S3 multipart upload could not be created", problem);
+        }
+    }
+
+    @Override
+    public List<PresignedPart> presignMultipartParts(ObjectPlan plan, String uploadId,
+                                                     int firstPartNumber, int count,
+                                                     long totalSize, long partSize,
+                                                     Instant expiresAt) throws IOException {
+        int partCount = Math.toIntExact(divideRoundUp(totalSize, partSize));
+        if (firstPartNumber < 1 || count < 1 || count > 100
+                || firstPartNumber > partCount || firstPartNumber + count - 1 > partCount) {
+            throw new IllegalArgumentException("Multipart part range is invalid");
+        }
+        Duration duration = signatureDuration(expiresAt);
+        List<PresignedPart> parts = new ArrayList<>(count);
+        try {
+            for (int number = firstPartNumber; number < firstPartNumber + count; number++) {
+                long offset = Math.multiplyExact((long) number - 1L, partSize);
+                long length = Math.min(partSize, totalSize - offset);
+                UploadPartRequest request = UploadPartRequest.builder().bucket(bucket).key(plan.location())
+                        .uploadId(uploadId).partNumber(number).contentLength(length).build();
+                var signed = presigner.presignUploadPart(UploadPartPresignRequest.builder()
+                        .signatureDuration(duration).uploadPartRequest(request).build());
+                Map<String, String> headers = new LinkedHashMap<>();
+                signed.signedHeaders().forEach((name, values) -> {
+                    if (!"host".equalsIgnoreCase(name) && !"content-length".equalsIgnoreCase(name)) {
+                        headers.put(name, String.join(",", values));
+                    }
+                });
+                parts.add(new PresignedPart(number, offset, length, signed.url().toString(), headers));
+            }
+            return List.copyOf(parts);
+        } catch (S3Exception problem) {
+            throw io("S3 multipart parts could not be presigned", problem);
+        }
+    }
+
+    @Override
+    public StoredObject completeMultipartUpload(ObjectPlan plan, String uploadId,
+                                                List<CompletedUploadPart> parts) throws IOException {
+        try {
+            List<CompletedPart> completed = parts.stream().map(part -> CompletedPart.builder()
+                    .partNumber(part.partNumber()).eTag(part.eTag()).build()).toList();
+            client.completeMultipartUpload(CompleteMultipartUploadRequest.builder()
+                    .bucket(bucket).key(plan.location()).uploadId(uploadId)
+                    .multipartUpload(CompletedMultipartUpload.builder().parts(completed).build()).build());
+            return inspect(plan.location());
+        } catch (S3Exception problem) {
+            throw io("S3 multipart upload could not be completed", problem);
+        }
+    }
+
+    @Override
+    public void abortMultipartUpload(ObjectPlan plan, String uploadId) throws IOException {
+        try {
+            client.abortMultipartUpload(AbortMultipartUploadRequest.builder().bucket(bucket)
+                    .key(plan.location()).uploadId(uploadId).build());
+        } catch (S3Exception problem) {
+            throw io("S3 multipart upload could not be aborted", problem);
+        }
+    }
+
+    @Override
     public InputStream open(String location, long offset, long length) throws IOException {
         if (length == 0) return InputStream.nullInputStream();
         try {
@@ -201,6 +286,18 @@ public final class S3ArtifactStore implements ArtifactStore, AutoCloseable {
                 .metadata(Map.of(SHA_METADATA, sha256));
         applyEncryption(request);
         return request.build();
+    }
+
+    private static Duration signatureDuration(Instant expiresAt) {
+        Duration duration = Duration.between(Instant.now(), expiresAt);
+        if (duration.isNegative() || duration.isZero() || duration.compareTo(Duration.ofDays(7)) > 0) {
+            throw new IllegalArgumentException("S3 presigned upload expiry is invalid");
+        }
+        return duration;
+    }
+
+    private static long divideRoundUp(long value, long divisor) {
+        return value / divisor + (value % divisor == 0 ? 0 : 1);
     }
 
     private void multipartUpload(String key, Path file, long size, String sha256,

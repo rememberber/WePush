@@ -4,7 +4,7 @@ WePush Next 是与 Classic 完全独立的新产品线。Classic 与 Next 可以
 
 > 产品定位：WePush Next 是开源、可下载、可安装、由用户自行部署和运维的消息推送产品。项目不建设官方公共 SaaS、注册计费订阅、公共租户平台或云 KMS/Secret Manager 集成。正式范围和分版本计划见[《产品目标、边界与路线图》](docs/product-scope-and-roadmap.md)。
 
-> 当前版本：`1.0.0` Stable。Desktop 与安装包按项目约定不使用商业代码签名；下载后必须验证 `SHA256SUMS`。发行边界和升级承诺见 [`UNSIGNED-NOTICE.md`](UNSIGNED-NOTICE.md)、[《兼容性策略》](docs/compatibility-policy.md)、[《升级与回滚指南》](docs/upgrade-guide.md)与 [`docs/releases/1.0.0.md`](docs/releases/1.0.0.md)。
+> 当前版本：`1.1.0` Stable。Desktop 与安装包按项目约定不使用商业代码签名；下载后必须验证 `SHA256SUMS`。发行边界和升级承诺见 [`UNSIGNED-NOTICE.md`](UNSIGNED-NOTICE.md)、[《兼容性策略》](docs/compatibility-policy.md)、[《升级与回滚指南》](docs/upgrade-guide.md)与 [`docs/releases/1.1.0.md`](docs/releases/1.1.0.md)。
 
 第一次下载和使用请从[《WePush Next 对外使用指南》](docs/user-guide.md)开始。渠道账号、模板、Recipient、SecretRef、限流和错误语义见[《内置 Provider 指南》](docs/provider-guide.md)。
 

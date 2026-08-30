@@ -57,7 +57,7 @@ final class DatabaseMigrationTest {
     }
 
     @Test
-    void upgradesBetaOneSchemaToStableBaselineWithoutChangingUserData() {
+    void upgradesBetaOneSchemaToOneOneWithoutChangingUserData() {
         try (var dataSource = SQLiteDatabase.create(temporaryDirectory.resolve("beta-one-upgrade.db"))) {
             Flyway.configure().dataSource(dataSource)
                     .locations("classpath:db/migration/sqlite")
@@ -74,7 +74,7 @@ final class DatabaseMigrationTest {
                     .validateMigrationNaming(true).load();
             flyway.migrate();
 
-            assertEquals("14", flyway.info().current().getVersion().getVersion());
+            assertEquals("17", flyway.info().current().getVersion().getVersion());
             assertEquals("Beta user data", jdbc.queryForObject(
                     "SELECT name FROM workspace WHERE id = 'ws_beta_user'", String.class));
             assertEquals(7, jdbc.queryForObject(
@@ -85,6 +85,12 @@ final class DatabaseMigrationTest {
             assertEquals("0.1.0-beta.1", jdbc.queryForObject(
                     "SELECT minimum_rollback_version FROM wepush_release_compatibility WHERE id = 1",
                     String.class));
+            assertEquals(604800L, jdbc.queryForObject("""
+                    SELECT artifact_retention_seconds FROM workspace_policy
+                    WHERE workspace_id = 'ws_beta_user'
+                    """, Long.class));
+            assertTrue(columns(jdbc, "account_auth_circuit").contains("open_until"));
+            assertTrue(columns(jdbc, "artifact_multipart_upload").contains("part_count"));
         }
     }
 

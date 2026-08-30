@@ -70,6 +70,8 @@
   transition: background .15s ease, border-color .15s ease;
 }
 
+:root[data-theme="dark"] .workspace-switcher { background: rgb(35 36 32 / 82%); }
+
 .workspace-switcher {
   min-height: 51px;
   margin: 11px 0 13px;
@@ -148,8 +150,8 @@
   transition: background .12s ease, color .12s ease;
 }
 
-.nav-item:hover { background: rgb(224 224 218 / 65%); color: var(--wp-text); }
-.nav-item--active { background: #dfdfda; color: var(--wp-text); font-weight: 580; }
+.nav-item:hover { background: var(--wp-surface-hover); color: var(--wp-text); }
+.nav-item--active { background: var(--wp-surface-muted); color: var(--wp-text); font-weight: 580; }
 .nav-item .icon { width: 16px; height: 16px; }
 .nav-count { margin-left: auto; color: var(--wp-text-tertiary); font-size: 10px; }
 
@@ -191,7 +193,7 @@
   justify-content: space-between;
   padding: 0 21px;
   border-bottom: 1px solid var(--wp-border);
-  background: rgb(247 247 245 / 91%);
+  background: color-mix(in srgb, var(--wp-bg) 91%, transparent);
   backdrop-filter: blur(18px);
 }
 
@@ -209,6 +211,20 @@
 .history-controls { gap: 9px; color: #a3a39c; font-size: 20px; line-height: 1; }
 .history-controls span:last-child { color: #c7c7c1; }
 .topbar-actions { gap: 10px; }
+
+.theme-toggle {
+  display: grid;
+  width: 31px;
+  height: 31px;
+  place-items: center;
+  border: 1px solid var(--wp-border);
+  border-radius: 8px;
+  background: var(--wp-surface);
+  color: var(--wp-text-secondary);
+  cursor: pointer;
+  font-size: 15px;
+}
+.theme-toggle:hover { background: var(--wp-surface-muted); color: var(--wp-text); }
 
 .command-button {
   width: 202px;
@@ -279,7 +295,7 @@
 .wp-button:active:not(:disabled) { transform: translateY(1px); }
 .wp-button:disabled { cursor: wait; opacity: .58; }
 .wp-button--primary { border-color: var(--wp-accent); background: var(--wp-accent); color: var(--wp-accent-contrast); box-shadow: 0 1px 2px rgb(0 0 0 / 12%); }
-.wp-button--primary:hover:not(:disabled) { background: #343432; }
+.wp-button--primary:hover:not(:disabled) { filter: brightness(.88); }
 .wp-button--ghost { border-color: transparent; background: transparent; color: var(--wp-text-secondary); }
 .wp-button--danger { border-color: var(--wp-danger); background: var(--wp-danger); color: white; }
 
@@ -604,6 +620,10 @@
 .one-time-secret { display: grid; gap: 8px; margin-top: 14px; padding: 12px; border: 1px solid var(--wp-warning); border-radius: 8px; background: var(--wp-warning-bg); }
 .one-time-secret code { overflow-wrap: anywhere; user-select: all; }
 .settings-page .recent-panel { margin-top: 20px; }
+.policy-form-grid { display: grid; grid-template-columns: repeat(3, minmax(140px, 1fr)); gap: 0 12px; margin-top: 18px; }
+.policy-usage { margin: 4px 0 0; color: var(--wp-text-secondary); font-size: 10px; }
+.operations-actions { justify-content: flex-start; margin-top: 15px; }
+.inline-success a { color: inherit; font-weight: 650; }
 .audit-list { display: grid; gap: 2px; }
 .audit-list article { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 12px; padding: 10px 2px; border-bottom: 1px solid var(--wp-border); }
 .audit-list article:last-child { border-bottom: 0; }
@@ -617,6 +637,20 @@
   .split-layout, .composer-layout, .api-layout, .runs-layout, .agents-layout { grid-template-columns: 1fr; }
   .provider-list-panel, .endpoint-list { min-height: auto; }
   .schedule-composer { grid-template-columns: 1fr; }
+  .policy-form-grid { grid-template-columns: repeat(2, minmax(140px, 1fr)); }
+}
+
+@media (max-height: 760px) and (min-width: 721px), (max-width: 1180px) and (min-width: 721px) {
+  .sidebar { width: 220px; padding-top: 8px; }
+  .app-workspace { width: calc(100% - 220px); margin-left: 220px; }
+  .workspace-switcher { min-height: 44px; margin-block: 6px 9px; }
+  .sidebar-nav section { margin-bottom: 8px; }
+  .nav-item { height: 29px; }
+  .topbar { height: 49px; }
+  .app-content { min-height: calc(100vh - 49px); }
+  .page { width: min(1180px, calc(100% - 30px)); padding: 22px 0 38px; }
+  .page-heading { margin-bottom: 20px; }
+  .activity-panel, .quick-start-panel { min-height: 290px; }
 }
 
 @media (max-width: 720px) {
@@ -636,4 +670,5 @@
   .resource-table { overflow-x: auto; }
   .resource-row { width: 720px; }
   .run-counter-grid { grid-template-columns: repeat(2, 1fr); }
+  .policy-form-grid { grid-template-columns: 1fr; }
 }

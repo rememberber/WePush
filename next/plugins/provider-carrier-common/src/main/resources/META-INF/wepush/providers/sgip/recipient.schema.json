@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://wepush.dev/schemas/providers/sgip/recipient/1","title":"SGIP Recipient","type":"object","additionalProperties":true,"required":["phoneNumber"],"properties":{"phoneNumber":{"type":"string","pattern":"^[0-9]{5,21}$"}}}

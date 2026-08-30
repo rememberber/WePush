@@ -88,6 +88,37 @@ export interface Workspace {
   id: string; name: string; status: string; createdAt: string; version: number;
 }
 
+export interface WorkspacePolicy {
+  workspaceId: string;
+  maxAgents: number;
+  maxConcurrentRuns: number;
+  maxTotalConcurrency: number;
+  artifactQuotaBytes: number;
+  artifactRetentionSeconds: number;
+  usedAgents: number;
+  activeRuns: number;
+  usedConcurrency: number;
+  usedArtifactBytes: number;
+  updatedAt: string;
+  version: number;
+}
+
+export interface VersionCheck {
+  successful: boolean;
+  currentVersion: string;
+  latestVersion: string;
+  updateAvailable: boolean;
+  releaseUrl: string;
+  checkedAt: string;
+  diagnostic: string;
+}
+
+export interface AuthenticationCircuit {
+  workspaceId: string; accountId: string; failureRuns: number;
+  firstFailureAt?: string; lastFailureAt?: string; openUntil?: string;
+  lastRunId: string; version: number;
+}
+
 export interface Account extends ResourceMetadata {
   providerId: string;
   providerVersion: string;
@@ -348,6 +379,28 @@ export class WePushClient {
     return this.getJson<Workspace[]>("/api/v1/workspaces", signal);
   }
 
+  workspacePolicy(workspaceId = "ws_default", signal?: AbortSignal): Promise<WorkspacePolicy> {
+    return this.getJson<WorkspacePolicy>(this.workspacePath(workspaceId, "/policy"), signal);
+  }
+
+  updateWorkspacePolicy(policy: Pick<WorkspacePolicy, "maxAgents" | "maxConcurrentRuns"
+    | "maxTotalConcurrency" | "artifactQuotaBytes" | "artifactRetentionSeconds">,
+    workspaceId = "ws_default", signal?: AbortSignal): Promise<WorkspacePolicy> {
+    return this.putJson<WorkspacePolicy>(this.workspacePath(workspaceId, "/policy"), policy, signal);
+  }
+
+  versionCheck(signal?: AbortSignal): Promise<VersionCheck> {
+    return this.postJson<VersionCheck>("/api/v1/system/version-check", {}, undefined, signal);
+  }
+
+  async diagnosticBundle(signal?: AbortSignal): Promise<Blob> {
+    const response = await fetch(this.resolve("/api/v1/system/diagnostics"), {
+      method: "POST", headers: this.headers({ Accept: "application/zip" }), signal,
+    });
+    if (!response.ok) throw new ApiError(response.status, await response.text());
+    return response.blob();
+  }
+
   agent(agentId: string, signal?: AbortSignal): Promise<Agent> {
     return this.getJson<Agent>(`/api/v1/agents/${pathId(agentId)}`, signal);
   }
@@ -381,6 +434,23 @@ export class WePushClient {
     signal?: AbortSignal): Promise<{ successful: boolean; code: string; diagnostic: string; latencyMillis: number }> {
     return this.postJson(this.workspacePath(workspaceId, `/accounts/${pathId(accountId)}/connection-test`),
       { timeout }, undefined, signal);
+  }
+
+  authenticationCircuit(accountId: string, workspaceId = "ws_default",
+    signal?: AbortSignal): Promise<AuthenticationCircuit> {
+    return this.getJson<AuthenticationCircuit>(this.workspacePath(workspaceId,
+      `/accounts/${pathId(accountId)}/authentication-circuit`), signal);
+  }
+
+  async resetAuthenticationCircuit(accountId: string, workspaceId = "ws_default",
+    signal?: AbortSignal): Promise<AuthenticationCircuit> {
+    const response = await fetch(this.resolve(this.workspacePath(workspaceId,
+      `/accounts/${pathId(accountId)}/authentication-circuit`)), {
+      method: "DELETE", headers: this.headers({ Accept: "application/json" }), signal,
+    });
+    const body = await response.text();
+    if (!response.ok) throw new ApiError(response.status, body);
+    return JSON.parse(body) as AuthenticationCircuit;
   }
 
   async messages(workspaceId = "ws_default", signal?: AbortSignal): Promise<Message[]> {

@@ -10,8 +10,9 @@ import org.springframework.stereotype.Component;
 final class RemoteLeaseScheduler {
     private final RemoteRunCoordinator remoteRuns;
 
-    RemoteLeaseScheduler(RemoteRunCoordinator remoteRuns) {
+    RemoteLeaseScheduler(RemoteRunCoordinator remoteRuns, PostgresNotificationBus notifications) {
         this.remoteRuns = remoteRuns;
+        notifications.subscribe(PostgresNotificationBus.RUN_PENDING, remoteRuns::recoverPending);
     }
 
     @Scheduled(fixedDelayString = "${wepush.agent.lease-scan-interval:PT10S}")

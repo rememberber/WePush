@@ -22,4 +22,15 @@ public interface ArtifactRepository {
     List<ArtifactDefinition> claimExpired(Instant now, int limit);
 
     void markDeleted(WorkspaceId workspaceId, String artifactId, Instant deletedAt);
+
+    default void createMultipart(ArtifactMultipartUpload upload) {
+        throw new UnsupportedOperationException("Multipart Artifact metadata is unavailable");
+    }
+
+    default Optional<ArtifactMultipartUpload> findMultipart(WorkspaceId workspaceId, String artifactId) {
+        return Optional.empty();
+    }
+
+    default void deleteMultipart(WorkspaceId workspaceId, String artifactId) {
+    }
 }

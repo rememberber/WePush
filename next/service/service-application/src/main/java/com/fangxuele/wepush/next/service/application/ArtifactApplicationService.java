@@ -27,6 +27,7 @@ public final class ArtifactApplicationService {
     private final RunRepository runs;
     private final RunResultRepository results;
     private final ArtifactRepository artifacts;
+    private final WorkspaceResourceGovernor resources;
     private final ArtifactStore store;
     private final ResourceIdGenerator ids;
     private final TransactionRunner transactions;
@@ -36,23 +37,25 @@ public final class ArtifactApplicationService {
     private final Duration exportRetention;
 
     public ArtifactApplicationService(RunRepository runs, RunResultRepository results,
-                                      ArtifactRepository artifacts, ArtifactStore store,
+                                      ArtifactRepository artifacts, WorkspaceResourceGovernor resources,
+                                      ArtifactStore store,
                                       ResourceIdGenerator ids, TransactionRunner transactions,
                                       JsonCodec json, RunEventPublisher events, Clock clock,
                                       Duration exportRetention) {
         this.runs = runs;
         this.results = results;
         this.artifacts = artifacts;
+        this.resources = resources;
         this.store = store;
         this.ids = ids;
         this.transactions = transactions;
         this.json = json;
         this.events = events;
         this.clock = clock;
-        this.exportRetention = exportRetention;
         if (exportRetention == null || exportRetention.isNegative() || exportRetention.isZero()) {
             throw new IllegalArgumentException("export retention must be positive");
         }
+        this.exportRetention = exportRetention;
     }
 
     public CreationResult createResultExport(WorkspaceId workspaceId, String runId) {
@@ -70,10 +73,12 @@ public final class ArtifactApplicationService {
 
         String artifactId = ids.next("artifact");
         ArtifactStore.ObjectPlan plan = store.plan(workspaceId, artifactId, RUN_RESULTS_CSV, now);
+        var policy = resources.policy(workspaceId);
+        Duration retention = policy.version() == 0 ? exportRetention : policy.artifactRetention();
         ArtifactDefinition uploading = new ArtifactDefinition(artifactId, workspaceId, runId,
                 RUN_RESULTS_CSV, plan.backend(), plan.location(),
                 "wepush-results-" + shortId(runId) + ".csv", CSV_CONTENT_TYPE,
-                0, "", ArtifactDefinition.State.UPLOADING, now.plus(exportRetention),
+                0, "", ArtifactDefinition.State.UPLOADING, now.plus(retention),
                 false, false, now, null, null, "", 0);
         transactions.required(() -> {
             artifacts.create(uploading);
@@ -85,6 +90,7 @@ public final class ArtifactApplicationService {
                     output -> writeResultCsv(workspaceId, runId, output));
             RunEventRecord event = transactions.required(() -> {
                 Instant readyAt = clock.instant();
+                resources.requireArtifactCapacity(workspaceId, stored.size());
                 artifacts.markReady(workspaceId, artifactId, stored.size(), stored.sha256(), readyAt);
                 RunEventRecord recorded = new RunEventRecord(runId, workspaceId,
                         runs.nextEventSequence(workspaceId, runId), "ARTIFACT_READY", readyAt,
@@ -99,6 +105,11 @@ public final class ArtifactApplicationService {
                     .orElseThrow(() -> new IllegalStateException("ready artifact metadata is missing"));
             return new CreationResult(ready, false);
         } catch (IOException | RuntimeException exception) {
+            try {
+                store.delete(plan.location());
+            } catch (IOException deleteFailure) {
+                exception.addSuppressed(deleteFailure);
+            }
             transactions.required(() -> {
                 artifacts.markFailed(workspaceId, artifactId,
                         "EXPORT_" + exception.getClass().getSimpleName());
@@ -143,8 +154,17 @@ public final class ArtifactApplicationService {
         int failed = 0;
         for (ArtifactDefinition artifact : claimed) {
             try {
+                artifacts.findMultipart(artifact.workspaceId(), artifact.id()).ifPresent(upload -> {
+                    try {
+                        store.abortMultipartUpload(new ArtifactStore.ObjectPlan(
+                                artifact.backend(), artifact.location()), upload.uploadId());
+                    } catch (IOException problem) {
+                        throw new MultipartCleanupException(problem);
+                    }
+                });
                 store.delete(artifact.location());
                 transactions.required(() -> {
+                    artifacts.deleteMultipart(artifact.workspaceId(), artifact.id());
                     artifacts.markDeleted(artifact.workspaceId(), artifact.id(), clock.instant());
                     return null;
                 });
@@ -215,5 +235,9 @@ public final class ArtifactApplicationService {
     }
 
     public record CleanupResult(int claimed, int deleted, int failed) {
+    }
+
+    private static final class MultipartCleanupException extends RuntimeException {
+        private MultipartCleanupException(IOException cause) { super(cause); }
     }
 }

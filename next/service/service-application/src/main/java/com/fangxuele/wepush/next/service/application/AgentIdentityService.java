@@ -23,6 +23,7 @@ public final class AgentIdentityService {
     private final AgentIdentityRepository identities;
     private final AgentCertificateAuthority certificates;
     private final WorkspaceRepository workspaces;
+    private final WorkspaceResourceGovernor resources;
     private final ResourceIdGenerator ids;
     private final TransactionRunner transactions;
     private final Clock clock;
@@ -32,11 +33,13 @@ public final class AgentIdentityService {
     public AgentIdentityService(AgentIdentityRepository identities,
                                 AgentCertificateAuthority certificates,
                                 WorkspaceRepository workspaces,
+                                WorkspaceResourceGovernor resources,
                                 ResourceIdGenerator ids, TransactionRunner transactions,
                                 Clock clock, SecureRandom random, Duration credentialTtl) {
         this.identities = identities;
         this.certificates = certificates;
         this.workspaces = workspaces;
+        this.resources = resources;
         this.ids = ids;
         this.transactions = transactions;
         this.clock = clock;
@@ -82,6 +85,7 @@ public final class AgentIdentityService {
             identities.createCredential(credential.record());
             String workspaceId = identities.enrollmentWorkspace(enrollment.id())
                     .orElseThrow(() -> new IllegalStateException("Enrollment Workspace is missing"));
+            resources.requireAgentCapacity(new WorkspaceId(workspaceId), agentId);
             identities.bindWorkspace(agentId, workspaceId, now);
             return true;
         });

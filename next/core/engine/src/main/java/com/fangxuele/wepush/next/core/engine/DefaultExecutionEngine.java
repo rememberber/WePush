@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -402,9 +403,11 @@ public final class DefaultExecutionEngine implements ExecutionEngine {
                 }
                 ports.clock().sleep(delay);
             }
+            Map<String, String> metadata = new LinkedHashMap<>(result.metadata());
+            metadata.put("wepush.errorCategory", result.category().name());
             return new ItemResult(
                     spec.runId(), recipient.itemId(), attempt, result.outcome(), result.code(),
-                    result.diagnostic(), result.externalRequestId(), ports.clock().now(), result.metadata());
+                    result.diagnostic(), result.externalRequestId(), ports.clock().now(), metadata);
         }
 
         private ProviderResult invokeProvider(

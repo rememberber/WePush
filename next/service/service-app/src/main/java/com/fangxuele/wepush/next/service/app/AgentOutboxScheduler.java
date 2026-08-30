@@ -8,9 +8,11 @@ final class AgentOutboxScheduler {
     private final RemoteRunCoordinator remoteRuns;
     private final boolean enabled;
 
-    AgentOutboxScheduler(RemoteRunCoordinator remoteRuns, boolean enabled) {
+    AgentOutboxScheduler(RemoteRunCoordinator remoteRuns, boolean enabled,
+                         PostgresNotificationBus notifications) {
         this.remoteRuns = remoteRuns;
         this.enabled = enabled;
+        if (enabled) notifications.subscribe(PostgresNotificationBus.AGENT_OUTBOX, this::scan);
     }
 
     @Scheduled(fixedDelayString = "${wepush.agent.outbox-scan-interval:PT1S}")

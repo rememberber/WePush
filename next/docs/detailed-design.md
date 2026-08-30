@@ -1391,7 +1391,7 @@ data/artifacts/
 - Server 默认实现 `S3ArtifactStore`，只依赖 Put/Get/Head/Delete、Range、Presigned URL 和 Multipart Upload 等受控 S3-compatible 子集。
 - 对象键格式为 `workspaces/{workspaceId}/{artifactType}/{yyyy}/{mm}/{artifactId}`，不含用户文件名和 Secret。
 - Agent 不持有长期对象存储 Credential；Service 签发最小权限、短期有效的上传或下载 URL。
-- Service 托管流式写入达到 100 MiB 时默认使用 Multipart；Agent 当前使用绑定长度和 SHA-256 的单次 Presigned Put，单 Artifact 上限 1 GiB。提高上限时可扩展 Presigned Multipart Plan；未完成 Multipart 由对象存储 Lifecycle 在 24 小时后终止。
+- Service 托管流式写入达到 100 MiB 时默认使用 Multipart。Agent 对不超过 1 GiB 的对象继续使用绑定长度和 SHA-256 的单次 Presigned Put，超过该阈值时使用 Presigned Multipart Plan，最大单 Artifact 为 5 TiB。Service 每批最多签发 100 个 Part URL，并显式约束 S3 的 10,000 Part 上限；Agent 可独立重试 Part，提交 ETag 列表后由 Service Complete 并用 Head 元数据核对总大小与 SHA-256。未完成会话由 V17 事实表驱动主动 Abort，对象存储 Lifecycle 在 24 小时后终止孤儿 Multipart 作为兜底。
 - Server 模式启用对象存储原生 AES256 或由部署方自行保证等价的存储端加密；WePush 不对接或管理云 KMS Key。
 - 数据库元数据是生命周期事实源，对象存储 List 只能用于对账和孤儿清理。
 
@@ -2047,7 +2047,7 @@ Next CI 使用 `next/**` 路径过滤，Classic 和 Next 互不依赖对方构�
 - Desktop 和三平台 Service 安装。
 - PostgreSQL 18 HA、S3-compatible Artifact Store 和部署文档。
 
-当前进度：Iteration 6 基线已完成。Workspace API 与 Agent Binding、Bearer API Token、VIEWER/OPERATOR/ADMIN、审计、Cron/Misfire Scheduler、PostgreSQL Advisory Lock、跨实例 SSE 补偿、S3 Store、Prometheus、三平台安装/升级/备份/卸载、WebUI Security/Schedule/API Debug 页面、Electron 目标平台目录打包、容器 HA 参考拓扑和运维手册均已落地。配置编辑、导入、发送确认和首批真实 Provider 也已在后续 Alpha 完成；下一阶段聚焦自部署安装升级、备份恢复和稳定发行，具体版本边界见[产品路线图](product-scope-and-roadmap.md)。
+当前进度：Iteration 9（`1.1.0`）已完成。除 `1.0.0` 稳定基线外，CMPP/SMGP/SGIP/SMPP 独立签名插件、Workspace 资源治理、脱敏诊断、手动版本检查、跨 Run 认证熔断、PostgreSQL 三类控制面通知、Agent Presigned Multipart 和 WebUI 主题/可访问性均已落地；具体版本边界见[产品路线图](product-scope-and-roadmap.md)和 [`1.1.0` Release Notes](releases/1.1.0.md)。
 
 ### 44.7 Iteration 7：日常使用闭环
 

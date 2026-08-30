@@ -2,6 +2,7 @@ package com.fangxuele.wepush.next.service.app;
 
 import com.fangxuele.wepush.next.service.api.ControlPlaneApi;
 import com.fangxuele.wepush.next.service.application.AccountApplicationService;
+import com.fangxuele.wepush.next.service.application.AccountAuthCircuitService;
 import com.fangxuele.wepush.next.service.application.ControlPlaneQueryService;
 import com.fangxuele.wepush.next.service.application.AudienceApplicationService;
 import com.fangxuele.wepush.next.service.application.JobApplicationService;
@@ -23,6 +24,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -44,6 +46,7 @@ import java.util.Set;
 @RequestMapping("/api/v1/workspaces/{workspaceId}")
 final class ControlPlaneController {
     private final AccountApplicationService accounts;
+    private final AccountAuthCircuitService authenticationCircuits;
     private final MessageApplicationService messages;
     private final AudienceApplicationService audiences;
     private final JobApplicationService jobs;
@@ -53,12 +56,14 @@ final class ControlPlaneController {
     private final ControlPlaneQueryService queries;
     private final JsonCodec json;
 
-    ControlPlaneController(AccountApplicationService accounts, MessageApplicationService messages,
+    ControlPlaneController(AccountApplicationService accounts, AccountAuthCircuitService authenticationCircuits,
+                           MessageApplicationService messages,
                            AudienceApplicationService audiences, JobApplicationService jobs,
                            RunApplicationService runs, RunResultApplicationService results,
                            RunCommandApplicationService commands, ControlPlaneQueryService queries,
                            JsonCodec json) {
         this.accounts = accounts;
+        this.authenticationCircuits = authenticationCircuits;
         this.messages = messages;
         this.audiences = audiences;
         this.jobs = jobs;
@@ -107,6 +112,22 @@ final class ControlPlaneController {
                 request == null || request.timeout() == null ? Duration.ofSeconds(10) : Duration.parse(request.timeout()));
         return new ControlPlaneApi.ConnectionTestResponse(result.successful(), result.code(), result.diagnostic(),
                 result.latency().toMillis());
+    }
+
+    @GetMapping("/accounts/{accountId}/authentication-circuit")
+    AuthenticationCircuitResponse authenticationCircuit(@PathVariable String workspaceId,
+                                                          @PathVariable String accountId) {
+        WorkspaceId workspace = new WorkspaceId(workspaceId);
+        accounts.get(workspace, accountId);
+        return circuit(authenticationCircuits.state(workspace, accountId));
+    }
+
+    @DeleteMapping("/accounts/{accountId}/authentication-circuit")
+    AuthenticationCircuitResponse resetAuthenticationCircuit(@PathVariable String workspaceId,
+                                                               @PathVariable String accountId) {
+        WorkspaceId workspace = new WorkspaceId(workspaceId);
+        accounts.get(workspace, accountId);
+        return circuit(authenticationCircuits.reset(workspace, accountId));
     }
 
     @PostMapping("/messages")
@@ -365,6 +386,17 @@ final class ControlPlaneController {
                 json.read(value.configuration(), Object.class), value.status().name(), value.createdAt(),
                 value.updatedAt(), value.version());
     }
+
+    private static AuthenticationCircuitResponse circuit(
+            com.fangxuele.wepush.next.service.domain.AccountAuthCircuit value) {
+        return new AuthenticationCircuitResponse(value.workspaceId().value(), value.accountId(),
+                value.failureRuns(), value.firstFailureAt(), value.lastFailureAt(), value.openUntil(),
+                value.lastRunId(), value.version());
+    }
+
+    record AuthenticationCircuitResponse(String workspaceId, String accountId, int failureRuns,
+                                         Instant firstFailureAt, Instant lastFailureAt, Instant openUntil,
+                                         String lastRunId, long version) { }
 
     private ControlPlaneApi.MessageResponse message(MessageDefinition value) {
         return new ControlPlaneApi.MessageResponse(value.id(), value.workspaceId().value(), value.name(),

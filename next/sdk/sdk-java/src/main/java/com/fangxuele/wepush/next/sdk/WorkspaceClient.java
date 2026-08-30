@@ -48,6 +48,16 @@ public final class WorkspaceClient {
                 ControlPlaneApi.ConnectionTestResponse.class);
     }
 
+    public AuthenticationCircuit authenticationCircuit(String accountId) {
+        return transport.getJson(base + "/accounts/" + pathId(accountId) + "/authentication-circuit",
+                AuthenticationCircuit.class);
+    }
+
+    public AuthenticationCircuit resetAuthenticationCircuit(String accountId) {
+        return transport.deleteJson(base + "/accounts/" + pathId(accountId) + "/authentication-circuit",
+                AuthenticationCircuit.class);
+    }
+
     public List<ControlPlaneApi.MessageResponse> messages() {
         return List.of(transport.getJson(base + "/messages", MessagePage.class).items());
     }
@@ -330,6 +340,9 @@ public final class WorkspaceClient {
     public record AuditEvent(String id, String workspaceId, String actorType, String actorId,
                              String action, String resourceType, String resourceId, String result,
                              String detailsJson, Instant occurredAt) {}
+    public record AuthenticationCircuit(String workspaceId, String accountId, int failureRuns,
+                                        Instant firstFailureAt, Instant lastFailureAt, Instant openUntil,
+                                        String lastRunId, long version) { }
 
     public record PageQuery(String cursor, int limit, String name, String status, Instant from, Instant to) {
         public PageQuery { if (limit < 1 || limit > 100) throw new IllegalArgumentException("limit must be 1..100"); }

@@ -12,6 +12,8 @@ import com.fangxuele.wepush.next.provider.spi.ProviderDescriptor;
 import com.fangxuele.wepush.next.provider.spi.ProviderFactory;
 
 import java.nio.file.Path;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.net.http.HttpClient;
 import java.security.SecureRandom;
 import java.time.Clock;
@@ -135,15 +137,33 @@ public final class WePushNextAgentApplication {
     }
 
     static void verifyPlugin(Path archive, ObjectMapper mapper) {
+        String trustedKeys = System.getenv("WEPUSH_PLUGIN_TRUSTED_KEYS");
         SignedProviderPluginManager verifier = new SignedProviderPluginManager(
                 archive.toAbsolutePath().normalize().getParent(), false,
-                System.getenv("WEPUSH_PLUGIN_TRUSTED_KEYS"), mapper);
+                trustedKeys, mapper);
+        Path isolatedDirectory = null;
         try {
             SignedProviderPluginManager.VerifiedPlugin plugin = verifier.verify(archive.toAbsolutePath().normalize());
-            System.out.printf("{\"valid\":true,\"pluginId\":\"%s\",\"version\":\"%s\",\"canonicalName\":\"%s\"}%n",
+            isolatedDirectory = Files.createTempDirectory("wepush-provider-verification-");
+            Files.copy(archive.toAbsolutePath().normalize(), isolatedDirectory.resolve(plugin.canonicalName()),
+                    StandardCopyOption.COPY_ATTRIBUTES);
+            List<ProviderFactory> factories;
+            try (SignedProviderPluginManager loader = new SignedProviderPluginManager(
+                    isolatedDirectory, false, trustedKeys, mapper)) {
+                factories = loader.load();
+            }
+            if (factories.size() != 1
+                    || !plugin.version().equals(factories.getFirst().descriptor().implementationVersion())) {
+                throw new IllegalStateException("Provider plugin must expose exactly one matching Provider factory");
+            }
+            System.out.printf("{\"valid\":true,\"pluginId\":\"%s\",\"version\":\"%s\","
+                            + "\"canonicalName\":\"%s\",\"providers\":1}%n",
                     plugin.pluginId(), plugin.version(), plugin.canonicalName());
         } catch (Exception problem) {
             throw new IllegalStateException("Provider plugin verification failed: " + rootMessage(problem), problem);
+        } finally {
+            verifier.close();
+            SignedProviderPluginManager.deleteDirectory(isolatedDirectory);
         }
     }
 

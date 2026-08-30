@@ -1,6 +1,6 @@
 # WePush Next 内置 Provider 指南
 
-本文适用于 `1.0.0`，说明内置 Provider 的最小配置、Recipient 字段、发送语义和故障处理。所有渠道都连接用户自己的服务或渠道账号；WePush 不代注册账号、不转售消息额度、不代收款，也不把凭据上传到官方公共平台。
+本文适用于 `1.1.0`，说明内置 Provider 的最小配置、Recipient 字段、发送语义和故障处理。所有渠道都连接用户自己的服务或渠道账号；WePush 不代注册账号、不转售消息额度、不代收款，也不把凭据上传到官方公共平台。CMPP、SMGP、SGIP、SMPP 不属于内置 Provider，而是独立签名 Agent 插件；协议能力、构建和安装见 [`plugins/README.md`](../plugins/README.md)及[《部署与运维》](deployment-and-operations.md)。
 
 ## 1. 共同行为
 

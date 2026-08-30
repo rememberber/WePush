@@ -46,7 +46,7 @@ final class PostgreSQLMigrationIntegrationTest {
                         .locations("classpath:db/migration/sqlite")
                         .validateMigrationNaming(true).load();
                 stableFlyway.migrate();
-                assertEquals("14", stableFlyway.info().current().getVersion().getVersion());
+                assertEquals("17", stableFlyway.info().current().getVersion().getVersion());
                 assertEquals(1, jdbc.queryForObject(
                         "SELECT COUNT(*) FROM workspace WHERE id = 'ws_default'", Integer.class));
                 assertEquals("Beta PostgreSQL data", jdbc.queryForObject(
@@ -75,6 +75,18 @@ final class PostgreSQLMigrationIntegrationTest {
                 assertEquals("0.1.0-beta.1", jdbc.queryForObject("""
                         SELECT minimum_upgrade_version FROM wepush_release_compatibility WHERE id = 1
                         """, String.class));
+                assertEquals(1, jdbc.queryForObject("""
+                        SELECT COUNT(*) FROM information_schema.tables
+                        WHERE table_schema = ? AND table_name = 'workspace_policy'
+                        """, Integer.class, schema));
+                assertEquals(1, jdbc.queryForObject("""
+                        SELECT COUNT(*) FROM information_schema.tables
+                        WHERE table_schema = ? AND table_name = 'account_auth_circuit'
+                        """, Integer.class, schema));
+                assertEquals(1, jdbc.queryForObject("""
+                        SELECT COUNT(*) FROM information_schema.tables
+                        WHERE table_schema = ? AND table_name = 'artifact_multipart_upload'
+                        """, Integer.class, schema));
             }
         } finally {
             try (var administration = PostgreSQLDatabase.create(url, username, password, 2);

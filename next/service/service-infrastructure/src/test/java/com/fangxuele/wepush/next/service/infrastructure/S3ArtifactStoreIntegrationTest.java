@@ -49,6 +49,7 @@ final class S3ArtifactStoreIntegrationTest {
                     "integration", "NONE"))) {
                 verifyServiceWriteAndRange(store);
                 verifyPresignedUpload(store);
+                verifyPresignedMultipartUpload(store);
                 verifyMultipart(store);
             } finally {
                 administration.deleteBucket(DeleteBucketRequest.builder().bucket(bucket).build());
@@ -97,6 +98,37 @@ final class S3ArtifactStoreIntegrationTest {
         assertEquals(MULTIPART_SIZE, stored.size());
         assertEquals(stored, store.inspect(plan.location()));
         store.delete(plan.location());
+    }
+
+    private static void verifyPresignedMultipartUpload(S3ArtifactStore store) throws Exception {
+        byte[] content = new byte[6 * 1024 * 1024];
+        for (int index = 0; index < content.length; index++) content[index] = (byte) (index % 251);
+        String sha256 = sha256(content);
+        ArtifactStore.ObjectPlan plan = store.plan(new WorkspaceId("ws_default"),
+                "artifact_presigned_multipart", "LARGE_AGENT_RESULT", Instant.now());
+        ArtifactStore.MultipartUpload upload = store.beginMultipartUpload(plan, content.length, sha256,
+                "application/octet-stream", Instant.now().plusSeconds(300)).orElseThrow();
+        assertEquals(1, upload.partCount());
+        ArtifactStore.PresignedPart part = store.presignMultipartParts(plan, upload.uploadId(),
+                1, 1, content.length, upload.partSize(), Instant.now().plusSeconds(300)).getFirst();
+        HttpRequest.Builder request = HttpRequest.newBuilder(URI.create(part.url()))
+                .PUT(HttpRequest.BodyPublishers.ofByteArray(content));
+        part.headers().forEach(request::header);
+        HttpResponse<Void> response = HttpClient.newHttpClient().send(
+                request.build(), HttpResponse.BodyHandlers.discarding());
+        assertTrue(response.statusCode() >= 200 && response.statusCode() < 300,
+                "presigned multipart part returned HTTP " + response.statusCode());
+        String eTag = response.headers().firstValue("etag").orElseThrow();
+        ArtifactStore.StoredObject stored = store.completeMultipartUpload(plan, upload.uploadId(),
+                java.util.List.of(new ArtifactStore.CompletedUploadPart(1, eTag)));
+        assertEquals(new ArtifactStore.StoredObject(content.length, sha256), stored);
+        store.delete(plan.location());
+
+        ArtifactStore.ObjectPlan abortedPlan = store.plan(new WorkspaceId("ws_default"),
+                "artifact_aborted_multipart", "LARGE_AGENT_RESULT", Instant.now());
+        ArtifactStore.MultipartUpload aborted = store.beginMultipartUpload(abortedPlan, content.length,
+                sha256, "application/octet-stream", Instant.now().plusSeconds(300)).orElseThrow();
+        store.abortMultipartUpload(abortedPlan, aborted.uploadId());
     }
 
     private static String sha256(byte[] value) throws Exception {

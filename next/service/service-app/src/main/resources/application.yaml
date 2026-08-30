@@ -39,6 +39,14 @@ wepush:
     scan-interval: ${WEPUSH_SCHEDULE_SCAN_INTERVAL:PT5S}
   events:
     poll-interval: ${WEPUSH_EVENT_POLL_INTERVAL:PT1S}
+  version-check:
+    # No scheduled checker exists; this URL is contacted only through the explicit API/UI action.
+    releases-uri: ${WEPUSH_VERSION_CHECK_RELEASES_URI:https://api.github.com/repos/rememberber/WePush/releases?per_page=50}
+  reliability:
+    authentication-circuit:
+      threshold: ${WEPUSH_AUTH_CIRCUIT_THRESHOLD:3}
+      window: ${WEPUSH_AUTH_CIRCUIT_WINDOW:PT15M}
+      open-duration: ${WEPUSH_AUTH_CIRCUIT_OPEN_DURATION:PT15M}
   database:
     kind: ${WEPUSH_DATABASE_KIND:sqlite}
     path: ${WEPUSH_DATABASE_PATH:.local/data/wepush-next.db}
@@ -69,7 +77,8 @@ wepush:
     artifact-signing-key-base64: ${WEPUSH_AGENT_ARTIFACT_SIGNING_KEY_BASE64:}
     artifact-upload-ttl: ${WEPUSH_AGENT_ARTIFACT_UPLOAD_TTL:PT15M}
     artifact-retention: ${WEPUSH_AGENT_ARTIFACT_RETENTION:P7D}
-    artifact-maximum-bytes: ${WEPUSH_AGENT_ARTIFACT_MAXIMUM_BYTES:1073741824}
+    artifact-maximum-bytes: ${WEPUSH_AGENT_ARTIFACT_MAXIMUM_BYTES:5497558138880}
+    artifact-multipart-threshold-bytes: ${WEPUSH_AGENT_ARTIFACT_MULTIPART_THRESHOLD_BYTES:1073741824}
     lease-offer-ttl: ${WEPUSH_AGENT_LEASE_OFFER_TTL:PT1M}
     lease-scan-interval: ${WEPUSH_AGENT_LEASE_SCAN_INTERVAL:PT10S}
     outbox-scan-interval: ${WEPUSH_AGENT_OUTBOX_SCAN_INTERVAL:PT1S}

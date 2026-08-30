@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -18,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.List;
 
 @RestController
 final class AgentArtifactController {
@@ -67,12 +69,56 @@ final class AgentArtifactController {
         }
     }
 
+    @PostMapping("/internal/agent/v1/artifacts/{artifactId}/multipart-parts")
+    List<ArtifactStore.PresignedPart> multipartParts(@PathVariable String artifactId,
+            @RequestParam("upload_token") String uploadToken,
+            @RequestBody MultipartPartPlanRequest request) {
+        try {
+            return artifacts.multipartParts(artifactId, uploadToken, request.uploadId(),
+                    request.firstPartNumber(), request.count());
+        } catch (ArtifactUploadTokenCodec.InvalidUploadTokenException problem) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, problem.getMessage(), problem);
+        }
+    }
+
+    @PostMapping("/internal/agent/v1/artifacts/{artifactId}/multipart-complete")
+    UploadResult completeMultipart(@PathVariable String artifactId,
+            @RequestParam("upload_token") String uploadToken,
+            @RequestBody MultipartCompleteRequest request) {
+        try {
+            List<ArtifactStore.CompletedUploadPart> parts = request.parts() == null ? List.of()
+                    : request.parts().stream().map(part ->
+                    new ArtifactStore.CompletedUploadPart(part.partNumber(), part.eTag())).toList();
+            ArtifactStore.StoredObject stored = artifacts.completeMultipart(
+                    artifactId, uploadToken, request.uploadId(), parts);
+            return new UploadResult(stored.size(), stored.sha256());
+        } catch (ArtifactUploadTokenCodec.InvalidUploadTokenException problem) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, problem.getMessage(), problem);
+        }
+    }
+
+    @DeleteMapping("/internal/agent/v1/artifacts/{artifactId}/multipart")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void abortMultipart(@PathVariable String artifactId,
+                        @RequestParam("upload_token") String uploadToken,
+                        @RequestParam("upload_id") String uploadId) {
+        try {
+            artifacts.abortMultipart(artifactId, uploadToken, uploadId);
+        } catch (ArtifactUploadTokenCodec.InvalidUploadTokenException problem) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, problem.getMessage(), problem);
+        }
+    }
+
     record CreateArtifactRequest(String runId, long epoch, String fencingToken, String type,
                                  String originalName, String contentType, long size, String sha256) {
     }
 
     record UploadResult(long size, String sha256) {
     }
+
+    record MultipartPartPlanRequest(String uploadId, int firstPartNumber, int count) { }
+    record MultipartCompleteRequest(String uploadId, List<CompletedPartRequest> parts) { }
+    record CompletedPartRequest(int partNumber, String eTag) { }
 
     record CommitResult(String artifactId, long size, String sha256, String state, Instant readyAt) {
     }

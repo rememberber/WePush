@@ -1,12 +1,12 @@
 # WePush Next 升级与回滚指南
 
-本文适用于 `0.1.0-beta.1` 升级到 `1.0.0`，也定义后续 `1.x` 升级的标准流程。完整兼容承诺见[《兼容性策略》](compatibility-policy.md)。
+本文以 `1.0.0` 升级到 `1.1.0` 为当前路径，也适用于 `0.1.0-beta.1` 经稳定版升级和后续 `1.x` Minor/Patch 升级。完整兼容承诺见[《兼容性策略》](compatibility-policy.md)。
 
 ## 1. 升级前检查
 
-1. 确认当前版本至少为 `0.1.0-beta.1`，Installation Health 为 `UP`。
+1. 确认当前版本至少为 `0.1.0-beta.1`，推荐先处于 `1.0.0`，且 Installation Health 为 `UP`。
 2. 确认磁盘有足够空间同时容纳当前数据、备份和新发行包；建议可用空间不低于数据目录大小的两倍加发行包大小。
-3. 从 GitHub Release 下载正确平台/架构的 `1.0.0` 包和 `SHA256SUMS`，完成 SHA-256 校验。
+3. 从 GitHub Release 下载正确平台/架构的 `1.1.0` 包和 `SHA256SUMS`，完成 SHA-256 校验。
 4. 阅读 [`UNSIGNED-NOTICE.md`](../UNSIGNED-NOTICE.md)。macOS/Windows 发行物没有商业代码签名。
 5. 暂停新 Schedule 或选择业务低峰。正在运行的外部发送必须先完成或由操作员确认结果处理方式。
 
@@ -18,21 +18,21 @@ Linux：
 
 ```bash
 sudo /opt/wepush-next/current/install/linux/upgrade.sh \
-  wepush-next-1.0.0-linux-x64.tar.gz <sha256>
+  wepush-next-1.1.0-linux-x64.tar.gz <sha256>
 ```
 
 macOS：
 
 ```bash
 sudo /Library/WePushNext/current/install/macos/upgrade.sh \
-  wepush-next-1.0.0-macos-arm64.zip <sha256>
+  wepush-next-1.1.0-macos-arm64.zip <sha256>
 ```
 
 Windows（管理员 PowerShell）：
 
 ```powershell
 & "$env:ProgramFiles\WePush Next\current\install\windows\upgrade.ps1" `
-  -Archive .\wepush-next-1.0.0-windows-x64.zip `
+  -Archive .\wepush-next-1.1.0-windows-x64.zip `
   -ExpectedSha256 <sha256>
 ```
 
@@ -40,16 +40,18 @@ Windows（管理员 PowerShell）：
 
 - `GET /actuator/health/readiness` 返回 `UP`。
 - `GET /actuator/health/installation` 显示数据库迁移和内置 Provider Dry Run 通过。
-- `GET /api/v1/system/info` 返回 `1.0.0`。
+- `GET /api/v1/system/info` 返回 `1.1.0`。
+- Installation Health 显示 Flyway 当前版本为 V17；`workspace_policy`、`account_auth_circuit` 和 `artifact_multipart_upload` 已创建。
 - 原 Workspace、Account、Message、Audience、Job、Schedule、历史 Run 和 Artifact 可读取。
-- Agent 重新连接，Provider Catalog 完整；先执行 Dry Run，再用自有测试目标执行小规模真实发送。
+- Agent 重新连接，Provider Catalog 完整；如使用超过 1 GiB Artifact 或运营商插件，确认 Agent 也为 `1.1.0` 并已配置发行签名公钥。先执行 Dry Run，再用自有测试目标执行小规模真实发送。
+- Server/HA 确认周期扫描持续工作，并在 PostgreSQL 日志/指标中检查通知链路；`LISTEN/NOTIFY` 失效不得阻断 Run、Agent 命令或 SSE 推进。
 - 备份文件仍保留在默认备份目录，且可用 Restore 的 `--validate-only` / `-ValidateOnly` 验证。
 
 ## 4. 回滚
 
 升级健康检查失败时脚本会自动回滚。升级成功后如需人工回滚，先停止 Service/Agent，再使用升级前备份恢复；不要只替换 JAR 而保留未经确认的新数据库。
 
-`1.0.0` 的 V14 仅新增兼容元数据表，最低可回滚版本是 `0.1.0-beta.1`。推荐仍通过备份恢复，因为备份还覆盖 Master Key、Artifact、Agent Identity、Journal、Event/Completion Outbox 和插件。
+`1.1.0` 的 V15–V17 只新增资源策略、认证熔断和 Multipart 会话表；受支持的回滚目标是 `1.0.0`，并必须通过升级前完整备份恢复。备份同时覆盖数据库、Master Key、Artifact、Agent Identity、Journal、Event/Completion Outbox 和插件，能清除新版本留下但旧程序无法治理的状态。
 
 Restore 会：
 

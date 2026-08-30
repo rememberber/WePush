@@ -227,6 +227,40 @@ Classic 与 Next 可以复用业务需求、测试数据和验收经验，但不
 - Core 自动执行 100,000 Recipient 流式任务；Agent 测试覆盖断网重放、进程崩溃后的 UNKNOWN、Outbox 上限和模拟磁盘写失败。
 - Java 21/25 × SQLite/PostgreSQL 长稳、浏览器 E2E、三平台 Desktop 启动和发行归档验证进入 CI/Release 门禁。
 
+### 6.6 `1.1.0`：自部署治理与 Provider 生态
+
+目标：在保持 1.x 兼容承诺、默认离线和用户自建边界的前提下，增强运营商短信接入、Server 资源治理、故障诊断、HA 唤醒、大 Artifact 和 WebUI 使用体验。
+
+状态：已完成（2026-08-30）。
+
+已交付内容：
+
+- 将 CMPP、SMGP、SGIP 和 SMPP 实现为独立签名 Provider 插件；可以参考 Classic 的业务需求和测试经验，但不建立源码或构建依赖。
+- 增加 Workspace 级 Agent 数量、并发 Run、总发送并发、Artifact 容量和默认保留期策略，并在 API、SDK、WebUI、调度与运行入口执行一致门禁。
+- 提供可下载的脱敏诊断包、更多用户自建部署模板，以及默认关闭、仅由用户手动触发的版本检查。
+- 增加跨 Run 的账号认证失败熔断；在 PostgreSQL Server/HA 中以 `LISTEN/NOTIFY` 优化新 Run、Agent 命令和 SSE 事件唤醒，同时保留数据库轮询和 Outbox 作为正确性事实源。
+- 将 Agent Artifact 上传从单次 Presigned Put 扩展为可恢复的 Presigned Multipart Plan；原有单次上传契约继续兼容。
+- 增加暗色主题，改善低分辨率布局、键盘操作、可见焦点、语义标签和颜色对比。
+
+验收条件：
+
+- 四种运营商协议均有独立插件包、协议编解码、连接测试、Dry Run、错误分类、边界校验和本地模拟网关测试；未安装插件时不增加 Service/Agent 核心依赖。
+- Workspace 配额在单 Service 和多 Service 竞争下都不会超发；拒绝结果可诊断且进入审计，策略更新保持向后兼容。
+- 诊断包不包含 Token、Secret、完整 Recipient 或未脱敏 Provider 响应；版本检查不会后台运行或回传遥测。
+- 跨 Run 熔断可自动恢复和由管理员安全复位；丢失 PostgreSQL 通知时轮询仍能推进所有状态。
+- Agent 可上传超过 1 GiB 的 Artifact，支持分片重试、Complete/Abort、SHA-256/大小校验和进程失败清理。
+- WebUI 在亮色/暗色、1366×768 和键盘操作下通过自动化与人工验收，关键文本和控件满足既定对比度要求。
+- OpenAPI、Remote Java SDK、配置、数据库迁移和 Agent 协议变更满足 1.x 兼容策略，并通过 Java、UI、SQLite、PostgreSQL、MinIO、Desktop 与发行归档门禁。
+
+验收结果：
+
+- 四种运营商协议均以独立 Maven/PF4J 模块构建，签名包由 Agent 生产校验器验签；本地网关测试覆盖登录、短短信和中文长短信，核心发行物不增加这些协议依赖。
+- V15 Workspace Policy 在 Agent 注册、Run 创建/领取、总发送并发、Artifact 创建和保留期清理入口执行；API、SDK 和 WebUI 提供一致的查看与更新能力。
+- 脱敏诊断、手动版本检查、Nginx/Traefik/Kubernetes 模板、V16 跨 Run 认证熔断及管理员复位已经交付。
+- PostgreSQL 对待调度 Run、Agent Outbox 和 Run Event 发布通知，所有订阅者继续保留周期扫描、持久 Outbox 和事件游标恢复。
+- V17 记录 Multipart 会话；Agent 支持分批获取 Part URL、重试、Complete/Abort、完整性检查与孤儿清理，S3 单对象上限为 5 TiB。
+- WebUI 的主题、低分辨率、键盘焦点、语义和减少动画进入类型检查、组件测试、构建与浏览器 E2E 门禁。
+
 ## 7. 优先级规则
 
 后续任务使用以下顺序决策：

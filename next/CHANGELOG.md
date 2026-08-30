@@ -4,6 +4,34 @@
 
 ## Unreleased
 
+## 1.1.0 — 2026-08-30
+
+### Added
+
+- 新增 CMPP、SMGP、SGIP、SMPP 四个源码独立、Ed25519 签名的运营商短信 Provider 插件，包含协议编解码、长短信分片、本地模拟网关和连接/发送测试。
+- 新增 Workspace 级 Agent 数量、活动 Run、总发送并发、Artifact 容量与默认保留期策略，并同步 REST API、Java SDK、审计和 WebUI 管理入口。
+- 新增脱敏诊断包、用户手动触发的版本检查，以及 Nginx、Traefik 和 Kubernetes 自建部署模板；版本检查默认不后台运行且不发送遥测。
+- 新增跨 Run 的账号认证失败熔断，支持冷却后自动恢复、管理员查看与复位。
+- 新增 PostgreSQL `LISTEN/NOTIFY` 低延迟唤醒，用于待调度 Run、Agent Outbox 和 SSE Run Event；数据库轮询与持久 Outbox 继续作为正确性兜底。
+- 新增 Agent Presigned Multipart Artifact 上传计划、分批 Part URL、Complete/Abort、进程失败清理和 S3 完整性校验，单 Artifact 上限扩展至 5 TiB。
+- 新增亮色/暗色/跟随系统主题、低分辨率布局、键盘焦点、语义标签、颜色对比和减少动画支持。
+
+### Changed
+
+- 数据库由 V14 前向迁移到 V17：V15 增加 Workspace 资源策略，V16 增加账号认证熔断，V17 增加 Artifact Multipart 会话；迁移均为附加式变更。
+- Agent 大文件上传在保留原单次 Presigned Put 契约的同时按大小自动选择 Multipart；Part URL 最多按 100 个一批签发，S3 10,000 Part 上限保持显式校验。
+- Public Preview Notice 归档为历史预览版说明；路线图、详细设计、部署、用户、兼容和升级文档同步到 `1.1.0`。
+
+### Fixed
+
+- 运营商插件构建统一固定 Netty `4.1.x` 依赖线，避免 BOM 覆盖造成运行时混用不兼容版本。
+- 插件发行包拒绝捆绑 Core API、Provider SPI、PF4J 和日志 API，只携带插件私有实现及运行时协议依赖。
+
+### Security
+
+- 诊断包对 Token、Secret、Recipient、Provider 响应和敏感配置执行结构化脱敏；版本检查必须由用户主动触发。
+- 运营商插件发布流水线缺少签名私钥、公钥或 Key ID 时失败关闭，并在上传 Release Asset 前由 Agent 生产校验器重新验签。
+
 ## 1.0.0 — 2026-08-29
 
 ### Added

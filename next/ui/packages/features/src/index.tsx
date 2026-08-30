@@ -16,6 +16,8 @@ import {
   type AuditEvent,
   type SystemInfo,
   type Workspace,
+  type WorkspacePolicy,
+  type VersionCheck,
   type RunOverview,
   type AudienceImport,
   type LiveConfirmation,
@@ -102,6 +104,12 @@ export function WePushApp({ apiBaseUrl }: { apiBaseUrl?: string }) {
   const [overview, setOverview] = useState<RunOverview>();
   const [loading, setLoading] = useState(true);
   const [connectionError, setConnectionError] = useState<string>();
+  const [theme, setTheme] = useState<"light" | "dark">(() => initialTheme());
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    try { localStorage.setItem("wepush.theme", theme); } catch { /* theme remains active for this session */ }
+  }, [theme]);
 
   const refresh = useCallback(async (signal?: AbortSignal) => {
     setLoading(true);
@@ -157,7 +165,8 @@ export function WePushApp({ apiBaseUrl }: { apiBaseUrl?: string }) {
         system={system} workspaces={workspaces} workspaceId={workspaceId} onWorkspaceChange={setWorkspaceId}
         activeRuns={overview?.activeRuns ?? 0} />
       <div className="app-workspace">
-        <Topbar title={pageTitles[activePage]} connected={!connectionError && Boolean(system)} />
+        <Topbar title={pageTitles[activePage]} connected={!connectionError && Boolean(system)}
+          theme={theme} onToggleTheme={() => setTheme((current) => current === "dark" ? "light" : "dark")} />
         <main className="app-content">
           {activePage === "overview" ? (
             <Overview
@@ -242,7 +251,8 @@ function Sidebar({ activePage, onNavigate, connected, system, workspaces, worksp
   );
 }
 
-function Topbar({ title, connected }: { title: string; connected: boolean }) {
+function Topbar({ title, connected, theme, onToggleTheme }: { title: string; connected: boolean;
+  theme: "light" | "dark"; onToggleTheme: () => void }) {
   return (
     <header className="topbar">
       <div className="topbar-title">
@@ -250,6 +260,11 @@ function Topbar({ title, connected }: { title: string; connected: boolean }) {
         <h1>{title}</h1>
       </div>
       <div className="topbar-actions">
+        <button className="theme-toggle" type="button" onClick={onToggleTheme}
+          aria-label={theme === "dark" ? "切换到浅色主题" : "切换到深色主题"}
+          aria-pressed={theme === "dark"} title={theme === "dark" ? "浅色主题" : "深色主题"}>
+          <span aria-hidden="true">{theme === "dark" ? "☀" : "☾"}</span>
+        </button>
         <button className="command-button" type="button"><Icon name="search" /><span>搜索或跳转</span><kbd>⌘ K</kbd></button>
         <span className={connected ? "connection-pill connection-pill--online" : "connection-pill"}>
           <span className="status-dot status-dot--online" />{connected ? "Connected" : "Offline"}
@@ -495,12 +510,19 @@ function AccountsPage({ client, workspaceId, onNavigate }: { client: WePushClien
 
   useEffect(() => { void load(); }, [client, workspaceId]);
 
-  async function mutate(account: Account, kind: "test" | "edit" | "enable" | "disable" | "archive") {
+  async function mutate(account: Account, kind: "test" | "circuit" | "edit" | "enable" | "disable" | "archive") {
     setAction(account.id); setError(undefined);
     try {
       if (kind === "test") {
         const result = await client.testAccount(account.id, "PT10S", workspaceId);
         window.alert(result.successful ? `连接成功（${result.latencyMillis} ms）` : `${result.code}: ${result.diagnostic}`);
+      } else if (kind === "circuit") {
+        const circuit = await client.authenticationCircuit(account.id, workspaceId);
+        if (!circuit.failureRuns) window.alert("认证熔断器已关闭，没有累计失败 Run。");
+        else if (window.confirm(`已累计 ${circuit.failureRuns} 个认证失败 Run${circuit.openUntil ? `，熔断至 ${new Date(circuit.openUntil).toLocaleString()}` : ""}。\n确认修复凭据后重置？`)) {
+          await client.resetAuthenticationCircuit(account.id, workspaceId);
+          window.alert("认证熔断器已重置。");
+        }
       } else {
         const name = kind === "edit" ? window.prompt("账号名称", account.name) : undefined;
         if (kind === "edit" && !name) return;
@@ -530,7 +552,7 @@ function AccountsPage({ client, workspaceId, onNavigate }: { client: WePushClien
             <span><strong>{account.name}</strong><small>{account.id}</small></span>
             <span>{account.providerId}<small>v{account.providerVersion}</small></span>
             <span><Badge tone="success">{account.status}</Badge></span>
-            <span className="heading-actions"><Button variant="ghost" disabled={action === account.id} onClick={() => void mutate(account, "test")}>测试</Button><Button variant="ghost" onClick={() => void mutate(account, "edit")}>编辑</Button>{account.status === "ACTIVE" ? <Button variant="ghost" onClick={() => void mutate(account, "disable")}>停用</Button> : account.status === "DISABLED" ? <Button variant="ghost" onClick={() => void mutate(account, "enable")}>启用</Button> : null}{account.status !== "ARCHIVED" ? <Button variant="ghost" onClick={() => void mutate(account, "archive")}>归档</Button> : null}</span>
+            <span className="heading-actions"><Button variant="ghost" disabled={action === account.id} onClick={() => void mutate(account, "test")}>测试</Button><Button variant="ghost" disabled={action === account.id} onClick={() => void mutate(account, "circuit")}>认证熔断</Button><Button variant="ghost" onClick={() => void mutate(account, "edit")}>编辑</Button>{account.status === "ACTIVE" ? <Button variant="ghost" onClick={() => void mutate(account, "disable")}>停用</Button> : account.status === "DISABLED" ? <Button variant="ghost" onClick={() => void mutate(account, "enable")}>启用</Button> : null}{account.status !== "ARCHIVED" ? <Button variant="ghost" onClick={() => void mutate(account, "archive")}>归档</Button> : null}</span>
           </div>)}
         </div> : null}
         {nextCursor ? <div className="load-more-row"><Button variant="ghost" onClick={() => void load(true)}>加载更多</Button></div> : null}
@@ -1375,17 +1397,23 @@ function SettingsPage({ client, workspaceId }: { client: WePushClient; workspace
   const [serviceStatus, setServiceStatus] = useState<DesktopServiceStatus>();
   const [operation, setOperation] = useState<DesktopCommandResult>();
   const [operationBusy, setOperationBusy] = useState(false);
+  const [policy, setPolicy] = useState<WorkspacePolicy>();
+  const [policyBusy, setPolicyBusy] = useState(false);
+  const [versionCheck, setVersionCheck] = useState<VersionCheck>();
+  const [systemOperationBusy, setSystemOperationBusy] = useState(false);
   const desktop = window.wepushDesktop;
 
   const load = useCallback(async () => {
     try {
-      const [nextTokens, nextAudits] = await Promise.all([client.apiTokens(workspaceId), client.auditEvents(50, workspaceId)]);
-      setTokens(nextTokens); setAudits(nextAudits); setError(undefined);
+      const [nextTokens, nextAudits, nextPolicy] = await Promise.all([
+        client.apiTokens(workspaceId), client.auditEvents(50, workspaceId), client.workspacePolicy(workspaceId),
+      ]);
+      setTokens(nextTokens); setAudits(nextAudits); setPolicy(nextPolicy); setError(undefined);
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : "安全数据加载失败");
     }
   }, [client, workspaceId]);
-  useEffect(() => { if (token) void load(); }, [load, token]);
+  useEffect(() => { void load(); }, [load]);
   useEffect(() => {
     if (!desktop) return;
     let active = true;
@@ -1448,6 +1476,39 @@ function SettingsPage({ client, workspaceId }: { client: WePushClient; workspace
     catch (nextError) { setError(nextError instanceof Error ? nextError.message : "注册令牌签发失败"); }
   }
 
+  async function savePolicy() {
+    if (!policy) return;
+    setPolicyBusy(true);
+    try {
+      setPolicy(await client.updateWorkspacePolicy({
+        maxAgents: policy.maxAgents,
+        maxConcurrentRuns: policy.maxConcurrentRuns,
+        maxTotalConcurrency: policy.maxTotalConcurrency,
+        artifactQuotaBytes: policy.artifactQuotaBytes,
+        artifactRetentionSeconds: policy.artifactRetentionSeconds,
+      }, workspaceId));
+      setError(undefined);
+    } catch (nextError) {
+      setError(nextError instanceof Error ? nextError.message : "Workspace 资源策略保存失败");
+    } finally { setPolicyBusy(false); }
+  }
+
+  async function checkVersion() {
+    setSystemOperationBusy(true);
+    try { setVersionCheck(await client.versionCheck()); setError(undefined); }
+    catch (nextError) { setError(nextError instanceof Error ? nextError.message : "版本检查失败"); }
+    finally { setSystemOperationBusy(false); }
+  }
+
+  async function createDiagnosticBundle() {
+    setSystemOperationBusy(true);
+    try {
+      downloadBlob(await client.diagnosticBundle(), `wepush-next-diagnostics-${Date.now()}.zip`);
+      setError(undefined);
+    } catch (nextError) { setError(nextError instanceof Error ? nextError.message : "诊断包生成失败"); }
+    finally { setSystemOperationBusy(false); }
+  }
+
   return <div className="page settings-page">
     <section className="page-heading page-heading--compact"><div><p className="eyebrow">SECURITY & OPERATIONS</p><h2>设置</h2><p>管理本机 API 身份、Agent 注册和只追加审计日志。</p></div><Badge tone="info">Workspace RBAC</Badge></section>
     {error ? <div className="inline-error">{error}</div> : null}
@@ -1462,6 +1523,38 @@ function SettingsPage({ client, workspaceId }: { client: WePushClient; workspace
         {enrollment ? <div className="one-time-secret"><strong>只显示一次</strong><code>{enrollment}</code></div> : null}
       </section>
     </div>
+    <section className="panel recent-panel workspace-policy-panel">
+      <PanelHeader title="Workspace 资源治理" description="0 表示不限制；新 Run、Agent 注册与 Artifact 计划会在事务内强制执行。"
+        action={policy ? <Badge tone="info">v{policy.version}</Badge> : undefined} />
+      {policy ? <>
+        <div className="policy-form-grid">
+          <label className="simple-field"><span>Agent 数量上限</span><input type="number" min="0"
+            value={policy.maxAgents} onChange={(event) => setPolicy({ ...policy, maxAgents: Number(event.target.value) })} /></label>
+          <label className="simple-field"><span>并发 Run 上限</span><input type="number" min="0"
+            value={policy.maxConcurrentRuns} onChange={(event) => setPolicy({ ...policy, maxConcurrentRuns: Number(event.target.value) })} /></label>
+          <label className="simple-field"><span>总发送并发上限</span><input type="number" min="0"
+            value={policy.maxTotalConcurrency} onChange={(event) => setPolicy({ ...policy, maxTotalConcurrency: Number(event.target.value) })} /></label>
+          <label className="simple-field"><span>Artifact 配额（bytes）</span><input type="number" min="0"
+            value={policy.artifactQuotaBytes} onChange={(event) => setPolicy({ ...policy, artifactQuotaBytes: Number(event.target.value) })} /></label>
+          <label className="simple-field"><span>Artifact 保留期（秒）</span><input type="number" min="300"
+            value={policy.artifactRetentionSeconds} onChange={(event) => setPolicy({ ...policy, artifactRetentionSeconds: Number(event.target.value) })} /></label>
+        </div>
+        <p className="policy-usage" aria-live="polite">当前使用：{policy.usedAgents} Agents · {policy.activeRuns} Runs · 并发 {policy.usedConcurrency} · Artifact {formatBytes(policy.usedArtifactBytes)}</p>
+        <div className="form-actions"><Button variant="primary" disabled={policyBusy} onClick={() => void savePolicy()}>{policyBusy ? "保存中…" : "保存资源策略"}</Button></div>
+      </> : <div className="loading-row"><Spinner />加载 Workspace 策略…</div>}
+    </section>
+    <section className="panel recent-panel">
+      <PanelHeader title="诊断与版本" description="诊断包固定脱敏；版本检查仅在点击时访问发行服务，不后台运行、不上传遥测。" />
+      <div className="form-actions operations-actions">
+        <Button disabled={systemOperationBusy} onClick={() => void createDiagnosticBundle()}>下载脱敏诊断包</Button>
+        <Button disabled={systemOperationBusy} onClick={() => void checkVersion()}>手动检查版本</Button>
+      </div>
+      {versionCheck ? <div className={versionCheck.successful ? "inline-success" : "inline-error"} role="status">
+        {versionCheck.successful ? <>当前 {versionCheck.currentVersion} · 最新 {versionCheck.latestVersion || "未知"}
+          {versionCheck.updateAvailable && versionCheck.releaseUrl ? <> · <a href={versionCheck.releaseUrl} target="_blank" rel="noreferrer">查看发行版</a></> : " · 已是最新"}</>
+          : versionCheck.diagnostic}
+      </div> : null}
+    </section>
     {desktop ? <section className="panel recent-panel">
       <PanelHeader title="本机 WePush Next Service" description="检测、启动、停止、读取最近日志，并生成不包含 Token/Secret 的诊断结果。" action={<Badge tone={serviceStatus?.running ? "success" : serviceStatus?.installed ? "warning" : "neutral"}>{serviceStatus?.running ? "RUNNING" : serviceStatus?.installed ? "STOPPED" : "NOT INSTALLED"}</Badge>} />
       {serviceStatus?.detail ? <pre className="response-body"><code>{serviceStatus.detail}</code></pre> : null}
@@ -1521,6 +1614,14 @@ function prettyBody(value: string): string {
 
 function shortId(value: string): string {
   return value.length > 18 ? `${value.slice(0, 12)}…${value.slice(-4)}` : value;
+}
+
+function initialTheme(): "light" | "dark" {
+  try {
+    const stored = localStorage.getItem("wepush.theme");
+    if (stored === "light" || stored === "dark") return stored;
+  } catch { /* use system preference */ }
+  return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
 function formatTime(value: string): string {

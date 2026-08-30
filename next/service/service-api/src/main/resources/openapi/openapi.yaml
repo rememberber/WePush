@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: WePush Next Service API
-  version: 1.0.0
+  version: 1.1.0
   description: Self-hosted control plane API shared by Web UI, Desktop UI and remote SDKs. It does not expose SaaS registration, billing, subscription or public-cloud platform services.
 servers:
   - url: /
@@ -33,6 +33,27 @@ paths:
           content:
             application/json:
               schema: {$ref: '#/components/schemas/SystemInfo'}
+  /api/v1/system/diagnostics:
+    post:
+      operationId: downloadRedactedDiagnostics
+      tags: [System]
+      description: Generates a redacted support bundle on demand. Secrets, credentials, recipient data, provider payloads, database URLs and local paths are excluded.
+      responses:
+        '200':
+          description: Redacted ZIP diagnostic bundle
+          headers:
+            Content-Disposition: {schema: {type: string}}
+          content:
+            application/zip: {schema: {type: string, format: binary}}
+  /api/v1/system/version-check:
+    post:
+      operationId: checkForNextRelease
+      tags: [System]
+      description: Contacts the configured release service only for this explicit request; no scheduled check or telemetry is enabled.
+      responses:
+        '200':
+          description: Latest stable WePush Next release comparison
+          content: {application/json: {schema: {$ref: '#/components/schemas/VersionCheck'}}}
   /api/v1/workspaces/{workspaceId}/api-tokens:
     get:
       operationId: listApiTokens
@@ -100,6 +121,23 @@ paths:
       parameters: [{$ref: '#/components/parameters/WorkspaceId'}]
       responses:
         '200': {description: Workspace, content: {application/json: {schema: {$ref: '#/components/schemas/Workspace'}}}}
+  /api/v1/workspaces/{workspaceId}/policy:
+    get:
+      operationId: getWorkspacePolicy
+      tags: [Security]
+      parameters: [{$ref: '#/components/parameters/WorkspaceId'}]
+      responses:
+        '200': {description: Workspace limits and current usage, content: {application/json: {schema: {$ref: '#/components/schemas/WorkspacePolicy'}}}}
+        '404': {$ref: '#/components/responses/NotFound'}
+    put:
+      operationId: updateWorkspacePolicy
+      tags: [Security]
+      parameters: [{$ref: '#/components/parameters/WorkspaceId'}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/UpdateWorkspacePolicy'}}}}
+      responses:
+        '200': {description: Updated Workspace limits and current usage, content: {application/json: {schema: {$ref: '#/components/schemas/WorkspacePolicy'}}}}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '404': {$ref: '#/components/responses/NotFound'}
   /api/v1/providers:
     get:
       operationId: listProviders
@@ -218,6 +256,22 @@ paths:
       requestBody: {required: false, content: {application/json: {schema: {$ref: '#/components/schemas/ConnectionTestRequest'}}}}
       responses:
         '200': {description: Provider connection result, content: {application/json: {schema: {$ref: '#/components/schemas/ConnectionTest'}}}}
+  /api/v1/workspaces/{workspaceId}/accounts/{accountId}/authentication-circuit:
+    parameters:
+      - {$ref: '#/components/parameters/WorkspaceId'}
+      - {name: accountId, in: path, required: true, schema: {type: string}}
+    get:
+      operationId: getAccountAuthenticationCircuit
+      tags: [Accounts]
+      responses:
+        '200': {description: Cross-Run authentication circuit state, content: {application/json: {schema: {$ref: '#/components/schemas/AuthenticationCircuit'}}}}
+        '404': {$ref: '#/components/responses/NotFound'}
+    delete:
+      operationId: resetAccountAuthenticationCircuit
+      tags: [Accounts]
+      responses:
+        '200': {description: Reset authentication circuit state, content: {application/json: {schema: {$ref: '#/components/schemas/AuthenticationCircuit'}}}}
+        '404': {$ref: '#/components/responses/NotFound'}
   /api/v1/workspaces/{workspaceId}/secrets/{namespace}/{name}/versions/{version}:
     parameters:
       - {$ref: '#/components/parameters/WorkspaceId'}
@@ -901,6 +955,7 @@ paths:
     put:
       operationId: uploadAgentArtifactContent
       tags: [Agent Internal, Artifacts]
+      security: [{artifactUploadAuth: []}]
       parameters:
         - {name: artifactId, in: path, required: true, schema: {type: string}}
         - {name: upload_token, in: query, required: true, schema: {type: string}}
@@ -913,17 +968,49 @@ paths:
     post:
       operationId: commitAgentArtifact
       tags: [Agent Internal, Artifacts]
+      security: [{artifactUploadAuth: []}]
       parameters:
         - {name: artifactId, in: path, required: true, schema: {type: string}}
         - {name: upload_token, in: query, required: true, schema: {type: string}}
       responses:
         '200': {description: Artifact checksum verified and READY, content: {application/json: {schema: {$ref: '#/components/schemas/AgentArtifactCommitResult'}}}}
+  /internal/agent/v1/artifacts/{artifactId}/multipart-parts:
+    post:
+      operationId: planAgentArtifactMultipartParts
+      tags: [Agent Internal, Artifacts]
+      security: [{artifactUploadAuth: []}]
+      parameters:
+        - {name: artifactId, in: path, required: true, schema: {type: string}}
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/MultipartPartPlanRequest'}}}}
+      responses:
+        '200': {description: A bounded batch of presigned part uploads, content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/PresignedMultipartPart'}}}}}
+  /internal/agent/v1/artifacts/{artifactId}/multipart-complete:
+    post:
+      operationId: completeAgentArtifactMultipart
+      tags: [Agent Internal, Artifacts]
+      security: [{artifactUploadAuth: []}]
+      parameters:
+        - {name: artifactId, in: path, required: true, schema: {type: string}}
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/MultipartCompleteRequest'}}}}
+      responses:
+        '200': {description: Multipart object assembled and verified; commit is still required, content: {application/json: {schema: {$ref: '#/components/schemas/AgentArtifactUploadResult'}}}}
+  /internal/agent/v1/artifacts/{artifactId}/multipart:
+    delete:
+      operationId: abortAgentArtifactMultipart
+      tags: [Agent Internal, Artifacts]
+      security: [{artifactUploadAuth: []}]
+      parameters:
+        - {name: artifactId, in: path, required: true, schema: {type: string}}
+        - {name: upload_id, in: query, required: true, schema: {type: string}}
+      responses:
+        '204': {description: Multipart upload aborted}
 components:
   securitySchemes:
     bearerAuth: {type: http, scheme: bearer}
     enrollmentAuth: {type: http, scheme: Enrollment}
     agentAuth: {type: http, scheme: Agent}
     agentHeaderAuth: {type: apiKey, in: header, name: x-wepush-agent-token}
+    artifactUploadAuth: {type: apiKey, in: query, name: upload_token}
   parameters:
     WorkspaceId: {name: workspaceId, in: path, required: true, schema: {type: string}}
     ProviderId: {name: providerId, in: path, required: true, schema: {type: string}}
@@ -1007,6 +1094,17 @@ components:
         version: {type: string}
         mode: {type: string}
         serverTime: {type: string, format: date-time}
+    VersionCheck:
+      type: object
+      required: [successful, currentVersion, latestVersion, updateAvailable, releaseUrl, checkedAt, diagnostic]
+      properties:
+        successful: {type: boolean}
+        currentVersion: {type: string}
+        latestVersion: {type: string}
+        updateAvailable: {type: boolean}
+        releaseUrl: {type: string}
+        checkedAt: {type: string, format: date-time}
+        diagnostic: {type: string}
     ProviderSummary:
       type: object
       required: [providerId, displayName, implementationVersion, capabilities, maximumConcurrency, links]
@@ -1091,6 +1189,18 @@ components:
         code: {type: string}
         diagnostic: {type: string}
         latencyMillis: {type: integer, format: int64, minimum: 0}
+    AuthenticationCircuit:
+      type: object
+      required: [workspaceId, accountId, failureRuns, version]
+      properties:
+        workspaceId: {type: string}
+        accountId: {type: string}
+        failureRuns: {type: integer, minimum: 0}
+        firstFailureAt: {type: [string, 'null'], format: date-time}
+        lastFailureAt: {type: [string, 'null'], format: date-time}
+        openUntil: {type: [string, 'null'], format: date-time}
+        lastRunId: {type: [string, 'null']}
+        version: {type: integer, format: int64, minimum: 0}
     SecretWrite:
       type: object
       required: [value]
@@ -1590,6 +1700,28 @@ components:
         status: {type: string, enum: [ACTIVE, SUSPENDED, ARCHIVED]}
         createdAt: {type: string, format: date-time}
         version: {type: integer, format: int64, minimum: 0}
+    UpdateWorkspacePolicy:
+      type: object
+      required: [maxAgents, maxConcurrentRuns, maxTotalConcurrency, artifactQuotaBytes, artifactRetentionSeconds]
+      properties:
+        maxAgents: {type: integer, minimum: 0, description: Zero means unlimited.}
+        maxConcurrentRuns: {type: integer, minimum: 0, description: Zero means unlimited.}
+        maxTotalConcurrency: {type: integer, minimum: 0, description: Sum of reserved Run concurrency; zero means unlimited.}
+        artifactQuotaBytes: {type: integer, format: int64, minimum: 0, description: Zero means unlimited.}
+        artifactRetentionSeconds: {type: integer, format: int64, minimum: 300}
+    WorkspacePolicy:
+      allOf:
+        - {$ref: '#/components/schemas/UpdateWorkspacePolicy'}
+        - type: object
+          required: [workspaceId, usedAgents, activeRuns, usedConcurrency, usedArtifactBytes, updatedAt, version]
+          properties:
+            workspaceId: {type: string}
+            usedAgents: {type: integer, format: int64, minimum: 0}
+            activeRuns: {type: integer, format: int64, minimum: 0}
+            usedConcurrency: {type: integer, format: int64, minimum: 0}
+            usedArtifactBytes: {type: integer, format: int64, minimum: 0}
+            updatedAt: {type: string, format: date-time}
+            version: {type: integer, format: int64, minimum: 0}
     AgentEnrollmentRequest:
       type: object
       required: [requestedAgentId, publicKeyBase64]
@@ -1624,13 +1756,62 @@ components:
         sha256: {type: string, pattern: '^[a-f0-9]{64}$'}
     AgentArtifactUploadPlan:
       type: object
-      required: [artifactId, uploadUrl, uploadHeaders, commitUrl, expiresAt]
+      required: [artifactId, uploadUrl, commitUrl, expiresAt, expectedSize, expectedSha256, uploadHeaders, uploadMode]
       properties:
         artifactId: {type: string}
         uploadUrl: {type: string, format: uri}
         uploadHeaders: {type: object, additionalProperties: {type: string}}
         commitUrl: {type: string, format: uri}
         expiresAt: {type: string, format: date-time}
+        expectedSize: {type: integer, format: int64, minimum: 0}
+        expectedSha256: {type: string, pattern: '^[a-f0-9]{64}$'}
+        uploadMode: {type: string, enum: [SINGLE, MULTIPART]}
+        multipart:
+          oneOf:
+            - {$ref: '#/components/schemas/MultipartUploadPlan'}
+            - {type: 'null'}
+    MultipartUploadPlan:
+      type: object
+      required: [uploadId, partSize, partCount, partPlanUrl, completeUrl, abortUrl]
+      properties:
+        uploadId: {type: string}
+        partSize: {type: integer, format: int64, minimum: 5242880}
+        partCount: {type: integer, minimum: 1, maximum: 10000}
+        partPlanUrl: {type: string, format: uri}
+        completeUrl: {type: string, format: uri}
+        abortUrl: {type: string, format: uri}
+    MultipartPartPlanRequest:
+      type: object
+      required: [uploadId, firstPartNumber, count]
+      properties:
+        uploadId: {type: string}
+        firstPartNumber: {type: integer, minimum: 1, maximum: 10000}
+        count: {type: integer, minimum: 1, maximum: 100}
+    PresignedMultipartPart:
+      type: object
+      required: [partNumber, offset, size, url, headers]
+      properties:
+        partNumber: {type: integer, minimum: 1, maximum: 10000}
+        offset: {type: integer, format: int64, minimum: 0}
+        size: {type: integer, format: int64, minimum: 1}
+        url: {type: string, format: uri}
+        headers: {type: object, additionalProperties: {type: string}}
+    MultipartCompleteRequest:
+      type: object
+      required: [uploadId, parts]
+      properties:
+        uploadId: {type: string}
+        parts:
+          type: array
+          minItems: 1
+          maxItems: 10000
+          items: {$ref: '#/components/schemas/CompletedMultipartPart'}
+    CompletedMultipartPart:
+      type: object
+      required: [partNumber, eTag]
+      properties:
+        partNumber: {type: integer, minimum: 1, maximum: 10000}
+        eTag: {type: string, minLength: 1, maxLength: 256}
     AgentArtifactUploadResult:
       type: object
       required: [size, sha256]

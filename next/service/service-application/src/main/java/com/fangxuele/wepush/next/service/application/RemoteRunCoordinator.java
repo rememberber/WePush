@@ -52,6 +52,7 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
     private final WorkspaceRepository workspaces;
     private final RunRepository runs;
     private final RunResultRepository results;
+    private final AccountAuthCircuitService authenticationCircuits;
     private final AudienceRepository audiences;
     private final AgentRepository agents;
     private final AgentIdentityService agentIdentities;
@@ -66,6 +67,7 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
     private final ResourceIdGenerator ids;
     private final TransactionRunner transactions;
     private final RunEventPublisher eventPublisher;
+    private final ControlPlaneWakeupPublisher wakeups;
     private final Clock clock;
     private final String publicBaseUrl;
     private final Duration offerTtl;
@@ -75,6 +77,7 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
             RunRepository runs,
             WorkspaceRepository workspaces,
             RunResultRepository results,
+            AccountAuthCircuitService authenticationCircuits,
             AudienceRepository audiences,
             AgentRepository agents,
             AgentIdentityService agentIdentities,
@@ -87,6 +90,7 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
             ResourceIdGenerator ids,
             TransactionRunner transactions,
             RunEventPublisher eventPublisher,
+            ControlPlaneWakeupPublisher wakeups,
             Clock clock,
             String publicBaseUrl,
             Duration offerTtl,
@@ -95,6 +99,7 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
         this.runs = Objects.requireNonNull(runs, "runs");
         this.workspaces = Objects.requireNonNull(workspaces, "workspaces");
         this.results = Objects.requireNonNull(results, "results");
+        this.authenticationCircuits = Objects.requireNonNull(authenticationCircuits, "authenticationCircuits");
         this.audiences = Objects.requireNonNull(audiences, "audiences");
         this.agents = Objects.requireNonNull(agents, "agents");
         this.agentIdentities = Objects.requireNonNull(agentIdentities, "agentIdentities");
@@ -108,6 +113,7 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
         this.ids = Objects.requireNonNull(ids, "ids");
         this.transactions = Objects.requireNonNull(transactions, "transactions");
         this.eventPublisher = Objects.requireNonNull(eventPublisher, "eventPublisher");
+        this.wakeups = Objects.requireNonNull(wakeups, "wakeups");
         this.clock = Objects.requireNonNull(clock, "clock");
         if (publicBaseUrl == null || publicBaseUrl.isBlank()) {
             throw new IllegalArgumentException("Agent public base URL is required");
@@ -175,6 +181,7 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
         });
         if (offered == null) return;
         eventPublisher.publish(offered);
+        wakeups.agentOutbox(message.agentId());
         deliver(message);
     }
 
@@ -228,6 +235,7 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
                 document.type(), new JsonDocument(new String(document.payload(), StandardCharsets.UTF_8)),
                 now, now, null, null, 0, "");
         transactions.required(() -> outbound.create(message));
+        wakeups.agentOutbox(message.agentId());
         return deliver(message)
                 ? CommandResult.accepted(command.commandId(), "REMOTE_COMMAND_DELIVERED")
                 : CommandResult.accepted(command.commandId(), "REMOTE_COMMAND_QUEUED");
@@ -389,6 +397,7 @@ public final class RemoteRunCoordinator implements RunDispatcher, RunCommandGate
                                 json.canonicalize(source.metadata()));
                     }).toList();
                     results.append(values);
+                    authenticationCircuits.record(lease.workspaceId(), lease.runId(), values);
                 }
             }
             if (!leases.advanceEvents(lease.id(), lease.fencingToken(), previous, batchLast)) {

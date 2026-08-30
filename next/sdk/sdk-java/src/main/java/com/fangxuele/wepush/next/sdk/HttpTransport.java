@@ -96,6 +96,10 @@ final class HttpTransport implements AutoCloseable {
         return writeJson(path, requestBody, idempotencyKey, "POST", responseType);
     }
 
+    <T> T postJson(String path, Class<T> responseType) {
+        return sendWithoutBody(path, "POST", HttpResponse.BodyHandlers.ofString(), responseType);
+    }
+
     <T> T putJson(String path, Object requestBody, Class<T> responseType) {
         return writeJson(path, requestBody, null, "PUT", responseType);
     }
@@ -158,6 +162,48 @@ final class HttpTransport implements AutoCloseable {
                 throw new WePushException("WePush Service returned HTTP " + response.statusCode(),
                         response.statusCode(), response.body());
             }
+        } catch (IOException exception) {
+            throw new WePushException("Unable to reach WePush Service", exception);
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+            throw new WePushException("Interrupted while calling WePush Service", exception);
+        }
+    }
+
+    <T> T deleteJson(String path, Class<T> responseType) {
+        return sendWithoutBody(path, "DELETE", HttpResponse.BodyHandlers.ofString(), responseType);
+    }
+
+    InputStream postStream(String path) {
+        HttpRequest request = requestBuilder(path)
+                .header("Accept", "application/zip")
+                .POST(HttpRequest.BodyPublishers.noBody()).build();
+        try {
+            HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
+            if (response.statusCode() >= 200 && response.statusCode() < 300) return response.body();
+            try (InputStream body = response.body()) {
+                throw new WePushException("WePush Service returned HTTP " + response.statusCode(),
+                        response.statusCode(), new String(body.readAllBytes(), StandardCharsets.UTF_8));
+            }
+        } catch (IOException exception) {
+            throw new WePushException("Unable to reach WePush Service", exception);
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+            throw new WePushException("Interrupted while calling WePush Service", exception);
+        }
+    }
+
+    private <T> T sendWithoutBody(String path, String method,
+                                  HttpResponse.BodyHandler<String> handler, Class<T> responseType) {
+        HttpRequest request = requestBuilder(path).header("Accept", "application/json")
+                .method(method, HttpRequest.BodyPublishers.noBody()).build();
+        try {
+            HttpResponse<String> response = client.send(request, handler);
+            if (response.statusCode() >= 200 && response.statusCode() < 300) {
+                return decode(response.body(), responseType);
+            }
+            throw new WePushException("WePush Service returned HTTP " + response.statusCode(),
+                    response.statusCode(), response.body());
         } catch (IOException exception) {
             throw new WePushException("Unable to reach WePush Service", exception);
         } catch (InterruptedException exception) {

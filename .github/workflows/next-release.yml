@@ -88,6 +88,39 @@ jobs:
       - name: Verify Java, PostgreSQL, S3 and build distributions
         working-directory: next
         run: ./mvnw --batch-mode --no-transfer-progress verify
+      - name: Build, sign and verify carrier provider plugins
+        working-directory: next
+        shell: bash
+        env:
+          VERSION: ${{ steps.metadata.outputs.version }}
+          WEPUSH_PLUGIN_SIGNING_KEY_ID: ${{ secrets.WEPUSH_PLUGIN_SIGNING_KEY_ID }}
+          WEPUSH_PLUGIN_SIGNING_KEY_PKCS8_BASE64: ${{ secrets.WEPUSH_PLUGIN_SIGNING_KEY_PKCS8_BASE64 }}
+          WEPUSH_PLUGIN_SIGNING_PUBLIC_KEY_X509_BASE64: ${{ secrets.WEPUSH_PLUGIN_SIGNING_PUBLIC_KEY_X509_BASE64 }}
+        run: |
+          set -euo pipefail
+          : "${WEPUSH_PLUGIN_SIGNING_KEY_ID:?Configure WEPUSH_PLUGIN_SIGNING_KEY_ID}"
+          : "${WEPUSH_PLUGIN_SIGNING_KEY_PKCS8_BASE64:?Configure WEPUSH_PLUGIN_SIGNING_KEY_PKCS8_BASE64}"
+          : "${WEPUSH_PLUGIN_SIGNING_PUBLIC_KEY_X509_BASE64:?Configure WEPUSH_PLUGIN_SIGNING_PUBLIC_KEY_X509_BASE64}"
+          ./mvnw --batch-mode --no-transfer-progress \
+            -pl plugins/provider-cmpp,plugins/provider-smgp,plugins/provider-sgip,plugins/provider-smpp \
+            -am -DskipTests install
+          mkdir -p provider-plugin-assets
+          for protocol in cmpp smgp sgip smpp; do
+            WEPUSH_PLUGIN_SKIP_BUILD=true scripts/package-carrier-provider.sh \
+              "$protocol" provider-plugin-assets
+            archive=$(find provider-plugin-assets -maxdepth 1 \
+              -name "wepush-provider-$protocol-*.zip" -print -quit)
+            test -n "$archive"
+            WEPUSH_PLUGIN_TRUSTED_KEYS="${WEPUSH_PLUGIN_SIGNING_KEY_ID}:${WEPUSH_PLUGIN_SIGNING_PUBLIC_KEY_X509_BASE64}" \
+              java -jar agent/agent-app/target/wepush-next-agent.jar --verify-plugin "$archive" \
+              | grep -F '"valid":true'
+          done
+          trust_asset="wepush-provider-trusted-key-$VERSION.env"
+          printf 'WEPUSH_PLUGIN_TRUSTED_KEYS=%s:%s\n' \
+            "$WEPUSH_PLUGIN_SIGNING_KEY_ID" "$WEPUSH_PLUGIN_SIGNING_PUBLIC_KEY_X509_BASE64" \
+            > "provider-plugin-assets/$trust_asset"
+          (cd provider-plugin-assets && sha256sum "$trust_asset" > "$trust_asset.sha256")
+          (cd provider-plugin-assets && sha256sum --check *.sha256)
       - name: Verify release archives
         working-directory: next/distribution/target
         shell: bash
@@ -111,6 +144,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p release-assets
+          cp next/provider-plugin-assets/* release-assets/
           cp next/distribution/target/*.tar.gz release-assets/
           cp next/distribution/target/*.zip release-assets/
           cp next/distribution/target/*.sha256 release-assets/

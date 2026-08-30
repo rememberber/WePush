@@ -19,9 +19,11 @@ final class LocalRunEventHub implements RunEventPublisher {
 
     private final ConcurrentHashMap<RunKey, Channel> channels = new ConcurrentHashMap<>();
     private final JsonCodec json;
+    private final PostgresNotificationBus notifications;
 
-    LocalRunEventHub(JsonCodec json) {
+    LocalRunEventHub(JsonCodec json, PostgresNotificationBus notifications) {
         this.json = json;
+        this.notifications = notifications;
     }
 
     SseEmitter subscribe(WorkspaceId workspaceId, String runId, long afterSequence,
@@ -51,6 +53,8 @@ final class LocalRunEventHub implements RunEventPublisher {
 
     @Override
     public void publish(RunEventRecord event) {
+        notifications.publish(PostgresNotificationBus.RUN_EVENT,
+                event.workspaceId().value() + ":" + event.runId() + ":" + event.sequence());
         RunKey key = new RunKey(event.workspaceId().value(), event.runId());
         Channel channel = channels.get(key);
         if (channel == null) {

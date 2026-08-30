@@ -2,6 +2,7 @@ package com.fangxuele.wepush.next.service.infrastructure;
 
 import com.fangxuele.wepush.next.service.domain.ArtifactDefinition;
 import com.fangxuele.wepush.next.service.domain.ArtifactRepository;
+import com.fangxuele.wepush.next.service.domain.ArtifactMultipartUpload;
 import com.fangxuele.wepush.next.service.domain.WorkspaceId;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -123,6 +124,32 @@ public final class JdbcArtifactRepository implements ArtifactRepository {
         if (changed != 1) {
             throw new IllegalStateException("artifact cannot become deleted: " + artifactId);
         }
+    }
+
+    @Override
+    public void createMultipart(ArtifactMultipartUpload value) {
+        jdbc.update("""
+                INSERT INTO artifact_multipart_upload
+                (artifact_id, workspace_id, upload_id, part_size, part_count, created_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """, value.artifactId(), value.workspaceId().value(), value.uploadId(),
+                value.partSize(), value.partCount(), value.createdAt().toString());
+    }
+
+    @Override
+    public Optional<ArtifactMultipartUpload> findMultipart(WorkspaceId workspaceId, String artifactId) {
+        return jdbc.query("""
+                SELECT * FROM artifact_multipart_upload WHERE workspace_id = ? AND artifact_id = ?
+                """, (rs, ignored) -> new ArtifactMultipartUpload(rs.getString("artifact_id"), workspaceId,
+                rs.getString("upload_id"), rs.getLong("part_size"), rs.getInt("part_count"),
+                Instant.parse(rs.getString("created_at"))), workspaceId.value(), artifactId)
+                .stream().findFirst();
+    }
+
+    @Override
+    public void deleteMultipart(WorkspaceId workspaceId, String artifactId) {
+        jdbc.update("DELETE FROM artifact_multipart_upload WHERE workspace_id = ? AND artifact_id = ?",
+                workspaceId.value(), artifactId);
     }
 
     private static String text(Instant value) {

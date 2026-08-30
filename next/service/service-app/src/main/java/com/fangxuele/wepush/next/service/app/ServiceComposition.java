@@ -12,10 +12,12 @@ import com.fangxuele.wepush.next.service.application.AgentIdentityService;
 import com.fangxuele.wepush.next.service.application.ArtifactStore;
 import com.fangxuele.wepush.next.service.application.ArtifactUploadTokenCodec;
 import com.fangxuele.wepush.next.service.application.AccountApplicationService;
+import com.fangxuele.wepush.next.service.application.AccountAuthCircuitService;
 import com.fangxuele.wepush.next.service.application.ApiAccessService;
 import com.fangxuele.wepush.next.service.application.AudienceApplicationService;
 import com.fangxuele.wepush.next.service.application.AudienceImportApplicationService;
 import com.fangxuele.wepush.next.service.application.ControlPlaneQueryService;
+import com.fangxuele.wepush.next.service.application.ControlPlaneWakeupPublisher;
 import com.fangxuele.wepush.next.service.application.JobApplicationService;
 import com.fangxuele.wepush.next.service.application.JsonCodec;
 import com.fangxuele.wepush.next.service.application.MessageApplicationService;
@@ -32,7 +34,9 @@ import com.fangxuele.wepush.next.service.application.SecretStore;
 import com.fangxuele.wepush.next.service.application.ScheduleApplicationService;
 import com.fangxuele.wepush.next.service.application.TransactionRunner;
 import com.fangxuele.wepush.next.service.application.WorkspaceApplicationService;
+import com.fangxuele.wepush.next.service.application.WorkspaceResourceGovernor;
 import com.fangxuele.wepush.next.service.domain.AccountRepository;
+import com.fangxuele.wepush.next.service.domain.AccountAuthCircuitRepository;
 import com.fangxuele.wepush.next.service.domain.ApiAccessRepository;
 import com.fangxuele.wepush.next.service.domain.AuditEventRepository;
 import com.fangxuele.wepush.next.service.domain.ArtifactRepository;
@@ -49,8 +53,11 @@ import com.fangxuele.wepush.next.service.domain.RunCommandRepository;
 import com.fangxuele.wepush.next.service.domain.RunResultRepository;
 import com.fangxuele.wepush.next.service.domain.ScheduleRepository;
 import com.fangxuele.wepush.next.service.domain.WorkspaceRepository;
+import com.fangxuele.wepush.next.service.domain.WorkspaceId;
+import com.fangxuele.wepush.next.service.domain.WorkspacePolicyRepository;
 import com.fangxuele.wepush.next.service.infrastructure.JacksonJsonCodec;
 import com.fangxuele.wepush.next.service.infrastructure.JdbcAccountRepository;
+import com.fangxuele.wepush.next.service.infrastructure.JdbcAccountAuthCircuitRepository;
 import com.fangxuele.wepush.next.service.infrastructure.JdbcApiAccessRepository;
 import com.fangxuele.wepush.next.service.infrastructure.JdbcAuditEventRepository;
 import com.fangxuele.wepush.next.service.infrastructure.JdbcArtifactRepository;
@@ -67,6 +74,7 @@ import com.fangxuele.wepush.next.service.infrastructure.JdbcRunCommandRepository
 import com.fangxuele.wepush.next.service.infrastructure.JdbcRunResultRepository;
 import com.fangxuele.wepush.next.service.infrastructure.JdbcScheduleRepository;
 import com.fangxuele.wepush.next.service.infrastructure.JdbcWorkspaceRepository;
+import com.fangxuele.wepush.next.service.infrastructure.JdbcWorkspacePolicyRepository;
 import com.fangxuele.wepush.next.service.infrastructure.LocalEnvelopeSecretStore;
 import com.fangxuele.wepush.next.service.infrastructure.LocalFileArtifactStore;
 import com.fangxuele.wepush.next.service.infrastructure.LocalHmacCursorCodec;
@@ -85,6 +93,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -93,6 +102,7 @@ import org.springframework.scheduling.support.CronExpression;
 
 import javax.sql.DataSource;
 import java.nio.file.Path;
+import java.net.URI;
 import java.security.SecureRandom;
 import java.time.Clock;
 import java.time.Duration;
@@ -103,6 +113,12 @@ import java.util.Base64;
 
 @Configuration(proxyBeanMethods = false)
 class ServiceComposition {
+    @Bean
+    SystemOperationsService systemOperationsService(
+            JdbcTemplate jdbc, ObjectMapper json, Environment environment,
+            @Value("${wepush.version-check.releases-uri:https://api.github.com/repos/rememberber/WePush/releases?per_page=50}") URI releasesUri) {
+        return new SystemOperationsService(jdbc, json, environment, releasesUri);
+    }
     @Bean(destroyMethod = "close")
     HikariDataSource dataSource(
             @Value("${wepush.database.kind:sqlite}") String kind,
@@ -163,8 +179,35 @@ class ServiceComposition {
     }
 
     @Bean
+    WorkspacePolicyRepository workspacePolicyRepository(JdbcTemplate jdbc, Flyway flyway) {
+        return new JdbcWorkspacePolicyRepository(jdbc);
+    }
+
+    @Bean
+    WorkspaceResourceGovernor workspaceResourceGovernor(
+            WorkspaceRepository workspaces, WorkspacePolicyRepository policies,
+            TransactionRunner transactions, Clock clock) {
+        return new WorkspaceResourceGovernor(workspaces, policies, transactions, clock);
+    }
+
+    @Bean
     AccountRepository accountRepository(JdbcTemplate jdbc, Flyway flyway) {
         return new JdbcAccountRepository(jdbc);
+    }
+
+    @Bean
+    AccountAuthCircuitRepository accountAuthCircuitRepository(JdbcTemplate jdbc, Flyway flyway) {
+        return new JdbcAccountAuthCircuitRepository(jdbc);
+    }
+
+    @Bean
+    AccountAuthCircuitService accountAuthCircuitService(
+            AccountAuthCircuitRepository circuits, JsonCodec json, TransactionRunner transactions, Clock clock,
+            @Value("${wepush.reliability.authentication-circuit.threshold:3}") int threshold,
+            @Value("${wepush.reliability.authentication-circuit.window:PT15M}") Duration window,
+            @Value("${wepush.reliability.authentication-circuit.open-duration:PT15M}") Duration openDuration) {
+        return new AccountAuthCircuitService(circuits, json, transactions, clock,
+                threshold, window, openDuration);
     }
 
     @Bean
@@ -205,10 +248,10 @@ class ServiceComposition {
     @Bean
     AgentIdentityService agentIdentityService(
             AgentIdentityRepository identities, AgentCertificateAuthority certificates,
-            WorkspaceRepository workspaces,
+            WorkspaceRepository workspaces, WorkspaceResourceGovernor resources,
             ResourceIdGenerator ids, TransactionRunner transactions, Clock clock, SecureRandom random,
             @Value("${wepush.agent.identity.credential-ttl:P90D}") Duration credentialTtl) {
-        return new AgentIdentityService(identities, certificates, workspaces, ids, transactions,
+        return new AgentIdentityService(identities, certificates, workspaces, resources, ids, transactions,
                 clock, random, credentialTtl);
     }
 
@@ -395,31 +438,56 @@ class ServiceComposition {
                 "standalone".equalsIgnoreCase(mode), records != null && records > 0);
     }
 
-    @Bean
-    LocalRunEventHub runEventHub(JsonCodec json) {
-        return new LocalRunEventHub(json);
+    @Bean(initMethod = "start", destroyMethod = "close")
+    PostgresNotificationBus postgresNotificationBus(
+            DataSource dataSource, JdbcTemplate jdbc,
+            @Value("${wepush.database.kind:sqlite}") String databaseKind) {
+        return new PostgresNotificationBus(dataSource, jdbc, databaseKind);
     }
 
     @Bean
-    RunEventPoller runEventPoller(LocalRunEventHub events, RunApplicationService runs) {
-        return new RunEventPoller(events, runs);
+    LocalRunEventHub runEventHub(JsonCodec json, PostgresNotificationBus notifications) {
+        return new LocalRunEventHub(json, notifications);
+    }
+
+    @Bean
+    ControlPlaneWakeupPublisher controlPlaneWakeups(PostgresNotificationBus notifications) {
+        return new ControlPlaneWakeupPublisher() {
+            @Override
+            public void runPending(WorkspaceId workspaceId, String runId) {
+                notifications.publish(PostgresNotificationBus.RUN_PENDING,
+                        workspaceId.value() + ":" + runId);
+            }
+
+            @Override
+            public void agentOutbox(String agentId) {
+                notifications.publish(PostgresNotificationBus.AGENT_OUTBOX, agentId);
+            }
+        };
+    }
+
+    @Bean
+    RunEventPoller runEventPoller(LocalRunEventHub events, RunApplicationService runs,
+                                  PostgresNotificationBus notifications) {
+        return new RunEventPoller(events, runs, notifications);
     }
 
     @Bean(destroyMethod = "close")
     StandaloneRunExecutor standaloneRunExecutor(
             WorkspaceRepository workspaces, RunRepository runs, RunResultRepository results,
             AudienceRepository audiences, ProviderRegistry providers,
-            SecretStore secrets, JsonCodec json, TransactionRunner transactions,
+            AccountAuthCircuitService authenticationCircuits, SecretStore secrets, JsonCodec json, TransactionRunner transactions,
             LocalRunEventHub eventHub, Clock clock) {
-        return new StandaloneRunExecutor(workspaces, runs, results, audiences, providers, secrets, json,
+        return new StandaloneRunExecutor(workspaces, runs, results, audiences, providers,
+                authenticationCircuits, secrets, json,
                 transactions, eventHub, clock);
     }
 
     @Bean
     WorkspaceApplicationService workspaceApplicationService(
-            WorkspaceRepository workspaces, ResourceIdGenerator ids,
+            WorkspaceRepository workspaces, WorkspacePolicyRepository policies, ResourceIdGenerator ids,
             TransactionRunner transactions, Clock clock) {
-        return new WorkspaceApplicationService(workspaces, ids, transactions, clock);
+        return new WorkspaceApplicationService(workspaces, policies, ids, transactions, clock);
     }
 
     @Bean
@@ -504,10 +572,10 @@ class ServiceComposition {
     @Bean
     ArtifactApplicationService artifactApplicationService(
             RunRepository runs, RunResultRepository results, ArtifactRepository artifacts,
-            ArtifactStore store, ResourceIdGenerator ids, TransactionRunner transactions,
+            WorkspaceResourceGovernor resources, ArtifactStore store, ResourceIdGenerator ids, TransactionRunner transactions,
             JsonCodec json, LocalRunEventHub events, Clock clock,
             @Value("${wepush.artifact.export-retention:PT24H}") Duration exportRetention) {
-        return new ArtifactApplicationService(runs, results, artifacts, store, ids,
+        return new ArtifactApplicationService(runs, results, artifacts, resources, store, ids,
                 transactions, json, events, clock, exportRetention);
     }
 
@@ -527,14 +595,16 @@ class ServiceComposition {
     @Bean
     AgentArtifactApplicationService agentArtifactApplicationService(
             AgentLeaseRepository leases, ArtifactRepository artifacts, RunRepository runs,
-            ArtifactStore store, ArtifactUploadTokenCodec tokens, ResourceIdGenerator ids,
+            WorkspaceResourceGovernor resources, ArtifactStore store, ArtifactUploadTokenCodec tokens, ResourceIdGenerator ids,
             TransactionRunner transactions, JsonCodec json, LocalRunEventHub events, Clock clock,
             @Value("${wepush.agent.public-base-url:http://127.0.0.1:18990}") String publicBaseUrl,
             @Value("${wepush.agent.artifact-upload-ttl:PT15M}") Duration uploadTtl,
             @Value("${wepush.agent.artifact-retention:P7D}") Duration retention,
-            @Value("${wepush.agent.artifact-maximum-bytes:1073741824}") long maximumBytes) {
-        return new AgentArtifactApplicationService(leases, artifacts, runs, store, tokens, ids,
-                transactions, json, events, clock, publicBaseUrl, uploadTtl, retention, maximumBytes);
+            @Value("${wepush.agent.artifact-maximum-bytes:5497558138880}") long maximumBytes,
+            @Value("${wepush.agent.artifact-multipart-threshold-bytes:1073741824}") long multipartThresholdBytes) {
+        return new AgentArtifactApplicationService(leases, artifacts, runs, resources, store, tokens, ids,
+                transactions, json, events, clock, publicBaseUrl, uploadTtl, retention, maximumBytes,
+                multipartThresholdBytes);
     }
 
     @Bean
@@ -554,26 +624,28 @@ class ServiceComposition {
     @Bean
     RemoteRunCoordinator remoteRunCoordinator(
             WorkspaceRepository workspaces, RunRepository runs, RunResultRepository results,
-            AudienceRepository audiences,
+            AccountAuthCircuitService authenticationCircuits, AudienceRepository audiences,
             AgentRepository agents, AgentLeaseRepository leases,
             AgentIdentityService agentIdentities,
             AgentOutboundMessageRepository outbound, ArtifactRepository artifacts,
             AgentControlGateway gateway,
             SecretStore secrets, JsonCodec json, ResourceIdGenerator ids, TransactionRunner transactions,
-            LocalRunEventHub events, Clock clock,
+            LocalRunEventHub events, ControlPlaneWakeupPublisher wakeups, Clock clock,
             @Value("${wepush.agent.public-base-url:http://127.0.0.1:18990}") String publicBaseUrl,
             @Value("${wepush.agent.lease-offer-ttl:PT1M}") Duration offerTtl,
             @Value("${wepush.agent.recovery-grace:PT30S}") Duration recoveryGrace) {
-        return new RemoteRunCoordinator(runs, workspaces, results, audiences, agents, agentIdentities, leases,
+        return new RemoteRunCoordinator(runs, workspaces, results, authenticationCircuits,
+                audiences, agents, agentIdentities, leases,
                 outbound, artifacts, gateway,
-                secrets, json, ids, transactions, events, clock, publicBaseUrl, offerTtl, recoveryGrace);
+                secrets, json, ids, transactions, events, wakeups, clock,
+                publicBaseUrl, offerTtl, recoveryGrace);
     }
 
     @Bean
     AgentOutboxScheduler agentOutboxScheduler(
-            RemoteRunCoordinator remoteRuns,
+            RemoteRunCoordinator remoteRuns, PostgresNotificationBus notifications,
             @Value("${wepush.execution.mode:embedded}") String mode) {
-        return new AgentOutboxScheduler(remoteRuns, "remote".equalsIgnoreCase(mode));
+        return new AgentOutboxScheduler(remoteRuns, "remote".equalsIgnoreCase(mode), notifications);
     }
 
     @Bean
@@ -627,11 +699,14 @@ class ServiceComposition {
     RunApplicationService runApplicationService(
             WorkspaceRepository workspaces, AccountRepository accounts, MessageRepository messages,
             AudienceRepository audiences, JobRepository jobs, RunRepository runs, RunResultRepository results,
+            WorkspaceResourceGovernor resources, AccountAuthCircuitService authenticationCircuits,
             ProviderRegistry providers,
             JsonCodec json, ResourceIdGenerator ids, TransactionRunner transactions,
-            LocalRunEventHub eventHub, RunDispatcher dispatcher, CursorCodec cursors, Clock clock) {
-        return new RunApplicationService(workspaces, accounts, messages, audiences, jobs, runs, results,
-                providers, json, ids, transactions, eventHub, dispatcher, cursors, clock);
+            LocalRunEventHub eventHub, RunDispatcher dispatcher, ControlPlaneWakeupPublisher wakeups,
+            CursorCodec cursors, Clock clock) {
+        return new RunApplicationService(workspaces, accounts, messages, audiences, jobs, runs, results, resources,
+                authenticationCircuits,
+                providers, json, ids, transactions, eventHub, dispatcher, wakeups, cursors, clock);
     }
 
     @Bean

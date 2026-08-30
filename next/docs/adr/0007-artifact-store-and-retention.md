@@ -43,7 +43,7 @@ S3-compatible 最小能力：
 - Service 在权限、Lease 和配额校验后签发短期 Presigned URL。
 - URL 绑定方法、Key、Content Length 范围、Checksum 和短期过期时间。
 - 上传完成后 Agent 通知 Service，Service通过 Head/Checksum 验证后把 Artifact 置为 `READY`。
-- Service 托管流式写入达到 100 MiB 时默认使用 Multipart Upload。Agent 首版直传使用带长度与校验和约束的单次 Presigned Put（当前上限 1 GiB）；后续如提高单 Artifact 上限，可在不改变 Artifact 状态机的前提下扩展 Presigned Multipart Plan。
+- Service 托管流式写入达到 100 MiB 时默认使用 Multipart Upload。Agent 对不超过 1 GiB 的 Artifact 使用带长度与校验和约束的单次 Presigned Put；`1.1.0` 对更大对象使用可恢复 Presigned Multipart Plan，单对象最大 5 TiB，每批最多签发 100 个 Part URL 并约束 10,000 Part 上限。Complete 后必须核对总大小和 SHA-256，失败或过期会话主动 Abort，对象存储 24 小时 Lifecycle 负责孤儿兜底。
 - 下载支持 Range，用户下载仍先经过 Service 权限检查。
 
 ### 完整性和加密

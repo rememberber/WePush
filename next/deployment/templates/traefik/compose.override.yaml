@@ -1,0 +1,15 @@
+services:
+  service-1:
+    labels: &wepush-traefik-labels
+      traefik.enable: "true"
+      traefik.http.routers.wepush.rule: "Host(`wepush.example.com`)"
+      traefik.http.routers.wepush.entrypoints: "websecure"
+      traefik.http.routers.wepush.tls: "true"
+      traefik.http.routers.wepush.tls.certresolver: "letsencrypt"
+      traefik.http.services.wepush.loadbalancer.server.port: "18990"
+      traefik.http.services.wepush.loadbalancer.healthcheck.path: "/actuator/health/readiness"
+      traefik.http.services.wepush.loadbalancer.healthcheck.interval: "10s"
+      traefik.http.middlewares.wepush-compress.compress: "true"
+      traefik.http.routers.wepush.middlewares: "wepush-compress"
+  service-2:
+    labels: *wepush-traefik-labels

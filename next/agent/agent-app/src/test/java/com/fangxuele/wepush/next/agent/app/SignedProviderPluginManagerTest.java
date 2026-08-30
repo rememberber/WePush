@@ -64,6 +64,19 @@ final class SignedProviderPluginManagerTest {
     }
 
     @Test
+    void rejectsAnExactParentPathEntry() throws Exception {
+        Path archive = archive(Map.of(
+                "plugin.json", manifest("", Map.of("..", sha256(new byte[]{1}))),
+                "..", new byte[]{1}));
+        try (SignedProviderPluginManager manager = new SignedProviderPluginManager(
+                temporary, true, "", new ObjectMapper())) {
+            IllegalStateException problem = assertThrows(IllegalStateException.class,
+                    () -> manager.verify(archive));
+            assertTrue(problem.getMessage().contains("unsafe path"));
+        }
+    }
+
+    @Test
     void rejectsUntrustedProductionSigner() throws Exception {
         byte[] content = new byte[]{1, 2, 3};
         Path archive = archive(Map.of(

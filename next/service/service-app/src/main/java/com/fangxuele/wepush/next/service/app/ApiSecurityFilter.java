@@ -108,6 +108,8 @@ final class ApiSecurityFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         if (path.startsWith("/api/v1/system/") || path.startsWith("/api/v1/agents")
                 || path.equals("/api/v1/workspaces")
+                || path.endsWith("/policy")
+                || path.endsWith("/authentication-circuit")
                 || path.contains("/secrets") || path.contains("/audit")
                 || path.contains("/api-tokens")
                 || path.contains("/agent-enrollment-tokens")) {

@@ -9,12 +9,14 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.security.KeyFactory;
 import java.security.MessageDigest;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.HexFormat;
 import java.util.LinkedHashMap;
@@ -37,6 +39,7 @@ final class SignedProviderPluginManager implements AutoCloseable {
     private final Map<String, PublicKey> trustedKeys;
     private final ObjectMapper json;
     private DefaultPluginManager manager;
+    private Path runtimeDirectory;
 
     SignedProviderPluginManager(Path activeDirectory, boolean developerMode,
                                 String trustedKeyConfiguration, ObjectMapper json) {
@@ -54,8 +57,22 @@ final class SignedProviderPluginManager implements AutoCloseable {
                 packages = paths.filter(path -> path.getFileName().toString().endsWith(".zip"))
                         .sorted().toList();
             }
-            for (Path pluginPackage : packages) verify(pluginPackage);
-            manager = new DefaultPluginManager(activeDirectory);
+            if (packages.isEmpty()) return List.of();
+            runtimeDirectory = Files.createTempDirectory("wepush-provider-runtime-");
+            Path archiveDirectory = Files.createDirectory(runtimeDirectory.resolve(".verified-archives"));
+            int packageIndex = 0;
+            for (Path pluginPackage : packages) {
+                Path stableArchive = archiveDirectory.resolve("plugin-" + packageIndex++ + ".zip");
+                Files.copy(pluginPackage, stableArchive, StandardCopyOption.COPY_ATTRIBUTES);
+                VerifiedPlugin plugin = verify(stableArchive);
+                Path destination = runtimeDirectory.resolve(plugin.pluginId() + "-" + plugin.version());
+                if (Files.exists(destination)) {
+                    throw new IllegalStateException("Provider plugin package identity is duplicated: "
+                            + plugin.pluginId() + "@" + plugin.version());
+                }
+                extract(stableArchive, destination);
+            }
+            manager = new DefaultPluginManager(runtimeDirectory);
             manager.loadPlugins();
             manager.startPlugins();
             List<ProviderFactory> factories = manager.getExtensions(ProviderFactoryExtension.class)
@@ -182,6 +199,29 @@ final class SignedProviderPluginManager implements AutoCloseable {
         }
     }
 
+    private static void extract(Path archive, Path destination) throws Exception {
+        Files.createDirectory(destination);
+        try (ZipFile zip = new ZipFile(archive.toFile())) {
+            var entries = zip.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                safeEntry(entry);
+                Path target = destination.resolve(entry.getName()).normalize();
+                if (!target.startsWith(destination)) {
+                    throw new IllegalStateException("Provider plugin contains an unsafe path");
+                }
+                if (entry.isDirectory()) {
+                    Files.createDirectories(target);
+                } else {
+                    Files.createDirectories(target.getParent());
+                    try (InputStream input = zip.getInputStream(entry)) {
+                        Files.copy(input, target);
+                    }
+                }
+            }
+        }
+    }
+
     private static void safeEntry(ZipEntry entry) {
         safeName(entry.getName());
         if (entry.isDirectory() && entry.getSize() > 0) {
@@ -191,7 +231,9 @@ final class SignedProviderPluginManager implements AutoCloseable {
 
     private static void safeName(String name) {
         if (name == null || name.isBlank() || name.startsWith("/") || name.startsWith("\\")
-                || name.contains("../") || name.contains("..\\") || name.contains(":")
+                || name.equals("..") || name.startsWith("../") || name.startsWith("..\\")
+                || name.endsWith("/..") || name.endsWith("\\..")
+                || name.contains("/../") || name.contains("\\..\\") || name.contains(":")
                 || name.indexOf('\0') >= 0) {
             throw new IllegalStateException("Provider plugin contains an unsafe path");
         }
@@ -217,10 +259,32 @@ final class SignedProviderPluginManager implements AutoCloseable {
 
     @Override
     public void close() {
-        if (manager != null) {
-            manager.stopPlugins();
-            manager.unloadPlugins();
+        try {
+            if (manager != null) {
+                List<String> started = manager.getStartedPlugins().stream()
+                        .map(plugin -> plugin.getPluginId()).toList();
+                for (String pluginId : started) manager.stopPlugin(pluginId);
+                List<String> loaded = manager.getPlugins().stream()
+                        .map(plugin -> plugin.getPluginId()).toList();
+                for (String pluginId : loaded) manager.unloadPlugin(pluginId);
+            }
+        } finally {
             manager = null;
+            if (runtimeDirectory != null) {
+                deleteDirectory(runtimeDirectory);
+                runtimeDirectory = null;
+            }
+        }
+    }
+
+    static void deleteDirectory(Path directory) {
+        if (directory == null || !Files.exists(directory)) return;
+        try (var paths = Files.walk(directory)) {
+            for (Path path : paths.sorted(Comparator.reverseOrder()).toList()) {
+                Files.deleteIfExists(path);
+            }
+        } catch (Exception ignored) {
+            // Runtime plugin copies live only in OS-owned temporary storage and are retried on process exit.
         }
     }
 

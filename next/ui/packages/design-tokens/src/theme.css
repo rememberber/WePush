@@ -28,6 +28,31 @@
   --wp-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --wp-bg: #171816;
+  --wp-sidebar: #1d1e1b;
+  --wp-surface: #232420;
+  --wp-surface-muted: #2a2b27;
+  --wp-surface-hover: #32332e;
+  --wp-border: #3a3b35;
+  --wp-border-strong: #505149;
+  --wp-text: #f0f0eb;
+  --wp-text-secondary: #b6b7ae;
+  --wp-text-tertiary: #898a82;
+  --wp-accent: #f0f0eb;
+  --wp-accent-contrast: #1a1b18;
+  --wp-success: #87c8a1;
+  --wp-success-bg: #20382a;
+  --wp-warning: #e1b46f;
+  --wp-warning-bg: #3b3020;
+  --wp-danger: #e49a93;
+  --wp-danger-bg: #402725;
+  --wp-info: #9bb8df;
+  --wp-info-bg: #263448;
+  --wp-shadow: 0 1px 2px rgb(0 0 0 / 25%), 0 10px 30px rgb(0 0 0 / 16%);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -59,6 +84,20 @@ a {
   -webkit-tap-highlight-color: transparent;
 }
 
+:where(button, a, input, textarea, select):focus-visible {
+  outline: 2px solid var(--wp-info);
+  outline-offset: 2px;
+}
+
 ::selection {
-  background: #d9d9d3;
+  background: var(--wp-border-strong);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
 }

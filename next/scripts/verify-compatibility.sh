@@ -14,14 +14,16 @@ hash_stream() {
 }
 
 expected_openapi=$(tr -d '[:space:]' < compatibility/0.1.0-beta.1-openapi.sha256)
-actual_openapi=$(sed -E 's/^  version: .*/  version: __VERSION__/' \
-  service/service-api/src/main/resources/openapi/openapi.yaml | hash_stream)
-if [[ "$actual_openapi" != "$expected_openapi" ]]; then
-  echo "The public OpenAPI contract differs from the 0.1.0-beta.1 compatibility baseline" >&2
+stored_baseline=$(sed -E 's/^  version: .*/  version: __VERSION__/' \
+  service/service-api/src/test/resources/compatibility/1.0.0-openapi.yaml | hash_stream)
+if [[ "$stored_baseline" != "$expected_openapi" ]]; then
+  echo "The stored 1.0.0 OpenAPI compatibility baseline was modified" >&2
   echo "Expected normalized SHA-256: $expected_openapi" >&2
-  echo "Actual normalized SHA-256:   $actual_openapi" >&2
+  echo "Actual normalized SHA-256:   $stored_baseline" >&2
   exit 1
 fi
+
+./mvnw -q -pl service/service-api -Dtest=OpenApiContractTest test
 
 current_keys=$(mktemp "${TMPDIR:-/tmp}/wepush-next-config-keys.XXXXXX")
 cleanup() { rm -f "$current_keys"; }
@@ -36,4 +38,4 @@ while IFS= read -r required_key; do
   }
 done < compatibility/0.1.0-beta.1-config-keys.txt
 
-echo "Beta.1 OpenAPI and configuration compatibility baselines are preserved"
+echo "The 1.0 OpenAPI contract and Beta.1 configuration baselines are preserved"

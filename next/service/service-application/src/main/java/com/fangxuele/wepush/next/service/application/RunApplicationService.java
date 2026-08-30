@@ -40,21 +40,27 @@ public final class RunApplicationService {
     private final JobRepository jobs;
     private final RunRepository runs;
     private final RunResultRepository results;
+    private final WorkspaceResourceGovernor resources;
+    private final AccountAuthCircuitService authenticationCircuits;
     private final ProviderRegistry providers;
     private final JsonCodec json;
     private final ResourceIdGenerator ids;
     private final TransactionRunner transactions;
     private final RunEventPublisher events;
     private final RunDispatcher dispatcher;
+    private final ControlPlaneWakeupPublisher wakeups;
     private final CursorCodec cursors;
     private final Clock clock;
 
     public RunApplicationService(WorkspaceRepository workspaces, AccountRepository accounts,
                                  MessageRepository messages, AudienceRepository audiences,
                                  JobRepository jobs, RunRepository runs, RunResultRepository results,
+                                 WorkspaceResourceGovernor resources,
+                                 AccountAuthCircuitService authenticationCircuits,
                                  ProviderRegistry providers,
                                  JsonCodec json, ResourceIdGenerator ids, TransactionRunner transactions,
                                  RunEventPublisher events, RunDispatcher dispatcher,
+                                 ControlPlaneWakeupPublisher wakeups,
                                  CursorCodec cursors, Clock clock) {
         this.workspaces = workspaces;
         this.accounts = accounts;
@@ -63,12 +69,15 @@ public final class RunApplicationService {
         this.jobs = jobs;
         this.runs = runs;
         this.results = results;
+        this.resources = resources;
+        this.authenticationCircuits = authenticationCircuits;
         this.providers = providers;
         this.json = json;
         this.ids = ids;
         this.transactions = transactions;
         this.events = events;
         this.dispatcher = dispatcher;
+        this.wakeups = wakeups;
         this.cursors = cursors;
         this.clock = clock;
     }
@@ -102,6 +111,7 @@ public final class RunApplicationService {
                 workspaceId, jobId, keyHash, requestHash, command));
         if (!created.replayed()) {
             events.publish(created.event());
+            wakeups.runPending(workspaceId, created.run().id());
             dispatcher.dispatch(workspaceId, created.run().id());
         }
         return new CreationResult(created.run(), created.replayed());
@@ -156,6 +166,7 @@ public final class RunApplicationService {
                 states, keyHash, requestHash, confirmation.itemCount()));
         if (!created.replayed()) {
             events.publish(created.event());
+            wakeups.runPending(workspaceId, created.run().id());
             dispatcher.dispatch(workspaceId, created.run().id());
         }
         return new CreationResult(created.run(), created.replayed());
@@ -202,6 +213,7 @@ public final class RunApplicationService {
         }
         AccountDefinition account = accounts.findById(workspaceId, job.accountId())
                 .orElseThrow(() -> notFound("Account", job.accountId()));
+        authenticationCircuits.requireClosed(workspaceId, account.id());
         MessageDefinition message = messages.findById(workspaceId, job.messageId())
                 .orElseThrow(() -> notFound("Message", job.messageId()));
         AudienceDefinition audience = audiences.findById(workspaceId, job.audienceId())
@@ -240,6 +252,7 @@ public final class RunApplicationService {
         IdempotencyRecord idempotency = new IdempotencyRecord(workspaceId, IDEMPOTENCY_SCOPE,
                 keyHash, requestHash, runId, 202, now, now.plus(Duration.ofHours(24)));
         runs.create(run, snapshot, event, idempotency);
+        resources.reserveRun(workspaceId, runId, targetConcurrency(policies));
         return new Created(run, event, false);
     }
 
@@ -267,6 +280,9 @@ public final class RunApplicationService {
         }
         RunDefinition source = runs.findById(workspaceId, sourceRunId)
                 .orElseThrow(() -> notFound("Run", sourceRunId));
+        JobDefinition sourceJob = jobs.findById(workspaceId, source.jobId())
+                .orElseThrow(() -> notFound("Job", source.jobId()));
+        authenticationCircuits.requireClosed(workspaceId, sourceJob.accountId());
         RunSnapshot sourceSnapshot = runs.findSnapshot(workspaceId, sourceRunId)
                 .orElseThrow(() -> notFound("Run snapshot", sourceRunId));
         String runId = ids.next("run");
@@ -283,6 +299,7 @@ public final class RunApplicationService {
         IdempotencyRecord idempotency = new IdempotencyRecord(workspaceId, "RETRY_RUN", keyHash,
                 requestHash, runId, 202, now, now.plus(Duration.ofHours(24)));
         runs.createRetry(run, snapshot, event, idempotency, sourceRunId, states);
+        resources.reserveRun(workspaceId, runId, targetConcurrency(sourceSnapshot.policies()));
         return new Created(run, event, false);
     }
 
@@ -349,6 +366,11 @@ public final class RunApplicationService {
     }
     private static long longValue(Object value, long fallback) {
         return value instanceof Number number ? number.longValue() : fallback;
+    }
+
+    private int targetConcurrency(JsonDocument policies) {
+        Map<?, ?> root = json.read(policies, Map.class);
+        return Math.max(1, integer(section(root, "concurrency").get("target"), 1));
     }
 
     @SuppressWarnings("unchecked")

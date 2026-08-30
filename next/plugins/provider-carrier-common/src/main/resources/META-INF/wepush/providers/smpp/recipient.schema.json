@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://wepush.dev/schemas/providers/smpp/recipient/1","title":"SMPP Recipient","type":"object","additionalProperties":true,"required":["phoneNumber"],"properties":{"phoneNumber":{"type":"string","pattern":"^[0-9]{5,20}$"}}}

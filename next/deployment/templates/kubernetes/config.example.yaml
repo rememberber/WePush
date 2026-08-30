@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wepush-next
+data:
+  WEPUSH_MODE: server
+  WEPUSH_EXECUTION_MODE: remote
+  WEPUSH_DATABASE_KIND: postgresql
+  WEPUSH_DATABASE_URL: jdbc:postgresql://postgresql.database.svc:5432/wepush
+  WEPUSH_ARTIFACT_KIND: s3
+  WEPUSH_ENVIRONMENT: production
+  WEPUSH_SECURITY_ENABLED: "true"
+  WEPUSH_AGENT_GRPC_TLS_ENABLED: "true"
+  WEPUSH_AGENT_GRPC_TLS_REQUIRE_CLIENT_CERTIFICATE: "true"
+  WEPUSH_AGENT_CA_KEY_PATH: /var/lib/wepush/agent-ca/ca-key.pem
+  WEPUSH_AGENT_CA_CERTIFICATE_PATH: /var/lib/wepush/agent-ca/ca-certificate.pem
+  WEPUSH_AGENT_GRPC_TLS_CERTIFICATE_CHAIN: /var/lib/wepush/tls/tls.crt
+  WEPUSH_AGENT_GRPC_TLS_PRIVATE_KEY: /var/lib/wepush/tls/tls.key
+  WEPUSH_AGENT_GRPC_TLS_TRUST_CERTIFICATES: /var/lib/wepush/tls/ca.crt
+---
+# Create this Secret with your secret manager or sealed-secret controller; never commit real values.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: wepush-next-secrets
+type: Opaque
+stringData:
+  WEPUSH_DATABASE_USERNAME: REPLACE_ME
+  WEPUSH_DATABASE_PASSWORD: REPLACE_ME
+  WEPUSH_BOOTSTRAP_TOKEN: REPLACE_ME
+  WEPUSH_MASTER_KEY_BASE64: REPLACE_ME
+  WEPUSH_AGENT_ARTIFACT_SIGNING_KEY_BASE64: REPLACE_ME
+  WEPUSH_S3_BUCKET: REPLACE_ME
+  WEPUSH_S3_REGION: REPLACE_ME
+  WEPUSH_S3_ACCESS_KEY: REPLACE_ME
+  WEPUSH_S3_SECRET_KEY: REPLACE_ME

@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
 import java.time.Instant;
 
@@ -17,11 +20,13 @@ import java.time.Instant;
 final class SystemController {
     private final String mode;
     private final ArtifactApplicationService artifacts;
+    private final SystemOperationsService operations;
 
     SystemController(@Value("${wepush.mode:standalone}") String mode,
-                     ArtifactApplicationService artifacts) {
+                     ArtifactApplicationService artifacts, SystemOperationsService operations) {
         this.mode = mode;
         this.artifacts = artifacts;
+        this.operations = operations;
     }
 
     @GetMapping("/info")
@@ -29,9 +34,24 @@ final class SystemController {
         return new SystemInfoResponse("WePush Next", productVersion(), mode, Instant.now());
     }
 
-    private static String productVersion() {
+    static String productVersion() {
         String version = SystemController.class.getPackage().getImplementationVersion();
         return version == null || version.isBlank() ? "development" : version;
+    }
+
+    @PostMapping("/diagnostics")
+    ResponseEntity<byte[]> diagnostics() {
+        byte[] bundle = operations.diagnosticBundle(productVersion(), mode);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("application/zip"))
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=wepush-next-diagnostics-" + Instant.now().toEpochMilli() + ".zip")
+                .contentLength(bundle.length).body(bundle);
+    }
+
+    @PostMapping("/version-check")
+    SystemOperationsService.VersionCheck versionCheck() {
+        return operations.versionCheck(productVersion());
     }
 
     @PostMapping("/maintenance/artifacts/retention")

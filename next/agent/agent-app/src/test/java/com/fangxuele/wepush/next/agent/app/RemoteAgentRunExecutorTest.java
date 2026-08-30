@@ -17,9 +17,14 @@ import com.fangxuele.wepush.next.provider.http.HttpProviderFactory;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -31,6 +36,7 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -40,6 +46,37 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RemoteAgentRunExecutorTest {
     private final ObjectMapper json = new ObjectMapper().findAndRegisterModules();
+
+    @Test
+    void retriesTransientMultipartPartFailuresAndStreamsOnlyTheRequestedSlice(
+            @TempDir Path directory) throws Exception {
+        Path file = directory.resolve("artifact.bin");
+        Files.writeString(file, "0123456789", StandardCharsets.UTF_8);
+        AtomicInteger requests = new AtomicInteger();
+        AtomicReference<String> received = new AtomicReference<>();
+        HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        server.createContext("/part", exchange -> {
+            received.set(new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
+            if (requests.getAndIncrement() == 0) {
+                exchange.sendResponseHeaders(500, -1);
+            } else {
+                exchange.getResponseHeaders().add("ETag", "\"part-etag\"");
+                exchange.sendResponseHeaders(200, -1);
+            }
+            exchange.close();
+        });
+        server.start();
+        try {
+            URI url = URI.create("http://127.0.0.1:" + server.getAddress().getPort() + "/part");
+            String eTag = RemoteAgentRunExecutor.uploadFilePart(
+                    HttpClient.newHttpClient(), file, 2, 4, url, Map.of(), 1);
+            assertEquals("\"part-etag\"", eTag);
+            assertEquals(2, requests.get());
+            assertEquals("2345", received.get());
+        } finally {
+            server.stop(0);
+        }
+    }
 
     @Test
     void replaysDurableBusinessEventsOnAuthorizedReconnectUntilAcknowledged() throws Exception {

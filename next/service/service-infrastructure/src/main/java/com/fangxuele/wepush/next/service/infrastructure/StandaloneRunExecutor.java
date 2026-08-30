@@ -21,6 +21,7 @@ import com.fangxuele.wepush.next.core.api.RunState;
 import com.fangxuele.wepush.next.core.api.RunSummary;
 import com.fangxuele.wepush.next.core.engine.DefaultExecutionEngine;
 import com.fangxuele.wepush.next.service.application.JsonCodec;
+import com.fangxuele.wepush.next.service.application.AccountAuthCircuitService;
 import com.fangxuele.wepush.next.service.application.ProviderRegistry;
 import com.fangxuele.wepush.next.service.application.RunDispatcher;
 import com.fangxuele.wepush.next.service.application.RunCommandGateway;
@@ -59,6 +60,7 @@ public final class StandaloneRunExecutor implements RunDispatcher, RunCommandGat
     private final WorkspaceRepository workspaces;
     private final AudienceRepository audiences;
     private final RunResultRepository results;
+    private final AccountAuthCircuitService authenticationCircuits;
     private final SecretStore secrets;
     private final JsonCodec json;
     private final TransactionRunner transactions;
@@ -71,12 +73,14 @@ public final class StandaloneRunExecutor implements RunDispatcher, RunCommandGat
 
     public StandaloneRunExecutor(WorkspaceRepository workspaces, RunRepository runs,
                                  RunResultRepository results, AudienceRepository audiences,
-                                 ProviderRegistry providers, SecretStore secrets, JsonCodec json,
+                                 ProviderRegistry providers, AccountAuthCircuitService authenticationCircuits,
+                                 SecretStore secrets, JsonCodec json,
                                  TransactionRunner transactions, RunEventPublisher eventPublisher,
                                  Clock clock) {
         this.workspaces = workspaces;
         this.runs = runs;
         this.results = results;
+        this.authenticationCircuits = authenticationCircuits;
         this.audiences = audiences;
         this.secrets = secrets;
         this.json = json;
@@ -329,6 +333,7 @@ public final class StandaloneRunExecutor implements RunDispatcher, RunCommandGat
             }).toList();
             transactions.required(() -> {
                 results.append(records);
+                authenticationCircuits.record(workspaceId, runId, records);
                 return null;
             });
         }

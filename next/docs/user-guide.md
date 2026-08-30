@@ -2,9 +2,9 @@
 
 WePush Next 是由用户自行下载、安装、部署和运维的开源产品，不依赖官方公共 SaaS、账号注册、计费订阅或云 KMS/Secret Manager。数据、密钥和运行环境均由用户掌控；完整定位和后续计划见[《产品目标、边界与路线图》](product-scope-and-roadmap.md)。
 
-本文面向第一次下载和使用 WePush Next 的用户，适用于 `1.0.0` 稳定自部署版。
+本文面向第一次下载和使用 WePush Next 的用户，适用于 `1.1.0` 稳定自部署版。
 
-> `1.0.0` 提供明确的 1.x API、配置、数据库和 Agent 协议兼容承诺。Desktop 与发行包未使用商业代码签名；请只从项目 GitHub Release 下载，并在运行前校验 `SHA256SUMS`。详见[《兼容性策略》](compatibility-policy.md)和 [`UNSIGNED-NOTICE.md`](../UNSIGNED-NOTICE.md)。
+> `1.1.0` 提供明确的 1.x API、配置、数据库和 Agent 协议兼容承诺。Desktop 与发行包未使用商业代码签名；请只从项目 GitHub Release 下载，并在运行前校验 `SHA256SUMS`。详见[《兼容性策略》](compatibility-policy.md)和 [`UNSIGNED-NOTICE.md`](../UNSIGNED-NOTICE.md)。
 
 ## 1. 先选择需要的组件
 
@@ -16,8 +16,8 @@ WePush Next 由多个可以独立使用的组件组成：
 | WebUI | 浏览器中的可视化配置、运行中心、动态 API 文档 | 已包含在 Service 发行包中 |
 | Desktop UI | Electron 桌面管理界面，连接并管理已安装的本机 `127.0.0.1:18990` Service | 可选 |
 | Agent | 从 Service 接收任务并在独立节点执行，适合远程或分布式部署 | 本地体验不需要 |
-| Remote Java SDK | 供其他 Java 应用通过 Service API 集成 WePush | 按需，`1.0.0` 附件已包含 |
-| Embedded Java SDK | 在 Java 应用进程内直接装配 Engine 和 Provider，不需要 Service | 按需，`1.0.0` 附件已包含 |
+| Remote Java SDK | 供其他 Java 应用通过 Service API 集成 WePush | 按需，`1.1.0` 附件已包含 |
+| Embedded Java SDK | 在 Java 应用进程内直接装配 Engine 和 Provider，不需要 Service | 按需，`1.1.0` 附件已包含 |
 | Core / Engine | Service 与 Agent 内部的执行引擎 | 不需要单独安装 |
 
 发行包的统一脚本负责安装 Standalone Service；Desktop UI 不重复内嵌 Service，但可以检测、启动、停止已安装的本机 Service，读取日志和生成脱敏诊断。
@@ -28,20 +28,22 @@ Classic 与 Next 是彼此独立的两条产品线。Classic 继续提供成熟�
 
 官方下载页：
 
-- [WePush Next `1.0.0` Stable](https://github.com/rememberber/WePush/releases/tag/next-v1.0.0)
+- [WePush Next `1.1.0` Stable](https://github.com/rememberber/WePush/releases/tag/next-v1.1.0)
 
 发行附件：
 
 | 文件 | 内容或平台 |
 | --- | --- |
-| `wepush-next-1.0.0-linux-<arch>.tar.gz` | Linux 完整包，内含 Java Runtime，推荐首次安装 |
-| `wepush-next-1.0.0-macos-<arch>.zip` | macOS 完整包，内含 Java Runtime，推荐首次安装 |
-| `wepush-next-1.0.0-windows-<arch>.zip` | Windows 完整包，内含 Java Runtime 和离线 WinSW |
-| `wepush-next-1.0.0.tar.gz` / `.zip` | 使用系统 Java 21+ 的精简便携包；内容不含 Java Runtime |
-| `wepush-next-desktop-1.0.0-<os>-<arch>.*` | 对应平台的 Desktop 管理界面 |
-| `wepush-next-java-sdk-1.0.0.zip` | Remote Java SDK、Embedded Java SDK 及其 POM/JAR 依赖闭包 |
+| `wepush-next-1.1.0-linux-<arch>.tar.gz` | Linux 完整包，内含 Java Runtime，推荐首次安装 |
+| `wepush-next-1.1.0-macos-<arch>.zip` | macOS 完整包，内含 Java Runtime，推荐首次安装 |
+| `wepush-next-1.1.0-windows-<arch>.zip` | Windows 完整包，内含 Java Runtime 和离线 WinSW |
+| `wepush-next-1.1.0.tar.gz` / `.zip` | 使用系统 Java 21+ 的精简便携包；内容不含 Java Runtime |
+| `wepush-next-desktop-1.1.0-<os>-<arch>.*` | 对应平台的 Desktop 管理界面 |
+| `wepush-next-java-sdk-1.1.0.zip` | Remote Java SDK、Embedded Java SDK 及其 POM/JAR 依赖闭包 |
+| `wepush-provider-{cmpp,smgp,sgip,smpp}-1.1.0.zip` | 可选运营商短信 Agent 签名插件；各自附带 `.sha256` |
+| `wepush-provider-trusted-key-1.1.0.env` | 官方插件签名 Key ID/公钥的 Agent 环境配置；附带 `.sha256` 并列入统一 `SHA256SUMS` |
 | `SHA256SUMS` | 全部附件的 SHA-256 |
-| `wepush-next-1.0.0-sbom.cdx.json` | CycloneDX SBOM |
+| `wepush-next-1.1.0-sbom.cdx.json` | CycloneDX SBOM |
 
 完整包运行 Service/Agent 不要求预装 Java。精简包、从源码构建和任一种 Java SDK 需要 Java 21 或更高版本：
 
@@ -58,22 +60,22 @@ java -version
 Linux：
 
 ```bash
-sha256sum wepush-next-1.0.0.tar.gz
-grep 'wepush-next-1.0.0.tar.gz$' SHA256SUMS
+sha256sum wepush-next-1.1.0.tar.gz
+grep 'wepush-next-1.1.0.tar.gz$' SHA256SUMS
 ```
 
 macOS：
 
 ```bash
-shasum -a 256 wepush-next-1.0.0.tar.gz
-grep 'wepush-next-1.0.0.tar.gz$' SHA256SUMS
+shasum -a 256 wepush-next-1.1.0.tar.gz
+grep 'wepush-next-1.1.0.tar.gz$' SHA256SUMS
 ```
 
 Windows PowerShell：
 
 ```powershell
-Get-FileHash .\wepush-next-1.0.0.zip -Algorithm SHA256
-Select-String -Path .\SHA256SUMS -Pattern 'wepush-next-1.0.0.zip$'
+Get-FileHash .\wepush-next-1.1.0.zip -Algorithm SHA256
+Select-String -Path .\SHA256SUMS -Pattern 'wepush-next-1.1.0.zip$'
 ```
 
 两个值必须完全一致。Desktop 包也使用相同方法校验。
@@ -87,24 +89,24 @@ Standalone 默认只监听 `127.0.0.1:18990`，使用 SQLite、本地 Artifact S
 ### Linux
 
 ```bash
-tar -xzf wepush-next-1.0.0-linux-x64.tar.gz
-cd wepush-next-1.0.0
+tar -xzf wepush-next-1.1.0-linux-x64.tar.gz
+cd wepush-next-1.1.0
 sudo ./install/install.sh
 ```
 
 ### macOS
 
 ```bash
-ditto -x -k wepush-next-1.0.0-macos-arm64.zip .
-cd wepush-next-1.0.0
+ditto -x -k wepush-next-1.1.0-macos-arm64.zip .
+cd wepush-next-1.1.0
 sudo ./install/install.sh
 ```
 
 ### Windows PowerShell
 
 ```powershell
-Expand-Archive .\wepush-next-1.0.0-windows-x64.zip .\wepush-next
-Set-Location .\wepush-next\wepush-next-1.0.0
+Expand-Archive .\wepush-next-1.1.0-windows-x64.zip .\wepush-next
+Set-Location .\wepush-next\wepush-next-1.1.0
 Set-ExecutionPolicy -Scope Process Bypass
 & .\install\install.ps1
 ```
@@ -128,9 +130,9 @@ curl --fail http://127.0.0.1:18990/api/v1/system/info
 
 先按上一节安装 Service，再解压对应平台的 Desktop 附件：
 
-- Linux：运行 `wepush-next-desktop-1.0.0-linux-x64/WePush Next/wepush-next`。
-- macOS：打开 `wepush-next-desktop-1.0.0-macos-arm64/WePush Next.app`。
-- Windows：运行 `wepush-next-desktop-1.0.0-windows-x64\WePush Next\WePush Next.exe`。
+- Linux：运行 `wepush-next-desktop-1.1.0-linux-x64/WePush Next/wepush-next`。
+- macOS：打开 `wepush-next-desktop-1.1.0-macos-arm64/WePush Next.app`。
+- Windows：运行 `wepush-next-desktop-1.1.0-windows-x64\WePush Next\WePush Next.exe`。
 
 Desktop 会连接本机 `http://127.0.0.1:18990`。设置页可以检测、启动、停止 Service，读取最近日志并生成不包含 Token/Secret 的诊断；涉及系统服务或插件目录的写操作会请求操作系统管理员授权。
 
@@ -139,6 +141,15 @@ Desktop 的 API Token 通过 Electron `safeStorage` 写入操作系统原生安�
 由于发行包没有商业签名，macOS Gatekeeper 或 Windows SmartScreen 可能显示未知开发者/发布者。只有在文件来自项目 Release 且 SHA-256 校验一致时，才使用系统提供的“打开”流程；不要全局关闭系统安全能力。
 
 不想安装 Desktop 时，直接使用浏览器 WebUI 即可，两种 UI 连接的是同一套 Service API 和数据。
+
+### 4.1 `1.1.0` 设置与主题
+
+- 顶部主题选择支持亮色、暗色和跟随系统；选择保存在本地浏览器偏好中，不会上传。
+- 系统管理员可在设置页为当前 Workspace 设置 Agent、活动 Run、总发送并发、Artifact 容量和默认保留期。降低上限不会自动删除资源；超过新上限时，新增操作会给出可诊断拒绝。
+- “生成诊断包”会由 Service 返回结构化脱敏 ZIP；仍应把它视为内部运维资料，不要公开上传。
+- “检查版本”只有点击时才查询 GitHub 的稳定 `next-v*` Release，不会后台检查、自动下载或发送遥测。
+- Account 的认证熔断面板显示跨 Run 认证失败和冷却状态。先修正 Secret/凭据，再由管理员复位；网络失败、限流或 Recipient 错误不会计入认证熔断。
+- 运营商短信使用 Release 中独立的 CMPP/SMGP/SGIP/SMPP 签名插件。安装前校验 `SHA256SUMS` 并配置发行公钥；这些插件当前处理主动提交和长短信，不处理状态报告或上行短信。
 
 ## 5. 完成第一次安全 Dry Run
 
@@ -288,8 +299,8 @@ Agent 使用 Service 的 `19090` gRPC 控制流。跨主机部署必须使用 En
 ### Linux / systemd
 
 ```bash
-tar -xzf wepush-next-1.0.0-linux-x64.tar.gz
-sudo ./wepush-next-1.0.0/install/install.sh
+tar -xzf wepush-next-1.1.0-linux-x64.tar.gz
+sudo ./wepush-next-1.1.0/install/install.sh
 systemctl status wepush-next-service
 ```
 
@@ -298,8 +309,8 @@ systemctl status wepush-next-service
 从普通登录用户的终端使用 `sudo`，安装器会将该用户作为非 root 服务用户：
 
 ```bash
-ditto -x -k wepush-next-1.0.0-macos-arm64.zip .
-sudo ./wepush-next-1.0.0/install/install.sh
+ditto -x -k wepush-next-1.1.0-macos-arm64.zip .
+sudo ./wepush-next-1.1.0/install/install.sh
 launchctl print system/com.fangxuele.wepush-next.service
 ```
 
@@ -310,9 +321,9 @@ launchctl print system/com.fangxuele.wepush-next.service
 以管理员 PowerShell 执行：
 
 ```powershell
-Expand-Archive .\wepush-next-1.0.0-windows-x64.zip .\release
+Expand-Archive .\wepush-next-1.1.0-windows-x64.zip .\release
 Set-ExecutionPolicy -Scope Process Bypass
-& .\release\wepush-next-1.0.0\install\install.ps1
+& .\release\wepush-next-1.1.0\install\install.ps1
 Get-Service WePushNextService
 ```
 
@@ -368,7 +379,7 @@ Service 已开启安全模式。把 Bootstrap Token 或已签发 Token 填入 We
 - [详细设计](detailed-design.md)
 - [部署与运维](deployment-and-operations.md)
 - [实现状态](implementation-status.md)
-- [本版本 Release Notes](releases/1.0.0.md)
+- [本版本 Release Notes](releases/1.1.0.md)
 - [安全策略](../SECURITY.md)
 
 普通问题和功能建议可提交 GitHub Issue。安全漏洞不要公开披露，请按 `SECURITY.md` 中的方式私下报告。

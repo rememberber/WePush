@@ -1,0 +1,12 @@
+package com.fangxuele.wepush.next.plugin.sgip;
+
+import com.fangxuele.wepush.next.agent.plugin.ProviderFactoryExtension;
+import com.fangxuele.wepush.next.plugin.carriersms.CarrierProtocol;
+import com.fangxuele.wepush.next.plugin.carriersms.CarrierSmsProviderFactory;
+import com.fangxuele.wepush.next.provider.spi.ProviderFactory;
+import org.pf4j.Extension;
+
+@Extension
+public final class SgipProviderExtension implements ProviderFactoryExtension {
+    @Override public ProviderFactory factory() { return new CarrierSmsProviderFactory(CarrierProtocol.SGIP); }
+}

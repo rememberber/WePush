@@ -46,7 +46,7 @@ Standalone 模式使用单 Service 和 SQLite，不需要控制面集群。Serve
 
 - Service→Agent 的 Lease Offer 和 Run Command 先写 `agent_message_outbox`，所有 Service 周期扫描；只有持有 Agent 当前 gRPC 流的实例发送，ACK 后关闭消息。
 - SSE 以 `run_event` 为事实源，每个实例只轮询本机存在订阅者的 Run Cursor，从而观察其他实例提交的事件。
-- PostgreSQL `LISTEN/NOTIFY` 可以在后续作为低延迟唤醒优化，但不得替代 outbox、事件表和周期扫描。
+- `1.1.0` 使用 PostgreSQL `LISTEN/NOTIFY` 作为待调度 Run、Agent Outbox 和 Run Event 的低延迟唤醒优化，但不得替代 outbox、事件表和周期扫描。
 - 禁止把 LISTEN/NOTIFY 当成持久消息队列。
 
 ### 数据库迁移

@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://wepush.dev/schemas/providers/cmpp/message/1","title":"CMPP SMS Message","type":"object","additionalProperties":false,"required":["content"],"properties":{"content":{"type":"string","minLength":1,"maxLength":10000,"x-wepush-variable":true,"default":"您好，{{name}}"}}}

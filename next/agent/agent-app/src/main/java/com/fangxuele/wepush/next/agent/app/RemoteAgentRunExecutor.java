@@ -34,6 +34,8 @@ import com.fangxuele.wepush.next.core.api.RunHandle;
 import com.fangxuele.wepush.next.core.api.RunSummary;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -46,6 +48,8 @@ import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.channels.FileChannel;
+import java.nio.file.StandardOpenOption;
 import java.security.KeyPair;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
@@ -65,6 +69,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Flow;
 
 final class RemoteAgentRunExecutor implements AutoCloseable {
     private static final int MAXIMUM_DOCUMENT_BYTES = 64 * 1024 * 1024;
@@ -582,7 +587,8 @@ final class RemoteAgentRunExecutor implements AutoCloseable {
                 long size = Files.size(temporary);
                 String sha256 = HexFormat.of().formatHex(digest.digest());
                 ArtifactUploadPlan plan = plan(type, originalName, contentType, size, sha256);
-                upload(plan, temporary);
+                if ("MULTIPART".equals(plan.uploadMode())) uploadMultipart(plan, temporary);
+                else upload(plan, temporary);
                 ArtifactCommitResult committed = commit(plan);
                 if (committed.size() != size || !sha256.equals(committed.sha256())
                         || !"READY".equals(committed.state())) {
@@ -636,6 +642,82 @@ final class RemoteAgentRunExecutor implements AutoCloseable {
             }
         }
 
+        private void uploadMultipart(ArtifactUploadPlan plan, Path file)
+                throws IOException, InterruptedException {
+            MultipartPlan multipart = plan.multipart();
+            if (multipart == null || multipart.partCount() < 1) {
+                throw new IOException("Service returned an incomplete multipart Artifact plan");
+            }
+            List<CompletedPart> completed = new ArrayList<>(multipart.partCount());
+            try {
+                int nextPart = 1;
+                while (nextPart <= multipart.partCount()) {
+                    int batch = Math.min(100, multipart.partCount() - nextPart + 1);
+                    List<PresignedPart> parts = planParts(multipart, nextPart, batch);
+                    if (parts.size() != batch) throw new IOException("Service returned incomplete part URLs");
+                    for (PresignedPart part : parts) {
+                        completed.add(new CompletedPart(part.partNumber(), uploadPart(file, part)));
+                    }
+                    nextPart += batch;
+                }
+                completeMultipart(multipart, completed);
+            } catch (IOException | InterruptedException problem) {
+                abortMultipart(multipart);
+                throw problem;
+            }
+        }
+
+        private String uploadPart(Path file, PresignedPart part)
+                throws IOException, InterruptedException {
+            return uploadFilePart(http, file, part.offset(), part.size(), URI.create(part.url()),
+                    part.headers(), part.partNumber());
+        }
+
+        private List<PresignedPart> planParts(MultipartPlan multipart, int firstPart, int count)
+                throws IOException, InterruptedException {
+            byte[] body = mapper.writeValueAsBytes(new PartPlanRequest(
+                    multipart.uploadId(), firstPart, count));
+            HttpRequest.Builder request = HttpRequest.newBuilder(URI.create(multipart.partPlanUrl()))
+                    .timeout(Duration.ofSeconds(30)).header("Accept", "application/json")
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofByteArray(body));
+            authenticate(request);
+            HttpResponse<byte[]> response = http.send(request.build(), HttpResponse.BodyHandlers.ofByteArray());
+            if (response.statusCode() != 200) {
+                throw new IOException("Artifact part plan returned HTTP " + response.statusCode());
+            }
+            return mapper.readValue(response.body(), new TypeReference<List<PresignedPart>>() { });
+        }
+
+        private void completeMultipart(MultipartPlan multipart, List<CompletedPart> parts)
+                throws IOException, InterruptedException {
+            byte[] body = mapper.writeValueAsBytes(new MultipartCompleteRequest(multipart.uploadId(), parts));
+            HttpRequest.Builder request = HttpRequest.newBuilder(URI.create(multipart.completeUrl()))
+                    .timeout(Duration.ofMinutes(5)).header("Accept", "application/json")
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofByteArray(body));
+            authenticate(request);
+            HttpResponse<byte[]> response = http.send(request.build(), HttpResponse.BodyHandlers.ofByteArray());
+            if (response.statusCode() != 200) {
+                throw new IOException("Artifact multipart completion returned HTTP " + response.statusCode());
+            }
+        }
+
+        private void abortMultipart(MultipartPlan multipart) {
+            try {
+                String separator = multipart.abortUrl().contains("?") ? "&" : "?";
+                URI uri = URI.create(multipart.abortUrl() + separator + "upload_id="
+                        + URLEncoder.encode(multipart.uploadId(), StandardCharsets.UTF_8));
+                HttpRequest.Builder request = HttpRequest.newBuilder(uri).timeout(Duration.ofSeconds(30)).DELETE();
+                authenticate(request);
+                http.send(request.build(), HttpResponse.BodyHandlers.discarding());
+            } catch (IOException ignored) {
+                // Retention cleanup and S3 lifecycle policies remain the final orphan-upload fallback.
+            } catch (InterruptedException interrupted) {
+                Thread.currentThread().interrupt();
+            }
+        }
+
         private ArtifactCommitResult commit(ArtifactUploadPlan plan)
                 throws IOException, InterruptedException {
             HttpRequest.Builder request = HttpRequest.newBuilder(URI.create(plan.commitUrl()))
@@ -654,6 +736,44 @@ final class RemoteAgentRunExecutor implements AutoCloseable {
         }
     }
 
+    static String uploadFilePart(HttpClient client, Path file, long offset, long size, URI url,
+                                 Map<String, String> headers, int partNumber)
+            throws IOException, InterruptedException {
+            IOException lastFailure = null;
+            for (int attempt = 1; attempt <= 3; attempt++) {
+                HttpResponse<byte[]> response = null;
+                try {
+                    HttpRequest.Builder request = HttpRequest.newBuilder(url)
+                            .timeout(Duration.ofMinutes(30))
+                            .PUT(new FileSliceBodyPublisher(file, offset, size));
+                    headers.forEach((name, value) -> {
+                        if (!"host".equalsIgnoreCase(name) && !"content-length".equalsIgnoreCase(name)) {
+                            request.header(name, value);
+                        }
+                    });
+                    response = client.send(request.build(),
+                            HttpResponse.BodyHandlers.ofByteArray());
+                } catch (IOException problem) {
+                    lastFailure = problem;
+                }
+                if (response != null) {
+                    if (response.statusCode() >= 200 && response.statusCode() < 300) {
+                        return response.headers().firstValue("ETag").orElseThrow(() ->
+                                new IOException("Artifact part response does not contain an ETag"));
+                    }
+                    lastFailure = new IOException("Artifact part " + partNumber
+                            + " returned HTTP " + response.statusCode());
+                    if (!retryableUploadStatus(response.statusCode())) throw lastFailure;
+                }
+                if (attempt < 3) Thread.sleep(200L * attempt);
+            }
+            throw lastFailure == null ? new IOException("Artifact part upload failed") : lastFailure;
+    }
+
+    private static boolean retryableUploadStatus(int status) {
+        return status == 408 || status == 425 || status == 429 || status >= 500;
+    }
+
     private static MessageDigest sha256Digest() {
         try {
             return MessageDigest.getInstance("SHA-256");
@@ -666,9 +786,72 @@ final class RemoteAgentRunExecutor implements AutoCloseable {
                                        String originalName, String contentType, long size, String sha256) { }
     private record ArtifactUploadPlan(String artifactId, String uploadUrl, String commitUrl,
                                       Instant expiresAt, long expectedSize, String expectedSha256,
-                                      Map<String, String> uploadHeaders) { }
+                                      Map<String, String> uploadHeaders, String uploadMode,
+                                      MultipartPlan multipart) { }
+    private record MultipartPlan(String uploadId, long partSize, int partCount,
+                                 String partPlanUrl, String completeUrl, String abortUrl) { }
+    private record PartPlanRequest(String uploadId, int firstPartNumber, int count) { }
+    private record PresignedPart(int partNumber, long offset, long size, String url,
+                                 Map<String, String> headers) { }
+    private record CompletedPart(int partNumber, String eTag) { }
+    private record MultipartCompleteRequest(String uploadId, List<CompletedPart> parts) { }
     private record ArtifactCommitResult(String artifactId, long size, String sha256,
                                         String state, Instant readyAt) { }
+
+    private static final class FileSliceBodyPublisher implements HttpRequest.BodyPublisher {
+        private final HttpRequest.BodyPublisher delegate;
+        private final long length;
+
+        private FileSliceBodyPublisher(Path file, long offset, long length) {
+            if (offset < 0 || length < 1) throw new IllegalArgumentException("Artifact part range is invalid");
+            this.length = length;
+            this.delegate = HttpRequest.BodyPublishers.ofInputStream(() -> {
+                try {
+                    return new BoundedFileInputStream(file, offset, length);
+                } catch (IOException problem) {
+                    throw new UncheckedIOException(problem);
+                }
+            });
+        }
+
+        @Override
+        public long contentLength() { return length; }
+
+        @Override
+        public void subscribe(Flow.Subscriber<? super ByteBuffer> subscriber) {
+            delegate.subscribe(subscriber);
+        }
+    }
+
+    private static final class BoundedFileInputStream extends InputStream {
+        private final FileChannel channel;
+        private long remaining;
+
+        private BoundedFileInputStream(Path file, long offset, long length) throws IOException {
+            this.channel = FileChannel.open(file, StandardOpenOption.READ);
+            this.channel.position(offset);
+            this.remaining = length;
+        }
+
+        @Override
+        public int read() throws IOException {
+            byte[] one = new byte[1];
+            int read = read(one, 0, 1);
+            return read < 0 ? -1 : one[0] & 0xff;
+        }
+
+        @Override
+        public int read(byte[] bytes, int offset, int length) throws IOException {
+            if (remaining == 0) return -1;
+            int maximum = (int) Math.min(length, remaining);
+            int read = channel.read(ByteBuffer.wrap(bytes, offset, maximum));
+            if (read > 0) remaining -= read;
+            return read;
+        }
+
+        @Override
+        public void close() throws IOException { channel.close(); }
+    }
 
     private static final class ListRecipientSource implements RecipientSource {
         private final List<RecipientRecord> recipients;
