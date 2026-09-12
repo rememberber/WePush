@@ -152,6 +152,9 @@ jobs:
       - name: Install pinned Electron runtime
         working-directory: next/ui
         run: node apps/desktop/node_modules/electron/install.js
+      - name: Verify AI installer on this platform
+        working-directory: next/ui
+        run: pnpm --filter @wepush-next/ai-integration test
       - name: Package native Desktop shell
         working-directory: next/ui
         run: pnpm --filter @wepush-next/desktop package
@@ -227,6 +230,9 @@ jobs:
       - name: Build release archives after verified jobs
         working-directory: next
         run: ./mvnw --batch-mode --no-transfer-progress -DskipTests package
+      - name: Verify MCP against isolated Service
+        working-directory: next/ui
+        run: pnpm --filter @wepush-next/ai-integration test:service
       - name: Verify checksums and required release content
         working-directory: next/distribution/target
         shell: bash
@@ -238,6 +244,8 @@ jobs:
           test -n "$tar_archive" && test -n "$zip_archive"
           tar_listing=$(tar -tzf "$tar_archive")
           grep -Eq '^wepush-next-[^/]+/web/index.html$' <<< "$tar_listing"
+          grep -Eq '^wepush-next-[^/]+/ai/wepush-ai.mjs$' <<< "$tar_listing"
+          grep -Eq '^wepush-next-[^/]+/web/ai/wepush-ai.mjs$' <<< "$tar_listing"
           grep -Eq '^wepush-next-[^/]+/docs/user-guide.md$' <<< "$tar_listing"
           grep -Eq '^wepush-next-[^/]+/LICENSE.txt$' <<< "$tar_listing"
           grep -Eq '^wepush-next-[^/]+/UNSIGNED-NOTICE.md$' <<< "$tar_listing"

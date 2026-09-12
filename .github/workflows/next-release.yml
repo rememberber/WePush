@@ -128,6 +128,8 @@ jobs:
           set -euo pipefail
           sha256sum --check *.sha256
           tar_listing=$(tar -tzf "wepush-next-${{ steps.metadata.outputs.version }}.tar.gz")
+          grep -Eq '^wepush-next-[^/]+/ai/wepush-ai.mjs$' <<< "$tar_listing"
+          grep -Eq '^wepush-next-[^/]+/web/ai/wepush-ai.mjs$' <<< "$tar_listing"
           grep -Eq '^wepush-next-[^/]+/UNSIGNED-NOTICE.md$' <<< "$tar_listing"
           grep -Eq '^wepush-next-[^/]+/docs/compatibility-policy.md$' <<< "$tar_listing"
           grep -Eq '^wepush-next-[^/]+/docs/upgrade-guide.md$' <<< "$tar_listing"

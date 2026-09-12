@@ -6,6 +6,7 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { promisify } from "node:util";
+import { installAiIntegration } from "./ai-integration.js";
 
 const currentDirectory = dirname(fileURLToPath(import.meta.url));
 const developmentUrl = process.env.WEPUSH_UI_URL ?? "http://127.0.0.1:5173";
@@ -111,6 +112,7 @@ function registerIpcHandlers(): void {
     };
 
   ipcMain.handle("wepush:token:load", trusted(async () => loadToken()));
+  ipcMain.handle("wepush:ai:install", trusted(installAiIntegration));
   ipcMain.handle("wepush:token:save", trusted(async (token: string) => saveToken(token)));
   ipcMain.handle("wepush:token:clear", trusted(async () => clearToken()));
   ipcMain.handle("wepush:service:status", trusted(async () => localServiceStatus()));

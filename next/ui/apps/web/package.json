@@ -11,6 +11,7 @@
     "e2e": "playwright test"
   },
   "dependencies": {
+    "@wepush-next/ai-integration": "workspace:*",
     "@wepush-next/design-tokens": "workspace:*",
     "@wepush-next/features": "workspace:*",
     "react": "catalog:",

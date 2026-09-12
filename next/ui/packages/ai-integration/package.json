@@ -1,0 +1,19 @@
+{
+  "name": "@wepush-next/ai-integration",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node --test test/*.test.mjs",
+    "test:service": "node build.mjs && node test/service-smoke.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.30.0",
+    "smol-toml": "1.8.0",
+    "zod": "4.3.6"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}

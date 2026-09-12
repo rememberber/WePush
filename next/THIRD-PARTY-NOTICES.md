@@ -8,6 +8,7 @@ WePush Next 自身依据仓库根目录的 MIT License 发布，并使用多个�
 | --- | --- |
 | Spring Boot, gRPC Java, Jackson, AWS SDK for Java, PF4J | Apache License 2.0 |
 | React, Electron, Vite | MIT License |
+| MCP TypeScript SDK, Zod, smol-toml | MIT License |
 | PostgreSQL JDBC Driver | BSD 2-Clause License |
 | Xerial SQLite JDBC | Apache License 2.0 |
 | Bouncy Castle | MIT-style license |

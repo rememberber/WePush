@@ -8,6 +8,8 @@ WePush Next 是与 Classic 完全独立的新产品线。Classic 与 Next 可以
 
 第一次下载和使用请从[《WePush Next 对外使用指南》](docs/user-guide.md)开始。渠道账号、模板、Recipient、SecretRef、限流和错误语义见[《内置 Provider 指南》](docs/provider-guide.md)。
 
+当前源码新增 **设置 → AI 助手接入**：Desktop 一键安装 Codex MCP + Skill，WebUI 提供独立安装器，支持导出通用 stdio MCP 配置。用法见[《AI 助手接入指南》](docs/ai-integration.md)；该功能尚未包含在已发布的 `next-v1.1.0` 附件中。
+
 ## 下载与安装
 
 正式发行物统一位于 [`next-v1.1.0` GitHub Release](https://github.com/rememberber/WePush/releases/tag/next-v1.1.0)：

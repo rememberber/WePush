@@ -74,6 +74,14 @@
                                        property="wepush.web.distribution.present"/>
                             <fail unless="wepush.web.distribution.present"
                                   message="WebUI dist is missing; run pnpm --filter @wepush-next/web build first"/>
+                            <available file="${project.basedir}/../ui/packages/ai-integration/dist/wepush-ai.mjs"
+                                       property="wepush.ai.distribution.present"/>
+                            <available file="${project.basedir}/../ui/apps/web/dist/ai/wepush-ai.mjs"
+                                       property="wepush.ai.web.present"/>
+                            <fail unless="wepush.ai.distribution.present"
+                                  message="AI integration bundle is missing; rebuild WebUI first"/>
+                            <fail unless="wepush.ai.web.present"
+                                  message="WebUI AI installer is missing; rebuild WebUI first"/>
                         </target></configuration>
                     </execution>
                     <execution>

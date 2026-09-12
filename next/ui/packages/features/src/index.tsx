@@ -25,10 +25,12 @@ import {
 } from "@wepush-next/api-client";
 import { defaultsForSchema, SchemaForm, type JsonSchema } from "@wepush-next/schema-renderer";
 import { Badge, Button, EmptyState, Spinner } from "@wepush-next/ui";
+import { AiIntegrationPanel, type AiIntegrationBridge } from "./ai-integration";
 
 interface DesktopCommandResult { ok: boolean; message: string; output: string; name?: string }
 interface DesktopServiceStatus { installed: boolean; running: boolean; platform: string; detail: string }
 interface WePushDesktopBridge {
+  ai?: AiIntegrationBridge;
   platform: string;
   versions: { chrome: string; electron: string };
   token: { load(): Promise<string>; save(token: string): Promise<void>; clear(): Promise<void> };
@@ -1512,6 +1514,7 @@ function SettingsPage({ client, workspaceId }: { client: WePushClient; workspace
   return <div className="page settings-page">
     <section className="page-heading page-heading--compact"><div><p className="eyebrow">SECURITY & OPERATIONS</p><h2>设置</h2><p>管理本机 API 身份、Agent 注册和只追加审计日志。</p></div><Badge tone="info">Workspace RBAC</Badge></section>
     {error ? <div className="inline-error">{error}</div> : null}
+    <AiIntegrationPanel serviceUrl={client.baseUrl} workspaceId={workspaceId} desktop={desktop?.ai} />
     <div className="dashboard-grid">
       <section className="panel composer-panel compact-form"><PanelHeader title="当前 API Token" description={desktop ? "由操作系统原生安全存储加密保存" : "仅保存在当前浏览器标签页会话中，关闭后清除"} />
         <label className="simple-field"><span>Bearer Token</span><input type="password" value={token} onChange={(event) => setToken(event.target.value)} placeholder="wpu.… 或 bootstrap token" /></label>

@@ -248,6 +248,8 @@ SMTP、机器人、短信和微信系渠道使用相同的 Account → Message �
 
 ## 7. API 文档与 Java SDKs
 
+当前源码还提供 **设置 → AI 助手接入**，可一键安装 Codex MCP + Skill 或导出其他客户端的 MCP 配置。完整步骤见[《AI 助手接入指南》](ai-integration.md)，需要使用包含此功能的新构建。
+
 WebUI 的“API 文档”会读取 Service 提供的 OpenAPI，支持查看请求 Schema、生成请求和动态调试。写操作发送前会二次确认；权限、审计和同源限制仍由 Service 强制执行。
 
 Remote Java SDK 是 Service API 客户端，不依赖 Core、Engine 或具体 Provider。`beta.1` 发行包和独立 SDK 压缩包都包含它，安装说明见 [Java SDK README](../sdk/README.md)。

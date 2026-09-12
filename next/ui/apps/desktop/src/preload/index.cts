@@ -11,6 +11,10 @@ contextBridge.exposeInMainWorld("wepushDesktop", Object.freeze({
     save: (token: string) => ipcRenderer.invoke("wepush:token:save", token) as Promise<void>,
     clear: () => ipcRenderer.invoke("wepush:token:clear") as Promise<void>,
   }),
+  ai: Object.freeze({
+    install: (target: "codex" | "skill" | "generic", url: string, workspace: string) =>
+      ipcRenderer.invoke("wepush:ai:install", target, url, workspace),
+  }),
   service: Object.freeze({
     status: () => ipcRenderer.invoke("wepush:service:status"),
     start: () => ipcRenderer.invoke("wepush:service:start"),

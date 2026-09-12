@@ -37,6 +37,7 @@ ui_packages=(
   ui/apps/web/package.json
   ui/apps/desktop/package.json
   ui/packages/api-client/package.json
+  ui/packages/ai-integration/package.json
   ui/packages/design-tokens/package.json
   ui/packages/features/package.json
   ui/packages/schema-renderer/package.json

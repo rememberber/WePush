@@ -78,6 +78,7 @@ const packagedApp = join(resources, "app");
 await mkdir(packagedApp, { recursive: true });
 await cp(join(appRoot, "dist"), join(packagedApp, "dist"), { recursive: true });
 await cp(webDist, join(resources, "web", "dist"), { recursive: true });
+await cp(join(appRoot, "../../packages/ai-integration/dist"), join(resources, "ai"), { recursive: true });
 await cp(join(repositoryRoot, "LICENSE.txt"), join(resources, "LICENSE.txt"));
 await cp(join(nextRoot, "UNSIGNED-NOTICE.md"), join(resources, "UNSIGNED-NOTICE.md"));
 await cp(join(nextRoot, "SECURITY.md"), join(resources, "SECURITY.md"));

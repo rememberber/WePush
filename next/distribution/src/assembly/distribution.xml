@@ -155,6 +155,12 @@
     </files>
     <fileSets>
         <fileSet>
+            <directory>${project.basedir}/../ui/packages/ai-integration/dist</directory>
+            <outputDirectory>ai</outputDirectory>
+            <includes><include>**/*</include></includes>
+            <fileMode>0644</fileMode>
+        </fileSet>
+        <fileSet>
             <directory>${project.basedir}/../docs</directory>
             <outputDirectory>docs</outputDirectory>
             <includes>

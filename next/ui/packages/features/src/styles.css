@@ -672,3 +672,7 @@
   .run-counter-grid { grid-template-columns: repeat(2, 1fr); }
   .policy-form-grid { grid-template-columns: 1fr; }
 }
+.ai-integration-panel { margin-bottom: 20px; }
+.ai-integration-panel h3 { margin-top: 0; }
+.ai-integration-panel p { color: var(--wp-text-secondary); line-height: 1.6; }
+.ai-integration-output { max-height: 280px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; padding: 12px; font-size: 12px; border: 1px solid var(--wp-border); border-radius: 8px; }

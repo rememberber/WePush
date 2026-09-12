@@ -5,12 +5,13 @@
   "type": "module",
   "main": "dist/main/index.js",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "pnpm --filter @wepush-next/ai-integration build && tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "dev": "pnpm build && electron .",
     "package": "pnpm --filter @wepush-next/web build && pnpm build && node scripts/package.mjs"
   },
   "dependencies": {
+    "@wepush-next/ai-integration": "workspace:*",
     "@wepush-next/web": "workspace:*"
   },
   "devDependencies": {
