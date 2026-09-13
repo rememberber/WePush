@@ -79,6 +79,13 @@ public class MybatisUtil {
         return sqlSession;
     }
 
+    /** Capture related task resources and construct senders without interleaved UI writes. */
+    public static <T> T withSessionLock(java.util.function.Supplier<T> action) {
+        synchronized (SESSION_LOCK) {
+            return action.get();
+        }
+    }
+
     /**
      * 包装 SqlSession。注意：getMapper() 返回的 Mapper 绑定的是原始 Session，
      * 必须再包装 Mapper，否则多线程仍会绕过锁直接打到同一 Executor。

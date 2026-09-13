@@ -82,14 +82,14 @@ public class TaskRunThread extends Thread {
     /**
      * 结束时间
      */
-    public static long endTime = 0;
+    public long endTime = 0;
 
     private List<String[]> toSendList;
 
     /**
      * 总记录数
      */
-    static long totalRecords;
+    private long totalRecords;
 
     /**
      * 线程总数
@@ -136,7 +136,7 @@ public class TaskRunThread extends Thread {
 
     private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
 
-    private TTaskHis taskHis;
+    private volatile TTaskHis taskHis;
 
     private TMsg tMsg;
 
@@ -145,6 +145,19 @@ public class TaskRunThread extends Thread {
     private String logFilePath;
 
     private BufferedWriter logWriter;
+
+    private List<String[]> preparedRecipients;
+    private List<IMsgSender> preparedSenders;
+
+    /** An approved snapshot supplied by the local AI bridge. Normal UI runs keep the original path. */
+    public TaskRunThread(TTask task, TMsg message, List<String[]> recipients,
+                         List<IMsgSender> senders, int dryRun) {
+        this(task.getId(), dryRun);
+        this.tTask = task;
+        this.tMsg = message;
+        this.preparedRecipients = recipients;
+        this.preparedSenders = senders;
+    }
 
     public static Map<Integer, TaskRunThread> taskRunThreadMap = new ConcurrentHashMap<>();
 
@@ -157,8 +170,23 @@ public class TaskRunThread extends Thread {
 
     @Override
     public void run() {
+        try {
+            runTask();
+        } finally {
+            running = false;
+            if (taskHis != null && taskHis.getId() != null) taskRunThreadMap.remove(taskHis.getId());
+            if (logWriter != null) {
+                try {
+                    ConsoleUtil.flushLog(logWriter);
+                    logWriter.close();
+                } catch (IOException e) { logger.error(e); }
+            }
+        }
+    }
+
+    private void runTask() {
         // 准备推送
-        this.tTask = taskMapper.selectByPrimaryKey(taskId);
+        if (preparedSenders == null) this.tTask = taskMapper.selectByPrimaryKey(taskId);
 
         try {
             String nowTime = DateUtil.now().replace(":", "_").replace(" ", "_");
@@ -181,7 +209,7 @@ public class TaskRunThread extends Thread {
 
         ConsoleUtil.pushLog(logWriter, "推送开始……");
         // 消息数据分片以及线程纷发
-        tMsg = msgMapper.selectByPrimaryKey(tTask.getMessageId());
+        if (preparedSenders == null) tMsg = msgMapper.selectByPrimaryKey(tTask.getMessageId());
         httpMetricsStart = HttpClientRegistry.snapshotAccount(tMsg.getAccountId());
         shardingAndMsgThread(tMsg);
 
@@ -251,12 +279,18 @@ public class TaskRunThread extends Thread {
         startTime = System.currentTimeMillis();
 
         // 拷贝准备的目标用户（预分配容量，尽快释放 ORM 行对象）
-        List<TPeopleData> tPeopleData = peopleDataMapper.selectByPeopleId(tTask.getPeopleId());
-        List<String[]> prepared = new ArrayList<>(tPeopleData.size());
-        for (TPeopleData peopleData : tPeopleData) {
-            prepared.add(JSON.parseObject(peopleData.getVarData(), String[].class));
+        List<String[]> prepared;
+        if (preparedRecipients != null) {
+            prepared = new ArrayList<>(preparedRecipients);
+            preparedRecipients = null;
+        } else {
+            List<TPeopleData> tPeopleData = peopleDataMapper.selectByPeopleId(tTask.getPeopleId());
+            prepared = new ArrayList<>(tPeopleData.size());
+            for (TPeopleData peopleData : tPeopleData) {
+                prepared.add(JSON.parseObject(peopleData.getVarData(), String[].class));
+            }
+            tPeopleData.clear();
         }
-        tPeopleData.clear();
         toSendList = Collections.synchronizedList(prepared);
         // 总记录数
         totalRecords = toSendList.size();
@@ -281,7 +315,7 @@ public class TaskRunThread extends Thread {
 
         taskHisMapper.insert(taskHis);
 
-        UiThreadUtil.runOnUi(() -> {
+        refreshUi(() -> {
             TaskForm taskForm = TaskForm.getInstance();
             int selectedRow = taskForm.getTaskListTable().getSelectedRow();
             if (selectedRow > -1) {
@@ -311,7 +345,7 @@ public class TaskRunThread extends Thread {
                 endIndex = (int) (totalRecords);
             }
 
-            IMsgSender msgSender = MsgSenderFactory.getMsgSender(tMsg.getId(), dryRun);
+            IMsgSender msgSender = preparedSenders == null ? MsgSenderFactory.getMsgSender(tMsg.getId(), dryRun) : preparedSenders.get(i);
             msgSendThread = new MsgSendThread(startIndex, endIndex, msgSender, this);
 
             Thread.ofVirtual().name("T-" + i).start(msgSendThread);
@@ -336,7 +370,7 @@ public class TaskRunThread extends Thread {
 
                 taskHisMapper.updateByPrimaryKey(taskHis);
 
-                UiThreadUtil.runOnUi(() -> updateTaskHisTableUi(true));
+                refreshUi(() -> updateTaskHisTableUi(true));
 
                 if (App.trayIcon != null && SystemUtil.isWindowsOs()) {
                     App.trayIcon.displayMessage("WePush", tTask.getTitle() + " 发送完毕！", TrayIcon.MessageType.INFO);
@@ -359,16 +393,6 @@ public class TaskRunThread extends Thread {
                     ConsoleUtil.pushLog(logWriter, metrics);
                 }
 
-                // 关闭logWriter
-                if (logWriter != null) {
-                    try {
-                        ConsoleUtil.flushLog(logWriter);
-                        logWriter.close();
-                    } catch (IOException e) {
-                        logger.error(e);
-                    }
-                }
-
                 running = false;
                 break;
             }
@@ -376,7 +400,7 @@ public class TaskRunThread extends Thread {
             taskHis.setSuccessCnt(successRecords.intValue());
             taskHis.setFailCnt(failRecords.intValue());
 
-            UiThreadUtil.runOnUi(() -> updateTaskHisTableUi(false));
+            refreshUi(() -> updateTaskHisTableUi(false));
             ThreadUtil.safeSleep(500);
         }
     }
@@ -413,6 +437,10 @@ public class TaskRunThread extends Thread {
         if (finished) {
             taskForm.getTaskHisListTable().setValueAt(taskHis.getEndTime(), taskHisListTableRow, 3);
         }
+    }
+
+    private void refreshUi(Runnable action) {
+        if (!GraphicsEnvironment.isHeadless()) UiThreadUtil.runOnUi(action);
     }
 
     /**

@@ -21,6 +21,31 @@ WePush 采用 Classic 与 Next 双轨发展。两条产品线彼此独立，允�
 | WePush Classic | 稳定桌面客户端 | 微信、短信、邮件、HTTP 等成熟批量推送场景 | [Classic 下载](https://gitee.com/zhoubochina/WePush/releases) |
 | WePush Next | `1.1.0` Stable | 三平台离线自部署、1.x 兼容承诺、Service/Agent、资源治理、可恢复运维、WebUI/Desktop 与可扩展 Provider | [Next 1.1.0 下载](https://github.com/rememberber/WePush/releases/tag/next-v1.1.0) |
 
+### AI 助手接入：Codex、MCP 与 Skill
+
+Classic 和 Next 均支持让 Codex 等 AI 助手使用 WePush。可一键安装 Codex MCP + Skill、仅安装 Skill，或生成通用 stdio MCP 配置给其他兼容客户端。两版独立实现，安装名称不同，可以同时使用。
+
+此功能已在当前源码实现；Classic 旧安装包及已发布的 `next-v1.1.0` 附件尚不包含相应入口，请使用包含此功能的新构建。
+
+| 版本 | 接入入口 | MCP / Skill 名称 | 主要能力 |
+| --- | --- | --- | --- |
+| Classic | **应用 → AI 助手接入** | `wepush-classic` | 查询已有任务、查看发送预览、空跑、授权发送、查询进度与历史 |
+| Next | **设置 → AI 助手接入** | `wepush` | 发现渠道与 Schema、查询资源、创建消息/受众/任务、空跑、授权发送、查询结果与控制运行 |
+
+**快速开始：**
+
+1. 在 WePush 中配置渠道账号。Classic 还需保存消息、人群和任务；Next 需启动 Service 并核对 Service URL 与 Workspace。
+2. 在 Classic 或 Next Desktop 的接入页面点击 **一键接入 Codex**，再重新连接 Codex MCP，必要时重启 Codex。两版桌面安装均使用各自自带的运行时，无需额外安装 Node.js 或 Java。
+3. 让助手先查询并空跑任务，例如：“用 WePush Classic 列出任务，空跑任务 1，并告诉我结果。”正式发送前核对预览中的消息与人群，按用户授权执行，再查询实际运行结果。
+
+使用 Next WebUI 时，在接入页面下载安装器并执行页面生成的命令，需要 Node.js 24+。仅使用 Skill 可点击 **仅安装 Skill**；其他支持 stdio MCP 的客户端可使用 Classic 的 **复制通用 MCP 配置** 或 Next Desktop 的 **导出通用 MCP 配置**。
+
+- **Classic 执行范围：**已保存的手动固定线程任务，线程数 1～100，关闭任务的结果邮件提醒；使用期间保持 Classic 运行。账号、消息、人群及任务的编辑仍在 Classic 界面完成。
+- **Next 运行要求：**保持 Service 可达；启用认证后，在 AI 客户端环境中设置 `WEPUSH_API_TOKEN`。安装器不复制登录 Token，调用遵循已有 Workspace 权限。
+- **发送防重：**正式发送使用预览确认令牌和请求编号；超时后查询原运行，重试时复用原请求编号与参数，结果不明时不自动重发。
+
+安装目录、客户端配置、完整工具列表及排错说明见 [Classic 接入指南](docs/classic-ai-integration.md) 和 [Next 接入指南](next/docs/ai-integration.md)。
+
 ### WePush Next Stable
 
 Next 是位于 [`next/`](next/) 的完整新架构产品线，包含 Core Engine、Provider SPI、可安装 Service、远程 Agent、Remote/Embedded Java SDK、React WebUI 和 Electron Desktop。`1.1.0` 是兼容 `1.0.0` 的稳定 Minor 发行版，在 1.x API、配置、数据库和 Agent 协议兼容承诺之上，补齐运营商短信插件、Workspace 资源治理、自建运维、跨 Run 可靠性、大 Artifact 与 WebUI 可用性。
@@ -112,6 +137,7 @@ Windows • Linux • macOS
 12. 小而美的可视化界面，支持亮暗多种外观风格  
 13. 支持全局字体字号设置  
 14. 支持推送结果邮件通知  
+15. 支持一键接入 Codex MCP / Skill，供 AI 助手查询任务、空跑校验和按授权发送（[接入说明](docs/classic-ai-integration.md)）
 ……
 
 ### 截图速览

@@ -106,6 +106,15 @@ public class App {
 
                     // 重启应用时把所有定时任务重新加入到任务队列
                     UiThreadUtil.runOffUi(TaskListener::addAllScheduledTask);
+                    UiThreadUtil.runOffUi(() -> {
+                        if (config.isAiIntegrationEnabled()) {
+                            try {
+                                com.fangxuele.tool.push.ai.ClassicAiIntegration.enable();
+                            } catch (Exception e) {
+                                log.warn("Classic AI 接入启动失败", e);
+                            }
+                        }
+                    });
                 });
             });
         });

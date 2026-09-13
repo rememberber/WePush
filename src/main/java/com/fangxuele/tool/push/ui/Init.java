@@ -286,6 +286,7 @@ public class Init {
     }
 
     public static void shutdown() {
+        com.fangxuele.tool.push.ai.ClassicAiIntegration.stop();
         CarrierSmsSessionRegistry.shutdown();
         HttpClientRegistry.shutdown();
         ProviderTrafficController.resetAll();

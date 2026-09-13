@@ -56,6 +56,14 @@ public class ConfigUtil extends ConfigBaseUtil {
         return setting.getBool("autoCheckUpdate", "setting.normal", true);
     }
 
+    public boolean isAiIntegrationEnabled() {
+        return setting.getBool("enabled", "ai.integration", false);
+    }
+
+    public void setAiIntegrationEnabled(boolean enabled) {
+        setting.put("ai.integration", "enabled", String.valueOf(enabled));
+    }
+
     public void setAutoCheckUpdate(boolean autoCheckUpdate) {
         setting.put("setting.normal", "autoCheckUpdate", String.valueOf(autoCheckUpdate));
     }

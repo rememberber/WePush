@@ -8,7 +8,7 @@ WePush Next 是与 Classic 完全独立的新产品线。Classic 与 Next 可以
 
 第一次下载和使用请从[《WePush Next 对外使用指南》](docs/user-guide.md)开始。渠道账号、模板、Recipient、SecretRef、限流和错误语义见[《内置 Provider 指南》](docs/provider-guide.md)。
 
-当前源码新增 **设置 → AI 助手接入**：Desktop 一键安装 Codex MCP + Skill，WebUI 提供独立安装器，支持导出通用 stdio MCP 配置。用法见[《AI 助手接入指南》](docs/ai-integration.md)；该功能尚未包含在已发布的 `next-v1.1.0` 附件中。
+当前源码新增 Codex MCP / Skill 接入，支持查询和创建资源、空跑、授权发送及运行控制，快速配置见下方「AI 助手接入」。该功能尚未包含在已发布的 `next-v1.1.0` 附件中。
 
 ## 下载与安装
 
@@ -38,6 +38,23 @@ Set-ExecutionPolicy -Scope Process Bypass
 ```
 
 安装完成前会检查 Service Readiness、Flyway 数据库版本和本地 Provider Dry Run。需要便携运行或已有 Java 21+ 时，可选择精简包；分组件部署仍可直接使用 `install/<os>/install.* service|agent|all`。
+
+## AI 助手接入（MCP / Skill）
+
+启动 Next Service 并配置渠道账号后，打开 **设置 → AI 助手接入**，核对 Service URL 与当前 Workspace：
+
+- **Desktop：**点击 **一键接入 Codex** 安装 MCP + Skill，或选择 **仅安装 Skill**；使用 Desktop 自带运行时，无需另装 Node.js。其他支持 stdio MCP 的客户端可使用 **导出通用 MCP 配置**。
+- **WebUI / 新构建发行包：**下载页面提供的独立安装器，或使用发行包中的 `ai/wepush-ai.mjs`，通过 Node.js 24+ 执行安装命令：
+
+```bash
+node ./wepush-ai.mjs install --target codex --url http://127.0.0.1:18990 --workspace ws_default
+```
+
+安装后重新连接 Codex MCP，必要时重启 Codex。MCP 名称为 `wepush`，Skill 位于 `~/.agents/skills/wepush`，可与 Classic 的 `wepush-classic` 同时安装。启用 Service 认证时，在 AI 客户端环境中设置 `WEPUSH_API_TOKEN`；安装器不复制登录 Token。
+
+助手可以发现 Provider Schema、查询现有资源、创建消息/受众/任务、执行 Dry Run、准备与提交正式发送，以及查询结果、暂停、恢复或取消运行。正式发送需核对预览并取得覆盖内容与受众的用户授权；网络超时后保留原请求编号，先查询运行结果。
+
+完整工具列表、权限要求、其他客户端配置及排错见[《AI 助手接入指南》](docs/ai-integration.md)。Classic 的入口与执行范围见[《Classic 接入指南》](../docs/classic-ai-integration.md)。
 
 ## 验证 Java 工程
 

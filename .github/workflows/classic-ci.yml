@@ -1,0 +1,35 @@
+name: Classic tests
+
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'pom.xml'
+      - '.github/workflows/classic-ci.yml'
+  push:
+    branches: [develop, master]
+    paths:
+      - 'src/**'
+      - 'pom.xml'
+      - '.github/workflows/classic-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Test Classic and local AI bridge
+        run: mvn -B -ntp test -Djava.awt.headless=true

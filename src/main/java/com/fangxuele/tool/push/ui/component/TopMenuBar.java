@@ -109,6 +109,9 @@ public class TopMenuBar extends JMenuBar {
         settingMenuItem.setText("设置");
         settingMenuItem.addActionListener(e -> settingActionPerformed());
         appMenu.add(settingMenuItem);
+        JMenuItem aiMenuItem = new JMenuItem("AI 助手接入");
+        aiMenuItem.addActionListener(e -> new com.fangxuele.tool.push.ui.dialog.ClassicAiDialog().setVisible(true));
+        appMenu.add(aiMenuItem);
         // 退出
         JMenuItem exitMenuItem = new JMenuItem();
         exitMenuItem.setText("退出");

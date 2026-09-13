@@ -87,6 +87,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.tomlj</groupId>
+            <artifactId>tomlj</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
@@ -631,7 +636,7 @@
                     <jdkPath>${packaging.jdkPath}</jdkPath>
                     <mainClass>com.fangxuele.tool.push.App</mainClass>
                     <generateInstaller>true</generateInstaller>
-                    <additionalModules>jdk.crypto.ec,jdk.charsets</additionalModules>
+                    <additionalModules>jdk.crypto.ec,jdk.charsets,jdk.httpserver</additionalModules>
                 </configuration>
             </plugin>
 
