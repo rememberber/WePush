@@ -1,6 +1,6 @@
 # WePush Next 历史预览版说明
 
-> 本文件仅为 `0.1.0-alpha.*` 和 `0.1.0-beta.1` 历史发行保留。WePush Next 已于 `1.0.0` 进入稳定版，当前稳定版为 `1.1.0`；安装、安全与兼容边界以 [`README.md`](README.md)、[`UNSIGNED-NOTICE.md`](UNSIGNED-NOTICE.md)、[《兼容性策略》](docs/compatibility-policy.md)和对应 Release Notes 为准。
+> 本文件仅为 `0.1.0-alpha.*` 和 `0.1.0-beta.1` 历史发行保留。WePush Next 已于 `1.0.0` 进入稳定版，当前稳定版为 `1.2.0`；安装、安全与兼容边界以 [`README.md`](README.md)、[`UNSIGNED-NOTICE.md`](UNSIGNED-NOTICE.md)、[《兼容性策略》](docs/compatibility-policy.md)和对应 Release Notes 为准。
 
 以下内容只适用于历史预览版，不代表稳定版仍处于预览状态。
 

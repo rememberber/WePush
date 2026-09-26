@@ -57,9 +57,9 @@ ClassLoader 隔离只解决依赖冲突，不是恶意代码安全沙箱。JVM �
 ```text
 plugins/
 ├── staging/
-│   └── wepush-provider-http-1.1.0.zip
+│   └── wepush-provider-http-1.2.0.zip
 ├── active/
-│   └── wepush-provider-http-1.1.0.zip
+│   └── wepush-provider-http-1.2.0.zip
 └── rollback/
     └── wepush-provider-http-1.0.0.zip.20260823T010203Z
 ```

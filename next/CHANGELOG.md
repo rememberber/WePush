@@ -4,6 +4,23 @@
 
 ## Unreleased
 
+## 1.2.0 — 2026-09-26
+
+### Added
+
+- 新增 Codex MCP / Skill 接入。Desktop 可一键安装 MCP 与 Skill，WebUI 和发行包提供同一个 `wepush-ai.mjs`；桥接器通过 stdio 调用用户自己的 REST API，不新开服务端口。
+- 正式发送继续使用既有预览确认令牌、Idempotency-Key 和 Workspace RBAC。安装器不复制登录 Token；启用认证时由 AI 客户端环境提供 `WEPUSH_API_TOKEN`。
+
+### Changed
+
+- Java 构建与运行基线由 21 升级到 25。完整安装包携带 Java 25 运行时；精简包和 Java SDK 需要系统 Java 25+。
+- 路线图、用户指南、部署、兼容和升级文档同步到 `1.2.0`。AI 助手接入随本版本发行附件提供。
+
+### Compatibility
+
+- 不新增 Flyway 迁移，数据库仍为 V17。REST/SSE、Remote Java SDK、Provider SPI 和 Agent 协议保持 `1.1.0` 契约。
+- 推荐通过升级前完整备份回滚到 `1.1.0`。
+
 ## 1.1.0 — 2026-08-30
 
 ### Added

@@ -38,7 +38,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: service
-          image: ghcr.io/rememberber/wepush-next-service:1.1.0
+          image: ghcr.io/rememberber/wepush-next-service:1.2.0
           ports:
             - { name: http, containerPort: 18990 }
             - { name: agent-grpc, containerPort: 19090 }

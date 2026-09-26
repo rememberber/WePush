@@ -19,7 +19,7 @@ WePush 采用 Classic 与 Next 双轨发展。两条产品线彼此独立，允�
 | 产品线 | 当前定位 | 适合场景 | 入口 |
 | --- | --- | --- | --- |
 | WePush Classic | 稳定桌面客户端 | 微信、短信、邮件、HTTP 等成熟批量推送场景 | [Classic 下载](https://gitee.com/zhoubochina/WePush/releases) |
-| WePush Next | `1.1.0` Stable | 三平台离线自部署、1.x 兼容承诺、Service/Agent、资源治理、可恢复运维、WebUI/Desktop 与可扩展 Provider | [Next 1.1.0 下载](https://github.com/rememberber/WePush/releases/tag/next-v1.1.0) |
+| WePush Next | `1.2.0` Stable | 三平台离线自部署、1.x 兼容承诺、Service/Agent、资源治理、AI 助手接入、可恢复运维、WebUI/Desktop 与可扩展 Provider | [Next 1.2.0 下载](https://github.com/rememberber/WePush/releases/tag/next-v1.2.0) |
 
 当前源码的 Classic 与 Next 均要求 JDK 25+ 构建；不含运行时的发行包及 Java SDK 要求 Java 25+。完整安装包内置 Java 25 运行时。
 
@@ -27,7 +27,7 @@ WePush 采用 Classic 与 Next 双轨发展。两条产品线彼此独立，允�
 
 Classic 和 Next 均支持让 Codex 等 AI 助手使用 WePush。可一键安装 Codex MCP + Skill、仅安装 Skill，或生成通用 stdio MCP 配置给其他兼容客户端。两版独立实现，安装名称不同，可以同时使用。
 
-此功能已在当前源码实现；Classic 旧安装包及已发布的 `next-v1.1.0` 附件尚不包含相应入口，请使用包含此功能的新构建。
+此功能随 Classic 当前发行版和 Next `1.2.0` 提供。更早的 Next `1.1.0` 及不含该入口的旧 Classic 安装包需要升级后再使用。
 
 | 版本 | 接入入口 | MCP / Skill 名称 | 主要能力 |
 | --- | --- | --- | --- |
@@ -50,17 +50,15 @@ Classic 和 Next 均支持让 Codex 等 AI 助手使用 WePush。可一键安装
 
 ### WePush Next Stable
 
-Next 是位于 [`next/`](next/) 的完整新架构产品线，包含 Core Engine、Provider SPI、可安装 Service、远程 Agent、Remote/Embedded Java SDK、React WebUI 和 Electron Desktop。`1.1.0` 是兼容 `1.0.0` 的稳定 Minor 发行版，在 1.x API、配置、数据库和 Agent 协议兼容承诺之上，补齐运营商短信插件、Workspace 资源治理、自建运维、跨 Run 可靠性、大 Artifact 与 WebUI 可用性。
+Next 是位于 [`next/`](next/) 的完整新架构产品线，包含 Core Engine、Provider SPI、可安装 Service、远程 Agent、Remote/Embedded Java SDK、React WebUI 和 Electron Desktop。`1.2.0` 是兼容 `1.1.0` 的稳定 Minor 发行版，在既有 1.x 兼容承诺之上提供 Codex MCP/Skill 接入，并把 Java 运行基线升级到 25。
 
 Next 的长期定位是由用户自行下载、安装、部署和运维的开源产品。项目不建设承载用户业务数据的官方公共 SaaS，不提供注册、计费、订阅或公共租户平台，也不规划云 KMS/Secret Manager 集成。用户可以在自己的环境中运行 Standalone，或自行搭建 Server/HA 和远程 Agent。
 
-#### `1.1.0` 重点更新
+#### `1.2.0` 重点更新
 
-- CMPP、SMGP、SGIP、SMPP 作为四个源码独立、Ed25519 签名的 Agent Provider 插件交付。
-- Workspace 可限制 Agent 数、活动 Run、总发送并发、Artifact 容量和默认保留期；相同账号的认证失败可跨 Run 熔断。
-- 提供结构化脱敏诊断包、Nginx/Traefik/Kubernetes 自建模板和仅由用户手动触发的版本检查。
-- PostgreSQL `LISTEN/NOTIFY` 加速 Run、Agent Outbox 与 SSE 唤醒；数据库轮询、持久 Outbox 和事件游标继续保证正确性。
-- Agent Artifact 支持 Presigned Multipart，单文件上限扩展到 5 TiB；WebUI 增加暗色/跟随系统主题并改善低分辨率与可访问性。
+- Desktop 一键安装 Codex MCP 与 Skill；WebUI 和发行包提供 `wepush-ai.mjs`。正式发送仍使用预览确认、幂等键和 Workspace 权限。
+- Java 运行基线升级到 25。完整包携带 Java 25 运行时；精简包和 Java SDK 需要系统 Java 25+。
+- 不新增数据库迁移。运营商插件、Workspace 资源治理、脱敏诊断、跨 Run 熔断、PostgreSQL 通知、Multipart Artifact 和 WebUI 主题继续可用。
 
 #### Next 组件
 
@@ -71,13 +69,13 @@ Next 的长期定位是由用户自行下载、安装、部署和运维的开源
 | [Service](next/service/) | 提供配置、调度、运行控制、Secret、Artifact、审计、REST/SSE、OpenAPI 和 Agent 控制面 | 可前台运行或安装为 Linux systemd、macOS launchd、Windows Service；本机模式可内嵌 Core Engine |
 | [Agent](next/agent/) | 在独立主机接收 Lease，使用 Core Engine 执行任务并回传事件、结果和 Artifact | 可独立安装，通过 gRPC 主动连接 Service；本机内嵌执行时不需要 Agent |
 | [Remote Java SDK](next/sdk/sdk-java/) | 让 Java 应用通过强类型客户端调用远程 Service API | 已实现；只依赖公开的 `service-api` 契约，不依赖 Core、Engine 或具体 Provider |
-| [Embedded Java SDK](next/sdk/embedded-java/) | 让 Java 应用在自己的进程内直接装配 Core Engine 和选定 Provider，无需启动 Service | `1.1.0` Java SDK 附件包含 HTTP 与标准渠道 Provider；业务应用仍须显式选择 |
+| [Embedded Java SDK](next/sdk/embedded-java/) | 让 Java 应用在自己的进程内直接装配 Core Engine 和选定 Provider，无需启动 Service | `1.2.0` Java SDK 附件包含 HTTP 与标准渠道 Provider；业务应用仍须显式选择 |
 | [WebUI](next/ui/apps/web/) | 提供可视化配置、任务与调度、运行中心、Agent 观察和动态调试 API 文档 | TypeScript + Vite + React，可由 Service 直接托管，也可在开发环境独立运行 |
 | [Desktop UI](next/ui/apps/desktop/) | 提供与 WebUI 一致的桌面管理体验和安全 Electron 外壳 | 连接并管理已安装的本机 Service，使用系统安全存储保存 Token；不把 Service 内嵌进 UI |
 
 当前典型调用关系为：`WebUI / Desktop UI / Remote Java SDK → Service API → Service → 内嵌 Core Engine`；远程执行时则由 `Service → Agent → Core Engine → Provider` 完成发送。进程内集成使用 `业务 Java 应用 → Embedded Java SDK → Core Engine → Provider`，不经过 Service。
 
-第一次使用请从[《WePush Next 对外使用指南》](next/docs/user-guide.md)开始。macOS/Windows 发行物按项目约定不使用商业代码签名，请只从 [`next-v1.1.0` GitHub Release](https://github.com/rememberber/WePush/releases/tag/next-v1.1.0) 下载，并使用同一 Release 中的 [`SHA256SUMS`](https://github.com/rememberber/WePush/releases/download/next-v1.1.0/SHA256SUMS) 校验完整性。
+第一次使用请从[《WePush Next 对外使用指南》](next/docs/user-guide.md)开始。macOS/Windows 发行物按项目约定不使用商业代码签名，请只从 [`next-v1.2.0` GitHub Release](https://github.com/rememberber/WePush/releases/tag/next-v1.2.0) 下载，并使用同一 Release 中的 [`SHA256SUMS`](https://github.com/rememberber/WePush/releases/download/next-v1.2.0/SHA256SUMS) 校验完整性。
 
 - [Next 项目说明](next/README.md)
 - [产品目标、边界与路线图](next/docs/product-scope-and-roadmap.md)
@@ -85,6 +83,7 @@ Next 的长期定位是由用户自行下载、安装、部署和运维的开源
 - [架构与概要设计](next/docs/architecture-and-high-level-design.md)
 - [详细设计](next/docs/detailed-design.md)
 - [部署与运维](next/docs/deployment-and-operations.md)
+- [`1.2.0` Release Notes](next/docs/releases/1.2.0.md)
 - [`1.1.0` Release Notes](next/docs/releases/1.1.0.md)
 - [1.x 兼容性策略](next/docs/compatibility-policy.md)
 - [升级与回滚指南](next/docs/upgrade-guide.md)

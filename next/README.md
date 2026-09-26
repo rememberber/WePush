@@ -4,25 +4,25 @@ WePush Next 是与 Classic 完全独立的新产品线。Classic 与 Next 可以
 
 > 产品定位：WePush Next 是开源、可下载、可安装、由用户自行部署和运维的消息推送产品。项目不建设官方公共 SaaS、注册计费订阅、公共租户平台或云 KMS/Secret Manager 集成。正式范围和分版本计划见[《产品目标、边界与路线图》](docs/product-scope-and-roadmap.md)。
 
-> 当前版本：[`1.1.0` Stable](https://github.com/rememberber/WePush/releases/tag/next-v1.1.0)。Desktop 与安装包按项目约定不使用商业代码签名；下载后必须验证同一 Release 中的 [`SHA256SUMS`](https://github.com/rememberber/WePush/releases/download/next-v1.1.0/SHA256SUMS)。发行边界和升级承诺见 [`UNSIGNED-NOTICE.md`](UNSIGNED-NOTICE.md)、[《兼容性策略》](docs/compatibility-policy.md)、[《升级与回滚指南》](docs/upgrade-guide.md)与 [`docs/releases/1.1.0.md`](docs/releases/1.1.0.md)。
+> 当前版本：`1.2.0` Stable。[下载 `next-v1.2.0`](https://github.com/rememberber/WePush/releases/tag/next-v1.2.0)。Desktop 与安装包按项目约定不使用商业代码签名；下载后必须验证同一 Release 中的 [`SHA256SUMS`](https://github.com/rememberber/WePush/releases/download/next-v1.2.0/SHA256SUMS)。发行边界和升级承诺见 [`UNSIGNED-NOTICE.md`](UNSIGNED-NOTICE.md)、[《兼容性策略》](docs/compatibility-policy.md)、[《升级与回滚指南》](docs/upgrade-guide.md)与 [`docs/releases/1.2.0.md`](docs/releases/1.2.0.md)。
 
 第一次下载和使用请从[《WePush Next 对外使用指南》](docs/user-guide.md)开始。渠道账号、模板、Recipient、SecretRef、限流和错误语义见[《内置 Provider 指南》](docs/provider-guide.md)。
 
-当前源码新增 Codex MCP / Skill 接入，支持查询和创建资源、空跑、授权发送及运行控制，快速配置见下方「AI 助手接入」。该功能尚未包含在已发布的 `next-v1.1.0` 附件中。
+`1.2.0` 提供 Codex MCP / Skill 接入，支持查询和创建资源、空跑、授权发送及运行控制，快速配置见下方「AI 助手接入」。
 
 ## 下载与安装
 
-正式发行物统一位于 [`next-v1.1.0` GitHub Release](https://github.com/rememberber/WePush/releases/tag/next-v1.1.0)：
+正式发行物统一位于 [`next-v1.2.0` GitHub Release](https://github.com/rememberber/WePush/releases/tag/next-v1.2.0)：
 
 | 使用方式 | 选择的发行物 |
 | --- | --- |
-| 推荐的 Standalone 安装 | 与操作系统、架构匹配的 `wepush-next-1.1.0-<os>-<arch>` 完整包，已包含 Java Runtime |
-| 已有 Java 25+ 或分组件部署 | `wepush-next-1.1.0.tar.gz` 或 `wepush-next-1.1.0.zip` 精简包 |
-| 只使用管理界面 | 与操作系统、架构匹配的 `wepush-next-desktop-1.1.0-<os>-<arch>` |
-| Java 集成 | `wepush-next-java-sdk-1.1.0.zip` |
-| 运营商短信 Agent 插件 | `wepush-provider-{cmpp,smgp,sgip,smpp}-1.1.0.zip` 及 `wepush-provider-trusted-key-1.1.0.env` |
+| 推荐的 Standalone 安装 | 与操作系统、架构匹配的 `wepush-next-1.2.0-<os>-<arch>` 完整包，已包含 Java Runtime |
+| 已有 Java 25+ 或分组件部署 | `wepush-next-1.2.0.tar.gz` 或 `wepush-next-1.2.0.zip` 精简包 |
+| 只使用管理界面 | 与操作系统、架构匹配的 `wepush-next-desktop-1.2.0-<os>-<arch>` |
+| Java 集成 | `wepush-next-java-sdk-1.2.0.zip` |
+| 运营商短信 Agent 插件 | `wepush-provider-{cmpp,smgp,sgip,smpp}-1.2.0.zip` 及 `wepush-provider-trusted-key-1.2.0.env` |
 
-下载后先验证 `SHA256SUMS`。安装运营商插件时，还必须校验信任公钥文件及各插件的旁路 `.sha256`；不要从插件 ZIP 或第三方页面获取替代公钥。完整资产说明和升级步骤见 [`1.1.0` Release Notes](docs/releases/1.1.0.md)。
+下载后先验证 `SHA256SUMS`。安装运营商插件时，还必须校验信任公钥文件及各插件的旁路 `.sha256`；不要从插件 ZIP 或第三方页面获取替代公钥。完整资产说明和升级步骤见 [`1.2.0` Release Notes](docs/releases/1.2.0.md)。
 
 完整包解压后执行统一 Standalone 安装入口：
 
@@ -165,9 +165,9 @@ try (var engine = WePushEngine.builder()
 }
 ```
 
-从源码安装、依赖声明和完整示例见 [`sdk/README.md`](sdk/README.md) 与 [`sdk/embedded-java/README.md`](sdk/embedded-java/README.md)。`1.1.0` 发行包和独立 Java SDK 附件同时提供 Remote SDK、Embedded SDK、HTTP Provider 与标准渠道 Provider；CMPP、SMGP、SGIP、SMPP 则作为独立签名 Agent 插件发布，不进入 Embedded SDK 的默认依赖。
+从源码安装、依赖声明和完整示例见 [`sdk/README.md`](sdk/README.md) 与 [`sdk/embedded-java/README.md`](sdk/embedded-java/README.md)。`1.2.0` 发行包和独立 Java SDK 附件同时提供 Remote SDK、Embedded SDK、HTTP Provider 与标准渠道 Provider；CMPP、SMGP、SGIP、SMPP 则作为独立签名 Agent 插件发布，不进入 Embedded SDK 的默认依赖。
 
-## `1.1.0` 已交付基线
+## `1.2.0` 已交付基线
 
 - Core API、Provider SPI、虚拟线程 Engine，以及 HTTP、SMTP Email、飞书/钉钉/企微机器人、阿里云短信、微信公众号、小程序和企业微信应用消息 Provider；CMPP、SMGP、SGIP、SMPP 以四个独立签名插件交付。
 - Agent Protocol、Protobuf/gRPC 双向控制流、Sequence/Fencing Runtime、持久 Journal、加密 Secret Envelope、远端 Core 执行适配与常驻 Agent 包。
@@ -175,6 +175,8 @@ try (var engine = WePushEngine.builder()
 - PostgreSQL `LISTEN/NOTIFY` 低延迟唤醒、结构化脱敏诊断包、手动版本检查、Nginx/Traefik/Kubernetes 自建模板，以及 Agent Presigned Multipart Artifact（最大 5 TiB）。
 - 相互独立的 Remote Java SDK、Embedded Java SDK 和 TypeScript API Client。
 - React WebUI、亮色/暗色/跟随系统主题、低分辨率和键盘可访问性、动态 Provider/SecretRef Schema、渠道消息示例、资源生命周期、CSV/TXT 导入、Dry Run/正式确认/结果/失败重发闭环、真实 Workspace 和运行总览、动态 API 文档、Electron 安全外壳和共享前端 packages。
+- Codex MCP / Skill 接入：Desktop 一键安装，WebUI 与发行包提供 `wepush-ai.mjs`；正式发送仍走既有确认令牌和 Workspace 权限。
+- Java 25 构建与运行基线；完整包内置 Java 25 运行时，精简包和 Java SDK 需要系统 Java 25+。
 - 一体化 Standalone/离线 Windows 安装、含 Java Runtime 完整包、正式备份恢复、升级健康门与自动回退；Desktop 提供本机 Service 运维、系统安全 Token 存储和签名插件 Stage/Activate/Rollback。
 - 架构、单元、契约、浏览器 E2E、Desktop 冒烟、三平台安装/恢复/失败升级以及定时长稳矩阵。
 

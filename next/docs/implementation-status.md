@@ -1,12 +1,12 @@
 # WePush Next 实现状态
 
-更新时间：2026-08-30
+更新时间：2026-09-26
 
 产品范围和后续优先级以[《产品目标、边界与路线图》](product-scope-and-roadmap.md)为准。Next 的长期定位是用户自行下载、安装、部署和运维；不建设官方公共 SaaS、注册计费订阅、云 KMS/Secret Manager 或恶意公共租户物理隔离。
 
 ## 1. 里程碑结论
 
-`next/` 的当前稳定基线为 `1.1.0`：在 `1.0.0` 的真实消息渠道、运维闭环和 1.x 兼容承诺上，增加运营商签名插件、Workspace 资源治理、脱敏诊断、跨 Run 认证熔断、PostgreSQL 低延迟唤醒、Agent Presigned Multipart 与 WebUI 主题/可访问性。Classic 源码和构建保持不动；两条产品线不共享源码依赖，允许各自存在相似实现。
+`next/` 的当前稳定基线为 `1.2.0`：在 `1.1.0` 的运营商签名插件、Workspace 资源治理、脱敏诊断、跨 Run 认证熔断、PostgreSQL 低延迟唤醒、Agent Presigned Multipart 与 WebUI 主题/可访问性之上，增加 Codex MCP/Skill 接入，并把 Java 运行基线升级到 25。数据库仍为 V17，REST/SSE 与 Agent 协议保持兼容。Classic 源码和构建保持不动；两条产品线不共享源码依赖，允许各自存在相似实现。
 
 ```text
 React WebUI / Electron Desktop / Remote Java SDK
@@ -40,8 +40,8 @@ Standalone 默认是单 Service + SQLite + Local Artifact + Embedded Engine；Se
 | Service | Spring Boot 4.1.1、SQLite/PostgreSQL、资源修订/分页、Workspace Policy、认证熔断、脱敏诊断、手动版本检查、Local/S3 Artifact、RBAC/审计/Scheduler、Agent HA Outbox、PostgreSQL 通知与跨实例 SSE 补偿 |
 | Remote Java SDK | 只依赖公开 `service-api`；覆盖 System、Provider、Agent、Workspace Policy、资源生命周期/分页、Audience 上传、Run、Artifact、Schedule、Security、诊断、版本检查与认证熔断 |
 | Embedded Java SDK | Framework-free 进程内 Engine 门面；显式 Provider、SecretResolver、Result/Event/Artifact Sink，支持列表或流式 Recipient 与完整 RunHandle 控制 |
-| WebUI | TypeScript/Vite/React；资源编辑/修订、导入/确认/重发、总览/分页/调度、Security、Workspace Policy、诊断/版本/熔断管理、动态 Schema、API 调试、亮暗主题、低分辨率与可访问性 |
-| Desktop | Electron 安全外壳，共用 WebUI；本机 Service 检测/启停/日志/诊断、系统原生 API Token 安全存储、签名插件生命周期；目标系统原生目录打包，不依赖 Core 或 Service 内部实现 |
+| WebUI | TypeScript/Vite/React；资源编辑/修订、导入/确认/重发、总览/分页/调度、Security、Workspace Policy、诊断/版本/熔断管理、动态 Schema、API 调试、亮暗主题、低分辨率与可访问性、AI 助手安装器下载 |
+| Desktop | Electron 安全外壳，共用 WebUI；本机 Service 检测/启停/日志/诊断、系统原生 API Token 安全存储、签名插件生命周期、一键安装 Codex MCP/Skill；目标系统原生目录打包，不依赖 Core 或 Service 内部实现 |
 | Distribution | 系统 Java 精简包 + 三平台 `jlink` Runtime 完整包；统一 Standalone/高级分组件安装、离线 WinSW、正式备份/恢复、Beta 升级、升级健康门、自动回退与安全卸载；容器 Server/HA 拓扑 |
 
 ## 3. Core、Provider 与 Agent
@@ -132,7 +132,7 @@ Standalone 默认是单 Service + SQLite + Local Artifact + Embedded Engine；Se
 
 ## 8. 稳定版完成边界与后续演进
 
-`1.1.0` 已在 `1.0.0` 稳定基线上完成兼容增量：公开 API 只增加端点/字段，V14→V17 为附加迁移，原单次 Artifact 上传和 Agent 协议 Major 1 保持兼容；Provider 插件、资源治理、诊断、可靠性、大 Artifact、UI 与发行资产均进入自动门禁。
+`1.2.0` 在 `1.1.0` 上完成兼容增量：不新增 Flyway 迁移，不改变 REST/SSE 与 Agent 协议；Codex MCP/Skill 复用既有 API、确认令牌和 Workspace 权限。Java 基线为 25，完整包携带对应运行时。`1.1.0` 已完成的 Provider 插件、资源治理、诊断、可靠性、大 Artifact 与 UI 门禁继续有效。
 
 以下属于 1.x 内可兼容增加的产品增量，不是稳定版缺口：
 

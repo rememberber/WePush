@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.Set;
 
 public final class CarrierSmsProviderFactory implements ProviderFactory {
-    public static final String VERSION = "1.1.0";
+    public static final String VERSION = "1.2.0";
     private final CarrierProtocol protocol;
     private final ProviderDescriptor descriptor;
 

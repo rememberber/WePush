@@ -261,6 +261,24 @@ Classic 与 Next 可以复用业务需求、测试数据和验收经验，但不
 - V17 记录 Multipart 会话；Agent 支持分批获取 Part URL、重试、Complete/Abort、完整性检查与孤儿清理，S3 单对象上限为 5 TiB。
 - WebUI 的主题、低分辨率、键盘焦点、语义和减少动画进入类型检查、组件测试、构建与浏览器 E2E 门禁。
 
+### 6.7 `1.2.0`：AI 助手接入与 Java 25
+
+目标：在不改变 1.x HTTP、数据库和 Agent 协议的前提下，让用户用自己的 AI 客户端操作已部署的 WePush，并把运行基线统一到 Java 25。
+
+状态：已完成（2026-09-26）。
+
+已交付内容：
+
+- Desktop 一键安装 Codex MCP 与 Skill，WebUI 和发行包提供同一个 `wepush-ai.mjs`。桥接器由 AI 客户端以 stdio 启动，只调用用户自己的 REST API。
+- 查询、创建草稿、Dry Run、预览确认后的正式发送，以及结果查询和运行控制。正式发送继续要求确认令牌、幂等键和 Workspace 权限；安装器不复制登录 Token。
+- Java 构建与运行基线升级到 25。完整包携带 Java 25 运行时；精简包和 Java SDK 要求系统 Java 25+。
+
+验收结果：
+
+- 不新增 Flyway 迁移，OpenAPI 在忽略版本号后保持既有兼容摘要。
+- AI 安装、连接和工具调用进入安装器测试；发行归档包含 `ai/wepush-ai.mjs`。
+- 浏览器 E2E 覆盖设置页的 AI 助手接入入口。
+
 ## 7. 优先级规则
 
 后续任务使用以下顺序决策：

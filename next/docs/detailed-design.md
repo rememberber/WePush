@@ -2047,7 +2047,7 @@ Next CI 使用 `next/**` 路径过滤，Classic 和 Next 互不依赖对方构�
 - Desktop 和三平台 Service 安装。
 - PostgreSQL 18 HA、S3-compatible Artifact Store 和部署文档。
 
-当前进度：Iteration 9（`1.1.0`）已完成。除 `1.0.0` 稳定基线外，CMPP/SMGP/SGIP/SMPP 独立签名插件、Workspace 资源治理、脱敏诊断、手动版本检查、跨 Run 认证熔断、PostgreSQL 三类控制面通知、Agent Presigned Multipart 和 WebUI 主题/可访问性均已落地；具体版本边界见[产品路线图](product-scope-and-roadmap.md)和 [`1.1.0` Release Notes](releases/1.1.0.md)。
+当前进度：Iteration 10（`1.2.0`）已完成。`1.1.0` 的运营商插件、资源治理、诊断、熔断、PostgreSQL 通知、Multipart Artifact 和 WebUI 可访问性继续有效；`1.2.0` 增加 Codex MCP/Skill 接入，并将 Java 基线升级到 25，且不新增数据库迁移。具体版本边界见[产品路线图](product-scope-and-roadmap.md)和 [`1.2.0` Release Notes](releases/1.2.0.md)。
 
 ### 44.7 Iteration 7：日常使用闭环
 

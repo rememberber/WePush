@@ -13,7 +13,7 @@ Embedded Java SDK 让 Java 应用在自己的 JVM 进程内直接运行 WePush C
 
 它刻意不包含 Service API、数据库、Spring、Agent、调度器、多租户控制面和 Provider 插件发现。应用只获得执行内核，其他生命周期由应用自己管理。
 
-> `1.0.0` 发行包和独立 Java SDK 附件包含 Embedded SDK 及所需 POM/JAR。
+> `1.2.0` 发行包和独立 Java SDK 附件包含 Embedded SDK 及所需 POM/JAR。
 
 ## 要求与依赖
 
@@ -30,17 +30,17 @@ cd next
 <dependency>
     <groupId>com.fangxuele.wepush.next</groupId>
     <artifactId>embedded-java</artifactId>
-    <version>1.0.0</version>
+    <version>1.2.0</version>
 </dependency>
 <dependency>
     <groupId>com.fangxuele.wepush.next</groupId>
     <artifactId>provider-http</artifactId>
-    <version>1.0.0</version>
+    <version>1.2.0</version>
 </dependency>
 <dependency>
     <groupId>com.fangxuele.wepush.next</groupId>
     <artifactId>provider-standard</artifactId>
-    <version>1.0.0</version>
+    <version>1.2.0</version>
 </dependency>
 ```
 

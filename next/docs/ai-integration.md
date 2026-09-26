@@ -1,6 +1,6 @@
 # 用 Codex 等 AI 助手操作 WePush
 
-本功能随当前源码构建交付，尚未包含在已发布的 `next-v1.1.0` 附件中。更新后的 WebUI、Desktop 和完整发行包提供同一个独立安装器 `wepush-ai.mjs`。
+本功能随 `1.2.0` 的 WebUI、Desktop 和完整发行包交付，使用同一个独立安装器 `wepush-ai.mjs`。
 
 MCP 桥接器由 AI 客户端通过 stdio 启动，再调用用户自己的 WePush Next REST API，不需要新开服务端口或部署公共服务。它遵循已有 Workspace RBAC、Provider 校验、发送确认和 Idempotency-Key 语义。
 
