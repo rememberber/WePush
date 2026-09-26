@@ -323,10 +323,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if find "$JAVA_HOME/jmods" -name '*.jmod' -print -quit | grep -q .; then
-            echo "JDK already contains jmods"
-            exit 0
-          fi
           case "$(uname -s)" in
             Linux) os=linux ;;
             Darwin) os=mac ;;
@@ -352,17 +348,15 @@ jobs:
           fi
           rm -rf "$JAVA_HOME/jmods"
           cp -R "$source" "$JAVA_HOME/jmods"
-          find "$JAVA_HOME/jmods" -name '*.jmod' -print -quit | grep -q .
+          count=$(find "$JAVA_HOME/jmods" -name '*.jmod' | wc -l | tr -d ' ')
+          echo "Installed $count jmods into $JAVA_HOME/jmods"
+          test "$count" -gt 0
       - name: Install Temurin jmods on Windows
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
           $destination = Join-Path $env:JAVA_HOME 'jmods'
-          if (Get-ChildItem $destination -Filter *.jmod -ErrorAction SilentlyContinue | Select-Object -First 1) {
-            Write-Host 'JDK already contains jmods'
-            exit 0
-          }
           $arch = if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'aarch64' } else { 'x64' }
           $archive = Join-Path $env:RUNNER_TEMP 'temurin-25-jmods.zip'
           $extract = Join-Path $env:RUNNER_TEMP 'temurin-25-jmods'
@@ -377,9 +371,9 @@ jobs:
           }
           New-Item -ItemType Directory -Force -Path $destination | Out-Null
           Copy-Item (Join-Path $source.FullName '*') $destination -Recurse -Force
-          if (-not (Get-ChildItem $destination -Filter *.jmod | Select-Object -First 1)) {
-            throw "No jmods were installed into $destination"
-          }
+          $count = @(Get-ChildItem $destination -Filter *.jmod).Count
+          Write-Host "Installed $count jmods into $destination"
+          if ($count -lt 1) { throw "No jmods were installed into $destination" }
       - name: Build Unix bundled-runtime archive
         if: runner.os != 'Windows'
         shell: bash
@@ -389,7 +383,8 @@ jobs:
           mkdir staging release-assets
           tar -xzf "$archive" -C staging
           root=$(find staging -mindepth 1 -maxdepth 1 -type d -print -quit)
-          "$JAVA_HOME/bin/jlink" --add-modules ALL-MODULE-PATH --strip-debug --no-header-files --no-man-pages --compress=2 --output "$root/runtime"
+          echo "jmods available: $(find "$JAVA_HOME/jmods" -name '*.jmod' | wc -l | tr -d ' ')"
+          "$JAVA_HOME/bin/jlink" --module-path "$JAVA_HOME/jmods" --add-modules ALL-MODULE-PATH --strip-debug --no-header-files --no-man-pages --compress=2 --output "$root/runtime"
           "$root/runtime/bin/java" -version
           machine=$(uname -m)
           case "$machine" in x86_64) arch=x64;; arm64|aarch64) arch=arm64;; *) arch=$machine;; esac
@@ -410,7 +405,9 @@ jobs:
           New-Item -ItemType Directory -Force -Path staging,'release-assets' | Out-Null
           Expand-Archive $archive.FullName staging
           $root = Get-ChildItem staging -Directory | Select-Object -First 1
-          & "$env:JAVA_HOME\bin\jlink.exe" --add-modules ALL-MODULE-PATH --strip-debug --no-header-files --no-man-pages --compress=2 --output "$($root.FullName)\runtime"
+          $jmodCount = @(Get-ChildItem (Join-Path $env:JAVA_HOME 'jmods') -Filter *.jmod).Count
+          Write-Host "jmods available: $jmodCount"
+          & "$env:JAVA_HOME\bin\jlink.exe" --module-path (Join-Path $env:JAVA_HOME 'jmods') --add-modules ALL-MODULE-PATH --strip-debug --no-header-files --no-man-pages --compress=2 --output "$($root.FullName)\runtime"
           & "$($root.FullName)\runtime\bin\java.exe" -version
           $arch = if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'arm64' } else { 'x64' }
           $version = $root.Name -replace '^wepush-next-', ''
