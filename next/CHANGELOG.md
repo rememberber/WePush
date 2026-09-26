@@ -15,6 +15,7 @@
 
 - Java 构建与运行基线由 21 升级到 25。完整安装包携带 Java 25 运行时；精简包和 Java SDK 需要系统 Java 25+。
 - 路线图、用户指南、部署、兼容和升级文档同步到 `1.2.0`。AI 助手接入随本版本发行附件提供。
+- 自建 Server Compose 示例改用仍可匿名拉取的 `ghcr.io/coollabsio/minio:RELEASE.2025-10-15T17-29-55Z`。原先的 `quay.io/minio/minio` 标签已无法匿名拉取。
 
 ### Compatibility
 

@@ -65,7 +65,7 @@ jobs:
           docker run --detach --name wepush-next-minio -p 9000:9000
           -e MINIO_ROOT_USER=wepush-test
           -e MINIO_ROOT_PASSWORD=wepush-test-secret
-          quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z server /data
+          ghcr.io/coollabsio/minio:RELEASE.2025-10-15T17-29-55Z server /data
       - name: Wait for MinIO
         shell: bash
         run: |

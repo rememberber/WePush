@@ -2,12 +2,13 @@ packages:
   - apps/*
   - packages/*
 
-# pnpm blocks dependency lifecycle scripts unless they are explicitly trusted.
-# Electron's pinned postinstall downloads and verifies the native runtime that
-# the Desktop packager copies into the release bundle.
-onlyBuiltDependencies:
-  - electron
-  - esbuild
+# pnpm 11 ignores legacy onlyBuiltDependencies and fails the install when a
+# dependency build script is not listed here. Electron's postinstall downloads
+# the native runtime copied into the Desktop bundle. esbuild's postinstall
+# installs the platform binary used by Vite.
+allowBuilds:
+  electron: true
+  esbuild: true
 
 catalog:
   '@tailwindcss/vite': 4.3.3
