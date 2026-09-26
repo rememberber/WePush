@@ -68,6 +68,17 @@ def has_java_binary(home_dir: Path) -> bool:
     return any(candidate.exists() for candidate in java_binary_candidates(home_dir))
 
 
+def has_java_version(home_dir: Path, version: str) -> bool:
+    release_file = home_dir / "release"
+    if not release_file.is_file():
+        return False
+    for line in release_file.read_text(encoding="utf-8").splitlines():
+        if line.startswith("JAVA_VERSION="):
+            actual = line.partition("=")[2].strip().strip('"')
+            return actual.split(".")[0].split("-")[0].split("+")[0] == version
+    return False
+
+
 def parse_targets(raw_targets: str) -> list[TargetSpec]:
     requested = [item.strip() for item in raw_targets.split(",") if item.strip()]
     if not requested:
@@ -213,11 +224,13 @@ def prepare_target(
         if install_home.exists():
             shutil.rmtree(install_home)
 
-    if has_java_binary(install_home):
+    if has_java_binary(install_home) and has_java_version(install_home, version):
         log(f"    reuse : {install_home}")
         return install_home
 
     if java_home_override is not None:
+        if not has_java_version(java_home_override, version):
+            raise RuntimeError(f"Provided java home must contain JDK {version}: {java_home_override}")
         log(f"    reuse JAVA_HOME -> {java_home_override}")
         install_from_existing_java_home(install_home, java_home_override)
         write_metadata(install_home, spec, version, f"java-home:{java_home_override}")
@@ -240,6 +253,8 @@ def prepare_target(
             safe_extract_tar(archive_path, extract_root)
 
         discovered_home = locate_java_home(extract_root)
+        if not has_java_version(discovered_home, version):
+            raise RuntimeError(f"Downloaded archive does not contain JDK {version}: {archive_path}")
         staged_home = Path(tmp_dir) / "home"
         log(f"    stage  -> {discovered_home}")
         shutil.move(str(discovered_home), staged_home)
@@ -264,7 +279,7 @@ def main(argv: Iterable[str] | None = None) -> int:
         required=True,
         help="Comma-separated targets to prepare. Supported: mac-x64, mac-arm64, windows-x64, linux-x64, all",
     )
-    parser.add_argument("--version", default="21", help="Temurin feature version to download. Default: 21")
+    parser.add_argument("--version", default="25", help="Temurin feature version to download. Default: 25")
     parser.add_argument(
         "--project-root",
         default=Path(__file__).resolve().parents[1],
@@ -296,6 +311,5 @@ def main(argv: Iterable[str] | None = None) -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-
 
 

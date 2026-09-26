@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-jdk AS java-build
+FROM eclipse-temurin:25-jdk AS java-build
 WORKDIR /src
 COPY .mvn .mvn
 COPY mvnw pom.xml ./
@@ -11,7 +11,7 @@ COPY tests tests
 COPY distribution distribution
 RUN ./mvnw -q -pl agent/agent-app -am -DskipTests package
 
-FROM eclipse-temurin:21-jre
+FROM eclipse-temurin:25-jre
 RUN groupadd --system --gid 10002 wepush-agent \
     && useradd --system --uid 10002 --gid 10002 --home /var/lib/wepush-next-agent --shell /usr/sbin/nologin wepush-agent
 WORKDIR /opt/wepush-next

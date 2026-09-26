@@ -79,6 +79,6 @@ Windows 示例：
 
 ## 开发验证
 
-使用 Java 21+ 和 Maven 执行 `mvn test`。新增测试覆盖 TOML 保留与冲突、重复安装、脚本路径转义、MCP 协议、鉴权与令牌轮换、配置变化、确认过期、持久防重及并发重试。真实链路测试在隔离子进程中使用临时数据库与本机 HTTP 接收器，断言空跑零投递、正式发送使用已接受的消息快照、重复请求不增加投递。
+使用 Java 25+ 和 Maven 执行 `mvn test`。新增测试覆盖 TOML 保留与冲突、重复安装、脚本路径转义、MCP 协议、鉴权与令牌轮换、配置变化、确认过期、持久防重及并发重试。真实链路测试在隔离子进程中使用临时数据库与本机 HTTP 接收器，断言空跑零投递、正式发送使用已接受的消息快照、重复请求不增加投递。
 
 配置依据：[Codex MCP](https://developers.openai.com/codex/mcp)、[Codex Skills](https://developers.openai.com/codex/skills)、[MCP 生命周期](https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle)及[工具协议](https://modelcontextprotocol.io/specification/2025-11-25/server/tools)。

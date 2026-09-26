@@ -17,7 +17,7 @@ WePush Next 是与 Classic 完全独立的新产品线。Classic 与 Next 可以
 | 使用方式 | 选择的发行物 |
 | --- | --- |
 | 推荐的 Standalone 安装 | 与操作系统、架构匹配的 `wepush-next-1.1.0-<os>-<arch>` 完整包，已包含 Java Runtime |
-| 已有 Java 21+ 或分组件部署 | `wepush-next-1.1.0.tar.gz` 或 `wepush-next-1.1.0.zip` 精简包 |
+| 已有 Java 25+ 或分组件部署 | `wepush-next-1.1.0.tar.gz` 或 `wepush-next-1.1.0.zip` 精简包 |
 | 只使用管理界面 | 与操作系统、架构匹配的 `wepush-next-desktop-1.1.0-<os>-<arch>` |
 | Java 集成 | `wepush-next-java-sdk-1.1.0.zip` |
 | 运营商短信 Agent 插件 | `wepush-provider-{cmpp,smgp,sgip,smpp}-1.1.0.zip` 及 `wepush-provider-trusted-key-1.1.0.env` |
@@ -37,7 +37,7 @@ Set-ExecutionPolicy -Scope Process Bypass
 & .\install\install.ps1
 ```
 
-安装完成前会检查 Service Readiness、Flyway 数据库版本和本地 Provider Dry Run。需要便携运行或已有 Java 21+ 时，可选择精简包；分组件部署仍可直接使用 `install/<os>/install.* service|agent|all`。
+安装完成前会检查 Service Readiness、Flyway 数据库版本和本地 Provider Dry Run。需要便携运行或已有 Java 25+ 时，可选择精简包；分组件部署仍可直接使用 `install/<os>/install.* service|agent|all`。
 
 ## AI 助手接入（MCP / Skill）
 

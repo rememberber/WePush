@@ -12,7 +12,7 @@ WePush Next 需要同时提供 Service、WebUI 和 Desktop UI。技术基线必�
 
 ### Service
 
-- Java 基线固定为 Java 21。
+- Java 基线固定为 Java 25。
 - Service Web 框架固定为 Spring Boot 4.1.x，初始实现版本固定为 4.1.1。
 - 使用 Spring MVC、Spring Security、Actuator、Validation 和 JDBC/DataSource 集成。
 - Service 以可执行 JAR 或应用镜像运行，不部署传统 WAR。

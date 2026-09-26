@@ -21,6 +21,8 @@ WePush 采用 Classic 与 Next 双轨发展。两条产品线彼此独立，允�
 | WePush Classic | 稳定桌面客户端 | 微信、短信、邮件、HTTP 等成熟批量推送场景 | [Classic 下载](https://gitee.com/zhoubochina/WePush/releases) |
 | WePush Next | `1.1.0` Stable | 三平台离线自部署、1.x 兼容承诺、Service/Agent、资源治理、可恢复运维、WebUI/Desktop 与可扩展 Provider | [Next 1.1.0 下载](https://github.com/rememberber/WePush/releases/tag/next-v1.1.0) |
 
+当前源码的 Classic 与 Next 均要求 JDK 25+ 构建；不含运行时的发行包及 Java SDK 要求 Java 25+。完整安装包内置 Java 25 运行时。
+
 ### AI 助手接入：Codex、MCP 与 Skill
 
 Classic 和 Next 均支持让 Codex 等 AI 助手使用 WePush。可一键安装 Codex MCP + Skill、仅安装 Skill，或生成通用 stdio MCP 配置给其他兼容客户端。两版独立实现，安装名称不同，可以同时使用。

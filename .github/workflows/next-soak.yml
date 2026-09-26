@@ -21,7 +21,7 @@ jobs:
       fail-fast: false
       matrix:
         database: [sqlite, postgresql]
-        java: ['21', '25']
+        java: ['25']
     services:
       postgres:
         image: postgres:18-alpine

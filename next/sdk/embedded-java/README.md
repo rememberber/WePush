@@ -17,7 +17,7 @@ Embedded Java SDK 让 Java 应用在自己的 JVM 进程内直接运行 WePush C
 
 ## 要求与依赖
 
-需要 Java 21 或更高版本。从源码安装当前模块、HTTP Provider 和标准渠道 Provider：
+需要 Java 25 或更高版本。从源码安装当前模块、HTTP Provider 和标准渠道 Provider：
 
 ```bash
 cd next

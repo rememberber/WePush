@@ -13,9 +13,9 @@ LOG_ROOT=${WEPUSH_LOG_ROOT:-/var/log/wepush-next}
 RELEASE="$INSTALL_ROOT/releases/$VERSION"
 if [ -x "$SOURCE/runtime/bin/java" ]; then JAVA="$SOURCE/runtime/bin/java"
 else JAVA=${WEPUSH_JAVA:-java}; fi
-command -v "$JAVA" >/dev/null 2>&1 || { echo "Java 21+ or a distribution with bundled runtime is required" >&2; exit 1; }
+command -v "$JAVA" >/dev/null 2>&1 || { echo "Java 25+ or a distribution with bundled runtime is required" >&2; exit 1; }
 JAVA_MAJOR=$($JAVA -version 2>&1 | sed -n '1s/.*version "\([0-9]*\).*/\1/p')
-[ "${JAVA_MAJOR:-0}" -ge 21 ] || { echo "Java 21+ is required" >&2; exit 1; }
+[ "${JAVA_MAJOR:-0}" -ge 25 ] || { echo "Java 25+ is required" >&2; exit 1; }
 if [ "${WEPUSH_SKIP_SERVICE_CONTROL:-false}" != true ]; then
   getent group wepush >/dev/null 2>&1 || groupadd --system wepush
   id wepush >/dev/null 2>&1 || useradd --system --gid wepush --home "$DATA_ROOT/service" --shell /usr/sbin/nologin wepush

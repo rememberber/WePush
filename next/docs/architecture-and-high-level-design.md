@@ -281,7 +281,7 @@ flowchart LR
 - `ResultPolicy`：结果明细、响应体、失败样本和制品保存策略。
 - `CancellationPolicy`：协作式取消和取消后的未发送数据处理。
 
-Java 21 虚拟线程可以作为 I/O 型发送的默认执行单元，但必须通过并发闸门和限流器限制实际外部请求数量，不能把虚拟线程数量直接等同于渠道并发能力。
+Java 25 虚拟线程可以作为 I/O 型发送的默认执行单元，但必须通过并发闸门和限流器限制实际外部请求数量，不能把虚拟线程数量直接等同于渠道并发能力。
 
 ### 10.4 事件接口
 
@@ -397,7 +397,7 @@ Enrollment 和凭据轮换使用 HTTPS REST；WebUI、Desktop UI 和远程 SDK �
 - `service-infrastructure`：数据库、Secret、Artifact、Agent 通信等适配器。
 - `service-app`：Web 框架、配置、启动和部署入口。
 
-Service 基线固定为 Java 21 和 Spring Boot 4.1.x，初始实现版本为 4.1.1；数据库迁移使用显式版本化迁移工具，依赖版本由 BOM 统一管理。Spring 只存在于 Service App、Web 和 Infrastructure 层，不进入 Core、Provider SPI、Agent Runtime、Remote Java SDK 或 Embedded SDK。详见 [ADR-0002](adr/0002-technology-baseline.md)。
+Service 基线固定为 Java 25 和 Spring Boot 4.1.x，初始实现版本为 4.1.1；数据库迁移使用显式版本化迁移工具，依赖版本由 BOM 统一管理。Spring 只存在于 Service App、Web 和 Infrastructure 层，不进入 Core、Provider SPI、Agent Runtime、Remote Java SDK 或 Embedded SDK。详见 [ADR-0002](adr/0002-technology-baseline.md)。
 
 ### 13.2 主要领域对象
 

@@ -120,7 +120,7 @@ Standalone 默认是单 Service + SQLite + Local Artifact + Embedded Engine；Se
 - 真实 gRPC 纵向链路覆盖 Hello/Welcome、Lease Ack、受保护文档、Secret、Command Ack、Event 去重、Agent Artifact 上传/Commit、Run Completion。
 - 插件测试覆盖有效签名、未知签名者、Zip Slip 和空目录。
 - 安装脚本通过 POSIX shell 语法、PowerShell AST、launchd plist、WinSW XML 与 Compose 配置校验；三平台自测实际覆盖备份内容摘要、完整恢复和强制升级失败回退。
-- 浏览器 Playwright E2E 覆盖 Standalone/Provider/会话 Token；三平台打包后启动 Desktop 冒烟；定时矩阵在 Java 21/25、SQLite/PostgreSQL 上执行长稳健康检查。
+- 浏览器 Playwright E2E 覆盖 Standalone/Provider/会话 Token；三平台打包后启动 Desktop 冒烟；定时矩阵在 Java 25、SQLite/PostgreSQL 上执行长稳健康检查。
 - 发行归档生成系统 Java 精简包和含 Runtime 的平台完整包，并检查离线 WinSW、Service/Agent/WebUI/安装/恢复脚本及 Remote/Embedded Java SDK 均存在。
 
 `.github/workflows/next-ci.yml` 另外使用真实 PostgreSQL 18 和固定 MinIO 版本验证：

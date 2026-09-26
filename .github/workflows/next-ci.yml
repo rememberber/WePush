@@ -27,7 +27,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: '25'
           cache: maven
       - name: Verify beta compatibility baselines
         run: next/scripts/verify-compatibility.sh
@@ -63,7 +63,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: '25'
           cache: maven
       - name: Verify PostgreSQL schema
         working-directory: next
@@ -85,7 +85,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: '25'
           cache: maven
       - name: Start pinned MinIO
         run: >-
@@ -216,7 +216,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: '25'
           cache: maven
       - uses: actions/setup-node@v4
         with:
@@ -289,7 +289,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: '25'
       - uses: actions/download-artifact@v4
         with:
           name: wepush-next-distribution

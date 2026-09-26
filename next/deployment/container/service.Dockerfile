@@ -6,7 +6,7 @@ COPY ui/apps ./apps
 COPY ui/packages ./packages
 RUN pnpm install --frozen-lockfile && pnpm --filter @wepush-next/web build
 
-FROM eclipse-temurin:21-jdk AS java-build
+FROM eclipse-temurin:25-jdk AS java-build
 WORKDIR /src
 COPY .mvn .mvn
 COPY mvnw pom.xml ./
@@ -19,7 +19,7 @@ COPY tests tests
 COPY distribution distribution
 RUN ./mvnw -q -pl service/service-app -am -DskipTests package
 
-FROM eclipse-temurin:21-jre
+FROM eclipse-temurin:25-jre
 RUN groupadd --system --gid 10001 wepush \
     && useradd --system --uid 10001 --gid 10001 --home /var/lib/wepush-next --shell /usr/sbin/nologin wepush
 WORKDIR /opt/wepush-next

@@ -18,9 +18,9 @@
 
 | 项目 | 首期设计基线 |
 |---|---|
-| Java | Java 21 |
+| Java | Java 25 |
 | 构建 | `next/pom.xml` 独立 Maven 聚合工程 |
-| Service | Java 21、Spring Boot 4.1.x，初始版本 4.1.1 |
+| Service | Java 25、Spring Boot 4.1.x，初始版本 4.1.1 |
 | API | HTTPS REST；Workspace 资源前缀 `/api/v1/workspaces/{workspaceId}` |
 | 实时事件 | Server-Sent Events |
 | API 契约 | Contract First OpenAPI 3.1 |
@@ -1858,14 +1858,14 @@ wepush:
 
 - Service 使用专用系统用户 `wepush`，Agent 使用独立的 `wepush-agent`，配置组权限和数据目录彼此分离。
 - systemd Unit 以非 root 用户运行。
-- `ExecStart` 指向版本化发行目录；完整发行变体携带 JDK 21 `jlink` Runtime Image，精简变体校验并使用系统 Java 21+，启动脚本按此顺序自动选择。
+- `ExecStart` 指向版本化发行目录；完整发行变体携带 JDK 25 `jlink` Runtime Image，精简变体校验并使用系统 Java 25+，启动脚本按此顺序自动选择。
 - 配置 `Restart=on-failure` 和合理的 Stop Timeout。
 - 安装后不自动开放公网防火墙端口。
 
 ### 40.2 Windows
 
 - 使用独立 Windows Service 名称 `WePushNextService`。
-- 通过发行包离线携带且固定长度/SHA-256 的 WinSW 启动包内 Runtime 或系统 Java 21+；WinSW 使用低权限 `LocalService`，`ProgramData` ACL 只授予 LocalService、SYSTEM 和 Administrators。
+- 通过发行包离线携带且固定长度/SHA-256 的 WinSW 启动包内 Runtime 或系统 Java 25+；WinSW 使用低权限 `LocalService`，`ProgramData` ACL 只授予 LocalService、SYSTEM 和 Administrators。
 - 配置滚动日志、失败重启和优雅停止。
 - 安装、卸载和 Service 控制需要管理员权限。
 

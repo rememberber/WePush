@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-/** Source-file-mode utility used by package-carrier-provider.sh; requires only Java 21+. */
+/** Source-file-mode utility used by package-carrier-provider.sh; requires only Java 25+. */
 final class PluginPackager {
     public static void main(String[] arguments) throws Exception {
         if (arguments.length != 4) throw new IllegalArgumentException(

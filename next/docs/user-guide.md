@@ -37,7 +37,7 @@ Classic 与 Next 是彼此独立的两条产品线。Classic 继续提供成熟�
 | `wepush-next-1.1.0-linux-<arch>.tar.gz` | Linux 完整包，内含 Java Runtime，推荐首次安装 |
 | `wepush-next-1.1.0-macos-<arch>.zip` | macOS 完整包，内含 Java Runtime，推荐首次安装 |
 | `wepush-next-1.1.0-windows-<arch>.zip` | Windows 完整包，内含 Java Runtime 和离线 WinSW |
-| `wepush-next-1.1.0.tar.gz` / `.zip` | 使用系统 Java 21+ 的精简便携包；内容不含 Java Runtime |
+| `wepush-next-1.1.0.tar.gz` / `.zip` | 使用系统 Java 25+ 的精简便携包；内容不含 Java Runtime |
 | `wepush-next-desktop-1.1.0-<os>-<arch>.*` | 对应平台的 Desktop 管理界面 |
 | `wepush-next-java-sdk-1.1.0.zip` | Remote Java SDK、Embedded Java SDK 及其 POM/JAR 依赖闭包 |
 | `wepush-provider-{cmpp,smgp,sgip,smpp}-1.1.0.zip` | 可选运营商短信 Agent 签名插件；各自附带 `.sha256` |
@@ -45,7 +45,7 @@ Classic 与 Next 是彼此独立的两条产品线。Classic 继续提供成熟�
 | `SHA256SUMS` | 全部附件的 SHA-256 |
 | `wepush-next-1.1.0-sbom.cdx.json` | CycloneDX SBOM |
 
-完整包运行 Service/Agent 不要求预装 Java。精简包、从源码构建和任一种 Java SDK 需要 Java 21 或更高版本：
+完整包运行 Service/Agent 不要求预装 Java。精简包、从源码构建和任一种 Java SDK 需要 Java 25 或更高版本：
 
 ```bash
 java -version

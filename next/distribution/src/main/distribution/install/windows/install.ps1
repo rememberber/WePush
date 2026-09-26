@@ -14,8 +14,8 @@ $dataRoot = if ($env:WEPUSH_DATA_ROOT) { $env:WEPUSH_DATA_ROOT } else { "$env:Pr
 $wrapperRoot = "$dataRoot\winsw"
 $java = if ($env:WEPUSH_JAVA) { $env:WEPUSH_JAVA } elseif (Test-Path "$source\runtime\bin\java.exe") { "$source\runtime\bin\java.exe" } else { "java.exe" }
 $javaVersion = (& $java -version 2>&1 | Select-Object -First 1).ToString()
-if ($javaVersion -notmatch 'version "(\d+)') { throw "Java 21+ is required" }
-if ([int]$Matches[1] -lt 21) { throw "Java 21+ is required" }
+if ($javaVersion -notmatch 'version "(\d+)') { throw "Java 25+ is required" }
+if ([int]$Matches[1] -lt 25) { throw "Java 25+ is required" }
 New-Item -ItemType Directory -Force -Path "$installRoot\releases", $dataRoot, "$dataRoot\service", "$dataRoot\agent", "$dataRoot\agent\plugins\active", "$dataRoot\logs", $wrapperRoot | Out-Null
 if ($env:WEPUSH_SKIP_SERVICE_CONTROL -ne "true") {
   & icacls.exe $dataRoot /inheritance:r /grant:r '*S-1-5-18:(OI)(CI)F' '*S-1-5-32-544:(OI)(CI)F' '*S-1-5-19:(OI)(CI)M' | Out-Null

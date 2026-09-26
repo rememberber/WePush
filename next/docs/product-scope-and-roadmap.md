@@ -92,7 +92,7 @@ PostgreSQL、S3-compatible Store 和多节点 HA 是可选的用户自建形态�
 - Desktop 本机 Service 运维、原生 Token 安全存储，以及签名插件 Stage/Activate/Rollback。
 - 1.x REST/SSE、Java SDK、配置、数据库迁移、Provider SPI 和 Agent 协议兼容承诺。
 - V13→V14 无损迁移、Beta 成功升级/失败回退、100,000 Recipient 流式执行和跨平台故障门禁。
-- 浏览器 E2E、Desktop 冒烟、三平台恢复/失败升级和 Java 21/25 长稳矩阵。
+- 浏览器 E2E、Desktop 冒烟、三平台恢复/失败升级和 Java 25 长稳矩阵。
 
 当前稳定基线不依赖商业代码签名，不需要也不会扩大公共平台能力。后续 1.x 只在兼容边界内改进自部署体验、可靠性和 Provider 生态。
 
@@ -196,11 +196,11 @@ Classic 与 Next 可以复用业务需求、测试数据和验收经验，但不
 
 验收结果：
 
-- Release 流水线在 Linux、macOS、Windows 分别用 JDK 21 `jlink` 生成完整包；精简包保留系统 Java 路径，Windows 两种包都离线携带固定摘要的 WinSW 2.12.0。
+- Release 流水线在 Linux、macOS、Windows 分别用 JDK 25 `jlink` 生成完整包；精简包保留系统 Java 路径，Windows 两种包都离线携带固定摘要的 WinSW 2.12.0。
 - 统一安装入口在安装后检查 Installation Health；该健康组同时断言 Flyway 当前版本和内置 HTTP Provider 的本地无网络 Dry Run。
 - 三平台运维自测创建代表数据库、Master Key、Artifact、Agent Identity、Journal、Event/Completion Outbox 和插件的快照，验证文件集合/逐文件摘要、完整恢复，以及强制新版本健康失败后旧版本/数据回退。
 - Desktop IPC 只允许固定的服务、插件和安全存储操作；浏览器 E2E 断言 Token 不进入 `localStorage`，Desktop 三平台包执行启动冒烟。
-- Java 21/25 × SQLite/PostgreSQL 的定时长稳矩阵，以及 JDK Native Access 和 Shade 重复资源清理进入发行门禁。
+- Java 25 × SQLite/PostgreSQL 的定时长稳矩阵，以及 JDK Native Access 和 Shade 重复资源清理进入发行门禁。
 
 ### 6.5 `1.0.0`：稳定发行
 
@@ -225,7 +225,7 @@ Classic 与 Next 可以复用业务需求、测试数据和验收经验，但不
 - SQLite 和 PostgreSQL 都从 V13 创建用户数据后迁移到 V14，并验证原数据、版本和兼容元数据。
 - Linux、macOS、Windows 运维自测覆盖成功升级、失败自动回退、完整恢复、默认卸载保留数据和显式 Purge。
 - Core 自动执行 100,000 Recipient 流式任务；Agent 测试覆盖断网重放、进程崩溃后的 UNKNOWN、Outbox 上限和模拟磁盘写失败。
-- Java 21/25 × SQLite/PostgreSQL 长稳、浏览器 E2E、三平台 Desktop 启动和发行归档验证进入 CI/Release 门禁。
+- Java 25 × SQLite/PostgreSQL 长稳、浏览器 E2E、三平台 Desktop 启动和发行归档验证进入 CI/Release 门禁。
 
 ### 6.6 `1.1.0`：自部署治理与 Provider 生态
 

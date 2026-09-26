@@ -7,7 +7,7 @@
 | ADR | 状态 | 决策摘要 |
 |---|---|---|
 | [ADR-0001](0001-dual-track-development.md) | 已接受 | Classic 与 Next 双轨独立发展，允许按需重复代码 |
-| [ADR-0002](0002-technology-baseline.md) | 已接受 | Java 21、Spring Boot 4.1.x、TypeScript/Vite/React、Electron 技术基线 |
+| [ADR-0002](0002-technology-baseline.md) | 已接受 | Java 25、Spring Boot 4.1.x、TypeScript/Vite/React、Electron 技术基线 |
 | [ADR-0003](0003-default-secret-store.md) | 已接受 | 默认并正式使用本地 AES-256-GCM 信封加密 Secret Store，不规划云密钥适配 |
 | [ADR-0004](0004-agent-communication-protocol.md) | 已接受 | Agent 使用 gRPC 双向流，UI/SDK 事件使用 SSE |
 | [ADR-0005](0005-provider-plugin-lifecycle.md) | 已接受 | PF4J、签名插件、ClassLoader 隔离和滚动重启更新 |

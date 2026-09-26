@@ -13,7 +13,7 @@ WePush Next 提供两种边界不同、彼此独立的 Java SDK：
 
 ## 从源码安装
 
-需要 Java 21 或更高版本。在仓库根目录执行：
+需要 Java 25 或更高版本。在仓库根目录执行：
 
 ```bash
 cd next

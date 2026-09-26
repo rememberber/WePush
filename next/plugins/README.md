@@ -8,7 +8,7 @@
 
 打包脚本不会内置或生成发布私钥。提供 Ed25519 PKCS#8 DER 的 Base64 和可信 Key ID 后分别构建：
 
-首次配置时，可用 JDK 21+ 生成 Agent 所需的 PKCS#8 私钥和 X.509 公钥（Base64）：
+首次配置时，可用 JDK 25+ 生成 Agent 所需的 PKCS#8 私钥和 X.509 公钥（Base64）：
 
 ```bash
 java scripts/GeneratePluginSigningKey.java private-key.b64 public-key.b64

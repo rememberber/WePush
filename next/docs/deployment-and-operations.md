@@ -6,7 +6,7 @@ Service 的无认证开发模式仅允许绑定回环地址。任何非回环 HT
 
 ## 1. 构建与发行物
 
-要求 JDK 21+、Node.js 24 和 pnpm 11.22.0：
+要求 JDK 25+、Node.js 24 和 pnpm 11.22.0：
 
 ```bash
 cd next/ui
@@ -25,7 +25,7 @@ cd ..
 - `distribution/target/wepush-next-1.1.0.zip`
 - 对应 `.sha256` 文件
 
-上面两个归档是使用系统 Java 21+ 的精简包。Release 流水线还在 Linux、macOS、Windows Runner 上用 JDK 21 `jlink` 生成对应架构的完整包，目录内多出 `runtime/`；两个变体都携带固定摘要的 WinSW 2.12.0，因此 Windows 用户安装时不联网。`prepare-winsw.sh` 只在源码发行构建阶段从上游下载并验证固定长度与 SHA-256。
+上面两个归档是使用系统 Java 25+ 的精简包。Release 流水线还在 Linux、macOS、Windows Runner 上用 JDK 25 `jlink` 生成对应架构的完整包，目录内多出 `runtime/`；两个变体都携带固定摘要的 WinSW 2.12.0，因此 Windows 用户安装时不联网。`prepare-winsw.sh` 只在源码发行构建阶段从上游下载并验证固定长度与 SHA-256。
 
 归档内包含 Service/Agent Fat JAR、生产 WebUI、统一/分组件安装脚本、正式 Backup/Restore/Upgrade、配置模板和 Provider 插件生命周期工具。Desktop 原生目录包在当前操作系统执行：
 
