@@ -318,6 +318,68 @@ jobs:
         with:
           name: wepush-next-distribution
           path: slim
+      - name: Install Temurin jmods
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if find "$JAVA_HOME/jmods" -name '*.jmod' -print -quit | grep -q .; then
+            echo "JDK already contains jmods"
+            exit 0
+          fi
+          case "$(uname -s)" in
+            Linux) os=linux ;;
+            Darwin) os=mac ;;
+            *) echo "Unsupported OS: $(uname -s)" >&2; exit 1 ;;
+          esac
+          case "$(uname -m)" in
+            x86_64|amd64) arch=x64 ;;
+            arm64|aarch64) arch=aarch64 ;;
+            *) echo "Unsupported architecture: $(uname -m)" >&2; exit 1 ;;
+          esac
+          archive="$RUNNER_TEMP/temurin-25-jmods.tar.gz"
+          curl --fail --location --silent --show-error --output "$archive" \
+            "https://api.adoptium.net/v3/binary/latest/25/ga/${os}/${arch}/jmods/hotspot/normal/eclipse?project=jdk"
+          extract="$RUNNER_TEMP/temurin-25-jmods"
+          rm -rf "$extract"
+          mkdir -p "$extract"
+          tar -xzf "$archive" -C "$extract"
+          source=$(find "$extract" -type d -name jmods -print -quit || true)
+          if [ -z "$source" ]; then
+            jmod=$(find "$extract" -name '*.jmod' -print -quit)
+            test -n "$jmod"
+            source=$(dirname "$jmod")
+          fi
+          rm -rf "$JAVA_HOME/jmods"
+          cp -R "$source" "$JAVA_HOME/jmods"
+          find "$JAVA_HOME/jmods" -name '*.jmod' -print -quit | grep -q .
+      - name: Install Temurin jmods on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $destination = Join-Path $env:JAVA_HOME 'jmods'
+          if (Get-ChildItem $destination -Filter *.jmod -ErrorAction SilentlyContinue | Select-Object -First 1) {
+            Write-Host 'JDK already contains jmods'
+            exit 0
+          }
+          $arch = if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'aarch64' } else { 'x64' }
+          $archive = Join-Path $env:RUNNER_TEMP 'temurin-25-jmods.zip'
+          $extract = Join-Path $env:RUNNER_TEMP 'temurin-25-jmods'
+          Invoke-WebRequest -Uri "https://api.adoptium.net/v3/binary/latest/25/ga/windows/$arch/jmods/hotspot/normal/eclipse?project=jdk" -OutFile $archive
+          if (Test-Path $extract) { Remove-Item $extract -Recurse -Force }
+          Expand-Archive $archive $extract
+          $source = Get-ChildItem $extract -Recurse -Directory -Filter jmods | Select-Object -First 1
+          if (-not $source) {
+            $jmod = Get-ChildItem $extract -Recurse -Filter *.jmod | Select-Object -First 1
+            if (-not $jmod) { throw 'Temurin jmods archive did not contain any .jmod files' }
+            $source = $jmod.Directory
+          }
+          New-Item -ItemType Directory -Force -Path $destination | Out-Null
+          Copy-Item (Join-Path $source.FullName '*') $destination -Recurse -Force
+          if (-not (Get-ChildItem $destination -Filter *.jmod | Select-Object -First 1)) {
+            throw "No jmods were installed into $destination"
+          }
       - name: Build Unix bundled-runtime archive
         if: runner.os != 'Windows'
         shell: bash
