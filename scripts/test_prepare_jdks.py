@@ -102,6 +102,11 @@ class PrepareJdksTests(unittest.TestCase):
             (macos / "java.base.jmod").write_bytes(b"jmod")
             self.assertEqual(locate_jmods_dir(root / "temurin-25.jdk"), macos)
 
+            flat = root / "flat" / "jdk-25.0.4.1+1"
+            flat.mkdir(parents=True)
+            (flat / "java.base.jmod").write_bytes(b"jmod")
+            self.assertEqual(locate_jmods_dir(root / "flat"), flat)
+
     def test_install_jmods_from_tar_and_zip(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             root = Path(tmp_dir)
@@ -137,7 +142,7 @@ class PrepareJdksTests(unittest.TestCase):
                 destination.parent.mkdir(parents=True, exist_ok=True)
                 payload = b"jmod"
                 with tarfile.open(destination, "w:gz") as archive:
-                    info = tarfile.TarInfo("jdk-25/jmods/java.base.jmod")
+                    info = tarfile.TarInfo("jdk-25.0.4.1+1/java.base.jmod")
                     info.size = len(payload)
                     archive.addfile(info, io.BytesIO(payload))
 

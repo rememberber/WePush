@@ -172,14 +172,23 @@ def download_file(url: str, destination: Path) -> None:
 
 
 def locate_jmods_dir(root: Path) -> Path:
-    candidates = [
+    named = [
         directory
         for directory in root.rglob("jmods")
         if directory.is_dir() and any(directory.glob("*.jmod"))
     ]
-    if not candidates:
-        raise RuntimeError(f"Could not locate a jmods directory under {root}")
-    return sorted(candidates, key=lambda item: (len(item.relative_to(root).parts), str(item)))[0]
+    if named:
+        return sorted(named, key=lambda item: (len(item.relative_to(root).parts), str(item)))[0]
+
+    parents = {
+        jmod.parent
+        for jmod in root.rglob("*.jmod")
+        if jmod.is_file()
+    }
+    if not parents:
+        sample = ", ".join(str(path.relative_to(root)) for path in list(root.rglob("*"))[:8])
+        raise RuntimeError(f"Could not locate a jmods directory under {root}. Entries: {sample or '<empty>'}")
+    return sorted(parents, key=lambda item: (len(item.relative_to(root).parts), str(item)))[0]
 
 
 def locate_java_home(root: Path) -> Path:
