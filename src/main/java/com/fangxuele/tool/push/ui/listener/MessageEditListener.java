@@ -199,7 +199,7 @@ public class MessageEditListener {
                 } else if (msgType == MessageTypeEnum.FEISHU_CODE) {
                     fillParaName = "消息变量（第 1 列是 $var0；若消息选择“@数据第1列open_id”，第 1 列须填写飞书 open_id）";
                     paraDemo = "ou_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx|变量1|变量2";
-                } else if (msgType == MessageTypeEnum.ALI_YUN_CODE || msgType == MessageTypeEnum.TX_YUN_CODE
+                } else if (msgType == MessageTypeEnum.KS_YUN_CODE || msgType == MessageTypeEnum.ALI_YUN_CODE || msgType == MessageTypeEnum.TX_YUN_CODE
                         || msgType == MessageTypeEnum.TX_YUN_3_CODE
                         || msgType == MessageTypeEnum.HW_YUN_CODE || msgType == MessageTypeEnum.BD_YUN_CODE
                         || msgType == MessageTypeEnum.UP_YUN_CODE || msgType == MessageTypeEnum.YUN_PIAN_CODE

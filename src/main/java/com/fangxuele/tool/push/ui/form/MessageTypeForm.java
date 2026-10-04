@@ -55,7 +55,21 @@ public class MessageTypeForm {
 
     private static MessageTypeForm messageTypeForm;
 
+    private JRadioButton ksYunRadioButton;
+
     private MessageTypeForm() {
+        GridLayoutManager layout = (GridLayoutManager) msgTypeListPanel.getLayout();
+        Component[] components = msgTypeListPanel.getComponents();
+        GridConstraints[] constraints = new GridConstraints[components.length];
+        for (int i = 0; i < components.length; i++) constraints[i] = layout.getConstraintsForComponent(components[i]);
+        msgTypeListPanel.removeAll();
+        msgTypeListPanel.setLayout(new GridLayoutManager(27, 3, layout.getMargin(), -1, -1));
+        for (int i = 0; i < components.length; i++) msgTypeListPanel.add(components[i], constraints[i]);
+        ksYunRadioButton = new JRadioButton("金山云短信");
+        msgTypeListPanel.add(ksYunRadioButton, new GridConstraints(26, 0, 1, 1,
+                GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     public static MessageTypeForm getInstance() {
@@ -98,6 +112,9 @@ public class MessageTypeForm {
                 break;
             case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE:
                 messageTypeForm.getWxUniformMessageRadioButton().setSelected(true);
+                break;
+            case MessageTypeEnum.KS_YUN_CODE:
+                messageTypeForm.getKsYunRadioButton().setSelected(true);
                 break;
             case MessageTypeEnum.ALI_YUN_CODE:
                 messageTypeForm.getAliYunRadioButton().setSelected(true);

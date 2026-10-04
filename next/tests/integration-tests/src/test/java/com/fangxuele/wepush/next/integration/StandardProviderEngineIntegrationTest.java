@@ -33,7 +33,7 @@ class StandardProviderEngineIntegrationTest {
                 .map(ServiceLoader.Provider::get)
                 .filter(provider -> !provider.descriptor().providerId().equals("wepush.http"))
                 .toList();
-        assertEquals(8, standard.size());
+        assertEquals(9, standard.size());
         assertTrue(standard.stream().allMatch(provider ->
                 provider.descriptor().capabilities().stream().anyMatch(
                         capability -> capability.name().equals("DRY_RUN"))));
@@ -61,7 +61,7 @@ class StandardProviderEngineIntegrationTest {
                 assertEquals(1, summary.succeeded(), provider.descriptor().providerId());
             }
         }
-        assertEquals(8, store.results().size());
+        assertEquals(9, store.results().size());
         assertTrue(store.results().stream().allMatch(result -> result.providerCode().equals("DRY_RUN")));
     }
 
@@ -78,6 +78,10 @@ class StandardProviderEngineIntegrationTest {
             case "wepush.sms.aliyun" -> new Fixture(
                     "{\"accessKeyId\":\"test-id\",\"accessKeySecret\":" + SECRET + "}",
                     "{\"signName\":\"WePush\",\"templateCode\":\"SMS_123\",\"templateParamJsonTemplate\":\"{\\\"name\\\":\\\"{{name}}\\\"}\"}",
+                    Map.of("phoneNumber", "13800138000", "name", "Alice"));
+            case "wepush.sms.ksyun" -> new Fixture(
+                    "{\"accessKeyId\":\"test-id\",\"accessKeySecret\":" + SECRET + "}",
+                    "{\"signName\":\"WePush\",\"templateId\":\"123\",\"templateParamJsonTemplate\":\"{\\\"name\\\":\\\"{{name}}\\\"}\"}",
                     Map.of("phoneNumber", "13800138000", "name", "Alice"));
             case "wepush.wechat.official" -> new Fixture(
                     "{\"appId\":\"app-id\",\"appSecret\":" + SECRET + "}",

@@ -37,6 +37,9 @@ public class MsgSenderFactory {
             case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE:
                 iMsgSender = new WxUniformMsgSender(msgId, dryRun);
                 break;
+            case MessageTypeEnum.KS_YUN_CODE:
+                iMsgSender = new KsYunMsgSender(msgId, dryRun);
+                break;
             case MessageTypeEnum.ALI_YUN_CODE:
                 iMsgSender = new AliYunMsgSender(msgId, dryRun);
                 break;
@@ -114,6 +117,7 @@ public class MsgSenderFactory {
             WxMaSubscribeMsgSender.removeAccount(accountId);
         } else {
             switch (msgType) {
+                case MessageTypeEnum.KS_YUN_CODE -> KsYunMsgSender.removeAccount(accountId);
                 case MessageTypeEnum.ALI_YUN_CODE -> AliYunMsgSender.removeAccount(accountId);
                 case MessageTypeEnum.NETEASE_YUN_XIN_CODE -> NeteaseYunXinMsgSender.removeAccount(accountId);
                 case MessageTypeEnum.TX_YUN_CODE -> TxYunMsgSender.removeAccount(accountId);

@@ -53,20 +53,25 @@ public class AliYunMsgForm implements IMsgForm {
 
     private static TMsgMapper msgMapper = MybatisUtil.getSqlSession().getMapper(TMsgMapper.class);
 
-    public AliYunMsgForm() {
+    private final int messageType;
+
+    public AliYunMsgForm() { this(MessageTypeEnum.ALI_YUN_CODE); }
+
+    protected AliYunMsgForm(int messageType) {
+        this.messageType = messageType;
         templateMsgDataAddButton.setIcon(new FlatSVGIcon("icon/add.svg"));
 
         // 模板数据-添加 按钮事件
         templateMsgDataAddButton.addActionListener(e -> {
             String[] data = new String[2];
-            data[0] = getInstance().getTemplateDataNameTextField().getText();
-            data[1] = getInstance().getTemplateDataValueTextField().getText();
+            data[0] = this.getTemplateDataNameTextField().getText();
+            data[1] = this.getTemplateDataValueTextField().getText();
 
-            if (getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-                initTemplateDataTable();
+            if (this.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+                initTemplateDataTableForForm();
             }
 
-            DefaultTableModel tableModel = (DefaultTableModel) getInstance().getTemplateMsgDataTable().getModel();
+            DefaultTableModel tableModel = (DefaultTableModel) this.getTemplateMsgDataTable().getModel();
             int rowCount = tableModel.getRowCount();
 
             Set<String> keySet = new HashSet<>();
@@ -95,13 +100,13 @@ public class AliYunMsgForm implements IMsgForm {
         TMsg tMsg = msgMapper.selectByPrimaryKey(msgId);
         if (tMsg != null) {
             TMsgSms tMsgSms = JSONUtil.toBean(tMsg.getContent(), TMsgSms.class);
-            getInstance().getMsgTemplateIdTextField().setText(tMsgSms.getTemplateId());
+            this.getMsgTemplateIdTextField().setText(tMsgSms.getTemplateId());
             MessageEditForm messageEditForm = MessageEditForm.getInstance();
             messageEditForm.getMsgNameField().setText(tMsg.getMsgName());
             messageEditForm.getPreviewUserField().setText(tMsg.getPreviewUser());
         }
 
-        initTemplateDataTable();
+        initTemplateDataTableForForm();
         // 模板消息Data表
         List<TemplateData> templateDataList;
         if (tMsg == null) {
@@ -118,12 +123,12 @@ public class AliYunMsgForm implements IMsgForm {
             cellData[i][1] = tTemplateData.getValue();
         }
         DefaultTableModel model = new DefaultTableModel(cellData, headerNames);
-        getInstance().getTemplateMsgDataTable().setModel(model);
-        TableColumnModel tableColumnModel = getInstance().getTemplateMsgDataTable().getColumnModel();
+        this.getTemplateMsgDataTable().setModel(model);
+        TableColumnModel tableColumnModel = this.getTemplateMsgDataTable().getColumnModel();
         tableColumnModel.getColumn(headerNames.length - 1).
-                setCellRenderer(new TableInCellButtonColumn(getInstance().getTemplateMsgDataTable(), headerNames.length - 1));
+                setCellRenderer(new TableInCellButtonColumn(this.getTemplateMsgDataTable(), headerNames.length - 1));
         tableColumnModel.getColumn(headerNames.length - 1).
-                setCellEditor(new TableInCellButtonColumn(getInstance().getTemplateMsgDataTable(), headerNames.length - 1));
+                setCellEditor(new TableInCellButtonColumn(this.getTemplateMsgDataTable(), headerNames.length - 1));
 
         // 设置列宽
         tableColumnModel.getColumn(2).setPreferredWidth(46);
@@ -135,7 +140,7 @@ public class AliYunMsgForm implements IMsgForm {
         int msgId = 0;
         boolean existSameMsg = false;
 
-        TMsg tMsg = msgMapper.selectByUnique(MessageTypeEnum.ALI_YUN_CODE, accountId, msgName);
+        TMsg tMsg = msgMapper.selectByUnique(messageType, accountId, msgName);
         if (tMsg != null) {
             existSameMsg = true;
             msgId = tMsg.getId();
@@ -149,13 +154,13 @@ public class AliYunMsgForm implements IMsgForm {
         }
 
         if (!existSameMsg || isCover == JOptionPane.YES_OPTION) {
-            String templateId = getInstance().getMsgTemplateIdTextField().getText();
+            String templateId = this.getMsgTemplateIdTextField().getText();
 
             String now = SqliteUtil.nowDateForSqlite();
 
             TMsg msg = new TMsg();
             TMsgSms tMsgSms = new TMsgSms();
-            msg.setMsgType(MessageTypeEnum.ALI_YUN_CODE);
+            msg.setMsgType(messageType);
             msg.setAccountId(accountId);
             msg.setMsgName(msgName);
             tMsgSms.setTemplateId(templateId);
@@ -165,12 +170,12 @@ public class AliYunMsgForm implements IMsgForm {
             msg.setPreviewUser(messageEditForm.getPreviewUserField().getText());
 
             // 如果table为空，则初始化
-            if (getInstance().getTemplateMsgDataTable().getModel().getRowCount() == 0) {
-                initTemplateDataTable();
+            if (this.getTemplateMsgDataTable().getModel().getRowCount() == 0) {
+                initTemplateDataTableForForm();
             }
 
             // 逐行读取
-            DefaultTableModel tableModel = (DefaultTableModel) getInstance().getTemplateMsgDataTable()
+            DefaultTableModel tableModel = (DefaultTableModel) this.getTemplateMsgDataTable()
                     .getModel();
             int rowCount = tableModel.getRowCount();
 
@@ -211,8 +216,10 @@ public class AliYunMsgForm implements IMsgForm {
     /**
      * 初始化模板消息数据table
      */
-    public static void initTemplateDataTable() {
-        JTable msgDataTable = getInstance().getTemplateMsgDataTable();
+    public static void initTemplateDataTable() { getInstance().initTemplateDataTableForForm(); }
+
+    private void initTemplateDataTableForForm() {
+        JTable msgDataTable = this.getTemplateMsgDataTable();
         String[] headerNames = {"模板参数", "参数对应的值", "操作"};
         DefaultTableModel model = new DefaultTableModel(null, headerNames);
         msgDataTable.setModel(model);
@@ -237,10 +244,10 @@ public class AliYunMsgForm implements IMsgForm {
      */
     @Override
     public void clearAllField() {
-        getInstance().getMsgTemplateIdTextField().setText("");
-        getInstance().getTemplateDataNameTextField().setText("");
-        getInstance().getTemplateDataValueTextField().setText("");
-        initTemplateDataTable();
+        this.getMsgTemplateIdTextField().setText("");
+        this.getTemplateDataNameTextField().setText("");
+        this.getTemplateDataValueTextField().setText("");
+        initTemplateDataTableForForm();
     }
 
     {

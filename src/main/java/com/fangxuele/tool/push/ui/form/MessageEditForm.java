@@ -100,6 +100,9 @@ public class MessageEditForm {
                 messageEditForm.getMsgEditorPanel().add(MaSubscribeMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
                 messageEditForm.getMsgEditorPanel().add(MpTemplateMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow1);
                 break;
+            case MessageTypeEnum.KS_YUN_CODE:
+                messageEditForm.getMsgEditorPanel().add(KsYunMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
+                break;
             case MessageTypeEnum.ALI_YUN_CODE:
                 messageEditForm.getMsgEditorPanel().add(AliYunMsgForm.getInstance().getTemplateMsgPanel(), gridConstraintsRow0);
                 break;

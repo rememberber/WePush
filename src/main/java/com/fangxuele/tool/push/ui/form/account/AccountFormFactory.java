@@ -32,6 +32,9 @@ public class AccountFormFactory {
             case MessageTypeEnum.WX_UNIFORM_MESSAGE_CODE:
                 iAccountForm = WxMaAccountForm.getInstance();
                 break;
+            case MessageTypeEnum.KS_YUN_CODE:
+                iAccountForm = KsYunAccountForm.getInstance();
+                break;
             case MessageTypeEnum.ALI_YUN_CODE:
                 iAccountForm = AliYunAccountForm.getInstance();
                 break;

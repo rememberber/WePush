@@ -6,3 +6,4 @@ com.fangxuele.wepush.next.provider.standard.AliyunSmsProviderFactory
 com.fangxuele.wepush.next.provider.standard.WeChatOfficialProviderFactory
 com.fangxuele.wepush.next.provider.standard.WeChatMiniProviderFactory
 com.fangxuele.wepush.next.provider.standard.WeComAppProviderFactory
+com.fangxuele.wepush.next.provider.standard.KsyunSmsProviderFactory

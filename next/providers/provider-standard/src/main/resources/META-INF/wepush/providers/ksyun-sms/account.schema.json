@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wepush.dev/schemas/providers/ksyun-sms/account/1",
+  "title": "Ksyun SMS Account",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "accessKeyId",
+    "accessKeySecret"
+  ],
+  "properties": {
+    "accessKeyId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "accessKeySecret": {
+      "$ref": "#/$defs/secretRef"
+    },
+    "region": {
+      "type": "string",
+      "default": "cn-beijing-6",
+      "enum": [
+        "cn-beijing-6",
+        "cn-guangzhou-1"
+      ]
+    },
+    "connectTimeout": {
+      "type": "string",
+      "default": "PT10S"
+    }
+  },
+  "$defs": {
+    "secretRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "namespace",
+        "name",
+        "version"
+      ],
+      "properties": {
+        "namespace": {
+          "type": "string",
+          "default": "ksyun"
+        },
+        "name": {
+          "type": "string",
+          "x-wepush-secret": true
+        },
+        "version": {
+          "type": "string",
+          "default": "v1"
+        }
+      }
+    }
+  }
+}

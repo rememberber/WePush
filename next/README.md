@@ -169,7 +169,7 @@ try (var engine = WePushEngine.builder()
 
 ## `1.2.0` 已交付基线
 
-- Core API、Provider SPI、虚拟线程 Engine，以及 HTTP、SMTP Email、飞书/钉钉/企微机器人、阿里云短信、微信公众号、小程序和企业微信应用消息 Provider；CMPP、SMGP、SGIP、SMPP 以四个独立签名插件交付。
+- Core API、Provider SPI、虚拟线程 Engine，以及 HTTP、SMTP Email、飞书/钉钉/企微机器人、阿里云/金山云短信、微信公众号、小程序和企业微信应用消息 Provider；CMPP、SMGP、SGIP、SMPP 以四个独立签名插件交付。
 - Agent Protocol、Protobuf/gRPC 双向控制流、Sequence/Fencing Runtime、持久 Journal、加密 Secret Envelope、远端 Core 执行适配与常驻 Agent 包。
 - Service 分层、SQLite/PostgreSQL/Flyway、Workspace 资源治理、跨 Run 账号认证熔断、资源编辑/不可变修订/分页、流式 Audience Import、正式发送确认、关联重发、真实总览、Agent 注册/心跳/持久 Lease、信封加密 Secret Store、Result/Command/Artifact 持久化、SSE，以及可切换的内嵌/远端执行器。
 - PostgreSQL `LISTEN/NOTIFY` 低延迟唤醒、结构化脱敏诊断包、手动版本检查、Nginx/Traefik/Kubernetes 自建模板，以及 Agent Presigned Multipart Artifact（最大 5 TiB）。

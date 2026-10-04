@@ -41,6 +41,9 @@ public class MsgFormFactory {
                 UndoUtil.register(MaSubscribeMsgForm.getInstance());
                 UndoUtil.register(MpTemplateMsgForm.getInstance());
                 break;
+            case MessageTypeEnum.KS_YUN_CODE:
+                iMsgForm = KsYunMsgForm.getInstance();
+                break;
             case MessageTypeEnum.ALI_YUN_CODE:
                 iMsgForm = AliYunMsgForm.getInstance();
                 break;

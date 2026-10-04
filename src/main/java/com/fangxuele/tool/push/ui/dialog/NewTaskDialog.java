@@ -419,6 +419,10 @@ public class NewTaskDialog extends JDialog {
         msgTypeMapReverse.put(MessageTypeEnum.CARRIER_SMS_CODE, MessageTypeEnum.getName(MessageTypeEnum.CARRIER_SMS));
         this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.CARRIER_SMS));
 
+        msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.KS_YUN), MessageTypeEnum.KS_YUN_CODE);
+        msgTypeMapReverse.put(MessageTypeEnum.KS_YUN_CODE, MessageTypeEnum.getName(MessageTypeEnum.KS_YUN));
+        this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.KS_YUN));
+
         msgTypeMap.put(MessageTypeEnum.getName(MessageTypeEnum.ALI_YUN), MessageTypeEnum.ALI_YUN_CODE);
         msgTypeMapReverse.put(MessageTypeEnum.ALI_YUN_CODE, MessageTypeEnum.getName(MessageTypeEnum.ALI_YUN));
         this.msgTypeComboBox.addItem(MessageTypeEnum.getName(MessageTypeEnum.ALI_YUN));

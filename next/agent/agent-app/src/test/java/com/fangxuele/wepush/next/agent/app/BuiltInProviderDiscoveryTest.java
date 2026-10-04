@@ -18,7 +18,7 @@ class BuiltInProviderDiscoveryTest {
                 .collect(Collectors.toSet());
 
         assertEquals(Set.of("wepush.http", "wepush.email.smtp", "wepush.bot.feishu",
-                "wepush.bot.dingtalk", "wepush.bot.wecom", "wepush.sms.aliyun",
+                "wepush.bot.dingtalk", "wepush.bot.wecom", "wepush.sms.aliyun", "wepush.sms.ksyun",
                 "wepush.wechat.official", "wepush.wechat.mini", "wepush.wecom.app"), providers);
     }
 }
